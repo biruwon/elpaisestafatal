@@ -33,6 +33,7 @@ import { employmentInvestigation } from './investigations/empleo';
 import { extremismInvestigation } from './investigations/extremismos';
 import { youthInvestigation } from './investigations/juventud';
 import { taxInvestigation } from './investigations/impuestos';
+import { healthInvestigation } from './investigations/sanidad';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -199,10 +200,11 @@ const entries: Entry[] = [
   },
   {
     slug: 'sanidad', title: 'Sanidad', short: 'Acceso, espera y recursos', first: 1.1, second: 5.7, third: 6,
-    question: '¿Qué muestran los datos?', summary: 'Acceso, actividad, tiempos de espera, profesionales y resultados describen dimensiones distintas del sistema sanitario.',
-    context: 'Las comparaciones necesitan comunidad autónoma, especialidad y periodo. La espera quirúrgica no resume la atención primaria ni la calidad clínica.', limits: 'Una lista de espera publicada no anticipa la cita individual ni mide toda la necesidad asistencial.',
+    question: '¿Cómo puede un sistema con grandes resultados ofrecer un acceso cada vez más desigual?', summary: 'España conserva una sanidad clínicamente sólida y una longevidad extraordinaria, pero las esperas, el territorio, la salud mental y la capacidad de pagar dividen el acceso.',
+    context: 'La investigación separa resultado clínico, acceso, continuidad, profesionales, financiación y cuidados. Una buena esperanza de vida no prueba que cada paciente reciba atención a tiempo.', limits: 'Las medias nacionales esconden diferencias por comunidad, especialidad, renta y necesidad. Las listas publicadas tampoco recogen toda la demanda no atendida.',
     sources: [survey, { label: 'Listas de espera · diciembre 2025', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Informe_situacion_listas_de_espera_dic_2025_V1.pdf', date: 'dic. 2025' }],
     dossier: { eyebrow: 'Acceso a cirugía', heading: '853.509 pacientes esperaban una operación al cierre de 2025', intro: 'La lista estructural recoge pacientes pendientes de intervención electiva. Los resultados cambian por comunidad autónoma y especialidad, por eso esta cifra nacional es punto de partida, no diagnóstico completo.', metrics: [{ value: '853.509', label: 'pacientes en lista' }, { value: '121 días', label: 'espera media' }, { value: '21,6 %', label: 'más de seis meses' }], series: { label: 'Espera media quirúrgica', labels: ['Dic. 2024', 'Jun. 2025', 'Dic. 2025'], values: [126, 119, 121], unit: 'días' }, source: { label: 'Listas de espera · diciembre 2025', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Informe_situacion_listas_de_espera_dic_2025_V1.pdf', date: '2026' }, limits: 'No mide atención primaria, urgencias, calidad clínica ni la espera de cada persona. Los datos dependen de información remitida por las comunidades autónomas.' },
+    investigation: healthInvestigation,
   },
   {
     slug: 'desigualdad', title: 'Desigualdades y pobreza', short: 'Renta, género y privación', first: 1, second: 1.9, third: 2,
