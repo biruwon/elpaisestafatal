@@ -28,6 +28,7 @@ import { housingInvestigation } from './investigations/vivienda';
 import { immigrationInvestigation } from './investigations/inmigracion';
 import { corruptionInvestigation } from './investigations/corrupcion';
 import { politicsInvestigation } from './investigations/politica';
+import { economyInvestigation } from './investigations/economia';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -90,6 +91,7 @@ const entries: Entry[] = [
     context: 'El IPC mide una cesta media. Para entender poder adquisitivo hay que compararlo con ingresos, composición familiar y costes de vivienda.', limits: 'Un promedio nacional puede ocultar diferencias grandes por renta, edad y territorio.',
     sources: [survey, { label: 'Indicador adelantado del IPC · junio 2026', publisher: 'INE', url: 'https://ine.es/dyngs/Prensa/es/adIPC0626.htm', date: '29 jun. 2026' }],
     dossier: { eyebrow: 'Crecimiento, precios y renta', heading: 'La economía creció un 2,7%; los precios no avanzan al mismo ritmo', intro: 'El PIB en volumen aumentó un 0,6% en el trimestre y un 2,7% en un año. Para los hogares, además importa la inflación y cómo evolucionan los ingresos.', metrics: [{ value: '2,7 %', label: 'PIB real interanual' }, { value: '0,6 %', label: 'PIB trimestral' }, { value: '3,2 %', label: 'IPC anual estimado' }], series: { label: 'Variación interanual · T1 2026', labels: ['PIB real', 'Horas', 'Empleo ETC'], values: [2.7, 2.1, 2.8], unit: '%' }, source: { label: 'Contabilidad Nacional Trimestral · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/CNTR1T26.htm', date: '25 jun. 2026' }, limits: 'PIB, IPC y renta disponible responden a preguntas distintas. Ninguna de estas medias mide por sí sola el coste de vida de un hogar concreto.' },
+    investigation: economyInvestigation,
   },
   {
     slug: 'calidad-empleo', title: 'Calidad del empleo', short: 'Estabilidad, salarios y jornada', first: 5, second: 8.9, third: 5.3,
