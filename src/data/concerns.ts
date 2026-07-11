@@ -31,6 +31,7 @@ import { politicsInvestigation } from './investigations/politica';
 import { economyInvestigation } from './investigations/economia';
 import { employmentInvestigation } from './investigations/empleo';
 import { extremismInvestigation } from './investigations/extremismos';
+import { youthInvestigation } from './investigations/juventud';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -146,10 +147,11 @@ const entries: Entry[] = [
   },
   {
     slug: 'juventud', title: 'Juventud y oportunidades', short: 'Empleo, emancipación y formación', first: 2.7, second: 3.4, third: 2.9,
-    question: '¿Qué indicadores dan contexto?', summary: 'Empleo, formación, ingresos y acceso a vivienda condicionan la autonomía. Ninguno explica por sí solo las trayectorias de una generación.',
-    context: 'Las comparaciones por edad deben indicar si hablan de población, hogares o personas ocupadas y el tramo de edad exacto.', limits: 'La etiqueta “jóvenes” reúne realidades muy distintas según edad, origen y territorio.',
+    question: '¿Puede una persona joven construir una vida autónoma sin patrimonio familiar?', summary: 'La juventud española estudia más y accede a un mercado laboral mejor que tras 2008, pero la vivienda, los ingresos iniciales y el patrimonio familiar retrasan la vida independiente.',
+    context: 'La investigación conecta educación, empleo, vivienda, salud mental, territorio y riqueza familiar. Las comparaciones indican el tramo de edad porque “juventud” no tiene una definición estadística única.', limits: 'Los indicadores usan edades, fechas y universos distintos. No deben sumarse ni interpretarse como la experiencia idéntica de toda una generación.',
     sources: [survey, { label: 'Observatorio de Emancipación', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/', date: 'publicación periódica' }, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }],
     dossier: { eyebrow: 'Emancipación y renta', heading: 'El 44,3% de quienes tienen 26–34 años vivía con sus padres', intro: 'La ECV permite relacionar la convivencia familiar con renta, edad y acceso a vivienda. No debe leerse como una elección idéntica para todas las personas jóvenes.', metrics: [{ value: '44,3 %', label: '26–34 años con sus padres' }, { value: '55,5 %', label: 'si renta < 6.000 €' }, { value: '29,4 %', label: 'si renta > 24.000 €' }], series: { label: 'Convivencia con progenitores por renta · 26–34', labels: ['< 6.000 €', 'Total', '> 24.000 €'], values: [55.5, 44.3, 29.4], unit: '%' }, source: { label: 'ECV · módulo sobre dificultades de acceso a vivienda', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/m3ECV2025.htm?print=1', date: 'may. 2026' }, limits: 'Describe convivencia en 2025, no deseo de emanciparse ni el conjunto de jóvenes de todas las edades.' },
+    investigation: youthInvestigation,
   },
   {
     slug: 'seguridad', title: 'Inseguridad ciudadana', short: 'Delitos, denuncias y percepción', first: 2.1, second: 3.1, third: 3.2,
