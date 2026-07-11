@@ -30,6 +30,7 @@ import { corruptionInvestigation } from './investigations/corrupcion';
 import { politicsInvestigation } from './investigations/politica';
 import { economyInvestigation } from './investigations/economia';
 import { employmentInvestigation } from './investigations/empleo';
+import { extremismInvestigation } from './investigations/extremismos';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -135,11 +136,13 @@ const entries: Entry[] = [
     investigation: corruptionInvestigation,
   },
   {
-    slug: 'extremismos', title: 'Extremismos', short: 'Violencia, odio y polarización', first: 3.4, second: 2.7, third: 2.4,
-    question: '¿Qué no conviene mezclar?', summary: 'Las posiciones políticas, la discriminación, los delitos de odio y la violencia son categorías diferentes y requieren fuentes específicas.',
-    context: 'Las estadísticas registran hechos conocidos por las fuerzas de seguridad; no miden todas las actitudes ni autorizan generalizaciones sobre grupos.', limits: 'Un dato registrado depende de denuncia, clasificación y contexto legal.',
-    sources: [survey, { label: 'Informe sobre evolución de delitos de odio', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/delitos-de-odio/', date: 'anual' }],
-    dossier: { eyebrow: 'Violencia y delitos de odio', heading: 'Los hechos registrados de odio subieron a 2.417 en 2025', intro: 'El informe policial separa ámbitos y tipos de infracción. Es más preciso que usar “extremismo” como una etiqueta única para ideas, discursos y delitos.', metrics: [{ value: '2.417', label: 'hechos registrados' }, { value: '2.242', label: 'delitos de odio' }, { value: '+23,63 %', label: 'variación anual' }], series: { label: 'Delitos e incidentes de odio registrados', labels: ['2023', '2024', '2025'], values: [2268, 1955, 2417], unit: 'hechos' }, source: { label: 'Informe de evolución de delitos e incidentes de odio 2025', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/export/sites/default/.galleries/galeria-de-prensa/documentos-y-multimedia/balances-e-informes/2025/Informe-sobre-la-evolucion-de-los-delitos-e-incidentes-de-odio-en-Espana-2025.pdf', date: 'jun. 2026' }, limits: 'Son hechos conocidos por las fuerzas de seguridad. No miden todas las actitudes sociales ni permiten identificar ideologías o grupos fuera de la clasificación del informe.' },
+    slug: 'extremismos', title: 'Extremismos y crispación social', short: 'Polarización, odio, radicalización y violencia', first: 12.9, second: 0, third: 0,
+    statOverride:'12,9 %',statLabelOverride:'mencionó extremismos o aumento de la crispación social',
+    question: '¿Está creciendo la violencia o la hostilidad?', summary: 'España sigue siendo una democracia comparativamente pacífica, pero el lenguaje de enemigo, la culpa colectiva y la polarización afectiva penetran en la política ordinaria.',
+    context: 'Esta ficha une dos categorías solapadas del CIS y distingue radicalismo, extremismo, crispación, delito de odio y terrorismo. No son sinónimos.', limits: 'El 12,9% es una unión ponderada, no una suma. Los hechos policiales dependen de denuncia y clasificación; una detención tampoco equivale a condena.',
+    sources: [survey,{label:'Microdatos del Barómetro de abril de 2026 · MD3557',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'27 may. 2026'},{ label: 'Informe sobre evolución de delitos de odio 2025', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/export/sites/default/.galleries/galeria-de-prensa/documentos-y-multimedia/balances-e-informes/2025/Informe-sobre-la-evolucion-de-los-delitos-e-incidentes-de-odio-en-Espana-2025.pdf', date: 'jun. 2026' }],
+    dossier:{eyebrow:'Dos respuestas, una sola persona',heading:'El 12,9% citó extremismos o crispación',intro:'El cálculo usa los 4.020 registros ponderados y cuenta una vez a cada persona aunque mencionara ambas categorías entre sus tres respuestas.',metrics:[{value:'12,9 %',label:'unión ponderada'},{value:'9,7 %',label:'extremismos'},{value:'3,5 %',label:'crispación social'}],series:{label:'Categorías individuales y unión',labels:['Extremismos','Crispación','Unión'],values:[9.7,3.5,12.9],unit:'%'},source:{label:'Microdatos CIS 3557 · cálculo reproducido',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'2026'},limits:'Las tasas individuales se solapan. La unión usa códigos 52 y 65 en PESPANNA1–3 y aplica PESO.'},
+    investigation:extremismInvestigation,
   },
   {
     slug: 'juventud', title: 'Juventud y oportunidades', short: 'Empleo, emancipación y formación', first: 2.7, second: 3.4, third: 2.9,
@@ -213,7 +216,7 @@ const entries: Entry[] = [
   },
 ];
 
-const mergedSlugs = new Set(['gobierno-partidos', 'problemas-politicos', 'comportamiento-politico', 'partidos-politicos', 'acuerdos-politicos', 'paro']);
+const mergedSlugs = new Set(['gobierno-partidos', 'problemas-politicos', 'comportamiento-politico', 'partidos-politicos', 'acuerdos-politicos', 'paro', 'crispacion-social']);
 export const concerns = entries
   .filter((entry) => !mergedSlugs.has(entry.slug))
   .sort((a, b) => b.first - a.first)
