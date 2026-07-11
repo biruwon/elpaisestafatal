@@ -1,5 +1,16 @@
 export type Source = { label: string; publisher: string; url: string; date: string };
 export type Dossier = { eyebrow: string; heading: string; intro: string; metrics: { value: string; label: string }[]; series: { label: string; values: number[]; labels: string[]; unit: string }; source: Source; limits: string };
+export type PublicationStatus = 'full-investigation' | 'data-briefing' | 'in-progress';
+export type TrendStatus = 'improving' | 'worsening' | 'mixed' | 'uncertain';
+export type QuickAnswer = {
+  sentence: string;
+  trend: TrendStatus;
+  facts: { value: string; label: string }[];
+  truePoints: string[];
+  misleadingPoints: string[];
+  unknownPoints: string[];
+  evidenceCouldChange: string;
+};
 export type InvestigationSection = {
   id: string; number: string; title: string; intro: string; paragraphs: string[];
   metrics?: { value: string; label: string }[];
@@ -21,6 +32,9 @@ export type Concern = {
   sources: Source[];
   video?: { title: string; publisher: string; videoId: string; url: string; note: string };
   dossier: Dossier;
+  status: PublicationStatus;
+  lastReviewed: string;
+  quickAnswer: QuickAnswer;
   investigation?: { kicker: string; title: string; standfirst: string; finding: string; sections: InvestigationSection[] };
 };
 
@@ -36,6 +50,7 @@ import { taxInvestigation } from './investigations/impuestos';
 import { healthInvestigation } from './investigations/sanidad';
 import { inequalityInvestigation } from './investigations/desigualdad';
 import { securityInvestigation } from './investigations/seguridad';
+import { quickAnswers } from './quickAnswers';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -44,7 +59,7 @@ const survey: Source = {
   date: 'abril de 2026',
 };
 
-type Entry = Omit<Concern, 'rank' | 'stat' | 'statLabel' | 'dossier'> & { first: number; second: number; third: number; statOverride?: string; statLabelOverride?: string; dossier?: Dossier };
+type Entry = Omit<Concern, 'rank' | 'stat' | 'statLabel' | 'dossier' | 'status' | 'lastReviewed' | 'quickAnswer'> & { first: number; second: number; third: number; statOverride?: string; statLabelOverride?: string; dossier?: Dossier };
 const concern = (entry: Entry, rank: number): Concern => ({
   ...entry,
   rank,
@@ -56,6 +71,9 @@ const concern = (entry: Entry, rank: number): Concern => ({
     series: { label: 'Posición de la mención en la encuesta', labels: ['Primero', 'Segundo', 'Tercero'], values: [entry.first, entry.second, entry.third], unit: '%' }, source: survey,
     limits: 'Este gráfico describe preocupación declarada, no la situación material. Los indicadores sectoriales sustituyen progresivamente esta vista.',
   },
+  status: entry.investigation ? 'full-investigation' : ['problemas-sociales','crisis-valores'].includes(entry.slug) ? 'in-progress' : 'data-briefing',
+  lastReviewed: '12 jul. 2026',
+  quickAnswer: quickAnswers[entry.slug],
 });
 
 const entries: Entry[] = [
