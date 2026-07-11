@@ -26,6 +26,7 @@ export type Concern = {
 
 import { housingInvestigation } from './investigations/vivienda';
 import { immigrationInvestigation } from './investigations/inmigracion';
+import { corruptionInvestigation } from './investigations/corrupcion';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -115,6 +116,7 @@ const entries: Entry[] = [
     context: 'Una fuente judicial debe indicar órgano, fase procesal y fecha. La estadística oficial permite seguir agregados sin prejuzgar expedientes.', limits: 'Una investigación no es una condena; una percepción tampoco prueba un caso concreto.',
     sources: [survey, { label: 'Estadística judicial', publisher: 'Consejo General del Poder Judicial', url: 'https://www.poderjudicial.es/cgpj/es/Temas/Estadistica-Judicial/', date: 'actualización periódica' }, { label: 'Fiscalía contra la Corrupción', publisher: 'Fiscalía General del Estado', url: 'https://www.fiscal.es/fiscalias-especiales', date: 'memorias anuales' }],
     dossier: { eyebrow: 'Percepción, procesos y condenas', heading: 'El índice internacional mide percepción, no delitos probados', intro: 'España obtuvo 55 sobre 100 y el puesto 49 de 182 en el Índice de Percepción de la Corrupción 2025. Para hechos concretos, la fuente adecuada es judicial o fiscal.', metrics: [{ value: '55/100', label: 'índice de percepción 2025' }, { value: '49/182', label: 'posición global' }, { value: '−1', label: 'punto frente a 2024' }], series: { label: 'Índice de percepción de corrupción', labels: ['2023', '2024', '2025'], values: [60, 56, 55], unit: 'puntos / 100' }, source: { label: 'Índice de Percepción de la Corrupción 2025', publisher: 'Transparency International España', url: 'https://transparencia.org.es/actualidad/indice-de-percepcion-de-la-corrupcion-2025/', date: 'feb. 2026' }, limits: 'No es una tasa de corrupción ni un registro de condenas: sintetiza percepciones de expertos y empresas. Una investigación tampoco equivale a condena.' },
+    investigation: corruptionInvestigation,
   },
   {
     slug: 'extremismos', title: 'Extremismos', short: 'Violencia, odio y polarización', first: 3.4, second: 2.7, third: 2.4,
