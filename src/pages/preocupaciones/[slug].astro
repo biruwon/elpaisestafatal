@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { concerns, getConcern } from '../../data/concerns';
+export function getStaticPaths() { return concerns.map((concern) => ({ params: { slug: concern.slug } })); }
+const concern = getConcern(Astro.params.slug!);
+if (!concern) return Astro.redirect('/');
+---
+<BaseLayout title={`${concern.title} — El país está fatal`} description={concern.summary}>
+  <article class="brief"><a class="back" href="/#preocupaciones">← Volver a las 20 preocupaciones</a><header class="brief-head"><p class="eyebrow">Preocupación {String(concern.rank).padStart(2,'0')} de 20</p><h1>{concern.title}</h1><p>{concern.summary}</p></header>
+  <section class="stat-block"><p class="eyebrow">Termómetro de preocupación</p><strong>{concern.stat}</strong><p>{concern.statLabel}</p><small>Barómetro CIS, abril de 2026. Respuesta múltiple cuando corresponde.</small></section>
+  <section class="brief-grid"><div><p class="eyebrow">La pregunta</p><h2>{concern.question}</h2><p>{concern.context}</p></div><aside><p class="eyebrow">Límite importante</p><p>{concern.limits}</p></aside></section>
+  {concern.video && <section class="video-card" data-video-url={concern.video.url}><div><p class="eyebrow">Vídeo · selección provisional</p><h2>{concern.video.title}</h2><p>{concern.video.publisher}</p><p class="video-note">{concern.video.note}</p><button type="button" class="video-load">Cargar vídeo externo <span>↗</span></button></div><div class="play" aria-hidden="true">▶</div></section>}
+  <section class="source-section"><div><p class="eyebrow">Comprueba las fuentes</p><h2>De dónde sale<br /><em>esta ficha.</em></h2></div><ol>{concern.sources.map((source, index) => <li><span>{String(index + 1).padStart(2,'0')}</span><a href={source.url} target="_blank" rel="noreferrer"><strong>{source.label}</strong><small>{source.publisher} · {source.date}</small></a><i>↗</i></li>)}</ol></section>
+  <nav class="brief-nav"><a href={`/preocupaciones/${concerns[Math.max(0, concern.rank - 2)].slug}`}>← Anterior</a><a href="/#preocupaciones">Ver las 20</a><a href={`/preocupaciones/${concerns[Math.min(concerns.length - 1, concern.rank)].slug}`}>Siguiente →</a></nav></article>
+  <script>document.querySelectorAll<HTMLElement>('.video-card').forEach((card) => { card.querySelector('.video-load')?.addEventListener('click', () => { const url = card.dataset.videoUrl; if (url) window.open(url, '_blank', 'noopener,noreferrer'); }); });</script>
+</BaseLayout>
