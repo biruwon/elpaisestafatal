@@ -1,5 +1,11 @@
 export type Source = { label: string; publisher: string; url: string; date: string };
 export type Dossier = { eyebrow: string; heading: string; intro: string; metrics: { value: string; label: string }[]; series: { label: string; values: number[]; labels: string[]; unit: string }; source: Source; limits: string };
+export type InvestigationSection = {
+  id: string; number: string; title: string; intro: string; paragraphs: string[];
+  metrics?: { value: string; label: string }[];
+  chart?: { title: string; labels: string[]; values: number[]; unit: string; source: Source };
+  bullets?: string[]; verdict?: string; source?: Source;
+};
 
 export type Concern = {
   slug: string;
@@ -15,7 +21,10 @@ export type Concern = {
   sources: Source[];
   video?: { title: string; publisher: string; videoId: string; url: string; note: string };
   dossier: Dossier;
+  investigation?: { kicker: string; title: string; standfirst: string; finding: string; sections: InvestigationSection[] };
 };
+
+import { housingInvestigation } from './investigations/vivienda';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -46,6 +55,7 @@ const entries: Entry[] = [
     sources: [survey, { label: 'Índice de Precios de Vivienda · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/IPV1T26.htm', date: '8 jun. 2026' }],
     dossier: { eyebrow: 'Precios de compraventa', heading: 'La vivienda libre subió un 12,9% interanual', intro: 'El INE mide viviendas libres efectivamente compradas, no anuncios ni alquileres. La subida trimestral fue del 3,5%; segunda mano creció más que obra nueva.', metrics: [{ value: '12,9 %', label: 'variación anual total' }, { value: '13,5 %', label: 'segunda mano' }, { value: '9,1 %', label: 'obra nueva' }], series: { label: 'Variación anual del precio de vivienda libre', labels: ['T2 24', 'T3 24', 'T4 24', 'T1 25', 'T2 25', 'T3 25', 'T4 25', 'T1 26'], values: [7.8, 8.1, 11.3, 12.2, 12.7, 12.8, 12.9, 12.9], unit: '%' }, source: { label: 'Índice de Precios de Vivienda · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/IPV1T26.htm', date: '8 jun. 2026' }, limits: 'No mide alquileres ni el esfuerzo de pago. Las tablas anexas del INE permiten bajar a comunidades autónomas.' },
     video: { title: 'Para entrar a vivir: los datos clave de la vivienda en España', publisher: 'RTVE Noticias', videoId: 'DNfazdr2duo', url: 'https://www.youtube.com/watch?v=DNfazdr2duo', note: 'Selección provisional de un medio público; explica datos y no respalda una posición partidista.' },
+    investigation: housingInvestigation,
   },
   {
     slug: 'gobierno-partidos', title: 'Gobierno y partidos concretos', short: 'Valoración de actores políticos', first: 8.7, second: 1.6, third: 1,
