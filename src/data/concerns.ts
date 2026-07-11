@@ -72,7 +72,7 @@ const entries: Entry[] = [
     slug: 'calidad-empleo', title: 'Calidad del empleo', short: 'Estabilidad, salarios y jornada', first: 5, second: 8.9, third: 5.3,
     question: '¿Tener empleo responde a todo?', summary: 'No. Salario, tipo de contrato, jornada, horas no deseadas y capacidad de progresar describen dimensiones diferentes de la calidad del empleo.',
     context: 'La EPA mide empleo, paro y actividad. Las tablas de salarios y condiciones de trabajo deben leerse por separado para no convertir la tasa de paro en un indicador de todo.', limits: 'Una media nacional no resume un contrato, un sector ni una comunidad autónoma.',
-    sources: [survey, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }, { label: 'Encuesta anual de estructura salarial', publisher: 'INE', url: 'https://www.ine.es/prensa/ees_2023.pdf', date: 'última publicación disponible' }],
+    sources: [survey, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }, { label: 'Encuesta anual de estructura salarial · resultados', publisher: 'INE', url: 'https://www.ine.es/ss/Satellite?L=es_ES&c=INESeccion_C&cid=1259925408327&p=1254735110672&pagename=ProductosYServicios%2FPYSLayout', date: 'serie anual' }],
     video: { title: 'El mercado de empleo se desinfla: claves de la EPA', publisher: 'RTVE Noticias', videoId: 'rn1QaqkSJcQ', url: 'https://www.youtube.com/watch?v=rn1QaqkSJcQ', note: 'Selección provisional: pieza explicativa basada en la EPA. Cárgala solo si quieres reproducir contenido de YouTube.' },
   },
   {
@@ -91,7 +91,7 @@ const entries: Entry[] = [
     slug: 'paro', title: 'Paro', short: 'Desempleo y búsqueda de trabajo', first: 4.5, second: 5.6, third: 4.2,
     question: '¿Qué fuente responde a qué pregunta?', summary: 'La EPA permite comparar desempleo; el paro registrado cuenta otra población administrativa. Son útiles, pero no intercambiables.',
     context: 'Edad, sexo, sector y duración de la búsqueda cambian mucho la experiencia detrás de una tasa agregada.', limits: 'Los registros administrativos y la encuesta tienen universos y metodologías distintas.',
-    sources: [survey, { label: 'Encuesta de Población Activa', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/EPA.htm', date: 'trimestral' }, { label: 'Estadística de empleo', publisher: 'SEPE', url: 'https://www.sepe.es/HomeSepe/que-es-el-sepe/estadisticas.html', date: 'mensual' }],
+    sources: [survey, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }, { label: 'Estadística de empleo', publisher: 'SEPE', url: 'https://www.sepe.es/HomeSepe/que-es-el-sepe/estadisticas.html', date: 'mensual' }],
   },
   {
     slug: 'corrupcion', title: 'Corrupción y fraude', short: 'Denuncias, procesos y condenas', first: 3.9, second: 3.2, third: 1.9,
@@ -109,7 +109,7 @@ const entries: Entry[] = [
     slug: 'juventud', title: 'Juventud y oportunidades', short: 'Empleo, emancipación y formación', first: 2.7, second: 3.4, third: 2.9,
     question: '¿Qué indicadores dan contexto?', summary: 'Empleo, formación, ingresos y acceso a vivienda condicionan la autonomía. Ninguno explica por sí solo las trayectorias de una generación.',
     context: 'Las comparaciones por edad deben indicar si hablan de población, hogares o personas ocupadas y el tramo de edad exacto.', limits: 'La etiqueta “jóvenes” reúne realidades muy distintas según edad, origen y territorio.',
-    sources: [survey, { label: 'Indicadores de emancipación', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/observatorio-emancipacion/', date: 'trimestral' }, { label: 'Encuesta de Población Activa', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/EPA.htm', date: 'trimestral' }],
+    sources: [survey, { label: 'Observatorio de Emancipación', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/', date: 'publicación periódica' }, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }],
   },
   {
     slug: 'seguridad', title: 'Inseguridad ciudadana', short: 'Delitos, denuncias y percepción', first: 2.1, second: 3.1, third: 3.2,
@@ -127,7 +127,7 @@ const entries: Entry[] = [
     slug: 'impuestos', title: 'Subida de impuestos', short: 'Recaudación, tipos y esfuerzo fiscal', first: 1.5, second: 1.6, third: 0.8,
     question: '¿Qué cifra conviene mirar?', summary: 'Tipo legal, recaudación, presión fiscal y carga efectiva son medidas diferentes. El efecto también cambia según renta, consumo y hogar.',
     context: 'Las comparaciones internacionales deben usar la misma definición y el mismo año de referencia.', limits: 'La presión fiscal agregada no equivale a la factura de una persona o empresa concreta.',
-    sources: [survey, { label: 'Recaudación tributaria', publisher: 'Agencia Tributaria', url: 'https://sede.agenciatributaria.gob.es/Sede/datosabiertos/catalogo/hacienda/recaudacion.html', date: 'actualización periódica' }, { label: 'Revenue statistics', publisher: 'OECD', url: 'https://www.oecd.org/en/topics/sub-issues/global-tax-revenues.html', date: 'serie internacional' }],
+    sources: [survey, { label: 'Recaudación tributaria', publisher: 'Agencia Tributaria', url: 'https://sede.agenciatributaria.gob.es/Sede/estadisticas/recaudacion-tributaria.html', date: 'actualización periódica' }, { label: 'Base de datos estadística', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/data/database', date: 'serie internacional' }],
   },
   {
     slug: 'problemas-sociales', title: 'Problemas sociales', short: 'Cohesión, cuidados y exclusión', first: 1.4, second: 1.4, third: 2,
@@ -139,13 +139,13 @@ const entries: Entry[] = [
     slug: 'crisis-valores', title: 'Crisis de valores', short: 'Civismo, convivencia y normas', first: 1.3, second: 1.4, third: 1.8,
     question: '¿Se puede convertir una sensación en un hecho?', summary: 'No de forma directa. “Crisis de valores” expresa un diagnóstico moral amplio; los datos solo pueden iluminar conductas o actitudes concretas.',
     context: 'Las encuestas deben leerse con su pregunta exacta, muestra y fecha. El proyecto evita presentar una opinión como un indicador objetivo.', limits: 'No existe una única métrica oficial de “valores” ni una lectura neutral de ese concepto.',
-    sources: [survey, { label: 'Banco de datos de estudios', publisher: 'Centro de Investigaciones Sociológicas', url: 'https://www.cis.es/es/banco-de-datos', date: 'consulta continua' }],
+    sources: [survey],
   },
   {
     slug: 'crispacion-social', title: 'Crispación social', short: 'Conflicto, convivencia y debate público', first: 1.2, second: 1, third: 0.8,
     question: '¿Qué mide la crispación?', summary: 'El término puede referirse a tono político, conversación pública o conflicto social. Cada una de esas cosas necesita una medida diferente.',
     context: 'La cifra de la encuesta capta que alguien lo señala como problema; no cuantifica automáticamente el nivel de hostilidad social.', limits: 'No es correcto deducir violencia, delitos o conducta individual a partir de una percepción agregada.',
-    sources: [survey, { label: 'Estudios y series de opinión pública', publisher: 'Centro de Investigaciones Sociológicas', url: 'https://www.cis.es/es/estudios/catalogo', date: 'consulta continua' }],
+    sources: [survey],
   },
   {
     slug: 'sanidad', title: 'Sanidad', short: 'Acceso, espera y recursos', first: 1.1, second: 5.7, third: 6,
@@ -157,7 +157,7 @@ const entries: Entry[] = [
     slug: 'desigualdad', title: 'Desigualdades y pobreza', short: 'Renta, género y privación', first: 1, second: 1.9, third: 2,
     question: '¿Cómo evitar simplificaciones?', summary: 'Distribución de renta, pobreza monetaria, privación material y desigualdades de género son medidas relacionadas, pero no idénticas.',
     context: 'AROPE combina renta, carencia material y baja intensidad de empleo. Es útil para comparar, no un recuento de personas sin ingresos.', limits: 'Los umbrales relativos no equivalen a una cantidad idéntica para todos los hogares.',
-    sources: [survey, { label: 'Encuesta de Condiciones de Vida · 2025', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/ECV2025.htm', date: '5 feb. 2026' }, { label: 'Gender statistics', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/web/gender-equality', date: 'serie europea' }],
+    sources: [survey, { label: 'Encuesta de Condiciones de Vida · 2025', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/ECV2025.htm', date: '5 feb. 2026' }, { label: 'Base de datos de Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/data/database', date: 'serie europea' }],
   },
   {
     slug: 'acuerdos-politicos', title: 'Falta de acuerdos e inestabilidad', short: 'Pactos, mayorías y continuidad', first: 1, second: 0.6, third: 0.3,
