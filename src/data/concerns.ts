@@ -25,6 +25,7 @@ export type Concern = {
 };
 
 import { housingInvestigation } from './investigations/vivienda';
+import { immigrationInvestigation } from './investigations/inmigracion';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -99,6 +100,7 @@ const entries: Entry[] = [
     context: 'Nacionalidad, lugar de nacimiento y residencia son conceptos distintos. Una persona nacida fuera de España puede tener nacionalidad española.', limits: 'Los datos agregados no justifican atribuir conductas o resultados a personas por su origen.',
     sources: [survey, { label: 'Estadística Continua de Población · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/ECP1T26.htm', date: '7 may. 2026' }],
     dossier: { eyebrow: 'Población y migraciones', heading: 'Nacionalidad y lugar de nacimiento no son lo mismo', intro: 'España tenía 49,687 millones de residentes el 1 de abril de 2026. La estadística distingue entre nacionalidad y lugar de nacimiento para no tratar categorías diferentes como si fueran iguales.', metrics: [{ value: '49,687 M', label: 'población residente' }, { value: '7,346 M', label: 'nacionalidad extranjera' }, { value: '10,155 M', label: 'nacidas fuera de España' }], series: { label: 'Población residente a 1 de abril', labels: ['2023', '2024', '2025', '2026'], values: [48.206, 48.701, 49.228, 49.687], unit: 'millones' }, source: { label: 'Estadística Continua de Población · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/ECP1T26.htm', date: '7 may. 2026' }, limits: 'Estos datos describen población y movimientos registrados; no permiten atribuir criminalidad, presión sobre servicios o resultados laborales a una nacionalidad u origen.' },
+    investigation: immigrationInvestigation,
   },
   {
     slug: 'paro', title: 'Paro', short: 'Desempleo y búsqueda de trabajo', first: 4.5, second: 5.6, third: 4.2,
