@@ -35,6 +35,7 @@ import { youthInvestigation } from './investigations/juventud';
 import { taxInvestigation } from './investigations/impuestos';
 import { healthInvestigation } from './investigations/sanidad';
 import { inequalityInvestigation } from './investigations/desigualdad';
+import { securityInvestigation } from './investigations/seguridad';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -162,6 +163,7 @@ const entries: Entry[] = [
     context: 'La comparación territorial requiere tasas por población y la misma tipología delictiva.', limits: 'La estadística depende de hechos conocidos y denunciados; no mide directamente todos los delitos.',
     sources: [survey, { label: 'Balance de criminalidad · T1 2026', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/es/prensa/balances-e-informes/', date: 'jun. 2026' }],
     dossier: { eyebrow: 'Delitos conocidos', heading: 'La criminalidad registrada subió un 1,0% interanual', intro: 'El balance contabiliza infracciones conocidas por los cuerpos policiales. La comparación útil separa tipologías, población y territorio, en lugar de usar un único relato sobre seguridad.', metrics: [{ value: '+1,0 %', label: 'variación interanual' }, { value: 'T1 2026', label: 'periodo del balance' }, { value: '6', label: 'cuerpos integrados' }], series: { label: 'Variación interanual registrada', labels: ['Total', 'Cibercriminalidad', 'Resto'], values: [1, 4.8, 0.2], unit: '%' }, source: { label: 'Balance de Criminalidad · primer trimestre 2026', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/es/prensa/balances-e-informes/', date: '2026' }, limits: 'La estadística depende de denuncias y clasificación de hechos conocidos. No mide directamente todos los delitos ni la percepción individual de seguridad.' },
+    investigation: securityInvestigation,
   },
   {
     slug: 'partidos-politicos', title: 'Lo que hacen los partidos', short: 'Propuestas, votos y actividad', first: 2, second: 0.9, third: 1,
