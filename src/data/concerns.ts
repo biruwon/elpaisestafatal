@@ -27,6 +27,7 @@ export type Concern = {
 import { housingInvestigation } from './investigations/vivienda';
 import { immigrationInvestigation } from './investigations/inmigracion';
 import { corruptionInvestigation } from './investigations/corrupcion';
+import { politicsInvestigation } from './investigations/politica';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -35,12 +36,12 @@ const survey: Source = {
   date: 'abril de 2026',
 };
 
-type Entry = Omit<Concern, 'rank' | 'stat' | 'statLabel' | 'dossier'> & { first: number; second: number; third: number; dossier?: Dossier };
+type Entry = Omit<Concern, 'rank' | 'stat' | 'statLabel' | 'dossier'> & { first: number; second: number; third: number; statOverride?: string; statLabelOverride?: string; dossier?: Dossier };
 const concern = (entry: Entry, rank: number): Concern => ({
   ...entry,
   rank,
-  stat: `${String(entry.first).replace('.', ',')} %`,
-  statLabel: 'lo señaló como primer problema de España',
+  stat: entry.statOverride ?? `${String(entry.first).replace('.', ',')} %`,
+  statLabel: entry.statLabelOverride ?? 'lo señaló como primer problema de España',
   dossier: entry.dossier ?? {
     eyebrow: 'La situación, con datos', heading: 'La percepción no es el indicador principal', intro: 'Esta ficha está en ampliación con indicadores sectoriales. Mientras tanto, la fuente enlazada permite comprobar la pregunta de partida y su metodología.',
     metrics: [{ value: `${String(entry.first).replace('.', ',')} %`, label: 'la señaló en primer lugar' }, { value: `${String(entry.second).replace('.', ',')} %`, label: 'la señaló en segundo lugar' }, { value: `${String(entry.third).replace('.', ',')} %`, label: 'la señaló en tercer lugar' }],
@@ -50,6 +51,16 @@ const concern = (entry: Entry, rank: number): Concern => ({
 });
 
 const entries: Entry[] = [
+  {
+    slug: 'politica', title: 'Política, políticos y partidos', short: 'Confianza, conducta, acuerdos y resultados', first: 37.5, second: 0, third: 0,
+    statOverride: '37,5 %', statLabelOverride: 'mencionó al menos uno de los cinco problemas políticos agrupados',
+    question: '¿Funciona la democracia aunque no confiemos en quienes la operan?', summary: 'España mantiene elecciones competitivas e instituciones capaces de controlar el poder, pero la confianza se erosiona entre polarización, personalismo, corrupción, nombramientos partidistas y dificultad para convertir acuerdos en resultados.',
+    context: 'Esta ficha agrupa cinco respuestas solapadas: Gobierno o políticos concretos, problemas políticos generales, mal comportamiento, actividad de los partidos y falta de acuerdos. El 37,5% es la unión ponderada de personas que citó al menos una en cualquiera de sus tres respuestas.',
+    limits: 'No se han sumado porcentajes. El cálculo usa los microdatos ponderados del estudio 3557 y evita contar dos veces a quien mencionó más de una categoría. Describe preocupación declarada, no calidad democrática objetiva.',
+    sources: [survey, { label:'Microdatos del Barómetro de abril de 2026 · MD3557', publisher:'CIS', url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257', date:'27 may. 2026' }, { label:'Composición de los grupos parlamentarios · XV Legislatura', publisher:'Congreso de los Diputados', url:'https://www.congreso.es/es/grupos/composicion-en-la-legislatura', date:'consulta jul. 2026' }],
+    dossier: { eyebrow:'Cinco respuestas, una sola persona', heading:'El 37,5% citó al menos un problema político', intro:'El porcentaje se ha calculado sobre los 4.020 registros ponderados. Cuenta una sola vez a cada persona aunque mencionara varias de las cinco categorías en sus tres respuestas.', metrics:[{value:'37,5 %',label:'unión ponderada'},{value:'4.020',label:'entrevistas'},{value:'5',label:'categorías agrupadas'}], series:{label:'Peso individual de cada categoría · cualquier posición',labels:['Política general','Gobierno/figuras','Conducta','Partidos','Acuerdos'],values:[13.9,11.3,9.6,3.9,1.9],unit:'%'}, source:{label:'Microdatos del Barómetro de abril de 2026 · cálculo reproducido',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'2026'}, limits:'Las barras individuales se solapan y no deben sumarse. El 37,5% es la unión de códigos 13, 24, 46, 50 y 51 en PESPANNA1–3, aplicando PESO.' },
+    investigation: politicsInvestigation,
+  },
   {
     slug: 'vivienda', title: 'Vivienda', short: 'Acceso, alquiler y compra', first: 25.1, second: 11, third: 5.2,
     question: '¿Qué está ocurriendo?', summary: 'Precios, renta disponible, oferta y territorio se mueven a ritmos distintos. Conviene mirar los cuatro antes de atribuir una causa única.',
@@ -197,5 +208,6 @@ const entries: Entry[] = [
   },
 ];
 
-export const concerns = entries.map((entry, index) => concern(entry, index + 1));
+const mergedPoliticalSlugs = new Set(['gobierno-partidos', 'problemas-politicos', 'comportamiento-politico', 'partidos-politicos', 'acuerdos-politicos']);
+export const concerns = entries.filter((entry) => !mergedPoliticalSlugs.has(entry.slug)).map((entry, index) => concern(entry, index + 1));
 export const getConcern = (slug: string) => concerns.find((item) => item.slug === slug);
