@@ -34,6 +34,7 @@ import { extremismInvestigation } from './investigations/extremismos';
 import { youthInvestigation } from './investigations/juventud';
 import { taxInvestigation } from './investigations/impuestos';
 import { healthInvestigation } from './investigations/sanidad';
+import { inequalityInvestigation } from './investigations/desigualdad';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -208,10 +209,11 @@ const entries: Entry[] = [
   },
   {
     slug: 'desigualdad', title: 'Desigualdades y pobreza', short: 'Renta, género y privación', first: 1, second: 1.9, third: 2,
-    question: '¿Cómo evitar simplificaciones?', summary: 'Distribución de renta, pobreza monetaria, privación material y desigualdades de género son medidas relacionadas, pero no idénticas.',
-    context: 'AROPE combina renta, carencia material y baja intensidad de empleo. Es útil para comparar, no un recuento de personas sin ingresos.', limits: 'Los umbrales relativos no equivalen a una cantidad idéntica para todos los hogares.',
+    question: '¿Por qué el crecimiento y el empleo reducen la pobreza tan lentamente?', summary: 'España mejora en renta y empleo, pero vivienda, infancia, patrimonio y apoyo familiar mantienen una vulnerabilidad elevada y transmiten oportunidades desiguales.',
+    context: 'La investigación separa pobreza monetaria, exclusión, renta, riqueza y movilidad. AROPE combina tres riesgos y no describe indigencia absoluta.', limits: 'Los umbrales son relativos y los datos patrimoniales llegan con retraso. Una media nacional oculta territorio, edad, hogar y coste de vivienda.',
     sources: [survey, { label: 'Encuesta de Condiciones de Vida · 2025', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/ECV2025.htm', date: '5 feb. 2026' }, { label: 'Base de datos de Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/data/database', date: 'serie europea' }],
     dossier: { eyebrow: 'Distribución de renta', heading: 'La exclusión bajó ligeramente, pero sigue afectando a una de cada cuatro personas', intro: 'La desigualdad se observa con varias medidas: renta, privación, empleo, género, edad y territorio. AROPE permite comparaciones europeas con una metodología publicada.', metrics: [{ value: '25,7 %', label: 'AROPE en 2025' }, { value: '8,1 %', label: 'privación severa' }, { value: '−0,1 pp', label: 'AROPE frente a 2024' }], series: { label: 'Tasa AROPE', labels: ['2021', '2022', '2023', '2024', '2025'], values: [27.8, 26, 26.5, 25.8, 25.7], unit: '%' }, source: { label: 'Encuesta de Condiciones de Vida · 2025', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/ECV2025.htm', date: '5 feb. 2026' }, limits: 'La evolución agregada puede ocultar cambios muy distintos por edad, comunidad autónoma y tipo de hogar. No mide todas las desigualdades de género.' },
+    investigation: inequalityInvestigation,
   },
   {
     slug: 'acuerdos-politicos', title: 'Falta de acuerdos e inestabilidad', short: 'Pactos, mayorías y continuidad', first: 1, second: 0.6, third: 0.3,
