@@ -1,4 +1,26 @@
-# La crisis de vivienda en España: la escasez no está donde están las casas vacías
+---
+kicker: Investigación · vivienda
+title: "La crisis de vivienda en España: la escasez no está donde están las casas vacías"
+standfirst: "Precios disparados, emancipación tardía y millones de viviendas infrautilizadas parecen una contradicción. Los datos muestran un problema de localización, asequibilidad y capacidad."
+finding: "España necesita vivienda asequible, habitable y permanentemente disponible en los lugares donde crecen la población, el empleo y la educación."
+chapters:
+  - { id: "1-las-cifras-de-la-emergencia", number: "01", title: "Las cifras de la emergencia" }
+  - { id: "2-la-demanda-crece-y-se-concentra", number: "02", title: "La demanda crece y se concentra" }
+  - { id: "3-la-construcción-no-reacciona-con-rapidez", number: "03", title: "La construcción no reacciona con rapidez" }
+  - { id: "4-españa-perdió-su-amortiguador-público", number: "04", title: "España perdió su amortiguador público" }
+  - { id: "5-las-viviendas-vacías-están-mal-repartidas", number: "05", title: "Las viviendas vacías están mal repartidas" }
+  - { id: "6-el-turismo-amplifica-crisis-locales", number: "06", title: "El turismo amplifica crisis locales" }
+  - { id: "7-los-compradores-extranjeros-importan-en-la-costa", number: "07", title: "Los compradores extranjeros importan en la costa" }
+  - { id: "8-los-pequeños-propietarios-dominan-el-alquiler", number: "08", title: "Los pequeños propietarios dominan el alquiler" }
+  - { id: "9-el-crédito-empuja-pero-esto-no-es-2007", number: "09", title: "El crédito empuja, pero esto no es 2007" }
+  - { id: "10-el-acceso-se-convierte-en-una-cuestión-de-herencia", number: "10", title: "El acceso se convierte en una cuestión de herencia" }
+  - { id: "11-regular-alquileres-freno-útil-tratamiento-incompleto", number: "11", title: "Regular alquileres: freno útil, tratamiento incompleto" }
+  - { id: "12-seis-explicaciones-populares", number: "12", title: "Seis explicaciones populares" }
+  - { id: "13-una-estrategia-eficaz", number: "13", title: "Una estrategia eficaz" }
+  - { id: "14-el-plan-público-debe-juzgarse-por-entregas", number: "14", title: "El plan público debe juzgarse por entregas" }
+  - { id: "15-lo-que-los-datos-no-demuestran", number: "15", title: "Lo que los datos no demuestran" }
+  - { id: "16-veredicto", number: "16", title: "Veredicto" }
+---
 
 > Última revisión: 11 de julio de 2026. Esta carpeta conserva las investigaciones editoriales que alimentan las fichas de la web. Las cifras deben revisarse cuando sus fuentes publiquen una actualización.
 
