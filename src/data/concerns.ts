@@ -29,6 +29,7 @@ import { immigrationInvestigation } from './investigations/inmigracion';
 import { corruptionInvestigation } from './investigations/corrupcion';
 import { politicsInvestigation } from './investigations/politica';
 import { economyInvestigation } from './investigations/economia';
+import { employmentInvestigation } from './investigations/empleo';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -94,11 +95,13 @@ const entries: Entry[] = [
     investigation: economyInvestigation,
   },
   {
-    slug: 'calidad-empleo', title: 'Calidad del empleo', short: 'Estabilidad, salarios y jornada', first: 5, second: 8.9, third: 5.3,
-    question: '¿Tener empleo responde a todo?', summary: 'No. Salario, tipo de contrato, jornada, horas no deseadas y capacidad de progresar describen dimensiones diferentes de la calidad del empleo.',
-    context: 'La EPA mide empleo, paro y actividad. Las tablas de salarios y condiciones de trabajo deben leerse por separado para no convertir la tasa de paro en un indicador de todo.', limits: 'Una media nacional no resume un contrato, un sector ni una comunidad autónoma.',
-    sources: [survey, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }, { label: 'Encuesta anual de estructura salarial · resultados', publisher: 'INE', url: 'https://www.ine.es/ss/Satellite?L=es_ES&c=INESeccion_C&cid=1259925408327&p=1254735110672&pagename=ProductosYServicios%2FPYSLayout', date: 'serie anual' }],
-    dossier: { eyebrow: 'Empleo, jornada y salarios', heading: '22,3 millones trabajan; la calidad exige más de una cifra', intro: 'La EPA sitúa la ocupación en 22,293 millones y permite separar empleo a tiempo completo, parcial y desempleo. Los salarios se publican en otra operación estadística y no deben inferirse de la EPA.', metrics: [{ value: '22,293 M', label: 'personas ocupadas' }, { value: '+527.600', label: 'ocupados en 12 meses' }, { value: '2,1 %', label: 'horas trabajadas, anual' }], series: { label: 'Variación de la ocupación en el primer trimestre', labels: ['2022', '2023', '2024', '2025', '2026'], values: [-78.2, -6.5, -139.7, -92.5, -170.3], unit: 'miles de personas' }, source: { label: 'EPA · Primer trimestre 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/EPA1T26.htm', date: '28 abr. 2026' }, limits: 'La caída del primer trimestre es estacional y no resume salarios, temporalidad o parcialidad involuntaria. Esas variables deben leerse en sus tablas específicas.' },
+    slug: 'empleo', title: 'Empleo y paro', short: 'Acceso, estabilidad, salarios y jornada', first: 31.7, second: 0, third: 0,
+    statOverride: '31,7 %', statLabelOverride: 'mencionó el paro o la calidad del empleo',
+    question: '¿Basta con crear empleo?', summary: 'España tiene ocupación récord y menos temporalidad, pero conserva paro elevado y empleos que no siempre permiten vivienda, ahorro o estabilidad.',
+    context: 'Esta ficha une dos respuestas solapadas del CIS: paro y problemas relacionados con la calidad del empleo. La investigación separa acceso al trabajo de salario, jornada, continuidad y progresión.', limits: 'El 31,7% es una unión ponderada de microdatos, no una suma. La EPA, los registros del SEPE y las estadísticas salariales miden poblaciones y conceptos distintos.',
+    sources: [survey, { label:'Microdatos del Barómetro de abril de 2026 · MD3557',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'27 may. 2026' }, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/EPA1T26.htm', date: '28 abr. 2026' }],
+    dossier: { eyebrow:'Dos respuestas, una sola persona',heading:'El 31,7% citó empleo o paro',intro:'El cálculo usa los 4.020 registros y la ponderación oficial. Cada persona cuenta una vez aunque mencionara ambas categorías o las repitiera entre sus tres respuestas.',metrics:[{value:'31,7 %',label:'unión ponderada'},{value:'18,8 %',label:'calidad del empleo'},{value:'14,4 %',label:'paro'}],series:{label:'Categorías individuales · cualquier posición',labels:['Calidad del empleo','Paro','Unión sin duplicados'],values:[18.8,14.4,31.7],unit:'%'},source:{label:'Microdatos CIS 3557 · cálculo reproducido',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'2026'},limits:'Las dos tasas individuales se solapan. La unión usa los códigos 1 y 9 en PESPANNA1–3 y aplica PESO.'},
+    investigation: employmentInvestigation,
     video: { title: 'El mercado de empleo se desinfla: claves de la EPA', publisher: 'RTVE Noticias', videoId: 'rn1QaqkSJcQ', url: 'https://www.youtube.com/watch?v=rn1QaqkSJcQ', note: 'Selección provisional: pieza explicativa basada en la EPA. Cárgala solo si quieres reproducir contenido de YouTube.' },
   },
   {
@@ -210,6 +213,9 @@ const entries: Entry[] = [
   },
 ];
 
-const mergedPoliticalSlugs = new Set(['gobierno-partidos', 'problemas-politicos', 'comportamiento-politico', 'partidos-politicos', 'acuerdos-politicos']);
-export const concerns = entries.filter((entry) => !mergedPoliticalSlugs.has(entry.slug)).map((entry, index) => concern(entry, index + 1));
+const mergedSlugs = new Set(['gobierno-partidos', 'problemas-politicos', 'comportamiento-politico', 'partidos-politicos', 'acuerdos-politicos', 'paro']);
+export const concerns = entries
+  .filter((entry) => !mergedSlugs.has(entry.slug))
+  .sort((a, b) => b.first - a.first)
+  .map((entry, index) => concern(entry, index + 1));
 export const getConcern = (slug: string) => concerns.find((item) => item.slug === slug);
