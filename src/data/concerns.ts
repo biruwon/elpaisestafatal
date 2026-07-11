@@ -32,6 +32,7 @@ import { economyInvestigation } from './investigations/economia';
 import { employmentInvestigation } from './investigations/empleo';
 import { extremismInvestigation } from './investigations/extremismos';
 import { youthInvestigation } from './investigations/juventud';
+import { taxInvestigation } from './investigations/impuestos';
 
 const survey: Source = {
   label: 'Barómetro de abril de 2026 · estudio 3557, pregunta 10R',
@@ -168,11 +169,12 @@ const entries: Entry[] = [
     dossier: { eyebrow: 'Actividad comprobable', heading: 'Las propuestas y votos están publicados', intro: 'La manera verificable de evaluar qué hacen los partidos es consultar iniciativa, texto, enmiendas, votación y fiscalización; no adjudicarles intenciones desde este proyecto.', metrics: [{ value: 'XV', label: 'legislatura actual' }, { value: '62', label: 'dosieres legislativos' }, { value: '2026', label: 'última actualización citada' }], series: { label: 'Dosieres legislativos publicados en 2026', labels: ['Ene.', 'Mar.', 'Abr.', 'May.', 'Jun.'], values: [3, 1, 3, 2, 2], unit: 'dosieres' }, source: { label: 'Actividad parlamentaria', publisher: 'Congreso de los Diputados', url: 'https://www.congreso.es/es/transparencia/actividad-parlamentaria', date: 'consulta continua' }, limits: 'Publicar actividad no permite inferir el impacto de una medida ni sustituye la lectura de sus textos y resultados de votación.' },
   },
   {
-    slug: 'impuestos', title: 'Subida de impuestos', short: 'Recaudación, tipos y esfuerzo fiscal', first: 1.5, second: 1.6, third: 0.8,
-    question: '¿Qué cifra conviene mirar?', summary: 'Tipo legal, recaudación, presión fiscal y carga efectiva son medidas diferentes. El efecto también cambia según renta, consumo y hogar.',
-    context: 'Las comparaciones internacionales deben usar la misma definición y el mismo año de referencia.', limits: 'La presión fiscal agregada no equivale a la factura de una persona o empresa concreta.',
+    slug: 'impuestos', title: 'Impuestos', short: 'Recaudación, tipos, equidad y servicios', first: 1.5, second: 1.6, third: 0.8,
+    question: '¿España cobra demasiado, demasiado poco o de la forma equivocada?', summary: 'España no es el país con más impuestos de Europa, pero grava con fuerza el empleo formal y mantiene un sistema complejo, territorialmente desigual y lleno de beneficios poco evaluados.',
+    context: 'La investigación separa recaudación, presión fiscal, cuña laboral, tipos legales, carga efectiva, fraude y decisiones políticas. No son medidas intercambiables.', limits: 'Las comparaciones internacionales requieren la misma definición y año. La presión fiscal agregada nunca equivale a la factura concreta de un hogar o empresa.',
     sources: [survey, { label: 'Recaudación tributaria', publisher: 'Agencia Tributaria', url: 'https://sede.agenciatributaria.gob.es/Sede/estadisticas/recaudacion-tributaria.html', date: 'actualización periódica' }, { label: 'Base de datos estadística', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/data/database', date: 'serie internacional' }],
     dossier: { eyebrow: 'Recaudación y tipos efectivos', heading: 'La recaudación tributaria alcanzó 325.356 millones en 2025', intro: 'Recaudación, tipo legal, presión fiscal y carga efectiva son indicadores distintos. El informe tributario permite seguir bases, tipos y pagos sin asumir que el efecto es igual para todos.', metrics: [{ value: '325.356 M€', label: 'ingresos tributarios 2025' }, { value: '+10,4 %', label: 'variación anual' }, { value: '7,0 %', label: 'bases imponibles agregadas' }], series: { label: 'Crecimiento anual · 2025', labels: ['Ingresos', 'Bases', 'Medidas'], values: [10.4, 7, 2.7], unit: '%' }, source: { label: 'Informe anual de recaudación tributaria 2025', publisher: 'Agencia Tributaria', url: 'https://sede.agenciatributaria.gob.es/Sede/estadisticas/recaudacion-tributaria/informe-anual/ejercicio-2025/1-ingresos-tributarios-2025/introduccion.html', date: '2026' }, limits: 'La recaudación total no es la factura fiscal de un hogar. Para comparar países hay que usar una definición homogénea y la misma fecha.' },
+    investigation: taxInvestigation,
   },
   {
     slug: 'problemas-sociales', title: 'Problemas sociales', short: 'Cohesión, cuidados y exclusión', first: 1.4, second: 1.4, third: 2,
