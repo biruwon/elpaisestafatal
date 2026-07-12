@@ -1,7 +1,7 @@
 ---
 interface Props { title?: string; description?: string; image?: string; pageType?: 'website'|'article' }
 import { concerns } from '../data/concerns';
-const { title = 'El país está fatal — datos, no trincheras', description = `${concerns.length} preocupaciones sobre España explicadas con fuentes primarias.`, image='/cards/preocupacion-vivienda.png', pageType='website' } = Astro.props;
+const { title = 'El país está fatal. ¿Seguro?', description = `Comprueba afirmaciones sobre España con ${concerns.length} investigaciones, contexto y fuentes primarias.`, image='/cards/preocupacion-vivienda.png', pageType='website' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 ---
@@ -29,6 +29,6 @@ const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
   <body>
     <header class="site-header"><a class="brand" href="/"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/verificaciones">Verificaciones</a><a href="/#preocupaciones">Las {concerns.length}</a><a href="/metodologia">Metodología</a><a href="/acerca-de">Acerca de</a></nav></header>
     <main><slot /></main>
-    <footer><p><strong>El país está fatal.</strong> Proyecto independiente, anónimo y sin financiación externa.</p><div><a href="/acerca-de">Acerca de</a><a href="/metodologia">Metodología</a><a href="/fuentes">Fuentes</a><a href="/revisiones">Revisiones</a><a href="/privacidad">Privacidad</a><a href="/contacto">Corregir</a></div></footer>
+    <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente, anónimo y sin financiación externa.</p><div><a href="/acerca-de">Acerca de</a><a href="/metodologia">Metodología</a><a href="/fuentes">Fuentes</a><a href="/revisiones">Revisiones</a><a href="/privacidad">Privacidad</a><a href="/contacto">Corregir</a></div></footer>
   </body>
 </html>
