@@ -24,7 +24,7 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
-    <script type="application/ld+json" set:html={structuredData}></script>
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
     <meta name="theme-color" content="#f5f1e8" />
     <title>{title}</title>
     {cloudflareAnalyticsToken && <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: cloudflareAnalyticsToken })}></script>}
