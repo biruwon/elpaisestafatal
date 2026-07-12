@@ -27,10 +27,19 @@ for (const file of files) {
   if (!slug) failures.push(`${file}: missing slug`);
   if (seen.has(slug)) failures.push(`${file}: duplicate slug ${slug}`);
   seen.add(slug);
-  if (!values.title) failures.push(`${file}: missing title`);
   if (!validStatuses.has(values.status)) failures.push(`${file}: invalid status ${values.status}`);
-  if (!/^\d+$/.test(values.order || '')) failures.push(`${file}: order must be an integer`);
-  if (!/^\d+$/.test(values.claimCount || '')) failures.push(`${file}: claimCount must be an integer`);
+  if (file.includes('/topics/')) {
+    if (!values.title) failures.push(`${file}: missing title`);
+    if (!/^\d+$/.test(values.order || '')) failures.push(`${file}: order must be an integer`);
+    if (!/^\d+$/.test(values.claimCount || '')) failures.push(`${file}: claimCount must be an integer`);
+  }
+  if (file.includes('/claims/')) {
+    for (const key of ['claim','assessment','topicSlugs','aliases','claimType','evidenceStrength','geography','period','reviewed','status','sourceRefs','evidenceIds']) if (!values[key]) failures.push(`${file}: missing ${key}`);
+    if (!new Set(['true','mostly-true','misleading','unsupported','uncertain','false']).has(values.assessment)) failures.push(`${file}: invalid assessment ${values.assessment}`);
+    if (!new Set(['descriptive','comparative','causal','predictive','legal','normative','mixed']).has(values.claimType)) failures.push(`${file}: invalid claimType ${values.claimType}`);
+    if (!new Set(['high','medium','limited','insufficient']).has(values.evidenceStrength)) failures.push(`${file}: invalid evidenceStrength ${values.evidenceStrength}`);
+    if (values.status === 'published' && !raw.includes('## Qué es cierto')) failures.push(`${file}: published claim missing evidence body`);
+  }
 }
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Content validation passed: ${files.length} Markdown records.`);

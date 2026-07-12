@@ -1,6 +1,7 @@
 import { getConcern, type Source } from './concerns';
 import { concernSources } from './provenance';
 import { evidenceId } from './evidence';
+import { markdownClaims } from './content';
 export type ClaimAssessment='true'|'mostly-true'|'misleading'|'unsupported'|'uncertain'|'false';
 export type ClaimType='descriptive'|'comparative'|'causal'|'predictive'|'legal'|'normative'|'mixed';
 export type EvidenceStrength='high'|'medium'|'limited'|'insufficient';
@@ -38,21 +39,28 @@ const legacyClaims:LegacyClaimVerification[]=[
 ];
 const claimTypeFor=(claim:LegacyClaimVerification):ClaimType=>claim.cannotProve.toLowerCase().includes('causal')?'causal':claim.assessment==='uncertain'?'predictive':'mixed';
 const evidenceStrengthFor=(claim:LegacyClaimVerification):EvidenceStrength=>claim.assessment==='uncertain'||claim.assessment==='unsupported'?'limited':'medium';
-export const claims:ClaimVerification[]=legacyClaims.map((claim)=>({
+export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=markdownClaims.find((record)=>record.slug===claim.slug); return ({
   ...claim,
-  topicSlugs:[claim.topicSlug],
-  aliases:claim.keywords,
-  claimType:claimTypeFor(claim),
-  evidenceStrength:evidenceStrengthFor(claim),
+  claim:md?.claim || claim.claim,
+  assessment:(md?.assessment as ClaimAssessment) || claim.assessment,
+  whatIsTrue:md?.whatIsTrue || claim.whatIsTrue,
+  whatIsMissing:md?.whatIsMissing || claim.whatIsMissing,
+  scale:md?.scale || claim.scale,
+  cannotProve:md?.cannotProve || claim.cannotProve,
+  shareable:md?.shareable || claim.shareable,
+  topicSlugs:md?.topicSlugs?.length ? md.topicSlugs : [claim.topicSlug],
+  aliases:md?.aliases?.length ? md.aliases : claim.keywords,
+  claimType:md?.claimType || claimTypeFor(claim),
+  evidenceStrength:md?.evidenceStrength || evidenceStrengthFor(claim),
   decisiveEvidence:claim.scale,
   competingExplanations:[],
   whyItCirculates:'La afirmación combina una experiencia visible, una formulación política o una simplificación de una estadística.',
   unknowns:claim.cannotProve,
   evidenceCouldChange:'Una nueva fuente primaria comparable, una revisión metodológica o un cambio relevante en el periodo analizado.',
-  relatedSlugs:[], supports:[], contradicts:[], dependsOn:[], geography:'España', period:'2025-2026', published:true,
-  reviewed:'2026-07-12',
+  relatedSlugs:[], supports:[], contradicts:[], dependsOn:[], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
+  reviewed:md?.reviewed || '2026-07-12',
   evidenceIds:claim.sources.map(evidenceId),
-}));
+}); });
 const validClaimTypes=new Set<ClaimType>(['descriptive','comparative','causal','predictive','legal','normative','mixed']);
 const validEvidenceStrengths=new Set<EvidenceStrength>(['high','medium','limited','insufficient']);
 const claimFailures=claims.flatMap((claim)=>[
