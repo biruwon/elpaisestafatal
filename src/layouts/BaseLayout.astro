@@ -34,10 +34,11 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
     <link rel="stylesheet" href="/topic.css" />
     <link rel="stylesheet" href="/home.css" />
     <link rel="stylesheet" href="/quick-answer.css" />
+    <style>.site-header nav{max-width:min(70vw,720px);overflow-x:auto;white-space:nowrap;scrollbar-width:none}.site-header nav::-webkit-scrollbar{display:none}@media(max-width:700px){.site-header{gap:14px}.site-header nav{max-width:68vw;gap:14px;font-size:.64rem}}</style>
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/">Inicio</a><a href="/buscar">Buscar</a>{!hideSecondaryLinks && <a href="/acerca-de">Acerca de</a>}</nav></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/">Inicio</a><a href="/buscar">Buscar</a><a href="/afirmaciones">Afirmaciones</a><a href="/investigaciones">Investigaciones</a>{!hideSecondaryLinks && <a href="/acerca-de">Acerca de</a>}</nav></header>
     <main id="contenido"><slot /></main>
     <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente, anónimo y sin financiación externa.</p>{!hideSecondaryLinks && <div><a href="/acerca-de">Acerca de</a><a href="/metodologia">Metodología</a><a href="/fuentes">Fuentes</a><a href="/revisiones">Revisiones</a><a href="/privacidad">Privacidad</a><a href="/contacto">Corregir</a></div>}</footer>
     <script is:inline>
