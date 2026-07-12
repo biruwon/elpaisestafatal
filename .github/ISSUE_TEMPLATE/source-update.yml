@@ -1,0 +1,21 @@
+name: Fuente nueva o actualizada
+description: Propón una fuente primaria que cambia o actualiza una página.
+title: "Fuente: "
+labels: [source-update]
+body:
+  - type: input
+    id: page
+    attributes: { label: Página afectada }
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes: { label: URL de la fuente original }
+    validations: { required: true }
+  - type: input
+    id: publication
+    attributes: { label: Organismo y fecha de publicación }
+    validations: { required: true }
+  - type: textarea
+    id: impact
+    attributes: { label: Qué dato o conclusión debería revisarse }
+    validations: { required: true }

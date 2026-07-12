@@ -1,0 +1,20 @@
+name: Corrección de un dato o afirmación
+description: Señala un error verificable en una página publicada.
+title: "Corrección: "
+labels: [correction]
+body:
+  - type: input
+    id: page
+    attributes: { label: Página, description: URL exacta de la página }
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes: { label: Qué es incorrecto, description: Copia la afirmación y explica el error }
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes: { label: Fuente que permite comprobarlo, description: Preferiblemente una fuente primaria }
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes: { label: Corrección propuesta }

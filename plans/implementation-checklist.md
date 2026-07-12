@@ -1,5 +1,7 @@
 # Web improvements implementation checklist
 
+> Improvement 7 («Qué ha cambiado») was explicitly removed from scope by the project owner on 12 July 2026. No dashboard or archive will be implemented.
+
 Approved implementation sequence for `plans/improvements.md`.
 
 - [ ] 1. Claim-checking homepage and deterministic curated search.

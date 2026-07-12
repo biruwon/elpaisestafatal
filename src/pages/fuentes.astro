@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { concerns } from '../data/concerns';
-const sources = [...new Map(concerns.flatMap(c => c.sources).map(s => [s.url, s])).values()];
+import { concernSources } from '../data/provenance';
+const sources = [...new Map(concerns.flatMap(concernSources).map(s => [s.url, s])).values()];
 ---
 <BaseLayout title="Fuentes — El país está fatal"><article class="prose sources-page"><p class="eyebrow">Fuentes</p><h1>Todo lo que<br /><em>puedes comprobar.</em></h1><p class="lead">Un índice único de las fuentes usadas. Cada página de preocupación muestra además las que le corresponden.</p><ol>{sources.map((source, i) => <li><span>{String(i+1).padStart(2,'0')}</span><a href={source.url} target="_blank" rel="noreferrer"><strong>{source.label}</strong><small>{source.publisher} · {source.date}</small></a></li>)}</ol></article></BaseLayout>

@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { revisions } from '../data/revisions';
+---
+<BaseLayout title="Revisiones — El país está fatal"><article class="prose revisions"><p class="eyebrow">Registro editorial</p><h1>Qué corregimos<br/><em>y por qué.</em></h1><p class="lead">Los cambios que alteran datos, método o conclusiones quedan registrados. Las correcciones menores de estilo permanecen en el historial del repositorio.</p>{revisions.map(entry=><section><time datetime={entry.date}>{entry.date}</time><h2>{entry.title}</h2><p>{entry.detail}</p><p><strong>Páginas revisadas:</strong> {entry.pages.join(' · ')}</p><a href={`https://github.com/biruwon/elpaisestafatal/commit/${entry.commit}`}>Ver cambio {entry.commit} ↗</a></section>)}</article></BaseLayout>
+<style>.revisions section{padding:30px 0;border-top:1px solid var(--line)}.revisions time{font:.65rem var(--mono);color:var(--red)}.revisions section h2{margin:8px 0}.revisions section a{font-weight:700;text-decoration:underline}</style>
