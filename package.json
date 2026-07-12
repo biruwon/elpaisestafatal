@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "audit:investigations": "node scripts/audit-investigations.mjs",
+    "audit:roadmap": "node scripts/audit-roadmap.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
     "cards": "node scripts/generate-social-cards.mjs"
   },
