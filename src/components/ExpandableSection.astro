@@ -1,0 +1,5 @@
+---
+interface Props { summary: string; open?: boolean }
+const { summary, open = false } = Astro.props;
+---
+<details class="expandable" open={open}><summary>{summary}<span aria-hidden="true">+</span></summary><div class="expandable-content"><slot /></div></details>
