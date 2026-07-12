@@ -1,0 +1,15 @@
+---
+interface Props { short: string; context: string; data: string; imageHref: string }
+const { short, context, data, imageHref } = Astro.props;
+const payload = JSON.stringify({ short, context, data }).replace(/</g, '\\u003c');
+---
+<section class="response-panel" aria-labelledby="response-title">
+  <div><p class="eyebrow" id="response-title">Responder con esto</p><p class="response-copy">{short}</p></div>
+  <label for="response-version">Versión de la respuesta<select id="response-version"><option value="short">Muy corta</option><option value="context">Con contexto</option><option value="data">Con datos</option></select></label>
+  <div class="response-actions"><button type="button" data-copy>Copiar respuesta</button><button type="button" data-share>Compartir</button><a href={imageHref} download>Compartir como imagen</a><span aria-live="polite"></span></div>
+</section>
+<nav class="claim-action-bar" aria-label="Acciones de la afirmación"><a href="#claim-top">Resumen</a><a href="#response-title">Responder</a><button type="button" data-share>Compartir</button></nav>
+<script is:inline type="application/json" id="response-data" set:html={payload}></script>
+<script>
+  const responseData=JSON.parse(document.querySelector('#response-data')?.textContent||'{}');const responsePanel=document.querySelector<HTMLElement>('.response-panel');const responseCopy=responsePanel?.querySelector<HTMLElement>('.response-copy');const version=responsePanel?.querySelector<HTMLSelectElement>('#response-version');const announce=(message:string)=>{const live=responsePanel?.querySelector<HTMLElement>('[aria-live]');if(live)live.textContent=message};const current=()=>responseData[version?.value||'short']||responseData.short;version?.addEventListener('change',()=>{if(responseCopy)responseCopy.textContent=current()});const copy=async()=>{const value=`${current()} ${location.href}`;try{await navigator.clipboard.writeText(value);announce('Respuesta copiada')}catch{announce('No se pudo copiar automáticamente; selecciona el texto para copiarlo')}};responsePanel?.querySelector('[data-copy]')?.addEventListener('click',copy);document.querySelectorAll<HTMLElement>('[data-share]').forEach((button)=>button.addEventListener('click',async()=>{if(navigator.share){await navigator.share({title:document.title,text:current(),url:location.href})}else await copy()}));
+</script>
