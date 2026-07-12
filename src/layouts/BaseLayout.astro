@@ -5,6 +5,7 @@ const { title = 'El país está fatal. ¿Seguro?', description = `Comprueba afir
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 const cloudflareAnalyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
+const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type': pageType === 'article' ? 'Article' : 'WebPage', name: title, description, url: canonical.toString(), image: socialImage.toString(), isPartOf: { '@type': 'WebSite', name: 'El país está fatal', url: Astro.site?.toString() ?? Astro.url.origin } });
 ---
 <!doctype html>
 <html lang="es">
@@ -18,7 +19,12 @@ const cloudflareAnalyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="El país está fatal" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <script type="application/ld+json" set:html={structuredData}></script>
     <meta name="theme-color" content="#f5f1e8" />
     <title>{title}</title>
     {cloudflareAnalyticsToken && <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: cloudflareAnalyticsToken })}></script>}
