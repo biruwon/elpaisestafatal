@@ -457,6 +457,37 @@ Create prompts or generation rules for future topic illustrations:
 
 Generate illustrations only after the style is approved with two or three representative topics.
 
+### TODO — generate topic illustrations in a separate session
+
+Do not generate these assets in the implementation session. The other session should create one square PNG for each path below, preserving the shared style and using the topic-specific prompt. Save the final files under `public/images/topics/`:
+
+Common prompt prefix for every asset:
+
+```text
+Use case: illustration-story. Asset type: square editorial web illustration for a Spanish public-interest data investigation. Flat screen-print collage with simple geometric shapes, tactile paper grain, warm cream paper background, deep blue, muted ochre, one restrained red accent, thoughtful and analytical rather than alarmist. No readable text, no logos, no flags, no political party branding, no stereotypes, no watermarks, no photorealism, no decorative UI, no embedded chart labels. Keep the central subject clear with generous negative space and crisp edges; suitable for desktop and mobile cropping. The illustration is secondary to evidence and must not imply that the topic is inherently good or bad.
+```
+
+Topic-specific prompts and required paths:
+
+| Path | Add this subject to the common prefix |
+|---|---|
+| `public/images/topics/politica.png` | A civic square with several abstract speech panels, a parliament-like building in the distance, and a balanced scale motif suggesting institutions and accountability. No party colours or politicians. |
+| `public/images/topics/vivienda.png` | A dense apartment block, a small house key and a restrained rising price line, suggesting access and affordability without depicting homelessness. |
+| `public/images/topics/empleo.png` | A worker at a crossroads between a training workshop and a modern workplace, with a subtle ladder or bridge motif suggesting opportunity and progression. |
+| `public/images/topics/inmigracion.png` | Diverse silhouettes moving along a bridge from a rural landscape toward a city, suggesting routes, work and integration without boats, borders or threat imagery. |
+| `public/images/topics/sanidad.png` | A public clinic with a clock, a waiting-room pathway and a small medical cross, suggesting access and waiting times without showing distress or illness. |
+| `public/images/topics/economia.png` | A household table connected to a factory, shop and transport line, with simple coins and arrows suggesting production, prices and living standards. |
+| `public/images/topics/corrupcion.png` | Public contract papers, a courthouse column and two hands separated by a transparent barrier, suggesting oversight without literal bribes or named officials. |
+| `public/images/topics/juventud.png` | A young adult with a backpack facing several doors labelled only by visual symbols for study, work, housing and independence; no text in the image. |
+| `public/images/topics/seguridad.png` | An ordinary urban street with lighting, a phone showing an abstract shield, and a clear public route, suggesting both street and digital safety without weapons. |
+| `public/images/topics/impuestos.png` | A receipt, household budget and public-service building connected by measured lines, suggesting the fiscal contract without partisan symbolism. |
+| `public/images/topics/desigualdad.png` | A set of unequal steps or platforms with different starting points, plus education, housing and healthcare symbols, suggesting unequal opportunity without caricaturing poverty. |
+| `public/images/topics/extremismos.png` | A divided public conversation represented by branching speech shapes and a narrow bridge between them, suggesting polarization and democratic limits without extremist symbols. |
+| `public/images/topics/problemas-sociales.png` | Interlocking neighbourhood homes, care hands and a shared public bench, suggesting cohesion, care and exclusion without depicting identifiable vulnerable people. |
+| `public/images/topics/crisis-valores.png` | A compass, shared street and several diverging paths, suggesting civic norms and uncertainty without presenting a moral judgement as fact. |
+
+Generation acceptance checklist: all 14 files exist, PNG dimensions are square, no asset contains readable text, style and palette are coherent, crops remain legible at 320 px, and each image has a meaningful page-level alternative description or is marked decorative when it adds no factual information. After copying the files, replace the temporary card fallback in the topic hero and run `npm run build`, `npm run audit:roadmap` and `git diff --check`.
+
 ## Deliverables
 
 * Global visual tokens.
