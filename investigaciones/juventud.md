@@ -1,3 +1,8 @@
+---
+slug: juventud
+status: data-briefing
+---
+
 # Youth and opportunity in Spain: a generation with more education, but less access to adulthood
 
 ### Young people in Spain are better educated, more digitally capable and entering a stronger labour market than those who came of age after the 2008 crisis. Yet they leave the family home later, accumulate less wealth, postpone children and depend more heavily on parental support. The problem is no longer simply youth unemployment. It is the growing distance between obtaining a job and constructing an independent life.

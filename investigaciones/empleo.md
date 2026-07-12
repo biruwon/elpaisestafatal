@@ -1,3 +1,8 @@
+---
+slug: empleo
+status: full-investigation
+---
+
 # Employment and unemployment in Spain: record job creation, but structural unemployment remains embedded
 
 ### Spain has more people working than ever, registered unemployment has fallen to its lowest level since before the financial crisis, and temporary contracting has declined sharply. Yet the country still combines one of Europe’s highest unemployment rates with youth exclusion, regional inequality, weak job matching and large numbers of workers who remain economically insecure despite holding permanent contracts.

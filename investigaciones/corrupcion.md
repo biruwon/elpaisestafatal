@@ -1,3 +1,8 @@
+---
+slug: corrupcion
+status: data-briefing
+---
+
 # Corruption and fraud in Spain: the scandal is visible, but the system behind it is harder to see
 
 ### Spain is not a country where citizens normally pay bribes to receive basic services. Its central corruption problem lies elsewhere: political access, public contracts, appointments, subsidies, urban planning and networks that convert institutional power into private advantage.

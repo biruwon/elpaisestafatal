@@ -10,7 +10,7 @@ const rows = slugs.map((slug) => {
   return {
     slug,
     markdown: Boolean(markdown),
-    status: markdown.match(/^status:\s*(.+)$/m)?.[1] ?? 'published',
+    status: markdown.match(/^status:\s*(.+)$/m)?.[1] ?? 'missing',
     structured: existsSync(structuredPath),
   };
 });
@@ -19,5 +19,11 @@ console.table(rows);
 const missingMarkdown = rows.filter((row) => !row.markdown);
 if (missingMarkdown.length) {
   console.error(`Missing Markdown sources: ${missingMarkdown.map((row) => row.slug).join(', ')}`);
+  process.exitCode = 1;
+}
+const validStatuses = new Set(['full-investigation','data-briefing','in-progress']);
+const invalidStatus = rows.filter((row) => !validStatuses.has(row.status));
+if (invalidStatus.length) {
+  console.error(`Missing or invalid status metadata: ${invalidStatus.map((row) => `${row.slug} (${row.status})`).join(', ')}`);
   process.exitCode = 1;
 }

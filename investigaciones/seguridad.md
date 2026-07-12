@@ -1,5 +1,10 @@
 
 
+---
+slug: seguridad
+status: data-briefing
+---
+
 # Public safety in Spain: street crime remains comparatively contained, while fraud and localized violence reshape insecurity
 
 ### Spain is not experiencing a generalized crime explosion. Conventional crime remains near the lower end of its historical range, and thefts and burglaries declined in 2025. Yet cyberfraud, sexual violence, violent incidents in particular neighbourhoods and the visibility of repeat offending sustain a strong perception that public safety is deteriorating.

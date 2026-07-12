@@ -1,3 +1,8 @@
+---
+slug: economia
+status: data-briefing
+---
+
 # Spain’s economy and cost of living: the country is growing faster than many neighbours, but ordinary life still feels expensive
 
 ### Spain has created jobs, raised wages and expanded its population while outperforming much of Europe. Yet housing, food, energy and essential services consume a growing share of many household budgets. The economy is improving faster than the feeling of prosperity.

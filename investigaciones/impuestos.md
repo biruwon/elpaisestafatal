@@ -1,3 +1,8 @@
+---
+slug: impuestos
+status: data-briefing
+---
+
 # Taxes in Spain: Spaniards do not pay the most in Europe, but employment is taxed heavily and the system is unusually complex
 
 ### Spain raises less tax than the highest-tax European welfare states, but more than the OECD average. The principal problem is not simply the amount collected: it is that formal employment bears a large burden, consumption taxes contain extensive exceptions, regional rules differ sharply, tax benefits are poorly evaluated and citizens struggle to connect what they pay with the services they receive.

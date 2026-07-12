@@ -1,5 +1,10 @@
 
 
+---
+slug: politica
+status: full-investigation
+---
+
 # Spain’s political system: democracy works, but trust is collapsing around it
 
 ### Spain continues to hold competitive elections, change governments peacefully and prosecute corruption. Yet citizens increasingly experience politics as a permanent conflict between party machines that protect their own, colonise institutions and postpone difficult reforms.

@@ -1,3 +1,8 @@
+---
+slug: sanidad
+status: full-investigation
+---
+
 # Sanidad en España: excelentes resultados clínicos, acceso cada vez más desigual
 
 ### España conserva uno de los sistemas sanitarios con mejores resultados de Europa. La esperanza de vida es muy alta, la mortalidad evitable es relativamente baja y la ciudadanía continúa confiando en la sanidad pública ante enfermedades graves. Pero llegar a tiempo al médico, al especialista, a la cirugía, al dentista o al psicólogo depende cada vez más del territorio, la renta y la capacidad de pagar una alternativa privada.

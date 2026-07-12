@@ -1,5 +1,10 @@
 
 
+---
+slug: inmigracion
+status: full-investigation
+---
+
 # Immigration in Spain: the country needs workers, but imports inequality
 
 ### Spain’s economy is growing partly because hundreds of thousands of people arrive each year. Yet housing, schools, administrative services and integration policies have not expanded at the same speed. The result is a system that produces national economic gains while concentrating many of its costs in particular neighbourhoods, occupations and municipalities.

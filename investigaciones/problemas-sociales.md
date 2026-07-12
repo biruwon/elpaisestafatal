@@ -1,7 +1,7 @@
 ---
 slug: problemas-sociales
 title: Problemas sociales
-status: pending-research
+status: in-progress
 ---
 
 # Problemas sociales en España

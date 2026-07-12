@@ -1,5 +1,10 @@
 
 
+---
+slug: vivienda
+status: full-investigation
+---
+
 # Spain’s housing crisis: the shortage is not where the empty homes are
 
 ### Prices are rising again at double-digit rates. Young adults cannot leave home. Renters cannot save enough to buy. Spain nevertheless has millions of vacant or underused dwellings. What explains the contradiction?
@@ -419,4 +424,4 @@ The visual opening can use footage from the April 2025 nationwide housing demons
 - **INE House Price Index, Q1 2026:** latest official price data. 
 - **INE Continuous Population Statistics:** population and household development. 
 - **Banco de España, Annual Report 2023 and 2024:** rental ownership, affordability and earlier supply evidence. 
-- **State Housing Plan 2026–2030:** current policy commitments and funding. 
+- **State Housing Plan 2026–2030:** current policy commitments and funding.

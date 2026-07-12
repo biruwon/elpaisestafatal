@@ -72,7 +72,7 @@ const concern = (entry: Entry, rank: number): Concern => ({
     series: { label: 'Posición de la mención en la encuesta', labels: ['Primero', 'Segundo', 'Tercero'], values: [entry.first, entry.second, entry.third], unit: '%' }, source: survey,
     limits: 'Este gráfico describe preocupación declarada, no la situación material. Los indicadores sectoriales sustituyen progresivamente esta vista.',
   },
-  status: entry.investigation ? 'full-investigation' : ['problemas-sociales','crisis-valores'].includes(entry.slug) ? 'in-progress' : 'data-briefing',
+  status: ['vivienda','inmigracion','empleo','politica','sanidad'].includes(entry.slug) ? 'full-investigation' : ['problemas-sociales','crisis-valores'].includes(entry.slug) ? 'in-progress' : 'data-briefing',
   lastReviewed: '12 jul. 2026',
   quickAnswer: quickAnswers[entry.slug],
 });

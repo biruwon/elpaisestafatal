@@ -1,5 +1,10 @@
 
 
+---
+slug: desigualdad
+status: data-briefing
+---
+
 # Desigualdad y pobreza en España: el empleo crece, pero la seguridad económica sigue dependiendo de la vivienda y la familia
 
 ### España ha reducido ligeramente la pobreza y la desigualdad de ingresos desde los peores años de la crisis financiera. Sin embargo, una cuarta parte de la población continúa en riesgo de pobreza o exclusión, la pobreza infantil permanece entre las más altas de Europa y la riqueza se concentra mucho más que la renta.

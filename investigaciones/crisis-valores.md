@@ -1,7 +1,7 @@
 ---
 slug: crisis-valores
 title: Crisis de valores
-status: pending-research
+status: in-progress
 ---
 
 # Crisis de valores en España

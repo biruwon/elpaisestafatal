@@ -1,5 +1,10 @@
 
 
+---
+slug: extremismos
+status: data-briefing
+---
+
 # Extremism and social tension in Spain: political hostility is growing faster than political violence
 
 ### Spain is not experiencing a generalized collapse into extremist violence. But its public conversation increasingly rewards humiliation, collective blame, conspiracy and the idea that political opponents are illegitimate. The greatest danger is not that most citizens are becoming extremists; it is that extremist ways of interpreting reality are entering ordinary politics.
