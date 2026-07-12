@@ -39,6 +39,10 @@ const legacyClaims:LegacyClaimVerification[]=[
 ];
 const claimTypeFor=(claim:LegacyClaimVerification):ClaimType=>claim.cannotProve.toLowerCase().includes('causal')?'causal':claim.assessment==='uncertain'?'predictive':'mixed';
 const evidenceStrengthFor=(claim:LegacyClaimVerification):EvidenceStrength=>claim.assessment==='uncertain'||claim.assessment==='unsupported'?'limited':'medium';
+const crossTopicSlugs:Record<string,string[]>= {
+  'inmigracion-delincuencia':['inmigracion','seguridad'], 'inmigrantes-pensiones':['inmigracion','juventud','economia'],
+  'demasiados-graduados':['empleo','juventud'], 'espana-impuestos-europa':['impuestos','economia'], 'espana-pobreza-cuarta-parte':['desigualdad','juventud'],
+};
 export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=markdownClaims.find((record)=>record.slug===claim.slug); return ({
   ...claim,
   claim:md?.claim || claim.claim,
@@ -48,7 +52,7 @@ export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=mar
   scale:md?.scale || claim.scale,
   cannotProve:md?.cannotProve || claim.cannotProve,
   shareable:md?.shareable || claim.shareable,
-  topicSlugs:md?.topicSlugs?.length ? md.topicSlugs : [claim.topicSlug],
+  topicSlugs:crossTopicSlugs[claim.slug] || (md?.topicSlugs?.length ? md.topicSlugs : [claim.topicSlug]),
   aliases:md?.aliases?.length ? md.aliases : claim.keywords,
   claimType:md?.claimType || claimTypeFor(claim),
   evidenceStrength:md?.evidenceStrength || evidenceStrengthFor(claim),
@@ -61,6 +65,9 @@ export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=mar
   reviewed:md?.reviewed || '2026-07-12',
   evidenceIds:claim.sources.map(evidenceId),
 }); });
+for(const claim of claims){
+  claim.relatedSlugs=claims.filter((other)=>other.slug!==claim.slug&&other.published&&(other.topicSlugs.some((slug)=>claim.topicSlugs.includes(slug))||other.keywords.some((keyword)=>claim.keywords.includes(keyword)))).slice(0,6).map((other)=>other.slug);
+}
 const validClaimTypes=new Set<ClaimType>(['descriptive','comparative','causal','predictive','legal','normative','mixed']);
 const validEvidenceStrengths=new Set<EvidenceStrength>(['high','medium','limited','insufficient']);
 const claimFailures=claims.flatMap((claim)=>[
