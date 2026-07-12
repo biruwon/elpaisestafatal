@@ -15,6 +15,7 @@ await walk(root);
 
 const seen = new Set();
 const failures = [];
+let topicCount = 0; let claimCount = 0; let publishedClaims = 0; let plannedClaims = 0;
 for (const file of files) {
   const raw = await readFile(file, 'utf8');
   const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
@@ -34,12 +35,18 @@ for (const file of files) {
     if (!/^\d+$/.test(values.claimCount || '')) failures.push(`${file}: claimCount must be an integer`);
   }
   if (file.includes('/claims/')) {
+    claimCount += 1; if (values.status === 'published') publishedClaims += 1; if (values.status === 'planned') plannedClaims += 1;
     for (const key of ['claim','assessment','topicSlugs','aliases','claimType','evidenceStrength','geography','period','reviewed','status','sourceRefs','evidenceIds']) if (!values[key]) failures.push(`${file}: missing ${key}`);
     if (!new Set(['true','mostly-true','misleading','unsupported','uncertain','false']).has(values.assessment)) failures.push(`${file}: invalid assessment ${values.assessment}`);
     if (!new Set(['descriptive','comparative','causal','predictive','legal','normative','mixed']).has(values.claimType)) failures.push(`${file}: invalid claimType ${values.claimType}`);
     if (!new Set(['high','medium','limited','insufficient']).has(values.evidenceStrength)) failures.push(`${file}: invalid evidenceStrength ${values.evidenceStrength}`);
     if (values.status === 'published' && !raw.includes('## Qué es cierto')) failures.push(`${file}: published claim missing evidence body`);
   }
+  if (file.includes('/topics/')) topicCount += 1;
 }
+if (topicCount !== 10) failures.push(`expected 10 planned topic records, found ${topicCount}`);
+if (claimCount !== 202) failures.push(`expected 202 claim records, found ${claimCount}`);
+if (publishedClaims !== 20) failures.push(`expected 20 published claims, found ${publishedClaims}`);
+if (plannedClaims !== 182) failures.push(`expected 182 planned claims, found ${plannedClaims}`);
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Content validation passed: ${files.length} Markdown records.`);
