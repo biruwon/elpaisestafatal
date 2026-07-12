@@ -46,6 +46,7 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
       const zaraz = window.zaraz;
       const sendEvent = (event, properties = {}) => zaraz?.track?.(event, {...properties, path: location.pathname});
       document.addEventListener('click', (event) => { const target = event.target.closest('[data-analytics-event], [data-share], [data-share-finding], [data-copy], [data-copy-finding], [download]'); if (!target) return; const eventName = target.dataset.analyticsEvent || (target.matches('[data-share], [data-share-finding]') ? 'share-response' : target.matches('[download]') ? 'download' : 'copy-response'); sendEvent(eventName, {label: (target.textContent || '').trim().slice(0, 80)}); });
+      document.addEventListener('click', async (event) => { const link = event.target.closest('a'); if (!link || link.textContent.trim() !== 'Copiar enlace') return; event.preventDefault(); try { await navigator.clipboard.writeText(location.href); link.textContent = 'Enlace copiado'; } catch { link.textContent = 'Selecciona el enlace en la barra del navegador'; } });
       document.querySelectorAll('form[role="search"]').forEach((form) => form.addEventListener('submit', () => sendEvent('search')));
     </script>
   </body>
