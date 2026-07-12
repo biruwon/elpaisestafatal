@@ -6,6 +6,19 @@ The core product, responsive mobile-first behavior, claim/topic pages, search, s
 
 ## Remaining work
 
+### 0. Mobile features still not implemented
+
+These items from the mobile plan remain optional follow-up work and should be implemented before declaring the mobile release fully complete:
+
+- Full-screen viewer for dense charts and map-like visuals, with accessible summary, close control and landscape support.
+- Contextual source preview sheets showing what each source supports and its main limitation before opening the external document.
+- Progressive disclosure for long investigation chapters, secondary charts, regional tables, methodology and extended caveats.
+- A full-screen mobile search overlay with automatic focus, popular claims on empty state and claims-before-topics ordering.
+- A dedicated topic section bottom navigator with current-section state and browser-fragment navigation; the existing responsive reading-mode links are the current fallback.
+- Chapter-level written takeaways and visible limitations beside every major visual.
+
+Retention features—continue where you left off, recently viewed, bookmarks and PWA evaluation—remain intentionally postponed until the core mobile experience is validated.
+
 ### 1. Topic illustration assets
 
 Generate the 14 square topic illustrations in a separate session. Do not generate them in this code session. The required paths and full prompts are preserved in the Git history of the previous roadmap commit; use the shared screen-print editorial style and save assets under `public/images/topics/`.
