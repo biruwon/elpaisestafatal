@@ -1,9 +1,20 @@
 import { getConcern, type Source } from './concerns';
 import { concernSources } from './provenance';
+import { evidenceId } from './evidence';
 export type ClaimAssessment='true'|'mostly-true'|'misleading'|'unsupported'|'uncertain'|'false';
-export type ClaimVerification={slug:string;claim:string;assessment:ClaimAssessment;topic:string;topicSlug:string;whatIsTrue:string;whatIsMissing:string;scale:string;cannotProve:string;shareable:string;keywords:string[];sources:Source[]};
+export type ClaimType='descriptive'|'comparative'|'causal'|'predictive'|'legal'|'normative'|'mixed';
+export type EvidenceStrength='high'|'medium'|'limited'|'insufficient';
+export type ClaimVerification={
+  slug:string; claim:string; assessment:ClaimAssessment; topic:string; topicSlug:string; topicSlugs:string[];
+  whatIsTrue:string; whatIsMissing:string; scale:string; cannotProve:string; shareable:string; keywords:string[]; aliases:string[];
+  claimType:ClaimType; evidenceStrength:EvidenceStrength; decisiveEvidence:string; competingExplanations:string[];
+  whyItCirculates:string; unknowns:string; evidenceCouldChange:string; valueDisagreement?:string;
+  relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[]; geography:string; period:string;
+  reviewed:string; published:boolean; sources:Source[]; evidenceIds:string[];
+};
+type LegacyClaimVerification={slug:string;claim:string;assessment:ClaimAssessment;topic:string;topicSlug:string;whatIsTrue:string;whatIsMissing:string;scale:string;cannotProve:string;shareable:string;keywords:string[];sources:Source[]};
 const sources=(slug:string):Source[]=>{const concern=getConcern(slug);return concern?concernSources(concern).slice(1):[];};
-export const claims:ClaimVerification[]=[
+const legacyClaims:LegacyClaimVerification[]=[
 {slug:'inmigrantes-ayudas',claim:'“Los inmigrantes vienen a España a vivir de ayudas.”',assessment:'misleading',topic:'Inmigración',topicSlug:'inmigracion',whatIsTrue:'Los hogares inmigrantes de renta baja pueden recibir prestaciones sujetas a requisitos, igual que los hogares españoles que cumplen las condiciones.',whatIsMissing:'El acceso depende de residencia, renta, composición familiar y, en ayudas contributivas, cotizaciones previas.',scale:'España terminó 2025 con alrededor de 3,1 millones de trabajadores extranjeros afiliados.',cannotProve:'Una cifra agregada de empleo no establece el balance fiscal de cada grupo ni de cada persona.',shareable:'Las ayudas se conceden por requisitos de renta, residencia, familia o cotización, no simplemente por ser inmigrante. España tenía unos 3,1 millones de afiliados extranjeros al acabar 2025.',keywords:['inmigrantes','ayudas','paguitas','prestaciones'],sources:sources('inmigracion')},
 {slug:'inmigrantes-patera',claim:'“La mayoría de inmigrantes llega en patera.”',assessment:'false',topic:'Inmigración',topicSlug:'inmigracion',whatIsTrue:'Las llegadas irregulares por mar y tierra son un reto humanitario y de control fronterizo.',whatIsMissing:'Son un flujo pequeño frente a más de diez millones de residentes nacidos fuera de España.',scale:'En 2025 se registraron 36.775 llegadas irregulares, frente a más de 10 millones de residentes nacidos en el extranjero.',cannotProve:'Los flujos y el stock de residentes miden poblaciones y periodos distintos y no deben sumarse.',shareable:'Las pateras son muy visibles, pero no representan la vía de llegada de la mayoría: hubo 36.775 llegadas irregulares registradas en 2025 y más de 10 millones de residentes nacidos fuera.',keywords:['patera','barco','irregular','canarias'],sources:sources('inmigracion')},
 {slug:'inmigracion-delincuencia',claim:'“La inmigración es la causa del aumento de la delincuencia.”',assessment:'unsupported',topic:'Seguridad',topicSlug:'seguridad',whatIsTrue:'Las tasas brutas de condena difieren por nacionalidad.',whatIsMissing:'Edad, sexo, renta, barrio, situación legal y exposición policial también difieren entre poblaciones.',scale:'En 2024 la tasa fue 15,7 por mil entre extranjeros y 6,2 entre españoles; la mayoría absoluta de condenados tenía nacionalidad española.',cannotProve:'Una comparación sin ajustar no identifica causalidad.',shareable:'Hay una diferencia descriptiva en tasas de condena, pero nacionalidad por sí sola no explica la causa. Edad, sexo, renta y territorio importan.',keywords:['inmigracion','delincuencia','crimen','extranjeros'],sources:sources('seguridad')},
@@ -25,5 +36,33 @@ export const claims:ClaimVerification[]=[
 {slug:'politicos-corruptos',claim:'“Todos los políticos son corruptos.”',assessment:'false',topic:'Corrupción',topicSlug:'corrupcion',whatIsTrue:'España ha sufrido redes importantes de corrupción bajo administraciones y partidos diferentes.',whatIsMissing:'Los procedimientos afectan a una minoría entre cientos de miles de cargos y empleados públicos.',scale:'Un macrocaso puede contener decenas de personas; contar nombres de casos no mide incidencia limpiamente.',cannotProve:'No puede estimarse la corrupción no detectada con un recuento exacto.',shareable:'España tiene corrupción política relevante, pero “todos son corruptos” es falso y borra la diferencia entre instituciones limpias y redes delictivas.',keywords:['todos politicos','corrupcion','partidos'],sources:sources('corrupcion')},
 {slug:'espana-mas-peligrosa',claim:'“España se está volviendo mucho más peligrosa.”',assessment:'false',topic:'Seguridad',topicSlug:'seguridad',whatIsTrue:'Algunos indicadores de violencia grave y ciberfraude han aumentado.',whatIsMissing:'La delincuencia convencional bajó ligeramente y permanece en una banda histórica baja.',scale:'La cibercriminalidad subió 5,3% en 2025 mientras la convencional cayó 0,2%.',cannotProve:'La media nacional no descarta focos locales graves.',shareable:'España no vive una explosión general de delito callejero. El cambio más claro está en fraude digital y algunos focos de violencia.',keywords:['peligrosa','inseguridad','delincuencia'],sources:sources('seguridad')},
 ];
+const claimTypeFor=(claim:LegacyClaimVerification):ClaimType=>claim.cannotProve.toLowerCase().includes('causal')?'causal':claim.assessment==='uncertain'?'predictive':'mixed';
+const evidenceStrengthFor=(claim:LegacyClaimVerification):EvidenceStrength=>claim.assessment==='uncertain'||claim.assessment==='unsupported'?'limited':'medium';
+export const claims:ClaimVerification[]=legacyClaims.map((claim)=>({
+  ...claim,
+  topicSlugs:[claim.topicSlug],
+  aliases:claim.keywords,
+  claimType:claimTypeFor(claim),
+  evidenceStrength:evidenceStrengthFor(claim),
+  decisiveEvidence:claim.scale,
+  competingExplanations:[],
+  whyItCirculates:'La afirmación combina una experiencia visible, una formulación política o una simplificación de una estadística.',
+  unknowns:claim.cannotProve,
+  evidenceCouldChange:'Una nueva fuente primaria comparable, una revisión metodológica o un cambio relevante en el periodo analizado.',
+  relatedSlugs:[], supports:[], contradicts:[], dependsOn:[], geography:'España', period:'2025-2026', published:true,
+  reviewed:'2026-07-12',
+  evidenceIds:claim.sources.map(evidenceId),
+}));
+const validClaimTypes=new Set<ClaimType>(['descriptive','comparative','causal','predictive','legal','normative','mixed']);
+const validEvidenceStrengths=new Set<EvidenceStrength>(['high','medium','limited','insufficient']);
+const claimFailures=claims.flatMap((claim)=>[
+  !claim.slug||!claim.claim?`${claim.slug||'unknown'}: missing identity`:null,
+  !claim.topicSlugs.length?`${claim.slug}: missing topic`:null,
+  !validClaimTypes.has(claim.claimType)?`${claim.slug}: invalid claim type`:null,
+  !validEvidenceStrengths.has(claim.evidenceStrength)?`${claim.slug}: invalid evidence strength`:null,
+  !claim.reviewed?`${claim.slug}: missing review date`:null,
+  !claim.sources.length?`${claim.slug}: missing sources`:null,
+].filter((failure):failure is string=>Boolean(failure)));
+if(claimFailures.length)throw new Error(`Invalid claim catalogue:\n${claimFailures.join('\n')}`);
 export const assessmentLabels:Record<ClaimAssessment,string>={'true':'Verdadero','mostly-true':'Mayormente cierto','misleading':'Generalización engañosa','unsupported':'Sin respaldo suficiente','uncertain':'Incierto','false':'Falso'};
 export const getClaim=(slug:string)=>claims.find(item=>item.slug===slug);

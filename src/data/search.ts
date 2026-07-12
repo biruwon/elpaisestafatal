@@ -13,7 +13,7 @@ export const curatedSearch: CuratedSearchItem[] = claims.map((item) => ({
   href: `/afirmaciones/${item.slug}`,
   topic: item.topic,
   answer: item.shareable,
-  keywords: [item.topic, item.claim, ...item.keywords],
+  keywords: [item.topic, ...item.topicSlugs, item.claim, ...item.aliases, ...item.keywords],
 }));
 
 const popularSlugs = [

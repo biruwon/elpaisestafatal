@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TopicBadge from '../../components/TopicBadge.astro';
+import { concerns } from '../../data/concerns';
+import { plannedTopics } from '../../data/content';
+---
+<BaseLayout title="Investigaciones — El país está fatal" description="Investigaciones y temas previstos para comprobar afirmaciones sobre España.">
+  <article class="prose investigations-index">
+    <p class="eyebrow">Mapa editorial</p>
+    <h1>Investigaciones<br /><em>conectadas.</em></h1>
+    <p class="lead">Los claims son la entrada rápida. Las investigaciones explican el sistema completo y reúnen los datos que varias afirmaciones comparten.</p>
+    <section>
+      <p class="eyebrow">Publicadas</p>
+      <div class="investigation-index-grid">{concerns.map((item) => <a href={`/preocupaciones/${item.slug}`}><TopicBadge slug={item.slug} compact /><h2>{item.title}</h2><small>{item.short}</small><span>Ver investigación →</span></a>)}</div>
+    </section>
+    <section>
+      <p class="eyebrow">Próximas investigaciones</p>
+      <div class="investigation-index-grid planned">{plannedTopics.map((item) => <article id={item.slug}><span class="status-label">En preparación</span><h2>{item.title}</h2><small>{item.claimCount} claims propuestos</small><p>{item.body}</p></article>)}</div>
+    </section>
+  </article>
+</BaseLayout>
+<style>
+  .investigations-index section{margin-top:70px}.investigation-index-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);margin-top:25px}.investigation-index-grid>a,.investigation-index-grid>article{background:var(--paper);padding:24px;min-height:190px}.investigation-index-grid h2{font:1.8rem/.95 var(--serif);margin:25px 0 10px}.investigation-index-grid small,.investigation-index-grid p{display:block;color:var(--muted);font-size:.8rem;line-height:1.45}.investigation-index-grid span:last-child{display:block;margin-top:24px;font:600 .68rem var(--mono)}.planned article{background:var(--paper-deep)}.status-label{font:600 .62rem var(--mono);color:var(--red);text-transform:uppercase}@media(max-width:700px){.investigation-index-grid{grid-template-columns:1fr}}
+</style>
