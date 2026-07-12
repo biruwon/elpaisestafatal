@@ -1,6 +1,3 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { claims,assessmentLabels } from '../../data/claims';
+return Astro.redirect('/afirmaciones', 301);
 ---
-<BaseLayout title="Verificaciones — El país está fatal" description="Afirmaciones sobre España verificadas con contexto y fuentes originales."><article class="prose verification-index"><p class="eyebrow">20 verificaciones</p><h1>Afirmaciones,<br/><em>puestas a prueba.</em></h1><p class="lead">Respuestas concretas para conversaciones concretas. Cada una enlaza los datos y explica lo que no permiten concluir.</p><div>{claims.map(item=><a href={`/verificaciones/${item.slug}`}><span>{assessmentLabels[item.assessment]}</span><h2>{item.claim}</h2><small>{item.topic} →</small></a>)}</div></article></BaseLayout>
-<style>.verification-index>div{margin-top:60px;border-top:1px solid var(--ink)}.verification-index>div a{display:grid;grid-template-columns:180px 1fr auto;gap:20px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}.verification-index>div span{font:.67rem var(--mono);color:var(--red);text-transform:uppercase}.verification-index>div h2{font:1.7rem/1 var(--serif);margin:0}.verification-index>div small{font-weight:600}@media(max-width:700px){.verification-index>div a{grid-template-columns:1fr}.verification-index>div h2{margin:5px 0}}</style>
