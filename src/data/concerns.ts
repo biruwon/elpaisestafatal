@@ -16,6 +16,7 @@ export type InvestigationSection = {
   metrics?: { value: string; label: string }[];
   chart?: { title: string; labels: string[]; values: number[]; unit: string; source: Source };
   bullets?: string[]; verdict?: string; source?: Source;
+  epistemic?: import('./epistemic').EpistemicKind;
 };
 
 export type Concern = {
