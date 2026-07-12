@@ -3,3 +3,6 @@
 /preocupaciones/comportamiento-politico/ /preocupaciones/politica/ 301
 /preocupaciones/partidos-politicos/ /preocupaciones/politica/ 301
 /preocupaciones/acuerdos-politicos/ /preocupaciones/politica/ 301
+/verificaciones/* /afirmaciones/:splat 301
+/verificaciones /afirmaciones 301
+/contacto /acerca-de#contacto 301
