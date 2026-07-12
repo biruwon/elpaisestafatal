@@ -24,11 +24,13 @@ const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/foundation.css" />
     <link rel="stylesheet" href="/quick-answer.css" />
   </head>
   <body>
-    <header class="site-header"><a class="brand" href="/"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/verificaciones">Verificaciones</a><a href="/#preocupaciones">Las {concerns.length}</a><a href="/metodologia">Metodología</a><a href="/acerca-de">Acerca de</a></nav></header>
-    <main><slot /></main>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/">Inicio</a><a href="/buscar">Buscar</a><a href="/acerca-de">Acerca de</a></nav></header>
+    <main id="contenido"><slot /></main>
     <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente, anónimo y sin financiación externa.</p><div><a href="/acerca-de">Acerca de</a><a href="/metodologia">Metodología</a><a href="/fuentes">Fuentes</a><a href="/revisiones">Revisiones</a><a href="/privacidad">Privacidad</a><a href="/contacto">Corregir</a></div></footer>
   </body>
 </html>
