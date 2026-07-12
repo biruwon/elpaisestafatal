@@ -1,0 +1,1 @@
+.topic-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(220px,.75fr);gap:55px;align-items:center}.topic-hero img{width:100%;height:auto;background:var(--paper-deep);order:2}.topic-hero>div{order:1}.topic-hero .topic-badge{margin-bottom:18px}@media(max-width:700px){.topic-hero{grid-template-columns:1fr;gap:25px}.topic-hero img{order:1}.topic-hero>div{order:2}}
