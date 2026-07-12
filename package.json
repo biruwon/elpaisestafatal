@@ -9,11 +9,15 @@
     "preview": "astro preview",
     "check": "astro check",
     "audit:investigations": "node scripts/audit-investigations.mjs",
-    "calculate:concerns": "node scripts/calculate-concerns.mjs"
+    "calculate:concerns": "node scripts/calculate-concerns.mjs",
+    "cards": "node scripts/generate-social-cards.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "astro": "^4.16.18",
     "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
   }
 }

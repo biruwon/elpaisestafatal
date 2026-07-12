@@ -1,7 +1,9 @@
 ---
-interface Props { title?: string; description?: string }
+interface Props { title?: string; description?: string; image?: string; pageType?: 'website'|'article' }
 import { concerns } from '../data/concerns';
-const { title = 'El país está fatal — datos, no trincheras', description = `${concerns.length} preocupaciones sobre España explicadas con fuentes primarias.` } = Astro.props;
+const { title = 'El país está fatal — datos, no trincheras', description = `${concerns.length} preocupaciones sobre España explicadas con fuentes primarias.`, image='/cards/preocupacion-vivienda.png', pageType='website' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 ---
 <!doctype html>
 <html lang="es">
@@ -9,6 +11,13 @@ const { title = 'El país está fatal — datos, no trincheras', description = `
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={pageType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#f5f1e8" />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
