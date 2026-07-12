@@ -10,7 +10,7 @@ export type CuratedSearchItem = {
 
 export const curatedSearch: CuratedSearchItem[] = claims.map((item) => ({
   question: item.claim.replace(/[“”]/g, ''),
-  href: `/verificaciones/${item.slug}`,
+  href: `/afirmaciones/${item.slug}`,
   topic: item.topic,
   answer: item.shareable,
   keywords: [item.topic, item.claim, ...item.keywords],
