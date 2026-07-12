@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "audit:investigations": "node scripts/audit-investigations.mjs"
+    "audit:investigations": "node scripts/audit-investigations.mjs",
+    "calculate:concerns": "node scripts/calculate-concerns.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

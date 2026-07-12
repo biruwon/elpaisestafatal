@@ -119,8 +119,8 @@ const entries: Entry[] = [
     investigation: economyInvestigation,
   },
   {
-    slug: 'empleo', title: 'Empleo y paro', short: 'Acceso, estabilidad, salarios y jornada', first: 31.7, second: 0, third: 0,
-    statOverride: '31,7 %', statLabelOverride: 'mencionó el paro o la calidad del empleo',
+    slug: 'empleo', title: 'Empleo y paro', short: 'Acceso, estabilidad, salarios y jornada', first: 31.8, second: 0, third: 0,
+    statOverride: '31,8 %', statLabelOverride: 'mencionó el paro o la calidad del empleo en cualquier respuesta',
     question: '¿Basta con crear empleo?', summary: 'España tiene ocupación récord y menos temporalidad, pero conserva paro elevado y empleos que no siempre permiten vivienda, ahorro o estabilidad.',
     context: 'Esta ficha une dos respuestas solapadas del CIS: paro y problemas relacionados con la calidad del empleo. La investigación separa acceso al trabajo de salario, jornada, continuidad y progresión.', limits: 'El 31,7% es una unión ponderada de microdatos, no una suma. La EPA, los registros del SEPE y las estadísticas salariales miden poblaciones y conceptos distintos.',
     sources: [survey, { label:'Microdatos del Barómetro de abril de 2026 · MD3557',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'27 may. 2026' }, { label: 'Encuesta de Población Activa · T1 2026', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/EPA1T26.htm', date: '28 abr. 2026' }],
@@ -159,12 +159,12 @@ const entries: Entry[] = [
     investigation: corruptionInvestigation,
   },
   {
-    slug: 'extremismos', title: 'Extremismos y crispación social', short: 'Polarización, odio, radicalización y violencia', first: 12.9, second: 0, third: 0,
-    statOverride:'12,9 %',statLabelOverride:'mencionó extremismos o aumento de la crispación social',
+    slug: 'extremismos', title: 'Extremismos y crispación social', short: 'Polarización, odio, radicalización y violencia', first: 11.4, second: 0, third: 0,
+    statOverride:'11,4 %',statLabelOverride:'mencionó extremismos o aumento de la crispación social en cualquier respuesta',
     question: '¿Está creciendo la violencia o la hostilidad?', summary: 'España sigue siendo una democracia comparativamente pacífica, pero el lenguaje de enemigo, la culpa colectiva y la polarización afectiva penetran en la política ordinaria.',
-    context: 'Esta ficha une dos categorías solapadas del CIS y distingue radicalismo, extremismo, crispación, delito de odio y terrorismo. No son sinónimos.', limits: 'El 12,9% es una unión ponderada, no una suma. Los hechos policiales dependen de denuncia y clasificación; una detención tampoco equivale a condena.',
+    context: 'Esta ficha une dos categorías solapadas del CIS y distingue radicalismo, extremismo, crispación, delito de odio y terrorismo. No son sinónimos.', limits: 'El 11,4% es una unión ponderada, no una suma. Los hechos policiales dependen de denuncia y clasificación; una detención tampoco equivale a condena.',
     sources: [survey,{label:'Microdatos del Barómetro de abril de 2026 · MD3557',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'27 may. 2026'},{ label: 'Informe sobre evolución de delitos de odio 2025', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/export/sites/default/.galleries/galeria-de-prensa/documentos-y-multimedia/balances-e-informes/2025/Informe-sobre-la-evolucion-de-los-delitos-e-incidentes-de-odio-en-Espana-2025.pdf', date: 'jun. 2026' }],
-    dossier:{eyebrow:'Dos respuestas, una sola persona',heading:'El 12,9% citó extremismos o crispación',intro:'El cálculo usa los 4.020 registros ponderados y cuenta una vez a cada persona aunque mencionara ambas categorías entre sus tres respuestas.',metrics:[{value:'12,9 %',label:'unión ponderada'},{value:'9,7 %',label:'extremismos'},{value:'3,5 %',label:'crispación social'}],series:{label:'Categorías individuales y unión',labels:['Extremismos','Crispación','Unión'],values:[9.7,3.5,12.9],unit:'%'},source:{label:'Microdatos CIS 3557 · cálculo reproducido',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'2026'},limits:'Las tasas individuales se solapan. La unión usa códigos 52 y 65 en PESPANNA1–3 y aplica PESO.'},
+    dossier:{eyebrow:'Dos respuestas, una sola persona',heading:'El 11,4% citó extremismos o crispación',intro:'El cálculo usa los 4.020 registros ponderados y cuenta una vez a cada persona aunque mencionara ambas categorías entre sus tres respuestas.',metrics:[{value:'11,4 %',label:'unión ponderada'},{value:'8,57 %',label:'extremismos'},{value:'2,98 %',label:'crispación social'}],series:{label:'Categorías individuales y unión',labels:['Extremismos','Crispación','Unión'],values:[8.57,2.98,11.4],unit:'%'},source:{label:'Microdatos CIS 3557 · cálculo reproducido',publisher:'CIS',url:'https://www.cis.es/documents/20117/13932083/MD3557.zip/b06ffee0-bd18-6b3f-cb75-4b674616aa2a?version=1.0&t=1779881033257',date:'2026'},limits:'Las tasas individuales se solapan. La unión busca las dos categorías etiquetadas en PESPANNA1–3 y aplica PESO.'},
     investigation:extremismInvestigation,
   },
   {

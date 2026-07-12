@@ -1,0 +1,43 @@
+mode,label,value_percent,definition
+first,Vivienda,25.08,Primera respuesta
+first,Gobierno o políticos concretos,8.72,Primera respuesta
+first,Problemas políticos en general,7.95,Primera respuesta
+first,Economía,7.34,Primera respuesta
+first,Calidad del empleo,4.96,Primera respuesta
+first,Mal comportamiento político,4.59,Primera respuesta
+first,Inmigración,4.57,Primera respuesta
+first,Paro,4.47,Primera respuesta
+first,Corrupción y fraude,3.85,Primera respuesta
+first,Extremismos,3.43,Primera respuesta
+first,Juventud y oportunidades,2.70,Primera respuesta
+first,Inseguridad ciudadana,2.15,Primera respuesta
+first,Actividad de los partidos,1.99,Primera respuesta
+first,Impuestos,1.52,Primera respuesta
+any,Vivienda,41.25,Al menos una de tres respuestas
+any,Economía,24.92,Al menos una de tres respuestas
+any,Calidad del empleo,19.17,Al menos una de tres respuestas
+any,Inmigración,15.78,Al menos una de tres respuestas
+any,Paro,14.34,Al menos una de tres respuestas
+any,Problemas políticos en general,13.91,Al menos una de tres respuestas
+any,Sanidad,12.80,Al menos una de tres respuestas
+any,Gobierno o políticos concretos,11.26,Al menos una de tres respuestas
+any,Mal comportamiento político,9.59,Al menos una de tres respuestas
+any,Juventud y oportunidades,9.00,Al menos una de tres respuestas
+any,Corrupción y fraude,8.91,Al menos una de tres respuestas
+any,Extremismos,8.57,Al menos una de tres respuestas
+any,Inseguridad ciudadana,8.53,Al menos una de tres respuestas
+any,Problemas sociales,4.84,Al menos una de tres respuestas
+grouped,Vivienda,41.25,Unión temática en cualquiera de tres respuestas
+grouped,"Política, políticos y partidos",37.48,Unión temática en cualquiera de tres respuestas
+grouped,Empleo y paro,31.80,Unión temática en cualquiera de tres respuestas
+grouped,Economía y coste de la vida,24.92,Unión temática en cualquiera de tres respuestas
+grouped,Inmigración,15.78,Unión temática en cualquiera de tres respuestas
+grouped,Sanidad,12.80,Unión temática en cualquiera de tres respuestas
+grouped,Extremismos y crispación,11.40,Unión temática en cualquiera de tres respuestas
+grouped,Juventud y oportunidades,9.00,Unión temática en cualquiera de tres respuestas
+grouped,Corrupción y fraude,8.91,Unión temática en cualquiera de tres respuestas
+grouped,Inseguridad ciudadana,8.53,Unión temática en cualquiera de tres respuestas
+grouped,Problemas sociales,4.84,Unión temática en cualquiera de tres respuestas
+grouped,Desigualdades y pobreza,4.80,Unión temática en cualquiera de tres respuestas
+grouped,Crisis de valores,4.55,Unión temática en cualquiera de tres respuestas
+grouped,Impuestos,3.93,Unión temática en cualquiera de tres respuestas
