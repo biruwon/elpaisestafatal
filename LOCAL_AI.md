@@ -44,3 +44,19 @@ The CLI uses `http://localhost:11434/api/chat` by default. Set `OLLAMA_ENDPOINT`
 - `PUBLIC_OLLAMA_ENDPOINT`
 - `PUBLIC_OLLAMA_TEXT_MODEL`
 - `PUBLIC_OLLAMA_VISION_MODEL`
+
+### Browser CORS setup
+
+When using the deployed site, Ollama must explicitly allow its origin. On macOS, quit Ollama and start it with:
+
+```bash
+OLLAMA_ORIGINS='https://elpaisestafatal.es,http://localhost:4321,http://localhost:4322' ollama serve
+```
+
+If using the Ollama macOS application, set the environment before opening it:
+
+```bash
+launchctl setenv OLLAMA_ORIGINS 'https://elpaisestafatal.es,http://localhost:4321,http://localhost:4322'
+```
+
+Then fully quit and reopen Ollama. A browser preflight returning `403` means this setting has not been applied. The browser sends the claim to the configured local endpoint; it is not uploaded to Cloudflare Pages.
