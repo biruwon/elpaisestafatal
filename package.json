@@ -15,6 +15,7 @@
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
     "cards": "node scripts/generate-social-cards.mjs"
+    ,"clarify:local": "node scripts/local-clarifier.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
