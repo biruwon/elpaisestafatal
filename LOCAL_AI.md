@@ -39,4 +39,8 @@ npm run clarify:local -- --audio /absolute/path/recording.m4a
 
 ## Endpoint and model
 
-The CLI uses `http://localhost:11434/api/chat` by default. Set `OLLAMA_ENDPOINT` for a hosted Ollama API and `OLLAMA_MODEL` for another model. The browser-side optional classifier uses the build-time `PUBLIC_OLLAMA_ENDPOINT` value and defaults to localhost.
+The CLI uses `http://localhost:11434/api/chat` by default. Set `OLLAMA_ENDPOINT` for a hosted Ollama API and `OLLAMA_MODEL` for another model. The browser-side optional classifier uses these build-time values and defaults to localhost:
+
+- `PUBLIC_OLLAMA_ENDPOINT`
+- `PUBLIC_OLLAMA_TEXT_MODEL`
+- `PUBLIC_OLLAMA_VISION_MODEL`
