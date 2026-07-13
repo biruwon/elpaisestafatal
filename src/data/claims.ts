@@ -11,7 +11,7 @@ export type ClaimVerification={
   claimType:ClaimType; evidenceStrength:EvidenceStrength; decisiveEvidence:string; competingExplanations:string[];
   whyItCirculates:string; unknowns:string; evidenceCouldChange:string; valueDisagreement?:string;
   relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[]; geography:string; period:string;
-  reviewed:string; published:boolean; sources:Source[]; evidenceIds:string[];
+  reviewed:string; published:boolean; sources:Source[]; sourceRefs:string[]; evidenceIds:string[];
 };
 type LegacyClaimVerification={slug:string;claim:string;assessment:ClaimAssessment;topic:string;topicSlug:string;whatIsTrue:string;whatIsMissing:string;scale:string;cannotProve:string;shareable:string;keywords:string[];sources:Source[]};
 const sources=(slug:string):Source[]=>{const concern=getConcern(slug);return concern?concernSources(concern).slice(1):[];};
@@ -62,8 +62,8 @@ export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=mar
   unknowns:claim.cannotProve,
   evidenceCouldChange:'Una nueva fuente primaria comparable, una revisión metodológica o un cambio relevante en el periodo analizado.',
   relatedSlugs:md?.relatedSlugs || [], supports:md?.supports || [], contradicts:md?.contradicts || [], dependsOn:md?.dependsOn || [], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
-  reviewed:md?.reviewed || '2026-07-12',
-  evidenceIds:claim.sources.map(evidenceId),
+  reviewed:md?.reviewed || '2026-07-12', sourceRefs:md?.sourceRefs || [],
+  evidenceIds:md?.evidenceIds?.length ? md.evidenceIds : claim.sources.map(evidenceId),
 }); });
 for(const claim of claims){
   claim.relatedSlugs=claims.filter((other)=>other.slug!==claim.slug&&other.published&&(other.topicSlugs.some((slug)=>claim.topicSlugs.includes(slug))||other.keywords.some((keyword)=>claim.keywords.includes(keyword)))).slice(0,6).map((other)=>other.slug);
