@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClarifierVisuals from '../../components/ClarifierVisuals.astro';
 import { conversationMvpClaims } from '../../data/conversationMvp';
 
 export function getStaticPaths() {
@@ -25,12 +26,7 @@ const sourceClaim = `/afirmaciones/${claim.slug}`;
 
     <section class="clarifier-section">
       <div class="section-intro"><p class="eyebrow">2 · La evidencia decisiva</p><h2>Lo que sabemos<br /><em>hasta ahora.</em></h2><p>{claim.supports}</p></div>
-      <div class="key-number-row"><div class="key-number"><strong>{claim.visuals.key.value}</strong><span>{claim.visuals.key.label}</span><small>{claim.visuals.key.period}</small></div><div class="key-number key-number-text"><strong>3</strong><span>preguntas distintas dentro de la frase</span><small>Descomposición del claim</small></div><div class="key-number key-number-text"><strong>1</strong><span>límite que cambia la interpretación</span><small>Contexto necesario</small></div></div>
-      <div class="visual-grid">
-        <div class="visual-card visual-wide"><div class="visual-heading"><div><span class="card-kicker">Tendencia</span><strong>{claim.visuals.trend.label}</strong></div><small>{claim.visuals.trend.unit}</small></div><div class="trend-chart">{claim.visuals.trend.values.map((value, index) => <div class="trend-point" style={`--point:${value}%`}><i></i><span>{claim.visuals.trend.labels[index]}</span></div>)}</div><p class="visual-note">Mock de la tendencia que debe acompañar a una afirmación sobre cambios en el tiempo.</p></div>
-        <div class="visual-card"><div class="visual-heading"><div><span class="card-kicker">Comparación</span><strong>{claim.visuals.comparison.label}</strong></div><small>{claim.visuals.comparison.unit}</small></div><div class="bar-list">{claim.visuals.comparison.labels.map((label, index) => <div><div><span>{label}</span><b>{claim.visuals.comparison.values[index]}</b></div><i style={`--bar:${Math.min(100, claim.visuals.comparison.values[index] / Math.max(...claim.visuals.comparison.values) * 100)}%`}></i></div>)}</div></div>
-        <div class="visual-card"><div class="visual-heading"><div><span class="card-kicker">Territorio</span><strong>{claim.visuals.regions.label}</strong></div><small>{claim.visuals.regions.unit}</small></div><div class="region-list">{claim.visuals.regions.labels.map((label, index) => <div><span>{label}</span><i><b style={`width:${Math.min(100, claim.visuals.regions.values[index])}%`}></b></i><em>{claim.visuals.regions.values[index]}</em></div>)}</div></div>
-      </div><div class="visual-caveat"><strong>Maqueta visual</strong><span>{claim.visuals.caveat}</span></div>
+      <ClarifierVisuals claim={claim} />
       <div class="evidence-grid"><div class="evidence-card"><span class="card-kicker">Lo que sí apoya</span><p>{claim.supports}</p><span class="evidence-strength">Evidencia directa</span></div><div class="evidence-card evidence-card-muted"><span class="card-kicker">Lo que no demuestra</span><p>{claim.limit}</p><span class="evidence-strength">Límite importante</span></div></div>
     </section>
 
