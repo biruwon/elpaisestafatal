@@ -2,7 +2,7 @@
 
 Updated: 2026-07-13
 
-This file is the single working checklist for the project. It distinguishes completed product work from pending technical implementation, editorial research and production QA.
+This file is the single working checklist for the project. The content is AI-generated and is not presented as human editorial work or as the output of a named newsroom.
 
 The project is Markdown-driven, anonymous, source-first and does not collect product analytics, search queries, profiles, subscriptions or topic-following data.
 
@@ -57,7 +57,7 @@ For each claim:
 - identify relevant value disagreements separately from empirical findings;
 - add primary sources and supporting studies;
 - add period, geography, unit and comparability limitations;
-- add a review date and revision entry.
+- record the research date and source set used.
 
 Only claims with all required material may change from `planned` to `published`.
 
@@ -76,7 +76,7 @@ The approved order is:
 9. Defence, strategic borders and national security
 10. Religion, secularism and freedom of conscience
 
-Each investigation needs a completed Markdown dossier, source inventory, evidence objects, limitations, review metadata and links to its canonical claims.
+Each investigation needs a completed Markdown dossier, source inventory, evidence objects, limitations and links to its canonical claims.
 
 The investigation must not be presented as complete merely because its claim catalogue exists.
 
@@ -85,13 +85,13 @@ The investigation must not be presented as complete merely because its claim cat
 - `problemas-sociales`
 - `crisis-valores`
 
-They need the same structured evidence, source and review treatment as the full investigations.
+They need the same structured evidence and source treatment as the full investigations.
 
 ### B. Markdown source and evidence system
 
 This is the next technical milestone.
 
-- Add `content/sources/` Markdown records with stable source IDs, publisher, title, URL, date, source type and access notes.
+- Add `content/sources/` Markdown records with stable source IDs, title, URL, date, source type and access notes. Do not add publisher or human-editorial attribution fields.
 - Add `content/evidence/` Markdown records with stable evidence IDs, kind, source IDs, claim relationship, period, geography, unit, calculation method and limitation.
 - Support statistical series, legal texts, datasets, charts, definitions, studies and official reports.
 - Migrate the 20 published claims from the TypeScript source bridge to Markdown source/evidence references.
@@ -115,16 +115,7 @@ This is the next technical milestone.
 
 ### D. Mobile product follow-up
 
-These are enhancements, not blockers for the current responsive release:
-
-- Full-screen viewer for dense charts and map-like visuals, with accessible summary, close control and landscape support.
-- Contextual source preview sheets explaining what a source supports and its main limitation before opening it.
-- Progressive disclosure for long investigation chapters, secondary charts, regional tables, methodology and extended caveats.
-- Full-screen search overlay with automatic focus and claims-before-topics ordering.
-- Dedicated topic-section bottom navigator with current-section state and fragment navigation.
-- Written takeaways and visible limitations beside every major visual.
-
-Intentionally deferred: recently viewed, bookmarks, “continue where you left off”, PWA work and other retention features.
+No additional mobile features are approved for this phase. The existing responsive implementation remains the mobile scope.
 
 ### E. Visual assets
 
@@ -162,11 +153,12 @@ git diff --check
 
 ## Publication rule
 
-`planned` means catalogue entry only. It is not a public verdict.
+Claims and investigations use only two states:
 
-`published` requires a complete answer, evidence, source references, limitations, review date and valid topic relationships.
+- `planned`: present in the catalogue but not published as a completed page.
+- `published`: available publicly.
 
-The presence of a Markdown file is not by itself evidence that the claim has been investigated.
+The project will not add a stricter editorial workflow or automated completeness gate in this phase. Research quality is handled through the research process and the content itself, not through an over-engineered publication validator.
 
 ## Recommended milestone order
 
@@ -281,10 +273,9 @@ Do not skip claims. Do not silently fill gaps with assumptions. If the list is t
 
 Every completed item should be recorded in this file or in a linked Markdown research file with:
 
-- status: `planned`, `in-progress`, `blocked` or `completed`;
+- status: `planned` or `published`;
 - date updated;
 - affected routes or content files;
-- validation command run;
 - commit hash when implementation is committed.
 
 Do not mark a claim or investigation completed solely because its file exists.
