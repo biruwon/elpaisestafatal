@@ -35,7 +35,12 @@ for (const file of files) {
     const index = line.indexOf(':');
     return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]];
   }));
-  if (file.includes('/sources/')) { if (!values.id) failures.push(`${file}: missing id`); if (!values.title || !values.url || !values.date) failures.push(`${file}: source requires title, url and date`); continue; }
+  if (file.includes('/sources/')) {
+    if (!values.id) failures.push(`${file}: missing id`);
+    if (!values.title || !values.url || !values.date) failures.push(`${file}: source requires title, url and date`);
+    if (values.url) { try { const url = new URL(values.url); if (!['http:', 'https:'].includes(url.protocol)) failures.push(`${file}: source URL must use http or https`); } catch { failures.push(`${file}: invalid source URL ${values.url}`); } }
+    continue;
+  }
   if (file.includes('/evidence/')) { if (!values.id) failures.push(`${file}: missing id`); for (const sourceId of parsedList(values.sourceIds)) if (!sourceIds.has(sourceId)) failures.push(`${file}: unknown source id ${sourceId}`); continue; }
   const slug = values.slug;
   if (!slug) failures.push(`${file}: missing slug`);
