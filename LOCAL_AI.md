@@ -25,7 +25,17 @@ This uses `qwen3-vl:8b` by default. Override the model with `OLLAMA_MODEL`.
 npm run clarify:local -- --audio /absolute/path/recording.m4a
 ```
 
-Audio is recorded as an explicit unsupported local input until `whisper.cpp` or `mlx_whisper` is installed. No audio is sent to the public site.
+Audio is transcribed only when `WHISPER_COMMAND` is configured to a local command that writes the transcript to stdout. Without it, the input is recorded as unsupported. No audio is sent to the public site.
+
+For a command that accepts the audio path as its first argument:
+
+```bash
+WHISPER_COMMAND=/path/to/local-transcriber \
+WHISPER_ARGS='["{audio}"]' \
+npm run clarify:local -- --audio /absolute/path/recording.m4a
+```
+
+`{audio}` is replaced with the supplied file path. The resulting transcript is then passed through the same approved-claim classifier as text and links.
 
 ## Endpoint and model
 

@@ -1,5 +1,9 @@
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 const root = new URL('../', import.meta.url).pathname;
 const args = process.argv.slice(2);
@@ -29,13 +33,29 @@ async function pageText(url) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 20000);
 }
 
+async function transcribeAudio(path) {
+  const command = process.env.WHISPER_COMMAND;
+  if (!command) return null;
+  const args = process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}'];
+  const resolvedArgs = args.map((arg) => String(arg).replaceAll('{audio}', path));
+  const result = await execFileAsync(command, resolvedArgs, { maxBuffer: 10 * 1024 * 1024, timeout: 300000 });
+  return result.stdout.trim();
+}
+
 const isUrl = /^https?:\/\//i.test(input);
 let extractedText = input;
 let url = null;
 let inputType = isUrl ? 'url' : 'text';
 let imageBase64 = null;
 if (imagePath) { inputType = 'image'; imageBase64 = (await readFile(imagePath)).toString('base64'); extractedText = 'Screenshot attached; extract visible claims and classify them.'; }
-if (audioPath) { inputType = 'audio'; extractedText = 'Audio transcription is not available because no local transcription runtime is installed.'; }
+if (audioPath) {
+  inputType = 'audio';
+  try {
+    extractedText = await transcribeAudio(audioPath) || 'Audio transcription returned no text.';
+  } catch (error) {
+    extractedText = `Audio transcription unavailable: ${error.message}`;
+  }
+}
 if (isUrl) {
   url = input;
   try { extractedText = await pageText(input); } catch (error) { console.error(`No se pudo extraer el enlace: ${error.message}`); }
@@ -43,7 +63,7 @@ if (isUrl) {
 
 let classification = { slug: 'none', reason: 'No se ejecutó Ollama', model: null };
 try {
-  if (inputType === 'audio') throw new Error('Audio input requires a local transcription runtime before classification.');
+  if (inputType === 'audio' && (extractedText.startsWith('Audio transcription unavailable:') || extractedText === 'Audio transcription returned no text.')) throw new Error(extractedText);
   const model = process.env.OLLAMA_MODEL || (inputType === 'image' ? 'qwen3-vl:8b' : 'qwen3.6:latest');
   const response = await fetch(process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/chat', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(120000),
@@ -61,7 +81,7 @@ try {
   classification.reason = `Ollama no disponible: ${error.message}`;
 }
 
-if (inputType === 'audio') classification.reason = 'Audio input requires a local transcription runtime such as whisper.cpp or mlx_whisper before it can enter the claim compiler.';
+if (inputType === 'audio' && classification.slug === 'none' && !process.env.WHISPER_COMMAND) classification.reason = 'Audio input requires a local transcription runtime such as whisper.cpp or mlx_whisper before it can enter the claim compiler.';
 const record = { createdAt: new Date().toISOString(), inputType, input: input || audioPath || imagePath, url, extractedText, classification };
 await mkdir(join(root, '.local'), { recursive: true });
 await appendFile(join(root, '.local/knowledge-gaps.jsonl'), `${JSON.stringify(record)}\n`);
