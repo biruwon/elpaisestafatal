@@ -15,7 +15,18 @@ await walk(root);
 
 const seen = new Set();
 const failures = [];
+const sourceIds = new Set();
+const evidenceIds = new Set();
+function parsedList(value) { try { const parsed = JSON.parse(value || '[]'); return Array.isArray(parsed) ? parsed : []; } catch { return []; } }
 let topicCount = 0; let claimCount = 0; let publishedClaims = 0; let plannedClaims = 0;
+for (const file of files) {
+  const raw = await readFile(file, 'utf8');
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) continue;
+  const values = Object.fromEntries(match[1].split('\n').flatMap((line) => { const index = line.indexOf(':'); return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]]; }));
+  if (file.includes('/sources/')) sourceIds.add(values.id);
+  if (file.includes('/evidence/')) evidenceIds.add(values.id);
+}
 for (const file of files) {
   const raw = await readFile(file, 'utf8');
   const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
@@ -24,7 +35,8 @@ for (const file of files) {
     const index = line.indexOf(':');
     return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]];
   }));
-  if (file.includes('/sources/') || file.includes('/evidence/')) continue;
+  if (file.includes('/sources/')) { if (!values.id) failures.push(`${file}: missing id`); if (!values.title || !values.url || !values.date) failures.push(`${file}: source requires title, url and date`); continue; }
+  if (file.includes('/evidence/')) { if (!values.id) failures.push(`${file}: missing id`); for (const sourceId of parsedList(values.sourceIds)) if (!sourceIds.has(sourceId)) failures.push(`${file}: unknown source id ${sourceId}`); continue; }
   const slug = values.slug;
   if (!slug) failures.push(`${file}: missing slug`);
   if (seen.has(slug)) failures.push(`${file}: duplicate slug ${slug}`);
@@ -42,6 +54,8 @@ for (const file of files) {
     if (!new Set(['descriptive','comparative','causal','predictive','legal','normative','mixed']).has(values.claimType)) failures.push(`${file}: invalid claimType ${values.claimType}`);
     if (!new Set(['high','medium','limited','insufficient']).has(values.evidenceStrength)) failures.push(`${file}: invalid evidenceStrength ${values.evidenceStrength}`);
     if (values.status === 'published' && !raw.includes('## Qué es cierto')) failures.push(`${file}: published claim missing evidence body`);
+    for (const sourceId of parsedList(values.sourceRefs)) if (!sourceIds.has(sourceId)) failures.push(`${file}: unknown source reference ${sourceId}`);
+    for (const evidenceId of parsedList(values.evidenceIds)) if (!evidenceIds.has(evidenceId)) failures.push(`${file}: unknown evidence reference ${evidenceId}`);
   }
   if (file.includes('/topics/')) topicCount += 1;
 }
