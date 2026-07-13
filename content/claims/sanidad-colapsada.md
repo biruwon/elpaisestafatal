@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: sanidad
-sourceRefs: ["sanidad-source-registry"]
-evidenceIds: ["sanidad-evidence-registry"]
+sourceRefs: ["sanidad-listas-de-espera-diciembre-2025","sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119"]
+evidenceIds: ["sanidad-listas-de-espera-diciembre-2025","sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119"]
 ---
 
 ## Qué es cierto

@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: inmigracion
-sourceRefs: ["inmigracion-source-registry"]
-evidenceIds: ["inmigracion-evidence-registry"]
+sourceRefs: ["inmigracion-estadistica-continua-de-poblacion-t1-2026","inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+evidenceIds: ["inmigracion-estadistica-continua-de-poblacion-t1-2026","inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
 ---
 
 ## Qué es cierto

@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: vivienda
-sourceRefs: ["vivienda-source-registry"]
-evidenceIds: ["vivienda-evidence-registry"]
+sourceRefs: ["vivienda-indice-de-precios-de-vivienda-t1-2026","vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+evidenceIds: ["vivienda-indice-de-precios-de-vivienda-t1-2026","vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
 ---
 
 ## Qué es cierto

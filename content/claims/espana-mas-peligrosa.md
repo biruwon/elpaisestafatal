@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: seguridad
-sourceRefs: ["seguridad-source-registry"]
-evidenceIds: ["seguridad-evidence-registry"]
+sourceRefs: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+evidenceIds: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
 ---
 
 ## Qué es cierto

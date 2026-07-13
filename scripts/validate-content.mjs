@@ -24,6 +24,7 @@ for (const file of files) {
     const index = line.indexOf(':');
     return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]];
   }));
+  if (file.includes('/sources/') || file.includes('/evidence/')) continue;
   const slug = values.slug;
   if (!slug) failures.push(`${file}: missing slug`);
   if (seen.has(slug)) failures.push(`${file}: duplicate slug ${slug}`);

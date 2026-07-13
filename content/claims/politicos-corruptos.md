@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: corrupcion
-sourceRefs: ["corrupcion-source-registry"]
-evidenceIds: ["corrupcion-evidence-registry"]
+sourceRefs: ["corrupcion-estadistica-judicial","corrupcion-fiscalia-contra-la-corrupcion","corrupcion-indice-de-percepcion-de-corrupcion-labels-2023-2024-2025-values-60-56-55"]
+evidenceIds: ["corrupcion-estadistica-judicial","corrupcion-fiscalia-contra-la-corrupcion","corrupcion-indice-de-percepcion-de-corrupcion-labels-2023-2024-2025-values-60-56-55"]
 ---
 
 ## Qué es cierto

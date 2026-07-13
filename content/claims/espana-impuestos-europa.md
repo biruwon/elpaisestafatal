@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: impuestos
-sourceRefs: ["impuestos-source-registry"]
-evidenceIds: ["impuestos-evidence-registry"]
+sourceRefs: ["impuestos-recaudacion-tributaria","impuestos-base-de-datos-estadistica","impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
+evidenceIds: ["impuestos-recaudacion-tributaria","impuestos-base-de-datos-estadistica","impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
 ---
 
 ## Qué es cierto

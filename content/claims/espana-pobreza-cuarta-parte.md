@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: desigualdad
-sourceRefs: ["desigualdad-source-registry"]
-evidenceIds: ["desigualdad-evidence-registry"]
+sourceRefs: ["desigualdad-encuesta-de-condiciones-de-vida-2025","desigualdad-base-de-datos-de-eurostat","desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"]
+evidenceIds: ["desigualdad-encuesta-de-condiciones-de-vida-2025","desigualdad-base-de-datos-de-eurostat","desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"]
 ---
 
 ## Qué es cierto

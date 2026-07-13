@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: empleo
-sourceRefs: ["empleo-source-registry"]
-evidenceIds: ["empleo-evidence-registry"]
+sourceRefs: ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557","empleo-encuesta-de-poblacion-activa-t1-2026","empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+evidenceIds: ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557","empleo-encuesta-de-poblacion-activa-t1-2026","empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
 ---
 
 ## Qué es cierto
