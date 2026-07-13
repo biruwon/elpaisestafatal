@@ -16,8 +16,12 @@ export type MarkdownClaimRecord = {
   sourceRefs:string[]; evidenceIds:string[]; relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[];
   body:string; whatIsTrue?:string; whatIsMissing?:string; scale?:string; cannotProve?:string; shareable?:string;
 };
+export type MarkdownSourceRecord = { id:string; title:string; url:string; date:string; type:string; body:string };
+export type MarkdownEvidenceRecord = { id:string; kind:string; sourceIds:string[]; period:string; geography:string; unit:string; body:string };
 
 const topicFiles = import.meta.glob('../../content/topics/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
+const sourceFiles = import.meta.glob('../../content/sources/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
+const evidenceFiles = import.meta.glob('../../content/evidence/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 
 function parseFrontmatter(raw: string): { data: Record<string, string>; body: string } {
   const match = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
@@ -33,6 +37,17 @@ function parseFrontmatter(raw: string): { data: Record<string, string>; body: st
 }
 function structured(value: string | undefined): string | string[] { if (!value) return ''; try { const parsed=JSON.parse(value); return parsed; } catch { return value; } }
 function section(body:string,title:string){const match=body.match(new RegExp(`## ${title}\\s*\\n+([\\s\\S]*?)(?=\\n## |$)`));return match?.[1].trim();}
+
+export const markdownSources: MarkdownSourceRecord[] = Object.entries(sourceFiles).map(([path, raw]) => {
+  const parsed=parseFrontmatter(raw); const data=parsed.data;
+  return { id:data.id || path.split('/').pop()!.replace(/\.md$/, ''), title:data.title || '', url:data.url || '', date:data.date || '', type:data.type || '', body:parsed.body };
+});
+export const markdownEvidence: MarkdownEvidenceRecord[] = Object.entries(evidenceFiles).map(([path, raw]) => {
+  const parsed=parseFrontmatter(raw); const data=parsed.data;
+  return { id:data.id || path.split('/').pop()!.replace(/\.md$/, ''), kind:data.kind || '', sourceIds:(structured(data.sourceIds) as string[]) || [], period:data.period || '', geography:data.geography || '', unit:data.unit || '', body:parsed.body };
+});
+export const getMarkdownSource = (id:string) => markdownSources.find((source) => source.id === id);
+export const getMarkdownEvidence = (id:string) => markdownEvidence.find((item) => item.id === id);
 
 export const plannedTopics: TopicRecord[] = Object.entries(topicFiles)
   .map(([path, raw]) => {
