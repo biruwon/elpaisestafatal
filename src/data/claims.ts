@@ -61,7 +61,7 @@ export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=mar
   whyItCirculates:'La afirmación combina una experiencia visible, una formulación política o una simplificación de una estadística.',
   unknowns:claim.cannotProve,
   evidenceCouldChange:'Una nueva fuente primaria comparable, una revisión metodológica o un cambio relevante en el periodo analizado.',
-  relatedSlugs:[], supports:[], contradicts:[], dependsOn:[], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
+  relatedSlugs:md?.relatedSlugs || [], supports:md?.supports || [], contradicts:md?.contradicts || [], dependsOn:md?.dependsOn || [], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
   reviewed:md?.reviewed || '2026-07-12',
   evidenceIds:claim.sources.map(evidenceId),
 }); });
