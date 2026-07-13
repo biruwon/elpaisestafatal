@@ -8,7 +8,7 @@ const audioIndex = args.indexOf('--audio');
 const imagePath = imageIndex >= 0 ? args[imageIndex + 1] : null;
 const audioPath = audioIndex >= 0 ? args[audioIndex + 1] : null;
 const input = args.filter((arg, index) => !['--image', '--audio'].includes(arg) && index !== imageIndex + 1 && index !== audioIndex + 1).join(' ').trim();
-if (!input) {
+if (!input && !imagePath && !audioPath) {
   console.error('Usage: npm run clarify:local -- "claim text"');
   console.error('   or: npm run clarify:local -- https://example.com/article');
   console.error('   or: npm run clarify:local -- --image /path/to/screenshot.png');
@@ -43,6 +43,7 @@ if (isUrl) {
 
 let classification = { slug: 'none', reason: 'No se ejecutó Ollama', model: null };
 try {
+  if (inputType === 'audio') throw new Error('Audio input requires a local transcription runtime before classification.');
   const model = process.env.OLLAMA_MODEL || (inputType === 'image' ? 'qwen3-vl:8b' : 'qwen3.6:latest');
   const response = await fetch(process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/chat', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(120000),
