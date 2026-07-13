@@ -181,7 +181,7 @@ The presence of a Markdown file is not by itself evidence that the claim has bee
 
 ## Research prompt for a new ChatGPT conversation
 
-Copy the following prompt into a new chat for the editorial research phase:
+The authoritative standalone prompt is [RESEARCH_PROMPT.md](/Users/antonio/projects/bulos/elpaisestafatal/RESEARCH_PROMPT.md). It includes all 182 proposed claims, so a separate ChatGPT conversation does not need repository access. The older embedded prompt below is retained as general methodology; use the standalone file when starting the research.
 
 ```text
 You are the research editor for an anonymous Spanish public-interest fact-checking project called “El país está fatal. ¿Seguro?”.
