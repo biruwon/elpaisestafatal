@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { conversationMvpClaims } from '../../data/conversationMvp';
+
+export function getStaticPaths() {
+  return conversationMvpClaims.map((claim) => ({ params: { slug: claim.slug }, props: { claim } }));
+}
+
+const { claim } = Astro.props;
+const sourceClaim = `/afirmaciones/${claim.slug}`;
+---
+<BaseLayout title={`${claim.prompt} — Aclaración`} description="Una aclaración breve con contexto, datos y límites de la evidencia.">
+  <article class="clarifier-page">
+    <a class="back-link" href="/">← Volver a las discusiones</a>
+    <header class="clarifier-hero">
+      <p class="eyebrow">Aclaración rápida · España</p>
+      <h1>{claim.prompt}</h1>
+      <p class="hero-answer">Esta frase mezcla varias preguntas. Aquí separamos lo que puede ser cierto, lo que muestran los datos y lo que todavía no permiten concluir.</p>
+    </header>
+
+    <section class="clarifier-section split-section">
+      <div><p class="eyebrow">1 · Qué se está afirmando</p><h2>No es una sola pregunta.</h2></div>
+      <div class="proposition-list">{claim.propositions.map((proposition, index) => <div><span>0{index + 1}</span><p>{proposition}</p></div>)}</div>
+    </section>
+
+    <section class="clarifier-section">
+      <div class="section-intro"><p class="eyebrow">2 · La evidencia decisiva</p><h2>Lo que sabemos<br /><em>hasta ahora.</em></h2><p>{claim.supports}</p></div>
+      <div class="evidence-grid">
+        <div class="evidence-card evidence-card-large"><span class="card-kicker">Dato principal</span><strong>{claim.visualLabel}</strong><div class="mock-chart" aria-label="Visualización conceptual de la evidencia"><i style="height:35%"></i><i style="height:52%"></i><i style="height:68%"></i><i style="height:84%"></i><i style="height:76%"></i></div><small>La visualización representa el tipo de comparación relevante. Consulta la investigación para las cifras, fechas y metodología completas.</small></div>
+        <div class="evidence-card"><span class="card-kicker">Lo que sí apoya</span><p>{claim.supports}</p><span class="evidence-strength">Evidencia directa</span></div>
+        <div class="evidence-card evidence-card-muted"><span class="card-kicker">Lo que no demuestra</span><p>{claim.limit}</p><span class="evidence-strength">Límite importante</span></div>
+      </div>
+    </section>
+
+    <section class="clarifier-section two-column-section">
+      <div><p class="eyebrow">3 · La preocupación real</p><h2>La experiencia puede ser válida aunque la explicación no esté demostrada.</h2><p>{claim.concern}</p></div>
+      <div class="question-card"><span class="card-kicker">La pregunta que aclara el debate</span><strong>{claim.question}</strong><p>Una buena pregunta concreta el lugar, el periodo, la población y la definición que necesitamos medir.</p></div>
+    </section>
+
+    <section class="clarifier-section reply-section">
+      <p class="eyebrow">4 · Una respuesta para compartir</p><h2>No hace falta ganar la discusión.</h2><div class="share-response"><p>“{claim.reply}”</p><button type="button" id="copy-response">Copiar respuesta</button></div><p id="copy-status" class="copy-status" aria-live="polite"></p>
+    </section>
+
+    <section class="clarifier-section uncertainty-section"><div><p class="eyebrow">5 · Lo que sigue abierto</p><h2>Qué podría cambiar<br /><em>esta conclusión.</em></h2></div><div><p>{claim.limit}</p><p class="future-evidence"><strong>Para afinarla harían falta:</strong> datos más específicos del territorio, una definición común y una comparación que mida el mismo fenómeno durante el mismo periodo.</p></div></section>
+
+    <footer class="clarifier-footer"><a href={sourceClaim}>Ver la investigación y todas las fuentes →</a><a href="/">Comprobar otra afirmación →</a></footer>
+  </article>
+</BaseLayout>
+<script is:inline>
+  const copyButton=document.querySelector('#copy-response');const copyStatus=document.querySelector('#copy-status');copyButton?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copyButton.parentElement?.querySelector('p')?.textContent?.replace(/[“”]/g,'')||'');copyButton.textContent='Respuesta copiada';if(copyStatus)copyStatus.textContent='Ya puedes pegarla en tu conversación.';}catch{if(copyStatus)copyStatus.textContent='No se pudo copiar automáticamente; selecciona el texto.';}});
+</script>
+<style>
+  .clarifier-page{max-width:1180px;margin:0 auto;padding:40px 24px 90px}.back-link{font:600 .68rem var(--mono);color:var(--muted)}.clarifier-hero{max-width:900px;padding:90px 0 80px}.clarifier-hero h1{font:400 clamp(3rem,7vw,7.5rem)/.86 var(--serif);letter-spacing:-.07em;margin:18px 0 28px}.hero-answer{font:1.35rem/1.35 var(--serif);max-width:680px}.clarifier-section{border-top:1px solid var(--line);padding:75px 0}.split-section,.two-column-section,.uncertainty-section{display:grid;grid-template-columns:1fr 1fr;gap:70px}.clarifier-section h2{font:400 clamp(2.4rem,4vw,4.8rem)/.9 var(--serif);letter-spacing:-.06em;margin:0 0 24px}.clarifier-section p{line-height:1.5}.proposition-list{border-top:2px solid var(--ink)}.proposition-list div{display:grid;grid-template-columns:45px 1fr;gap:15px;border-bottom:1px solid var(--line);padding:17px 0}.proposition-list span{font:600 .7rem var(--mono);color:var(--red)}.proposition-list p{margin:0;font:1.25rem/1.15 var(--serif)}.section-intro{max-width:560px;margin-bottom:35px}.section-intro>p:last-child{font-size:1.1rem}.evidence-grid{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:1px;background:var(--line)}.evidence-card{background:var(--paper);padding:25px;min-height:220px;display:flex;flex-direction:column}.evidence-card-large{grid-row:span 2}.card-kicker,.clarification-label{font:600 .63rem var(--mono);text-transform:uppercase;color:var(--red);display:block}.evidence-card strong{font:1.6rem/1 var(--serif);margin:20px 0}.evidence-card p{font:1.05rem/1.35 var(--serif);margin:20px 0 auto}.evidence-card small{color:var(--muted);line-height:1.4}.evidence-card-muted{background:var(--paper-deep)}.evidence-strength{font:600 .65rem var(--mono);text-transform:uppercase;margin-top:25px}.mock-chart{height:170px;display:flex;align-items:end;gap:12px;border-bottom:1px solid var(--ink);padding:20px 15px 0;margin:10px 0 18px}.mock-chart i{display:block;flex:1;background:var(--red);opacity:.78}.question-card{background:var(--yellow);padding:30px;align-self:start}.question-card strong{display:block;font:1.8rem/1 var(--serif);margin:20px 0}.reply-section{max-width:880px}.share-response{border:2px solid var(--ink);padding:28px;background:var(--paper-deep)}.share-response p{font:1.5rem/1.3 var(--serif);margin:0 0 24px}.share-response button{background:var(--ink);color:var(--paper);border:0;padding:13px 18px;font:600 .68rem var(--mono);cursor:pointer}.copy-status{color:var(--red);font:600 .7rem var(--mono)}.future-evidence{border-left:3px solid var(--yellow);padding-left:20px}.clarifier-footer{border-top:2px solid var(--ink);padding-top:20px;display:flex;justify-content:space-between;gap:20px;font:600 .7rem var(--mono)}.clarifier-footer a:first-child{color:var(--red)}@media(max-width:700px){.clarifier-page{padding:25px 20px 65px}.clarifier-hero{padding:65px 0}.clarifier-hero h1{font-size:3.5rem}.hero-answer{font-size:1.15rem}.split-section,.two-column-section,.uncertainty-section{grid-template-columns:1fr;gap:30px;padding:55px 0}.evidence-grid{grid-template-columns:1fr}.evidence-card-large{grid-row:auto}.evidence-card{min-height:0}.clarifier-footer{flex-direction:column}.proposition-list p{font-size:1.1rem}}
+</style>
