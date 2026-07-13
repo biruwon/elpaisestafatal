@@ -9,9 +9,8 @@ export function concernSources(concern:Concern):Source[]{
   return [...new Map(candidates.filter(Boolean).map(source=>[source.url,source])).values()];
 }
 
-export const editorialMetadata={
-  editorialRole:'Edición y síntesis: proyecto independiente y anónimo',
-  dataReviewRole:'Revisión de datos: comprobación interna contra fuentes primarias',
+export const projectMetadata={
+  contentNote:'Contenido generado y organizado con ayuda de IA a partir de fuentes públicas',
   funding:'Sin financiación externa',
   calculationMethod:'Fuentes originales, cálculos versionados y límites publicados',
   repository:'https://github.com/biruwon/elpaisestafatal',

@@ -1,6 +1,6 @@
 # Markdown content contract
 
-Markdown is the long-term editorial source of truth for new investigations and claims.
+Markdown is the long-term source of truth for new investigations and claims.
 
 Every record uses frontmatter with a unique `slug`, human-readable `title`, integer `order`, and explicit `status`. Published claims must additionally provide an assessment, review date, source references, evidence objects, limitations, geography and period. Claims are canonical records: a single claim may reference multiple topic slugs and related claims.
 
