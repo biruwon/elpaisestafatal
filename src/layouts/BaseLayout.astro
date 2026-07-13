@@ -1,7 +1,7 @@
 ---
-interface Props { title?: string; description?: string; image?: string; pageType?: 'website'|'article'; hideSecondaryLinks?: boolean }
+interface Props { title?: string; description?: string; image?: string; pageType?: 'website'|'article' }
 import { concerns } from '../data/concerns';
-const { title = 'El país está fatal. ¿Seguro?', description = `Comprueba afirmaciones sobre España con ${concerns.length} investigaciones, contexto y fuentes primarias.`, image='/cards/preocupacion-vivienda.png', pageType='website', hideSecondaryLinks = false } = Astro.props;
+const { title = 'El país está fatal. ¿Seguro?', description = `Comprueba afirmaciones sobre España con ${concerns.length} investigaciones, contexto y fuentes primarias.`, image='/cards/preocupacion-vivienda.png', pageType='website' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type': pageType === 'article' ? 'Article' : 'WebPage', name: title, description, url: canonical.toString(), image: socialImage.toString(), isPartOf: { '@type': 'WebSite', name: 'El país está fatal', url: Astro.site?.toString() ?? Astro.url.origin } });
@@ -38,9 +38,9 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/">Inicio</a><a href="/buscar">Buscar</a><a href="/afirmaciones">Afirmaciones</a><a href="/investigaciones">Investigaciones</a>{!hideSecondaryLinks && <a href="/acerca-de">Acerca de</a>}</nav></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a href="/">Inicio</a><a href="/buscar">Buscar</a><a href="/afirmaciones">Afirmaciones</a><a href="/investigaciones">Investigaciones</a></nav></header>
     <main id="contenido"><slot /></main>
-    <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente, anónimo y sin financiación externa.</p>{!hideSecondaryLinks && <div><a href="/acerca-de">Acerca de</a><a href="/metodologia">Metodología</a><a href="/fuentes">Fuentes</a><a href="/revisiones">Revisiones</a><a href="/privacidad">Privacidad</a><a href="/contacto">Corregir</a></div>}</footer>
+    <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente, anónimo y sin financiación externa.</p></footer>
     <script is:inline>
       document.addEventListener('click', async (event) => { const link = event.target.closest('a'); if (!link || link.textContent.trim() !== 'Copiar enlace') return; event.preventDefault(); try { await navigator.clipboard.writeText(location.href); link.textContent = 'Enlace copiado'; } catch { link.textContent = 'Selecciona el enlace en la barra del navegador'; } });
     </script>
