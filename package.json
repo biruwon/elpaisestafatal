@@ -10,6 +10,7 @@
     "check": "astro check",
     "audit:investigations": "node scripts/audit-investigations.mjs",
     "audit:roadmap": "node scripts/audit-roadmap.mjs",
+    "smoke:production": "node scripts/smoke-production.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",
