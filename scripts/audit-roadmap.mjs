@@ -24,8 +24,23 @@ for (const file of html) {
 
 const concernPages = html.filter((file) => file.includes('/preocupaciones/') && file.endsWith('/index.html'));
 const claimPages = html.filter((file) => file.includes('/afirmaciones/') && !file.endsWith('/afirmaciones/index.html') && file.endsWith('/index.html'));
+const verificationPages = html.filter((file) => file.includes('/verificaciones/') && !file.endsWith('/verificaciones/index.html') && file.endsWith('/index.html'));
+const clarifierPages = html.filter((file) => file.includes('/aclarar/') && file.endsWith('/index.html'));
 if (concernPages.length !== 14) failures.push(`expected 14 concern pages, found ${concernPages.length}`);
 if (claimPages.length !== 20) failures.push(`expected 20 affirmation pages, found ${claimPages.length}`);
+if (verificationPages.length !== 20) failures.push(`expected 20 verification pages, found ${verificationPages.length}`);
+if (clarifierPages.length !== 3) failures.push(`expected 3 clarifier pages, found ${clarifierPages.length}`);
+for (const file of clarifierPages) {
+  const source = await readFile(file, 'utf8');
+  const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');
+  if (!source.includes('noscript-notice')) failures.push(`${route}: missing no-JavaScript fallback`);
+  if (!source.includes('Fuentes') && !source.includes('fuentes')) failures.push(`${route}: missing source link/content`);
+}
+for (const file of verificationPages) {
+  const source = await readFile(file, 'utf8');
+  const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');
+  if (!source.includes('http-equiv="refresh"') && !source.includes('location.replace')) failures.push(`${route}: missing redirect fallback`);
+}
 const redirects = await readFile(new URL('../public/_redirects', import.meta.url), 'utf8');
 if (!redirects.includes('/verificaciones/* /afirmaciones/:splat 301')) failures.push('missing legacy verification redirect');
 if (!redirects.includes('/contacto /acerca-de#contacto 301')) failures.push('missing contact redirect');
