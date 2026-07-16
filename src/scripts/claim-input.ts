@@ -62,7 +62,20 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
     renderCard('published', original, primary, alternatives);
     return;
   }
-  renderCard(primary ? 'related' : 'loading', original, primary, alternatives, undefined, primary ? 'Estamos comprobando si esta relación es la más útil.' : '');
+  if (primary) {
+    renderCard('related', original, primary, alternatives, {
+      questions: ['¿Qué fecha, lugar o decisión concreta quieres comprobar?'],
+      limitation: 'Esta es la orientación más cercana que hemos encontrado; todavía no es una comprobación de esta frase exacta.',
+    }, 'Estamos comprobando si esta relación es la más útil.');
+    return;
+  }
+  renderCard('uncovered', original, undefined, [], {
+    questions: [
+      '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
+      '¿Qué fuente o publicación quieres que revisemos?',
+    ],
+    limitation: 'No tenemos una comprobación publicada de esta afirmación. Puedes concretarla para encontrar una orientación más útil.',
+  });
 };
 
 const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {
