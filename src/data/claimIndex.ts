@@ -89,7 +89,10 @@ export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit 
   if (!normaliseClaimText(value)) return [];
   return entries
     .map((entry) => scoreClaimIndexEntry(value, entry))
-    .filter((entry) => entry.score > 0)
+    // A shared word such as “España” or “país” is context, not a claim match.
+    // Keep weak candidates out of the UI so an unrelated published claim cannot
+    // be presented as guidance for an uncovered statement.
+    .filter((entry) => entry.score >= 24)
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, 'es'))
     .slice(0, limit);
 };
