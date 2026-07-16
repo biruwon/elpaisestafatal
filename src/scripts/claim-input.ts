@@ -1,130 +1,109 @@
 import { isStrongClaimMatch, normaliseClaimText, rankClaimIndex, type ClaimIndexEntry, type RankedClaimIndexEntry } from '../data/claimIndex';
 
-type ConversationClaim = {
-  slug: string;
-  prompt: string;
-  propositions: string[];
-  concern: string;
-  supports: string;
-  limit: string;
-  question: string;
-  reply: string;
-  visualLabel: string;
-};
-
-type ClassifierResponse = {
-  status?: 'match' | 'draft' | 'unknown' | 'unavailable';
-  claimSlug?: string;
-  topicSlug?: string;
-  confidence?: number;
-  draft?: { title?: string; summary?: string; questions?: string[]; limitation?: string };
+type SearchResponse = {
+  status?: 'published' | 'related' | 'uncovered' | 'unavailable';
+  input?: { original?: string; canonical?: string };
+  primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
+  alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
+  guidance?: { questions?: string[]; limitation?: string };
 };
 
 const readJson = <T>(id: string, fallback: T): T => {
   try {
     const element = document.querySelector(`#${id}`);
     return element ? JSON.parse(element.textContent || '') as T : fallback;
-  } catch {
-    return fallback;
-  }
+  } catch { return fallback; }
 };
 
 const escapeHtml = (value: string): string => value
-  .replace(/&/g, '&amp;')
-  .replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;')
-  .replace(/'/g, '&#039;');
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
-const conversationData = readJson<ConversationClaim[]>('conversation-mvp-data', []);
 const claimIndex = readJson<ClaimIndexEntry[]>('claim-index-data', []);
-const conversationSlugs = new Set(conversationData.map((claim) => claim.slug));
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLInputElement>('#conversation-input');
 const result = document.querySelector<HTMLElement>('#conversation-result');
-const mediaForm = document.querySelector<HTMLFormElement>('#local-media-form');
-const mediaInput = document.querySelector<HTMLInputElement>('#local-media-input');
+const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
+const advancedEnabled = catalogElement?.dataset.advanced === 'true';
 let activeRequest: AbortController | null = null;
-const responseCache = new Map<string, ClassifierResponse>();
+let requestVersion = 0;
+const responseCache = new Map<string, SearchResponse>();
 
-const claimHref = (slug: string): string => conversationSlugs.has(slug) ? `/aclarar/${slug}` : `/afirmaciones/${slug}`;
+const findEntry = (slug: string | undefined): ClaimIndexEntry | undefined => slug ? claimIndex.find((entry) => entry.slug === slug) : undefined;
 
-const suggestionMarkup = (entries: RankedClaimIndexEntry[]): string => entries.length
-  ? `<div class="claim-suggestions"><span class="clarification-label">Lo más cercano que podemos comprobar</span>${entries.slice(0, 4).map((entry) => `<a class="claim-suggestion" href="${escapeHtml(entry.href)}"><span>${entry.kind === 'topic' ? 'Tema' : 'Afirmación'}</span><strong>${escapeHtml(entry.title)}</strong></a>`).join('')}</div>`
-  : '<p class="quiet-note">Todavía no tenemos una página cercana para esta formulación.</p>';
+const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">Ver datos y fuentes <span aria-hidden="true">→</span></a>`;
 
-const renderDraft = (response: ClassifierResponse): void => {
-  if (!result || !response.draft) return;
-  const questions = response.draft.questions?.filter(Boolean).slice(0, 3) ?? [];
-  result.innerHTML = `<article class="conversation-empty draft-result"><span class="eyebrow">Borrador automático · todavía no es una verificación publicada</span><strong>${escapeHtml(response.draft.title || 'Una forma más concreta de plantearlo')}</strong><p>${escapeHtml(response.draft.summary || 'Esta formulación necesita una pregunta más concreta antes de poder contrastarse.')}</p>${questions.length ? `<div class="draft-questions"><span class="clarification-label">Preguntas que ayudan a comprobarlo</span><ul>${questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}<p class="draft-limit"><strong>Límite:</strong> ${escapeHtml(response.draft.limitation || 'Este borrador no sustituye una investigación con fuentes.')}</p></article>`;
-};
+const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
+  ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
+  : '';
 
-const renderImmediate = (ranked: RankedClaimIndexEntry[]): void => {
+const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
   if (!result) return;
-  result.innerHTML = `<div class="conversation-empty"><span class="eyebrow">No hay una coincidencia exacta</span><strong>No tenemos una comprobación publicada de esa frase tal como está formulada.</strong><p>Podemos acercarnos desde el tema o la afirmación más parecida, y comprobar si existe una respuesta útil.</p>${suggestionMarkup(ranked)}<p id="classifier-status" class="classifier-status" aria-live="polite">Buscando una respuesta relacionada…</p></div>`;
+  const labels = {
+    loading: 'Buscando una respuesta relacionada',
+    published: 'Comprobación publicada',
+    related: 'Tema relacionado',
+    uncovered: 'Todavía no cubierta',
+  };
+  const title = primary?.title || guidance?.questions?.[0] || 'Estamos intentando entender la afirmación';
+  const body = state === 'loading'
+    ? `<p>Estamos comparando tu formulación con las afirmaciones y temas disponibles.</p>`
+    : state === 'uncovered'
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}`
+      : `<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una relación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}`;
+  const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(primary.assessment)}</span>` : '';
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(title)}</h3>${body}${alternativeMarkup(alternatives)}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La primera orientación ya está disponible; afinando la coincidencia…</p>' : ''}</article>`;
 };
 
-const applyClassifierResponse = (response: ClassifierResponse): void => {
-  if (response.status === 'match') {
-    const claim = response.claimSlug && claimIndex.find((entry) => entry.kind === 'claim' && entry.slug === response.claimSlug);
-    const topic = response.topicSlug && claimIndex.find((entry) => entry.kind === 'topic' && entry.slug === response.topicSlug);
-    if (claim) {
-      window.location.href = claimHref(claim.slug);
-      return;
-    }
-    if (topic) {
-      window.location.href = topic.href;
-      return;
-    }
-  }
-  if (response.status === 'draft') {
-    renderDraft(response);
+const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]): void => {
+  const primary = ranked[0];
+  const alternatives = ranked.slice(1).map((entry) => entry);
+  if (primary && isStrongClaimMatch(primary)) {
+    renderCard('published', original, primary, alternatives);
     return;
   }
-  const status = document.querySelector<HTMLElement>('#classifier-status');
-  if (status) status.textContent = response.status === 'unavailable'
-    ? 'No hemos podido completar el análisis. Las sugerencias disponibles siguen siendo válidas.'
-    : 'No hemos encontrado una respuesta publicada para esa formulación. Las sugerencias anteriores son el punto de partida más cercano.';
+  renderCard(primary ? 'related' : 'loading', original, primary, alternatives, undefined, primary ? 'Estamos comprobando si esta relación es la más útil.' : '');
 };
 
-const classify = async (payload: FormData, cacheKey: string): Promise<void> => {
-  if (!result) return;
-  const cached = responseCache.get(cacheKey) || (() => {
-    try { return JSON.parse(sessionStorage.getItem(`claim-classification:${cacheKey}`) || 'null') as ClassifierResponse | null; } catch { return null; }
-  })();
-  if (cached) { applyClassifierResponse(cached); return; }
+const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {
+  const primary = findEntry(response.primary?.slug);
+  const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
+  if (response.status === 'published' && primary) {
+    renderCard('published', original, primary, alternatives, undefined, response.primary?.reason);
+    return;
+  }
+  if (response.status === 'related' && primary) {
+    renderCard('related', original, primary, alternatives, undefined, response.primary?.reason);
+    return;
+  }
+  if (response.status === 'uncovered') {
+    renderCard('uncovered', original, undefined, alternatives.length ? alternatives : fallback.slice(0, 2), response.guidance);
+    return;
+  }
+  renderDeterministic(original, fallback);
+};
 
+const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise<void> => {
+  if (!result || !advancedEnabled) return;
+  const version = ++requestVersion;
+  const cacheKey = normaliseClaimText(query);
+  const cached = responseCache.get(cacheKey) || (() => {
+    try { return JSON.parse(sessionStorage.getItem(`claim-classification:${cacheKey}`) || 'null') as SearchResponse | null; } catch { return null; }
+  })();
+  if (cached) { applyResponse(cached, query, ranked); return; }
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
-    const response = await fetch('/api/classify', { method: 'POST', body: payload, signal: activeRequest.signal });
-    const data = await response.json() as ClassifierResponse;
+    const response = await fetch(`/api/classify?text=${encodeURIComponent(query)}`, { method: 'POST', signal: activeRequest.signal });
+    const data = await response.json() as SearchResponse;
+    if (version !== requestVersion) return;
     responseCache.set(cacheKey, data);
-    try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Storage is optional. */ }
-    applyClassifierResponse(data);
+    try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }
+    applyResponse(data, query, ranked);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
-    const status = document.querySelector<HTMLElement>('#classifier-status');
-    if (status) status.textContent = 'No hemos podido completar el análisis. Las sugerencias disponibles siguen siendo válidas.';
+    if (version === requestVersion) renderDeterministic(query, ranked);
   }
-};
-
-const classifyText = (query: string, ranked: RankedClaimIndexEntry[]): void => {
-  const payload = new FormData();
-  payload.set('text', query);
-  payload.set('inputType', 'text');
-  payload.set('candidates', JSON.stringify(ranked.length ? ranked : claimIndex.slice(0, 20)));
-  void classify(payload, normaliseClaimText(query));
-};
-
-const classifyFile = (file: File): void => {
-  if (!result) return;
-  result.innerHTML = '<div class="conversation-empty"><span class="eyebrow">Archivo recibido</span><strong>Procesando el archivo…</strong><p>Estamos extrayendo la afirmación principal para buscar una respuesta relacionada.</p><p id="classifier-status" class="classifier-status" aria-live="polite">Esto puede tardar unos segundos.</p></div>';
-  const payload = new FormData();
-  payload.set('file', file);
-  payload.set('inputType', file.type.startsWith('image/') ? 'image' : 'audio');
-  payload.set('candidates', JSON.stringify(claimIndex.slice(0, 20)));
-  void classify(payload, `${file.name}:${file.size}:${file.lastModified}`);
 };
 
 form?.addEventListener('submit', (event) => {
@@ -132,30 +111,12 @@ form?.addEventListener('submit', (event) => {
   const query = input?.value.trim() || '';
   if (!query || !result) return;
   const ranked = rankClaimIndex(query, claimIndex);
-  const topClaim = ranked.find((entry) => entry.kind === 'claim');
-  if (isStrongClaimMatch(topClaim)) {
-    window.location.href = claimHref(topClaim!.slug);
-    return;
-  }
-  renderImmediate(ranked);
-  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  classifyText(query, ranked);
-});
-
-mediaForm?.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const file = mediaInput?.files?.[0];
-  if (file) classifyFile(file);
+  renderDeterministic(query, ranked);
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (ranked[0] && isStrongClaimMatch(ranked[0])) return;
+  void classify(query, ranked);
 });
 
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {
   if (input) { input.value = button.dataset.example || ''; form?.requestSubmit(); }
 }));
-
-document.addEventListener('click', async (event) => {
-  const target = event.target as HTMLElement;
-  const button = target.closest<HTMLButtonElement>('[data-copy]');
-  if (!button) return;
-  try { await navigator.clipboard.writeText(button.dataset.copy || ''); button.textContent = 'Respuesta copiada'; }
-  catch { button.textContent = 'Selecciona el texto para copiarlo'; }
-});

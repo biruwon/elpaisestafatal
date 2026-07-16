@@ -7,6 +7,9 @@ export type ClaimIndexEntry = {
   href: string;
   aliases: string[];
   keywords: string[];
+  assessment?: string;
+  answer?: string;
+  topic?: string;
 };
 
 export type RankedClaimIndexEntry = ClaimIndexEntry & {

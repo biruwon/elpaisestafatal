@@ -37,26 +37,15 @@ npm run clarify:local -- --audio /absolute/path/recording.m4a
 
 `{audio}` is replaced with the supplied file path. The resulting transcript is then passed through the same approved-claim classifier as text and links.
 
-## Endpoint and model
+## Endpoint and local models
 
-The CLI uses `http://localhost:11434/api/chat` by default. Set `OLLAMA_ENDPOINT` for a hosted Ollama API and `OLLAMA_MODEL` for another model. The browser-side optional classifier uses these build-time values and defaults to localhost:
+The browser always submits to the same-origin `/api/classify` endpoint. Provider configuration stays server-side and is never included in the built HTML.
 
-- `PUBLIC_OLLAMA_ENDPOINT`
-- `PUBLIC_OLLAMA_TEXT_MODEL`
-- `PUBLIC_OLLAMA_VISION_MODEL`
-
-### Browser CORS setup
-
-When using the deployed site, Ollama must explicitly allow its origin. On macOS, quit Ollama and start it with:
+The local development proxy keeps Ollama behind the same-origin `/api/classify` boundary. Set up the local models once:
 
 ```bash
-OLLAMA_ORIGINS='https://elpaisestafatal.es,http://localhost:4321,http://localhost:4322' ollama serve
+npm run ai:setup
+npm run dev:ai
 ```
 
-If using the Ollama macOS application, set the environment before opening it:
-
-```bash
-launchctl setenv OLLAMA_ORIGINS 'https://elpaisestafatal.es,http://localhost:4321,http://localhost:4322'
-```
-
-Then fully quit and reopen Ollama. A browser preflight returning `403` means this setting has not been applied. The browser sends the claim to the configured local endpoint; it is not uploaded to Cloudflare Pages.
+The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and does not run inference.
