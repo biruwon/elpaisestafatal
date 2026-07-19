@@ -93,4 +93,34 @@ const flattenIneTable = (payload, source) => {
   });
 };
 
-export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenIneTable(payload, source)).concat(flattenRows(payload, source));
+const asArray = (value) => Array.isArray(value) ? value : value ? [value] : [];
+
+// BOE's daily-summary API is a document index rather than a numeric dataset.
+// Keep each publication searchable with its exact title and direct document
+// URL; a document match is evidence of publication, not proof of its claims.
+const flattenBoeSummary = (payload, source) => {
+  const summary = payload?.data?.sumario;
+  if (!summary || !Array.isArray(summary.diario)) return [];
+  const period = summary.metadatos?.fecha_publicacion;
+  return summary.diario.flatMap((daily) => asArray(daily.seccion).flatMap((section) => asArray(section.departamento).flatMap((department) => asArray(department.epigrafe).flatMap((epigraph) => asArray(epigraph.item).map((item) => {
+    if (!item || typeof item !== 'object' || !item.identificador || !item.titulo) return null;
+    return {
+      id: `${source.id}-boe-${item.identificador}`,
+      kind: 'official_publication',
+      sourceId: source.id,
+      datasetId: source.title,
+      metric: String(item.titulo).trim(),
+      value: null,
+      period,
+      url: item.url_html || item.url_xml || item.url_pdf?.texto,
+      dimensions: {
+        identifier: item.identificador,
+        section: section.nombre,
+        department: department.nombre,
+        epigraph: epigraph.nombre,
+      },
+    };
+  }).filter(Boolean)))));
+};
+
+export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenBoeSummary(payload, source)).concat(flattenIneTable(payload, source)).concat(flattenRows(payload, source));

@@ -28,6 +28,7 @@ const recordText = (record) => [
   record.source?.title,
   ...(record.source?.aliases || []),
   record.source?.url,
+  record.url,
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
 ].join(' ');
@@ -39,18 +40,20 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     const available = new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
     return { record, score: matched.length / wanted.length, matched: matched.length };
-  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && typeof record.value === 'number' && Number.isFinite(record.value))
+  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || record.kind === 'official_publication'))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
     .map(({ record, score }) => ({
       id: record.id,
+      kind: record.kind,
       datasetId: record.datasetId,
       metric: record.metric,
       value: record.value,
       unit: record.unit,
       period: record.period,
+      url: record.url,
       dimensions: record.dimensions || {},
-      source: record.source ? { id: record.source.id, title: record.source.title || record.source.publisher || record.source.url, url: record.source.url, aliases: record.source.aliases || [] } : undefined,
+      source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, aliases: record.source.aliases || [] } : undefined,
       score,
     }));
 };

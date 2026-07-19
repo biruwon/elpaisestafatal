@@ -393,19 +393,23 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const provisionalBlocks = observations.length ? (() => {
     const grouped = observations.slice(0, 6);
+    const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+    const publications = grouped.filter((item) => item.kind === 'official_publication');
+    if (!numeric.length && publications.length) return [{ type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'La publicación demuestra que el documento existe, pero todavía hay que leer su contenido para comprobar la conclusión completa.'] }];
     const periods = grouped.filter((item) => item.period).map((item) => item.period);
-    const first = grouped[0];
+    const first = numeric[0];
     return [
       { type: 'key_number', evidenceId: first.id, label: first.metric || first.datasetId || 'Valor localizado', value: String(first.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
       ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: grouped.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: grouped.map((item) => item.id), points: ['Estos valores no demuestran por sí solos la conclusión de la afirmación.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto.'] },
     ];
   })() : [];
-  const warehouseSeries = observations.length >= 2 ? {
-    labels: observations.slice(0, 6).map((item) => String(item.period || item.id)),
-    values: observations.slice(0, 6).map((item) => Number(item.value)),
-    label: String(observations[0].metric || observations[0].datasetId || 'Dato localizado'),
-    unit: String(observations[0].unit || ''),
+  const numericObservations = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const warehouseSeries = numericObservations.length >= 2 ? {
+    labels: numericObservations.slice(0, 6).map((item) => String(item.period || item.id)),
+    values: numericObservations.slice(0, 6).map((item) => Number(item.value)),
+    label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
+    unit: String(numericObservations[0].unit || ''),
   } : undefined;
   const result = {
     schemaVersion: '1',
