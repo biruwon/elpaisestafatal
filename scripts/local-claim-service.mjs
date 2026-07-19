@@ -133,7 +133,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
 const compilerSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'retrievalHints', 'clarificationRequired'],
+  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired'],
   properties: {
     normalized: { type: 'string' },
     claimType: { type: 'string', enum: ['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed'] },
@@ -142,6 +142,7 @@ const compilerSchema = {
     numbers: { type: 'array', items: { type: 'string' } },
     geography: { type: ['string', 'null'] },
     period: { type: ['string', 'null'] },
+    population: { type: ['string', 'null'] },
     retrievalHints: { type: 'array', items: { type: 'string' } },
     clarificationRequired: { type: 'boolean' },
   },
@@ -160,6 +161,8 @@ const normalizeCompiler = (value, text) => {
     }))
     : [];
   if (!propositions.length) return fallbackCompiler(text);
+  const explicitPropositions = propositions.filter((item) => item.explicit);
+  const impliedPropositions = propositions.filter((item) => !item.explicit);
   return {
     normalized: typeof value.normalized === 'string' && value.normalized.trim() ? value.normalized.slice(0, 300) : text.slice(0, 300),
     claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed',
@@ -168,13 +171,16 @@ const normalizeCompiler = (value, text) => {
     numbers: Array.isArray(value.numbers) ? value.numbers.filter((item) => typeof item === 'string').slice(0, 12).map((item) => item.slice(0, 80)) : [],
     geography: typeof value.geography === 'string' ? value.geography.slice(0, 120) : null,
     period: typeof value.period === 'string' ? value.period.slice(0, 120) : null,
+    population: typeof value.population === 'string' ? value.population.slice(0, 120) : null,
+    explicitPropositions,
+    impliedPropositions,
     retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
     clarificationRequired: value.clarificationRequired === true,
   };
 };
 
 const compileClaim = async (text) => {
-  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
+  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
   try {
     const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 280, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 2500);
     const value = parseModelJson(response.message?.content);

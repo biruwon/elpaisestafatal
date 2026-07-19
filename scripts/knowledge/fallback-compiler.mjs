@@ -31,6 +31,21 @@ const entityAliases = [
 
 const regions = ['andalucia', 'aragon', 'asturias', 'baleares', 'canarias', 'cantabria', 'castilla la mancha', 'castilla y leon', 'cataluna', 'comunidad valenciana', 'extremadura', 'galicia', 'madrid', 'murcia', 'navarra', 'pais vasco', 'rioja', 'ceuta', 'melilla'];
 
+const populationAliases = [
+  ['personas inmigrantes o extranjeras', ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'nacido en el extranjero']],
+  ['personas residentes', ['residentes', 'poblacion', 'habitantes', 'personas que viven']],
+  ['hogares', ['hogar', 'hogares', 'familias']],
+  ['personas trabajadoras', ['trabajador', 'trabajadores', 'afiliados', 'ocupado', 'ocupados', 'empleados']],
+  ['personas desempleadas', ['parado', 'parados', 'desempleado', 'desempleados', 'personas sin empleo']],
+  ['personas beneficiarias', ['beneficiario', 'beneficiarios', 'beneficiaria', 'beneficiarias', 'perceptores', 'receptores de ayudas']],
+  ['personas condenadas', ['condenado', 'condenados', 'sentencia firme']],
+  ['personas detenidas o investigadas', ['detenido', 'detenidos', 'investigado', 'investigados']],
+  ['alumnado', ['alumno', 'alumnos', 'estudiante', 'estudiantes', 'escolar']],
+  ['pacientes', ['paciente', 'pacientes', 'personas en lista de espera']],
+  ['personas jóvenes', ['joven', 'jovenes', 'jóvenes', 'menor', 'menores']],
+  ['mujeres y hombres', ['mujeres', 'hombres', 'sexo']],
+];
+
 const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
@@ -62,6 +77,7 @@ export const deterministicFallbackCompiler = (text) => {
   const geography = normalized.includes('espana') || normalized.includes('nacional')
     ? 'España'
     : regions.find((region) => normalized.includes(region)) || null;
+  const population = populationAliases.find(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias)))?.[0] || null;
   const years = [...normalized.matchAll(/\b(19\d{2}|20\d{2})\b/g)].map((match) => match[1]);
   const period = years.length ? [...new Set(years)].join('–') : /hace\s+(\d+)\s+anos?/.exec(normalized)?.[0] || null;
   const numbers = [...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)).slice(0, 12);
@@ -70,6 +86,8 @@ export const deterministicFallbackCompiler = (text) => {
     ...(original ? [{ text: original, type: claimType, explicit: true }] : []),
     ...impliedFor(claimType, original),
   ];
+  const explicitPropositions = propositions.filter((item) => item.explicit);
+  const impliedPropositions = propositions.filter((item) => !item.explicit);
   return {
     normalized: original || 'Afirmación vacía',
     claimType,
@@ -78,6 +96,9 @@ export const deterministicFallbackCompiler = (text) => {
     numbers,
     geography,
     period,
+    population,
+    explicitPropositions,
+    impliedPropositions,
     retrievalHints,
     clarificationRequired: claimType === 'normative' || claimType === 'causal' || !original,
   };
