@@ -179,16 +179,21 @@ const readText = async (request) => {
   return String(form.get('text') || '').trim();
 };
 
-const readJson = async (request) => {
+const readResolveBody = async (request) => {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
   const body = Buffer.concat(chunks).toString('utf8');
+  if (request.headers['content-type']?.includes('multipart/form-data')) {
+    try {
+      const form = await new Request('http://local', { method: 'POST', headers: request.headers, body: Buffer.from(body) }).formData();
+      const file = form.get('file');
+      return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: file instanceof File };
+    } catch { return { text: '', inputType: 'text', hasFile: false }; }
+  }
   try {
     const value = JSON.parse(body);
-    return { text: String(value.text || '').trim(), inputType: String(value.inputType || 'text') };
-  } catch {
-    return { text: '', inputType: 'text' };
-  }
+    return { text: String(value.text || '').trim(), inputType: String(value.inputType || 'text'), hasFile: false };
+  } catch { return { text: '', inputType: 'text', hasFile: false }; }
 };
 
 const server = createServer(async (request, response) => {
@@ -203,8 +208,8 @@ const server = createServer(async (request, response) => {
         response.end(JSON.stringify(job || { status: 'unavailable' }));
         return;
       }
-      const body = await readJson(request);
-      const result = body.text ? startResolveJob(body.text) : { status: 'uncovered', relatedClaims: [] };
+      const body = await readResolveBody(request);
+      const result = body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.hasFile || body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;
