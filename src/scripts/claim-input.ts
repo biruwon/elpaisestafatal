@@ -12,6 +12,14 @@ type SearchResponse = {
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
 
+type ConversationVisual = {
+  slug: string;
+  visuals?: {
+    key?: { value: string; label: string; period: string };
+    comparison?: { labels: string[]; values: number[]; label: string; unit: string };
+  };
+};
+
 const readJson = <T>(id: string, fallback: T): T => {
   try {
     const element = document.querySelector(`#${id}`);
@@ -24,6 +32,7 @@ const escapeHtml = (value: string): string => value
   .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
 const claimIndex = readJson<ClaimIndexEntry[]>('claim-index-data', []);
+const conversationVisuals = readJson<ConversationVisual[]>('conversation-mvp-data', []);
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLInputElement>('#conversation-input');
 const result = document.querySelector<HTMLElement>('#conversation-result');
@@ -41,6 +50,15 @@ const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
   ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
   : '';
 
+const visualMarkup = (entry?: ClaimIndexEntry): string => {
+  if (!entry) return '';
+  const visual = conversationVisuals.find((item) => item.slug === entry.slug)?.visuals;
+  if (!visual?.key) return '';
+  const comparison = visual.comparison;
+  const max = comparison ? Math.max(...comparison.values, 1) : 1;
+  return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparison.labels.slice(0, 3).map((label, index) => `<div><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((comparison.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`).join('')}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
+};
+
 const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
   if (!result) return;
   const labels = {
@@ -54,7 +72,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered', or
     ? `<p>Estamos comparando tu formulación con las afirmaciones y temas disponibles.</p>`
     : state === 'uncovered'
       ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}`
-      : `<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una relación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}`;
+      : `${visualMarkup(primary)}<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una relación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}`;
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(primary.assessment)}</span>` : '';
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(title)}</h3>${body}${alternativeMarkup(alternatives)}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La primera orientación ya está disponible; afinando la coincidencia…</p>' : ''}</article>`;
 };
