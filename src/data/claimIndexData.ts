@@ -36,6 +36,11 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     assessment: claim.assessment,
     answer: claim.shareable,
     topic: claim.topic,
+    claimType: claim.claimType,
+    evidenceStrength: claim.evidenceStrength,
+    evidenceIds: claim.evidenceIds,
+    sourceRefs: claim.sourceRefs,
+    relatedSlugs: claim.relatedSlugs,
   })),
   ...concerns.map((concern) => ({
     kind: 'topic' as const,

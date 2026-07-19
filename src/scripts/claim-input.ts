@@ -1,4 +1,5 @@
 import { isStrongClaimMatch, normaliseClaimText, rankClaimIndex, type ClaimIndexEntry, type RankedClaimIndexEntry } from '../data/claimIndex';
+import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'uncovered' | 'unavailable';
@@ -58,18 +59,19 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered', or
 const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]): void => {
   const primary = ranked[0];
   const alternatives = ranked.slice(1).map((entry) => entry);
-  if (primary && isStrongClaimMatch(primary)) {
+  const coverage = classifyDeterministicCoverage(primary);
+  if (coverage.status === 'strong' && primary && isStrongClaimMatch(primary)) {
     renderCard('published', original, primary, alternatives);
     return;
   }
-  if (primary) {
+  if (coverage.status === 'qualified' && primary) {
     renderCard('related', original, primary, alternatives, {
       questions: ['¿Qué fecha, lugar o decisión concreta quieres comprobar?'],
       limitation: 'Esta es la orientación más cercana que hemos encontrado; todavía no es una comprobación de esta frase exacta.',
     }, 'Estamos comprobando si esta relación es la más útil.');
     return;
   }
-  renderCard('uncovered', original, undefined, [], {
+  renderCard('uncovered', original, undefined, alternatives, {
     questions: [
       '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
       '¿Qué fuente o publicación quieres que revisemos?',
