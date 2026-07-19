@@ -69,6 +69,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The durable local-origin contract is now checked in as a redacted tunnel template with deny-by-default ingress and endpoint validation; deployment-specific tunnel credentials and hostname remain runtime configuration.
 - The warehouse now supports a deterministic same-period country ranking handler, including contradictory handling for claims that Spain is highest or lowest; the result includes country-labelled visual data and the source feed.
 - Warehouse observations now carry matched terms and an evidence-fit band; weak token overlaps are excluded from provisional answers instead of being rendered as relevant data.
+- Warehouse retrieval now carries population-fit metadata and rejects mismatched denominators before provisional rendering; total-population observations remain explicitly contextual rather than direct group evidence.
 - File-only screenshot and audio submissions are accepted by the API, and extracted media text now re-enters the same warehouse and handler enrichment path as typed text and links.
 - The homepage now progressively displays approved popular query clusters from `/api/questions`, while the static popular-claim cards remain the offline fallback.
 - Query submissions now derive a deterministic sorted-term signature before entering D1, so punctuation, accents, stopwords, and word order do not create separate usage clusters; the original canonical wording remains the review/display text.

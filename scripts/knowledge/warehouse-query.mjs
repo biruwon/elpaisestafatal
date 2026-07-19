@@ -8,6 +8,35 @@ const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus',
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 export const warehouseEvidenceFit = (score) => score >= 0.67 ? 'direct' : score >= 0.5 ? 'qualified' : 'weak';
 
+const populationVocabulary = [
+  { aliases: ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'foreign', 'migrant', 'migrants', 'nacido en el extranjero'], terms: ['inmigr', 'extranj', 'foreign', 'migr', 'born abroad'] },
+  { aliases: ['residente', 'residentes', 'poblacion', 'habitantes', 'personas que viven', 'resident', 'population'], terms: ['resident', 'poblacion', 'habit', 'population'] },
+  { aliases: ['hogar', 'hogares', 'familia', 'familias', 'household'], terms: ['hogar', 'famil', 'household'] },
+  { aliases: ['trabajador', 'trabajadores', 'afiliados', 'ocupado', 'ocupados', 'empleado', 'empleados', 'worker', 'employment'], terms: ['trabaj', 'afiliad', 'ocupad', 'emplead', 'worker', 'employment', 'labour force'] },
+  { aliases: ['parado', 'parados', 'desempleado', 'desempleados', 'unemployed'], terms: ['parad', 'desemple', 'unemploy'] },
+  { aliases: ['beneficiario', 'beneficiarios', 'beneficiaria', 'beneficiarias', 'perceptor', 'perceptores', 'beneficiary', 'beneficiaries'], terms: ['benefici', 'perceptor', 'recipient'] },
+  { aliases: ['condenado', 'condenados', 'convicted'], terms: ['conden', 'convict'] },
+  { aliases: ['detenido', 'detenidos', 'investigado', 'investigados', 'arrested'], terms: ['deten', 'investig', 'arrest'] },
+  { aliases: ['alumno', 'alumnos', 'estudiante', 'estudiantes', 'alumnado', 'student', 'students'], terms: ['alumn', 'estudiant', 'student'] },
+  { aliases: ['paciente', 'pacientes', 'patient', 'patients'], terms: ['pacient', 'patient'] },
+  { aliases: ['joven', 'jovenes', 'jóvenes', 'menor', 'menores', 'youth'], terms: ['joven', 'menor', 'youth'] },
+  { aliases: ['mujer', 'mujeres', 'hombre', 'hombres', 'sex'], terms: ['mujer', 'hombre', 'female', 'male', 'sex'] },
+];
+
+const populationVocabularyFor = (value) => {
+  const normalized = normalise(value);
+  return populationVocabulary.find((entry) => entry.aliases.some((alias) => normalized.includes(normalise(alias)))) || null;
+};
+
+export const populationEvidenceFit = (requestedPopulation, record) => {
+  if (!requestedPopulation) return 'not_requested';
+  const requested = populationVocabularyFor(requestedPopulation);
+  if (!requested) return 'unknown';
+  const actual = normalise([record?.population, JSON.stringify(record?.dimensions || {}), JSON.stringify(record?.dimensionLabels || {})].filter(Boolean).join(' '));
+  if (!actual || /\b(total|all|todos|todas|general)\b/.test(actual)) return 'context';
+  return requested.terms.some((term) => actual.includes(normalise(term))) ? 'direct' : 'mismatch';
+};
+
 const readRecords = async () => {
   let files;
   try { files = (await readdir(join(root, 'records'))).filter((file) => file.endsWith('.json')); } catch { return []; }
@@ -63,6 +92,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       score,
       matchedTerms: matchedTokens,
       evidenceFit: warehouseEvidenceFit(score),
+      populationFit: 'not_requested',
     }));
 };
 
