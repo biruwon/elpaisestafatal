@@ -17,6 +17,7 @@ const similarity = (left, right) => {
   for (const token of a) if (b.has(token)) overlap += 1;
   return overlap / (a.size + b.size - overlap);
 };
+const harmWeight = (value) => /inmigr|delinc|crimen|violenc|salud|eleccion|corrup|ayuda|viviend/.test(normalise(value)) ? 1.5 : 1;
 for (const line of raw.split('\n')) {
   if (!line.trim()) continue;
   try {
@@ -41,6 +42,11 @@ for (const line of raw.split('\n')) {
   } catch { /* Ignore one malformed local record. */ }
 }
 
-const result = [...clusters.values()].sort((left, right) => right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
+const result = [...clusters.values()].map((cluster) => {
+  const unresolved = (cluster.statuses.uncovered || 0) + (cluster.statuses.draft || 0) + (cluster.statuses.partial || 0);
+  const unresolvedRate = cluster.count ? unresolved / cluster.count : 0;
+  const evidenceAvailability = cluster.sourceIds.length ? 1.2 : 1;
+  return { ...cluster, priorityScore: Math.round(cluster.count * unresolvedRate * evidenceAvailability * harmWeight(cluster.text) * 100) / 100 };
+}).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
 await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), clusters: result }, null, 2));
 console.log(`Knowledge-gap clusters written: ${result.length} clusters from ${raw.split('\n').filter(Boolean).length} records.`);
