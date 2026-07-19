@@ -49,6 +49,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Uncovered multi-term claims now have a bounded La Moncloa/BOE discovery fallback with progressive query narrowing, attributable document links, caching, freshness gates, and no-verdict rules; search hits remain provisional publication evidence rather than automatic fact checks.
 - La Moncloa discovery now carries a short, bounded relevant excerpt from the fetched official page into the provisional answer, with an explicit non-verdict label; the excerpt is rendered as evidence context rather than treated as a structured fact.
 - A bounded parser now recognizes official credit-transfer wording and renders amount, origin ministry, destination ministry, and purpose as a provisional money-flow component; it explicitly preserves the rule that a transfer does not prove a service cut or identify political staff.
+- Discovered official evidence is now persisted in the local derived cache by normalized multi-term signature, so equivalent phrasings reuse the same fetched evidence across resolver restarts without becoming published claims.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

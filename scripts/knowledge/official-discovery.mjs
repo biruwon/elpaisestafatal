@@ -1,7 +1,29 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 const searchEndpoint = 'https://www.boe.es/buscar/redirector.php';
 const moncloaRssEndpoint = 'https://www.lamoncloa.gob.es/Paginas/rss.aspx?tipo=16';
 const cacheTtlMs = 5 * 60 * 1000;
 const cache = new Map();
+const persistentCachePath = join(new URL('../../.local/', import.meta.url).pathname, 'official-discovery-cache.json');
+let persistentCachePromise;
+
+const loadPersistentCache = async () => {
+  if (persistentCachePromise) return persistentCachePromise;
+  persistentCachePromise = readFile(persistentCachePath, 'utf8').then((raw) => {
+    const saved = JSON.parse(raw);
+    for (const [key, item] of Object.entries(saved?.entries || {})) {
+      if (item && item.expiresAt > Date.now() && Array.isArray(item.results)) cache.set(key, item);
+    }
+  }).catch(() => { /* A missing or malformed derived cache is rebuilt from official sources. */ });
+  return persistentCachePromise;
+};
+
+const persistCache = async () => {
+  const entries = Object.fromEntries([...cache.entries()].slice(-100).map(([key, item]) => [key, item]));
+  await mkdir(new URL('../../.local/', import.meta.url).pathname, { recursive: true });
+  await writeFile(persistentCachePath, JSON.stringify({ version: 1, entries }));
+};
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'he', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
@@ -153,8 +175,17 @@ export const discoverOfficialDocuments = async (query, limit = 3) => {
   const hasEntity = wanted.some((token) => entityTerms.has(token));
   const hasNumber = /\b\d[\d.,%]*\b/.test(String(query));
   if (wanted.length < 3 && !hasEntity && !hasNumber) return [];
+  await loadPersistentCache();
+  const key = `official-v1:${cacheKey(query)}`;
+  const cached = cache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.results.slice(0, limit);
+  if (cached) cache.delete(key);
   const [moncloa, boe] = await Promise.all([discoverMoncloaDocuments(query, limit), discoverBoeDocuments(query, limit)]);
-  return [...moncloa, ...boe].sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
+  const results = [...moncloa, ...boe].sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
+  cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
+  while (cache.size > 100) cache.delete(cache.keys().next().value);
+  await persistCache().catch(() => { /* Derived caching must never block a response. */ });
+  return results;
 };
 
 export const discoveryObservation = (item) => {
