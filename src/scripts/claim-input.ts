@@ -122,12 +122,23 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
   ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
   : '';
 
-const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = []): void => {
+const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
   if (!result) return;
   const isDraft = !primary && Boolean(plan.sourceLinks?.length);
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Copiada'; } catch { button.textContent = 'No se ha podido copiar'; }
+  }));
+  result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
+    const feedback = button.closest<HTMLElement>('[data-feedback-request]');
+    const requestId = feedback?.dataset.feedbackRequest;
+    if (!requestId) return;
+    try {
+      await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ requestId, value: button.dataset.feedbackValue }) });
+      feedback.querySelectorAll('button').forEach((item) => { item.disabled = true; });
+      const label = feedback.querySelector('span');
+      if (label) label.textContent = 'Gracias por tu respuesta.';
+    } catch { /* Feedback must never interrupt the answer. */ }
   }));
 };
 
@@ -181,7 +192,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
   const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
   if (response.status === 'complete' && response.result && primary) {
-    renderStructuredPlan(original, response.result, primary, alternatives);
+    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
     return;
   }
   if (response.status === 'complete' && primary) {
@@ -189,7 +200,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     return;
   }
   if (response.status === 'draft' && response.result) {
-    renderStructuredPlan(original, response.result, primary, alternatives);
+    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
     return;
   }
   if (response.status === 'partial' && primary) {
