@@ -124,6 +124,35 @@ const classify = async (text) => {
   return result;
 };
 
+const requestId = (text) => digest(normalise(text)).slice(0, 24);
+
+const toResolveResult = (text, classified) => {
+  const relatedClaims = (classified.alternatives || []).map((item) => ({
+    kind: item.kind,
+    slug: item.slug,
+    title: item.title,
+    href: item.href,
+    confidence: item.confidence,
+  }));
+  const primary = classified.primary;
+  if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
+  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : 'uncovered';
+  const result = {
+    schemaVersion: '1',
+    headline: primary?.title || 'Todavía no tenemos una comprobación publicada para esta afirmación.',
+    summary: primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.',
+    coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
+    claimType: 'mixed',
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [] }, { type: 'conversation_reply', text: 'Puedes concretar el periodo, lugar o fuente para comprobar mejor esta afirmación.' }] : [{ type: 'cannot_conclude', evidenceIds: [], points: classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?'] }],
+    clarificationQuestion: classified.guidance?.questions?.[0],
+    limitation: classified.guidance?.limitation,
+    evidenceIds: [],
+    sourceIds: [],
+    knowledgeVersion: 'legacy-index',
+  };
+  return { status, requestId: requestId(text), result, relatedClaims };
+};
+
 const readText = async (request) => {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
@@ -133,10 +162,29 @@ const readText = async (request) => {
   return String(form.get('text') || '').trim();
 };
 
+const readJson = async (request) => {
+  const chunks = [];
+  for await (const chunk of request) chunks.push(chunk);
+  const body = Buffer.concat(chunks).toString('utf8');
+  try {
+    const value = JSON.parse(body);
+    return { text: String(value.text || '').trim(), inputType: String(value.inputType || 'text') };
+  } catch {
+    return { text: '', inputType: 'text' };
+  }
+};
+
 const server = createServer(async (request, response) => {
-  if (!request.url?.startsWith('/api/classify')) { response.writeHead(404); response.end(); return; }
+  if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }
   try {
     const url = new URL(request.url, 'http://127.0.0.1');
+    if (request.url.startsWith('/v1/resolve')) {
+      const body = await readJson(request);
+      const result = body.text ? toResolveResult(body.text, await classify(body.text)) : { status: 'uncovered', relatedClaims: [] };
+      response.writeHead(body.text ? 200 : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+      response.end(JSON.stringify(result));
+      return;
+    }
     const text = url.searchParams.get('text')?.trim() || await readText(request);
     const result = text ? await classify(text) : { status: 'unavailable' };
     response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
