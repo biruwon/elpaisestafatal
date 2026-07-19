@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { queryPostgresWarehouse, postgresEnabled } from './postgres-warehouse.mjs';
+import { sourceFreshness } from './source-freshness.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -93,6 +94,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       matchedTerms: matchedTokens,
       evidenceFit: warehouseEvidenceFit(score),
       populationFit: 'not_requested',
+      freshness: sourceFreshness(record.source),
     }));
 };
 

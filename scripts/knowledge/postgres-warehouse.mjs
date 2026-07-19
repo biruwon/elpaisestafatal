@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import pg from 'pg';
+import { sourceFreshness } from './source-freshness.mjs';
 
 const { Pool } = pg;
 const connectionString = process.env.WAREHOUSE_DATABASE_URL || '';
@@ -98,7 +99,7 @@ export const queryPostgresWarehouse = async (query, limit = 12) => {
       SELECT o.id, o.kind, o.metric, o.metric_id, o.value, o.unit, o.period, o.population, o.url,
              o.dimensions_json, o.dimension_labels_json, o.search_text,
              d.title AS dataset_id, s.id AS source_id, s.title AS source_title,
-             s.publisher AS source_publisher, s.url AS source_url, s.aliases_json,
+             s.publisher AS source_publisher, s.url AS source_url, s.aliases_json, s.retrieved_at AS source_retrieved_at,
              (${matchedExpression})::float / $${wanted.length + 1}::float AS score
       FROM observations o
       JOIN datasets d ON d.id = o.dataset_id
@@ -126,6 +127,7 @@ export const queryPostgresWarehouse = async (query, limit = 12) => {
       score: Number(row.score),
       matchedTerms: wanted.filter((token) => row.search_text.includes(token)),
       evidenceFit: row.score >= 0.67 ? 'direct' : 'qualified',
+      freshness: sourceFreshness({ retrievedAt: row.source_retrieved_at }),
     }));
   });
 };

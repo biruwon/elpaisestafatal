@@ -50,6 +50,7 @@ jobs:
           npm run knowledge:fallback-compiler
           npm run knowledge:discovery
           npm run knowledge:connectors
+          npm run knowledge:freshness
           npm run knowledge:warehouse
           npm run knowledge:warehouse:query
           npm run knowledge:answer-plan

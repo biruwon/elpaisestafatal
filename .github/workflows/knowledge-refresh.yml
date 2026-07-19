@@ -34,6 +34,7 @@ jobs:
       - name: Validate the derived warehouse
         run: |
           npm run knowledge:warehouse
+          npm run knowledge:freshness
           npm run knowledge:warehouse:sql
 
       - name: Upload refresh snapshot

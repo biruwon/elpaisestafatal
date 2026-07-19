@@ -351,6 +351,7 @@ const findWarehouseEvidence = async (query, compiler) => {
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
   const candidates = (await findWarehouseObservations(query, 100)).filter((item) => {
     if (item.evidenceFit === 'weak') return false;
+    if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (item.kind === 'official_publication' && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
     if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term))) return false;
