@@ -35,10 +35,17 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const inputType = typeof body.inputType === 'string' ? body.inputType.slice(0, 20) : 'text';
   const status = typeof body.status === 'string' ? body.status.slice(0, 30) : 'received';
   try {
-    await env.DB.prepare(`INSERT OR IGNORE INTO resolve_requests (id, normalized_text, input_type, status, created_at) VALUES (?, ?, ?, ?, ?)`)
-      .bind(id, normalized, inputType, status, now).run();
+    await env.DB.prepare(`INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`)
+      .bind(id, normalized, normalized, inputType, status, now).run();
+    await env.DB.prepare(`UPDATE resolve_requests SET status = ?, canonical_signature = ? WHERE id = ?`)
+      .bind(status, normalized, id).run();
+    const clusterId = `cluster-${id}`;
     await env.DB.prepare(`INSERT INTO query_clusters (id, canonical_text, canonical_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, 1, ?, ?) ON CONFLICT(canonical_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = excluded.coverage_status`)
-      .bind(`cluster-${id}`, normalized, normalized, now, status === 'complete' ? 'covered' : status).run();
+      .bind(clusterId, normalized, normalized, now, status === 'complete' ? 'covered' : status).run();
+    const cluster = await env.DB.prepare(`SELECT id FROM query_clusters WHERE canonical_signature = ? LIMIT 1`).bind(normalized).all<{ id: string }>();
+    const resolvedClusterId = cluster.results[0]?.id || clusterId;
+    await env.DB.prepare(`INSERT OR IGNORE INTO query_cluster_members (request_id, cluster_id) VALUES (?, ?)`)
+      .bind(id, resolvedClusterId).run();
     return json({ status: 'accepted', requestId: id }, 202);
   } catch {
     return json({ status: 'unavailable' }, 503);

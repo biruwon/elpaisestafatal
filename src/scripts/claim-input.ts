@@ -46,7 +46,7 @@ let requestVersion = 0;
 const responseCache = new Map<string, SearchResponse>();
 
 const recordUncoveredQuestion = (text: string, response: SearchResponse): void => {
-  if (response.status !== 'uncovered' && response.status !== 'partial') return;
+  if (response.status !== 'uncovered' && response.status !== 'partial' && response.status !== 'draft') return;
   void fetch('/api/questions', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
