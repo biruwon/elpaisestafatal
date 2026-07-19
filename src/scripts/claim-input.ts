@@ -36,6 +36,7 @@ const claimIndex = readJson<ClaimIndexEntry[]>('claim-index-data', []);
 const conversationVisuals = readJson<ConversationVisual[]>('conversation-mvp-data', []);
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLInputElement>('#conversation-input');
+const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
 const result = document.querySelector<HTMLElement>('#conversation-result');
 const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
 const advancedEnabled = catalogElement?.dataset.advanced === 'true';
@@ -182,18 +183,20 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   renderDeterministic(original, fallback);
 };
 
-const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise<void> => {
+const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: File): Promise<void> => {
   if (!result || !advancedEnabled) return;
   const version = ++requestVersion;
   const cacheKey = normaliseClaimText(query);
-  const cached = responseCache.get(cacheKey) || (() => {
+  const cached = !file && cacheKey ? responseCache.get(cacheKey) || (() => {
     try { return JSON.parse(sessionStorage.getItem(`claim-classification:${cacheKey}`) || 'null') as SearchResponse | null; } catch { return null; }
-  })();
+  })() : null;
   if (cached) { applyResponse(cached, query, ranked); return; }
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
-    const response = await fetch('/api/resolve', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: query, inputType: 'text' }), signal: activeRequest.signal });
+    const inputType = file?.type.startsWith('audio/') ? 'audio' : file ? 'image' : 'text';
+    const requestBody = file ? (() => { const body = new FormData(); body.set('text', query); body.set('inputType', inputType); body.set('file', file); return body; })() : JSON.stringify({ text: query, inputType });
+    const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const pendingRequestId = data.requestId;
@@ -208,9 +211,11 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise
       }
     }
     if (version !== requestVersion) return;
-    responseCache.set(cacheKey, data);
-    try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }
-    recordUncoveredQuestion(query, data);
+    if (!file && cacheKey) {
+      responseCache.set(cacheKey, data);
+      try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }
+      recordUncoveredQuestion(query, data);
+    }
     applyResponse(data, query, ranked);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
@@ -221,12 +226,14 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise
 form?.addEventListener('submit', (event) => {
   event.preventDefault();
   const query = input?.value.trim() || '';
-  if (!query || !result) return;
-  const ranked = rankClaimIndex(query, claimIndex);
-  renderDeterministic(query, ranked);
+  const file = fileInput?.files?.[0];
+  if ((!query && !file) || !result) return;
+  const ranked = query ? rankClaimIndex(query, claimIndex) : [];
+  if (query) renderDeterministic(query, ranked);
+  else renderCard('loading', file?.name || 'Archivo enviado');
   result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  if (ranked[0] && isStrongClaimMatch(ranked[0])) return;
-  void classify(query, ranked);
+  if (ranked[0] && isStrongClaimMatch(ranked[0]) && !file) return;
+  void classify(query, ranked, file);
 });
 
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {
