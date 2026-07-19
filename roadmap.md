@@ -69,6 +69,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Popular unresolved query clusters now produce a review-only materialization queue with suggested slugs, counts, priority, source references, and required review actions. The queue cannot publish directly: evidence must first be promoted into reviewed Git records and pass the existing relation/build gates.
 - The browser now preserves its deterministic result while dynamic analysis is pending, timed out, cancelled, or unavailable; completed structured results can still upgrade it automatically, but users are no longer left with a generic pending/unavailable replacement.
 - Added a provider-neutral `/api/health` Pages Function and expanded the local health contract so monitoring can distinguish static/deterministic availability from optional dynamic availability without exposing origin or model details.
+- The local health contract now reports provider-neutral queue depth, completed/unavailable counts, cache hit rate, p95 latency, and status counts; Pages health forwards only those safe operational fields for monitoring.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

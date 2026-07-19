@@ -38,6 +38,7 @@ const maxCacheEntries = 1000;
 const maxResolveJobs = 500;
 const answerCache = new Map();
 const resolveJobs = new Map();
+const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, latencies: [], statusCounts: {} };
 const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
@@ -60,6 +61,21 @@ const pruneRuntimeState = () => {
   while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
 };
 setInterval(pruneRuntimeState, 60 * 1000).unref();
+
+const recordCompletion = (startedAt, status) => {
+  const latency = Math.max(0, Date.now() - startedAt);
+  telemetry.completed += 1;
+  if (status === 'unavailable') telemetry.unavailable += 1;
+  telemetry.statusCounts[status] = (telemetry.statusCounts[status] || 0) + 1;
+  telemetry.latencies.push(latency);
+  if (telemetry.latencies.length > 200) telemetry.latencies.shift();
+};
+
+const percentile = (values, fraction) => {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
+};
 
 const recordKnowledgeGap = async (text, result, inputType = 'text') => {
   if (!['uncovered', 'draft', 'partial'].includes(result.status)) return;
@@ -493,8 +509,9 @@ const rerank = async (text, candidates, compiled) => {
 const classify = async (text) => {
   const key = normalise(text);
   const cached = answerCache.get(key);
-  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  if (cached && cached.expiresAt > Date.now()) { telemetry.cacheHits += 1; return cached.value; }
   if (cached) answerCache.delete(key);
+  telemetry.cacheMisses += 1;
   const index = await getIndex();
   const deterministicCompiler = fallbackCompiler(text);
   const deterministicHandler = handlerForInput(deterministicCompiler, deterministicCompiler.claimType);
@@ -546,14 +563,18 @@ const startResolveJob = (text) => {
   const existing = resolveJobs.get(id);
   if (existing) return existing;
   pruneRuntimeState();
+  telemetry.received += 1;
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
     const completed = { ...await enrichResolve(text, classified, undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
+    recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed);
   }).catch(() => {
-    resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() });
+    const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() };
+    resolveJobs.set(id, completed);
+    recordCompletion(job.createdAt, completed.status);
   });
   return job;
 };
@@ -563,6 +584,7 @@ const startMediaResolveJob = (text, inputType, media) => {
   const existing = resolveJobs.get(id);
   if (existing) return existing;
   pruneRuntimeState();
+  telemetry.received += 1;
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
@@ -572,8 +594,9 @@ const startMediaResolveJob = (text, inputType, media) => {
     const combined = [text, extracted].filter(Boolean).join('\n\n');
     const completed = { ...await enrichResolve(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
+    recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(combined, completed, inputType);
-  })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
+  })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }; resolveJobs.set(id, completed); recordCompletion(job.createdAt, completed.status); });
   return job;
 };
 
@@ -582,14 +605,17 @@ const startUrlResolveJob = (url) => {
   const existing = resolveJobs.get(id);
   if (existing) return existing;
   pruneRuntimeState();
+  telemetry.received += 1;
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
     const extracted = await extractPageText(url);
     if (!extracted) throw new Error('No source text extracted');
     const source = { id: `url-${digest(url).slice(0, 20)}`, title: `Fuente oficial: ${new URL(url).hostname}`, url };
-    resolveJobs.set(id, { ...await enrichResolve(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() });
-  })().catch((error) => { console.error('Link extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
+    const completed = { ...await enrichResolve(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() };
+    resolveJobs.set(id, completed);
+    recordCompletion(job.createdAt, completed.status);
+  })().catch((error) => { console.error('Link extraction failed:', error instanceof Error ? error.message : error); const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }; resolveJobs.set(id, completed); recordCompletion(job.createdAt, completed.status); });
   return job;
 };
 
@@ -840,7 +866,8 @@ const readResolveBody = async (request) => {
 const server = createServer(async (request, response) => {
   if (request.url === '/healthz' && request.method === 'GET') {
     response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil }));
+    const totalLookups = telemetry.cacheHits + telemetry.cacheMisses;
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }
