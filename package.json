@@ -18,6 +18,7 @@
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",
     "backup:operations": "node scripts/backup-operations.mjs",
     "backup:validate": "node scripts/validate-backup-config.mjs",
+    "origin:validate": "node scripts/validate-local-origin.mjs",
     "deploy:pages": "npm run build && npx wrangler pages deploy dist --project-name elpaisestafatal",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "validate:content": "node scripts/validate-content.mjs",

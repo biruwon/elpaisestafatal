@@ -37,6 +37,9 @@ jobs:
       - name: Validate backup contract
         run: npm run backup:validate
 
+      - name: Validate local-origin contract
+        run: npm run origin:validate
+
       - name: Validate claim and knowledge contracts
         run: |
           npm run validate:content

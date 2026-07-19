@@ -43,6 +43,10 @@ The browser always submits to the same-origin `/api/resolve` endpoint. Provider 
 
 For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TOKEN` in the Pages Function environment and the local resolver environment. The token is optional for a loopback-only development setup.
 
+### Durable local origin
+
+For production local inference, create a named tunnel with an API token that has `Account → Cloudflare Tunnel → Edit`, copy `config/cloudflared.example.yml` to the machine's `~/.cloudflared/config.yml`, replace its placeholders locally, and point the Pages secret `LOCAL_CLASSIFIER_ENDPOINT` at the HTTPS hostname. Keep the resolver bound to `127.0.0.1:8789`; the tunnel template has a deny-by-default fallback. Run `npm run origin:validate` before deployment. Temporary account-less tunnels are suitable only for connectivity tests, not production uptime.
+
 The local development proxy keeps the local inference service behind the same-origin `/api/resolve` boundary. Set up the local models once:
 
 ```bash

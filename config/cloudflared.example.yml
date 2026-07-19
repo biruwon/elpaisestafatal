@@ -1,0 +1,10 @@
+# Copy to ~/.cloudflared/config.yml after creating a named tunnel.
+# Replace the placeholders locally; never commit credentials or the real
+# hostname. The origin stays loopback-only on the machine running Ollama.
+tunnel: <TUNNEL_UUID>
+credentials-file: /Users/<USER>/.cloudflared/<TUNNEL_UUID>.json
+
+ingress:
+  - hostname: <CLASSIFIER_ORIGIN_HOSTNAME>
+    service: http://127.0.0.1:8789
+  - service: http_status:404
