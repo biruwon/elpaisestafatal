@@ -125,19 +125,22 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   }));
 };
 
-const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
+const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
   if (!result) return;
   const labels = {
     loading: 'Buscando una respuesta relacionada',
     published: 'Comprobación publicada',
     related: 'Tema relacionado',
     uncovered: 'Todavía no cubierta',
+    unavailable: 'Orientación rápida disponible',
   };
   const title = primary?.title || guidance?.questions?.[0] || 'Estamos intentando entender la afirmación';
   const body = state === 'loading'
     ? `<p>Estamos comparando tu formulación con las afirmaciones y temas disponibles.</p>`
     : state === 'uncovered'
       ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}`
+      : state === 'unavailable'
+        ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : `${visualMarkup(primary)}<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una relación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}`;
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(primary.assessment)}</span>` : '';
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(title)}</h3>${body}${alternativeMarkup(alternatives)}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La primera orientación ya está disponible; afinando la coincidencia…</p>' : ''}</article>`;
@@ -235,6 +238,12 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       }
     }
     if (version !== requestVersion) return;
+    if (data.status === 'processing') {
+      renderCard('unavailable', query, undefined, ranked.slice(0, 2), {
+        limitation: 'La comprobación automática está tardando más de lo previsto. La orientación rápida no se ha perdido; puedes consultar una relación cercana o volver a intentarlo.',
+      });
+      return;
+    }
     if (!file && cacheKey) {
       responseCache.set(cacheKey, data);
       try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }
@@ -249,6 +258,9 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
 
 form?.addEventListener('submit', (event) => {
   event.preventDefault();
+  requestVersion += 1;
+  activeRequest?.abort();
+  activeRequest = null;
   const query = input?.value.trim() || '';
   const file = fileInput?.files?.[0];
   if ((!query && !file) || !result) return;

@@ -19,6 +19,7 @@ const whisperCommand = process.env.WHISPER_COMMAND || '';
 const whisperArgs = (() => {
   try { return process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
 })();
+const allowedInferenceHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
 const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const indexPath = join(root, '.local/claim-semantic-index.json');
@@ -64,7 +65,7 @@ const recordKnowledgeGap = async (text, result, inputType = 'text') => {
 
 const checkLocalEndpoint = () => {
   const host = new URL(endpoint).hostname;
-  if (!['127.0.0.1', 'localhost', '::1'].includes(host)) throw new Error('Inference endpoint is not local');
+  if (!allowedInferenceHosts.has(host)) throw new Error('Inference endpoint is not local');
 };
 
 const ollama = async (path, body, timeout = 5000) => {
@@ -454,6 +455,11 @@ const readResolveBody = async (request) => {
 };
 
 const server = createServer(async (request, response) => {
+  if (request.url === '/healthz' && request.method === 'GET') {
+    response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+    response.end(JSON.stringify({ status: 'ok' }));
+    return;
+  }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }
   try {
     if (classifierToken && request.headers.authorization !== `Bearer ${classifierToken}`) { response.writeHead(401, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable' })); return; }
