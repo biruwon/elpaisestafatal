@@ -27,6 +27,7 @@ const recordText = (record) => [
   record.source?.publisher,
   record.source?.url,
   JSON.stringify(record.dimensions || {}),
+  JSON.stringify(record.dimensionLabels || {}),
 ].join(' ');
 
 export const rankWarehouseObservations = (query, records, limit = 12) => {

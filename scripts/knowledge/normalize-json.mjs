@@ -21,6 +21,11 @@ const unitLabel = (payload, coordinate, dimensions) => {
   return unitDimension?.category?.label?.[code] || code || payload.unit;
 };
 
+const dimensionLabels = (payload, coordinate, dimensions) => Object.fromEntries(coordinate.map((value, index) => {
+  const dimension = payload.dimension?.[dimensions[index].id];
+  return [dimensions[index].id, dimension?.category?.label?.[value] || value];
+}));
+
 const flattenJsonStat = (payload, source) => {
   if (!payload || typeof payload !== 'object' || !Array.isArray(payload.id) || !Array.isArray(payload.size) || !payload.dimension || !('value' in payload)) return [];
   const dimensions = payload.id.map((id) => ({ id, values: dimensionValues(payload.dimension[id]) }));
@@ -32,6 +37,7 @@ const flattenJsonStat = (payload, source) => {
     datasetId: payload.label || payload.id.join('_'),
     period: coordinate[dimensions.findIndex(({ id }) => ['time', 'period', 'year'].includes(id.toLowerCase()))] || undefined,
     dimensions: Object.fromEntries(coordinate.map((value, index) => [dimensions[index].id, value])),
+    dimensionLabels: dimensionLabels(payload, coordinate, dimensions),
     value: valueAt(payload.value, position),
     unit: unitLabel(payload, coordinate, dimensions),
   }));
