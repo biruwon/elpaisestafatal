@@ -7,6 +7,20 @@ const dimensionValues = (dimension) => {
   return Object.keys(dimension?.category?.label || {});
 };
 
+const valueAt = (value, position) => {
+  if (Array.isArray(value)) return value[position] ?? null;
+  if (value && typeof value === 'object') return value[String(position)] ?? null;
+  return value ?? null;
+};
+
+const unitLabel = (payload, coordinate, dimensions) => {
+  const unitIndex = dimensions.findIndex(({ id }) => id.toLowerCase() === 'unit');
+  if (unitIndex < 0) return payload.unit;
+  const unitDimension = payload.dimension?.[dimensions[unitIndex].id];
+  const code = coordinate[unitIndex];
+  return unitDimension?.category?.label?.[code] || code || payload.unit;
+};
+
 const flattenJsonStat = (payload, source) => {
   if (!payload || typeof payload !== 'object' || !Array.isArray(payload.id) || !Array.isArray(payload.size) || !payload.dimension || !('value' in payload)) return [];
   const dimensions = payload.id.map((id) => ({ id, values: dimensionValues(payload.dimension[id]) }));
@@ -18,8 +32,8 @@ const flattenJsonStat = (payload, source) => {
     datasetId: payload.label || payload.id.join('_'),
     period: coordinate[dimensions.findIndex(({ id }) => ['time', 'period', 'year'].includes(id.toLowerCase()))] || undefined,
     dimensions: Object.fromEntries(coordinate.map((value, index) => [dimensions[index].id, value])),
-    value: Array.isArray(payload.value) ? payload.value[position] ?? null : payload.value,
-    unit: payload.unit || payload.dimension.unit?.category?.label?.[payload.unit] || undefined,
+    value: valueAt(payload.value, position),
+    unit: unitLabel(payload, coordinate, dimensions),
   }));
 };
 

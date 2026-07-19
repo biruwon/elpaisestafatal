@@ -2,10 +2,25 @@ interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: str
 interface Context { request: Request; env: Env }
 type InputType = 'text' | 'image' | 'audio' | 'url';
 
+const requestWindows = new Map<string, { startedAt: number; count: number }>();
+const windowMs = 60_000;
+const maxRequestsPerWindow = 30;
+
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
   headers: { 'Cache-Control': 'no-store' },
 });
+
+const clientKey = (request: Request): string => request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
+const allowRequest = (request: Request): boolean => {
+  const key = clientKey(request);
+  const now = Date.now();
+  const current = requestWindows.get(key);
+  if (!current || now - current.startedAt >= windowMs) { requestWindows.set(key, { startedAt: now, count: 1 }); return true; }
+  if (current.count >= maxRequestsPerWindow) return false;
+  current.count += 1;
+  return true;
+};
 
 const requestBody = async (request: Request): Promise<{ text: string; inputType: InputType; file?: File }> => {
   const contentType = request.headers.get('content-type') || '';
@@ -24,6 +39,9 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
 };
 
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
+  if (!allowRequest(request)) return json({ status: 'unavailable', relatedClaims: [] }, 429);
+  const contentLength = Number(request.headers.get('content-length') || 0);
+  if (contentLength > 9 * 1024 * 1024) return json({ status: 'unavailable', relatedClaims: [] }, 413);
   let body: { text: string; inputType: InputType; file?: File };
   try { body = await requestBody(request); } catch { return json({ status: 'unavailable', relatedClaims: [] }, 400); }
   if ((!body.text && !body.file) || body.text.length > 12000) return json({ status: 'uncovered', relatedClaims: [] }, 400);

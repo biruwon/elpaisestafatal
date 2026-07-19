@@ -83,6 +83,7 @@ export type AnswerPlan = {
   sourceIds: string[];
   sourceLinks?: Array<{ id: string; title: string; url: string }>;
   knowledgeVersion: string;
+  warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
 };
 
 export type ResolveResult = {

@@ -1,0 +1,11 @@
+{
+  "boe": [
+    "https://www.boe.es/datosabiertos/api/boe/sumario/{yesterday}"
+  ],
+  "ine": [
+    "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50902?nult=12"
+  ],
+  "eurostat": [
+    "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015"
+  ]
+}

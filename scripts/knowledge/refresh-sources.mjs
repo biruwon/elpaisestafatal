@@ -15,11 +15,18 @@ try { config = JSON.parse(await readFile(configPath, 'utf8')); } catch {
 }
 
 const byId = new Map(sourceRegistry.map((source) => [source.id, source]));
+const today = new Date();
+const dateValue = (offsetDays = 0) => {
+  const value = new Date(today);
+  value.setUTCDate(value.getUTCDate() + offsetDays);
+  return value.toISOString().slice(0, 10).replaceAll('-', '');
+};
+const expandUrl = (url) => String(url).replaceAll('{today}', dateValue()).replaceAll('{yesterday}', dateValue(-1));
 const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
   const source = byId.get(sourceId);
   if (!source) throw new Error(`Unknown source registry id: ${sourceId}`);
   if (!Array.isArray(urls)) throw new Error(`Refresh URLs for ${sourceId} must be an array`);
-  return urls.map((url) => ({ sourceId, url }));
+  return urls.map((url) => ({ sourceId, url: expandUrl(url) }));
 });
 if (!jobs.length) { console.log('Refresh configuration contains no URLs.'); process.exit(0); }
 

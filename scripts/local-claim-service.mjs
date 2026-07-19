@@ -6,6 +6,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
+import { findWarehouseObservations } from './knowledge/warehouse-query.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -33,7 +34,7 @@ let indexPromise;
 let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
-const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'más', 'mas', 'todo', 'va', 'peor']);
+const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
@@ -218,6 +219,12 @@ const findWarehouseSource = async (query) => {
   return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
 };
 
+const findWarehouseEvidence = async (query) => {
+  const observations = await findWarehouseObservations(query);
+  const source = observations.find((item) => item.source)?.source;
+  return { observations, source };
+};
+
 const cosine = (left, right) => {
   if (!left || !right || left.length !== right.length) return 0;
   let score = 0;
@@ -319,9 +326,10 @@ const startResolveJob = (text) => {
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
-    const indexedSource = !classified.primary ? await findWarehouseSource(text) : null;
-    const source = indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined;
-    const completed = { ...toResolveResult(text, classified, source, id), createdAt: job.createdAt, completedAt: Date.now() };
+    const warehouse = !classified.primary ? await findWarehouseEvidence(text) : { observations: [], source: undefined };
+    const indexedSource = !warehouse.observations.length ? await findWarehouseSource(text) : null;
+    const source = warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined);
+    const completed = { ...toResolveResult(text, classified, source, id, warehouse.observations), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     void recordKnowledgeGap(text, completed);
   }).catch(() => {
@@ -365,7 +373,7 @@ const startUrlResolveJob = (url) => {
   return job;
 };
 
-const toResolveResult = (text, classified, source, resultRequestId = requestId(text)) => {
+const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
   const relatedClaims = (classified.alternatives || []).map((item) => ({
     kind: item.kind,
     slug: item.slug,
@@ -380,19 +388,36 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
+  const provisionalBlocks = observations.length ? (() => {
+    const grouped = observations.slice(0, 6);
+    const periods = grouped.filter((item) => item.period).map((item) => item.period);
+    const first = grouped[0];
+    return [
+      { type: 'key_number', evidenceId: first.id, label: first.metric || first.datasetId || 'Valor localizado', value: String(first.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
+      ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: grouped.map((item) => item.id) }] : []),
+      { type: 'cannot_conclude', evidenceIds: grouped.map((item) => item.id), points: ['Estos valores no demuestran por sí solos la conclusión de la afirmación.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto.'] },
+    ];
+  })() : [];
+  const warehouseSeries = observations.length >= 2 ? {
+    labels: observations.slice(0, 6).map((item) => String(item.period || item.id)),
+    values: observations.slice(0, 6).map((item) => Number(item.value)),
+    label: String(observations[0].metric || observations[0].datasetId || 'Dato localizado'),
+    unit: String(observations[0].unit || ''),
+  } : undefined;
   const result = {
     schemaVersion: '1',
     headline: primary?.title || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: primary ? answer : source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer,
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
-    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
-    clarificationQuestion: source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
-    evidenceIds,
-    sourceIds,
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
+    clarificationQuestion: observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
+    sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
     ...(source ? { sourceLinks: [source] } : {}),
-    knowledgeVersion: 'legacy-index',
+    knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
+    ...(warehouseSeries ? { warehouseSeries } : {}),
   };
   return { status, requestId: resultRequestId, result, relatedClaims: source && !primary ? [] : relatedClaims };
 };

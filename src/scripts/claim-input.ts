@@ -72,12 +72,14 @@ const visualMarkup = (entry?: ClaimIndexEntry): string => {
   return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparison.labels.slice(0, 3).map((label, index) => `<div><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((comparison.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`).join('')}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
 };
 
-const planVisualMarkup = (block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
+const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
   const visual = conversationVisuals.find((item) => item.slug === block.visualId)?.visuals;
-  const series = block.type === 'line_chart' ? visual?.trend : visual?.comparison;
+  const series = block.visualId === 'warehouse-observation'
+    ? plan.warehouseSeries
+    : block.type === 'line_chart' ? visual?.trend : visual?.comparison;
   if (!series || !series.values.length) return `<div class="claim-plan-chart"><span class="clarification-label">Visualización pendiente</span><strong>Datos vinculados, gráfico no disponible todavía</strong><small>La respuesta conserva la evidencia y sus fuentes; aún no hay una serie visual preparada para esta afirmación.</small></div>`;
   const max = Math.max(...series.values, 1);
-  return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label, index) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
+  return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label: string, index: number) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
 };
 
 const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((block) => {
@@ -98,7 +100,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-flow"><span class="clarification-label">Flujo de fondos</span><div><strong>Origen</strong><span>↓ transferencia</span><strong>Destino</strong></div><small>${escapeHtml(block.evidenceIds.join(' · '))}</small></div>`;
   }
   if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
-    return planVisualMarkup(block);
+    return planVisualMarkup(plan, block);
   }
   if (block.type === 'conversation_reply') {
     return `<div class="claim-plan-reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button></div>`;
