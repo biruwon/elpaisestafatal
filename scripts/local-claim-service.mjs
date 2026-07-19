@@ -36,6 +36,43 @@ const parseModelJson = (value) => {
   try { return object ? JSON.parse(object) : null; } catch { return null; }
 };
 
+const compilerSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'retrievalHints', 'clarificationRequired'],
+  properties: {
+    normalized: { type: 'string' },
+    claimType: { type: 'string', enum: ['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed'] },
+    propositions: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['text', 'type', 'explicit'], properties: { text: { type: 'string' }, type: { type: 'string', enum: ['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed'] }, explicit: { type: 'boolean' } } } },
+    entities: { type: 'array', items: { type: 'string' } },
+    numbers: { type: 'array', items: { type: 'string' } },
+    geography: { type: ['string', 'null'] },
+    period: { type: ['string', 'null'] },
+    retrievalHints: { type: 'array', items: { type: 'string' } },
+    clarificationRequired: { type: 'boolean' },
+  },
+};
+
+const compileClaim = async (text) => {
+  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
+  try {
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 5000);
+    const value = parseModelJson(response.message?.content);
+    if (!value || !Array.isArray(value.propositions)) return null;
+    return {
+      normalized: typeof value.normalized === 'string' ? value.normalized.slice(0, 300) : text.slice(0, 300),
+      claimType: typeof value.claimType === 'string' ? value.claimType : 'mixed',
+      propositions: value.propositions.filter((item) => item && typeof item.text === 'string').slice(0, 6).map((item) => ({ text: item.text.slice(0, 300), type: item.type || 'mixed', explicit: item.explicit !== false })),
+      entities: Array.isArray(value.entities) ? value.entities.filter((item) => typeof item === 'string').slice(0, 12) : [],
+      numbers: Array.isArray(value.numbers) ? value.numbers.filter((item) => typeof item === 'string').slice(0, 12) : [],
+      geography: typeof value.geography === 'string' ? value.geography.slice(0, 120) : null,
+      period: typeof value.period === 'string' ? value.period.slice(0, 120) : null,
+      retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8) : [],
+      clarificationRequired: value.clarificationRequired === true,
+    };
+  } catch { return null; }
+};
+
 const searchText = (entry) => [entry.title, ...(entry.aliases || []), ...(entry.keywords || [])].join(' ');
 const lexicalScore = (query, entry) => {
   const queryText = normalise(query);
@@ -101,8 +138,8 @@ const getIndex = async () => {
   return indexPromise;
 };
 
-const rerank = async (text, candidates) => {
-  const prompt = `Clasifica una afirmación en español. Devuelve solo JSON válido: {"status":"published|related|uncovered","primarySlug":"","canonical":"","reason":"","questions":[]}. Solo puedes usar como primarySlug un candidato con published=true. No inventes datos ni respuestas. Si no hay coincidencia publicada, usa uncovered.\n\nAfirmación: ${text.slice(0, 4000)}\nCandidatos:\n${candidates.map((entry) => `${entry.published ? 'published' : 'internal'}:${entry.slug} — ${entry.title}`).join('\n')}`;
+const rerank = async (text, candidates, compiled) => {
+  const prompt = `Clasifica una afirmación en español. Devuelve solo JSON válido: {"status":"published|related|uncovered","primarySlug":"","canonical":"","reason":"","questions":[]}. Solo puedes usar como primarySlug un candidato con published=true. No inventes datos ni respuestas. Si no hay coincidencia publicada, usa uncovered.\n\nAfirmación: ${text.slice(0, 4000)}\nEstructura extraída (no es evidencia): ${compiled ? JSON.stringify(compiled) : 'no disponible'}\nCandidatos:\n${candidates.map((entry) => `${entry.published ? 'published' : 'internal'}:${entry.slug} — ${entry.title}`).join('\n')}`;
   try { return parseModelJson((await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: 'json', keep_alive: '-1', options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 3500)).message?.content); } catch { return null; }
 };
 
@@ -117,7 +154,8 @@ const classify = async (text) => {
   const top = publicRanked[0];
   const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
   if (top && top.score >= 0.68 && margin >= 0.12 && top.lexical >= 0.6) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: publicRanked.slice(1, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })) };
-  const model = await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry));
+  const compiled = top && top.score >= 0.48 ? null : await compileClaim(text);
+  const model = await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled);
   const selected = model?.primarySlug && index.entries.find((entry) => entry.slug === model.primarySlug && entry.published);
   const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
   const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: publicRanked.slice(0, 3).filter(({ entry }) => entry.slug !== selected?.slug).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
