@@ -54,6 +54,13 @@ const includesAny = (value, words) => words.some((word) => value.includes(word))
 const canonicalSignatureFor = (value) => tokens(value).join(' ') || normalise(value);
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
+const evidenceUnavailableSignal = (value) => includesAny(normalise(value), [
+  'sin fuente', 'no tiene fuente', 'sin contexto', 'sin fecha', 'no se ha publicado', 'no publicado',
+  'archivo que no', 'no aparece en ningun registro', 'contrato verbal', 'reunion privada',
+  'persona particular', 'nadie lo denuncio', 'intencion privada', 'sabia lo que', 'lo oculto',
+  'mi experiencia demuestra', 'depende de que poblacion', 'depende del denominador',
+  'no sabemos que significa', 'no indica el periodo', 'definiciones diferentes',
+]);
 
 const pruneRuntimeState = () => {
   const now = Date.now();
@@ -135,7 +142,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
 const compilerSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired'],
+  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired', 'routing'],
   properties: {
     normalized: { type: 'string' },
     claimType: { type: 'string', enum: ['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed'] },
@@ -147,6 +154,17 @@ const compilerSchema = {
     population: { type: ['string', 'null'] },
     retrievalHints: { type: 'array', items: { type: 'string' } },
     clarificationRequired: { type: 'boolean' },
+    routing: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['status', 'primarySlug', 'reason', 'questions'],
+      properties: {
+        status: { type: 'string', enum: ['published', 'related', 'uncovered'] },
+        primarySlug: { type: 'string' },
+        reason: { type: 'string' },
+        questions: { type: 'array', items: { type: 'string' } },
+      },
+    },
   },
 };
 
@@ -178,13 +196,22 @@ const normalizeCompiler = (value, text) => {
     impliedPropositions,
     retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
     clarificationRequired: value.clarificationRequired === true,
+    routing: value.routing && typeof value.routing === 'object' ? {
+      status: ['published', 'related', 'uncovered'].includes(value.routing.status) ? value.routing.status : 'uncovered',
+      primarySlug: typeof value.routing.primarySlug === 'string' ? value.routing.primarySlug.slice(0, 160) : '',
+      reason: typeof value.routing.reason === 'string' ? value.routing.reason.slice(0, 220) : '',
+      questions: Array.isArray(value.routing.questions) ? value.routing.questions.filter((item) => typeof item === 'string').slice(0, 2).map((item) => item.slice(0, 220)) : [],
+    } : { status: 'uncovered', primarySlug: '', reason: '', questions: [] },
   };
 };
 
-const compileClaim = async (text) => {
-  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
+const compileClaim = async (text, candidates = []) => {
+  const candidateText = candidates.length
+    ? candidates.map((entry) => `${entry.published ? 'published' : 'internal'}:${entry.slug} — ${entry.title}`).join('\n')
+    : 'ninguno';
+  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. En routing solo puedes usar como primarySlug un candidato marcado published que exprese la misma afirmación; si solo comparte tema o no hay coincidencia, usa uncovered y primarySlug vacío. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 280, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 2500);
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 1800);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
     return normalizeCompiler(value, text);
@@ -514,13 +541,8 @@ const getIndex = async () => {
   return indexPromise;
 };
 
-const rerank = async (text, candidates, compiled) => {
-  const prompt = `Clasifica una afirmación en español. Devuelve solo JSON válido: {"status":"published|related|uncovered","primarySlug":"","canonical":"","reason":"","questions":[]}. Solo puedes usar como primarySlug un candidato con published=true. No inventes datos ni respuestas. Si no hay coincidencia publicada, usa uncovered.\n\nAfirmación: ${text.slice(0, 4000)}\nEstructura extraída (no es evidencia): ${compiled ? JSON.stringify(compiled) : 'no disponible'}\nCandidatos:\n${candidates.map((entry) => `${entry.published ? 'published' : 'internal'}:${entry.slug} — ${entry.title}`).join('\n')}`;
-  try { return parseModelJson((await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: 'json', keep_alive: -1, options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 3500)).message?.content); } catch { return null; }
-};
-
 const classify = async (text) => {
-  const key = normalise(text);
+  const key = canonicalSignatureFor(text);
   const cached = answerCache.get(key);
   if (cached && cached.expiresAt > Date.now()) { telemetry.cacheHits += 1; return cached.value; }
   if (cached) answerCache.delete(key);
@@ -557,8 +579,15 @@ const classify = async (text) => {
   const publicRanked = ranked.filter((item) => item.entry.published && compatibleEntry(item.entry));
   const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score }));
   const top = publicRanked[0];
-  const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
-  const lexicalMargin = top ? top.lexical - (publicRanked[1]?.lexical || 0) : 0;
+  // A topic can be almost identical to the claim it contains. It is useful as
+  // fallback guidance, but it must not force an exact claim paraphrase through
+  // the slow model path. Measure ambiguity against the next published claim;
+  // a competing topic is not a competing factual answer.
+  const competitor = top?.entry.kind === 'claim'
+    ? publicRanked.find((item) => item.entry.kind === 'claim' && item.entry.slug !== top.entry.slug)
+    : publicRanked[1];
+  const margin = top ? top.score - (competitor?.score || 0) : 0;
+  const lexicalMargin = top ? top.lexical - (competitor?.lexical || 0) : 0;
   const topHandler = top ? handlerForEntry(top.entry) : '';
   const compatibleHandlers = Boolean(top && compatibleEntry(top.entry));
   // A canonical wording can be safely resolved without a semantic-margin
@@ -578,13 +607,13 @@ const classify = async (text) => {
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
-  const compiled = hasPlausibleCandidate || compileEligible ? await compileClaim(text) : fallbackCompiler(text);
-  const model = hasPlausibleCandidate ? await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled) : null;
+  const compiled = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
+  const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
-  const selectedCandidate = model?.primarySlug && ranked.find(({ entry }) => entry.slug === model.primarySlug && entry.published && compatibleEntry(entry));
+  const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && compatibleEntry(entry));
   const selected = selectedCandidate && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
-  const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
-  const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
+  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
   return result;
@@ -594,14 +623,15 @@ const requestId = (text) => digest(normalise(text)).slice(0, 24);
 
 const startResolveJob = (text) => {
   const id = requestId(text);
-  const existing = resolveJobs.get(id);
+  const signature = canonicalSignatureFor(text);
+  const existing = resolveJobs.get(id) || [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && (!item.completedAt || item.completedAt + cacheTtlMs > Date.now()));
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
-  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  const job = { status: 'processing', requestId: id, canonicalSignature: signature, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
-    const completed = { ...await enrichResolve(text, classified, undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
+    const completed = { ...await enrichResolve(text, classified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed);
@@ -864,7 +894,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // typed record or explain what is missing instead of attaching a topical
   // publication.
   const discoveryEligible = new Set(['budget_transfer', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
-  const discovered = discoveryEligible.has(handlerId) && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discovered = discoveryEligible.has(handlerId) && !evidenceUnavailableSignal(text) && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;

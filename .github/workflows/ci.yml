@@ -53,6 +53,7 @@ jobs:
           npm run knowledge:freshness
           npm run knowledge:warehouse
           npm run knowledge:warehouse:query
+          npm run knowledge:warehouse:cache
           npm run knowledge:answer-plan
           npm run knowledge:evidence-packet
           npm run knowledge:materialization-candidates:validate
@@ -79,7 +80,7 @@ jobs:
             if curl --fail --silent http://127.0.0.1:8906/healthz > /dev/null; then break; fi
             sleep 0.25
           done
-          SMOKE_RESOLVE_BASE_URL=http://127.0.0.1:8906 SMOKE_RESOLVE_PATH=/v1/resolve SMOKE_MEDIA=1 npm run smoke:local-resolver
+          SMOKE_RESOLVE_BASE_URL=http://127.0.0.1:8906 SMOKE_RESOLVE_PATH=/v1/resolve SMOKE_MEDIA=1 SMOKE_DEDUPE=1 npm run smoke:local-resolver
 
       - name: Check whitespace and repository state
         run: git diff --check

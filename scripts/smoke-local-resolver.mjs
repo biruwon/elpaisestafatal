@@ -60,6 +60,17 @@ if (process.env.SMOKE_MEDIA === '1') {
   }
 }
 
+if (process.env.SMOKE_DEDUPE === '1') {
+  try {
+    const submit = (text) => fetch(`${base}${resolvePath}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, inputType: 'text' }), signal: AbortSignal.timeout(10000) }).then((response) => response.json());
+    const [plain, conversational] = await Promise.all([
+      submit('La brecha salarial de género es un mito'),
+      submit('Mi cuñado insiste: la brecha salarial de género es un mito'),
+    ]);
+    if (!plain.requestId || plain.requestId !== conversational.requestId) failures.push('canonical dedupe: equivalent concurrent claims did not reuse one job');
+  } catch (error) { failures.push(`canonical dedupe: ${error.message}`); }
+}
+
 if (process.env.SMOKE_WAREHOUSE === '1') {
   try {
     const result = await resolve('precios de la vivienda en España');
@@ -137,4 +148,4 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
 }
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''}${process.env.SMOKE_LONG_TAIL === '1' ? ' + long-tail' : ''} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_DEDUPE === '1' ? ' + dedupe' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''}${process.env.SMOKE_LONG_TAIL === '1' ? ' + long-tail' : ''} cases at ${base}`);

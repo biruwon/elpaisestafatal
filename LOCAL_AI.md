@@ -64,7 +64,9 @@ Meaningful unmatched text (at least three substantive terms, or two terms plus a
 
 The resolver uses a short local-inference circuit breaker: a failed or timed-out model request temporarily suppresses repeated model/embedding attempts, while the deterministic matcher and evidence guidance continue immediately. Embeddings are only requested when lexical retrieval finds a plausible candidate.
 
-The checked-in evaluation corpus can be run in slices when measuring model changes. For example, `EVALUATION_OFFSET=0 EVALUATION_LIMIT=180` covers known-claim variants and `EVALUATION_OFFSET=180 EVALUATION_LIMIT=120` covers unknown and long-tail inputs. The current local development run with the installed models reached 180/180 known accuracy and 120/120 unknown safety; slow-path p95 was approximately 2.5 seconds.
+Extraction and candidate routing use one bounded schema-constrained request. Published matches still require the deterministic score, claim-type, publication, and evidence gates. The resolver also reuses equivalent in-flight and completed requests by canonical signature and keeps a short-lived parsed/tokenized warehouse snapshot, so repeated conversational variants do not re-run the same model and disk work.
+
+The checked-in evaluation corpus can be run in slices when measuring model changes. For example, `EVALUATION_OFFSET=0 EVALUATION_LIMIT=180` covers known-claim variants and `EVALUATION_OFFSET=180 EVALUATION_LIMIT=120` covers unknown and long-tail inputs. The current local development run with the installed models reached 180/180 known accuracy and 120/120 unknown safety; at concurrency eight, known p95 was approximately 1.8 seconds and long-tail p95 approximately 2.6 seconds.
 
 ## Optional containerized resolver
 
