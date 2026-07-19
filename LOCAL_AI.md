@@ -39,9 +39,9 @@ npm run clarify:local -- --audio /absolute/path/recording.m4a
 
 ## Endpoint and local models
 
-The browser always submits to the same-origin `/api/classify` endpoint. Provider configuration stays server-side and is never included in the built HTML.
+The browser always submits to the same-origin `/api/resolve` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
 
-The local development proxy keeps Ollama behind the same-origin `/api/classify` boundary. Set up the local models once:
+The local development proxy keeps the local inference service behind the same-origin `/api/resolve` boundary. Set up the local models once:
 
 ```bash
 npm run ai:setup
