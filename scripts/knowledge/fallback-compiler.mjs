@@ -11,12 +11,17 @@ const stopWords = new Set([
 ]);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const includesAny = (value, values) => values.some((item) => value.includes(item));
+const containsPhrase = (value, phrase) => {
+  const text = ` ${normalise(value)} `;
+  const wanted = ` ${normalise(phrase)} `;
+  return text.includes(wanted);
+};
 
 const entityAliases = [
   ['gobierno de España', ['gobierno', 'moncloa', 'sanchez', 'presidencia']],
-  ['inmigración', ['inmigracion', 'inmigrante', 'migrante', 'extranjero', 'patera', 'asilo']],
-  ['vivienda', ['vivienda', 'viviendas', 'alquiler', 'hipoteca', 'piso', 'casas']],
-  ['empleo', ['empleo', 'trabajo', 'paro', 'desempleo', 'salario', 'ocupados']],
+  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'patera', 'pateras', 'asilo']],
+  ['vivienda', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas']],
+  ['empleo', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados']],
   ['impuestos', ['impuestos', 'tributos', 'fiscalidad', 'hacienda']],
   ['sanidad', ['sanidad', 'hospital', 'medico', 'salud', 'espera']],
   ['seguridad y delincuencia', ['delincuencia', 'delito', 'delitos', 'crimen', 'inseguridad', 'robos']],
@@ -53,7 +58,7 @@ export const deterministicFallbackCompiler = (text) => {
   const original = String(text || '').trim().slice(0, 300);
   const normalized = normalise(original);
   const claimType = claimTypeFor(original);
-  const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => normalized.includes(alias))).map(([entity]) => entity);
+  const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
   const geography = normalized.includes('espana') || normalized.includes('nacional')
     ? 'España'
     : regions.find((region) => normalized.includes(region)) || null;

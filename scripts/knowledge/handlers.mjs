@@ -10,7 +10,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la'])) return 'causal';
-  if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico'])) return 'prediction';
+  if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';

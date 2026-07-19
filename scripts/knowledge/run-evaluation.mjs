@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { evaluationCases } from './evaluation-cases.mjs';
 
 const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
+const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/v1/resolve';
 const offset = Math.min(evaluationCases.length, Math.max(0, Number(process.env.EVALUATION_OFFSET || 0)));
 const limit = Math.min(evaluationCases.length - offset, Math.max(1, Number(process.env.EVALUATION_LIMIT || evaluationCases.length)));
 const concurrency = Math.max(1, Math.min(8, Number(process.env.EVALUATION_CONCURRENCY || 3)));
@@ -13,12 +14,12 @@ let cursor = 0;
 const resolve = async (item) => {
   const started = performance.now();
   try {
-    const response = await fetch(`${base}/api/v1/resolve`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: item.input, inputType: 'text' }), signal: AbortSignal.timeout(15000) });
+    const response = await fetch(`${base}${resolvePath}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: item.input, inputType: 'text' }), signal: AbortSignal.timeout(15000) });
     if (!response.ok) throw new Error(`POST ${response.status}`);
     let result = await response.json();
     for (let attempt = 0; attempt < 40 && result.status === 'processing'; attempt += 1) {
       await new Promise((wait) => setTimeout(wait, 350));
-      result = await fetch(`${base}/api/v1/resolve/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) }).then((pending) => pending.json());
+      result = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) }).then((pending) => pending.json());
     }
     const claims = Array.isArray(result.relatedClaims) ? result.relatedClaims : [];
     const primarySlug = claims[0]?.slug;
@@ -45,6 +46,7 @@ const percentile = (value) => latencies.length ? latencies[Math.min(latencies.le
 const report = {
   generatedAt: new Date().toISOString(),
   base,
+  resolvePath,
   offset,
   cases: outcomes.length,
   knownCases: outcomes.filter((item) => item.expected.status === 'known').length,

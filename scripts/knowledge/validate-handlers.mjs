@@ -26,6 +26,7 @@ const probes = {
   normative: 'Los españoles deberían tener prioridad',
 };
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
+if (handlerForInput('La vivienda acabará cayendo como en 2008', 'mixed') !== 'prediction') throw new Error('Forecast wording must remain a prediction');
 
 const expected = { ...Object.fromEntries(required.map((handler) => [handler, handler])), quantity: 'quantity' };
 const failures = required.filter((handler) => handlerForInput(probes[handler], handler) !== expected[handler]);
