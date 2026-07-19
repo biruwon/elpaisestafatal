@@ -12,6 +12,7 @@
     "audit:roadmap": "node scripts/audit-roadmap.mjs",
     "smoke:production": "node scripts/smoke-production.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
+    "container:validate": "node scripts/validate-local-container.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "knowledge:validate": "node scripts/knowledge/validate-relations.mjs",

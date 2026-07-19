@@ -1,9 +1,12 @@
 FROM node:20-bookworm-slim
 
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 COPY scripts ./scripts
 COPY content ./content
-COPY package.json ./package.json
+COPY config ./config
+COPY migrations ./migrations
 
 ENV NODE_ENV=production
 ENV LOCAL_CLASSIFIER_PORT=8789

@@ -72,6 +72,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Fallback entity extraction now uses word/phrase boundaries; short aliases such as `UE` cannot match inside ordinary words and distort handler compatibility or retrieval.
 - Added a provider-neutral `/api/health` Pages Function and expanded the local health contract so monitoring can distinguish static/deterministic availability from optional dynamic availability without exposing origin or model details.
 - The local health contract now reports provider-neutral queue depth, completed/unavailable counts, cache hit rate, p95 latency, and status counts; Pages health forwards only those safe operational fields for monitoring.
+- The local Compose image now installs production dependencies and includes the migrations/configuration required by the optional PostgreSQL warehouse path; a container-contract validator checks the build, binding, token, and healthcheck wiring without requiring Docker on the developer machine.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration
