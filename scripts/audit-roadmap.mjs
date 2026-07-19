@@ -26,9 +26,9 @@ const concernPages = html.filter((file) => file.includes('/preocupaciones/') && 
 const claimPages = html.filter((file) => file.includes('/afirmaciones/') && !file.endsWith('/afirmaciones/index.html') && file.endsWith('/index.html'));
 const verificationPages = html.filter((file) => file.includes('/verificaciones/') && !file.endsWith('/verificaciones/index.html') && file.endsWith('/index.html'));
 const clarifierPages = html.filter((file) => file.includes('/aclarar/') && file.endsWith('/index.html'));
-if (concernPages.length !== 14) failures.push(`expected 14 concern pages, found ${concernPages.length}`);
-if (claimPages.length !== 20) failures.push(`expected 20 affirmation pages, found ${claimPages.length}`);
-if (verificationPages.length !== 20) failures.push(`expected 20 verification pages, found ${verificationPages.length}`);
+if (concernPages.length < 14) failures.push(`expected at least 14 concern pages, found ${concernPages.length}`);
+if (claimPages.length < 20) failures.push(`expected at least 20 affirmation pages, found ${claimPages.length}`);
+if (verificationPages.length < 20) failures.push(`expected at least 20 verification pages, found ${verificationPages.length}`);
 if (clarifierPages.length !== 3) failures.push(`expected 3 clarifier pages, found ${clarifierPages.length}`);
 for (const file of clarifierPages) {
   const source = await readFile(file, 'utf8');

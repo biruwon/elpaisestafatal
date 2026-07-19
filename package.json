@@ -15,6 +15,7 @@
     "knowledge:validate": "node scripts/knowledge/validate-relations.mjs",
     "knowledge:ingest": "node scripts/knowledge/ingest-source.mjs",
     "knowledge:warehouse": "node scripts/knowledge/validate-warehouse.mjs",
+    "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
