@@ -467,6 +467,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
     if (!numeric.length && publications.length) return [
+      ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
+        const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
+        return [{ type: 'money_flow', evidenceIds: publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id), amount: `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, origin: transfer.originEntity, destination: transfer.destinationEntity, purpose: transfer.purpose }];
+      })() : []),
       ...(publications.find((item) => item.excerpt) ? [{ type: 'source_excerpt', evidenceIds: publications.filter((item) => item.excerpt).slice(0, 1).map((item) => item.id), title: 'Fragmento localizado en la fuente oficial', excerpt: publications.find((item) => item.excerpt).excerpt }] : []),
       { type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
     ];

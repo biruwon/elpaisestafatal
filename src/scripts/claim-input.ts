@@ -101,7 +101,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
   }
   if (block.type === 'money_flow') {
-    return `<div class="claim-plan-flow"><span class="clarification-label">Flujo de fondos</span><div><strong>Origen</strong><span>↓ transferencia</span><strong>Destino</strong></div><small>${escapeHtml(block.evidenceIds.join(' · '))}</small></div>`;
+    return `<div class="claim-plan-flow"><span class="clarification-label">Flujo descrito en la fuente localizada</span>${block.amount ? `<strong>${escapeHtml(block.amount)}</strong>` : ''}<div><strong>${escapeHtml(block.origin || 'Origen')}</strong><span>↓ transferencia</span><strong>${escapeHtml(block.destination || 'Destino')}</strong></div>${block.purpose ? `<small>Finalidad: ${escapeHtml(block.purpose)}</small>` : ''}<small>Contexto provisional; no demuestra por sí solo un recorte de servicios.</small></div>`;
   }
   if (block.type === 'data_finding') {
     return `<div class="claim-plan-finding"><span class="clarification-label">Lo que muestran los datos localizados</span><ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;

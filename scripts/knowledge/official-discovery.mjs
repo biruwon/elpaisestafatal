@@ -66,6 +66,18 @@ export const parseMoncloaRssItems = (xml, limit = 8) => {
 
 const extractPageText = (html) => stripHtml(String(html || '').replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')).slice(0, 500_000);
 const extractHeading = (html, fallback) => stripHtml(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || fallback).slice(0, 500);
+const parseEuroAmount = (value) => {
+  const numeric = String(value || '').replace(/\./g, '').replace(',', '.');
+  const amount = Number(numeric);
+  return Number.isFinite(amount) ? amount : undefined;
+};
+export const parseBudgetTransferExcerpt = (text) => {
+  const match = String(text || '').match(/por importe de\s+([\d.]+(?:,\d+)?)\s+euros,?\s+desde el\s+(.+?),\s+al\s+(.+?)\s+para financiar\s+(.+?)(?:\.|$)/i);
+  if (!match) return undefined;
+  const amount = parseEuroAmount(match[1]);
+  if (!amount) return undefined;
+  return { type: 'budget_transfer', amount, currency: 'EUR', originEntity: match[2].trim(), destinationEntity: match[3].trim(), purpose: match[4].trim() };
+};
 export const extractRelevantExcerpt = (text, wanted, maxLength = 420) => {
   const sentences = String(text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).filter(Boolean);
   const ranked = sentences.map((sentence, index) => ({ sentence, index, matches: wanted.filter((token) => normalise(sentence).includes(token)).length }))
@@ -96,7 +108,7 @@ export const discoverMoncloaDocuments = async (query, limit = 3) => {
         const matchedTerms = wanted.filter((token) => text.includes(token));
         const score = matchedTerms.length / wanted.length;
         if (matchedTerms.length < 2 || score < 0.5) return null;
-        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, excerpt: extractRelevantExcerpt(pageText, matchedTerms), score, searchScore: score + 0.2 };
+        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, excerpt: extractRelevantExcerpt(pageText, matchedTerms), finding: parseBudgetTransferExcerpt(pageText), score, searchScore: score + 0.2 };
       } catch { return null; }
     }));
     return pages.filter(Boolean).sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
@@ -161,6 +173,7 @@ export const discoveryObservation = (item) => {
     score: item.score,
     matchedTerms: item.matchedTerms,
     excerpt: item.excerpt || '',
+    finding: item.finding,
     evidenceFit: item.score >= 0.67 ? 'direct' : 'qualified',
   };
 };
