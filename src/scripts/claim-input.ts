@@ -43,6 +43,16 @@ let activeRequest: AbortController | null = null;
 let requestVersion = 0;
 const responseCache = new Map<string, SearchResponse>();
 
+const recordUncoveredQuestion = (text: string, response: SearchResponse): void => {
+  if (response.status !== 'uncovered' && response.status !== 'partial') return;
+  void fetch('/api/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text, inputType: 'text', status: response.status, requestId: response.requestId }),
+    keepalive: true,
+  }).catch(() => { /* Operational learning is optional and never blocks the answer. */ });
+};
+
 const findEntry = (slug: string | undefined): ClaimIndexEntry | undefined => slug ? claimIndex.find((entry) => entry.slug === slug) : undefined;
 
 const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">Ver datos y fuentes <span aria-hidden="true">→</span></a>`;
@@ -200,6 +210,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise
     if (version !== requestVersion) return;
     responseCache.set(cacheKey, data);
     try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }
+    recordUncoveredQuestion(query, data);
     applyResponse(data, query, ranked);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
