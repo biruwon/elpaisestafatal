@@ -34,6 +34,9 @@ jobs:
       - name: Validate Cloudflare deployment boundary
         run: npm run deployment:validate
 
+      - name: Validate backup contract
+        run: npm run backup:validate
+
       - name: Validate claim and knowledge contracts
         run: |
           npm run validate:content

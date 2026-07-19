@@ -48,6 +48,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - D1 and PostgreSQL migration paths are now separated: D1 receives SQLite-safe operational migrations, while the derived PostgreSQL warehouse retains its `pg_trgm` migration independently.
 - The production Pages project now has the `DB` D1 binding configured and the three operational migrations applied; `/api/questions` is live and returns the generic empty popularity feed when no clusters are published.
 - Production smoke now requires the D1-backed popularity endpoint to return its generic empty/published feed, preventing a deployment from silently losing the operational binding.
+- A reproducible backup command now exports remote D1 and optional PostgreSQL state, plus the local source warehouse and configuration/migration manifests, into ignored `.local/backups` artifacts.
 - The warehouse now supports a deterministic same-period country ranking handler, including contradictory handling for claims that Spain is highest or lowest; the result includes country-labelled visual data and the source feed.
 - Warehouse observations now carry matched terms and an evidence-fit band; weak token overlaps are excluded from provisional answers instead of being rendered as relevant data.
 - File-only screenshot and audio submissions are accepted by the API, and extracted media text now re-enters the same warehouse and handler enrichment path as typed text and links.
