@@ -517,21 +517,29 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
-    if (!numeric.length && publications.length) return [
+    const catalogueLeads = grouped.filter((item) => item.kind === 'dataset_catalogue');
+    const publicationLike = [...publications, ...catalogueLeads];
+    if (!numeric.length && publicationLike.length) return [
       ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
         const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
         const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
         const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
         return [{ type: 'money_flow', evidenceIds, amount, origin: transfer.originEntity, destination: transfer.destinationEntity, purpose: transfer.purpose }];
       })() : []),
-      ...(publications.find((item) => item.excerpt) ? [{ type: 'source_excerpt', evidenceIds: publications.filter((item) => item.excerpt).slice(0, 1).map((item) => item.id), title: 'Fragmento localizado en la fuente oficial', excerpt: publications.find((item) => item.excerpt).excerpt }] : []),
+      ...(publicationLike.find((item) => item.excerpt) ? (() => {
+        const item = publicationLike.find((candidate) => candidate.excerpt);
+        return [{ type: 'source_excerpt', evidenceIds: [item.id], title: item.kind === 'dataset_catalogue' ? 'Conjunto de datos candidato en el catálogo público' : 'Fragmento localizado en la fuente oficial', excerpt: item.excerpt }];
+      })() : []),
       ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
         const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
         const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
         const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
         return [{ type: 'conversation_reply', evidenceIds, text: `La fuente oficial documenta una transferencia de ${amount} desde ${transfer.originEntity} a ${transfer.destinationEntity} para ${transfer.purpose}. Eso no demuestra por sí solo que se hayan recortado servicios educativos ni que el dinero sea para asesores.` }];
       })() : []),
-      { type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
+      ...(catalogueLeads.length && !publications.length ? [{ type: 'conversation_reply', evidenceIds: catalogueLeads.map((item) => item.id), text: 'El catálogo público apunta a un conjunto de datos relacionado, pero la ficha no demuestra la afirmación. Hay que abrir la distribución, comprobar su definición, periodo y cobertura territorial antes de usarla como evidencia.' }] : []),
+      { type: 'cannot_conclude', evidenceIds: publicationLike.map((item) => item.id), points: catalogueLeads.length && !publications.length
+        ? ['La ficha del catálogo sirve para localizar un posible conjunto de datos, no para demostrar la afirmación.', 'Falta comprobar la distribución, definición, periodo, población y cobertura territorial del recurso.']
+        : ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
     ];
     const series = ranking?.observations || trend?.observations || causalContext?.observations || numeric;
     const periods = series.filter((item) => item.period).map((item) => item.period);
