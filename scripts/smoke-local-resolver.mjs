@@ -78,5 +78,19 @@ if (process.env.SMOKE_OFFICIAL === '1') {
   } catch (error) { failures.push(`official transfer: ${error.message}`); }
 }
 
+if (process.env.SMOKE_LONG_TAIL === '1') {
+  try {
+    const result = await resolve('Los precios de la vivienda causan la crisis en España');
+    if (result.status !== 'draft') failures.push(`causal long-tail: expected draft, received ${result.status}`);
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('causalidad')) failures.push('causal long-tail: did not explain the causal limitation');
+    if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('causal long-tail: missing contextual data block');
+  } catch (error) { failures.push(`causal long-tail: ${error.message}`); }
+  try {
+    const result = await resolve('Los españoles deberían tener prioridad en las ayudas');
+    if (result.status !== 'uncovered' || result.result?.coverage !== 'values') failures.push(`normative long-tail: expected uncovered values guidance, received ${result.status}/${result.result?.coverage}`);
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('prioridad')) failures.push('normative long-tail: did not identify the value disagreement');
+  } catch (error) { failures.push(`normative long-tail: ${error.message}`); }
+}
+
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''}${process.env.SMOKE_LONG_TAIL === '1' ? ' + long-tail' : ''} cases at ${base}`);

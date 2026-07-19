@@ -486,8 +486,28 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
-  const ranking = !primary ? summarizeWarehouseRanking(text, observations) : null;
-  const trend = !primary && !ranking ? summarizeWarehouseTrend(text, observations) : null;
+  const handlerId = primary?.handlerId || handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const isNormative = handlerId === 'normative';
+  const isCausal = handlerId === 'causal';
+  const ranking = !primary && !isNormative && !isCausal ? summarizeWarehouseRanking(text, observations) : null;
+  const trend = !primary && !ranking && !isNormative ? summarizeWarehouseTrend(text, observations) : null;
+  const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
+  const causalContext = causalObservations.length >= 2 ? {
+    observations: causalObservations,
+    headline: 'Hay datos relacionados, pero no una prueba de causalidad',
+    summary: 'Hemos localizado una serie relacionada con la afirmación. Describe el contexto o la evolución observada, pero no demuestra por sí sola que una causa produzca la otra.',
+    points: [
+      `La serie localizada contiene ${causalObservations.length} observaciones comparables.`,
+      'Una coincidencia temporal o territorial no identifica por sí sola el efecto causal.',
+      'Para evaluar la causa harían falta comparación, magnitud, mecanismo y explicaciones alternativas.',
+    ],
+    reply: 'La serie aporta contexto, pero no demuestra por sí sola que una causa explique el cambio. Habría que comparar territorios o periodos y descartar otras explicaciones.',
+    replyEvidenceIds: causalObservations.map((item) => item.id),
+  } : null;
+  const valuesContext = isNormative && !primary ? {
+    headline: 'Esta parte trata de una prioridad, no solo de un dato',
+    summary: 'La afirmación plantea qué criterio debería considerarse justo. Los datos pueden mostrar las reglas actuales y sus consecuencias, pero no deciden por sí solos qué prioridad moral debe elegirse.',
+  } : null;
   const compilerBreakdown = classified.compiler?.propositions?.length ? {
     type: 'claim_breakdown',
     propositionIds: [],
@@ -513,7 +533,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       })() : []),
       { type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
     ];
-    const series = ranking?.observations || trend?.observations || numeric;
+    const series = ranking?.observations || trend?.observations || causalContext?.observations || numeric;
     const periods = series.filter((item) => item.period).map((item) => item.period);
     const keyObservation = ranking
       ? series.find((item) => {
@@ -524,12 +544,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       : series.at(-1);
     return [
       { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${keyObservation.metric || keyObservation.datasetId || 'Valor comparado'}` : keyObservation.metric || keyObservation.datasetId || 'Valor localizado', value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
-      ...((ranking || trend) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend).reply }] : []),
+      ...((ranking || trend || causalContext) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend || causalContext).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend || causalContext).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend || causalContext).reply }] : []),
       ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
     ];
   })() : [];
-  const numericObservations = ranking?.observations || trend?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const numericObservations = ranking?.observations || trend?.observations || causalContext?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
@@ -544,13 +564,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   ).values()].slice(0, 5);
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : ranking?.summary || trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
-    coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
+    headline: primary?.title || valuesContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : valuesContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
-    clarificationQuestion: ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
     ...(sourceLinks.length ? { sourceLinks } : {}),
@@ -559,6 +579,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   };
   const validation = validateAnswerPlan(result, { provisional: status === 'draft' });
   if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : relatedClaims };
+  console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
     headline: 'Todavía no podemos sostener una respuesta completa.',
@@ -578,7 +599,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || [])].join(' ').slice(0, 6000);
   const warehouse = !classified.primary ? await findWarehouseEvidence(retrievalText) : { observations: [], source: undefined };
   const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
-  const discovered = !warehouse.observations.length && !indexedSource && !sourceOverride ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation) : [];
+  const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  // A normative statement is a question about priorities. Generic current
+  // affairs search results would add false authority without answering it.
+  const discovered = handlerId !== 'normative' && !warehouse.observations.length && !indexedSource && !sourceOverride
+    ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
+    : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
   return toResolveResult(text, classified, source, resultRequestId, warehouse.observations.length ? warehouse.observations : discovered);
 };

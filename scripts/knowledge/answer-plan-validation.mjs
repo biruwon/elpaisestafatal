@@ -31,8 +31,11 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
       continue;
     }
     if (evidenceBearingBlocks.has(block.type)) {
-      if (!arrayOfStrings(block.evidenceIds)) errors.push(`block ${index} (${block.type}) has no evidence IDs`);
-      for (const id of Array.isArray(block.evidenceIds) ? block.evidenceIds : []) {
+      const blockEvidenceIds = block.type === 'key_number' && !Array.isArray(block.evidenceIds) && typeof block.evidenceId === 'string'
+        ? [block.evidenceId]
+        : block.evidenceIds;
+      if (!arrayOfStrings(blockEvidenceIds)) errors.push(`block ${index} (${block.type}) has no evidence IDs`);
+      for (const id of Array.isArray(blockEvidenceIds) ? blockEvidenceIds : []) {
         if (!evidenceIds.has(id)) errors.push(`block ${index} references evidence outside plan: ${id}`);
       }
     }
@@ -46,4 +49,3 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   }
   return { ok: errors.length === 0, errors };
 };
-
