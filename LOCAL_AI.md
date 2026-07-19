@@ -86,3 +86,7 @@ WAREHOUSE_DATABASE_URL="$WAREHOUSE_DATABASE_URL" npm run dev:ai
 ```
 
 The loader applies the additive warehouse migrations, creates the `pg_trgm` search index, and upserts the current source snapshots and observations. If the database is unavailable, the resolver automatically falls back to `.local/source-warehouse`; the public API and UI do not change. PostgreSQL is a derived copy and can always be rebuilt from the source manifests.
+
+### Bounded official-source discovery
+
+When structured retrieval has no usable match, the local resolver may search current La Moncloa references and the BOE’s public search surface using at least two meaningful terms. It tries a small number of progressively narrower queries, applies freshness bounds, caches the result briefly, and exposes only attributable document links. A search hit is rendered as provisional publication evidence; it never becomes a published verdict automatically.

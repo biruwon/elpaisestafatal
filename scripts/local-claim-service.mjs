@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
+import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations } from './knowledge/warehouse-query.mjs';
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
@@ -243,7 +244,7 @@ const findWarehouseSource = async (query) => {
   const wanted = warehouseTokens(query);
   if (wanted.length < 2) return null;
   const entries = await loadWarehouse();
-  const ranked = entries.map((entry) => {
+  const ranked = entries.filter((entry) => !normalise(entry.title).includes('sumario diario')).map((entry) => {
     const available = new Set(warehouseTokens(entry.text));
     const matched = wanted.filter((token) => available.has(token)).length;
     return { entry, score: matched / wanted.length, matched };
@@ -286,7 +287,8 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
 const findWarehouseEvidence = async (query) => {
   const normalizedQuery = normalise(query);
   const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
-  const candidates = (await findWarehouseObservations(query, rankingQuery ? 100 : 100)).filter((item) => item.evidenceFit !== 'weak');
+  const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
+  const candidates = (await findWarehouseObservations(query, 100)).filter((item) => item.evidenceFit !== 'weak' && (item.kind !== 'official_publication' || item.matchedTerms?.length >= Math.min(3, meaningfulTerms.length)));
   const observations = rankingQuery ? candidates : selectCompatibleWarehouseSeries(query, candidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
@@ -497,7 +499,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
     clarificationQuestion: ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    limitation: observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
     ...(source ? { sourceLinks: [source] } : {}),
@@ -510,8 +512,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
   const warehouse = !classified.primary ? await findWarehouseEvidence(text) : { observations: [], source: undefined };
   const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(text) : null;
-  const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined);
-  return toResolveResult(text, classified, source, resultRequestId, warehouse.observations);
+  const discovered = !warehouse.observations.length && !indexedSource && !sourceOverride ? (await discoverOfficialDocuments(text, 3)).map(discoveryObservation) : [];
+  const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
+  return toResolveResult(text, classified, source, resultRequestId, warehouse.observations.length ? warehouse.observations : discovered);
 };
 
 const readText = async (request) => {
