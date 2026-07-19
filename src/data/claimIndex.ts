@@ -15,6 +15,10 @@ export type ClaimIndexEntry = {
   evidenceIds?: string[];
   sourceRefs?: string[];
   relatedSlugs?: string[];
+  whatIsTrue?: string;
+  whatIsMissing?: string;
+  cannotProve?: string;
+  scale?: string;
 };
 
 export type RankedClaimIndexEntry = ClaimIndexEntry & {

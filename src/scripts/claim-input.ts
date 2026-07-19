@@ -78,7 +78,7 @@ const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][
   const series = block.visualId === 'warehouse-observation'
     ? plan.warehouseSeries
     : block.type === 'line_chart' ? visual?.trend : visual?.comparison;
-  if (!series || !series.values.length) return `<div class="claim-plan-chart"><span class="clarification-label">Visualización pendiente</span><strong>Datos vinculados, gráfico no disponible todavía</strong><small>La respuesta conserva la evidencia y sus fuentes; aún no hay una serie visual preparada para esta afirmación.</small></div>`;
+  if (!series || !series.values.length) return '';
   const max = Math.max(...series.values, 1);
   return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label: string, index: number) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
 };
@@ -92,7 +92,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   }
   if (block.type === 'confirmed') {
     const linked = block.evidenceIds?.length || block.propositionIds.length;
-    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span><p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p></div>`;
+    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}</div>`;
   }
   if (block.type === 'cannot_conclude') {
     return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
