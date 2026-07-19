@@ -23,9 +23,11 @@ const cases = [
 for (const item of cases) {
   try {
     const result = await resolve(item.text);
+    if (result.status === 'processing') failures.push(`${item.text}: request remained processing after polling`);
     if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
     if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
+    if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
 }
 

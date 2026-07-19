@@ -88,7 +88,10 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-number"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}</div>`;
   }
   if (block.type === 'claim_breakdown') {
-    return `<div class="claim-plan-breakdown"><span class="clarification-label">Qué estamos comprobando</span><p>${escapeHtml(block.propositionIds.join(' · '))}</p></div>`;
+    const items = block.items?.length
+      ? `<ul>${block.items.map((item) => `<li><strong>${item.explicit ? 'Afirmación' : 'Implicación'}</strong><span>${escapeHtml(item.text)}</span></li>`).join('')}</ul>`
+      : `<p>${escapeHtml(block.propositionIds.join(' · '))}</p>`;
+    return `<div class="claim-plan-breakdown"><span class="clarification-label">Qué estamos comprobando</span>${items}</div>`;
   }
   if (block.type === 'confirmed') {
     const linked = block.evidenceIds?.length || block.propositionIds.length;

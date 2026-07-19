@@ -61,7 +61,7 @@ export type StaticClaimReference = {
 };
 
 export type AnswerBlock =
-  | { type: 'claim_breakdown'; propositionIds: string[] }
+  | { type: 'claim_breakdown'; propositionIds: string[]; items?: Array<{ text: string; type: ClaimType; explicit: boolean }> }
   | { type: 'key_number'; evidenceId: string; label: string; value: string; caveat?: string }
   | { type: 'line_chart' | 'bar_chart' | 'comparison_chart'; visualId: string; evidenceIds: string[] }
   | { type: 'money_flow'; evidenceIds: string[] }

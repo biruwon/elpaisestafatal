@@ -31,6 +31,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - 202 Markdown claim records exist; 20 are published.
 - 28 evidence records and 28 source records are currently linked.
 - The browser has a deterministic claim index and automatic local classification support.
+- Uncovered inputs now receive a structured proposition breakdown; when no plausible indexed candidate exists, model extraction and reranking are skipped for a fast deterministic result.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
 - The current local embedding model configuration still needs installation and evaluation before semantic retrieval is considered active.
@@ -106,7 +107,7 @@ No weak match may be presented as an answer. For example, `España está destrui
 
 ## Phase 3 — Local claim compiler
 
-Status: boundary implemented; compiler expansion pending.
+Status: boundary implemented; first compiler-result slice complete; richer extraction expansion pending.
 
 Run the local service on a dedicated always-on machine. Package it with Docker Compose so the current Mac remains suitable for development.
 

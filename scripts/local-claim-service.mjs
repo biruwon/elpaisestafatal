@@ -101,12 +101,24 @@ const compilerSchema = {
   },
 };
 
+const fallbackCompiler = (text) => ({
+  normalized: text.slice(0, 300),
+  claimType: 'mixed',
+  propositions: [{ text: text.slice(0, 300), type: 'mixed', explicit: true }],
+  entities: [],
+  numbers: [...text.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).slice(0, 12),
+  geography: null,
+  period: null,
+  retrievalHints: tokens(text).slice(0, 8),
+  clarificationRequired: true,
+});
+
 const compileClaim = async (text) => {
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
   try {
     const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 5000);
     const value = parseModelJson(response.message?.content);
-    if (!value || !Array.isArray(value.propositions)) return null;
+    if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
     return {
       normalized: typeof value.normalized === 'string' ? value.normalized.slice(0, 300) : text.slice(0, 300),
       claimType: typeof value.claimType === 'string' ? value.claimType : 'mixed',
@@ -118,7 +130,7 @@ const compileClaim = async (text) => {
       retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8) : [],
       clarificationRequired: value.clarificationRequired === true,
     };
-  } catch { return null; }
+  } catch { return fallbackCompiler(text); }
 };
 
 const extractImageText = async (media) => {
@@ -258,12 +270,12 @@ const plannedClaims = async () => {
 };
 
 const fetchCatalog = async () => {
-  for (let attempt = 0; attempt < 10; attempt += 1) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
-      const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(1000) });
+      const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(350) });
       if (response.ok) return response.json();
     } catch { /* The Astro server may still be starting. */ }
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await new Promise((resolve) => setTimeout(resolve, 150));
   }
   return [];
 };
@@ -312,13 +324,14 @@ const classify = async (text) => {
   const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
   const lexicalMargin = top ? top.lexical - (publicRanked[1]?.lexical || 0) : 0;
   if (top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: handlerForInput({ retrievalHints: top.entry.keywords || [], entities: top.entry.aliases || [] }, top.entry.claimType), evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
-  const compiled = top && top.score >= 0.48 ? null : await compileClaim(text);
-  const model = await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled);
+  const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
+  const compiled = hasPlausibleCandidate ? await compileClaim(text) : fallbackCompiler(text);
+  const model = hasPlausibleCandidate ? await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled) : null;
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   const selectedCandidate = model?.primarySlug && ranked.find(({ entry }) => entry.slug === model.primarySlug && entry.published);
   const selected = selectedCandidate && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
-  const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
   return result;
@@ -398,6 +411,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const ranking = !primary ? summarizeWarehouseRanking(text, observations) : null;
   const trend = !primary && !ranking ? summarizeWarehouseTrend(text, observations) : null;
+  const compilerBreakdown = classified.compiler?.propositions?.length ? {
+    type: 'claim_breakdown',
+    propositionIds: [],
+    items: classified.compiler.propositions.slice(0, 6).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
+  } : null;
   const provisionalBlocks = observations.length ? (() => {
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
@@ -432,8 +450,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: primary?.title || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: primary ? answer : ranking?.summary || trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
-    claimType: 'mixed',
-    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', text: answer }] : provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
+    claimType: classified.compiler?.claimType || 'mixed',
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
     clarificationQuestion: ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
