@@ -11,6 +11,15 @@ const json = (body: unknown, status = 200): Response => Response.json(body, {
   headers: { 'Cache-Control': 'no-store' },
 });
 
+const linkedTimeout = (request: Request, milliseconds: number): { signal: AbortSignal; dispose: () => void } => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), milliseconds);
+  const cancel = () => controller.abort();
+  if (request.signal.aborted) cancel();
+  else request.signal.addEventListener('abort', cancel, { once: true });
+  return { signal: controller.signal, dispose: () => { clearTimeout(timer); request.signal.removeEventListener('abort', cancel); } };
+};
+
 const clientKey = (request: Request): string => request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
 const allowRequest = (request: Request): boolean => {
   const key = clientKey(request);
@@ -63,12 +72,11 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     const headers = new Headers();
     if (!isMultipart) headers.set('content-type', 'application/json');
     if (env.LOCAL_CLASSIFIER_TOKEN) headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);
-    const response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/resolve`, {
-      method: 'POST',
-      headers,
-      body: payload,
-      signal: AbortSignal.timeout(12000),
-    });
+    const upstream = linkedTimeout(request, 12000);
+    let response: Response;
+    try {
+      response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/resolve`, { method: 'POST', headers, body: payload, signal: upstream.signal });
+    } finally { upstream.dispose(); }
     if (!response.ok) return json({ status: 'unavailable', relatedClaims: [] });
     return new Response(response.body, { status: response.status, headers: { 'content-type': 'application/json', 'Cache-Control': 'no-store' } });
   } catch {

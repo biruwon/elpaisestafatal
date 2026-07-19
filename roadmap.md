@@ -73,6 +73,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Added a provider-neutral `/api/health` Pages Function and expanded the local health contract so monitoring can distinguish static/deterministic availability from optional dynamic availability without exposing origin or model details.
 - The local health contract now reports provider-neutral queue depth, completed/unavailable counts, cache hit rate, p95 latency, and status counts; Pages health forwards only those safe operational fields for monitoring.
 - The local Compose image now installs production dependencies and includes the migrations/configuration required by the optional PostgreSQL warehouse path; a container-contract validator checks the build, binding, token, and healthcheck wiring without requiring Docker on the developer machine.
+- Pages resolve requests now link the incoming browser abort signal to the bounded upstream timeout, so cancelled submissions stop consuming local-origin capacity instead of waiting for the full timeout window.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration
