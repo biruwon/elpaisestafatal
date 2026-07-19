@@ -19,6 +19,7 @@
     "knowledge:warehouse": "node scripts/knowledge/validate-warehouse.mjs",
     "knowledge:normalizer": "node scripts/knowledge/validate-normalizer.mjs",
     "knowledge:warehouse:query": "node scripts/knowledge/validate-warehouse-query.mjs",
+    "knowledge:trend": "node scripts/knowledge/validate-warehouse-trend.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",

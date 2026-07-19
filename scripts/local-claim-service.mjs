@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
 import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations } from './knowledge/warehouse-query.mjs';
+import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -228,41 +229,6 @@ const findWarehouseEvidence = async (query) => {
   return { observations, source };
 };
 
-const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
-const warehouseTrend = (text, observations) => {
-  const numeric = observations
-    .filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period)
-    .slice()
-    .sort((left, right) => String(left.period).localeCompare(String(right.period)));
-  if (numeric.length < 2) return null;
-  const first = numeric[0];
-  const latest = numeric[numeric.length - 1];
-  const delta = latest.value - first.value;
-  const unit = String(latest.unit || first.unit || '').trim();
-  const suffix = unit ? ` ${unit}` : '';
-  const metric = String(latest.metric || latest.datasetId || latest.source?.title || 'La serie localizada');
-  const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
-  const change = `${formatNumber(Math.abs(delta))}${suffix}`;
-  const directionWords = normalise(text);
-  const expectedLower = directionWords.includes('menos') || directionWords.includes('baja') || directionWords.includes('disminuye') || directionWords.includes('cae');
-  const expectedHigher = directionWords.includes('mas') || directionWords.includes('sube') || directionWords.includes('aumenta') || directionWords.includes('crece');
-  const points = [
-    `${metric} ${direction}, de ${formatNumber(first.value)}${suffix} (${first.period}) a ${formatNumber(latest.value)}${suffix} (${latest.period}).`,
-    `El cambio entre esos dos puntos es de ${change}${delta < 0 ? ' menos' : delta > 0 ? ' más' : ''}.`,
-  ];
-  if ((expectedLower || expectedHigher) && Math.abs(delta) >= 0.000001) {
-    const agrees = (expectedLower && delta < 0) || (expectedHigher && delta > 0);
-    points.push(agrees ? 'La dirección de la serie coincide con la comparación expresada en la afirmación.' : 'La dirección de la serie no coincide con la comparación expresada en la afirmación.');
-  }
-  return {
-    observations: numeric,
-    headline: `${metric}: comparación entre ${first.period} y ${latest.period}`,
-    summary: `${metric} ${direction} entre el primer y el último periodo localizado (${first.period}–${latest.period}).`,
-    points,
-    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value)}${suffix} a ${formatNumber(latest.value)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
-  };
-};
-
 const cosine = (left, right) => {
   if (!left || !right || left.length !== right.length) return 0;
   let score = 0;
@@ -426,7 +392,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
-  const trend = !primary ? warehouseTrend(text, observations) : null;
+  const trend = !primary ? summarizeWarehouseTrend(text, observations) : null;
   const provisionalBlocks = observations.length ? (() => {
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
