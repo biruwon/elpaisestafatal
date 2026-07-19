@@ -54,7 +54,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
-- `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine; the live 300-case regression run is 180/180 known matches and 120/120 unknown-safe results, with p95 latency below 2.9 seconds. Semantic retrieval remains opt-in until its relevance benchmark is recorded.
+- `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine. After correcting the runtime keep-alive payload so model calls really execute, the live regression remains 180/180 known matches and 120/120 unknown-safe results; at concurrency eight, known p95 is about 6.7 seconds and long-tail p95 about 7.5 seconds, so model-path latency remains an explicit optimization task.
 - The source warehouse now preserves real dated observations from INE `DATOS_TABLA` responses instead of indexing row metadata as measurements.
 - Refresh resources can carry source-specific titles and aliases, which are included in derived retrieval indexes for long-tail wording such as `inflación`, `IPC`, and `PIB`.
 - BOE daily summaries are normalized into searchable publication records with date, department, identifier, title, and direct document URL; document matches remain provisional until their content is checked.
@@ -77,6 +77,8 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Structured answers now collect optional usefulness feedback (`yes`, `partly`, or `no`) through a rate-limited `/api/feedback` endpoint backed by the existing D1 table; feedback never blocks or changes the answer.
 - The derived warehouse can now be loaded into an optional PostgreSQL backend with additive migrations and indexed `pg_trgm` search; the local resolver uses it when configured and falls back to the JSON warehouse when it is unavailable.
 - The optional PostgreSQL warehouse now has a rebuildable `pgvector` index and strict hybrid lexical/semantic reciprocal-rank fusion. Semantic-only candidates require a high similarity threshold, retain retrieval provenance, and fall back to trigram or JSON retrieval when vectors are unavailable.
+- A reproducible 46-case Spanish warehouse-routing benchmark now covers all twelve statistical metric families plus ten out-of-domain inputs. With the installed `bge-m3` baseline, hybrid retrieval improved top-1 routing from 21/36 lexical to 36/36, retained 36/36 recall@3, rejected 10/10 out-of-domain inputs, and produced no known non-equivalent metric confusion.
+- Local runtime requests now use the supported numeric keep-alive contract; the previous duration-string form was rejected by the installed runtime and could silently force compiler, reranker, and embedding calls onto deterministic fallback.
 - Uncovered multi-term claims now have a bounded La Moncloa/BOE discovery fallback with progressive query narrowing, attributable document links, caching, freshness gates, and no-verdict rules; search hits remain provisional publication evidence rather than automatic fact checks.
 - La Moncloa discovery now carries a short, bounded relevant excerpt from the fetched official page into the provisional answer, with an explicit non-verdict label; the excerpt is rendered as evidence context rather than treated as a structured fact.
 - A bounded parser now recognizes official credit-transfer wording and renders amount, origin ministry, destination ministry, and purpose as a provisional money-flow component; it explicitly preserves the rule that a transfer does not prove a service cut or identify political staff.
@@ -213,7 +215,7 @@ The frontend submits once and polls automatically when a request is processing. 
 
 ## Phase 4 — Retrieval and evidence warehouse
 
-Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval now available. Broader source/domain coverage and a recorded semantic relevance benchmark remain pending.
+Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. Broader source/domain coverage and observation-level PostgreSQL benchmarking remain pending.
 
 Use local PostgreSQL with full-text search and pgvector initially. Cloudflare Vectorize is optional later; do not require it for the first production version.
 

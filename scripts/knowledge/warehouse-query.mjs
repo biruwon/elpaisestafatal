@@ -45,7 +45,7 @@ const readRecords = async () => {
   for (const file of files.slice(0, 5000)) {
     try {
       const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
-      for (const record of Array.isArray(payload.records) ? payload.records : []) records.push({ ...record, source: payload.source });
+      for (const record of Array.isArray(payload.records) ? payload.records : []) records.push({ ...record, metricId: record.metricId || payload.source?.metricId, source: payload.source });
     } catch { /* Validation reports malformed records separately. */ }
   }
   return records;

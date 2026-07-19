@@ -2,7 +2,8 @@ import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import pg from 'pg';
 import { sourceFreshness } from './source-freshness.mjs';
-import { reciprocalRankFusion, validateEmbedding } from './hybrid-retrieval.mjs';
+import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
+import { loadMetricRegistry } from './metric-registry.mjs';
 
 const { Pool } = pg;
 const connectionString = process.env.WAREHOUSE_DATABASE_URL || '';
@@ -156,7 +157,7 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
         JOIN source_documents s ON s.id = o.source_document_id
         WHERE o.search_embedding IS NOT NULL
           AND ((o.value IS NOT NULL) OR o.kind = 'official_publication')
-          AND 1 - (o.search_embedding <=> $1::vector) >= 0.72
+          AND 1 - (o.search_embedding <=> $1::vector) >= 0.42
         ORDER BY o.search_embedding <=> $1::vector
         LIMIT $2
       `, [JSON.stringify(queryEmbedding), Math.max(12, Math.min(100, limit * 3))]);
@@ -165,8 +166,10 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
       // warehouse. Semantic search is an opt-in derived acceleration layer.
       return lexical;
     }
-    const semantic = semanticResult.rows.map((row) => rowToObservation(row));
-    return reciprocalRankFusion(lexical, semantic, { limit });
+    const registry = await loadMetricRegistry();
+    const withMetricRules = (item) => ({ ...item, notEquivalentTo: registry[item.metricId]?.notEquivalentTo || [] });
+    const resolved = resolveMetricConflict(lexical.map(withMetricRules), semanticResult.rows.map((row) => withMetricRules(rowToObservation(row))));
+    return reciprocalRankFusion(resolved.lexical, resolved.semantic, { limit, preferredId: resolved.preferredId });
   });
 };
 
@@ -179,7 +182,7 @@ export const populateWarehouseEmbeddings = async ({ endpoint, model, batchSize =
     let written = 0;
     for (let offset = 0; offset < pending.rows.length; offset += batchSize) {
       const batch = pending.rows.slice(offset, offset + batchSize);
-      const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input: batch.map((row) => row.search_text), keep_alive: '-1' }), signal: AbortSignal.timeout(60_000) });
+      const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input: batch.map((row) => row.search_text), keep_alive: -1 }), signal: AbortSignal.timeout(60_000) });
       if (!response.ok) throw new Error(`Embedding request failed with ${response.status}`);
       const embeddings = (await response.json()).embeddings;
       if (!Array.isArray(embeddings) || embeddings.length !== batch.length || embeddings.some((embedding) => !validateEmbedding(embedding, embeddingDimensions))) throw new Error(`Embedding response must contain ${embeddingDimensions}-dimension vectors`);

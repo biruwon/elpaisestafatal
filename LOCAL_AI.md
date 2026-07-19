@@ -112,6 +112,15 @@ WAREHOUSE_SEMANTIC_SEARCH=1 npm run dev:ai
 
 This creates a rebuildable 1,024-dimension embedding index for the current `bge-m3` baseline. Semantic retrieval is opt-in: it is fused with lexical results, retains the retrieval channel and score, rejects weak semantic-only candidates, and falls back to trigram or JSON retrieval when the vector extension, embedding runtime, or database is unavailable. If the embedding model changes, rebuild the derived embeddings and re-run the evaluation corpus before enabling it.
 
+Run the metric-routing benchmark before changing the embedding model or thresholds:
+
+```bash
+npm run knowledge:hybrid:corpus
+npm run knowledge:hybrid:benchmark
+```
+
+The July 2026 `bge-m3` baseline achieved 36/36 top-1 and recall@3 metric matches, rejected 10/10 out-of-domain inputs, and produced zero known non-equivalent metric confusions. The generated detailed report is written to the ignored `.local/warehouse-retrieval-benchmark.json` file.
+
 ### Bounded official-source discovery
 
 When structured retrieval has no usable match, the local resolver may search current La Moncloa references and the BOE’s public search surface using at least two meaningful terms. It tries a small number of progressively narrower queries, applies freshness bounds, fetches a bounded number of matching official documents for short excerpts and typed fields, caches query results briefly, retains attributable discovered documents for up to 24 hours, persists the derived result by normalized signature, and exposes only attributable document links. A search hit is rendered as provisional publication evidence; it never becomes a published verdict automatically.

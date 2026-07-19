@@ -123,7 +123,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   if (!validateEvidencePacket(packet).ok) return result.result;
   const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
     const draft = parseModelJson(response.message?.content);
     const upgraded = applySafePlanUpgrade(result.result, draft, packet);
     return validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok ? upgraded : result.result;
@@ -184,7 +184,7 @@ const normalizeCompiler = (value, text) => {
 const compileClaim = async (text) => {
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 280, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 2500);
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 280, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 2500);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
     return normalizeCompiler(value, text);
@@ -355,8 +355,8 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (item.kind === 'official_publication' && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
-    const semanticDirect = item.semanticScore >= 0.82 && item.retrievalChannels?.includes('semantic');
-    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticDirect) return false;
+    const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
+    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
     const populationFit = populationEvidenceFit(compiler?.population, item);
     if (populationFit === 'mismatch') return false;
     item.populationFit = populationFit;
@@ -506,7 +506,7 @@ const getIndex = async () => {
       if (saved.signature === signature) return saved;
     } catch { /* Rebuild the local index. */ }
     let embeddings = [];
-    try { embeddings = (await ollama('/api/embed', { model: embedModel, input: entries.map(searchText), keep_alive: '-1' }, 30000)).embeddings || []; } catch { /* Lexical fallback. */ }
+    try { embeddings = (await ollama('/api/embed', { model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)).embeddings || []; } catch { /* Lexical fallback. */ }
     const value = { signature, entries, embeddings };
     await writeFile(indexPath, JSON.stringify(value));
     return value;
@@ -516,7 +516,7 @@ const getIndex = async () => {
 
 const rerank = async (text, candidates, compiled) => {
   const prompt = `Clasifica una afirmación en español. Devuelve solo JSON válido: {"status":"published|related|uncovered","primarySlug":"","canonical":"","reason":"","questions":[]}. Solo puedes usar como primarySlug un candidato con published=true. No inventes datos ni respuestas. Si no hay coincidencia publicada, usa uncovered.\n\nAfirmación: ${text.slice(0, 4000)}\nEstructura extraída (no es evidencia): ${compiled ? JSON.stringify(compiled) : 'no disponible'}\nCandidatos:\n${candidates.map((entry) => `${entry.published ? 'published' : 'internal'}:${entry.slug} — ${entry.title}`).join('\n')}`;
-  try { return parseModelJson((await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: 'json', keep_alive: '-1', options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 3500)).message?.content); } catch { return null; }
+  try { return parseModelJson((await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: 'json', keep_alive: -1, options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 3500)).message?.content); } catch { return null; }
 };
 
 const classify = async (text) => {
@@ -534,7 +534,7 @@ const classify = async (text) => {
   // alias matches are already covered lexically; semantic retrieval is only
   // useful when the input has a plausible relation to the published index.
   if ((lexicalRanked[0]?.lexical || 0) >= 0.1) {
-    try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: '-1' }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
+    try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({ entry, lexical, semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
@@ -852,7 +852,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled) {
     try {
-      const embedded = await ollama('/api/embed', { model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: '-1' }, 1800);
+      const embedded = await ollama('/api/embed', { model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: -1 }, 1800);
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
