@@ -222,7 +222,7 @@ const toResolveResult = (text, classified) => {
     summary: answer,
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
-    blocks: primary ? [{ type: 'confirmed', propositionIds: primary.evidenceIds || [] }, { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?'] }],
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?'] }],
     clarificationQuestion: classified.guidance?.questions?.[0],
     limitation: classified.guidance?.limitation,
     evidenceIds,

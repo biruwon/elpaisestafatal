@@ -79,7 +79,8 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-breakdown"><span class="clarification-label">Qué estamos comprobando</span><p>${escapeHtml(block.propositionIds.join(' · '))}</p></div>`;
   }
   if (block.type === 'confirmed') {
-    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span><p>${escapeHtml(`${block.propositionIds.length} parte${block.propositionIds.length === 1 ? '' : 's'} de la afirmación`)}</p></div>`;
+    const linked = block.evidenceIds?.length || block.propositionIds.length;
+    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span><p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p></div>`;
   }
   if (block.type === 'cannot_conclude') {
     return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
