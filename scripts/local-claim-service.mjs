@@ -11,6 +11,7 @@ const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
+const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.es', 'hacienda.gob.es', 'interior.gob.es', 'seg-social.es', 'sepe.es', 'bde.es', 'datos.gob.es', 'congreso.es', 'senado.es', 'poderjudicial.es'];
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const answerCache = new Map();
 const resolveJobs = new Map();
@@ -79,6 +80,30 @@ const extractImageText = async (media) => {
   if (!media?.base64) return '';
   const response = await ollama('/api/chat', { model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
   return String(response.message?.content || '').trim().slice(0, 8000);
+};
+
+const sourceHostAllowed = (hostname) => approvedSourceHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
+const extractPageText = async (value) => {
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || !sourceHostAllowed(url.hostname)) throw new Error('Source host is not approved');
+  const response = await fetch(url, { redirect: 'error', headers: { accept: 'text/html,application/json;q=0.9' }, signal: AbortSignal.timeout(12000) });
+  if (!response.ok) throw new Error(`Source returned ${response.status}`);
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('html') && !contentType.includes('json') && !contentType.includes('text/')) throw new Error('Unsupported source format');
+  const reader = response.body?.getReader();
+  if (!reader) return '';
+  const chunks = [];
+  let total = 0;
+  while (total < 2 * 1024 * 1024) {
+    const part = await reader.read();
+    if (part.done) break;
+    const remaining = Math.min(part.value.byteLength, 2 * 1024 * 1024 - total);
+    chunks.push(Buffer.from(part.value.slice(0, remaining)));
+    total += remaining;
+    if (remaining < part.value.byteLength) break;
+  }
+  const raw = Buffer.concat(chunks).toString('utf8');
+  return contentType.includes('html') ? raw.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 20000) : raw.slice(0, 20000);
 };
 
 const searchText = (entry) => [entry.title, ...(entry.aliases || []), ...(entry.keywords || [])].join(' ');
@@ -204,6 +229,20 @@ const startMediaResolveJob = (text, inputType, media) => {
   return job;
 };
 
+const startUrlResolveJob = (url) => {
+  const id = requestId(`url:${url}`);
+  const existing = resolveJobs.get(id);
+  if (existing) return existing;
+  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  resolveJobs.set(id, job);
+  void (async () => {
+    const extracted = await extractPageText(url);
+    if (!extracted) throw new Error('No source text extracted');
+    resolveJobs.set(id, { ...toResolveResult(extracted, await classify(extracted)), createdAt: job.createdAt, completedAt: Date.now() });
+  })().catch((error) => { console.error('Link extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
+  return job;
+};
+
 const toResolveResult = (text, classified) => {
   const relatedClaims = (classified.alternatives || []).map((item) => ({
     kind: item.kind,
@@ -277,7 +316,7 @@ const server = createServer(async (request, response) => {
         return;
       }
       const body = await readResolveBody(request);
-      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
+      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

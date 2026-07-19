@@ -195,7 +195,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
-    const inputType = file?.type.startsWith('audio/') ? 'audio' : file ? 'image' : 'text';
+    const inputType = file?.type.startsWith('audio/') ? 'audio' : file ? 'image' : /^https:\/\//i.test(query) ? 'url' : 'text';
     const requestBody = file ? (() => { const body = new FormData(); body.set('text', query); body.set('inputType', inputType); body.set('file', file); return body; })() : JSON.stringify({ text: query, inputType });
     const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
