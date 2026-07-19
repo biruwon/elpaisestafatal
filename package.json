@@ -26,6 +26,7 @@
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs",
+    "knowledge:answer-plan": "node scripts/knowledge/validate-answer-plan.mjs",
     "knowledge:warehouse:sql": "node scripts/knowledge/export-warehouse-sql.mjs",
     "knowledge:warehouse:postgres": "node scripts/knowledge/load-warehouse-postgres.mjs",
     "knowledge:warehouse:postgres:validate": "node scripts/knowledge/validate-postgres-warehouse.mjs",

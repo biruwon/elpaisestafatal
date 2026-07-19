@@ -66,5 +66,17 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   } catch (error) { failures.push(`warehouse: ${error.message}`); }
 }
 
+if (process.env.SMOKE_OFFICIAL === '1') {
+  try {
+    const result = await resolve('El Gobierno quita 310 millones de educación para gastos de personal de presidencia');
+    const moneyFlow = result.result?.blocks?.find((block) => block.type === 'money_flow');
+    const reply = result.result?.blocks?.find((block) => block.type === 'conversation_reply');
+    if (result.status !== 'draft') failures.push(`official transfer: expected draft, received ${result.status}`);
+    if (!moneyFlow?.evidenceIds?.length) failures.push('official transfer: money flow lost its evidence IDs');
+    if (!reply?.evidenceIds?.length) failures.push('official transfer: conversation reply lost its evidence IDs');
+    if (!result.result?.sourceLinks?.length || !result.result.sourceLinks.every((source) => /^https:\/\//i.test(source.url))) failures.push('official transfer: source link is missing or not attributable');
+  } catch (error) { failures.push(`official transfer: ${error.message}`); }
+}
+
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''} cases at ${base}`);
