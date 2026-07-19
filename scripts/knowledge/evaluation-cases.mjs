@@ -14,11 +14,16 @@ const knownSeeds = [
   ['paro-historico', 'trend', 'España tiene el paro más bajo de la historia'],
   ['precio-vivienda-caera', 'prediction', 'El precio de la vivienda va a caer como en 2008'],
   ['construir-vivienda', 'normative', 'Basta con construir más vivienda'],
+];
+
+// These are deliberately present in the corpus as unpublished claims. The
+// resolver must not expose planned editorial records as public answers.
+const unpublishedSeeds = [
   ['desalojar-a-un-ocupante-ilegal-tarda-anos', 'legal', 'Desalojar a un ocupante ilegal tarda años'],
   ['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'legal', 'La ley trans permite cambiar de sexo sin ningún control'],
   ['la-amnistia-rompe-la-igualdad-ante-la-ley', 'normative', 'La amnistía rompe la igualdad ante la ley'],
   ['la-brecha-salarial-de-genero-es-un-mito', 'group_comparison', 'La brecha salarial de género es un mito'],
-  ['espana-esta-sufriendo-un-reemplazo-poblacional', 'predictive', 'España está sufriendo un reemplazo poblacional'],
+  ['espana-esta-sufriendo-un-reemplazo-poblacional', 'prediction', 'España está sufriendo un reemplazo poblacional'],
 ];
 
 const accentless = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
@@ -41,6 +46,23 @@ for (const [slug, category, prompt] of knownSeeds) {
     `¿Qué hay de cierto en que ${prompt.toLocaleLowerCase('es')}?`,
   ];
   variants.forEach((input, index) => cases.push({ id: `known-${slug}-${index + 1}`, input, expected: { status: 'known', slug }, category }));
+}
+for (const [slug, category, prompt] of unpublishedSeeds) {
+  const variants = [
+    prompt,
+    `¿Es verdad que ${prompt.toLocaleLowerCase('es')}?`,
+    `En el grupo dicen que ${prompt.toLocaleLowerCase('es')}`,
+    `Mi cuñado insiste: ${prompt.toLocaleLowerCase('es')}`,
+    accentless(prompt),
+    typo(prompt),
+    `Según los datos, ${prompt.toLocaleLowerCase('es')}`,
+    `No me creo que ${prompt.toLocaleLowerCase('es')}`,
+    `¿De verdad ${prompt.toLocaleLowerCase('es')}?`,
+    `${prompt} y por eso todo va peor`,
+    `He leído esto: “${prompt}”`,
+    `¿Qué hay de cierto en que ${prompt.toLocaleLowerCase('es')}?`,
+  ];
+  variants.forEach((input, index) => cases.push({ id: `unpublished-${slug}-${index + 1}`, input, expected: { status: 'unknown' }, category }));
 }
 
 const unknownInputs = [

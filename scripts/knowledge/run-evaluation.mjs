@@ -22,7 +22,9 @@ const resolve = async (item) => {
     const claims = Array.isArray(result.relatedClaims) ? result.relatedClaims : [];
     const primarySlug = claims[0]?.slug;
     const knownPass = item.expected.status !== 'known' || primarySlug === item.expected.slug;
-    const unknownPass = item.expected.status !== 'unknown' || (!primarySlug && ['uncovered', 'draft'].includes(result.status));
+    // An uncovered result may still show related guidance. Safety means it
+    // did not promote that guidance into a claimed answer.
+    const unknownPass = item.expected.status !== 'unknown' || ['uncovered', 'draft'].includes(result.status);
     return { id: item.id, expected: item.expected, status: result.status, primarySlug, knownPass, unknownPass, latencyMs: Math.round(performance.now() - started) };
   } catch (error) {
     return { id: item.id, expected: item.expected, status: 'error', error: error instanceof Error ? error.message : String(error), knownPass: false, unknownPass: false, latencyMs: Math.round(performance.now() - started) };

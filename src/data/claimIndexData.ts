@@ -24,6 +24,12 @@ const topicVocabulary: Record<string, string[]> = {
 const clean = (value: string): string => value.replace(/[“”]/g, '').trim();
 
 const conversationAliases = new Map(conversationMvpClaims.map((claim) => [claim.slug, [claim.prompt, ...claim.aliases]]));
+const scalableAliases: Record<string, string[]> = {
+  'airbnb-vivienda': ['pisos turísticos han causado la crisis de vivienda', 'los pisos turísticos causan la crisis de vivienda', 'alquiler turístico crisis vivienda'],
+  'paro-historico': ['paro más bajo de la historia', 'paro mínimo histórico', 'España tiene el paro más bajo de la historia'],
+  'empleo-record': ['España tiene más empleo que nunca', 'más empleo que nunca', 'récord de empleo en España', 'nunca ha habido tanta gente trabajando'],
+  'espana-mas-peligrosa': ['España es cada vez más peligrosa', 'España se está volviendo mucho más peligrosa', 'cada vez hay más delincuencia en España'],
+};
 
 export const claimIndexEntries: ClaimIndexEntry[] = [
   ...claims.filter((claim) => claim.published).map((claim) => ({
@@ -31,7 +37,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     slug: claim.slug,
     title: clean(claim.claim),
     href: `/afirmaciones/${claim.slug}`,
-    aliases: [...(conversationAliases.get(claim.slug) ?? []), ...claim.aliases, claim.topic],
+    aliases: [...(conversationAliases.get(claim.slug) ?? []), ...claim.aliases, ...(scalableAliases[claim.slug] ?? []), claim.topic],
     keywords: [...claim.keywords, ...claim.topicSlugs],
     assessment: claim.assessment,
     answer: claim.shareable,

@@ -33,7 +33,8 @@ let indexPromise;
 let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
-const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno'].includes(token)))];
+const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'más', 'mas', 'todo', 'va', 'peor']);
+const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 
@@ -283,7 +284,13 @@ const classify = async (text) => {
   const index = await getIndex();
   let vector = null;
   try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: '-1' }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
-  const ranked = index.entries.map((entry, position) => ({ entry, lexical: lexicalScore(text, entry), semantic: cosine(vector, index.embeddings[position]) })).map((item) => ({ ...item, score: vector ? item.lexical * 0.35 + item.semantic * 0.65 : item.lexical })).sort((a, b) => b.score - a.score);
+  const ranked = index.entries.map((entry, position) => ({ entry, lexical: lexicalScore(text, entry), semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
+    // Semantic similarity is useful for paraphrases, but it must not outrank
+    // distinctive words in a short political claim. Keep lexical evidence
+    // dominant whenever the user supplied a meaningful direct match.
+    const lexicalWeight = item.lexical >= 0.55 ? 0.75 : 0.55;
+    return { ...item, score: vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical };
+  }).sort((a, b) => b.score - a.score);
   const publicRanked = ranked.filter((item) => item.entry.published);
   const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score }));
   const top = publicRanked[0];

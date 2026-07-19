@@ -55,7 +55,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
 export const onRequestGet = async ({ env }: Context): Promise<Response> => {
   if (!env.DB) return json({ status: 'unavailable', claims: [] }, 503);
   try {
-    const rows = await env.DB.prepare(`SELECT id, canonical_text AS text, query_count AS count, coverage_status AS status FROM query_clusters WHERE review_status != 'hidden' ORDER BY query_count DESC, last_seen_at DESC LIMIT 12`).all();
+    // Raw submissions may contain insults, personal details, or unreviewed
+    // allegations. Only explicitly approved canonical questions belong in the
+    // public popularity feed.
+    const rows = await env.DB.prepare(`SELECT id, canonical_text AS text, query_count AS count, coverage_status AS status FROM query_clusters WHERE review_status = 'published' ORDER BY query_count DESC, last_seen_at DESC LIMIT 12`).all();
     return json({ status: 'ok', claims: rows.results });
   } catch {
     return json({ status: 'unavailable', claims: [] }, 503);
