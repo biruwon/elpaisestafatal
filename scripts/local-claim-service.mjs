@@ -23,6 +23,7 @@ const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
+const semanticWarehouseEnabled = process.env.WAREHOUSE_SEMANTIC_SEARCH === '1';
 const whisperCommand = process.env.WHISPER_COMMAND || '';
 const whisperArgs = (() => {
   try { return process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
@@ -343,18 +344,19 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
   return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-12);
 };
 
-const findWarehouseEvidence = async (query, compiler) => {
+const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const normalizedQuery = normalise(query);
   const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
-  const candidates = (await findWarehouseObservations(query, 100)).filter((item) => {
+  const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding })).filter((item) => {
     if (item.evidenceFit === 'weak') return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (item.kind === 'official_publication' && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
-    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term))) return false;
+    const semanticDirect = item.semanticScore >= 0.82 && item.retrievalChannels?.includes('semantic');
+    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticDirect) return false;
     const populationFit = populationEvidenceFit(compiler?.population, item);
     if (populationFit === 'mismatch') return false;
     item.populationFit = populationFit;
@@ -847,7 +849,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.
   const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
-  const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery, classified.compiler) : { observations: [], source: undefined };
+  let queryEmbedding;
+  if (!classified.primary && semanticWarehouseEnabled) {
+    try {
+      const embedded = await ollama('/api/embed', { model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: '-1' }, 1800);
+      queryEmbedding = embedded.embeddings?.[0];
+    } catch { /* Hybrid retrieval falls back to lexical search. */ }
+  }
+  const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery, classified.compiler, queryEmbedding) : { observations: [], source: undefined };
   const indexedSource = !classified.primary && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,

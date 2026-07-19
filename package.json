@@ -47,6 +47,7 @@
     "knowledge:warehouse:sql": "node scripts/knowledge/export-warehouse-sql.mjs",
     "knowledge:warehouse:postgres": "node scripts/knowledge/load-warehouse-postgres.mjs",
     "knowledge:warehouse:postgres:validate": "node scripts/knowledge/validate-postgres-warehouse.mjs",
+    "knowledge:hybrid": "node scripts/knowledge/validate-hybrid-retrieval.mjs",
     "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",

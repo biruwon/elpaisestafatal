@@ -98,9 +98,9 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     }));
 };
 
-export const findWarehouseObservations = async (query, limit = 12) => {
+export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding } = {}) => {
   if (postgresEnabled()) {
-    const results = await queryPostgresWarehouse(query, limit);
+    const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
     if (results) return results;
   }
   return rankWarehouseObservations(query, await readRecords(), limit);

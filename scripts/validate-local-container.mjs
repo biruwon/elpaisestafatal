@@ -17,6 +17,9 @@ requireText(dockerfile, 'COPY config ./config', 'Dockerfile');
 requireText(compose, '127.0.0.1:8789:8789', 'Compose');
 requireText(compose, 'LOCAL_CLASSIFIER_TOKEN', 'Compose');
 requireText(compose, 'OLLAMA_ENDPOINT', 'Compose');
+requireText(compose, 'WAREHOUSE_SEMANTIC_SEARCH', 'Compose');
+requireText(compose, 'pgvector/pgvector:pg16', 'Compose');
+requireText(compose, '0004_warehouse_vectors.sql', 'Compose');
 requireText(compose, 'healthcheck:', 'Compose');
 if (!packageJson.dependencies?.pg) errors.push('package.json: PostgreSQL runtime dependency is missing');
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }

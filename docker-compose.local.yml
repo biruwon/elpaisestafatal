@@ -13,6 +13,7 @@ services:
       OLLAMA_VISION_MODEL: ${OLLAMA_VISION_MODEL:-gemma3:4b}
       WAREHOUSE_DATABASE_URL: ${WAREHOUSE_DATABASE_URL:-}
       WAREHOUSE_DATABASE_POOL_SIZE: ${WAREHOUSE_DATABASE_POOL_SIZE:-4}
+      WAREHOUSE_SEMANTIC_SEARCH: ${WAREHOUSE_SEMANTIC_SEARCH:-0}
       WHISPER_COMMAND: ${WHISPER_COMMAND:-}
       WHISPER_ARGS: ${WHISPER_ARGS:-["{audio}"]}
     extra_hosts:
@@ -27,3 +28,27 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+
+  warehouse:
+    image: pgvector/pgvector:pg16
+    profiles: ["warehouse"]
+    environment:
+      POSTGRES_DB: claims
+      POSTGRES_USER: claims
+      POSTGRES_PASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD:-local-development-only}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - warehouse-data:/var/lib/postgresql/data
+      - ./migrations/0002_evidence_warehouse.sql:/docker-entrypoint-initdb.d/0002_evidence_warehouse.sql:ro
+      - ./migrations/postgres/0003_warehouse_search.sql:/docker-entrypoint-initdb.d/0003_warehouse_search.sql:ro
+      - ./migrations/postgres/0004_warehouse_vectors.sql:/docker-entrypoint-initdb.d/0004_warehouse_vectors.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claims -d claims"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  warehouse-data:

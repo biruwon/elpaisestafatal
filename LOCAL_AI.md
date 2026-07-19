@@ -101,6 +101,17 @@ WAREHOUSE_DATABASE_URL="$WAREHOUSE_DATABASE_URL" npm run dev:ai
 
 The loader applies the additive warehouse migrations, creates the `pg_trgm` search index, and upserts the current source snapshots and observations. If the database is unavailable, the resolver automatically falls back to `.local/source-warehouse`; the public API and UI do not change. PostgreSQL is a derived copy and can always be rebuilt from the source manifests.
 
+For semantic retrieval, the compose file also provides an optional PostgreSQL profile with `pgvector`:
+
+```bash
+docker compose -f docker-compose.local.yml --profile warehouse up -d warehouse
+export WAREHOUSE_DATABASE_URL='postgresql://claims:local-development-only@127.0.0.1:5433/claims'
+WAREHOUSE_EMBEDDINGS=1 npm run knowledge:warehouse:postgres
+WAREHOUSE_SEMANTIC_SEARCH=1 npm run dev:ai
+```
+
+This creates a rebuildable 1,024-dimension embedding index for the current `bge-m3` baseline. Semantic retrieval is opt-in: it is fused with lexical results, retains the retrieval channel and score, rejects weak semantic-only candidates, and falls back to trigram or JSON retrieval when the vector extension, embedding runtime, or database is unavailable. If the embedding model changes, rebuild the derived embeddings and re-run the evaluation corpus before enabling it.
+
 ### Bounded official-source discovery
 
 When structured retrieval has no usable match, the local resolver may search current La Moncloa references and the BOE’s public search surface using at least two meaningful terms. It tries a small number of progressively narrower queries, applies freshness bounds, fetches a bounded number of matching official documents for short excerpts and typed fields, caches query results briefly, retains attributable discovered documents for up to 24 hours, persists the derived result by normalized signature, and exposes only attributable document links. A search hit is rendered as provisional publication evidence; it never becomes a published verdict automatically.
