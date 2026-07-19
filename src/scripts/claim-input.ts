@@ -3,7 +3,7 @@ import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
 
 type SearchResponse = {
-  status?: 'published' | 'related' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
+  status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
   requestId?: string;
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
@@ -100,9 +100,14 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   return '';
 }).join('');
 
+const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
+  ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
+  : '';
+
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = []): void => {
   if (!result) return;
-  result.innerHTML = `<article class="claim-result-card" data-state="published"><div class="claim-result-top"><span class="eyebrow">Aclaración estructurada</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p>${visualMarkup(primary)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}</article>`;
+  const isDraft = !primary && Boolean(plan.sourceLinks?.length);
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p>${visualMarkup(primary)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}</article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Copiada'; } catch { button.textContent = 'No se ha podido copiar'; }
   }));
@@ -160,6 +165,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   }
   if (response.status === 'complete' && primary) {
     renderCard('published', original, primary, alternatives, undefined, response.result?.summary || response.primary?.reason);
+    return;
+  }
+  if (response.status === 'draft' && response.result) {
+    renderStructuredPlan(original, response.result, primary, alternatives);
     return;
   }
   if (response.status === 'partial' && primary) {

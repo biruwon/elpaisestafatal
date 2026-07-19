@@ -81,11 +81,12 @@ export type AnswerPlan = {
   limitation?: string;
   evidenceIds: string[];
   sourceIds: string[];
+  sourceLinks?: Array<{ id: string; title: string; url: string }>;
   knowledgeVersion: string;
 };
 
 export type ResolveResult = {
-  status: 'complete' | 'partial' | 'uncovered' | 'unavailable' | 'processing';
+  status: 'complete' | 'partial' | 'draft' | 'uncovered' | 'unavailable' | 'processing';
   requestId?: string;
   result?: AnswerPlan;
   relatedClaims?: StaticClaimReference[];

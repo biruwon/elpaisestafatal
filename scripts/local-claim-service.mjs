@@ -224,7 +224,7 @@ const startMediaResolveJob = (text, inputType, media) => {
     const extracted = await extractImageText(media);
     if (!extracted) throw new Error('No text extracted');
     const combined = [text, extracted].filter(Boolean).join('\n\n');
-    resolveJobs.set(id, { ...toResolveResult(combined, await classify(combined)), createdAt: job.createdAt, completedAt: Date.now() });
+    resolveJobs.set(id, { ...toResolveResult(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() });
   })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
   return job;
 };
@@ -238,12 +238,13 @@ const startUrlResolveJob = (url) => {
   void (async () => {
     const extracted = await extractPageText(url);
     if (!extracted) throw new Error('No source text extracted');
-    resolveJobs.set(id, { ...toResolveResult(extracted, await classify(extracted)), createdAt: job.createdAt, completedAt: Date.now() });
+    const source = { id: `url-${digest(url).slice(0, 20)}`, title: `Fuente oficial: ${new URL(url).hostname}`, url };
+    resolveJobs.set(id, { ...toResolveResult(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() });
   })().catch((error) => { console.error('Link extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
   return job;
 };
 
-const toResolveResult = (text, classified) => {
+const toResolveResult = (text, classified, source, resultRequestId = requestId(text)) => {
   const relatedClaims = (classified.alternatives || []).map((item) => ({
     kind: item.kind,
     slug: item.slug,
@@ -255,23 +256,24 @@ const toResolveResult = (text, classified) => {
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];
   const sourceIds = primary?.sourceRefs || [];
-  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : 'uncovered';
+  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || 'Todavía no tenemos una comprobación publicada para esta afirmación.',
-    summary: answer,
+    headline: primary?.title || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : source ? 'Hemos podido leer la fuente enlazada, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer,
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
-    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?'] }],
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
     clarificationQuestion: classified.guidance?.questions?.[0],
     limitation: classified.guidance?.limitation,
     evidenceIds,
     sourceIds,
+    ...(source ? { sourceLinks: [source] } : {}),
     knowledgeVersion: 'legacy-index',
   };
-  return { status, requestId: requestId(text), result, relatedClaims };
+  return { status, requestId: resultRequestId, result, relatedClaims: source && !primary ? [] : relatedClaims };
 };
 
 const readText = async (request) => {
