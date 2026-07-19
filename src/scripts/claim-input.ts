@@ -134,7 +134,7 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
   if (!result) return;
-  const isDraft = !primary && Boolean(plan.sourceLinks?.length);
+  const isDraft = !primary && (Boolean(plan.sourceLinks?.length) || plan.coverage !== 'strong');
   result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Copiada'; } catch { button.textContent = 'No se ha podido copiar'; }
@@ -226,6 +226,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     return;
   }
   if (response.status === 'uncovered') {
+    if (response.result?.blocks?.some((block) => block.type === 'claim_breakdown')) {
+      renderStructuredPlan(original, response.result, primary, alternatives.length ? alternatives : fallback.slice(0, 2), response.requestId);
+      return;
+    }
     renderCard('uncovered', original, undefined, alternatives.length ? alternatives : fallback.slice(0, 2), response.guidance || {
       questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
       limitation: response.result?.limitation,
