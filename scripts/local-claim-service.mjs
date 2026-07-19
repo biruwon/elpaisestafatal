@@ -115,11 +115,11 @@ const classify = async (text) => {
   const publicRanked = ranked.filter((item) => item.entry.published);
   const top = publicRanked[0];
   const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
-  if (top && top.score >= 0.84 && margin >= 0.12 && top.lexical >= 0.7) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.' }, alternatives: publicRanked.slice(1, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })) };
+  if (top && top.score >= 0.68 && margin >= 0.12 && top.lexical >= 0.6) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: publicRanked.slice(1, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })) };
   const model = await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry));
   const selected = model?.primarySlug && index.entries.find((entry) => entry.slug === model.primarySlug && entry.published);
   const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
-  const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '' } : undefined, alternatives: publicRanked.slice(0, 3).filter(({ entry }) => entry.slug !== selected?.slug).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: publicRanked.slice(0, 3).filter(({ entry }) => entry.slug !== selected?.slug).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, result);
   return result;
 };
@@ -136,6 +136,8 @@ const toResolveResult = (text, classified) => {
   }));
   const primary = classified.primary;
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
+  const evidenceIds = primary?.evidenceIds || [];
+  const sourceIds = primary?.sourceRefs || [];
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : 'uncovered';
   const result = {
     schemaVersion: '1',
@@ -146,8 +148,8 @@ const toResolveResult = (text, classified) => {
     blocks: primary ? [{ type: 'confirmed', propositionIds: [] }, { type: 'conversation_reply', text: 'Puedes concretar el periodo, lugar o fuente para comprobar mejor esta afirmación.' }] : [{ type: 'cannot_conclude', evidenceIds: [], points: classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?'] }],
     clarificationQuestion: classified.guidance?.questions?.[0],
     limitation: classified.guidance?.limitation,
-    evidenceIds: [],
-    sourceIds: [],
+    evidenceIds,
+    sourceIds,
     knowledgeVersion: 'legacy-index',
   };
   return { status, requestId: requestId(text), result, relatedClaims };
