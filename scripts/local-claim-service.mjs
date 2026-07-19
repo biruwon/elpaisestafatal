@@ -22,6 +22,9 @@ const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
+const cacheTtlMs = 15 * 60 * 1000;
+const maxCacheEntries = 1000;
+const maxResolveJobs = 500;
 const answerCache = new Map();
 const resolveJobs = new Map();
 let indexPromise;
@@ -30,6 +33,15 @@ let warehousePromise;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno'].includes(token)))];
 const digest = (value) => createHash('sha256').update(value).digest('hex');
+
+const pruneRuntimeState = () => {
+  const now = Date.now();
+  for (const [key, item] of answerCache) if (!item || item.expiresAt <= now) answerCache.delete(key);
+  for (const [key, item] of resolveJobs) if (!item || (item.completedAt && item.completedAt + cacheTtlMs <= now) || (!item.completedAt && item.createdAt + cacheTtlMs <= now)) resolveJobs.delete(key);
+  while (answerCache.size > maxCacheEntries) answerCache.delete(answerCache.keys().next().value);
+  while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
+};
+setInterval(pruneRuntimeState, 60 * 1000).unref();
 
 const checkLocalEndpoint = () => {
   const host = new URL(endpoint).hostname;
@@ -250,7 +262,9 @@ const rerank = async (text, candidates, compiled) => {
 
 const classify = async (text) => {
   const key = normalise(text);
-  if (answerCache.has(key)) return answerCache.get(key);
+  const cached = answerCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  if (cached) answerCache.delete(key);
   const index = await getIndex();
   let vector = null;
   try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: '-1' }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
@@ -265,7 +279,8 @@ const classify = async (text) => {
   const selected = model?.primarySlug && index.entries.find((entry) => entry.slug === model.primarySlug && entry.published);
   const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
   const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: publicRanked.slice(0, 3).filter(({ entry }) => entry.slug !== selected?.slug).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score })), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
-  answerCache.set(key, result);
+  answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+  pruneRuntimeState();
   return result;
 };
 
@@ -275,6 +290,7 @@ const startResolveJob = (text) => {
   const id = requestId(text);
   const existing = resolveJobs.get(id);
   if (existing) return existing;
+  pruneRuntimeState();
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
@@ -291,6 +307,7 @@ const startMediaResolveJob = (text, inputType, media) => {
   const id = requestId(`${inputType}:${media?.sha || text}`);
   const existing = resolveJobs.get(id);
   if (existing) return existing;
+  pruneRuntimeState();
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
@@ -307,6 +324,7 @@ const startUrlResolveJob = (url) => {
   const id = requestId(`url:${url}`);
   const existing = resolveJobs.get(id);
   if (existing) return existing;
+  pruneRuntimeState();
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
