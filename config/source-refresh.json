@@ -3,71 +3,84 @@
     {
       "url": "https://www.boe.es/datosabiertos/api/boe/sumario/{yesterday}",
       "title": "Boletín Oficial del Estado · Sumario diario",
-      "aliases": ["BOE", "normas", "disposiciones", "nombramientos"]
+      "aliases": ["BOE", "normas", "disposiciones", "nombramientos"],
+      "metricId": "official_publication"
     }
   ],
   "ine": [
     {
       "url": "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50902?nult=12",
       "title": "Índice de precios de consumo e inflación en España",
-      "aliases": ["IPC", "inflación", "precios", "coste de vida"]
+      "aliases": ["IPC", "inflación", "precios", "coste de vida"],
+      "metricId": "cpi_index"
     }
   ],
   "eurostat": [
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015",
       "title": "Producto interior bruto de España · Eurostat",
-      "aliases": ["PIB", "GDP", "economía", "producción"]
+      "aliases": ["PIB", "GDP", "economía", "producción"],
+      "metricId": "gdp_current_prices"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2015",
       "title": "Tasa de desempleo de España · Eurostat",
-      "aliases": ["paro", "desempleo", "empleo", "tasa de paro"]
+      "aliases": ["paro", "desempleo", "empleo", "tasa de paro"],
+      "metricId": "unemployment_rate"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2025",
       "title": "Tasa de desempleo en Europa y España · Eurostat",
-      "aliases": ["paro", "desempleo", "Europa", "países", "ranking"]
+      "aliases": ["paro", "desempleo", "Europa", "países", "ranking"],
+      "metricId": "unemployment_rate_europe"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsi_emp_a?geo=ES&age=Y20-64&sex=T&unit=PC_POP&sinceTimePeriod=2015",
       "title": "Tasa de empleo de España · Eurostat",
-      "aliases": ["empleo", "ocupación", "tasa de empleo", "trabajo"]
+      "aliases": ["empleo", "ocupación", "tasa de empleo", "trabajo"],
+      "metricId": "employment_rate"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
-      "aliases": ["población", "habitantes", "demografía", "residentes"]
+      "aliases": ["población", "habitantes", "demografía", "residentes"],
+      "metricId": "resident_population"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_pop3ctb?geo=ES&age=TOTAL&sex=T&sinceTimePeriod=2015",
       "title": "Población por país de nacimiento en España · Eurostat",
-      "aliases": ["inmigración", "inmigrantes", "extranjeros", "nacidos en el extranjero", "país de nacimiento"]
+      "aliases": ["inmigración", "inmigrantes", "extranjeros", "nacidos en el extranjero", "país de nacimiento"],
+      "metricId": "foreign_born_population"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_imm8?geo=ES&age=TOTAL&sex=T&unit=NR&sinceTimePeriod=2015",
       "title": "Inmigración anual en España · Eurostat",
-      "aliases": ["inmigración", "llegadas", "inmigrantes", "flujos migratorios"]
+      "aliases": ["inmigración", "llegadas", "inmigrantes", "flujos migratorios"],
+      "metricId": "immigration_flows"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/crim_off_cat?geo=ES&unit=NR&sinceTimePeriod=2015",
       "title": "Delitos registrados en España · Eurostat",
-      "aliases": ["delincuencia", "crimen", "delitos", "seguridad"]
+      "aliases": ["delincuencia", "crimen", "delitos", "seguridad"],
+      "metricId": "recorded_offences"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/DEMO_R_D3DENS?geoLevel=nuts2&sinceTimePeriod=2015",
       "title": "Densidad de población por región · Eurostat",
-      "aliases": ["población", "densidad", "territorio", "regiones", "comunidades autónomas"]
+      "aliases": ["población", "densidad", "territorio", "regiones", "comunidades autónomas"],
+      "metricId": "regional_population_density"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP00&sinceTimePeriod=2015",
       "title": "Índice armonizado de precios de España · Eurostat",
-      "aliases": ["inflación europea", "precios", "coste de vida", "HICP"]
+      "aliases": ["inflación europea", "precios", "coste de vida", "HICP"],
+      "metricId": "harmonised_price_index"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?geo=ES&sinceTimePeriod=2015",
       "title": "Índice trimestral de precios de la vivienda en España · Eurostat",
-      "aliases": ["vivienda", "precios de la vivienda", "precio de la vivienda", "casas", "alquileres"]
+      "aliases": ["vivienda", "precios de la vivienda", "precio de la vivienda", "casas", "alquileres"],
+      "metricId": "house_price_index"
     }
   ]
 }

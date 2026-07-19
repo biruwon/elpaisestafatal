@@ -21,6 +21,13 @@ if (!config) {
   console.log(`No refresh configuration found at ${configCandidates.join(' or ')}. Create one with {"ine":["https://..."]}.`);
   process.exit(0);
 }
+let canonicalConfig = {};
+try { canonicalConfig = JSON.parse(await readFile('config/source-refresh.json', 'utf8')); } catch { /* A custom deployment may provide only its selected config. */ }
+const metricForResource = (sourceId, definition) => {
+  if (definition.metricId) return definition.metricId;
+  const canonical = Array.isArray(canonicalConfig[sourceId]) ? canonicalConfig[sourceId].find((item) => (typeof item === 'string' ? item : item?.url) === definition.url || (typeof item !== 'string' && item?.title && item.title === definition.title)) : undefined;
+  return typeof canonical === 'object' ? canonical.metricId : undefined;
+};
 
 const byId = new Map(sourceRegistry.map((source) => [source.id, source]));
 const today = new Date();
@@ -37,7 +44,7 @@ const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
   return urls.map((resource) => {
     const definition = typeof resource === 'string' ? { url: resource } : resource;
     if (!definition || typeof definition.url !== 'string') throw new Error(`Refresh resource for ${sourceId} must contain a URL`);
-    return { sourceId, url: expandUrl(definition.url), title: definition.title, aliases: Array.isArray(definition.aliases) ? definition.aliases : [] };
+    return { sourceId, url: expandUrl(definition.url), title: definition.title, aliases: Array.isArray(definition.aliases) ? definition.aliases : [], metricId: metricForResource(sourceId, definition) };
   });
 });
 if (!jobs.length) { console.log('Refresh configuration contains no URLs.'); process.exit(0); }
@@ -48,6 +55,7 @@ for (const job of jobs) {
     const childArgs = ['scripts/knowledge/ingest-source.mjs', '--url', job.url];
     if (job.title) childArgs.push('--title', job.title);
     if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
+    if (job.metricId) childArgs.push('--metric-id', job.metricId);
     const child = spawn(process.execPath, childArgs, { stdio: 'inherit' });
     child.on('error', reject);
     child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Ingestion failed for ${job.url} (${code})`)));

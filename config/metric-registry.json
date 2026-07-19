@@ -1,0 +1,106 @@
+{
+  "official_publication": {
+    "name": "Official publication record",
+    "aliases": ["BOE", "normas", "disposiciones", "nombramientos"],
+    "unit": "document",
+    "population": "published official documents",
+    "notEquivalentTo": [],
+    "dimensions": ["publication_date", "department", "document_type"]
+  },
+  "cpi_index": {
+    "name": "Consumer price index",
+    "aliases": ["IPC", "inflación", "precios", "coste de vida"],
+    "unit": "index",
+    "population": "all households",
+    "notEquivalentTo": ["house_price_index", "harmonised_price_index"],
+    "dimensions": ["period", "geography", "consumption_group"]
+  },
+  "gdp_current_prices": {
+    "name": "Gross domestic product at current prices",
+    "aliases": ["PIB", "GDP", "economía", "producción"],
+    "unit": "EUR",
+    "population": "national economy",
+    "notEquivalentTo": [],
+    "dimensions": ["period", "geography", "national_account_item"]
+  },
+  "unemployment_rate": {
+    "name": "Unemployment rate",
+    "aliases": ["paro", "desempleo", "tasa de paro"],
+    "unit": "percent of active population",
+    "population": "active population aged 15-74",
+    "notEquivalentTo": ["employment_rate"],
+    "dimensions": ["period", "geography", "age", "sex"]
+  },
+  "unemployment_rate_europe": {
+    "name": "Comparable unemployment rate across European countries",
+    "aliases": ["paro", "desempleo", "Europa", "ranking"],
+    "unit": "percent of active population",
+    "population": "active population aged 15-74",
+    "notEquivalentTo": ["unemployment_rate"],
+    "dimensions": ["period", "country", "age", "sex"]
+  },
+  "employment_rate": {
+    "name": "Employment rate",
+    "aliases": ["empleo", "ocupación", "tasa de empleo", "trabajo"],
+    "unit": "percent of population",
+    "population": "population aged 20-64",
+    "notEquivalentTo": ["unemployment_rate"],
+    "dimensions": ["period", "geography", "age", "sex"]
+  },
+  "resident_population": {
+    "name": "Resident population",
+    "aliases": ["población", "habitantes", "demografía", "residentes"],
+    "unit": "persons",
+    "population": "usual residents",
+    "notEquivalentTo": ["foreign_born_population", "immigration_flows"],
+    "dimensions": ["period", "geography", "age", "sex"]
+  },
+  "foreign_born_population": {
+    "name": "Population by country of birth",
+    "aliases": ["inmigración", "inmigrantes", "extranjeros", "nacidos en el extranjero"],
+    "unit": "persons",
+    "population": "usual residents by country of birth",
+    "notEquivalentTo": ["immigration_flows", "resident_population"],
+    "dimensions": ["period", "geography", "country_of_birth", "age", "sex"]
+  },
+  "immigration_flows": {
+    "name": "Annual immigration flows",
+    "aliases": ["inmigración", "llegadas", "flujos migratorios"],
+    "unit": "persons",
+    "population": "immigrants during reference period",
+    "notEquivalentTo": ["foreign_born_population", "resident_population"],
+    "dimensions": ["period", "geography", "citizenship", "age", "sex"]
+  },
+  "recorded_offences": {
+    "name": "Recorded offences",
+    "aliases": ["delincuencia", "crimen", "delitos", "seguridad"],
+    "unit": "recorded offences",
+    "population": "reported or recorded offences",
+    "notEquivalentTo": [],
+    "dimensions": ["period", "geography", "offence_category"]
+  },
+  "regional_population_density": {
+    "name": "Population density by region",
+    "aliases": ["población", "densidad", "territorio", "regiones"],
+    "unit": "persons per square kilometre",
+    "population": "usual residents and land area",
+    "notEquivalentTo": ["resident_population"],
+    "dimensions": ["period", "region"]
+  },
+  "harmonised_price_index": {
+    "name": "Harmonised index of consumer prices",
+    "aliases": ["inflación europea", "precios", "coste de vida", "HICP"],
+    "unit": "index",
+    "population": "household consumption under harmonised EU methodology",
+    "notEquivalentTo": ["cpi_index", "house_price_index"],
+    "dimensions": ["period", "geography", "consumption_group"]
+  },
+  "house_price_index": {
+    "name": "Quarterly house price index",
+    "aliases": ["vivienda", "precios de la vivienda", "precio de la vivienda", "casas"],
+    "unit": "index",
+    "population": "residential property transactions or valuations",
+    "notEquivalentTo": ["cpi_index"],
+    "dimensions": ["period", "geography", "property_type"]
+  }
+}

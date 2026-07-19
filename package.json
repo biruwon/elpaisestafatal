@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:refresh:validate && astro build",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && astro build",
     "preview": "astro preview",
     "check": "astro check",
     "audit:investigations": "node scripts/audit-investigations.mjs",
@@ -18,6 +18,7 @@
     "knowledge:ingest": "node scripts/knowledge/ingest-source.mjs",
     "knowledge:refresh": "node scripts/knowledge/refresh-sources.mjs",
     "knowledge:refresh:validate": "node scripts/knowledge/validate-refresh-config.mjs",
+    "knowledge:metrics": "node scripts/knowledge/validate-metric-registry.mjs",
     "knowledge:warehouse": "node scripts/knowledge/validate-warehouse.mjs",
     "knowledge:normalizer": "node scripts/knowledge/validate-normalizer.mjs",
     "knowledge:warehouse:query": "node scripts/knowledge/validate-warehouse-query.mjs",

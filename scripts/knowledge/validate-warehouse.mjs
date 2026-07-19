@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { hasMetric } from './metric-registry.mjs';
 
 const root = new URL('../../.local/source-warehouse/records/', import.meta.url).pathname;
 let files;
@@ -16,6 +17,7 @@ for (const file of files) {
     if (!record.id || seen.has(record.id)) errors.push(`${file}: duplicate or missing record id`);
     seen.add(record.id);
     if (record.sourceId !== payload.source.id) errors.push(`${file}: ${record.id} has mismatched source id`);
+    if (record.metricId && !(await hasMetric(record.metricId))) errors.push(`${file}: ${record.id} references unknown metric ${record.metricId}`);
     if (record.value !== null && record.value !== undefined && typeof record.value !== 'number') errors.push(`${file}: ${record.id} has non-numeric value`);
   }
 }

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { sourceForHost } from './source-registry.mjs';
+import { hasMetric } from './metric-registry.mjs';
 
 const files = process.argv.slice(2).length ? process.argv.slice(2) : ['config/source-refresh.json', 'config/source-refresh.example.json'];
 const errors = [];
@@ -33,6 +34,7 @@ for (const file of files) {
       seen.add(value.url);
       if (value.title !== undefined && typeof value.title !== 'string') errors.push(`${file}: ${sourceId}[${index}] title must be a string`);
       if (value.aliases !== undefined && (!Array.isArray(value.aliases) || value.aliases.some((alias) => typeof alias !== 'string'))) errors.push(`${file}: ${sourceId}[${index}] aliases must be strings`);
+      if (value.metricId !== undefined && (typeof value.metricId !== 'string' || !(await hasMetric(value.metricId)))) errors.push(`${file}: ${sourceId}[${index}] references unknown metricId ${value.metricId}`);
     }
   }
 }

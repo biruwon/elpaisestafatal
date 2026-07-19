@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { normalizeJsonPayload } from './normalize-json.mjs';
 import { sourceForHost } from './source-registry.mjs';
+import { hasMetric } from './metric-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -12,12 +13,17 @@ const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) 
 const urlValue = args.get('url');
 const publisher = args.get('publisher') || 'unclassified';
 const title = args.get('title') || publisher;
+const metricId = args.get('metric-id');
 let aliases = [];
 try { aliases = args.has('aliases') ? JSON.parse(args.get('aliases')) : []; } catch { aliases = []; }
 if (!Array.isArray(aliases)) aliases = [];
 const allowUnlisted = args.get('allow-unlisted') === 'true';
 if (!urlValue) {
   console.error('Usage: npm run knowledge:ingest -- --url https://official.example/source --publisher "Publisher"');
+  process.exit(1);
+}
+if (metricId && !(await hasMetric(metricId))) {
+  console.error(`Unknown metric id: ${metricId}`);
   process.exit(1);
 }
 
@@ -40,7 +46,7 @@ await mkdir(join(root, 'manifests'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
 const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
-const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
+const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
