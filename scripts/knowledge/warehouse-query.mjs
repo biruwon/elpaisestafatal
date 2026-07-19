@@ -77,6 +77,7 @@ const recordText = (record) => [
   ...(record.source?.aliases || []),
   record.source?.url,
   record.url,
+  record.excerpt,
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
 ].join(' ');
@@ -88,7 +89,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
     return { record, score: matched.length / wanted.length, matched: matched.length, matchedTokens: matched };
-  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || record.kind === 'official_publication' || record.kind === 'legal_document'))
+  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
     .map(({ record, score, matchedTokens }) => ({
@@ -102,6 +103,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       period: record.period,
       population: record.population,
       url: record.url,
+      excerpt: record.excerpt,
       dimensions: record.dimensions || {},
       dimensionLabels: record.dimensionLabels || {},
       source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, aliases: record.source.aliases || [] } : undefined,

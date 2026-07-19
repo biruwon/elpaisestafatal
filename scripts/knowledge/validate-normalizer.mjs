@@ -1,4 +1,6 @@
 import { normalizeJsonPayload } from './normalize-json.mjs';
+import { normalizeXmlPayload } from './normalize-xml.mjs';
+import { selectCurrentLegalRule } from './legal-rules.mjs';
 
 const source = { id: 'source-ine-fixture', title: 'INE fixture' };
 const payload = [
@@ -26,4 +28,7 @@ const boeRecords = normalizeJsonPayload({
 if (boeRecords.length !== 1 || boeRecords[0].kind !== 'official_publication' || boeRecords[0].value !== null || boeRecords[0].url?.includes('BOE-A-1') !== true) throw new Error('BOE publication record was not normalized');
 const legalRecords = normalizeJsonPayload({ status: { code: '200' }, data: [{ fecha_actualizacion: '20260718T120000Z', identificador: 'BOE-A-2026-10', ambito: { texto: 'Estatal' }, departamento: { texto: 'Jefatura del Estado' }, rango: { texto: 'Ley' }, numero_oficial: '1/2026', titulo: 'Ley de prueba sobre vivienda', fecha_publicacion: '20260110', fecha_vigencia: '20260111', estatus_derogacion: 'N', estatus_anulacion: 'N', estado_consolidacion: { texto: 'Finalizado' }, url_html_consolidada: 'https://www.boe.es/buscar/act.php?id=BOE-A-2026-10' }] }, { id: 'source-boe-law', title: 'BOE legislación consolidada' });
 if (legalRecords.length !== 1 || legalRecords[0].kind !== 'legal_document' || legalRecords[0].dimensions.jurisdiction !== 'Estatal' || legalRecords[0].dimensions.effectiveFrom !== '20260111' || legalRecords[0].url?.includes('BOE-A-2026-10') !== true) throw new Error('BOE consolidated-law metadata was not normalized');
-console.log('Warehouse normalizer validation passed: INE observations, BOE publications, and consolidated-law metadata are preserved.');
+const legalBlockRecords = normalizeXmlPayload(`<?xml version="1.0"?><response><data><bloque id="a1" tipo="precepto" titulo="Artículo 1"><version id_norma="BOE-A-2000-1" fecha_publicacion="20000101" fecha_vigencia="20000102"><p class="articulo">Artículo 1.</p><p>Texto anterior.</p></version><version id_norma="BOE-A-2026-2" fecha_publicacion="20260101" fecha_vigencia="20260102"><p class="articulo">Artículo 1.</p><p>Texto vigente con &amp; condición.</p><blockquote><p>Nota editorial.</p></blockquote></version></bloque></data></response>`, { id: 'source-boe-block', title: 'Ley de prueba', url: 'https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2000-1/texto/bloque/a1' });
+if (legalBlockRecords.length !== 2 || legalBlockRecords[0].dimensions.validTo !== '2026-01-02' || legalBlockRecords[1].dimensions.currentVersion !== true || !legalBlockRecords[1].excerpt.includes('Texto vigente con & condición') || legalBlockRecords[1].excerpt.includes('Nota editorial')) throw new Error('BOE consolidated article versions were not normalized safely');
+if (selectCurrentLegalRule([...legalBlockRecords].reverse())?.period !== '2026-01-02') throw new Error('Legal rule selection did not prefer the explicitly current version');
+console.log('Warehouse normalizer validation passed: statistical observations, BOE publications, legal metadata, and versioned article text are preserved.');

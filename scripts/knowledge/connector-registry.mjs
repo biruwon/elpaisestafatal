@@ -11,8 +11,8 @@ export const connectorRegistry = {
   },
   'boe-summary': {
     formats: ['json', 'xml', 'html', 'pdf'],
-    parserVersion: 'boe-summary-v2',
-    description: 'BOE daily publication summaries and consolidated-legislation metadata',
+    parserVersion: 'boe-summary-v3',
+    description: 'BOE daily summaries, consolidated-law metadata, and versioned article blocks',
   },
   catalogue: {
     formats: ['json', 'html'],

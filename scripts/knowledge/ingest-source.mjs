@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { normalizeJsonPayload } from './normalize-json.mjs';
+import { normalizeXmlPayload } from './normalize-xml.mjs';
 import { sourceForHost } from './source-registry.mjs';
 import { connectorForId, connectorSupports, formatForContentType } from './connector-registry.mjs';
 import { hasMetric } from './metric-registry.mjs';
@@ -36,7 +37,10 @@ if (!approved && !allowUnlisted) {
   process.exit(1);
 }
 
-const response = await fetch(sourceUrl, { headers: { accept: 'text/html,application/json,application/pdf;q=0.9,*/*;q=0.5' }, signal: AbortSignal.timeout(15000) });
+const accept = sourceUrl.hostname.endsWith('boe.es') && sourceUrl.pathname.includes('/texto/bloque/')
+  ? 'application/xml'
+  : 'application/json,text/html,application/xml;q=0.9,application/pdf;q=0.8,*/*;q=0.4';
+const response = await fetch(sourceUrl, { headers: { accept }, signal: AbortSignal.timeout(15000) });
 if (!response.ok) throw new Error(`Source returned ${response.status}`);
 const contentType = response.headers.get('content-type') || 'application/octet-stream';
 const connector = sourceDefinition?.connector || 'official-document';
@@ -57,6 +61,9 @@ await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(m
 let records = [];
 if (contentType.includes('json')) {
   try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+}
+if (contentType.includes('xml')) {
+  try { records = normalizeXmlPayload(bytes.toString('utf8'), { id: manifest.id, title: manifest.title, url: sourceUrl.toString(), metricId }); } catch { /* Keep unsupported XML as a source snapshot. */ }
 }
 if (records.length) {
   manifest.recordCount = records.length;

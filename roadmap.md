@@ -217,7 +217,7 @@ The frontend submits once and polls automatically when a request is processing. 
 
 ## Phase 4 — Retrieval and evidence warehouse
 
-Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. BOE consolidated-law metadata is normalized into typed legal documents so legal answers can resolve the applicable norm, jurisdiction, effective date, repeal state, and attributable source without inventing an article-level conclusion. Broader source/domain coverage, consolidated article ingestion, and observation-level PostgreSQL benchmarking remain pending.
+Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. BOE consolidated-law metadata and bounded article blocks are normalized into typed, versioned legal records. Legal answers can resolve the norm, jurisdiction, effective date, repeal state, current article version, exact consolidated wording, and attributable source without presenting the informational consolidated text as a legal opinion. Broader source/domain coverage, automatic article discovery, jurisprudence, and observation-level PostgreSQL benchmarking remain pending.
 
 Use local PostgreSQL with full-text search and pgvector initially. Cloudflare Vectorize is optional later; do not require it for the first production version.
 
@@ -252,7 +252,7 @@ Use deterministic parsers for APIs and stable tables. Use the local model only f
 
 ## Phase 5 — Deterministic claim handlers
 
-Status: in progress. Quantity, proportion, trend, ranking, definition, budget-transfer, causal, legal, group-comparison, prediction, and normative routing now exist. Long-tail causal, legal, group-comparison, predictive, and normative inputs produce dedicated deterministic method plans instead of a generic unsupported answer; deeper domain-specific calculations and source-backed legal/event resolution remain pending.
+Status: in progress. Quantity, proportion, trend, ranking, definition, budget-transfer, causal, legal, group-comparison, prediction, and normative routing now exist. Long-tail causal, legal, group-comparison, predictive, and normative inputs produce dedicated deterministic method plans instead of a generic unsupported answer. The legal handler now prefers the explicitly current BOE article version and cites its exact text while retaining scenario, exception, and jurisprudence limitations; deeper domain-specific calculations and broader legal/event resolution remain pending.
 
 Implement reusable handlers instead of manually authored answers for every wording:
 

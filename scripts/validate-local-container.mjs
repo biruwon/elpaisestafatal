@@ -20,6 +20,7 @@ requireText(compose, 'OLLAMA_ENDPOINT', 'Compose');
 requireText(compose, 'WAREHOUSE_SEMANTIC_SEARCH', 'Compose');
 requireText(compose, 'pgvector/pgvector:pg16', 'Compose');
 requireText(compose, '0004_warehouse_vectors.sql', 'Compose');
+requireText(compose, '0005_legal_rule_text.sql', 'Compose');
 requireText(compose, 'healthcheck:', 'Compose');
 if (!packageJson.dependencies?.pg) errors.push('package.json: PostgreSQL runtime dependency is missing');
 const localService = await readFile('scripts/local-claim-service.mjs', 'utf8');

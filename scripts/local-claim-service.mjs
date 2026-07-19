@@ -14,6 +14,7 @@ import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
+import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -378,9 +379,9 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
   const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding })).filter((item) => {
-    if (item.evidenceFit === 'weak' && !(item.kind === 'legal_document' && item.matchedTerms?.length >= 3)) return false;
+    if (item.evidenceFit === 'weak' && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
-    if ((item.kind === 'official_publication' || item.kind === 'legal_document') && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
+    if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
     if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
@@ -389,7 +390,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     item.populationFit = populationFit;
     return true;
   });
-  const observations = rankingQuery ? candidates : selectCompatibleWarehouseSeries(query, candidates);
+  const observations = rankingQuery ? candidates : compiler?.claimType === 'legal' ? candidates : selectCompatibleWarehouseSeries(query, candidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };
@@ -706,7 +707,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isDefinition = handlerId === 'definition';
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
-  const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document') : [];
+  const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document' || item.kind === 'legal_rule') : [];
+  const currentLegalRule = selectCurrentLegalRule(legalObservations);
   const quantityClaim = isQuantityLike ? claimedNumericValue(text, classified.compiler) : null;
   const quantity = isQuantityLike ? quantityAssessment(text, classified.compiler, observations) : null;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || isDefinition;
@@ -771,8 +773,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ...(isLegal ? [
       { type: 'strongest_valid_concern', text: 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
       { type: 'legal_decision_tree', items: [
-        { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? `${legalObservations[0].dimensions?.jurisdiction || 'Ámbito localizado'} · ${legalObservations[0].metric}` : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
-        { label: 'Situación jurídica', status: 'missing', detail: 'Distinguir propiedad, residencia, contrato, ocupación y condición de las partes.' },
+        { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? `${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'Norma estatal localizada'} · ${currentLegalRule?.datasetId || legalObservations[0].metric}` : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
+        { label: 'Artículo aplicable', status: currentLegalRule ? 'known' : 'missing', detail: currentLegalRule ? `${currentLegalRule.metric} · versión vigente desde ${currentLegalRule.dimensions?.effectiveFrom || currentLegalRule.period}` : 'Localizar el precepto que regula exactamente el supuesto.' },
+        { label: 'Situación jurídica', status: 'missing', detail: 'Distinguir la condición de las partes y los hechos relevantes del caso.' },
         { label: 'Procedimiento', status: 'missing', detail: 'Determinar qué vía, autoridad y plazos corresponden.' },
         { label: 'Excepciones', status: 'missing', detail: 'Comprobar medidas especiales, vulnerabilidad, recursos y disposiciones transitorias.' },
       ] },
@@ -818,12 +821,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
     ];
     if (isLegal && legalObservations.length) return [
+      ...(currentLegalRule?.excerpt ? [{ type: 'source_excerpt', evidenceIds: [currentLegalRule.id], title: `${currentLegalRule.metric} · texto consolidado`, excerpt: currentLegalRule.excerpt }] : []),
       { type: 'data_finding', evidenceIds: legalObservations.map((item) => item.id), points: [
-        `Norma localizada: ${String(legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
-        `Ámbito: ${legalObservations[0].dimensions?.jurisdiction || 'no indicado'}; vigencia desde: ${legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
-        legalObservations[0].dimensions?.repealed ? 'La ficha indica que la norma está derogada.' : 'La ficha no indica derogación total.',
+        `Norma localizada: ${String(currentLegalRule?.datasetId || legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
+        `Ámbito: ${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'estatal'}; versión localizada desde: ${currentLegalRule?.dimensions?.effectiveFrom || legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
+        legalObservations.some((item) => item.dimensions?.repealed) ? 'La ficha indica que la norma está derogada.' : 'La ficha localizada no indica derogación total.',
       ] },
-      { type: 'cannot_conclude', evidenceIds: legalObservations.map((item) => item.id), points: ['La ficha identifica la norma, pero no resuelve por sí sola el supuesto planteado.', 'Falta localizar el artículo aplicable, sus excepciones y la situación concreta.'] },
+      { type: 'cannot_conclude', evidenceIds: legalObservations.map((item) => item.id), points: [currentLegalRule ? 'El artículo aporta el texto aplicable, pero no decide por sí solo cómo encaja el caso concreto.' : 'La ficha identifica la norma, pero no resuelve por sí sola el supuesto planteado.', 'Falta comprobar otros artículos, excepciones, jurisprudencia y la situación concreta.'] },
     ];
     if (isLegal || isDefinition) return [
       { type: 'cannot_conclude', evidenceIds: [], points: [

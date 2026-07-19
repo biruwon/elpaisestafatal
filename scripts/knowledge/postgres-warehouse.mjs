@@ -25,7 +25,7 @@ const json = (value, fallback = {}) => {
 const migrationDirectory = new URL('../../migrations/', import.meta.url).pathname;
 const postgresMigrationDirectory = new URL('../../migrations/postgres/', import.meta.url).pathname;
 const migrationFiles = ['0002_evidence_warehouse.sql'];
-const postgresMigrationFiles = ['0003_warehouse_search.sql'];
+const postgresMigrationFiles = ['0003_warehouse_search.sql', '0005_legal_rule_text.sql'];
 const semanticMigrationFiles = ['0004_warehouse_vectors.sql'];
 const embeddingDimensions = 1024;
 const semanticIndexRequested = () => process.env.WAREHOUSE_SEMANTIC_SEARCH === '1' || process.env.WAREHOUSE_EMBEDDINGS === '1';
@@ -57,8 +57,8 @@ export const loadWarehouse = async () => withWarehousePool(async (database) => {
   let sourceCount = 0;
   let observationCount = 0;
   const observationUpdate = semanticIndexRequested()
-    ? 'dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, metric_id=EXCLUDED.metric_id, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, search_embedding=CASE WHEN observations.search_text IS DISTINCT FROM EXCLUDED.search_text THEN NULL ELSE observations.search_embedding END, embedding_model=CASE WHEN observations.search_text IS DISTINCT FROM EXCLUDED.search_text THEN NULL ELSE observations.embedding_model END, search_text=EXCLUDED.search_text'
-    : 'dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, metric_id=EXCLUDED.metric_id, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, search_text=EXCLUDED.search_text';
+    ? 'dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, metric_id=EXCLUDED.metric_id, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, excerpt=EXCLUDED.excerpt, search_embedding=CASE WHEN observations.search_text IS DISTINCT FROM EXCLUDED.search_text THEN NULL ELSE observations.search_embedding END, embedding_model=CASE WHEN observations.search_text IS DISTINCT FROM EXCLUDED.search_text THEN NULL ELSE observations.embedding_model END, search_text=EXCLUDED.search_text'
+    : 'dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, metric_id=EXCLUDED.metric_id, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, excerpt=EXCLUDED.excerpt, search_text=EXCLUDED.search_text';
   await database.query('BEGIN');
   try {
     for (const file of manifestFiles) {
@@ -76,17 +76,17 @@ export const loadWarehouse = async () => withWarehousePool(async (database) => {
         const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
         const dimensions = record.dimensions || {};
         const labels = record.dimensionLabels || {};
-        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), manifest.metricId, record.metricId, record.datasetId, record.metric, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
+        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), manifest.metricId, record.metricId, record.datasetId, record.metric, record.excerpt, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
         await database.query(`
           INSERT INTO datasets (id, source_document_id, title, metric, unit, geography, population, period_start, period_end, definition)
           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8,NULL)
           ON CONFLICT (id) DO UPDATE SET title=EXCLUDED.title, metric=EXCLUDED.metric, unit=EXCLUDED.unit, period_start=EXCLUDED.period_start, period_end=EXCLUDED.period_end
         `, [datasetId, manifest.id, record.datasetId || 'Observations', record.metric || null, record.unit || null, record.geography || null, record.population || null, record.period || null]);
         await database.query(`
-        INSERT INTO observations (id, dataset_id, source_document_id, metric, metric_id, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, search_text)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+        INSERT INTO observations (id, dataset_id, source_document_id, metric, metric_id, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, excerpt, search_text)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
         ON CONFLICT (id) DO UPDATE SET ${observationUpdate}
-        `, [record.id, datasetId, manifest.id, record.metric || null, record.metricId || manifest.metricId || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, searchText]);
+        `, [record.id, datasetId, manifest.id, record.metric || null, record.metricId || manifest.metricId || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, record.excerpt || null, searchText]);
         observationCount += 1;
       }
     }
@@ -109,6 +109,7 @@ const rowToObservation = (row, score = row.score) => ({
   period: row.period,
   population: row.population,
   url: row.url,
+  excerpt: row.excerpt,
   dimensions: json(row.dimensions_json),
   dimensionLabels: json(row.dimension_labels_json),
   source: { id: row.source_id, title: row.source_title || row.source_publisher || row.source_url, url: row.url || row.source_url, aliases: json(row.aliases_json, []) },
@@ -119,7 +120,7 @@ const rowToObservation = (row, score = row.score) => ({
 });
 
 const observationSelect = `
-  SELECT o.id, o.kind, o.metric, o.metric_id, o.value, o.unit, o.period, o.population, o.url,
+  SELECT o.id, o.kind, o.metric, o.metric_id, o.value, o.unit, o.period, o.population, o.url, o.excerpt,
          o.dimensions_json, o.dimension_labels_json, o.search_text,
          d.title AS dataset_id, s.id AS source_id, s.title AS source_title,
          s.publisher AS source_publisher, s.url AS source_url, s.aliases_json, s.retrieved_at AS source_retrieved_at`;
@@ -139,7 +140,7 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
       JOIN source_documents s ON s.id = o.source_document_id
       WHERE (${clauses.join(' OR ')})
         AND (${matchedExpression}) >= $${wanted.length + 3}::float
-        AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document'))
+        AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document', 'legal_rule'))
       ORDER BY score DESC, o.period DESC NULLS LAST
       LIMIT $${wanted.length + 2}
     `, [...params, wanted.length, Math.max(1, Math.min(100, limit)), Math.min(2, wanted.length)]);
@@ -156,7 +157,7 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
         JOIN datasets d ON d.id = o.dataset_id
         JOIN source_documents s ON s.id = o.source_document_id
         WHERE o.search_embedding IS NOT NULL
-          AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document'))
+          AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document', 'legal_rule'))
           AND 1 - (o.search_embedding <=> $1::vector) >= 0.42
         ORDER BY o.search_embedding <=> $1::vector
         LIMIT $2
