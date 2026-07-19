@@ -1,19 +1,7 @@
--- Search columns for the derived PostgreSQL warehouse. This migration is
--- additive so older local databases can be upgraded without a rebuild.
+-- D1-safe additive fields for the operational schema. PostgreSQL-specific
+-- full-text/trigram indexes live under migrations/postgres instead.
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+ALTER TABLE observations ADD COLUMN metric_id TEXT;
 
-ALTER TABLE source_documents ADD COLUMN IF NOT EXISTS title TEXT NOT NULL DEFAULT '';
-ALTER TABLE source_documents ADD COLUMN IF NOT EXISTS aliases_json TEXT NOT NULL DEFAULT '[]';
-
-ALTER TABLE observations ADD COLUMN IF NOT EXISTS dimension_labels_json TEXT NOT NULL DEFAULT '{}';
-ALTER TABLE observations ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'observation';
-ALTER TABLE observations ADD COLUMN IF NOT EXISTS url TEXT;
-ALTER TABLE observations ADD COLUMN IF NOT EXISTS search_text TEXT NOT NULL DEFAULT '';
-ALTER TABLE observations ADD COLUMN IF NOT EXISTS metric_id TEXT;
-
-CREATE INDEX IF NOT EXISTS idx_observations_search_text_trgm
-  ON observations USING gin (search_text gin_trgm_ops);
-
-CREATE INDEX IF NOT EXISTS idx_observations_period_value
-  ON observations(period, value);
+CREATE INDEX IF NOT EXISTS idx_observations_metric_period
+  ON observations(metric_id, period);

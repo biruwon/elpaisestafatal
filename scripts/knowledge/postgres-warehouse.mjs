@@ -20,7 +20,9 @@ const json = (value, fallback = {}) => {
 };
 
 const migrationDirectory = new URL('../../migrations/', import.meta.url).pathname;
-const migrationFiles = ['0002_evidence_warehouse.sql', '0003_warehouse_search.sql'];
+const postgresMigrationDirectory = new URL('../../migrations/postgres/', import.meta.url).pathname;
+const migrationFiles = ['0002_evidence_warehouse.sql'];
+const postgresMigrationFiles = ['0003_warehouse_search.sql'];
 
 export const postgresEnabled = () => Boolean(connectionString);
 
@@ -35,11 +37,13 @@ export const withWarehousePool = async (callback) => {
 
 export const migrateWarehouse = async () => withWarehousePool(async (database) => {
   for (const file of migrationFiles) await database.query(await readFile(join(migrationDirectory, file), 'utf8'));
+  for (const file of postgresMigrationFiles) await database.query(await readFile(join(postgresMigrationDirectory, file), 'utf8'));
   return true;
 });
 
 export const loadWarehouse = async () => withWarehousePool(async (database) => {
   for (const file of migrationFiles) await database.query(await readFile(join(migrationDirectory, file), 'utf8'));
+  for (const file of postgresMigrationFiles) await database.query(await readFile(join(postgresMigrationDirectory, file), 'utf8'));
   const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
   const manifestFiles = (await readdir(join(root, 'manifests'))).filter((file) => file.endsWith('.json'));
   let sourceCount = 0;

@@ -2,5 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "elpaisestafatal",
   "compatibility_date": "2026-07-16",
-  "pages_build_output_dir": "./dist"
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "elpaisestafatal-ops",
+      "database_id": "423f04db-bd1a-4fb2-8e46-99c3a326aaa0",
+      "migrations_dir": "./migrations"
+    }
+  ]
 }
