@@ -113,6 +113,18 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('predic')) failures.push('prediction long-tail: did not label the forecast');
     if (result.result?.blocks?.some((block) => block.type === 'line_chart')) failures.push('prediction long-tail: presented historical context as a forecast chart');
   } catch (error) { failures.push(`prediction long-tail: ${error.message}`); }
+  try {
+    const result = await resolve('España tiene 48 millones de habitantes');
+    if (result.status !== 'draft') failures.push(`quantity long-tail: expected draft, received ${result.status}`);
+    if (!result.result?.blocks?.some((block) => block.type === 'key_number')) failures.push('quantity long-tail: missing comparable key number');
+    if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('quantity long-tail: missing numeric comparison details');
+  } catch (error) { failures.push(`quantity long-tail: ${error.message}`); }
+  try {
+    const result = await resolve('España tiene 100 millones de habitantes');
+    if (result.status !== 'draft') failures.push(`mismatched quantity: expected provisional draft, received ${result.status}`);
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('no coincide')) failures.push('mismatched quantity: did not show the numerical mismatch');
+    if (!result.result?.blocks?.some((block) => block.type === 'cannot_conclude')) failures.push('mismatched quantity: missing explicit limitation');
+  } catch (error) { failures.push(`mismatched quantity: ${error.message}`); }
 }
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }

@@ -4,12 +4,15 @@ const includesAny = (value, words) => words.some((word) => value.includes(word))
 
 export const handlerForInput = (input, claimType = '') => {
   const text = normalized([input, ...(input?.retrievalHints || []), ...(input?.entities || [])].join(' '));
-  if (includesAny(text, ['presupuesto', 'millones', 'transferencia', 'ministerio', 'gasto de personal', 'recorte'])) return 'budget_transfer';
+  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'ministerio', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo'])
+    || (includesAny(text, ['quita', 'recorta']) && includesAny(text, ['gobierno', 'educacion', 'presidencia']));
+  if (budgetSignal) return 'budget_transfer';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico'])) return 'prediction';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
+  if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico'])) return 'trend';
   if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'definicion'])) return 'definition';
