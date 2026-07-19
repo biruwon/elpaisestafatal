@@ -41,6 +41,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - The example refresh currently covers seven live resources: BOE publications, INE CPI, and Eurostat GDP, Spain unemployment, cross-country unemployment, population, and harmonised prices.
 - The warehouse now supports a deterministic same-period country ranking handler, including contradictory handling for claims that Spain is highest or lowest; the result includes country-labelled visual data and the source feed.
 - Warehouse observations now carry matched terms and an evidence-fit band; weak token overlaps are excluded from provisional answers instead of being rendered as relevant data.
+- File-only screenshot and audio submissions are accepted by the API, and extracted media text now re-enters the same warehouse and handler enrichment path as typed text and links.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration
