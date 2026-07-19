@@ -27,19 +27,22 @@
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs",
     "knowledge:warehouse:sql": "node scripts/knowledge/export-warehouse-sql.mjs",
+    "knowledge:warehouse:postgres": "node scripts/knowledge/load-warehouse-postgres.mjs",
+    "knowledge:warehouse:postgres:validate": "node scripts/knowledge/validate-postgres-warehouse.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
-    "cards": "node scripts/generate-social-cards.mjs"
-    ,"clarify:local": "node scripts/local-clarifier.mjs"
-    ,"ai:setup": "node scripts/setup-local-ai.mjs"
-    ,"dev:ai": "node scripts/dev-local-ai.mjs"
+    "cards": "node scripts/generate-social-cards.mjs",
+    "clarify:local": "node scripts/local-clarifier.mjs",
+    "ai:setup": "node scripts/setup-local-ai.mjs",
+    "dev:ai": "node scripts/dev-local-ai.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "astro": "^4.16.18",
+    "pg": "^8.22.0",
     "typescript": "^5.6.3"
   },
   "devDependencies": {

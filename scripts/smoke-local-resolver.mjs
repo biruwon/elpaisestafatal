@@ -55,5 +55,16 @@ if (process.env.SMOKE_MEDIA === '1') {
   }
 }
 
+if (process.env.SMOKE_WAREHOUSE === '1') {
+  try {
+    const result = await resolve('precios de la vivienda en España');
+    const series = result.result?.warehouseSeries;
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`warehouse: expected a provisional result, received ${result.status}`);
+    if (!series || series.values.length < 2 || series.values.length !== series.labels.length) failures.push('warehouse: expected a traceable multi-period series');
+    if (new Set(series?.labels || []).size !== (series?.labels || []).length) failures.push('warehouse: mixed incompatible observations into one time series');
+    if (String(series?.unit || '').toLocaleLowerCase().includes('rate of change')) failures.push('warehouse: selected a rate-of-change series for a level-price query');
+  } catch (error) { failures.push(`warehouse: ${error.message}`); }
+}
+
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''} cases at ${base}`);

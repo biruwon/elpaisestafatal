@@ -45,6 +45,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - The homepage now progressively displays approved popular query clusters from `/api/questions`, while the static popular-claim cards remain the offline fallback.
 - Query submissions now derive a deterministic sorted-term signature before entering D1, so punctuation, accents, stopwords, and word order do not create separate usage clusters; the original canonical wording remains the review/display text.
 - Structured answers now collect optional usefulness feedback (`yes`, `partly`, or `no`) through a rate-limited `/api/feedback` endpoint backed by the existing D1 table; feedback never blocks or changes the answer.
+- The derived warehouse can now be loaded into an optional PostgreSQL backend with additive migrations and indexed `pg_trgm` search; the local resolver uses it when configured and falls back to the JSON warehouse when it is unavailable.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

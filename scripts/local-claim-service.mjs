@@ -38,8 +38,9 @@ let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const displayUnit = (value) => normalise(value) === 'percentage of population in the labour force' ? '%' : String(value || '');
-const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor']);
+const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'cuñado', 'cunado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
+const includesAny = (value, words) => words.some((word) => value.includes(word));
 const canonicalSignatureFor = (value) => tokens(value).join(' ') || normalise(value);
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
@@ -216,7 +217,7 @@ const loadWarehouse = async () => {
     for (const file of files.slice(0, 2000)) {
       try {
         const manifest = JSON.parse(await readFile(join(warehousePath, 'manifests', file), 'utf8'));
-        if (manifest?.url && manifest.trust === 'approved-domain') manifests.push(manifest);
+        if (manifest?.url && (manifest.trust === 'primary' || manifest.trust === 'approved-domain')) manifests.push(manifest);
       } catch { /* Validation reports malformed manifests separately. */ }
     }
     const signature = digest(JSON.stringify(manifests.map(({ id, sha256, url, publisher, title, aliases }) => ({ id, sha256, url, publisher, title, aliases }))));
@@ -251,10 +252,42 @@ const findWarehouseSource = async (query) => {
   return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
 };
 
+const observationSeriesKey = (item) => {
+  const dimensions = Object.entries(item.dimensions || {})
+    .filter(([key]) => !['time', 'period', 'year'].includes(normalise(key)))
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}:${value}`)
+    .join('|');
+  return [item.source?.id, item.datasetId, item.metric, item.unit, dimensions].join('::');
+};
+
+const selectCompatibleWarehouseSeries = (query, observations) => {
+  if (observations.length < 2) return observations;
+  const wantsChange = includesAny(normalise(query), ['aumenta', 'aumento', 'sube', 'subida', 'crece', 'crecimiento', 'cae', 'baja', 'variacion', 'cambio', 'rate', 'change', 'growth']);
+  const grouped = new Map();
+  for (const observation of observations) {
+    const key = observationSeriesKey(observation);
+    const group = grouped.get(key) || [];
+    group.push(observation);
+    grouped.set(key, group);
+  }
+  const groups = [...grouped.values()];
+  const ranked = groups.map((group) => {
+    const units = normalise(group[0]?.unit);
+    const unitPreference = wantsChange
+      ? (includesAny(units, ['rate', 'change', 'variacion', 'growth', 'percent', 'porcentaje']) ? 0.3 : 0)
+      : (includesAny(units, ['index', 'indice', 'level', 'nivel']) ? 0.3 : 0);
+    return { group, score: unitPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000 };
+  }).sort((left, right) => right.score - left.score);
+  const selected = ranked[0]?.group || observations;
+  return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-12);
+};
+
 const findWarehouseEvidence = async (query) => {
   const normalizedQuery = normalise(query);
   const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
-  const observations = (await findWarehouseObservations(query, rankingQuery ? 100 : 12)).filter((item) => item.evidenceFit !== 'weak');
+  const candidates = (await findWarehouseObservations(query, rankingQuery ? 100 : 100)).filter((item) => item.evidenceFit !== 'weak');
+  const observations = rankingQuery ? candidates : selectCompatibleWarehouseSeries(query, candidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };

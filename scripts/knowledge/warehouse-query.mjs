@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { queryPostgresWarehouse, postgresEnabled } from './postgres-warehouse.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -62,4 +63,10 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     }));
 };
 
-export const findWarehouseObservations = async (query, limit = 12) => rankWarehouseObservations(query, await readRecords(), limit);
+export const findWarehouseObservations = async (query, limit = 12) => {
+  if (postgresEnabled()) {
+    const results = await queryPostgresWarehouse(query, limit);
+    if (results) return results;
+  }
+  return rankWarehouseObservations(query, await readRecords(), limit);
+};

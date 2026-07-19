@@ -73,4 +73,16 @@ npm run knowledge:refresh
 npm run knowledge:warehouse
 ```
 
-The example refreshes a BOE daily summary, an INE table, and a Eurostat GDP series. `{yesterday}` and `{today}` placeholders are expanded at refresh time. Normalized observations are used for provisional number and trend cards; they do not become published verdicts without an explicit reviewed claim.
+The example refreshes approved BOE, INE, and Eurostat resources. `{yesterday}` and `{today}` placeholders are expanded at refresh time. Normalized observations are used for provisional number and trend cards; they do not become published verdicts without an explicit reviewed claim.
+
+### Optional PostgreSQL retrieval backend
+
+The JSON warehouse is the offline fallback. For a larger local installation, load the same derived data into PostgreSQL and let the resolver query indexed rows instead of scanning files:
+
+```bash
+export WAREHOUSE_DATABASE_URL='postgresql://localhost/claims'
+npm run knowledge:warehouse:postgres
+WAREHOUSE_DATABASE_URL="$WAREHOUSE_DATABASE_URL" npm run dev:ai
+```
+
+The loader applies the additive warehouse migrations, creates the `pg_trgm` search index, and upserts the current source snapshots and observations. If the database is unavailable, the resolver automatically falls back to `.local/source-warehouse`; the public API and UI do not change. PostgreSQL is a derived copy and can always be rebuilt from the source manifests.
