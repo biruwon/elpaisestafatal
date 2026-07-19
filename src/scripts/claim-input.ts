@@ -197,7 +197,23 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   });
 };
 
+const clearDynamicStatus = (): void => {
+  result?.querySelector('[data-dynamic-status]')?.remove();
+};
+
+const setDynamicStatus = (message: string): void => {
+  if (!result) return;
+  clearDynamicStatus();
+  const status = document.createElement('p');
+  status.className = 'classifier-status';
+  status.dataset.dynamicStatus = 'true';
+  status.setAttribute('aria-live', 'polite');
+  status.textContent = message;
+  result.querySelector('article')?.append(status);
+};
+
 const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {
+  clearDynamicStatus();
   const structuredPrimary = response.relatedClaims?.[0];
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
   const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
@@ -255,6 +271,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
+      setDynamicStatus('Estamos afinando la coincidencia; la orientación rápida sigue disponible.');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
       const waitMs = file ? 500 : 350;
@@ -270,9 +287,14 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      renderCard('unavailable', query, undefined, ranked.slice(0, 2), {
-        limitation: 'La comprobación automática está tardando más de lo previsto. La orientación rápida no se ha perdido; puedes consultar una relación cercana o volver a intentarlo.',
+      setDynamicStatus('La comprobación adicional está tardando más de lo previsto. La orientación rápida sigue disponible.');
+      return;
+    }
+    if (data.status === 'unavailable') {
+      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), {
+        limitation: 'La comprobación automática no está disponible ahora. Puedes volver a intentarlo más tarde.',
       });
+      else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
       return;
     }
     if (!file && cacheKey) {
@@ -283,7 +305,10 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     applyResponse(data, query, ranked);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
-    if (version === requestVersion) renderDeterministic(query, ranked);
+    if (version === requestVersion) {
+      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), { limitation: 'La comprobación automática no está disponible ahora. Puedes volver a intentarlo más tarde.' });
+      else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
+    }
   }
 };
 
