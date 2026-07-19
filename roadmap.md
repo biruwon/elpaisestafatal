@@ -55,6 +55,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Discovered official evidence is now persisted in the local derived cache by normalized multi-term signature, so equivalent phrasings reuse the same fetched evidence across resolver restarts without becoming published claims.
 - The derived cache also keeps attributable discovered documents separately from short-lived query results, allowing reordered or newly phrased requests to reuse a fetched official document for up to 24 hours before refreshing it.
 - BOE search hits now receive the same bounded document fetch, relevant excerpt, and typed-field extraction as La Moncloa hits; failures retain only the attributable metadata and never block the answer.
+- Structured provisional answers now expose the distinct source links used by their evidence records, and the result UI renders a compact source trail on evidence-bearing cards, charts, money flows, limits, and copied replies.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

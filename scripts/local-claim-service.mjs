@@ -536,6 +536,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
     unit: displayUnit(numericObservations[0].unit),
   } : undefined;
+  const sourceLinks = [...new Map(
+    [source, ...observations.map((item) => item.source)]
+      .filter((item) => item && item.url)
+      .map((item) => [item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url }]),
+  ).values()].slice(0, 5);
   const result = {
     schemaVersion: '1',
     headline: primary?.title || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
@@ -547,7 +552,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     limitation: observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
-    ...(source ? { sourceLinks: [source] } : {}),
+    ...(sourceLinks.length ? { sourceLinks } : {}),
     knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };

@@ -83,9 +83,15 @@ const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][
   return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label: string, index: number) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
 };
 
+const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
+  if (!evidenceIds?.length || !plan.sourceLinks?.length) return '';
+  const links = plan.sourceLinks.slice(0, 2).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('');
+  return `<div class="claim-plan-block-evidence"><span>Fuente${evidenceIds.length > 1 ? 's' : ''} · ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''}</span>${links}</div>`;
+};
+
 const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((block) => {
   if (block.type === 'key_number') {
-    return `<div class="claim-plan-number"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}</div>`;
+    return `<div class="claim-plan-number"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}${blockEvidenceMarkup(plan, [block.evidenceId])}</div>`;
   }
   if (block.type === 'claim_breakdown') {
     const items = block.items?.length
@@ -95,25 +101,26 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   }
   if (block.type === 'confirmed') {
     const linked = block.evidenceIds?.length || block.propositionIds.length;
-    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}</div>`;
+    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'cannot_conclude') {
-    return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
+    return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'money_flow') {
-    return `<div class="claim-plan-flow"><span class="clarification-label">Flujo descrito en la fuente localizada</span>${block.amount ? `<strong>${escapeHtml(block.amount)}</strong>` : ''}<div><strong>${escapeHtml(block.origin || 'Origen')}</strong><span>↓ transferencia</span><strong>${escapeHtml(block.destination || 'Destino')}</strong></div>${block.purpose ? `<small>Finalidad: ${escapeHtml(block.purpose)}</small>` : ''}<small>Contexto provisional; no demuestra por sí solo un recorte de servicios.</small></div>`;
+    return `<div class="claim-plan-flow"><span class="clarification-label">Flujo descrito en la fuente localizada</span>${block.amount ? `<strong>${escapeHtml(block.amount)}</strong>` : ''}<div><strong>${escapeHtml(block.origin || 'Origen')}</strong><span>↓ transferencia</span><strong>${escapeHtml(block.destination || 'Destino')}</strong></div>${block.purpose ? `<small>Finalidad: ${escapeHtml(block.purpose)}</small>` : ''}<small>Contexto provisional; no demuestra por sí solo un recorte de servicios.</small>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'data_finding') {
-    return `<div class="claim-plan-finding"><span class="clarification-label">Lo que muestran los datos localizados</span><ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
+    return `<div class="claim-plan-finding"><span class="clarification-label">Lo que muestran los datos localizados</span><ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'source_excerpt') {
-    return `<div class="claim-plan-excerpt"><span class="clarification-label">${escapeHtml(block.title)}</span><blockquote>${escapeHtml(block.excerpt)}</blockquote><small>Fragmento mostrado para orientar la comprobación; no es por sí solo un veredicto.</small></div>`;
+    return `<div class="claim-plan-excerpt"><span class="clarification-label">${escapeHtml(block.title)}</span><blockquote>${escapeHtml(block.excerpt)}</blockquote><small>Fragmento mostrado para orientar la comprobación; no es por sí solo un veredicto.</small>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
-    return planVisualMarkup(plan, block);
+    const chart = planVisualMarkup(plan, block);
+    return chart ? chart.slice(0, -6) + blockEvidenceMarkup(plan, block.evidenceIds) + '</div>' : '';
   }
   if (block.type === 'conversation_reply') {
-    return `<div class="claim-plan-reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button></div>`;
+    return `<div class="claim-plan-reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'sources') {
     return `<div class="claim-plan-sources"><span class="clarification-label">Fuentes vinculadas</span><p>${escapeHtml(block.sourceIds.join(' · '))}</p></div>`;
