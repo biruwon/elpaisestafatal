@@ -274,13 +274,17 @@ const loadWarehouse = async () => {
 
 const findWarehouseSource = async (query) => {
   const wanted = warehouseTokens(query);
+  const locationOnly = new Set(['espana', 'espanol', 'espanola', 'europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
+  const subjectWanted = wanted.filter((token) => !locationOnly.has(token));
   if (wanted.length < 2) return null;
+  if (!subjectWanted.length) return null;
   const entries = await loadWarehouse();
   const ranked = entries.filter((entry) => !normalise(entry.title).includes('sumario diario')).map((entry) => {
     const available = new Set(warehouseTokens(entry.text));
     const matched = wanted.filter((token) => available.has(token)).length;
-    return { entry, score: matched / wanted.length, matched };
-  }).filter(({ score, matched }) => score >= 0.34 && matched >= 2).sort((left, right) => right.score - left.score);
+    const matchedSubject = subjectWanted.filter((token) => available.has(token)).length;
+    return { entry, score: matched / wanted.length, matched, matchedSubject };
+  }).filter(({ score, matched, matchedSubject }) => score >= 0.34 && matched >= 2 && matchedSubject >= 1).sort((left, right) => right.score - left.score);
   const top = ranked[0];
   return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
 };
@@ -320,7 +324,15 @@ const findWarehouseEvidence = async (query) => {
   const normalizedQuery = normalise(query);
   const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
-  const candidates = (await findWarehouseObservations(query, 100)).filter((item) => item.evidenceFit !== 'weak' && (item.kind !== 'official_publication' || item.matchedTerms?.length >= Math.min(3, meaningfulTerms.length)));
+  const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
+  const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
+  const candidates = (await findWarehouseObservations(query, 100)).filter((item) => {
+    if (item.evidenceFit === 'weak') return false;
+    if (item.kind === 'official_publication' && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
+    // A location or comparison word alone is not evidence of subject fit.
+    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term))) return false;
+    return true;
+  });
   const observations = rankingQuery ? candidates : selectCompatibleWarehouseSeries(query, candidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
@@ -484,6 +496,8 @@ const classify = async (text) => {
   if (cached && cached.expiresAt > Date.now()) return cached.value;
   if (cached) answerCache.delete(key);
   const index = await getIndex();
+  const deterministicCompiler = fallbackCompiler(text);
+  const deterministicHandler = handlerForInput(deterministicCompiler, deterministicCompiler.claimType);
   const lexicalRanked = index.entries.map((entry, position) => ({ entry, position, lexical: lexicalScore(text, entry) })).sort((left, right) => right.lexical - left.lexical);
   let vector = null;
   // Do not pay for an embedding request for obvious long-tail text. Exact and
@@ -504,7 +518,12 @@ const classify = async (text) => {
   const top = publicRanked[0];
   const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
   const lexicalMargin = top ? top.lexical - (publicRanked[1]?.lexical || 0) : 0;
-  if (top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: handlerForInput({ retrievalHints: top.entry.keywords || [], entities: top.entry.aliases || [] }, top.entry.claimType), evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
+  // Derive compatibility from the canonical claim wording as well as its
+  // metadata. Keywords often describe a broad topic and can incorrectly make
+  // a causal claim look compatible with a group-comparison input.
+  const topHandler = top ? handlerForInput({ retrievalHints: [top.entry.title, ...(top.entry.keywords || [])], entities: top.entry.aliases || [] }, top.entry.claimType) : '';
+  const compatibleHandlers = top?.entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'quantity' || deterministicHandler === 'mixed' || topHandler === deterministicHandler;
+  if (top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
@@ -769,10 +788,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // events, but do not let generic quantities retrieve unrelated numeric rows.
   const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
   const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery) : { observations: [], source: undefined };
-  const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const indexedSource = !classified.primary && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // A normative statement is a question about priorities. Generic current
   // affairs search results would add false authority without answering it.
-  const discovered = !['normative', 'group_comparison', 'definition', 'prediction'].includes(handlerId) && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discovered = handlerId === 'budget_transfer' && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;

@@ -102,6 +102,15 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('comparaci')) failures.push('group-comparison long-tail: did not explain missing direct comparison');
   } catch (error) { failures.push(`group-comparison long-tail: ${error.message}`); }
   try {
+    const result = await resolve('España cobra los impuestos más altos de Europa');
+    const unrelated = (result.result?.sourceLinks || []).some((source) => /inmigraci[oó]n/i.test(`${source.title || ''} ${source.url || ''}`));
+    if (unrelated) failures.push('published tax claim: inherited an unrelated immigration source');
+  } catch (error) { failures.push(`published tax claim: ${error.message}`); }
+  try {
+    const result = await resolve('Los extranjeros delinquen más');
+    if (result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'inmigracion-delincuencia') failures.push('group comparison: accepted a causal published claim as an exact match');
+  } catch (error) { failures.push(`group comparison compatibility: ${error.message}`); }
+  try {
     const result = await resolve('La ley permite echar a cualquiera de su casa');
     if (result.status !== 'uncovered') failures.push(`legal long-tail: expected uncovered, received ${result.status}`);
     if (result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('legal long-tail: leaked unrelated evidence');
