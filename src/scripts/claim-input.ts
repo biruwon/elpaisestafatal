@@ -100,6 +100,9 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   if (block.type === 'money_flow') {
     return `<div class="claim-plan-flow"><span class="clarification-label">Flujo de fondos</span><div><strong>Origen</strong><span>↓ transferencia</span><strong>Destino</strong></div><small>${escapeHtml(block.evidenceIds.join(' · '))}</small></div>`;
   }
+  if (block.type === 'data_finding') {
+    return `<div class="claim-plan-finding"><span class="clarification-label">Lo que muestran los datos localizados</span><ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
+  }
   if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
     return planVisualMarkup(plan, block);
   }

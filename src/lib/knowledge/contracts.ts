@@ -65,6 +65,7 @@ export type AnswerBlock =
   | { type: 'key_number'; evidenceId: string; label: string; value: string; caveat?: string }
   | { type: 'line_chart' | 'bar_chart' | 'comparison_chart'; visualId: string; evidenceIds: string[] }
   | { type: 'money_flow'; evidenceIds: string[] }
+  | { type: 'data_finding'; evidenceIds: string[]; points: string[] }
   | { type: 'confirmed'; propositionIds: string[]; evidenceIds?: string[]; points?: string[] }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string }

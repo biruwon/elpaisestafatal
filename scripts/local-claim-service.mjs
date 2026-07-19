@@ -228,6 +228,41 @@ const findWarehouseEvidence = async (query) => {
   return { observations, source };
 };
 
+const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const warehouseTrend = (text, observations) => {
+  const numeric = observations
+    .filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period)
+    .slice()
+    .sort((left, right) => String(left.period).localeCompare(String(right.period)));
+  if (numeric.length < 2) return null;
+  const first = numeric[0];
+  const latest = numeric[numeric.length - 1];
+  const delta = latest.value - first.value;
+  const unit = String(latest.unit || first.unit || '').trim();
+  const suffix = unit ? ` ${unit}` : '';
+  const metric = String(latest.metric || latest.datasetId || latest.source?.title || 'La serie localizada');
+  const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
+  const change = `${formatNumber(Math.abs(delta))}${suffix}`;
+  const directionWords = normalise(text);
+  const expectedLower = directionWords.includes('menos') || directionWords.includes('baja') || directionWords.includes('disminuye') || directionWords.includes('cae');
+  const expectedHigher = directionWords.includes('mas') || directionWords.includes('sube') || directionWords.includes('aumenta') || directionWords.includes('crece');
+  const points = [
+    `${metric} ${direction}, de ${formatNumber(first.value)}${suffix} (${first.period}) a ${formatNumber(latest.value)}${suffix} (${latest.period}).`,
+    `El cambio entre esos dos puntos es de ${change}${delta < 0 ? ' menos' : delta > 0 ? ' más' : ''}.`,
+  ];
+  if ((expectedLower || expectedHigher) && Math.abs(delta) >= 0.000001) {
+    const agrees = (expectedLower && delta < 0) || (expectedHigher && delta > 0);
+    points.push(agrees ? 'La dirección de la serie coincide con la comparación expresada en la afirmación.' : 'La dirección de la serie no coincide con la comparación expresada en la afirmación.');
+  }
+  return {
+    observations: numeric,
+    headline: `${metric}: comparación entre ${first.period} y ${latest.period}`,
+    summary: `${metric} ${direction} entre el primer y el último periodo localizado (${first.period}–${latest.period}).`,
+    points,
+    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value)}${suffix} a ${formatNumber(latest.value)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
+  };
+};
+
 const cosine = (left, right) => {
   if (!left || !right || left.length !== right.length) return 0;
   let score = 0;
@@ -391,34 +426,36 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
+  const trend = !primary ? warehouseTrend(text, observations) : null;
   const provisionalBlocks = observations.length ? (() => {
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
     if (!numeric.length && publications.length) return [{ type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'La publicación demuestra que el documento existe, pero todavía hay que leer su contenido para comprobar la conclusión completa.'] }];
-    const periods = grouped.filter((item) => item.period).map((item) => item.period);
-    const first = numeric[0];
+    const series = trend?.observations || numeric;
+    const periods = series.filter((item) => item.period).map((item) => item.period);
     return [
-      { type: 'key_number', evidenceId: first.id, label: first.metric || first.datasetId || 'Valor localizado', value: String(first.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
-      ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: grouped.map((item) => item.id) }] : []),
-      { type: 'cannot_conclude', evidenceIds: grouped.map((item) => item.id), points: ['Estos valores no demuestran por sí solos la conclusión de la afirmación.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto.'] },
+      { type: 'key_number', evidenceId: series.at(-1).id, label: series.at(-1).metric || series.at(-1).datasetId || 'Valor localizado', value: String(series.at(-1).value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
+      ...(trend ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: trend.points }, { type: 'conversation_reply', text: trend.reply }] : []),
+      ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
+      { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
     ];
   })() : [];
-  const numericObservations = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const numericObservations = trend?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   const warehouseSeries = numericObservations.length >= 2 ? {
-    labels: numericObservations.slice(0, 6).map((item) => String(item.period || item.id)),
-    values: numericObservations.slice(0, 6).map((item) => Number(item.value)),
+    labels: numericObservations.slice(-6).map((item) => String(item.period || item.id)),
+    values: numericObservations.slice(-6).map((item) => Number(item.value)),
     label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
     unit: String(numericObservations[0].unit || ''),
   } : undefined;
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer,
+    headline: primary?.title || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', text: answer }] : provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
-    clarificationQuestion: observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    clarificationQuestion: trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
