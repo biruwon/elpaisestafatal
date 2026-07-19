@@ -10,6 +10,7 @@ ALTER TABLE observations ADD COLUMN IF NOT EXISTS dimension_labels_json TEXT NOT
 ALTER TABLE observations ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'observation';
 ALTER TABLE observations ADD COLUMN IF NOT EXISTS url TEXT;
 ALTER TABLE observations ADD COLUMN IF NOT EXISTS search_text TEXT NOT NULL DEFAULT '';
+ALTER TABLE observations ADD COLUMN IF NOT EXISTS metric_id TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_observations_search_text_trgm
   ON observations USING gin (search_text gin_trgm_ops);

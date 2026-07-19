@@ -295,7 +295,7 @@ const observationSeriesKey = (item) => {
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([key, value]) => `${key}:${value}`)
     .join('|');
-  return [item.source?.id, item.datasetId, item.metric, item.unit, dimensions].join('::');
+  return [item.source?.id, item.datasetId, item.metricId, item.metric, item.unit, dimensions].join('::');
 };
 
 const selectCompatibleWarehouseSeries = (query, observations) => {
@@ -741,6 +741,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     values: seriesForVisual.map((item) => Number(item.value)),
     label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
     unit: displayUnit(numericObservations[0].unit),
+    metricId: numericObservations[0].metricId,
+    population: numericObservations[0].population,
   } : undefined;
   const sourceLinks = [...new Map(
     [usableSource, ...evidenceObservations.map((item) => item.source)]

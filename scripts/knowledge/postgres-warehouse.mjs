@@ -61,17 +61,17 @@ export const loadWarehouse = async () => withWarehousePool(async (database) => {
         const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
         const dimensions = record.dimensions || {};
         const labels = record.dimensionLabels || {};
-        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), record.datasetId, record.metric, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
+        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), manifest.metricId, record.metricId, record.datasetId, record.metric, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
         await database.query(`
           INSERT INTO datasets (id, source_document_id, title, metric, unit, geography, population, period_start, period_end, definition)
           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8,NULL)
           ON CONFLICT (id) DO UPDATE SET title=EXCLUDED.title, metric=EXCLUDED.metric, unit=EXCLUDED.unit, period_start=EXCLUDED.period_start, period_end=EXCLUDED.period_end
         `, [datasetId, manifest.id, record.datasetId || 'Observations', record.metric || null, record.unit || null, record.geography || null, record.population || null, record.period || null]);
         await database.query(`
-          INSERT INTO observations (id, dataset_id, source_document_id, metric, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, search_text)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
-          ON CONFLICT (id) DO UPDATE SET dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, search_text=EXCLUDED.search_text
-        `, [record.id, datasetId, manifest.id, record.metric || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, searchText]);
+        INSERT INTO observations (id, dataset_id, source_document_id, metric, metric_id, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, search_text)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+        ON CONFLICT (id) DO UPDATE SET dataset_id=EXCLUDED.dataset_id, metric=EXCLUDED.metric, metric_id=EXCLUDED.metric_id, value=EXCLUDED.value, unit=EXCLUDED.unit, period=EXCLUDED.period, geography=EXCLUDED.geography, population=EXCLUDED.population, dimensions_json=EXCLUDED.dimensions_json, dimension_labels_json=EXCLUDED.dimension_labels_json, kind=EXCLUDED.kind, url=EXCLUDED.url, search_text=EXCLUDED.search_text
+        `, [record.id, datasetId, manifest.id, record.metric || null, record.metricId || manifest.metricId || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, searchText]);
         observationCount += 1;
       }
     }
@@ -91,7 +91,7 @@ export const queryPostgresWarehouse = async (query, limit = 12) => {
     const params = wanted.map((token) => `%${token}%`);
     const matchedExpression = wanted.map((_, index) => `(CASE WHEN o.search_text LIKE $${index + 1} THEN 1 ELSE 0 END)`).join(' + ');
     const result = await database.query(`
-      SELECT o.id, o.kind, o.metric, o.value, o.unit, o.period, o.url,
+      SELECT o.id, o.kind, o.metric, o.metric_id, o.value, o.unit, o.period, o.population, o.url,
              o.dimensions_json, o.dimension_labels_json, o.search_text,
              d.title AS dataset_id, s.id AS source_id, s.title AS source_title,
              s.publisher AS source_publisher, s.url AS source_url, s.aliases_json,
@@ -110,9 +110,11 @@ export const queryPostgresWarehouse = async (query, limit = 12) => {
       kind: row.kind,
       datasetId: row.dataset_id,
       metric: row.metric,
+      metricId: row.metric_id,
       value: row.value === null ? null : Number(row.value),
       unit: row.unit,
       period: row.period,
+      population: row.population,
       url: row.url,
       dimensions: json(row.dimensions_json),
       dimensionLabels: json(row.dimension_labels_json),
