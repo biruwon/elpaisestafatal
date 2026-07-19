@@ -24,6 +24,7 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
   const body = await requestBody(request);
   if ((!body.text && !body.file) || body.text.length > 12000) return json({ status: 'uncovered', relatedClaims: [] }, 400);
+  if (body.file && (body.file.size > 8 * 1024 * 1024 || !['image/', 'audio/'].some((prefix) => body.file?.type.startsWith(prefix)))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
   if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json({ status: 'unavailable', relatedClaims: [] });
   try {
     const isMultipart = Boolean(body.file);

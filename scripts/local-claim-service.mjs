@@ -8,6 +8,7 @@ const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
+const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const answerCache = new Map();
@@ -26,7 +27,7 @@ const checkLocalEndpoint = () => {
 const ollama = async (path, body, timeout = 5000) => {
   checkLocalEndpoint();
   const response = await fetch(`${endpoint}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeout) });
-  if (!response.ok) throw new Error(`Inference request failed: ${response.status}`);
+  if (!response.ok) throw new Error(`Inference request failed: ${response.status} ${String(await response.text()).slice(0, 240)}`);
   return response.json();
 };
 
@@ -71,6 +72,12 @@ const compileClaim = async (text) => {
       clarificationRequired: value.clarificationRequired === true,
     };
   } catch { return null; }
+};
+
+const extractImageText = async (media) => {
+  if (!media?.base64) return '';
+  const response = await ollama('/api/chat', { model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
+  return String(response.message?.content || '').trim().slice(0, 8000);
 };
 
 const searchText = (entry) => [entry.title, ...(entry.aliases || []), ...(entry.keywords || [])].join(' ');
@@ -179,6 +186,22 @@ const startResolveJob = (text) => {
   return job;
 };
 
+const startMediaResolveJob = (text, inputType, media) => {
+  const id = requestId(`${inputType}:${media?.sha || text}`);
+  const existing = resolveJobs.get(id);
+  if (existing) return existing;
+  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  resolveJobs.set(id, job);
+  void (async () => {
+    if (inputType !== 'image') throw new Error('No local media extractor');
+    const extracted = await extractImageText(media);
+    if (!extracted) throw new Error('No text extracted');
+    const combined = [text, extracted].filter(Boolean).join('\n\n');
+    resolveJobs.set(id, { ...toResolveResult(combined, await classify(combined)), createdAt: job.createdAt, completedAt: Date.now() });
+  })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
+  return job;
+};
+
 const toResolveResult = (text, classified) => {
   const relatedClaims = (classified.alternatives || []).map((item) => ({
     kind: item.kind,
@@ -221,13 +244,16 @@ const readText = async (request) => {
 const readResolveBody = async (request) => {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
-  const body = Buffer.concat(chunks).toString('utf8');
+  const rawBody = Buffer.concat(chunks);
+  const body = rawBody.toString('utf8');
   if (request.headers['content-type']?.includes('multipart/form-data')) {
     try {
-      const form = await new Request('http://local', { method: 'POST', headers: request.headers, body: Buffer.from(body) }).formData();
+      const form = await new Request('http://local', { method: 'POST', headers: request.headers, body: rawBody }).formData();
       const file = form.get('file');
-      return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: file instanceof File };
-    } catch { return { text: '', inputType: 'text', hasFile: false }; }
+      if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: false };
+      const fileBytes = Buffer.from(await file.arrayBuffer());
+      return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: true, media: { base64: fileBytes.toString('base64'), mime: file.type, sha: digest(fileBytes.toString('base64')).slice(0, 24) } };
+    } catch (error) { console.error('Media parsing failed:', error instanceof Error ? error.message : error); return { text: '', inputType: 'text', hasFile: false }; }
   }
   try {
     const value = JSON.parse(body);
@@ -248,7 +274,7 @@ const server = createServer(async (request, response) => {
         return;
       }
       const body = await readResolveBody(request);
-      const result = body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.hasFile || body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
+      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

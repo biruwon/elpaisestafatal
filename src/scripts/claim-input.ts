@@ -200,9 +200,11 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const pendingRequestId = data.requestId;
-      for (let attempt = 0; attempt < 20; attempt += 1) {
+      const maxAttempts = file ? 120 : 20;
+      const waitMs = file ? 500 : 350;
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         await new Promise((resolve, reject) => {
-          const timeout = window.setTimeout(resolve, 350);
+          const timeout = window.setTimeout(resolve, waitMs);
           activeRequest?.signal.addEventListener('abort', () => { window.clearTimeout(timeout); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
         });
         const pending = await fetch(`/api/resolve/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal });
