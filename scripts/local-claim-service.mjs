@@ -315,11 +315,30 @@ const hasNonTotalGroupDimension = (item) => {
     .some(([key, value]) => groupKeys.some((term) => normalise(key).includes(term)) && !totalValues.has(normalise(value)));
 };
 
+const observationText = (item) => normalise([
+  item.metric,
+  item.datasetId,
+  JSON.stringify(item.dimensions || {}),
+  JSON.stringify(item.dimensionLabels || {}),
+  item.source?.title,
+  ...(item.source?.aliases || []),
+].join(' '));
+
 const directGroupObservations = (query, observations) => {
   const queryText = normalise(query);
   const requestedGroup = includesAny(queryText, ['inmigr', 'extranj', 'nacionalidad', 'foreign', 'espanol', 'espanola', 'hombre', 'mujer', 'edad', 'joven', 'mayor', 'benefici', 'ayudas']);
   if (!requestedGroup) return [];
-  return observations.filter((item) => hasNonTotalGroupDimension(item));
+  const measureFamilies = [
+    { query: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'], evidence: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'] },
+    { query: ['delinc', 'crimen', 'delito', 'seguridad', 'insegur'], evidence: ['delinc', 'crimen', 'delito', 'seguridad', 'insegur', 'offence', 'crime'] },
+    { query: ['empleo', 'trabaj', 'paro', 'desemple', 'ocup'], evidence: ['empleo', 'trabaj', 'paro', 'desemple', 'ocup', 'employment', 'unemployment'] },
+    { query: ['viviend', 'alquiler', 'casa', 'precio'], evidence: ['viviend', 'alquiler', 'casa', 'precio', 'housing', 'rent'] },
+    { query: ['poblacion', 'habit', 'nacid', 'ciudadan', 'inmigr', 'migr'], evidence: ['poblacion', 'habit', 'nacid', 'ciudadan', 'inmigr', 'migr', 'population', 'birth', 'citizen'] },
+    { query: ['sanidad', 'salud', 'hospital', 'medic'], evidence: ['sanidad', 'salud', 'hospital', 'medic', 'health'] },
+  ];
+  const family = measureFamilies.find((candidate) => includesAny(queryText, candidate.query));
+  if (!family) return [];
+  return observations.filter((item) => hasNonTotalGroupDimension(item) && includesAny(observationText(item), family.evidence));
 };
 
 const cosine = (left, right) => {

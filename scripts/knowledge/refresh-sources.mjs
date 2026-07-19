@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { sourceRegistry } from './source-registry.mjs';
 
@@ -7,10 +7,18 @@ const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) 
   pairs.push([value.slice(2), values[index + 1] && !values[index + 1].startsWith('--') ? values[index + 1] : 'true']);
   return pairs;
 }, []));
-const configPath = args.get('config') || process.env.SOURCE_REFRESH_CONFIG || '.local/source-refresh.json';
+const configuredPath = args.get('config') || process.env.SOURCE_REFRESH_CONFIG;
+const configCandidates = configuredPath ? [configuredPath] : ['.local/source-refresh.json', 'config/source-refresh.json'];
 let config;
-try { config = JSON.parse(await readFile(configPath, 'utf8')); } catch {
-  console.log(`No refresh configuration found at ${configPath}. Create it with {"ine":["https://..."]}.`);
+for (const candidate of configCandidates) {
+  try {
+    await access(candidate);
+    config = JSON.parse(await readFile(candidate, 'utf8'));
+    break;
+  } catch { /* Try the next configured source set. */ }
+}
+if (!config) {
+  console.log(`No refresh configuration found at ${configCandidates.join(' or ')}. Create one with {"ine":["https://..."]}.`);
   process.exit(0);
 }
 
