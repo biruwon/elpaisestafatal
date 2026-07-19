@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -10,6 +12,11 @@ const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
+const whisperCommand = process.env.WHISPER_COMMAND || '';
+const whisperArgs = (() => {
+  try { return process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
+})();
+const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.es', 'hacienda.gob.es', 'interior.gob.es', 'seg-social.es', 'sepe.es', 'bde.es', 'datos.gob.es', 'congreso.es', 'senado.es', 'poderjudicial.es'];
 const indexPath = join(root, '.local/claim-semantic-index.json');
@@ -80,6 +87,23 @@ const extractImageText = async (media) => {
   if (!media?.base64) return '';
   const response = await ollama('/api/chat', { model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
   return String(response.message?.content || '').trim().slice(0, 8000);
+};
+
+const transcribeAudio = async (media) => {
+  if (!media?.base64 || !whisperCommand) throw new Error('No local transcription runtime configured');
+  const directory = await mkdtemp(join(root, '.local/audio-'));
+  const extension = media.mime === 'audio/wav' ? '.wav' : media.mime === 'audio/ogg' ? '.ogg' : media.mime === 'audio/webm' ? '.webm' : '.m4a';
+  const audioPath = join(directory, `input${extension}`);
+  try {
+    await writeFile(audioPath, Buffer.from(media.base64, 'base64'));
+    const args = whisperArgs.map((arg) => String(arg).replaceAll('{audio}', audioPath));
+    const response = await execFileAsync(whisperCommand, args, { timeout: 45000, maxBuffer: 2 * 1024 * 1024, windowsHide: true });
+    const text = String(response.stdout || '').trim().slice(0, 12000);
+    if (!text) throw new Error('Transcription returned no text');
+    return text;
+  } finally {
+    await rm(directory, { recursive: true, force: true }).catch(() => { /* Best-effort cleanup. */ });
+  }
 };
 
 const sourceHostAllowed = (hostname) => approvedSourceHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
@@ -220,8 +244,8 @@ const startMediaResolveJob = (text, inputType, media) => {
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
-    if (inputType !== 'image') throw new Error('No local media extractor');
-    const extracted = await extractImageText(media);
+    if (inputType !== 'image' && inputType !== 'audio') throw new Error('Unsupported media input');
+    const extracted = inputType === 'image' ? await extractImageText(media) : await transcribeAudio(media);
     if (!extracted) throw new Error('No text extracted');
     const combined = [text, extracted].filter(Boolean).join('\n\n');
     resolveJobs.set(id, { ...toResolveResult(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() });
@@ -266,8 +290,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
-    clarificationQuestion: classified.guidance?.questions?.[0],
-    limitation: classified.guidance?.limitation,
+    clarificationQuestion: source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds,
     sourceIds,
     ...(source ? { sourceLinks: [source] } : {}),
