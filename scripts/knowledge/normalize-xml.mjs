@@ -12,8 +12,7 @@ const attributes = (value) => Object.fromEntries([...String(value || '').matchAl
 const plainText = (value) => decodeXml(String(value || '').replace(/<blockquote[\s\S]*?<\/blockquote>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 const isoDate = (value) => /^\d{8}$/.test(String(value || '')) ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}` : value || undefined;
 
-export const normalizeBoeLegalBlock = (xml, source) => {
-  const blockMatch = String(xml || '').match(/<bloque\s+([^>]*)>([\s\S]*?)<\/bloque>/i);
+const normalizeBlockMatch = (blockMatch, source) => {
   if (!blockMatch) return [];
   const block = attributes(blockMatch[1]);
   if (!block.id || !block.titulo) return [];
@@ -47,4 +46,8 @@ export const normalizeBoeLegalBlock = (xml, source) => {
   });
 };
 
-export const normalizeXmlPayload = (xml, source) => normalizeBoeLegalBlock(xml, source);
+export const normalizeBoeLegalBlock = (xml, source) => normalizeBlockMatch(String(xml || '').match(/<bloque\s+([^>]*)>([\s\S]*?)<\/bloque>/i), source);
+
+export const normalizeBoeLegalText = (xml, source) => [...String(xml || '').matchAll(/<bloque\s+([^>]*)>([\s\S]*?)<\/bloque>/gi)].flatMap((match) => normalizeBlockMatch(match, source));
+
+export const normalizeXmlPayload = (xml, source) => normalizeBoeLegalText(xml, source);

@@ -15,6 +15,7 @@ import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
+import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -48,6 +49,10 @@ let indexPromise;
 let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const boundedExcerpt = (value, limit = 900) => {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
+};
 const displayUnit = (value) => normalise(value) === 'percentage of population in the labour force' ? '%' : String(value || '');
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'cuñado', 'cunado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
@@ -821,7 +826,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
     ];
     if (isLegal && legalObservations.length) return [
-      ...(currentLegalRule?.excerpt ? [{ type: 'source_excerpt', evidenceIds: [currentLegalRule.id], title: `${currentLegalRule.metric} · texto consolidado`, excerpt: currentLegalRule.excerpt }] : []),
+      ...(currentLegalRule?.excerpt ? [{ type: 'source_excerpt', evidenceIds: [currentLegalRule.id], title: `${currentLegalRule.metric} · texto consolidado`, excerpt: boundedExcerpt(currentLegalRule.excerpt) }] : []),
       { type: 'data_finding', evidenceIds: legalObservations.map((item) => item.id), points: [
         `Norma localizada: ${String(currentLegalRule?.datasetId || legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
         `Ámbito: ${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'estatal'}; versión localizada desde: ${currentLegalRule?.dimensions?.effectiveFrom || legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
@@ -893,11 +898,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     metricId: numericObservations[0].metricId,
     population: numericObservations[0].population,
   } : undefined;
-  const sourceLinks = [...new Map(
-    [usableSource, ...evidenceObservations.map((item) => item.source)]
-      .filter((item) => item && item.url)
-      .map((item) => [item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url }]),
-  ).values()].slice(0, 5);
+  const sourceLinkMap = new Map();
+  for (const item of [usableSource, ...evidenceObservations.map((observation) => observation.source)].filter((candidate) => candidate?.url)) {
+    if (!sourceLinkMap.has(item.url)) sourceLinkMap.set(item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url });
+  }
+  const sourceLinks = [...sourceLinkMap.values()].slice(0, 5);
   const result = {
     schemaVersion: '1',
     headline: primary?.title || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
@@ -946,6 +951,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
   const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery, classified.compiler, queryEmbedding) : { observations: [], source: undefined };
+  const liveLegal = !classified.primary && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
+    ? await discoverBoeLegalRules(retrievalText, 6)
+    : [];
   const indexedSource = !classified.primary && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
@@ -956,8 +964,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const discovered = discoveryEligible.has(handlerId) && !evidenceUnavailableSignal(text) && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
-  const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
-  const observations = warehouse.observations.length ? warehouse.observations : discovered;
+  const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
+  const observations = warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
   const deterministic = toResolveResult(text, classified, source, resultRequestId, observations);
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);

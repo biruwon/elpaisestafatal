@@ -217,7 +217,7 @@ The frontend submits once and polls automatically when a request is processing. 
 
 ## Phase 4 — Retrieval and evidence warehouse
 
-Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. BOE consolidated-law metadata and bounded article blocks are normalized into typed, versioned legal records. Legal answers can resolve the norm, jurisdiction, effective date, repeal state, current article version, exact consolidated wording, and attributable source without presenting the informational consolidated text as a legal opinion. Broader source/domain coverage, automatic article discovery, jurisprudence, and observation-level PostgreSQL benchmarking remain pending.
+Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. BOE consolidated-law metadata and bounded article blocks are normalized into typed, versioned legal records. Legal answers can resolve the norm, jurisdiction, effective date, repeal state, current article version, exact consolidated wording, and attributable source without presenting the informational consolidated text as a legal opinion. On-demand title-pair discovery can now retrieve current article text for an unseen legal claim; broader source/domain coverage, wider legal-query recall, jurisprudence, and observation-level PostgreSQL benchmarking remain pending.
 
 Use local PostgreSQL with full-text search and pgvector initially. Cloudflare Vectorize is optional later; do not require it for the first production version.
 
@@ -286,6 +286,8 @@ extraction confidence
 Never expose a fake truth percentage.
 
 ## Phase 6 — Newly published and long-tail claims
+
+Status: in progress. Unknown measurable claims progressively use the local warehouse and constrained official discovery. Unknown legal claims now search BOE's consolidated-legislation collection with bounded wildcard title pairs, reject expired or outdated consolidations, download at most two bounded official texts, select only current directly matching articles, cache the result, and retain scenario/jurisprudence limitations. Broader current-event coverage and persistent knowledge-gap promotion remain pending.
 
 Use progressive retrieval:
 

@@ -37,4 +37,7 @@ if (!methodPlan.ok) throw new Error(`Valid methodological blocks rejected: ${met
 const malformedMethod = validateAnswerPlan({ ...valid, blocks: [{ type: 'trade_offs', principle: '', alternatives: [] }] });
 if (malformedMethod.ok || !malformedMethod.errors.some((error) => error.includes('trade-offs'))) throw new Error('Malformed methodological block was accepted');
 
+const oversizedExcerpt = validateAnswerPlan({ ...valid, blocks: [{ type: 'source_excerpt', evidenceIds: ['e1'], title: 'Official article', excerpt: 'x'.repeat(1201) }] });
+if (oversizedExcerpt.ok || !oversizedExcerpt.errors.some((error) => error.includes('too long'))) throw new Error('Oversized source excerpt was accepted');
+
 console.log('Answer-plan validation passed: traceability and provisional-source gates are enforced.');

@@ -44,6 +44,7 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
     if (block.type === 'key_number' && (!block.evidenceId || !evidenceIds.has(block.evidenceId))) errors.push(`block ${index} key number is untraceable`);
     if ((block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') && typeof block.visualId !== 'string') errors.push(`block ${index} chart has no visual ID`);
     if (block.type === 'conversation_reply' && (typeof block.text !== 'string' || !block.text.trim())) errors.push(`block ${index} reply is empty`);
+    if (block.type === 'source_excerpt' && (!nonEmptyString(block.title) || !nonEmptyString(block.excerpt) || block.excerpt.length > 1200)) errors.push(`block ${index} source excerpt is malformed or too long`);
     if (block.type === 'strongest_valid_concern' && !nonEmptyString(block.text)) errors.push(`block ${index} concern is empty`);
     if (block.type === 'evidence_ladder' && !structuredItems(block.steps, new Set(['available', 'context', 'missing']))) errors.push(`block ${index} evidence ladder is malformed`);
     if (block.type === 'legal_decision_tree' && !structuredItems(block.items, new Set(['known', 'missing']))) errors.push(`block ${index} legal decision tree is malformed`);

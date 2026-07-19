@@ -39,7 +39,7 @@
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
-    "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs",
+    "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs && node scripts/knowledge/validate-boe-legal-discovery.mjs",
     "knowledge:freshness": "node scripts/knowledge/validate-source-freshness.mjs",
     "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs",
     "knowledge:answer-plan": "node scripts/knowledge/validate-answer-plan.mjs",
