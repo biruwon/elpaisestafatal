@@ -43,6 +43,15 @@ const apiChecks = [
       if (forbidden.test(JSON.stringify(body))) failures.push('/api/resolve: exposed implementation details');
     },
   },
+  {
+    path: '/api/questions',
+    init: { method: 'GET' },
+    validate(response, body) {
+      if (response.status !== 200) failures.push(`/api/questions: expected 200 with the operational database bound, received ${response.status}`);
+      if (!body || body.status !== 'ok' || !Array.isArray(body.claims)) failures.push('/api/questions: missing operational popularity feed');
+      if (forbidden.test(JSON.stringify(body))) failures.push('/api/questions: exposed implementation details');
+    },
+  },
 ];
 
 for (const check of apiChecks) {
