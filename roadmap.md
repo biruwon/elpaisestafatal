@@ -59,6 +59,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Answer plans now pass a runtime traceability gate before rendering: evidence-bearing blocks must reference plan evidence, provisional plans must contain an attributable HTTPS source, and invalid plans are downgraded to an explicit insufficient-evidence response.
 - Unmatched causal inputs now label retrieved series as contextual evidence rather than a causal verdict; normative inputs are explicitly presented as priority/value disagreements with a follow-up question about the rule or trade-off.
 - When structured and publication retrieval are empty, the bounded official fallback can now surface matching `datos.gob.es` catalogue entries as source leads; catalogue metadata is never treated as proof and remains explicitly provisional.
+- Catalogue leads are now typed separately from official publications and render a concrete next step: open the distribution and verify its definition, period, population, and territorial coverage before treating it as evidence.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

@@ -284,16 +284,19 @@ export const discoverOfficialDocuments = async (query, limit = 3) => {
 
 export const discoveryObservation = (item) => {
   const publisher = item.url.includes('lamoncloa.gob.es') ? 'La Moncloa' : item.url.includes('datos.gob.es') ? 'Datos.gob.es' : 'BOE';
+  const sourceKind = item.url.includes('datos.gob.es') ? 'dataset_catalogue' : 'official_publication';
+  const publication = String(item.publication || item.publishedAt || '');
   const source = { id: `${publisher.toLocaleLowerCase().replaceAll(' ', '-')}-discovery-${item.id}`, title: `${publisher} · ${item.title}`, url: item.url };
   return {
     id: `discovered-${item.id}`,
-    kind: 'official_publication',
+    kind: sourceKind,
+    sourceKind,
     metric: item.title,
     value: null,
-    period: item.publication.match(/\b(\d{4})\b/)?.[1],
+    period: publication.match(/\b(\d{4})\b/)?.[1],
     url: item.url,
-    dimensions: { department: item.department, publication: item.publication },
-    dimensionLabels: { department: item.department, publication: item.publication },
+    dimensions: { department: item.department, publication },
+    dimensionLabels: { department: item.department, publication },
     source,
     score: item.score,
     matchedTerms: item.matchedTerms,
