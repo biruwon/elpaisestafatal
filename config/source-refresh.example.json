@@ -18,6 +18,21 @@
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015",
       "title": "Producto interior bruto de España · Eurostat",
       "aliases": ["PIB", "GDP", "economía", "producción"]
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2015",
+      "title": "Tasa de desempleo de España · Eurostat",
+      "aliases": ["paro", "desempleo", "empleo", "tasa de paro"]
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
+      "title": "Población residente de España · Eurostat",
+      "aliases": ["población", "habitantes", "demografía", "residentes"]
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP00&sinceTimePeriod=2015",
+      "title": "Índice armonizado de precios de España · Eurostat",
+      "aliases": ["inflación europea", "precios", "coste de vida", "HICP"]
     }
   ]
 }
