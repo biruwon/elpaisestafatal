@@ -20,9 +20,12 @@ const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.es', 'hacienda.gob.es', 'interior.gob.es', 'seg-social.es', 'sepe.es', 'bde.es', 'datos.gob.es', 'congreso.es', 'senado.es', 'poderjudicial.es'];
 const indexPath = join(root, '.local/claim-semantic-index.json');
+const warehousePath = join(root, '.local/source-warehouse');
+const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const answerCache = new Map();
 const resolveJobs = new Map();
 let indexPromise;
+let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno'].includes(token)))];
@@ -142,6 +145,51 @@ const lexicalScore = (query, entry) => {
   return wanted.length ? wanted.filter((token) => available.has(token)).length / wanted.length : 0;
 };
 
+const warehouseTokens = (value) => tokens(value).filter((token) => token.length > 3);
+const loadWarehouse = async () => {
+  if (warehousePromise) return warehousePromise;
+  warehousePromise = (async () => {
+    let files;
+    try { files = (await readdir(join(warehousePath, 'manifests'))).filter((file) => file.endsWith('.json')); } catch { return []; }
+    const manifests = [];
+    for (const file of files.slice(0, 2000)) {
+      try {
+        const manifest = JSON.parse(await readFile(join(warehousePath, 'manifests', file), 'utf8'));
+        if (manifest?.url && manifest.trust === 'approved-domain') manifests.push(manifest);
+      } catch { /* Validation reports malformed manifests separately. */ }
+    }
+    const signature = digest(JSON.stringify(manifests.map(({ id, sha256, url }) => ({ id, sha256, url }))));
+    try {
+      const cached = JSON.parse(await readFile(warehouseIndexPath, 'utf8'));
+      if (cached.signature === signature && Array.isArray(cached.entries)) return cached.entries;
+    } catch { /* Build the derived index. */ }
+    const entries = [];
+    for (const manifest of manifests) {
+      try {
+        let content = `${manifest.publisher || ''} ${manifest.url}`;
+        try { content += ` ${await readFile(manifest.objectPath, 'utf8')}`; } catch { /* Metadata remains searchable. */ }
+        entries.push({ id: manifest.id, title: `${manifest.publisher || 'Fuente oficial'} · ${new URL(manifest.url).hostname}`, url: manifest.url, text: content.slice(0, 120000) });
+      } catch { /* Ignore malformed source manifests; validation reports them separately. */ }
+    }
+    await writeFile(warehouseIndexPath, JSON.stringify({ signature, entries }));
+    return entries;
+  })();
+  return warehousePromise;
+};
+
+const findWarehouseSource = async (query) => {
+  const wanted = warehouseTokens(query);
+  if (wanted.length < 2) return null;
+  const entries = await loadWarehouse();
+  const ranked = entries.map((entry) => {
+    const available = new Set(warehouseTokens(entry.text));
+    const matched = wanted.filter((token) => available.has(token)).length;
+    return { entry, score: matched / wanted.length, matched };
+  }).filter(({ score, matched }) => score >= 0.34 && matched >= 2).sort((left, right) => right.score - left.score);
+  const top = ranked[0];
+  return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
+};
+
 const cosine = (left, right) => {
   if (!left || !right || left.length !== right.length) return 0;
   let score = 0;
@@ -229,8 +277,10 @@ const startResolveJob = (text) => {
   if (existing) return existing;
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
-  void classify(text).then((classified) => {
-    resolveJobs.set(id, { ...toResolveResult(text, classified), createdAt: job.createdAt, completedAt: Date.now() });
+  void classify(text).then(async (classified) => {
+    const indexedSource = !classified.primary ? await findWarehouseSource(text) : null;
+    const source = indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined;
+    resolveJobs.set(id, { ...toResolveResult(text, classified, source, id), createdAt: job.createdAt, completedAt: Date.now() });
   }).catch(() => {
     resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() });
   });
@@ -286,7 +336,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const result = {
     schemaVersion: '1',
     headline: primary?.title || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : source ? 'Hemos podido leer la fuente enlazada, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer,
+    summary: primary ? answer : source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer,
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [] }, ...(visualBlock ? [visualBlock] : []), { type: 'conversation_reply', text: answer }] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
