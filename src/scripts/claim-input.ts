@@ -106,6 +106,9 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   if (block.type === 'data_finding') {
     return `<div class="claim-plan-finding"><span class="clarification-label">Lo que muestran los datos localizados</span><ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div>`;
   }
+  if (block.type === 'source_excerpt') {
+    return `<div class="claim-plan-excerpt"><span class="clarification-label">${escapeHtml(block.title)}</span><blockquote>${escapeHtml(block.excerpt)}</blockquote><small>Fragmento mostrado para orientar la comprobación; no es por sí solo un veredicto.</small></div>`;
+  }
   if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
     return planVisualMarkup(plan, block);
   }

@@ -466,7 +466,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
-    if (!numeric.length && publications.length) return [{ type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'La publicación demuestra que el documento existe, pero todavía hay que leer su contenido para comprobar la conclusión completa.'] }];
+    if (!numeric.length && publications.length) return [
+      ...(publications.find((item) => item.excerpt) ? [{ type: 'source_excerpt', evidenceIds: publications.filter((item) => item.excerpt).slice(0, 1).map((item) => item.id), title: 'Fragmento localizado en la fuente oficial', excerpt: publications.find((item) => item.excerpt).excerpt }] : []),
+      { type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
+    ];
     const series = ranking?.observations || trend?.observations || numeric;
     const periods = series.filter((item) => item.period).map((item) => item.period);
     const keyObservation = ranking

@@ -12,7 +12,8 @@ const decodeHtml = (value) => String(value || '')
   .replace(/&#(d+);/g, (_, code) => String.fromCodePoint(Number(code)))
   .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
   .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  .replace(/&(aacute|eacute|iacute|oacute|uacute|ntilde|uuml|Aacute|Eacute|Iacute|Oacute|Uacute|Ntilde|Uuml);/g, (_, entity) => ({ aacute: 'á', eacute: 'é', iacute: 'í', oacute: 'ó', uacute: 'ú', ntilde: 'ñ', uuml: 'ü', Aacute: 'Á', Eacute: 'É', Iacute: 'Í', Oacute: 'Ó', Uacute: 'Ú', Ntilde: 'Ñ', Uuml: 'Ü' })[entity] || entity);
 const stripHtml = (value) => decodeHtml(String(value || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
 
 export const parseBoeSearchResults = (html, query, limit = 5) => {
@@ -65,6 +66,15 @@ export const parseMoncloaRssItems = (xml, limit = 8) => {
 
 const extractPageText = (html) => stripHtml(String(html || '').replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')).slice(0, 500_000);
 const extractHeading = (html, fallback) => stripHtml(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || fallback).slice(0, 500);
+export const extractRelevantExcerpt = (text, wanted, maxLength = 420) => {
+  const sentences = String(text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).filter(Boolean);
+  const ranked = sentences.map((sentence, index) => ({ sentence, index, matches: wanted.filter((token) => normalise(sentence).includes(token)).length }))
+    .filter((item) => item.matches > 0)
+    .sort((left, right) => right.matches - left.matches || left.index - right.index);
+  if (!ranked.length) return '';
+  const selected = ranked.slice(0, 2).sort((left, right) => left.index - right.index).map((item) => item.sentence).join(' ');
+  return selected.length <= maxLength ? selected : `${selected.slice(0, maxLength - 1).trimEnd()}…`;
+};
 
 export const discoverMoncloaDocuments = async (query, limit = 3) => {
   const wanted = tokens(query);
@@ -81,11 +91,12 @@ export const discoverMoncloaDocuments = async (query, limit = 3) => {
         const response = await fetch(item.link, { headers: { accept: 'text/html', 'user-agent': 'elpaisestafatal-local-resolver/1.0' }, signal: AbortSignal.timeout(Math.min(3500, remaining)) });
         if (!response.ok) return null;
         const html = (await response.text()).slice(0, 2_000_000);
-        const text = normalise(extractPageText(html));
+        const pageText = extractPageText(html);
+        const text = normalise(pageText);
         const matchedTerms = wanted.filter((token) => text.includes(token));
         const score = matchedTerms.length / wanted.length;
         if (matchedTerms.length < 2 || score < 0.5) return null;
-        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, score, searchScore: score + 0.2 };
+        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, excerpt: extractRelevantExcerpt(pageText, matchedTerms), score, searchScore: score + 0.2 };
       } catch { return null; }
     }));
     return pages.filter(Boolean).sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
@@ -149,6 +160,7 @@ export const discoveryObservation = (item) => {
     source,
     score: item.score,
     matchedTerms: item.matchedTerms,
+    excerpt: item.excerpt || '',
     evidenceFit: item.score >= 0.67 ? 'direct' : 'qualified',
   };
 };

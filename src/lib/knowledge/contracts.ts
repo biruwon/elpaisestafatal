@@ -66,6 +66,7 @@ export type AnswerBlock =
   | { type: 'line_chart' | 'bar_chart' | 'comparison_chart'; visualId: string; evidenceIds: string[] }
   | { type: 'money_flow'; evidenceIds: string[] }
   | { type: 'data_finding'; evidenceIds: string[]; points: string[] }
+  | { type: 'source_excerpt'; evidenceIds: string[]; title: string; excerpt: string }
   | { type: 'confirmed'; propositionIds: string[]; evidenceIds?: string[]; points?: string[] }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string }
