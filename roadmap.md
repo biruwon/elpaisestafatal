@@ -37,7 +37,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
-- `bge-m3` and the configured local chat/vision models are installed on the development machine; the current 300-case regression run is 180/180 known matches and 120/120 unknown-safe results. Semantic retrieval remains opt-in until its relevance benchmark is recorded.
+- `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine; the live 300-case regression run is 180/180 known matches and 120/120 unknown-safe results, with p95 latency below 2.9 seconds. Semantic retrieval remains opt-in until its relevance benchmark is recorded.
 - The source warehouse now preserves real dated observations from INE `DATOS_TABLA` responses instead of indexing row metadata as measurements.
 - Refresh resources can carry source-specific titles and aliases, which are included in derived retrieval indexes for long-tail wording such as `inflación`, `IPC`, and `PIB`.
 - BOE daily summaries are normalized into searchable publication records with date, department, identifier, title, and direct document URL; document matches remain provisional until their content is checked.

@@ -20,7 +20,7 @@ const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
-const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
+const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
 const whisperCommand = process.env.WHISPER_COMMAND || '';
 const whisperArgs = (() => {
