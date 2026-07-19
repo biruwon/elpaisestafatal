@@ -14,8 +14,8 @@ const forward = (request, response, targetPort, targetPath = request.url) => {
 };
 
 createServer((request, response) => {
-  if (request.url?.startsWith('/api/classify') || request.url?.startsWith('/api/resolve')) {
-    const targetPath = request.url.startsWith('/api/resolve') ? request.url.replace(/^\/api\/resolve/, '/v1/resolve') : request.url;
+  if (request.url?.startsWith('/api/classify') || request.url?.startsWith('/api/resolve') || request.url?.startsWith('/api/v1/resolve')) {
+    const targetPath = request.url.startsWith('/api/v1/resolve') ? request.url.replace(/^\/api\/v1\/resolve/, '/v1/resolve') : request.url.startsWith('/api/resolve') ? request.url.replace(/^\/api\/resolve/, '/v1/resolve') : request.url;
     forward(request, response, classifierPort, targetPath);
     return;
   }
