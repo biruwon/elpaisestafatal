@@ -1,0 +1,45 @@
+name: Refresh public evidence warehouse
+
+on:
+  schedule:
+    - cron: '15 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate refresh configuration
+        run: npm run knowledge:refresh:validate
+
+      - name: Refresh approved public sources
+        run: npm run knowledge:refresh -- --config config/source-refresh.example.json
+
+      - name: Validate the derived warehouse
+        run: |
+          npm run knowledge:warehouse
+          npm run knowledge:warehouse:sql
+
+      - name: Upload refresh snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-warehouse-${{ github.run_id }}
+          path: .local/source-warehouse
+          if-no-files-found: error
+          retention-days: 14
