@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { appendFile, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -22,6 +22,7 @@ const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
+const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
 const cacheTtlMs = 15 * 60 * 1000;
 const maxCacheEntries = 1000;
 const maxResolveJobs = 500;
@@ -42,6 +43,18 @@ const pruneRuntimeState = () => {
   while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
 };
 setInterval(pruneRuntimeState, 60 * 1000).unref();
+
+const recordKnowledgeGap = async (text, result, inputType = 'text') => {
+  if (!['uncovered', 'draft', 'partial'].includes(result.status)) return;
+  await appendFile(knowledgeGapPath, `${JSON.stringify({
+    createdAt: new Date().toISOString(),
+    inputType,
+    normalized: normalise(text),
+    status: result.status,
+    requestId: result.requestId,
+    sourceIds: result.result?.sourceIds || [],
+  })}\n`).catch(() => { /* Learning must never block the user response. */ });
+};
 
 const checkLocalEndpoint = () => {
   const host = new URL(endpoint).hostname;
@@ -296,7 +309,9 @@ const startResolveJob = (text) => {
   void classify(text).then(async (classified) => {
     const indexedSource = !classified.primary ? await findWarehouseSource(text) : null;
     const source = indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined;
-    resolveJobs.set(id, { ...toResolveResult(text, classified, source, id), createdAt: job.createdAt, completedAt: Date.now() });
+    const completed = { ...toResolveResult(text, classified, source, id), createdAt: job.createdAt, completedAt: Date.now() };
+    resolveJobs.set(id, completed);
+    void recordKnowledgeGap(text, completed);
   }).catch(() => {
     resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() });
   });
@@ -315,7 +330,9 @@ const startMediaResolveJob = (text, inputType, media) => {
     const extracted = inputType === 'image' ? await extractImageText(media) : await transcribeAudio(media);
     if (!extracted) throw new Error('No text extracted');
     const combined = [text, extracted].filter(Boolean).join('\n\n');
-    resolveJobs.set(id, { ...toResolveResult(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() });
+    const completed = { ...toResolveResult(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
+    resolveJobs.set(id, completed);
+    void recordKnowledgeGap(combined, completed, inputType);
   })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
   return job;
 };
