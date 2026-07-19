@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 const searchEndpoint = 'https://www.boe.es/buscar/redirector.php';
 const moncloaRssEndpoint = 'https://www.lamoncloa.gob.es/Paginas/rss.aspx?tipo=16';
+const dataCatalogueEndpoint = 'https://datos.gob.es/apidata/catalog/dataset/title/';
 const cacheTtlMs = 5 * 60 * 1000;
 const documentCacheTtlMs = 24 * 60 * 60 * 1000;
 const cache = new Map();
@@ -90,6 +91,55 @@ export const parseMoncloaRssItems = (xml, limit = 8) => {
     if (items.length >= limit) break;
   }
   return items;
+};
+
+const catalogueText = (value) => Array.isArray(value)
+  ? value.map((item) => item?._value || item?.value || '').filter(Boolean).join(' ')
+  : String(value?._value || value?.value || value || '');
+
+export const parseDatosGobCatalogResults = (payload, query, limit = 5) => {
+  const wanted = tokens(query);
+  if (wanted.length < 2 || !Array.isArray(payload?.result?.items)) return [];
+  return payload.result.items.map((item) => {
+    const title = catalogueText(item.title).trim();
+    const description = catalogueText(item.description).trim();
+    const searchable = normalise(`${title} ${description}`);
+    const matchedTerms = wanted.filter((token) => searchable.includes(token));
+    const url = String(item._about || item.about || '').trim();
+    return {
+      id: `datos-gob-${Buffer.from(url || `${title}-${description}`).toString('base64url')}`,
+      title: title.slice(0, 500),
+      description: description.slice(0, 700),
+      url,
+      publisher: catalogueText(item.publisher || item.organization).slice(0, 240),
+      matchedTerms,
+      score: wanted.length ? matchedTerms.length / wanted.length : 0,
+      searchScore: wanted.length ? matchedTerms.length / wanted.length : 0,
+    };
+  }).filter((item) => item.title && item.url.startsWith('https://datos.gob.es/') && item.matchedTerms.length >= 2 && item.score >= 0.5)
+    .sort((left, right) => right.searchScore - left.searchScore || left.title.localeCompare(right.title, 'es'))
+    .slice(0, limit);
+};
+
+export const discoverDatosGobCatalog = async (query, limit = 3) => {
+  const wanted = tokens(query);
+  if (wanted.length < 2) return [];
+  const queryTerms = [...new Set([wanted.slice(0, 3).join(' '), wanted.slice(-2).join(' ')])];
+  const deadline = Date.now() + 5000;
+  const results = [];
+  for (const term of queryTerms) {
+    const remaining = deadline - Date.now();
+    if (remaining < 250) break;
+    try {
+      const url = `${dataCatalogueEndpoint}${encodeURIComponent(term)}.json?_pageSize=5`;
+      const response = await fetch(url, { headers: { accept: 'application/json', 'user-agent': 'elpaisestafatal-local-resolver/1.0' }, signal: AbortSignal.timeout(Math.min(2500, remaining)) });
+      if (!response.ok) continue;
+      results.push(...parseDatosGobCatalogResults(await response.json(), query, limit));
+    } catch { /* Catalogue discovery is optional and never blocks the official path. */ }
+  }
+  return [...new Map(results.map((item) => [item.url, item])).values()]
+    .sort((left, right) => right.searchScore - left.searchScore)
+    .slice(0, limit);
 };
 
 const extractPageText = (html) => stripHtml(String(html || '').replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')).slice(0, 500_000);
@@ -223,8 +273,8 @@ export const discoverOfficialDocuments = async (query, limit = 3) => {
     cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
     return results;
   }
-  const [moncloa, boe] = await Promise.all([discoverMoncloaDocuments(query, limit), discoverBoeDocuments(query, limit)]);
-  const results = [...moncloa, ...boe].sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
+  const [moncloa, boe, catalogue] = await Promise.all([discoverMoncloaDocuments(query, limit), discoverBoeDocuments(query, limit), discoverDatosGobCatalog(query, limit)]);
+  const results = [...moncloa, ...boe, ...catalogue].sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
   for (const result of results) if (result.url) documentCache.set(result.url, { document: result, expiresAt: Date.now() + documentCacheTtlMs });
   cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
   while (cache.size > 100) cache.delete(cache.keys().next().value);
@@ -233,7 +283,7 @@ export const discoverOfficialDocuments = async (query, limit = 3) => {
 };
 
 export const discoveryObservation = (item) => {
-  const publisher = item.url.includes('lamoncloa.gob.es') ? 'La Moncloa' : 'BOE';
+  const publisher = item.url.includes('lamoncloa.gob.es') ? 'La Moncloa' : item.url.includes('datos.gob.es') ? 'Datos.gob.es' : 'BOE';
   const source = { id: `${publisher.toLocaleLowerCase().replaceAll(' ', '-')}-discovery-${item.id}`, title: `${publisher} · ${item.title}`, url: item.url };
   return {
     id: `discovered-${item.id}`,
@@ -247,7 +297,7 @@ export const discoveryObservation = (item) => {
     source,
     score: item.score,
     matchedTerms: item.matchedTerms,
-    excerpt: item.excerpt || '',
+    excerpt: item.excerpt || (item.description ? item.description.slice(0, 420) : ''),
     finding: item.finding,
     evidenceFit: item.score >= 0.67 ? 'direct' : 'qualified',
   };

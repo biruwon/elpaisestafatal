@@ -1,4 +1,4 @@
-import { discoverOfficialDocuments, extractRelevantExcerpt, parseBoeSearchResults, parseBudgetTransferExcerpt, parseMoncloaRssItems } from './official-discovery.mjs';
+import { discoverOfficialDocuments, extractRelevantExcerpt, parseBoeSearchResults, parseBudgetTransferExcerpt, parseDatosGobCatalogResults, parseMoncloaRssItems } from './official-discovery.mjs';
 
 const fixture = `<li class="resultado-busqueda"><p>Ministerio de Educación</p><p>BOE 10 de 10/01/2026 - I. Disposiciones generales</p><p>Resolución sobre educación y Presidencia.</p><a href="../buscar/doc.php?id=BOE-A-2026-10" title="Ref. BOE-A-2026-10">Más...</a></li>`;
 const results = parseBoeSearchResults(fixture, 'educación presidencia', 2);
@@ -13,5 +13,7 @@ const excerpt = extractRelevantExcerpt('El Gobierno aprobó una transferencia de
 if (!excerpt || excerpt.length > 420 || !excerpt.includes('transferencia')) throw new Error('Official discovery excerpt extraction is not bounded or relevant');
 const transfer = parseBudgetTransferExcerpt('ACUERDO por el que se autoriza una transferencia de crédito, por importe de 309.840.377,20 euros, desde el Ministerio de Educación, Formación Profesional y Deportes, al Ministerio de la Presidencia, Justicia y Relaciones con las Cortes para financiar insuficiencias en el capítulo 1 "Gastos de personal".');
 if (!transfer || transfer.amount !== 309840377.2 || !transfer.originEntity.includes('Educación') || !transfer.destinationEntity.includes('Presidencia')) throw new Error('Budget transfer extraction did not preserve the official fields');
+const catalogue = parseDatosGobCatalogResults({ result: { items: [{ _about: 'https://datos.gob.es/catalogo/example-vivienda', title: [{ _value: 'Viviendas y población' }], description: [{ _value: 'Datos de vivienda por municipio y población residente.' }] }] } }, 'vivienda población', 2);
+if (catalogue.length !== 1 || !catalogue[0].url.includes('datos.gob.es/catalogo') || catalogue[0].matchedTerms.length !== 2) throw new Error('Datos.gob.es catalogue parser did not preserve a dataset lead');
 if ((await discoverOfficialDocuments('España está destruida')).length !== 0) throw new Error('Low-signal claims should not trigger official-source discovery');
 console.log('Official discovery validation passed: attributable BOE and La Moncloa results are parsed safely.');
