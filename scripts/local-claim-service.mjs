@@ -113,23 +113,37 @@ const fallbackCompiler = (text) => ({
   clarificationRequired: true,
 });
 
+const compilerTypes = new Set(['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
+const normalizeCompiler = (value, text) => {
+  if (!value || typeof value !== 'object') return fallbackCompiler(text);
+  const propositions = Array.isArray(value.propositions)
+    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => ({
+      text: item.text.slice(0, 300),
+      type: compilerTypes.has(item.type) ? item.type : 'mixed',
+      explicit: item.explicit !== false,
+    }))
+    : [];
+  if (!propositions.length) return fallbackCompiler(text);
+  return {
+    normalized: typeof value.normalized === 'string' && value.normalized.trim() ? value.normalized.slice(0, 300) : text.slice(0, 300),
+    claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed',
+    propositions,
+    entities: Array.isArray(value.entities) ? value.entities.filter((item) => typeof item === 'string').slice(0, 12).map((item) => item.slice(0, 120)) : [],
+    numbers: Array.isArray(value.numbers) ? value.numbers.filter((item) => typeof item === 'string').slice(0, 12).map((item) => item.slice(0, 80)) : [],
+    geography: typeof value.geography === 'string' ? value.geography.slice(0, 120) : null,
+    period: typeof value.period === 'string' ? value.period.slice(0, 120) : null,
+    retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
+    clarificationRequired: value.clarificationRequired === true,
+  };
+};
+
 const compileClaim = async (text) => {
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
   try {
     const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 5000);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
-    return {
-      normalized: typeof value.normalized === 'string' ? value.normalized.slice(0, 300) : text.slice(0, 300),
-      claimType: typeof value.claimType === 'string' ? value.claimType : 'mixed',
-      propositions: value.propositions.filter((item) => item && typeof item.text === 'string').slice(0, 6).map((item) => ({ text: item.text.slice(0, 300), type: item.type || 'mixed', explicit: item.explicit !== false })),
-      entities: Array.isArray(value.entities) ? value.entities.filter((item) => typeof item === 'string').slice(0, 12) : [],
-      numbers: Array.isArray(value.numbers) ? value.numbers.filter((item) => typeof item === 'string').slice(0, 12) : [],
-      geography: typeof value.geography === 'string' ? value.geography.slice(0, 120) : null,
-      period: typeof value.period === 'string' ? value.period.slice(0, 120) : null,
-      retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8) : [],
-      clarificationRequired: value.clarificationRequired === true,
-    };
+    return normalizeCompiler(value, text);
   } catch { return fallbackCompiler(text); }
 };
 
@@ -240,7 +254,7 @@ const findWarehouseSource = async (query) => {
 const findWarehouseEvidence = async (query) => {
   const normalizedQuery = normalise(query);
   const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
-  const observations = await findWarehouseObservations(query, rankingQuery ? 100 : 12);
+  const observations = (await findWarehouseObservations(query, rankingQuery ? 100 : 12)).filter((item) => item.evidenceFit !== 'weak');
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };

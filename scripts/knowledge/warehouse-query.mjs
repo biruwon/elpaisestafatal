@@ -5,6 +5,7 @@ const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
+export const warehouseEvidenceFit = (score) => score >= 0.67 ? 'direct' : score >= 0.5 ? 'qualified' : 'weak';
 
 const readRecords = async () => {
   let files;
@@ -39,11 +40,11 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
   return records.map((record) => {
     const available = new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
-    return { record, score: matched.length / wanted.length, matched: matched.length };
+    return { record, score: matched.length / wanted.length, matched: matched.length, matchedTokens: matched };
   }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || record.kind === 'official_publication'))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
-    .map(({ record, score }) => ({
+    .map(({ record, score, matchedTokens }) => ({
       id: record.id,
       kind: record.kind,
       datasetId: record.datasetId,
@@ -56,6 +57,8 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       dimensionLabels: record.dimensionLabels || {},
       source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, aliases: record.source.aliases || [] } : undefined,
       score,
+      matchedTerms: matchedTokens,
+      evidenceFit: warehouseEvidenceFit(score),
     }));
 };
 
