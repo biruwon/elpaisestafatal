@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { normalizeJsonPayload } from './normalize-json.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -34,5 +35,16 @@ await mkdir(join(root, 'manifests'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
 const manifest = { id: `source-${hash.slice(0, 16)}`, url: sourceUrl.toString(), publisher, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? 'approved-domain' : 'discovery-only' };
+await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
+let records = [];
+if (contentType.includes('json')) {
+  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: publisher }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+}
+if (records.length) {
+  manifest.recordCount = records.length;
+  manifest.recordPath = join(root, 'records', `${manifest.id}.json`);
+  await mkdir(join(root, 'records'), { recursive: true });
+  await writeFile(manifest.recordPath, JSON.stringify({ source: manifest, records }, null, 2));
+}
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 console.log(JSON.stringify(manifest, null, 2));
