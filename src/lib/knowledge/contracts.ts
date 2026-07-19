@@ -69,7 +69,7 @@ export type AnswerBlock =
   | { type: 'source_excerpt'; evidenceIds: string[]; title: string; excerpt: string }
   | { type: 'confirmed'; propositionIds: string[]; evidenceIds?: string[]; points?: string[] }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
-  | { type: 'conversation_reply'; text: string }
+  | { type: 'conversation_reply'; text: string; evidenceIds?: string[] }
   | { type: 'sources'; sourceIds: string[] };
 
 export type AnswerPlan = {

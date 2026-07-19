@@ -54,5 +54,6 @@ export const summarizeWarehouseTrend = (text, observations) => {
     summary: `${metric} ${direction} entre el primer y el último periodo localizado (${first.period}–${latest.period}).`,
     points,
     reply: `${metric} ${direction}: pasó de ${formatNumber(first.value)}${suffix} a ${formatNumber(latest.value)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
+    replyEvidenceIds: numeric.map((item) => item.id),
   };
 };

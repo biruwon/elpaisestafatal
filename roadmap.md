@@ -34,6 +34,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Uncovered inputs now receive a structured proposition breakdown; when no plausible indexed candidate exists, model extraction and reranking are skipped for a fast deterministic result.
 - Meaningful uncovered claims now enter a bounded local compiler path even without an indexed candidate; obvious noise still skips inference, and compiler retrieval hints feed the same warehouse and official-source lookup path.
 - Local inference now has a short circuit breaker and the embedding fast path is skipped for obvious long-tail text; direct tests reduced repeated unknown-claim fallback responses to roughly 100–260 ms when local inference is unavailable.
+- Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
 - The current local embedding model configuration still needs installation and evaluation before semantic retrieval is considered active.

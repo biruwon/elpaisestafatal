@@ -48,5 +48,6 @@ export const summarizeWarehouseRanking = (text, observations) => {
     summary: spain ? `España ocupa el puesto ${spainIndex + 1} de ${rows.length} territorios en la comparación disponible para ${period}.` : `Se ha localizado una comparación de ${rows.length} territorios para ${period}.`,
     points,
     reply: spain ? `En ${period}, España aparece en el puesto ${spainIndex + 1} de ${rows.length} territorios con ${formatNumber(spain.value)}${suffix}. El resultado depende de esta definición, población y conjunto de países.` : 'La comparación localizada no incluye una observación identificable de España.',
+    replyEvidenceIds: rows.map((item) => item.id),
   };
 };

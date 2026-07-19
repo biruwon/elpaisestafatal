@@ -499,9 +499,17 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     if (!numeric.length && publications.length) return [
       ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
         const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
-        return [{ type: 'money_flow', evidenceIds: publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id), amount: `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, origin: transfer.originEntity, destination: transfer.destinationEntity, purpose: transfer.purpose }];
+        const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
+        const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+        return [{ type: 'money_flow', evidenceIds, amount, origin: transfer.originEntity, destination: transfer.destinationEntity, purpose: transfer.purpose }];
       })() : []),
       ...(publications.find((item) => item.excerpt) ? [{ type: 'source_excerpt', evidenceIds: publications.filter((item) => item.excerpt).slice(0, 1).map((item) => item.id), title: 'Fragmento localizado en la fuente oficial', excerpt: publications.find((item) => item.excerpt).excerpt }] : []),
+      ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
+        const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
+        const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
+        const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+        return [{ type: 'conversation_reply', evidenceIds, text: `La fuente oficial documenta una transferencia de ${amount} desde ${transfer.originEntity} a ${transfer.destinationEntity} para ${transfer.purpose}. Eso no demuestra por sí solo que se hayan recortado servicios educativos ni que el dinero sea para asesores.` }];
+      })() : []),
       { type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
     ];
     const series = ranking?.observations || trend?.observations || numeric;
@@ -515,7 +523,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       : series.at(-1);
     return [
       { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${keyObservation.metric || keyObservation.datasetId || 'Valor comparado'}` : keyObservation.metric || keyObservation.datasetId || 'Valor localizado', value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
-      ...((ranking || trend) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend).points }, { type: 'conversation_reply', text: (ranking || trend).reply }] : []),
+      ...((ranking || trend) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend).reply }] : []),
       ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
     ];
