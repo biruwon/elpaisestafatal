@@ -252,6 +252,8 @@ Use deterministic parsers for APIs and stable tables. Use the local model only f
 
 ## Phase 5 — Deterministic claim handlers
 
+Status: in progress. Quantity, proportion, trend, ranking, definition, budget-transfer, causal, legal, group-comparison, prediction, and normative routing now exist. Long-tail causal, legal, group-comparison, predictive, and normative inputs produce dedicated deterministic method plans instead of a generic unsupported answer; deeper domain-specific calculations and source-backed legal/event resolution remain pending.
+
 Implement reusable handlers instead of manually authored answers for every wording:
 
 1. Quantity and proportion.
@@ -312,6 +314,8 @@ When evidence is insufficient, explain exactly what record or measurement is mis
 Popular provisional answers become permanent static pages only after the owner reviews the evidence packet.
 
 ## Phase 7 — Visual answer composition
+
+Status: in progress. The shared renderer now supports claim breakdowns, key numbers, charts, money flows, confirmed/unknown cards, source excerpts, strongest-valid-concern cards, evidence ladders, legal decision paths, prediction conditions, normative trade-offs, group-comparability checklists, conversation replies, and source links. Richer reviewed chart coverage and reusable animated scenes remain pending.
 
 Render structured, reusable components:
 

@@ -757,6 +757,52 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     propositionIds: [],
     items: classified.compiler.propositions.slice(0, 6).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
   } : null;
+  const handlerBlocks = !primary ? [
+    ...(isCausal ? [
+      { type: 'strongest_valid_concern', text: 'Puede existir un cambio real que merezca explicación, aunque la causa propuesta todavía no esté demostrada.' },
+      { type: 'evidence_ladder', evidenceIds: causalContext?.observations.map((item) => item.id) || [], steps: [
+        { label: 'Cambio observado', status: causalContext ? 'available' : 'missing', detail: causalContext ? 'Hay una serie relacionada que permite describir el contexto.' : 'Falta una serie directa y comparable del resultado mencionado.' },
+        { label: 'Secuencia temporal', status: causalContext ? 'context' : 'missing', detail: causalContext ? 'La evolución temporal orienta, pero no separa causa y coincidencia.' : 'Falta comprobar que la causa aparece antes que el efecto.' },
+        { label: 'Comparación y magnitud', status: 'missing', detail: 'Hace falta comparar grupos, territorios o periodos y estimar cuánto cambia el resultado.' },
+        { label: 'Explicaciones alternativas', status: 'missing', detail: 'Hay que comprobar si otros factores explican el mismo patrón.' },
+      ] },
+    ] : []),
+    ...(isLegal ? [
+      { type: 'strongest_valid_concern', text: 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
+      { type: 'legal_decision_tree', items: [
+        { label: 'Jurisdicción y norma vigente', status: 'missing', detail: 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
+        { label: 'Situación jurídica', status: 'missing', detail: 'Distinguir propiedad, residencia, contrato, ocupación y condición de las partes.' },
+        { label: 'Procedimiento', status: 'missing', detail: 'Determinar qué vía, autoridad y plazos corresponden.' },
+        { label: 'Excepciones', status: 'missing', detail: 'Comprobar medidas especiales, vulnerabilidad, recursos y disposiciones transitorias.' },
+      ] },
+    ] : []),
+    ...(isPrediction ? [
+      { type: 'strongest_valid_concern', text: 'La predicción puede ser plausible, pero necesita formularse de manera que pueda comprobarse cuando llegue la fecha.' },
+      { type: 'prediction_conditions', items: [
+        { label: 'Indicador', value: 'Qué variable exacta debe cambiar', status: 'missing' },
+        { label: 'Magnitud', value: 'Cuánto debe subir o bajar', status: /\d/.test(text) ? 'specified' : 'missing' },
+        { label: 'Fecha límite', value: 'Cuándo debe haberse producido', status: /a[nñ]o que viene|\b20\d{2}\b|mes|trimestre/i.test(text) ? 'specified' : 'missing' },
+        { label: 'Condiciones', value: 'Qué cambios externos invalidarían la comparación', status: 'missing' },
+      ] },
+    ] : []),
+    ...(isNormative ? [
+      { type: 'strongest_valid_concern', text: 'Cuando un recurso es limitado, decidir quién debe recibir prioridad es una pregunta legítima de justicia y reparto.' },
+      { type: 'trade_offs', principle: 'Los datos pueden mostrar efectos y beneficiarios; la prioridad final depende del criterio de justicia elegido.', alternatives: [
+        { label: 'Prioridad por ciudadanía', consequence: 'Favorece el vínculo político con el país, pero puede excluir a residentes con la misma necesidad.' },
+        { label: 'Prioridad por necesidad', consequence: 'Atiende primero la vulnerabilidad, pero no reconoce una preferencia específica por nacionalidad.' },
+        { label: 'Prioridad por contribución', consequence: 'Relaciona acceso y aportaciones previas, pero deja peor cubiertos algunos casos de necesidad.' },
+      ] },
+    ] : []),
+    ...(isGroupComparison ? [
+      { type: 'strongest_valid_concern', text: 'Puede haber diferencias reales entre grupos, pero solo una comparación equivalente permite saber su tamaño y significado.' },
+      { type: 'group_comparison_requirements', items: [
+        { label: 'Grupos equivalentes', status: groupObservations.length ? 'check' : 'missing', detail: 'Definir exactamente quién pertenece a cada grupo.' },
+        { label: 'Mismo denominador', status: groupObservations.length ? 'check' : 'missing', detail: 'Comparar tasas sobre poblaciones equivalentes, no solo totales.' },
+        { label: 'Mismo periodo y territorio', status: groupObservations.length ? 'check' : 'missing', detail: 'Usar la misma fecha y cobertura geográfica.' },
+        { label: 'Ajustes relevantes', status: 'missing', detail: 'Comprobar edad, renta, composición familiar u otras diferencias que afecten al resultado.' },
+      ] },
+    ] : []),
+  ] : [];
   const provisionalBlocks = observations.length ? (() => {
     if (isQuantityLike && quantityClaim && quantity) return [
       { type: 'key_number', evidenceId: quantity.observation.id, label: quantity.observation.metric || quantity.observation.datasetId || 'Última observación comparable', value: String(quantity.observation.value), caveat: 'Comparación automática provisional; comprueba el periodo, la unidad y la población.' },
@@ -845,7 +891,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     summary: primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || quantityContext ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
-    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
+    blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
     clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),

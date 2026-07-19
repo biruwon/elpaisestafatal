@@ -24,4 +24,17 @@ if (missingSource.ok || !missingSource.errors.some((error) => error.includes('so
 const malformed = validateAnswerPlan({ ...valid, blocks: [{ type: 'conversation_reply', text: 'No citation' }] });
 if (malformed.ok || !malformed.errors.some((error) => error.includes('no evidence IDs'))) throw new Error('Malformed reply was accepted');
 
+const methodPlan = validateAnswerPlan({ ...valid, evidenceIds: [], sourceIds: [], sourceLinks: [], blocks: [
+  { type: 'strongest_valid_concern', text: 'The concern can be valid without proving the proposed cause.' },
+  { type: 'evidence_ladder', steps: [{ label: 'Observed change', status: 'missing', detail: 'A comparable series is required.' }] },
+  { type: 'legal_decision_tree', items: [{ label: 'Jurisdiction', status: 'missing', detail: 'Identify the applicable law.' }] },
+  { type: 'prediction_conditions', items: [{ label: 'Deadline', value: 'A concrete date', status: 'missing' }] },
+  { type: 'trade_offs', principle: 'Evidence describes effects.', alternatives: [{ label: 'A', consequence: 'Effect A' }, { label: 'B', consequence: 'Effect B' }] },
+  { type: 'group_comparison_requirements', items: [{ label: 'Denominator', status: 'missing', detail: 'Use equivalent populations.' }] },
+] });
+if (!methodPlan.ok) throw new Error(`Valid methodological blocks rejected: ${methodPlan.errors.join('; ')}`);
+
+const malformedMethod = validateAnswerPlan({ ...valid, blocks: [{ type: 'trade_offs', principle: '', alternatives: [] }] });
+if (malformedMethod.ok || !malformedMethod.errors.some((error) => error.includes('trade-offs'))) throw new Error('Malformed methodological block was accepted');
+
 console.log('Answer-plan validation passed: traceability and provisional-source gates are enforced.');

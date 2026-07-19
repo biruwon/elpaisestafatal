@@ -103,6 +103,24 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     const linked = block.evidenceIds?.length || block.propositionIds.length;
     return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
+  if (block.type === 'strongest_valid_concern') {
+    return `<div class="claim-plan-concern"><span class="clarification-label">La preocupación válida</span><p>${escapeHtml(block.text)}</p></div>`;
+  }
+  if (block.type === 'evidence_ladder') {
+    return `<div class="claim-plan-method claim-plan-ladder"><span class="clarification-label">Qué haría falta para demostrar la causa</span><ol>${block.steps.map((step) => `<li data-status="${escapeHtml(step.status)}"><span>${escapeHtml(step.label)}</span><p>${escapeHtml(step.detail)}</p></li>`).join('')}</ol>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
+  }
+  if (block.type === 'legal_decision_tree') {
+    return `<div class="claim-plan-method"><span class="clarification-label">Ruta para comprobar la regla</span><ol>${block.items.map((item) => `<li data-status="${escapeHtml(item.status)}"><span>${escapeHtml(item.label)}</span><p>${escapeHtml(item.detail)}</p></li>`).join('')}</ol></div>`;
+  }
+  if (block.type === 'prediction_conditions') {
+    return `<div class="claim-plan-method"><span class="clarification-label">Convertirla en una predicción comprobable</span><dl>${block.items.map((item) => `<div data-status="${escapeHtml(item.status)}"><dt>${escapeHtml(item.label)}</dt><dd>${escapeHtml(item.value)}</dd></div>`).join('')}</dl></div>`;
+  }
+  if (block.type === 'trade_offs') {
+    return `<div class="claim-plan-method claim-plan-tradeoffs"><span class="clarification-label">Qué criterio queréis priorizar</span><p>${escapeHtml(block.principle)}</p><div>${block.alternatives.map((item) => `<section><strong>${escapeHtml(item.label)}</strong><p>${escapeHtml(item.consequence)}</p></section>`).join('')}</div></div>`;
+  }
+  if (block.type === 'group_comparison_requirements') {
+    return `<div class="claim-plan-method"><span class="clarification-label">Comprobación de comparabilidad</span><ul>${block.items.map((item) => `<li data-status="${escapeHtml(item.status)}"><span>${escapeHtml(item.label)}</span><p>${escapeHtml(item.detail)}</p></li>`).join('')}</ul></div>`;
+  }
   if (block.type === 'cannot_conclude') {
     return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }

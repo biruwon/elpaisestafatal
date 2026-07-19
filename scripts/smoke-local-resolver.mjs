@@ -100,17 +100,20 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (result.status !== 'draft') failures.push(`causal long-tail: expected draft, received ${result.status}`);
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('causalidad')) failures.push('causal long-tail: did not explain the causal limitation');
     if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('causal long-tail: missing contextual data block');
+    if (!result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push('causal long-tail: missing evidence ladder');
   } catch (error) { failures.push(`causal long-tail: ${error.message}`); }
   try {
     const result = await resolve('Los españoles deberían tener prioridad en las ayudas');
     if (result.status !== 'uncovered' || result.result?.coverage !== 'values') failures.push(`normative long-tail: expected uncovered values guidance, received ${result.status}/${result.result?.coverage}`);
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('prioridad')) failures.push('normative long-tail: did not identify the value disagreement');
+    if (!result.result?.blocks?.some((block) => block.type === 'trade_offs')) failures.push('normative long-tail: missing trade-off comparison');
   } catch (error) { failures.push(`normative long-tail: ${error.message}`); }
   try {
     const result = await resolve('Los inmigrantes reciben más ayudas que los españoles');
     if (result.status !== 'uncovered') failures.push(`group-comparison long-tail: expected uncovered, received ${result.status}`);
     if (result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('group-comparison long-tail: leaked unrelated evidence');
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('comparaci')) failures.push('group-comparison long-tail: did not explain missing direct comparison');
+    if (!result.result?.blocks?.some((block) => block.type === 'group_comparison_requirements')) failures.push('group-comparison long-tail: missing comparability checklist');
   } catch (error) { failures.push(`group-comparison long-tail: ${error.message}`); }
   try {
     const result = await resolve('España cobra los impuestos más altos de Europa');
@@ -126,12 +129,14 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (result.status !== 'uncovered') failures.push(`legal long-tail: expected uncovered, received ${result.status}`);
     if (result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('legal long-tail: leaked unrelated evidence');
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('supuesto')) failures.push('legal long-tail: did not ask for the concrete scenario');
+    if (!result.result?.blocks?.some((block) => block.type === 'legal_decision_tree')) failures.push('legal long-tail: missing legal decision tree');
   } catch (error) { failures.push(`legal long-tail: ${error.message}`); }
   try {
     const result = await resolve('La vivienda va a bajar un 30 por ciento el año que viene');
     if (!['draft', 'uncovered'].includes(result.status)) failures.push(`prediction long-tail: expected provisional or unresolved guidance, received ${result.status}`);
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('predic')) failures.push('prediction long-tail: did not label the forecast');
     if (result.result?.blocks?.some((block) => block.type === 'line_chart')) failures.push('prediction long-tail: presented historical context as a forecast chart');
+    if (!result.result?.blocks?.some((block) => block.type === 'prediction_conditions')) failures.push('prediction long-tail: missing verification conditions');
   } catch (error) { failures.push(`prediction long-tail: ${error.message}`); }
   try {
     const result = await resolve('España tiene 48 millones de habitantes');

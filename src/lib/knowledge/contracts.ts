@@ -68,6 +68,12 @@ export type AnswerBlock =
   | { type: 'data_finding'; evidenceIds: string[]; points: string[] }
   | { type: 'source_excerpt'; evidenceIds: string[]; title: string; excerpt: string }
   | { type: 'confirmed'; propositionIds: string[]; evidenceIds?: string[]; points?: string[] }
+  | { type: 'strongest_valid_concern'; text: string }
+  | { type: 'evidence_ladder'; evidenceIds?: string[]; steps: Array<{ label: string; status: 'available' | 'context' | 'missing'; detail: string }> }
+  | { type: 'legal_decision_tree'; items: Array<{ label: string; status: 'known' | 'missing'; detail: string }> }
+  | { type: 'prediction_conditions'; items: Array<{ label: string; value: string; status: 'specified' | 'missing' }> }
+  | { type: 'trade_offs'; principle: string; alternatives: Array<{ label: string; consequence: string }> }
+  | { type: 'group_comparison_requirements'; items: Array<{ label: string; status: 'available' | 'check' | 'missing'; detail: string }> }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string; evidenceIds?: string[] }
   | { type: 'sources'; sourceIds: string[] };

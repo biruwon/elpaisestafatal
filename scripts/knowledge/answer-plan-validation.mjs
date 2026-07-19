@@ -12,6 +12,8 @@ const evidenceBearingBlocks = new Set([
 ]);
 
 const arrayOfStrings = (value) => Array.isArray(value) && value.every((item) => typeof item === 'string' && item.length > 0);
+const nonEmptyString = (value) => typeof value === 'string' && value.trim().length > 0;
+const structuredItems = (value, allowedStatuses) => Array.isArray(value) && value.length > 0 && value.every((item) => item && typeof item === 'object' && nonEmptyString(item.label) && nonEmptyString(item.detail) && allowedStatuses.has(item.status));
 
 export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   const errors = [];
@@ -42,6 +44,12 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
     if (block.type === 'key_number' && (!block.evidenceId || !evidenceIds.has(block.evidenceId))) errors.push(`block ${index} key number is untraceable`);
     if ((block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') && typeof block.visualId !== 'string') errors.push(`block ${index} chart has no visual ID`);
     if (block.type === 'conversation_reply' && (typeof block.text !== 'string' || !block.text.trim())) errors.push(`block ${index} reply is empty`);
+    if (block.type === 'strongest_valid_concern' && !nonEmptyString(block.text)) errors.push(`block ${index} concern is empty`);
+    if (block.type === 'evidence_ladder' && !structuredItems(block.steps, new Set(['available', 'context', 'missing']))) errors.push(`block ${index} evidence ladder is malformed`);
+    if (block.type === 'legal_decision_tree' && !structuredItems(block.items, new Set(['known', 'missing']))) errors.push(`block ${index} legal decision tree is malformed`);
+    if (block.type === 'group_comparison_requirements' && !structuredItems(block.items, new Set(['available', 'check', 'missing']))) errors.push(`block ${index} group comparison is malformed`);
+    if (block.type === 'prediction_conditions' && (!Array.isArray(block.items) || !block.items.length || !block.items.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.value) && ['specified', 'missing'].includes(item.status)))) errors.push(`block ${index} prediction conditions are malformed`);
+    if (block.type === 'trade_offs' && (!nonEmptyString(block.principle) || !Array.isArray(block.alternatives) || block.alternatives.length < 2 || !block.alternatives.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.consequence)))) errors.push(`block ${index} trade-offs are malformed`);
   }
 
   for (const [index, source] of (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).entries()) {
