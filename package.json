@@ -36,6 +36,8 @@
     "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
+    "knowledge:materialization-candidates": "node scripts/knowledge/materialization-candidates.mjs",
+    "knowledge:materialization-candidates:validate": "node scripts/knowledge/validate-materialization-candidates.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
