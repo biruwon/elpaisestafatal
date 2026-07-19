@@ -38,6 +38,11 @@
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP00&sinceTimePeriod=2015",
       "title": "Índice armonizado de precios de España · Eurostat",
       "aliases": ["inflación europea", "precios", "coste de vida", "HICP"]
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?geo=ES&sinceTimePeriod=2015",
+      "title": "Índice trimestral de precios de la vivienda en España · Eurostat",
+      "aliases": ["vivienda", "precios de la vivienda", "precio de la vivienda", "casas", "alquileres"]
     }
   ]
 }
