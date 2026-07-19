@@ -4,7 +4,9 @@ import { join } from 'node:path';
 const searchEndpoint = 'https://www.boe.es/buscar/redirector.php';
 const moncloaRssEndpoint = 'https://www.lamoncloa.gob.es/Paginas/rss.aspx?tipo=16';
 const cacheTtlMs = 5 * 60 * 1000;
+const documentCacheTtlMs = 24 * 60 * 60 * 1000;
 const cache = new Map();
+const documentCache = new Map();
 const persistentCachePath = join(new URL('../../.local/', import.meta.url).pathname, 'official-discovery-cache.json');
 let persistentCachePromise;
 
@@ -15,14 +17,18 @@ const loadPersistentCache = async () => {
     for (const [key, item] of Object.entries(saved?.entries || {})) {
       if (item && item.expiresAt > Date.now() && Array.isArray(item.results)) cache.set(key, item);
     }
+    for (const [key, item] of Object.entries(saved?.documents || {})) {
+      if (item?.expiresAt > Date.now() && item.document?.url) documentCache.set(key, item);
+    }
   }).catch(() => { /* A missing or malformed derived cache is rebuilt from official sources. */ });
   return persistentCachePromise;
 };
 
 const persistCache = async () => {
   const entries = Object.fromEntries([...cache.entries()].slice(-100).map(([key, item]) => [key, item]));
+  const documents = Object.fromEntries([...documentCache.entries()].slice(-500).map(([key, item]) => [key, item]));
   await mkdir(new URL('../../.local/', import.meta.url).pathname, { recursive: true });
-  await writeFile(persistentCachePath, JSON.stringify({ version: 1, entries }));
+  await writeFile(persistentCachePath, JSON.stringify({ version: 2, entries, documents }));
 };
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -138,6 +144,18 @@ export const discoverMoncloaDocuments = async (query, limit = 3) => {
 };
 
 const cacheKey = (query) => tokens(query).join(' ');
+const documentMatch = (query, document) => {
+  const wanted = tokens(query);
+  const searchable = normalise([document.title, document.excerpt, JSON.stringify(document.finding || {})].join(' '));
+  const matchedTerms = wanted.filter((token) => searchable.includes(token));
+  const score = wanted.length ? matchedTerms.length / wanted.length : 0;
+  return matchedTerms.length >= 2 && score >= 0.5 ? { ...document, matchedTerms, score, searchScore: score + 0.15 } : null;
+};
+const findCachedDocuments = (query, limit = 3) => [...documentCache.values()]
+  .map((item) => documentMatch(query, item.document, limit))
+  .filter(Boolean)
+  .sort((left, right) => right.searchScore - left.searchScore)
+  .slice(0, limit);
 
 export const discoverBoeDocuments = async (query, limit = 3) => {
   const key = cacheKey(query);
@@ -180,8 +198,15 @@ export const discoverOfficialDocuments = async (query, limit = 3) => {
   const cached = cache.get(key);
   if (cached && cached.expiresAt > Date.now()) return cached.results.slice(0, limit);
   if (cached) cache.delete(key);
+  const cachedDocuments = findCachedDocuments(query, limit);
+  if (cachedDocuments.length) {
+    const results = cachedDocuments;
+    cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
+    return results;
+  }
   const [moncloa, boe] = await Promise.all([discoverMoncloaDocuments(query, limit), discoverBoeDocuments(query, limit)]);
   const results = [...moncloa, ...boe].sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
+  for (const result of results) if (result.url) documentCache.set(result.url, { document: result, expiresAt: Date.now() + documentCacheTtlMs });
   cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
   while (cache.size > 100) cache.delete(cache.keys().next().value);
   await persistCache().catch(() => { /* Derived caching must never block a response. */ });
