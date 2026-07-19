@@ -22,7 +22,7 @@ for (const item of cases) {
     const result = await resolve(item.text);
     if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
-    if (!item.slug && result.relatedClaims?.some((claim) => claim.slug === 'espana-impuestos-europa')) failures.push(`${item.text}: unrelated tax claim returned`);
+    if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
 }
 
