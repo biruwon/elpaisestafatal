@@ -54,5 +54,16 @@ jobs:
           npm run claim-input:lifecycle
           npm run audit:roadmap
 
+      - name: Smoke-test local text and media boundary without inference
+        run: |
+          OLLAMA_ENDPOINT=http://127.0.0.1:1 LOCAL_CLASSIFIER_PORT=8906 node scripts/local-claim-service.mjs > /tmp/local-claim-service.log 2>&1 &
+          service_pid=$!
+          trap 'kill "$service_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8906/healthz > /dev/null; then break; fi
+            sleep 0.25
+          done
+          SMOKE_RESOLVE_BASE_URL=http://127.0.0.1:8906 SMOKE_RESOLVE_PATH=/v1/resolve SMOKE_MEDIA=1 npm run smoke:local-resolver
+
       - name: Check whitespace and repository state
         run: git diff --check

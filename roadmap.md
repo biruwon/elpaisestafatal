@@ -346,6 +346,7 @@ dynamic answer
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
 - Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
 - Run production smoke checks against both static routes and the generic `/api/health` and `/api/resolve` boundaries without requiring dynamic inference to be available.
+- Exercise text, screenshot, and audio multipart requests against the local boundary in CI with inference unavailable; each request must finish with a useful result or generic unavailable state.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements
