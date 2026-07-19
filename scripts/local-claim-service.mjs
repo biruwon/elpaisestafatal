@@ -308,6 +308,20 @@ const findWarehouseEvidence = async (query) => {
   return { observations, source };
 };
 
+const hasNonTotalGroupDimension = (item) => {
+  const groupKeys = ['nacionalidad', 'nationality', 'sexo', 'sex', 'edad', 'age', 'grupo', 'group', 'poblacion', 'population', 'beneficiario', 'beneficiary', 'hogar', 'household'];
+  const totalValues = new Set(['total', 't', 'all', 'todos', 'todas', 'y_total', 'nr']);
+  return Object.entries({ ...(item.dimensions || {}), ...(item.dimensionLabels || {}) })
+    .some(([key, value]) => groupKeys.some((term) => normalise(key).includes(term)) && !totalValues.has(normalise(value)));
+};
+
+const directGroupObservations = (query, observations) => {
+  const queryText = normalise(query);
+  const requestedGroup = includesAny(queryText, ['inmigr', 'extranj', 'nacionalidad', 'foreign', 'espanol', 'espanola', 'hombre', 'mujer', 'edad', 'joven', 'mayor', 'benefici', 'ayudas']);
+  if (!requestedGroup) return [];
+  return observations.filter((item) => hasNonTotalGroupDimension(item));
+};
+
 const cosine = (left, right) => {
   if (!left || !right || left.length !== right.length) return 0;
   let score = 0;
@@ -474,14 +488,21 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];
   const sourceIds = primary?.sourceRefs || [];
-  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const handlerId = primary?.handlerId || handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
-  const ranking = !primary && !isNormative && !isCausal ? summarizeWarehouseRanking(text, observations) : null;
-  const trend = !primary && !ranking && !isNormative ? summarizeWarehouseTrend(text, observations) : null;
+  const isGroupComparison = handlerId === 'group_comparison';
+  const isPrediction = handlerId === 'prediction';
+  const isLegal = handlerId === 'legal_rule';
+  const isDefinition = handlerId === 'definition';
+  const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
+  const suppressGenericSource = (isGroupComparison && !groupObservations.length) || isLegal || isDefinition;
+  const usableSource = suppressGenericSource ? undefined : source;
+  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : usableSource ? 'draft' : 'uncovered';
+  const ranking = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : null;
+  const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalContext = causalObservations.length >= 2 ? {
     observations: causalObservations,
@@ -499,12 +520,39 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: 'Esta parte trata de una prioridad, no solo de un dato',
     summary: 'La afirmación plantea qué criterio debería considerarse justo. Los datos pueden mostrar las reglas actuales y sus consecuencias, pero no deciden por sí solos qué prioridad moral debe elegirse.',
   } : null;
+  const groupContext = isGroupComparison && !primary ? {
+    headline: groupObservations.length ? 'La comparación necesita un grupo y un denominador claros' : 'No hemos localizado una comparación directa del grupo mencionado',
+    summary: groupObservations.length
+      ? 'Hemos encontrado observaciones con dimensiones de grupo, pero todavía hay que comprobar que la definición, la población y el periodo coincidan con la afirmación.'
+      : 'Los totales generales o las cifras de contexto no permiten saber si un grupo recibe más, delinque más o está sobrerrepresentado. Hace falta una comparación directa con el mismo denominador y periodo.',
+  } : null;
+  const predictionContext = isPrediction && !primary ? {
+    headline: 'Esto es una predicción, no un hecho ya comprobable',
+    summary: 'Una serie histórica puede aportar contexto, pero no confirma por sí sola lo que ocurrirá. Para evaluar la predicción hay que fijar una fecha, un indicador, una magnitud y las condiciones que podrían cambiar el resultado.',
+  } : null;
+  const legalContext = isLegal && !primary ? {
+    headline: 'La respuesta legal depende del supuesto concreto',
+    summary: 'No basta con una frase general sobre lo que “permite” o “prohíbe” la ley. Hay que identificar la jurisdicción, el procedimiento, las fechas, las excepciones y la situación concreta.',
+  } : null;
+  const definitionContext = isDefinition && !primary ? {
+    headline: 'Primero hay que fijar qué significa la expresión',
+    summary: 'La afirmación usa una categoría que puede tener varias definiciones estadísticas o jurídicas. Comparar cifras sin fijar esa definición puede producir una respuesta aparentemente precisa pero equivocada.',
+  } : null;
   const compilerBreakdown = classified.compiler?.propositions?.length ? {
     type: 'claim_breakdown',
     propositionIds: [],
     items: classified.compiler.propositions.slice(0, 6).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
   } : null;
   const provisionalBlocks = observations.length ? (() => {
+    if (isGroupComparison && !groupObservations.length) return [
+      { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
+    ];
+    if (isLegal || isDefinition) return [
+      { type: 'cannot_conclude', evidenceIds: [], points: [
+        isLegal ? 'No hemos localizado una regla o resolución que corresponda exactamente al supuesto descrito.' : 'No hemos localizado una fuente que fije la definición exacta de la expresión utilizada.',
+        isLegal ? 'La respuesta requiere jurisdicción, procedimiento, fechas y excepciones.' : 'Sin una definición común, las cifras relacionadas no son comparables.',
+      ] },
+    ];
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
@@ -532,7 +580,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         ? ['La ficha del catálogo sirve para localizar un posible conjunto de datos, no para demostrar la afirmación.', 'Falta comprobar la distribución, definición, periodo, población y cobertura territorial del recurso.']
         : ['Hemos localizado una publicación oficial relacionada con la formulación.', 'El fragmento ayuda a comprobar el contexto, pero la coincidencia no demuestra por sí sola la conclusión completa.'] },
     ];
-    const series = ranking?.observations || trend?.observations || causalContext?.observations || numeric;
+    const series = ranking?.observations || trend?.observations || causalContext?.observations || (isGroupComparison ? groupObservations : numeric);
     const periods = series.filter((item) => item.period).map((item) => item.period);
     const keyObservation = ranking
       ? series.find((item) => {
@@ -544,11 +592,16 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     return [
       { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${keyObservation.metric || keyObservation.datasetId || 'Valor comparado'}` : keyObservation.metric || keyObservation.datasetId || 'Valor localizado', value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
       ...((ranking || trend || causalContext) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend || causalContext).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend || causalContext).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend || causalContext).reply }] : []),
-      ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
-      { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
+      ...(periods.length >= 2 && !isPrediction ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
+      { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: isPrediction
+        ? ['Estos valores describen el pasado, pero no demuestran la predicción.', 'Faltan una fecha límite, un indicador y una magnitud que permitan comprobarla.']
+        : isGroupComparison
+          ? ['La comparación solo sería válida con el mismo grupo, población, denominador y periodo.', 'Una cifra total o de contexto no demuestra diferencias entre grupos.']
+          : ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
     ];
   })() : [];
-  const numericObservations = ranking?.observations || trend?.observations || causalContext?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const numericObservations = ranking?.observations || trend?.observations || causalContext?.observations || (isGroupComparison ? groupObservations : (isPrediction ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)) : observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value))));
+  const evidenceObservations = isGroupComparison ? groupObservations : (isLegal || isDefinition ? [] : observations);
   const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
@@ -557,21 +610,21 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     unit: displayUnit(numericObservations[0].unit),
   } : undefined;
   const sourceLinks = [...new Map(
-    [source, ...observations.map((item) => item.source)]
+    [usableSource, ...evidenceObservations.map((item) => item.source)]
       .filter((item) => item && item.url)
       .map((item) => [item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url }]),
   ).values()].slice(0, 5);
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || valuesContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : valuesContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    headline: primary?.title || valuesContext?.headline || groupContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : valuesContext?.summary || groupContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...(provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
-    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
-    evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
-    sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],
+    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
+    sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
     ...(sourceLinks.length ? { sourceLinks } : {}),
     knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
     ...(warehouseSeries ? { warehouseSeries } : {}),
@@ -586,7 +639,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     coverage: 'insufficient',
     blocks: [
       ...(compilerBreakdown ? [compilerBreakdown] : []),
-      { type: 'cannot_conclude', evidenceIds: [], points: ['La respuesta automática se ha descartado porque faltaba una relación verificable entre el dato y la afirmación.', 'Puedes consultar la fuente localizada, pero todavía no debe interpretarse como un veredicto.'] },
+      { type: 'cannot_conclude', evidenceIds: [], points: ['La respuesta automática se ha descartado porque faltaba una relación verificable entre el dato y la afirmación.', usableSource ? 'Puedes consultar la fuente localizada, pero todavía no debe interpretarse como un veredicto.' : 'No hemos localizado una evidencia directa que permita sostener un veredicto.' ] },
     ],
     evidenceIds: [],
     sourceIds: [],
@@ -601,7 +654,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
   // A normative statement is a question about priorities. Generic current
   // affairs search results would add false authority without answering it.
-  const discovered = handlerId !== 'normative' && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discovered = !['normative', 'group_comparison', 'definition', 'prediction'].includes(handlerId) && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;

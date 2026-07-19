@@ -23,6 +23,7 @@ const probes = {
   prediction: 'La vivienda caerá como en 2008',
   normative: 'Los españoles deberían tener prioridad',
 };
+if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
 
 const expected = { ...Object.fromEntries(required.map((handler) => [handler, handler])), quantity: 'quantity' };
 const failures = required.filter((handler) => handlerForInput(probes[handler], handler) !== expected[handler]);

@@ -9,8 +9,8 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico'])) return 'prediction';
-  if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
+  if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico'])) return 'trend';
   if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'definicion'])) return 'definition';
   return 'quantity';
