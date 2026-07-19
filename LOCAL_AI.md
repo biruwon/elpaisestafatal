@@ -45,7 +45,9 @@ For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TO
 
 ### Durable local origin
 
-For production local inference, create a named tunnel with an API token that has `Account → Cloudflare Tunnel → Edit`, copy `config/cloudflared.example.yml` to the machine's `~/.cloudflared/config.yml`, replace its placeholders locally, and point the Pages secret `LOCAL_CLASSIFIER_ENDPOINT` at the HTTPS hostname. Keep the resolver bound to `127.0.0.1:8789`; the tunnel template has a deny-by-default fallback. Run `npm run origin:validate` before deployment. Temporary account-less tunnels are suitable only for connectivity tests, not production uptime.
+For a later production iteration, create a named tunnel with an API token that has `Account → Cloudflare Tunnel → Edit`, copy `config/cloudflared.example.yml` to the machine's `~/.cloudflared/config.yml`, replace its placeholders locally, and point the Pages secret `LOCAL_CLASSIFIER_ENDPOINT` at the HTTPS hostname. Keep the resolver bound to `127.0.0.1:8789`; the tunnel template has a deny-by-default fallback. Run `npm run origin:validate` before deployment. Temporary account-less tunnels are suitable only for connectivity tests, not production uptime.
+
+This tunnel is intentionally deferred. The current production deployment does not require local inference: it serves deterministic claim matching and evidence guidance through the static site and API fallback. A public health response with `dynamic: false` is therefore expected until the persistent origin is configured.
 
 The local development proxy keeps the local inference service behind the same-origin `/api/resolve` boundary. Set up the local models once:
 

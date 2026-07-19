@@ -25,6 +25,23 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Materialise popular reviewed answers into static Astro pages.
 - Fail open to static guidance when the local machine, model, database, or dynamic API is unavailable.
 
+## Deferred operations task — persistent local inference origin
+
+Status: todo for a later deployment iteration.
+
+The current production release does not depend on a persistent tunnel or local inference origin. Cloudflare Pages serves the static site and deterministic API fallback; local Ollama inference remains available for development and local evaluation. This keeps the release useful and deployable without requiring additional Cloudflare credentials.
+
+When revisiting this task:
+
+1. Create or provide a named Cloudflare Tunnel credential with tunnel edit permission.
+2. Configure the redacted `config/cloudflared.example.yml` locally with the tunnel UUID, hostname, and credential path.
+3. Run the local resolver behind the tunnel with a shared `LOCAL_CLASSIFIER_TOKEN`.
+4. Set the Pages secrets `LOCAL_CLASSIFIER_ENDPOINT` and `LOCAL_CLASSIFIER_TOKEN`.
+5. Run `npm run origin:validate`, `npm run build`, and `npm run smoke:production`.
+6. Confirm that dynamic inference upgrades deterministic results without becoming a production dependency.
+
+Do not use a temporary account-less tunnel as the production configuration. Until this task is completed, `dynamic: false` on the public health endpoint is expected and the deterministic result is the supported production path.
+
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
