@@ -8,6 +8,7 @@ import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations } from './knowledge/warehouse-query.mjs';
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
+import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -36,6 +37,7 @@ let indexPromise;
 let warehousePromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const displayUnit = (value) => normalise(value) === 'percentage of population in the labour force' ? '%' : String(value || '');
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const canonicalSignatureFor = (value) => tokens(value).join(' ') || normalise(value);
@@ -224,8 +226,10 @@ const findWarehouseSource = async (query) => {
 };
 
 const findWarehouseEvidence = async (query) => {
-  const observations = await findWarehouseObservations(query);
-  const source = observations.find((item) => item.source)?.source;
+  const normalizedQuery = normalise(query);
+  const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
+  const observations = await findWarehouseObservations(query, rankingQuery ? 100 : 12);
+  const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };
 
@@ -392,36 +396,45 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : source ? 'draft' : 'uncovered';
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
-  const trend = !primary ? summarizeWarehouseTrend(text, observations) : null;
+  const ranking = !primary ? summarizeWarehouseRanking(text, observations) : null;
+  const trend = !primary && !ranking ? summarizeWarehouseTrend(text, observations) : null;
   const provisionalBlocks = observations.length ? (() => {
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
     if (!numeric.length && publications.length) return [{ type: 'cannot_conclude', evidenceIds: publications.map((item) => item.id), points: ['Hemos localizado una publicación oficial relacionada con la formulación.', 'La publicación demuestra que el documento existe, pero todavía hay que leer su contenido para comprobar la conclusión completa.'] }];
-    const series = trend?.observations || numeric;
+    const series = ranking?.observations || trend?.observations || numeric;
     const periods = series.filter((item) => item.period).map((item) => item.period);
+    const keyObservation = ranking
+      ? series.find((item) => {
+        const label = normalise(item.dimensionLabels?.geo || '');
+        const code = normalise(item.dimensions?.geo || '');
+        return code === 'es' || label.includes('espana') || label.includes('spain');
+      }) || series[0]
+      : series.at(-1);
     return [
-      { type: 'key_number', evidenceId: series.at(-1).id, label: series.at(-1).metric || series.at(-1).datasetId || 'Valor localizado', value: String(series.at(-1).value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
-      ...(trend ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: trend.points }, { type: 'conversation_reply', text: trend.reply }] : []),
+      { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${keyObservation.metric || keyObservation.datasetId || 'Valor comparado'}` : keyObservation.metric || keyObservation.datasetId || 'Valor localizado', value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
+      ...((ranking || trend) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend).points }, { type: 'conversation_reply', text: (ranking || trend).reply }] : []),
       ...(periods.length >= 2 ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: ['Estos valores describen la serie localizada, pero no demuestran por sí solos la causa del cambio.', 'La definición, población y periodo deben comprobarse antes de convertirlos en un veredicto completo.'] },
     ];
   })() : [];
-  const numericObservations = trend?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const numericObservations = ranking?.observations || trend?.observations || observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
-    labels: numericObservations.slice(-6).map((item) => String(item.period || item.id)),
-    values: numericObservations.slice(-6).map((item) => Number(item.value)),
+    labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
+    values: seriesForVisual.map((item) => Number(item.value)),
     label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
-    unit: String(numericObservations[0].unit || ''),
+    unit: displayUnit(numericObservations[0].unit),
   } : undefined;
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    headline: primary?.title || ranking?.headline || trend?.headline || (source ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : ranking?.summary || trend?.summary || (source ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' ? 'qualified' : 'insufficient',
     claimType: 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', text: answer }] : provisionalBlocks.length ? provisionalBlocks : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }],
-    clarificationQuestion: trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    clarificationQuestion: ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : source ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : observations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(observations.map((item) => item.source?.id).filter(Boolean))],

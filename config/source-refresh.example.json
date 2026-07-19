@@ -25,6 +25,11 @@
       "aliases": ["paro", "desempleo", "empleo", "tasa de paro"]
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2025",
+      "title": "Tasa de desempleo en Europa y España · Eurostat",
+      "aliases": ["paro", "desempleo", "Europa", "países", "ranking"]
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"]

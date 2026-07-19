@@ -53,6 +53,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       period: record.period,
       url: record.url,
       dimensions: record.dimensions || {},
+      dimensionLabels: record.dimensionLabels || {},
       source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, aliases: record.source.aliases || [] } : undefined,
       score,
     }));
