@@ -1,0 +1,58 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type and Astro checks
+        run: npm run check
+
+      - name: Validate local-runtime contract
+        run: npm run container:validate
+
+      - name: Validate claim and knowledge contracts
+        run: |
+          npm run validate:content
+          npm run knowledge:validate
+          npm run knowledge:metrics
+          npm run knowledge:refresh:validate
+          npm run knowledge:handlers
+          npm run knowledge:fallback-compiler
+          npm run knowledge:discovery
+          npm run knowledge:warehouse
+          npm run knowledge:warehouse:query
+          npm run knowledge:answer-plan
+          npm run knowledge:evidence-packet
+          npm run knowledge:materialization-candidates:validate
+
+      - name: Build public site and audit public surface
+        run: npm run build
+
+      - name: Validate request lifecycle and static fallback contracts
+        run: |
+          npm run claim-input:lifecycle
+          npm run audit:roadmap
+
+      - name: Check whitespace and repository state
+        run: git diff --check

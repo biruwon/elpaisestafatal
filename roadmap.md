@@ -344,6 +344,8 @@ dynamic answer
 - Version knowledge, schemas, handlers, parsers, and models.
 - Preserve all existing public URLs and route behavior.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
+- Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
+- Run production smoke checks against both static routes and the generic `/api/health` and `/api/resolve` boundaries without requiring dynamic inference to be available.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements
