@@ -3,6 +3,7 @@ import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
+  requestId?: string;
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
@@ -124,7 +125,19 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise
   activeRequest = new AbortController();
   try {
     const response = await fetch('/api/resolve', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: query, inputType: 'text' }), signal: activeRequest.signal });
-    const data = await response.json() as SearchResponse;
+    let data = await response.json() as SearchResponse;
+    if (data.status === 'processing' && data.requestId) {
+      const pendingRequestId = data.requestId;
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        await new Promise((resolve, reject) => {
+          const timeout = window.setTimeout(resolve, 350);
+          activeRequest?.signal.addEventListener('abort', () => { window.clearTimeout(timeout); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+        });
+        const pending = await fetch(`/api/resolve/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal });
+        data = await pending.json() as SearchResponse;
+        if (data.status !== 'processing') break;
+      }
+    }
     if (version !== requestVersion) return;
     responseCache.set(cacheKey, data);
     try { sessionStorage.setItem(`claim-classification:${cacheKey}`, JSON.stringify(data)); } catch { /* Optional storage. */ }

@@ -11,6 +11,7 @@ const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const answerCache = new Map();
+const resolveJobs = new Map();
 let indexPromise;
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -126,6 +127,20 @@ const classify = async (text) => {
 
 const requestId = (text) => digest(normalise(text)).slice(0, 24);
 
+const startResolveJob = (text) => {
+  const id = requestId(text);
+  const existing = resolveJobs.get(id);
+  if (existing) return existing;
+  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  resolveJobs.set(id, job);
+  void classify(text).then((classified) => {
+    resolveJobs.set(id, { ...toResolveResult(text, classified), createdAt: job.createdAt, completedAt: Date.now() });
+  }).catch(() => {
+    resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() });
+  });
+  return job;
+};
+
 const toResolveResult = (text, classified) => {
   const relatedClaims = (classified.alternatives || []).map((item) => ({
     kind: item.kind,
@@ -181,9 +196,16 @@ const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://127.0.0.1');
     if (request.url.startsWith('/v1/resolve')) {
+      const requestMatch = url.pathname.match(/^\/v1\/resolve\/([^/]+)$/);
+      if (requestMatch && request.method === 'GET') {
+        const job = resolveJobs.get(requestMatch[1]);
+        response.writeHead(job ? 200 : 404, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+        response.end(JSON.stringify(job || { status: 'unavailable' }));
+        return;
+      }
       const body = await readJson(request);
-      const result = body.text ? toResolveResult(body.text, await classify(body.text)) : { status: 'uncovered', relatedClaims: [] };
-      response.writeHead(body.text ? 200 : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+      const result = body.text ? startResolveJob(body.text) : { status: 'uncovered', relatedClaims: [] };
+      response.writeHead(body.text ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;
     }
