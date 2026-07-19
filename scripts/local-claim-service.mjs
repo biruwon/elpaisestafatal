@@ -11,6 +11,7 @@ import { findWarehouseObservations } from './knowledge/warehouse-query.mjs';
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
+import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -112,17 +113,7 @@ const compilerSchema = {
   },
 };
 
-const fallbackCompiler = (text) => ({
-  normalized: text.slice(0, 300),
-  claimType: 'mixed',
-  propositions: [{ text: text.slice(0, 300), type: 'mixed', explicit: true }],
-  entities: [],
-  numbers: [...text.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).slice(0, 12),
-  geography: null,
-  period: null,
-  retrievalHints: tokens(text).slice(0, 8),
-  clarificationRequired: true,
-});
+const fallbackCompiler = deterministicFallbackCompiler;
 
 const compilerTypes = new Set(['descriptive', 'comparative', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 const normalizeCompiler = (value, text) => {
