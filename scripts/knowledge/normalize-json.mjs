@@ -127,4 +127,35 @@ const flattenBoeSummary = (payload, source) => {
   }).filter(Boolean)))));
 };
 
-export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenBoeSummary(payload, source)).concat(flattenIneTable(payload, source)).concat(flattenRows(payload, source));
+// Consolidated-legislation metadata resolves which rule, jurisdiction and
+// effective date are relevant. It does not contain enough article text to
+// decide a legal scenario, so these records remain legal-document evidence.
+const flattenBoeLegislationMetadata = (payload, source) => {
+  const entries = Array.isArray(payload?.data) ? payload.data : [];
+  return entries.filter((item) => item && typeof item === 'object' && item.identificador && item.titulo && item.ambito?.texto).map((item) => ({
+    id: `${source.id}-legal-${item.identificador}`,
+    kind: 'legal_document',
+    sourceId: source.id,
+    metricId: source.metricId || 'official_publication',
+    datasetId: source.title,
+    metric: String(item.titulo).trim(),
+    value: null,
+    period: item.fecha_actualizacion || item.fecha_vigencia || item.fecha_publicacion,
+    url: item.url_html_consolidada || item.url_eli,
+    dimensions: {
+      identifier: item.identificador,
+      jurisdiction: item.ambito.texto,
+      department: item.departamento?.texto,
+      rank: item.rango?.texto,
+      officialNumber: item.numero_oficial,
+      publishedAt: item.fecha_publicacion,
+      effectiveFrom: item.fecha_vigencia,
+      updatedAt: item.fecha_actualizacion,
+      repealed: item.estatus_derogacion === 'S',
+      annulled: item.estatus_anulacion === 'S',
+      consolidationStatus: item.estado_consolidacion?.texto,
+    },
+  }));
+};
+
+export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenBoeSummary(payload, source)).concat(flattenBoeLegislationMetadata(payload, source)).concat(flattenIneTable(payload, source)).concat(flattenRows(payload, source));

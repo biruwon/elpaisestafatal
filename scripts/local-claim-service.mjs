@@ -378,9 +378,9 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
   const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding })).filter((item) => {
-    if (item.evidenceFit === 'weak') return false;
+    if (item.evidenceFit === 'weak' && !(item.kind === 'legal_document' && item.matchedTerms?.length >= 3)) return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
-    if (item.kind === 'official_publication' && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
+    if ((item.kind === 'official_publication' || item.kind === 'legal_document') && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
     if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
@@ -706,9 +706,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isDefinition = handlerId === 'definition';
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
+  const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document') : [];
   const quantityClaim = isQuantityLike ? claimedNumericValue(text, classified.compiler) : null;
   const quantity = isQuantityLike ? quantityAssessment(text, classified.compiler, observations) : null;
-  const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || isLegal || isDefinition;
+  const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || isDefinition;
   const usableSource = suppressGenericSource ? undefined : source;
   const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : usableSource ? 'draft' : 'uncovered';
   const ranking = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : null;
@@ -770,7 +771,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ...(isLegal ? [
       { type: 'strongest_valid_concern', text: 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
       { type: 'legal_decision_tree', items: [
-        { label: 'Jurisdicción y norma vigente', status: 'missing', detail: 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
+        { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? `${legalObservations[0].dimensions?.jurisdiction || 'Ámbito localizado'} · ${legalObservations[0].metric}` : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
         { label: 'Situación jurídica', status: 'missing', detail: 'Distinguir propiedad, residencia, contrato, ocupación y condición de las partes.' },
         { label: 'Procedimiento', status: 'missing', detail: 'Determinar qué vía, autoridad y plazos corresponden.' },
         { label: 'Excepciones', status: 'missing', detail: 'Comprobar medidas especiales, vulnerabilidad, recursos y disposiciones transitorias.' },
@@ -815,6 +816,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ];
     if (isGroupComparison && !groupObservations.length) return [
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
+    ];
+    if (isLegal && legalObservations.length) return [
+      { type: 'data_finding', evidenceIds: legalObservations.map((item) => item.id), points: [
+        `Norma localizada: ${String(legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
+        `Ámbito: ${legalObservations[0].dimensions?.jurisdiction || 'no indicado'}; vigencia desde: ${legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
+        legalObservations[0].dimensions?.repealed ? 'La ficha indica que la norma está derogada.' : 'La ficha no indica derogación total.',
+      ] },
+      { type: 'cannot_conclude', evidenceIds: legalObservations.map((item) => item.id), points: ['La ficha identifica la norma, pero no resuelve por sí sola el supuesto planteado.', 'Falta localizar el artículo aplicable, sus excepciones y la situación concreta.'] },
     ];
     if (isLegal || isDefinition) return [
       { type: 'cannot_conclude', evidenceIds: [], points: [
@@ -870,7 +879,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ];
   })() : [];
   const numericObservations = ranking?.observations || trend?.observations || causalContext?.observations || quantity?.observations || (isGroupComparison ? groupObservations : (isPrediction ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)) : observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value))));
-  const evidenceObservations = isGroupComparison ? groupObservations : isQuantityLike ? (quantity?.observations || (!quantityClaim ? observations : [])) : (isLegal || isDefinition ? [] : observations);
+  const evidenceObservations = isGroupComparison ? groupObservations : isQuantityLike ? (quantity?.observations || (!quantityClaim ? observations : [])) : isLegal ? legalObservations : (isDefinition ? [] : observations);
   const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),

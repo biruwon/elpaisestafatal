@@ -139,7 +139,7 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
       JOIN source_documents s ON s.id = o.source_document_id
       WHERE (${clauses.join(' OR ')})
         AND (${matchedExpression}) >= $${wanted.length + 3}::float
-        AND ((o.value IS NOT NULL) OR o.kind = 'official_publication')
+        AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document'))
       ORDER BY score DESC, o.period DESC NULLS LAST
       LIMIT $${wanted.length + 2}
     `, [...params, wanted.length, Math.max(1, Math.min(100, limit)), Math.min(2, wanted.length)]);
@@ -156,7 +156,7 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
         JOIN datasets d ON d.id = o.dataset_id
         JOIN source_documents s ON s.id = o.source_document_id
         WHERE o.search_embedding IS NOT NULL
-          AND ((o.value IS NOT NULL) OR o.kind = 'official_publication')
+          AND ((o.value IS NOT NULL) OR o.kind IN ('official_publication', 'legal_document'))
           AND 1 - (o.search_embedding <=> $1::vector) >= 0.42
         ORDER BY o.search_embedding <=> $1::vector
         LIMIT $2

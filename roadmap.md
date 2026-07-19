@@ -217,7 +217,7 @@ The frontend submits once and polls automatically when a request is processing. 
 
 ## Phase 4 — Retrieval and evidence warehouse
 
-Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. Broader source/domain coverage and observation-level PostgreSQL benchmarking remain pending.
+Status: started; JSON and PostgreSQL lexical retrieval are implemented, with opt-in pgvector hybrid retrieval and its first recorded relevance benchmark now available. BOE consolidated-law metadata is normalized into typed legal documents so legal answers can resolve the applicable norm, jurisdiction, effective date, repeal state, and attributable source without inventing an article-level conclusion. Broader source/domain coverage, consolidated article ingestion, and observation-level PostgreSQL benchmarking remain pending.
 
 Use local PostgreSQL with full-text search and pgvector initially. Cloudflare Vectorize is optional later; do not require it for the first production version.
 

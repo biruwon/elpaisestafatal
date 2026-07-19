@@ -88,7 +88,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
     return { record, score: matched.length / wanted.length, matched: matched.length, matchedTokens: matched };
-  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || record.kind === 'official_publication'))
+  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || record.kind === 'official_publication' || record.kind === 'legal_document'))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
     .map(({ record, score, matchedTokens }) => ({
