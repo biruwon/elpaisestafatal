@@ -32,6 +32,8 @@ The user may write a claim in any wording, including blunt or politically loaded
 - 28 evidence records and 28 source records are currently linked.
 - The browser has a deterministic claim index and automatic local classification support.
 - Uncovered inputs now receive a structured proposition breakdown; when no plausible indexed candidate exists, model extraction and reranking are skipped for a fast deterministic result.
+- Meaningful uncovered claims now enter a bounded local compiler path even without an indexed candidate; obvious noise still skips inference, and compiler retrieval hints feed the same warehouse and official-source lookup path.
+- Local inference now has a short circuit breaker and the embedding fast path is skipped for obvious long-tail text; direct tests reduced repeated unknown-claim fallback responses to roughly 100–260 ms when local inference is unavailable.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
 - The current local embedding model configuration still needs installation and evaluation before semantic retrieval is considered active.

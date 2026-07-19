@@ -34,6 +34,8 @@ const maxCacheEntries = 1000;
 const maxResolveJobs = 500;
 const answerCache = new Map();
 const resolveJobs = new Map();
+const inferenceBackoffMs = 30 * 1000;
+let inferenceDisabledUntil = 0;
 let indexPromise;
 let warehousePromise;
 
@@ -75,9 +77,15 @@ const checkLocalEndpoint = () => {
 
 const ollama = async (path, body, timeout = 5000) => {
   checkLocalEndpoint();
-  const response = await fetch(`${endpoint}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeout) });
-  if (!response.ok) throw new Error(`Inference request failed: ${response.status} ${String(await response.text()).slice(0, 240)}`);
-  return response.json();
+  if (Date.now() < inferenceDisabledUntil) throw new Error('Local inference temporarily unavailable');
+  try {
+    const response = await fetch(`${endpoint}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeout) });
+    if (!response.ok) throw new Error(`Inference request failed: ${response.status} ${String(await response.text()).slice(0, 240)}`);
+    return response.json();
+  } catch (error) {
+    inferenceDisabledUntil = Date.now() + inferenceBackoffMs;
+    throw error;
+  }
 };
 
 const parseModelJson = (value) => {
@@ -142,7 +150,7 @@ const normalizeCompiler = (value, text) => {
 const compileClaim = async (text) => {
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }] }, 5000);
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 280, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 2500);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
     return normalizeCompiler(value, text);
@@ -197,6 +205,20 @@ const extractPageText = async (value) => {
 };
 
 const searchText = (entry) => [entry.title, ...(entry.aliases || []), ...(entry.keywords || [])].join(' ');
+const oneEditAway = (left, right) => {
+  if (left === right) return true;
+  if (Math.abs(left.length - right.length) > 1 || Math.min(left.length, right.length) < 4) return false;
+  let edits = 0; let i = 0; let j = 0;
+  while (i < left.length && j < right.length) {
+    if (left[i] === right[j]) { i += 1; j += 1; continue; }
+    edits += 1;
+    if (edits > 1) return false;
+    if (left.length > right.length) i += 1;
+    else if (right.length > left.length) j += 1;
+    else { i += 1; j += 1; }
+  }
+  return edits + (left.length - i) + (right.length - j) <= 1;
+};
 const lexicalScore = (query, entry) => {
   const queryText = normalise(query);
   const haystack = normalise(searchText(entry));
@@ -205,7 +227,7 @@ const lexicalScore = (query, entry) => {
   if (haystack.includes(queryText) || queryText.includes(haystack)) return 0.9;
   const wanted = tokens(queryText).filter((token) => !lowSignalTokens.has(token));
   const available = new Set(tokens(haystack));
-  return wanted.length ? wanted.filter((token) => available.has(token)).length / wanted.length : 0;
+  return wanted.length ? wanted.filter((token) => available.has(token) || [...available].some((candidate) => oneEditAway(token, candidate))).length / wanted.length : 0;
 };
 
 const warehouseTokens = (value) => tokens(value).filter((token) => token.length > 3);
@@ -358,9 +380,15 @@ const classify = async (text) => {
   if (cached && cached.expiresAt > Date.now()) return cached.value;
   if (cached) answerCache.delete(key);
   const index = await getIndex();
+  const lexicalRanked = index.entries.map((entry, position) => ({ entry, position, lexical: lexicalScore(text, entry) })).sort((left, right) => right.lexical - left.lexical);
   let vector = null;
-  try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: '-1' }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
-  const ranked = index.entries.map((entry, position) => ({ entry, lexical: lexicalScore(text, entry), semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
+  // Do not pay for an embedding request for obvious long-tail text. Exact and
+  // alias matches are already covered lexically; semantic retrieval is only
+  // useful when the input has a plausible relation to the published index.
+  if ((lexicalRanked[0]?.lexical || 0) >= 0.1) {
+    try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: '-1' }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
+  }
+  const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({ entry, lexical, semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
     // distinctive words in a short political claim. Keep lexical evidence
     // dominant whenever the user supplied a meaningful direct match.
@@ -374,7 +402,9 @@ const classify = async (text) => {
   const lexicalMargin = top ? top.lexical - (publicRanked[1]?.lexical || 0) : 0;
   if (top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: handlerForInput({ retrievalHints: top.entry.keywords || [], entities: top.entry.aliases || [] }, top.entry.claimType), evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
-  const compiled = hasPlausibleCandidate ? await compileClaim(text) : fallbackCompiler(text);
+  const meaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
+  const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
+  const compiled = hasPlausibleCandidate || compileEligible ? await compileClaim(text) : fallbackCompiler(text);
   const model = hasPlausibleCandidate ? await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled) : null;
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   const selectedCandidate = model?.primarySlug && ranked.find(({ entry }) => entry.slug === model.primarySlug && entry.published);
@@ -517,9 +547,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
-  const warehouse = !classified.primary ? await findWarehouseEvidence(text) : { observations: [], source: undefined };
-  const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(text) : null;
-  const discovered = !warehouse.observations.length && !indexedSource && !sourceOverride ? (await discoverOfficialDocuments(text, 3)).map(discoveryObservation) : [];
+  const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || [])].join(' ').slice(0, 6000);
+  const warehouse = !classified.primary ? await findWarehouseEvidence(retrievalText) : { observations: [], source: undefined };
+  const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const discovered = !warehouse.observations.length && !indexedSource && !sourceOverride ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation) : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
   return toResolveResult(text, classified, source, resultRequestId, warehouse.observations.length ? warehouse.observations : discovered);
 };
