@@ -35,6 +35,7 @@
     "knowledge:ranking": "node scripts/knowledge/validate-warehouse-ranking.mjs",
     "knowledge:signature": "node scripts/knowledge/validate-query-signature.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
+    "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs",

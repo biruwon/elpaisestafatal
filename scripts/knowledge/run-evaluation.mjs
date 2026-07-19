@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { evaluationCases } from './evaluation-cases.mjs';
+import { evaluateOutcome } from './evaluation-metrics.mjs';
 
 const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
 const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/v1/resolve';
@@ -21,13 +22,7 @@ const resolve = async (item) => {
       await new Promise((wait) => setTimeout(wait, 350));
       result = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) }).then((pending) => pending.json());
     }
-    const claims = Array.isArray(result.relatedClaims) ? result.relatedClaims : [];
-    const primarySlug = claims[0]?.slug;
-    const knownPass = item.expected.status !== 'known' || primarySlug === item.expected.slug;
-    // An uncovered result may still show related guidance. Safety means it
-    // did not promote that guidance into a claimed answer.
-    const unknownPass = item.expected.status !== 'unknown' || ['uncovered', 'draft'].includes(result.status);
-    return { id: item.id, expected: item.expected, status: result.status, primarySlug, knownPass, unknownPass, latencyMs: Math.round(performance.now() - started) };
+    return evaluateOutcome({ item, result, latencyMs: Math.round(performance.now() - started) });
   } catch (error) {
     return { id: item.id, expected: item.expected, status: 'error', error: error instanceof Error ? error.message : String(error), knownPass: false, unknownPass: false, latencyMs: Math.round(performance.now() - started) };
   }
@@ -43,6 +38,14 @@ const worker = async () => {
 await Promise.all(Array.from({ length: Math.min(concurrency, cases.length) }, worker));
 const latencies = outcomes.map((item) => item.latencyMs).sort((left, right) => left - right);
 const percentile = (value) => latencies.length ? latencies[Math.min(latencies.length - 1, Math.floor(latencies.length * value))] : 0;
+const knownOutcomes = outcomes.filter((item) => item.expected.status === 'known');
+const unknownOutcomes = outcomes.filter((item) => item.expected.status === 'unknown');
+const traceableOutcomes = outcomes.filter((item) => item.traceabilityChecked);
+let health = null;
+try {
+  const response = await fetch(`${base}${process.env.EVALUATION_HEALTH_PATH || '/healthz'}`, { signal: AbortSignal.timeout(3000) });
+  if (response.ok) health = await response.json();
+} catch { /* Health telemetry is optional for a remote Pages endpoint. */ }
 const report = {
   generatedAt: new Date().toISOString(),
   base,
@@ -51,8 +54,15 @@ const report = {
   cases: outcomes.length,
   knownCases: outcomes.filter((item) => item.expected.status === 'known').length,
   unknownCases: outcomes.filter((item) => item.expected.status === 'unknown').length,
-  knownAccuracy: outcomes.filter((item) => item.expected.status === 'known').filter((item) => item.knownPass).length,
-  unknownSafety: outcomes.filter((item) => item.expected.status === 'unknown').filter((item) => item.unknownPass).length,
+  knownAccuracy: knownOutcomes.filter((item) => item.knownPass).length,
+  knownRetrievalRecall: knownOutcomes.filter((item) => item.knownPass).length,
+  unknownSafety: unknownOutcomes.filter((item) => item.unknownPass).length,
+  irrelevantMatches: outcomes.filter((item) => item.irrelevantMatch).length,
+  unsupportedConclusionRate: unknownOutcomes.length ? Number((unknownOutcomes.filter((item) => !item.unknownPass).length / unknownOutcomes.length).toFixed(4)) : 0,
+  propositionBreakdowns: outcomes.filter((item) => item.propositionBreakdown).length,
+  traceability: { checked: traceableOutcomes.length, passed: traceableOutcomes.filter((item) => item.traceabilityPass).length },
+  coverageByStatus: Object.fromEntries([...new Set(outcomes.map((item) => item.coverage))].map((status) => [status, outcomes.filter((item) => item.coverage === status).length])),
+  cacheHitRate: typeof health?.metrics?.cacheHitRate === 'number' ? health.metrics.cacheHitRate : null,
   errors: outcomes.filter((item) => item.status === 'error').length,
   p50LatencyMs: percentile(0.5),
   p95LatencyMs: percentile(0.95),
@@ -61,5 +71,5 @@ const report = {
 const root = new URL('../../.local/', import.meta.url).pathname;
 await mkdir(root, { recursive: true });
 await writeFile(join(root, 'evaluation-latest.json'), JSON.stringify(report, null, 2));
-console.log(`Evaluation completed: ${report.cases} cases; known accuracy ${report.knownAccuracy}/${report.knownCases}; unknown safety ${report.unknownSafety}/${report.unknownCases}; p50 ${report.p50LatencyMs}ms; p95 ${report.p95LatencyMs}ms.`);
+console.log(`Evaluation completed: ${report.cases} cases; known recall ${report.knownRetrievalRecall}/${report.knownCases}; unknown safety ${report.unknownSafety}/${report.unknownCases}; irrelevant matches ${report.irrelevantMatches}; traceability ${report.traceability.passed}/${report.traceability.checked}; p50 ${report.p50LatencyMs}ms; p95 ${report.p95LatencyMs}ms.`);
 if (report.errors === report.cases) process.exit(1);

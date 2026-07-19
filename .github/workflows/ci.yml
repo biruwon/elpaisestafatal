@@ -57,6 +57,7 @@ jobs:
           npm run knowledge:evidence-packet
           npm run knowledge:materialization-candidates:validate
           npm run knowledge:promote-cluster:validate
+          npm run knowledge:evaluate:metrics
 
       - name: Build public site and audit public surface
         run: npm run build
