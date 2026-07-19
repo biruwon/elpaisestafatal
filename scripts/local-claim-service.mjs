@@ -361,10 +361,7 @@ const startResolveJob = (text) => {
   const job = { status: 'processing', requestId: id, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
-    const warehouse = !classified.primary ? await findWarehouseEvidence(text) : { observations: [], source: undefined };
-    const indexedSource = !warehouse.observations.length ? await findWarehouseSource(text) : null;
-    const source = warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined);
-    const completed = { ...toResolveResult(text, classified, source, id, warehouse.observations), createdAt: job.createdAt, completedAt: Date.now() };
+    const completed = { ...await enrichResolve(text, classified, undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     void recordKnowledgeGap(text, completed);
   }).catch(() => {
@@ -385,7 +382,7 @@ const startMediaResolveJob = (text, inputType, media) => {
     const extracted = inputType === 'image' ? await extractImageText(media) : await transcribeAudio(media);
     if (!extracted) throw new Error('No text extracted');
     const combined = [text, extracted].filter(Boolean).join('\n\n');
-    const completed = { ...toResolveResult(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
+    const completed = { ...await enrichResolve(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     void recordKnowledgeGap(combined, completed, inputType);
   })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
@@ -403,7 +400,7 @@ const startUrlResolveJob = (url) => {
     const extracted = await extractPageText(url);
     if (!extracted) throw new Error('No source text extracted');
     const source = { id: `url-${digest(url).slice(0, 20)}`, title: `Fuente oficial: ${new URL(url).hostname}`, url };
-    resolveJobs.set(id, { ...toResolveResult(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() });
+    resolveJobs.set(id, { ...await enrichResolve(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() });
   })().catch((error) => { console.error('Link extraction failed:', error instanceof Error ? error.message : error); resolveJobs.set(id, { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }); });
   return job;
 };
@@ -477,6 +474,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : relatedClaims };
 };
 
+const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
+  const warehouse = !classified.primary ? await findWarehouseEvidence(text) : { observations: [], source: undefined };
+  const indexedSource = !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(text) : null;
+  const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined);
+  return toResolveResult(text, classified, source, resultRequestId, warehouse.observations);
+};
+
 const readText = async (request) => {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
@@ -526,7 +530,7 @@ const server = createServer(async (request, response) => {
       }
       const body = await readResolveBody(request);
       const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
-      response.writeHead(body.text ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+      response.writeHead(body.text || body.hasFile ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;
     }

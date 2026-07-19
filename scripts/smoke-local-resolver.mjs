@@ -16,6 +16,21 @@ const resolve = async (text, inputType = 'text') => {
   return result;
 };
 
+const resolveMultipart = async (inputType, mimeType) => {
+  const form = new FormData();
+  form.set('inputType', inputType);
+  form.set('file', new Blob(['smoke-test'], { type: mimeType }), 'smoke-test.bin');
+  const response = await fetch(`${base}/api/v1/resolve`, { method: 'POST', body: form, signal: AbortSignal.timeout(10000) });
+  if (response.status === 400) throw new Error(`${inputType} multipart request was rejected as missing text`);
+  let result = await response.json();
+  for (let attempt = 0; attempt < 30 && result.status === 'processing'; attempt += 1) {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 350));
+    const pending = await fetch(`${base}/api/v1/resolve/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) });
+    result = await pending.json();
+  }
+  return result;
+};
+
 const cases = [
   { text: 'España cobra demasiados impuestos', status: 'complete', slug: 'espana-impuestos-europa' },
   { text: 'España está destruida', status: 'uncovered', slug: null },
@@ -31,5 +46,14 @@ for (const item of cases) {
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
 }
 
+if (process.env.SMOKE_MEDIA === '1') {
+  for (const [inputType, mimeType] of [['image', 'image/png'], ['audio', 'audio/wav']]) {
+    try {
+      const result = await resolveMultipart(inputType, mimeType);
+      if (result.status === 'processing') failures.push(`${inputType}: multipart request remained processing after polling`);
+    } catch (error) { failures.push(`${inputType}: ${error.message}`); }
+  }
+}
+
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''} cases at ${base}`);
