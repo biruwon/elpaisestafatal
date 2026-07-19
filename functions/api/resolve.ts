@@ -1,6 +1,7 @@
 interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
 interface Context { request: Request; env: Env }
 type InputType = 'text' | 'image' | 'audio' | 'url';
+import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
 
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const windowMs = 60_000;
@@ -50,15 +51,11 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
   if (!allowRequest(request)) return json({ status: 'unavailable', relatedClaims: [] }, 429);
   const contentLength = Number(request.headers.get('content-length') || 0);
-  if (contentLength > 9 * 1024 * 1024) return json({ status: 'unavailable', relatedClaims: [] }, 413);
+  if (contentLength > INPUT_LIMITS.maxRequestBytes) return json({ status: 'unavailable', relatedClaims: [] }, 413);
   let body: { text: string; inputType: InputType; file?: File };
   try { body = await requestBody(request); } catch { return json({ status: 'unavailable', relatedClaims: [] }, 400); }
-  if ((!body.text && !body.file) || body.text.length > 12000) return json({ status: 'uncovered', relatedClaims: [] }, 400);
-  if (body.inputType === 'text' && body.file) return json({ status: 'unavailable', relatedClaims: [] }, 415);
-  if (body.inputType === 'image' && (!body.file || !body.file.type.startsWith('image/'))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
-  if (body.inputType === 'audio' && (!body.file || !body.file.type.startsWith('audio/'))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
-  if (body.inputType === 'url' && !/^https:\/\//i.test(body.text)) return json({ status: 'unavailable', relatedClaims: [] }, 400);
-  if (body.file && (body.file.size > 8 * 1024 * 1024 || !['image/', 'audio/'].some((prefix) => body.file?.type.startsWith(prefix)))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
+  const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
+  if (!validation.ok) return json({ status: validation.code === 'empty' || validation.code === 'text_too_large' || validation.code === 'invalid_url' ? 'uncovered' : 'unavailable', relatedClaims: [] }, validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'invalid_url' || validation.code === 'empty' ? 400 : 415);
   if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json({ status: 'unavailable', relatedClaims: [] });
   try {
     const isMultipart = Boolean(body.file);

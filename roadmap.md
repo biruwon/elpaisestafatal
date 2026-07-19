@@ -71,6 +71,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Warehouse observations now carry matched terms and an evidence-fit band; weak token overlaps are excluded from provisional answers instead of being rendered as relevant data.
 - Warehouse retrieval now carries population-fit metadata and rejects mismatched denominators before provisional rendering; total-population observations remain explicitly contextual rather than direct group evidence.
 - File-only screenshot and audio submissions are accepted by the API, and extracted media text now re-enters the same warehouse and handler enrichment path as typed text and links.
+- Text, URL, screenshot, and audio boundaries now share one input contract for character limits, request/file sizes, HTTPS-only links, and allowlisted MIME types; the local boundary enforces the same limits before buffering media.
 - The homepage now progressively displays approved popular query clusters from `/api/questions`, while the static popular-claim cards remain the offline fallback.
 - Query submissions now derive a deterministic sorted-term signature before entering D1, so punctuation, accents, stopwords, and word order do not create separate usage clusters; the original canonical wording remains the review/display text.
 - Structured answers now collect optional usefulness feedback (`yes`, `partly`, or `no`) through a rate-limited `/api/feedback` endpoint backed by the existing D1 table; feedback never blocks or changes the answer.

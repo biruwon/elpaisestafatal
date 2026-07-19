@@ -62,6 +62,7 @@ jobs:
 
       - name: Validate request lifecycle and static fallback contracts
         run: |
+          npm run input:validate
           npm run claim-input:lifecycle
           npm run audit:roadmap
 

@@ -8,6 +8,7 @@ import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs
 import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit } from './knowledge/warehouse-query.mjs';
+import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-contract.mjs';
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
@@ -874,8 +875,15 @@ const readText = async (request) => {
 };
 
 const readResolveBody = async (request) => {
+  const declaredLength = Number(request.headers['content-length'] || 0);
+  if (declaredLength > INPUT_LIMITS.maxRequestBytes) return { text: '', inputType: 'text', hasFile: false, tooLarge: true };
   const chunks = [];
-  for await (const chunk of request) chunks.push(chunk);
+  let totalBytes = 0;
+  for await (const chunk of request) {
+    totalBytes += chunk.length;
+    if (totalBytes > INPUT_LIMITS.maxRequestBytes) return { text: '', inputType: 'text', hasFile: false, tooLarge: true };
+    chunks.push(chunk);
+  }
   const rawBody = Buffer.concat(chunks);
   const body = rawBody.toString('utf8');
   if (request.headers['content-type']?.includes('multipart/form-data')) {
@@ -884,6 +892,7 @@ const readResolveBody = async (request) => {
       const file = form.get('file');
       if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: false };
       const fileBytes = Buffer.from(await file.arrayBuffer());
+      if (fileBytes.length > INPUT_LIMITS.maxFileBytes) return { text: '', inputType: String(form.get('inputType') || 'text'), hasFile: false, tooLarge: true };
       return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: true, media: { base64: fileBytes.toString('base64'), mime: file.type, sha: digest(fileBytes.toString('base64')).slice(0, 24) } };
     } catch (error) { console.error('Media parsing failed:', error instanceof Error ? error.message : error); return { text: '', inputType: 'text', hasFile: false }; }
   }
@@ -913,6 +922,9 @@ const server = createServer(async (request, response) => {
         return;
       }
       const body = await readResolveBody(request);
+      if (body.tooLarge) { response.writeHead(413, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable', relatedClaims: [] })); return; }
+      const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: body.hasFile, fileSize: body.media?.base64 ? Buffer.byteLength(body.media.base64, 'base64') : 0, mimeType: body.media?.mime });
+      if (!validation.ok) { response.writeHead(validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'empty' || validation.code === 'invalid_url' ? 400 : 415, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: validation.code === 'empty' || validation.code === 'text_too_large' ? 'uncovered' : 'unavailable', relatedClaims: [] })); return; }
       const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text || body.hasFile ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
