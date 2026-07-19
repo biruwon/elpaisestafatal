@@ -46,6 +46,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Refresh configuration is schema-checked against the approved source registry before ingestion, so a new feed cannot silently use an unregistered host, HTTP URL, malformed aliases, or duplicate resources.
 - Source ingestion now uses typed connector capabilities for INE table series, Eurostat JSON-stat, BOE summaries, dataset catalogues, and general official documents; registry validation rejects unsupported formats before refresh.
 - D1 and PostgreSQL migration paths are now separated: D1 receives SQLite-safe operational migrations, while the derived PostgreSQL warehouse retains its `pg_trgm` migration independently.
+- The production Pages project now has the `DB` D1 binding configured and the three operational migrations applied; `/api/questions` is live and returns the generic empty popularity feed when no clusters are published.
 - The warehouse now supports a deterministic same-period country ranking handler, including contradictory handling for claims that Spain is highest or lowest; the result includes country-labelled visual data and the source feed.
 - Warehouse observations now carry matched terms and an evidence-fit band; weak token overlaps are excluded from provisional answers instead of being rendered as relevant data.
 - File-only screenshot and audio submissions are accepted by the API, and extracted media text now re-enters the same warehouse and handler enrichment path as typed text and links.
