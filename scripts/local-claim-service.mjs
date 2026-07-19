@@ -789,9 +789,13 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
   const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery) : { observations: [], source: undefined };
   const indexedSource = !classified.primary && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
-  // A normative statement is a question about priorities. Generic current
-  // affairs search results would add false authority without answering it.
-  const discovered = handlerId === 'budget_transfer' && !warehouse.observations.length && !indexedSource && !sourceOverride
+  // Official discovery is useful for new measurable or definitional claims,
+  // but generic documents are not evidence for causal, group, legal,
+  // predictive, or normative conclusions. Those handlers must either find a
+  // typed record or explain what is missing instead of attaching a topical
+  // publication.
+  const discoveryEligible = new Set(['budget_transfer', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
+  const discovered = discoveryEligible.has(handlerId) && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
