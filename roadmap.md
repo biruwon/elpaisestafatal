@@ -51,6 +51,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - A bounded parser now recognizes official credit-transfer wording and renders amount, origin ministry, destination ministry, and purpose as a provisional money-flow component; it explicitly preserves the rule that a transfer does not prove a service cut or identify political staff.
 - Discovered official evidence is now persisted in the local derived cache by normalized multi-term signature, so equivalent phrasings reuse the same fetched evidence across resolver restarts without becoming published claims.
 - The derived cache also keeps attributable discovered documents separately from short-lived query results, allowing reordered or newly phrased requests to reuse a fetched official document for up to 24 hours before refreshing it.
+- BOE search hits now receive the same bounded document fetch, relevant excerpt, and typed-field extraction as La Moncloa hits; failures retain only the attributable metadata and never block the answer.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration

@@ -143,6 +143,21 @@ export const discoverMoncloaDocuments = async (query, limit = 3) => {
   } catch { return []; }
 };
 
+const enrichBoeResults = async (results, limit = 3) => {
+  const deadline = Date.now() + 5000;
+  const enriched = await Promise.all(results.slice(0, limit).map(async (item) => {
+    try {
+      const remaining = deadline - Date.now();
+      if (remaining < 250) return item;
+      const response = await fetch(item.url, { headers: { accept: 'text/html', 'user-agent': 'elpaisestafatal-local-resolver/1.0' }, signal: AbortSignal.timeout(Math.min(2500, remaining)) });
+      if (!response.ok) return item;
+      const pageText = extractPageText((await response.text()).slice(0, 2 * 1024 * 1024));
+      return { ...item, excerpt: extractRelevantExcerpt(pageText, item.matchedTerms), finding: parseBudgetTransferExcerpt(pageText) };
+    } catch { return item; }
+  }));
+  return enriched;
+};
+
 const cacheKey = (query) => tokens(query).join(' ');
 const documentMatch = (query, document) => {
   const wanted = tokens(query);
@@ -161,7 +176,10 @@ export const discoverBoeDocuments = async (query, limit = 3) => {
   const key = cacheKey(query);
   if (!key || key.split(' ').length < 2) return [];
   const cached = cache.get(key);
-  if (cached && cached.expiresAt > Date.now()) return cached.results;
+  if (cached && cached.expiresAt > Date.now()) {
+    if (cached.results.some((item) => !item.excerpt)) cached.results = await enrichBoeResults(cached.results, limit);
+    return cached.results;
+  }
   if (cached) cache.delete(key);
   try {
     const terms = key.split(' ');
@@ -182,6 +200,7 @@ export const discoverBoeDocuments = async (query, limit = 3) => {
       results = parseBoeSearchResults(html, key, limit);
       if (results.length) break;
     }
+    results = await enrichBoeResults(results, limit);
     cache.set(key, { results, expiresAt: Date.now() + cacheTtlMs });
     while (cache.size > 100) cache.delete(cache.keys().next().value);
     return results;
