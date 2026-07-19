@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.local
     environment:
       LOCAL_CLASSIFIER_PORT: 8789
+      LOCAL_CLASSIFIER_TOKEN: ${LOCAL_CLASSIFIER_TOKEN:-}
       LOCAL_CATALOG_URL: ${LOCAL_CATALOG_URL:-http://host.docker.internal:4321/claim-catalog.json}
       OLLAMA_ENDPOINT: ${OLLAMA_ENDPOINT:-http://host.docker.internal:11434}
       OLLAMA_ROUTER_MODEL: ${OLLAMA_ROUTER_MODEL:-gemma3:4b}

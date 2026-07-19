@@ -1,29 +1,36 @@
-interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string }
+interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
 interface Context { request: Request; env: Env }
+type InputType = 'text' | 'image' | 'audio' | 'url';
 
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
   headers: { 'Cache-Control': 'no-store' },
 });
 
-const requestBody = async (request: Request): Promise<{ text: string; inputType: string; file?: File }> => {
+const requestBody = async (request: Request): Promise<{ text: string; inputType: InputType; file?: File }> => {
   const contentType = request.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
     const value = await request.json() as { text?: unknown; inputType?: unknown };
-    return { text: typeof value.text === 'string' ? value.text.trim() : '', inputType: typeof value.inputType === 'string' ? value.inputType : 'text' };
+    const inputType = value.inputType === 'image' || value.inputType === 'audio' || value.inputType === 'url' ? value.inputType : 'text';
+    return { text: typeof value.text === 'string' ? value.text.trim() : '', inputType };
   }
   const form = await request.formData();
   const candidate = form.get('file');
   return {
     text: String(form.get('text') || '').trim(),
-    inputType: String(form.get('inputType') || 'text'),
+    inputType: ['image', 'audio', 'url'].includes(String(form.get('inputType') || '')) ? String(form.get('inputType')) as InputType : 'text',
     file: candidate instanceof File ? candidate : undefined,
   };
 };
 
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
-  const body = await requestBody(request);
+  let body: { text: string; inputType: InputType; file?: File };
+  try { body = await requestBody(request); } catch { return json({ status: 'unavailable', relatedClaims: [] }, 400); }
   if ((!body.text && !body.file) || body.text.length > 12000) return json({ status: 'uncovered', relatedClaims: [] }, 400);
+  if (body.inputType === 'text' && body.file) return json({ status: 'unavailable', relatedClaims: [] }, 415);
+  if (body.inputType === 'image' && (!body.file || !body.file.type.startsWith('image/'))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
+  if (body.inputType === 'audio' && (!body.file || !body.file.type.startsWith('audio/'))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
+  if (body.inputType === 'url' && !/^https:\/\//i.test(body.text)) return json({ status: 'unavailable', relatedClaims: [] }, 400);
   if (body.file && (body.file.size > 8 * 1024 * 1024 || !['image/', 'audio/'].some((prefix) => body.file?.type.startsWith(prefix)))) return json({ status: 'unavailable', relatedClaims: [] }, 415);
   if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json({ status: 'unavailable', relatedClaims: [] });
   try {
@@ -35,9 +42,12 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       if (body.file) form.set('file', body.file, body.file.name || 'upload');
       return form;
     })() : JSON.stringify({ text: body.text, inputType: body.inputType });
+    const headers = new Headers();
+    if (!isMultipart) headers.set('content-type', 'application/json');
+    if (env.LOCAL_CLASSIFIER_TOKEN) headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);
     const response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/resolve`, {
       method: 'POST',
-      headers: isMultipart ? undefined : { 'content-type': 'application/json' },
+      headers,
       body: payload,
       signal: AbortSignal.timeout(12000),
     });

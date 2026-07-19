@@ -9,6 +9,7 @@ import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
+const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
@@ -417,6 +418,7 @@ const readResolveBody = async (request) => {
 const server = createServer(async (request, response) => {
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }
   try {
+    if (classifierToken && request.headers.authorization !== `Bearer ${classifierToken}`) { response.writeHead(401, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable' })); return; }
     const url = new URL(request.url, 'http://127.0.0.1');
     if (request.url.startsWith('/v1/resolve')) {
       const requestMatch = url.pathname.match(/^\/v1\/resolve\/([^/]+)$/);

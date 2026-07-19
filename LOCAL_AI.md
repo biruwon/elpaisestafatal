@@ -41,6 +41,8 @@ npm run clarify:local -- --audio /absolute/path/recording.m4a
 
 The browser always submits to the same-origin `/api/resolve` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
 
+For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TOKEN` in the Pages Function environment and the local resolver environment. The token is optional for a loopback-only development setup.
+
 The local development proxy keeps the local inference service behind the same-origin `/api/resolve` boundary. Set up the local models once:
 
 ```bash
