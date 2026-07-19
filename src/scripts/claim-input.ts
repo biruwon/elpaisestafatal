@@ -2,11 +2,13 @@ import { isStrongClaimMatch, normaliseClaimText, rankClaimIndex, type ClaimIndex
 import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 
 type SearchResponse = {
-  status?: 'published' | 'related' | 'uncovered' | 'unavailable';
+  status?: 'published' | 'related' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
   guidance?: { questions?: string[]; limitation?: string };
+  result?: { headline?: string; summary?: string; limitation?: string; clarificationQuestion?: string };
+  relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
 
 const readJson = <T>(id: string, fallback: T): T => {
@@ -81,8 +83,17 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
 };
 
 const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {
-  const primary = findEntry(response.primary?.slug);
+  const structuredPrimary = response.relatedClaims?.[0];
+  const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
   const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
+  if (response.status === 'complete' && primary) {
+    renderCard('published', original, primary, alternatives, undefined, response.result?.summary || response.primary?.reason);
+    return;
+  }
+  if (response.status === 'partial' && primary) {
+    renderCard('related', original, primary, alternatives, undefined, response.result?.summary || response.primary?.reason);
+    return;
+  }
   if (response.status === 'published' && primary) {
     renderCard('published', original, primary, alternatives, undefined, response.primary?.reason);
     return;
@@ -92,7 +103,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     return;
   }
   if (response.status === 'uncovered') {
-    renderCard('uncovered', original, undefined, alternatives.length ? alternatives : fallback.slice(0, 2), response.guidance);
+    renderCard('uncovered', original, undefined, alternatives.length ? alternatives : fallback.slice(0, 2), response.guidance || {
+      questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
+      limitation: response.result?.limitation,
+    });
     return;
   }
   renderDeterministic(original, fallback);
@@ -109,7 +123,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[]): Promise
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
-    const response = await fetch(`/api/classify?text=${encodeURIComponent(query)}`, { method: 'POST', signal: activeRequest.signal });
+    const response = await fetch('/api/resolve', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: query, inputType: 'text' }), signal: activeRequest.signal });
     const data = await response.json() as SearchResponse;
     if (version !== requestVersion) return;
     responseCache.set(cacheKey, data);
