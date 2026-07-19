@@ -61,3 +61,16 @@ docker compose -f docker-compose.local.yml up --build -d
 ```
 
 The compose file binds the resolver to `127.0.0.1:8789`, mounts only the local derived cache, and uses host services for the catalog and local model runtime. It is a development/deployment convenience; the public site still communicates through the same-origin API boundary.
+
+## Refresh the local evidence warehouse
+
+The resolver can ingest approved official feeds into the rebuildable local warehouse. Start from the checked-in example, then add or remove endpoints as needed:
+
+```bash
+mkdir -p .local
+cp config/source-refresh.example.json .local/source-refresh.json
+npm run knowledge:refresh
+npm run knowledge:warehouse
+```
+
+The example refreshes a BOE daily summary, an INE table, and a Eurostat GDP series. `{yesterday}` and `{today}` placeholders are expanded at refresh time. Normalized observations are used for provisional number and trend cards; they do not become published verdicts without an explicit reviewed claim.
