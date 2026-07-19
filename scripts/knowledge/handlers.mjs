@@ -9,13 +9,13 @@ export const handlerForInput = (input, claimType = '') => {
   if (budgetSignal) return 'budget_transfer';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido'])) return 'legal_rule';
-  if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la'])) return 'causal';
+  if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
-  if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
+  if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
-  if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico'])) return 'trend';
-  if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'definicion'])) return 'definition';
+  if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';
+  if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   return 'quantity';
 };
 

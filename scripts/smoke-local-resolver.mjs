@@ -118,7 +118,7 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
   } catch (error) { failures.push(`legal long-tail: ${error.message}`); }
   try {
     const result = await resolve('La vivienda va a bajar un 30 por ciento el año que viene');
-    if (result.status !== 'draft') failures.push(`prediction long-tail: expected draft, received ${result.status}`);
+    if (!['draft', 'uncovered'].includes(result.status)) failures.push(`prediction long-tail: expected provisional or unresolved guidance, received ${result.status}`);
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('predic')) failures.push('prediction long-tail: did not label the forecast');
     if (result.result?.blocks?.some((block) => block.type === 'line_chart')) failures.push('prediction long-tail: presented historical context as a forecast chart');
   } catch (error) { failures.push(`prediction long-tail: ${error.message}`); }

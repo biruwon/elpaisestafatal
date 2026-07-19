@@ -530,30 +530,45 @@ const classify = async (text) => {
     const lexicalWeight = item.lexical >= 0.55 ? 0.75 : 0.55;
     return { ...item, score: vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical };
   }).sort((a, b) => b.score - a.score);
-  const publicRanked = ranked.filter((item) => item.entry.published);
+  // Derive compatibility from each canonical claim wording as well as its
+  // metadata. Keywords often describe a broad topic and can incorrectly make
+  // a prediction look compatible with a descriptive query. Apply this gate
+  // to both the fast path and the model-selected path; otherwise the local
+  // model can reintroduce an incompatible candidate after deterministic
+  // matching correctly rejected it.
+  const handlerForEntry = (entry) => handlerForInput({ retrievalHints: [entry.title, ...(entry.keywords || [])], entities: entry.aliases || [] }, entry.claimType);
+  const compatibleEntry = (entry) => {
+    if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
+    return handlerForEntry(entry) === deterministicHandler;
+  };
+  const publicRanked = ranked.filter((item) => item.entry.published && compatibleEntry(item.entry));
   const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score }));
   const top = publicRanked[0];
   const margin = top ? top.score - (publicRanked[1]?.score || 0) : 0;
   const lexicalMargin = top ? top.lexical - (publicRanked[1]?.lexical || 0) : 0;
-  // Derive compatibility from the canonical claim wording as well as its
-  // metadata. Keywords often describe a broad topic and can incorrectly make
-  // a causal claim look compatible with a group-comparison input.
-  const topHandler = top ? handlerForInput({ retrievalHints: [top.entry.title, ...(top.entry.keywords || [])], entities: top.entry.aliases || [] }, top.entry.claimType) : '';
-  const compatibleHandlers = top?.entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'quantity' || deterministicHandler === 'mixed' || topHandler === deterministicHandler;
+  const topHandler = top ? handlerForEntry(top.entry) : '';
+  const compatibleHandlers = Boolean(top && compatibleEntry(top.entry));
   // A canonical wording can be safely resolved without a semantic-margin
   // decision. This is limited to a very high lexical match and a compatible
   // handler, so a phrase that merely shares a topic still goes through the
   // cautious related/uncovered path.
   const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && top.lexical >= 0.9 && compatibleHandlers);
   const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers);
-  if (canonicalPhrase || strongMatch) return { status: top.entry.kind === 'claim' ? 'published' : 'related', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: top.entry.kind === 'claim' ? 'La formulación coincide con una afirmación publicada.' : 'La formulación se relaciona con este tema publicado.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
+  if (canonicalPhrase || strongMatch) {
+    // A topic is useful guidance, but it is not a claim-specific answer. Keep
+    // it as a related result so the warehouse can still enrich a descriptive
+    // query with the most relevant current data instead of stopping at a
+    // generic topic card.
+    if (top.entry.kind !== 'claim') return { status: 'uncovered', input: { original: text }, alternatives: usefulAlternatives(publicRanked) };
+    return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
+  }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
   const compiled = hasPlausibleCandidate || compileEligible ? await compileClaim(text) : fallbackCompiler(text);
   const model = hasPlausibleCandidate ? await rerank(text, ranked.slice(0, 8).map(({ entry }) => entry), compiled) : null;
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
-  const selectedCandidate = model?.primarySlug && ranked.find(({ entry }) => entry.slug === model.primarySlug && entry.published);
+  const selectedCandidate = model?.primarySlug && ranked.find(({ entry }) => entry.slug === model.primarySlug && entry.published && compatibleEntry(entry));
   const selected = selectedCandidate && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (model.status === 'published' ? 'published' : 'related') : 'uncovered';
   const result = { status, input: { original: text, canonical: typeof model?.canonical === 'string' ? model.canonical.slice(0, 220) : undefined }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: typeof model.confidence === 'number' ? Math.max(0, Math.min(1, model.confidence)) : top?.score || 0, reason: typeof model.reason === 'string' ? model.reason.slice(0, 220) : '', answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: Array.isArray(model?.questions) ? model.questions.filter((question) => typeof question === 'string').slice(0, 2).map((question) => question.slice(0, 220)) : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
