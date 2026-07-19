@@ -12,6 +12,7 @@ import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
+import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -20,6 +21,7 @@ const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'gemma3:4b';
+const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
 const whisperCommand = process.env.WHISPER_COMMAND || '';
 const whisperArgs = (() => {
   try { return process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
@@ -94,6 +96,22 @@ const parseModelJson = (value) => {
   const text = typeof value === 'string' ? value : JSON.stringify(value || '');
   const object = text.match(/\{[\s\S]*\}/)?.[0];
   try { return object ? JSON.parse(object) : null; } catch { return null; }
+};
+
+const planAnswerWithLocalModel = async (text, classified, result, observations) => {
+  if (!answerPlannerEnabled || !result?.result) return result?.result;
+  const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const packet = buildEvidencePacket({ text, compiler: classified.compiler, handlerId, plan: result.result, observations });
+  if (!validateEvidencePacket(packet).ok) return result.result;
+  const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
+  try {
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: '-1', options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
+    const draft = parseModelJson(response.message?.content);
+    const upgraded = applySafePlanUpgrade(result.result, draft, packet);
+    return validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok ? upgraded : result.result;
+  } catch {
+    return result.result;
+  }
 };
 
 const compilerSchema = {
@@ -758,7 +776,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
-  return toResolveResult(text, classified, source, resultRequestId, warehouse.observations.length ? warehouse.observations : discovered);
+  const observations = warehouse.observations.length ? warehouse.observations : discovered;
+  const deterministic = toResolveResult(text, classified, source, resultRequestId, observations);
+  if (!answerPlannerEnabled || !deterministic.result) return deterministic;
+  const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);
+  return upgraded === deterministic.result ? deterministic : { ...deterministic, result: upgraded };
 };
 
 const readText = async (request) => {

@@ -52,6 +52,8 @@ npm run dev:ai
 
 The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and does not run inference.
 
+For local experiments, `LOCAL_ANSWER_PLANNER=1` enables a final presentation pass after deterministic enrichment. The planner receives a bounded evidence packet and may only rewrite the headline, summary, question, limitation, and existing conversation reply. It cannot add evidence IDs, sources, visual blocks, or unsupported numbers; malformed, timed-out, or untraceable output is discarded automatically. Leave it unset for the fastest deterministic path.
+
 Meaningful unmatched text (at least three substantive terms, or two terms plus a number) is passed through the local structured compiler even when it has no published candidate. The compiler only extracts propositions, entities, numbers, and retrieval hints; it does not assess truth. Obvious low-signal input such as a single random token continues to use the immediate deterministic fallback.
 
 The resolver uses a short local-inference circuit breaker: a failed or timed-out model request temporarily suppresses repeated model/embedding attempts, while the deterministic matcher and evidence guidance continue immediately. Embeddings are only requested when lexical retrieval finds a plausible candidate.
