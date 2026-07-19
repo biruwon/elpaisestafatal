@@ -5,6 +5,7 @@ import type { AnswerPlan } from '../lib/knowledge/contracts';
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
   requestId?: string;
+  canonicalSignature?: string;
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
@@ -50,7 +51,7 @@ const recordUncoveredQuestion = (text: string, response: SearchResponse): void =
   void fetch('/api/questions', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ text, inputType: 'text', status: response.status, requestId: response.requestId }),
+    body: JSON.stringify({ text, canonical: response.canonicalSignature, inputType: 'text', status: response.status, requestId: response.requestId }),
     keepalive: true,
   }).catch(() => { /* Operational learning is optional and never blocks the answer. */ });
 };

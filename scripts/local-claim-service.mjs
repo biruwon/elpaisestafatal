@@ -36,6 +36,7 @@ let warehousePromise;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'cuñado', 'cuñado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
+const canonicalSignatureFor = (value) => tokens(value).join(' ') || normalise(value);
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 
@@ -54,6 +55,7 @@ const recordKnowledgeGap = async (text, result, inputType = 'text') => {
     createdAt: new Date().toISOString(),
     inputType,
     normalized: normalise(text),
+    canonical: result.canonicalSignature || canonicalSignatureFor(text),
     status: result.status,
     requestId: result.requestId,
     sourceIds: result.result?.sourceIds || [],
@@ -419,7 +421,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
-  return { status, requestId: resultRequestId, result, relatedClaims: source && !primary ? [] : relatedClaims };
+  return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : relatedClaims };
 };
 
 const readText = async (request) => {
