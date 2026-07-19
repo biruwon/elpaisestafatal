@@ -17,6 +17,7 @@ type ConversationVisual = {
   slug: string;
   visuals?: {
     key?: { value: string; label: string; period: string };
+    trend?: { available: boolean; labels: string[]; values: number[]; label: string; unit: string };
     comparison?: { labels: string[]; values: number[]; label: string; unit: string };
   };
 };
@@ -71,6 +72,14 @@ const visualMarkup = (entry?: ClaimIndexEntry): string => {
   return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparison.labels.slice(0, 3).map((label, index) => `<div><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((comparison.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`).join('')}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
 };
 
+const planVisualMarkup = (block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
+  const visual = conversationVisuals.find((item) => item.slug === block.visualId)?.visuals;
+  const series = block.type === 'line_chart' ? visual?.trend : visual?.comparison;
+  if (!series || !series.values.length) return `<div class="claim-plan-chart"><span class="clarification-label">Visualización pendiente</span><strong>Datos vinculados, gráfico no disponible todavía</strong><small>La respuesta conserva la evidencia y sus fuentes; aún no hay una serie visual preparada para esta afirmación.</small></div>`;
+  const max = Math.max(...series.values, 1);
+  return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label, index) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
+};
+
 const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((block) => {
   if (block.type === 'key_number') {
     return `<div class="claim-plan-number"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}</div>`;
@@ -89,7 +98,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-flow"><span class="clarification-label">Flujo de fondos</span><div><strong>Origen</strong><span>↓ transferencia</span><strong>Destino</strong></div><small>${escapeHtml(block.evidenceIds.join(' · '))}</small></div>`;
   }
   if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
-    return `<div class="claim-plan-chart"><span class="clarification-label">Visualización</span><strong>${escapeHtml(block.visualId)}</strong><small>La visualización se construye a partir de los datos vinculados a esta evidencia.</small></div>`;
+    return planVisualMarkup(block);
   }
   if (block.type === 'conversation_reply') {
     return `<div class="claim-plan-reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button></div>`;
@@ -107,7 +116,7 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = []): void => {
   if (!result) return;
   const isDraft = !primary && Boolean(plan.sourceLinks?.length);
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p>${visualMarkup(primary)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(plan.coverage)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}</article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Copiada'; } catch { button.textContent = 'No se ha podido copiar'; }
   }));
