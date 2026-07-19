@@ -18,6 +18,7 @@
     "knowledge:warehouse": "node scripts/knowledge/validate-warehouse.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
+    "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",
     "import:planned-claims": "node scripts/import-proposed-claims.mjs",

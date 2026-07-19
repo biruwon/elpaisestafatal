@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { normalizeJsonPayload } from './normalize-json.mjs';
+import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -17,8 +18,8 @@ if (!urlValue) {
 }
 
 const sourceUrl = new URL(urlValue);
-const approvedHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.es', 'hacienda.gob.es', 'interior.gob.es', 'seg-social.es', 'sepe.es', 'bde.es', 'datos.gob.es', 'congreso.es', 'senado.es', 'poderjudicial.es'];
-const approved = approvedHosts.some((host) => sourceUrl.hostname === host || sourceUrl.hostname.endsWith(`.${host}`));
+const sourceDefinition = sourceForHost(sourceUrl.hostname);
+const approved = Boolean(sourceDefinition);
 if (!approved && !allowUnlisted) {
   console.error(`Host ${sourceUrl.hostname} is not in the approved source registry. Use --allow-unlisted only for a deliberate discovery source.`);
   process.exit(1);
@@ -34,7 +35,7 @@ await mkdir(join(root, 'objects'), { recursive: true });
 await mkdir(join(root, 'manifests'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
-const manifest = { id: `source-${hash.slice(0, 16)}`, url: sourceUrl.toString(), publisher, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? 'approved-domain' : 'discovery-only' };
+const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, url: sourceUrl.toString(), publisher: publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {

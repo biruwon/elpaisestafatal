@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
+import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -19,7 +20,6 @@ const whisperArgs = (() => {
 })();
 const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
-const approvedSourceHosts = ['ine.es', 'ec.europa.eu', 'boe.es', 'lamoncloa.gob.es', 'hacienda.gob.es', 'interior.gob.es', 'seg-social.es', 'sepe.es', 'bde.es', 'datos.gob.es', 'congreso.es', 'senado.es', 'poderjudicial.es'];
 const indexPath = join(root, '.local/claim-semantic-index.json');
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
