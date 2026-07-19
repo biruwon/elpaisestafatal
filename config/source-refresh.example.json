@@ -1,11 +1,23 @@
 {
   "boe": [
-    "https://www.boe.es/datosabiertos/api/boe/sumario/{yesterday}"
+    {
+      "url": "https://www.boe.es/datosabiertos/api/boe/sumario/{yesterday}",
+      "title": "Boletín Oficial del Estado · Sumario diario",
+      "aliases": ["BOE", "normas", "disposiciones", "nombramientos"]
+    }
   ],
   "ine": [
-    "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50902?nult=12"
+    {
+      "url": "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50902?nult=12",
+      "title": "Índice de precios de consumo e inflación en España",
+      "aliases": ["IPC", "inflación", "precios", "coste de vida"]
+    }
   ],
   "eurostat": [
-    "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015"
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015",
+      "title": "Producto interior bruto de España · Eurostat",
+      "aliases": ["PIB", "GDP", "economía", "producción"]
+    }
   ]
 }

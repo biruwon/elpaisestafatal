@@ -25,6 +25,8 @@ const recordText = (record) => [
   record.unit,
   record.period,
   record.source?.publisher,
+  record.source?.title,
+  ...(record.source?.aliases || []),
   record.source?.url,
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
@@ -48,7 +50,7 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
       unit: record.unit,
       period: record.period,
       dimensions: record.dimensions || {},
-      source: record.source ? { id: record.source.id, title: record.source.publisher || record.source.url, url: record.source.url } : undefined,
+      source: record.source ? { id: record.source.id, title: record.source.title || record.source.publisher || record.source.url, url: record.source.url, aliases: record.source.aliases || [] } : undefined,
       score,
     }));
 };

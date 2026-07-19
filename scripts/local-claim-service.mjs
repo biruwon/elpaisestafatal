@@ -190,7 +190,7 @@ const loadWarehouse = async () => {
         if (manifest?.url && manifest.trust === 'approved-domain') manifests.push(manifest);
       } catch { /* Validation reports malformed manifests separately. */ }
     }
-    const signature = digest(JSON.stringify(manifests.map(({ id, sha256, url }) => ({ id, sha256, url }))));
+    const signature = digest(JSON.stringify(manifests.map(({ id, sha256, url, publisher, title, aliases }) => ({ id, sha256, url, publisher, title, aliases }))));
     try {
       const cached = JSON.parse(await readFile(warehouseIndexPath, 'utf8'));
       if (cached.signature === signature && Array.isArray(cached.entries)) return cached.entries;
@@ -198,9 +198,9 @@ const loadWarehouse = async () => {
     const entries = [];
     for (const manifest of manifests) {
       try {
-        let content = `${manifest.publisher || ''} ${manifest.url}`;
+        let content = `${manifest.publisher || ''} ${manifest.title || ''} ${(manifest.aliases || []).join(' ')} ${manifest.url}`;
         try { content += ` ${await readFile(manifest.objectPath, 'utf8')}`; } catch { /* Metadata remains searchable. */ }
-        entries.push({ id: manifest.id, title: `${manifest.publisher || 'Fuente oficial'} · ${new URL(manifest.url).hostname}`, url: manifest.url, text: content.slice(0, 120000) });
+        entries.push({ id: manifest.id, title: manifest.title || `${manifest.publisher || 'Fuente oficial'} · ${new URL(manifest.url).hostname}`, url: manifest.url, text: content.slice(0, 120000) });
       } catch { /* Ignore malformed source manifests; validation reports them separately. */ }
     }
     await writeFile(warehouseIndexPath, JSON.stringify({ signature, entries }));

@@ -11,6 +11,10 @@ const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) 
 }, []));
 const urlValue = args.get('url');
 const publisher = args.get('publisher') || 'unclassified';
+const title = args.get('title') || publisher;
+let aliases = [];
+try { aliases = args.has('aliases') ? JSON.parse(args.get('aliases')) : []; } catch { aliases = []; }
+if (!Array.isArray(aliases)) aliases = [];
 const allowUnlisted = args.get('allow-unlisted') === 'true';
 if (!urlValue) {
   console.error('Usage: npm run knowledge:ingest -- --url https://official.example/source --publisher "Publisher"');
@@ -35,11 +39,12 @@ await mkdir(join(root, 'objects'), { recursive: true });
 await mkdir(join(root, 'manifests'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
-const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, url: sourceUrl.toString(), publisher: publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
+const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
+const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
-  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: publisher }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
 }
 if (records.length) {
   manifest.recordCount = records.length;

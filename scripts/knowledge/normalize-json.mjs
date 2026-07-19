@@ -45,7 +45,7 @@ const flattenJsonStat = (payload, source) => {
 
 const flattenRows = (payload, source) => {
   if (!Array.isArray(payload) || !payload.every((row) => row && typeof row === 'object' && !Array.isArray(row))) return [];
-  return payload.flatMap((row, rowIndex) => Object.entries(row)
+  return payload.flatMap((row, rowIndex) => Array.isArray(row.Data) ? [] : Object.entries(row)
     .filter(([, value]) => typeof value === 'number' || value === null)
     .map(([metric, value]) => ({
       id: `${source.id}-row-${rowIndex}-${metric}`,
@@ -58,4 +58,39 @@ const flattenRows = (payload, source) => {
     })));
 };
 
-export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenRows(payload, source));
+const periodLabel = (point) => {
+  if (Number.isFinite(point?.Anyo) && Number.isFinite(point?.FK_Periodo)) return `${point.Anyo}-${String(point.FK_Periodo).padStart(2, '0')}`;
+  if (Number.isFinite(point?.Anyo)) return String(point.Anyo);
+  if (Number.isFinite(point?.Fecha)) return new Date(point.Fecha).toISOString().slice(0, 10);
+  return undefined;
+};
+
+// INE's DATOS_TABLA endpoints return one series per row with a nested Data
+// array. Treat each Data point as an observation instead of flattening the
+// row's implementation fields (FK_Unidad, FK_Escala, etc.) into fake values.
+const flattenIneTable = (payload, source) => {
+  if (!Array.isArray(payload)) return [];
+  return payload.flatMap((row, rowIndex) => {
+    if (!row || typeof row !== 'object' || !Array.isArray(row.Data)) return [];
+    const metric = typeof row.Nombre === 'string' ? row.Nombre.trim() : row.COD || `series-${rowIndex}`;
+    return row.Data.filter((point) => point && typeof point === 'object' && typeof point.Valor === 'number' && Number.isFinite(point.Valor)).map((point, pointIndex) => ({
+      id: `${source.id}-ine-${rowIndex}-${pointIndex}`,
+      kind: 'observation',
+      sourceId: source.id,
+      datasetId: source.title,
+      metric,
+      value: point.Valor,
+      period: periodLabel(point),
+      unit: row.FK_Unidad == null ? undefined : `INE unit ${row.FK_Unidad}`,
+      dimensions: {
+        code: row.COD,
+        series: metric,
+        year: point.Anyo,
+        period: point.FK_Periodo,
+        dataType: point.FK_TipoDato,
+      },
+    }));
+  });
+};
+
+export const normalizeJsonPayload = (payload, source) => flattenJsonStat(payload, source).concat(flattenIneTable(payload, source)).concat(flattenRows(payload, source));

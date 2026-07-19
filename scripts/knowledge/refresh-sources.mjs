@@ -26,14 +26,21 @@ const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
   const source = byId.get(sourceId);
   if (!source) throw new Error(`Unknown source registry id: ${sourceId}`);
   if (!Array.isArray(urls)) throw new Error(`Refresh URLs for ${sourceId} must be an array`);
-  return urls.map((url) => ({ sourceId, url: expandUrl(url) }));
+  return urls.map((resource) => {
+    const definition = typeof resource === 'string' ? { url: resource } : resource;
+    if (!definition || typeof definition.url !== 'string') throw new Error(`Refresh resource for ${sourceId} must contain a URL`);
+    return { sourceId, url: expandUrl(definition.url), title: definition.title, aliases: Array.isArray(definition.aliases) ? definition.aliases : [] };
+  });
 });
 if (!jobs.length) { console.log('Refresh configuration contains no URLs.'); process.exit(0); }
 
 for (const job of jobs) {
   console.log(`Refreshing ${job.sourceId}: ${job.url}`);
   await new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ['scripts/knowledge/ingest-source.mjs', '--url', job.url], { stdio: 'inherit' });
+    const childArgs = ['scripts/knowledge/ingest-source.mjs', '--url', job.url];
+    if (job.title) childArgs.push('--title', job.title);
+    if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
+    const child = spawn(process.execPath, childArgs, { stdio: 'inherit' });
     child.on('error', reject);
     child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Ingestion failed for ${job.url} (${code})`)));
   });
