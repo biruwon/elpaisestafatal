@@ -3,9 +3,10 @@ import { join } from 'node:path';
 import { evaluationCases } from './evaluation-cases.mjs';
 
 const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const limit = Math.min(evaluationCases.length, Math.max(1, Number(process.env.EVALUATION_LIMIT || evaluationCases.length)));
+const offset = Math.min(evaluationCases.length, Math.max(0, Number(process.env.EVALUATION_OFFSET || 0)));
+const limit = Math.min(evaluationCases.length - offset, Math.max(1, Number(process.env.EVALUATION_LIMIT || evaluationCases.length)));
 const concurrency = Math.max(1, Math.min(8, Number(process.env.EVALUATION_CONCURRENCY || 3)));
-const cases = evaluationCases.slice(0, limit);
+const cases = evaluationCases.slice(offset, offset + limit);
 const outcomes = [];
 let cursor = 0;
 
@@ -44,6 +45,7 @@ const percentile = (value) => latencies.length ? latencies[Math.min(latencies.le
 const report = {
   generatedAt: new Date().toISOString(),
   base,
+  offset,
   cases: outcomes.length,
   knownCases: outcomes.filter((item) => item.expected.status === 'known').length,
   unknownCases: outcomes.filter((item) => item.expected.status === 'unknown').length,
