@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { normalizeJsonPayload } from './normalize-json.mjs';
 import { sourceForHost } from './source-registry.mjs';
+import { connectorForId, connectorSupports, formatForContentType } from './connector-registry.mjs';
 import { hasMetric } from './metric-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -38,6 +39,10 @@ if (!approved && !allowUnlisted) {
 const response = await fetch(sourceUrl, { headers: { accept: 'text/html,application/json,application/pdf;q=0.9,*/*;q=0.5' }, signal: AbortSignal.timeout(15000) });
 if (!response.ok) throw new Error(`Source returned ${response.status}`);
 const contentType = response.headers.get('content-type') || 'application/octet-stream';
+const connector = sourceDefinition?.connector || 'official-document';
+if (sourceDefinition && !connectorSupports(connector, contentType)) {
+  throw new Error(`Connector ${connector} does not support ${formatForContentType(contentType)} resources`);
+}
 const bytes = Buffer.from(await response.arrayBuffer());
 const hash = createHash('sha256').update(bytes).digest('hex');
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
@@ -46,7 +51,8 @@ await mkdir(join(root, 'manifests'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
 const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
-const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector: sourceDefinition?.connector || 'discovery' };
+const connectorDefinition = connectorForId(connector);
+const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
