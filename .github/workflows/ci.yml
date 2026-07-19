@@ -31,6 +31,9 @@ jobs:
       - name: Validate local-runtime contract
         run: npm run container:validate
 
+      - name: Validate Cloudflare deployment boundary
+        run: npm run deployment:validate
+
       - name: Validate claim and knowledge contracts
         run: |
           npm run validate:content

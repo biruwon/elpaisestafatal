@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && astro build && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run deployment:validate && astro build && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -14,6 +14,7 @@
     "smoke:production": "node scripts/smoke-production.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
     "container:validate": "node scripts/validate-local-container.mjs",
+    "deployment:validate": "node scripts/validate-deployment-config.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "knowledge:validate": "node scripts/knowledge/validate-relations.mjs",
