@@ -10,6 +10,7 @@ interface Database {
 
 interface Env { DB?: Database }
 interface Context { request: Request; env: Env }
+import { canonicalQuerySignature } from '../../src/lib/knowledge/querySignature';
 
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const allowRequest = (request: Request): boolean => {
@@ -44,19 +45,20 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (!text) return json({ status: 'invalid' }, 400);
   const normalized = normalise(text);
   const canonical = typeof body.canonical === 'string' && body.canonical.trim() ? normalise(body.canonical).slice(0, 12000) : normalized;
+  const signature = canonicalQuerySignature(canonical) || canonical;
   const id = typeof body.requestId === 'string' && body.requestId ? body.requestId.slice(0, 80) : (await digest(normalized)).slice(0, 32);
   const now = new Date().toISOString();
   const inputType = typeof body.inputType === 'string' ? body.inputType.slice(0, 20) : 'text';
   const status = typeof body.status === 'string' ? body.status.slice(0, 30) : 'received';
   try {
     await env.DB.prepare(`INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`)
-      .bind(id, normalized, canonical, inputType, status, now).run();
+      .bind(id, normalized, signature, inputType, status, now).run();
     await env.DB.prepare(`UPDATE resolve_requests SET status = ?, canonical_signature = ? WHERE id = ?`)
-      .bind(status, canonical, id).run();
+      .bind(status, signature, id).run();
     const clusterId = `cluster-${id}`;
     await env.DB.prepare(`INSERT INTO query_clusters (id, canonical_text, canonical_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, 1, ?, ?) ON CONFLICT(canonical_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END`)
-      .bind(clusterId, canonical, canonical, now, status === 'complete' ? 'covered' : status).run();
-    const cluster = await env.DB.prepare(`SELECT id FROM query_clusters WHERE canonical_signature = ? LIMIT 1`).bind(canonical).all<{ id: string }>();
+      .bind(clusterId, canonical, signature, now, status === 'complete' ? 'covered' : status).run();
+    const cluster = await env.DB.prepare(`SELECT id FROM query_clusters WHERE canonical_signature = ? LIMIT 1`).bind(signature).all<{ id: string }>();
     const resolvedClusterId = cluster.results[0]?.id || clusterId;
     await env.DB.prepare(`INSERT OR IGNORE INTO query_cluster_members (request_id, cluster_id) VALUES (?, ?)`)
       .bind(id, resolvedClusterId).run();
