@@ -49,3 +49,13 @@ npm run dev:ai
 ```
 
 The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and does not run inference.
+
+## Optional containerized resolver
+
+The resolver can also run as a restartable local container while Astro and Ollama remain on the host:
+
+```bash
+docker compose -f docker-compose.local.yml up --build -d
+```
+
+The compose file binds the resolver to `127.0.0.1:8789`, mounts only the local derived cache, and uses host services for the catalog and local model runtime. It is a development/deployment convenience; the public site still communicates through the same-origin API boundary.

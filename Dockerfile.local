@@ -1,0 +1,14 @@
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+COPY scripts ./scripts
+COPY content ./content
+COPY package.json ./package.json
+
+ENV NODE_ENV=production
+ENV LOCAL_CLASSIFIER_PORT=8789
+ENV LOCAL_CATALOG_URL=http://host.docker.internal:4321/claim-catalog.json
+ENV OLLAMA_ENDPOINT=http://host.docker.internal:11434
+
+EXPOSE 8789
+CMD ["node", "scripts/local-claim-service.mjs"]

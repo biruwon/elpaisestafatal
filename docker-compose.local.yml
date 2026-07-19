@@ -1,0 +1,21 @@
+services:
+  claim-resolver:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    environment:
+      LOCAL_CLASSIFIER_PORT: 8789
+      LOCAL_CATALOG_URL: ${LOCAL_CATALOG_URL:-http://host.docker.internal:4321/claim-catalog.json}
+      OLLAMA_ENDPOINT: ${OLLAMA_ENDPOINT:-http://host.docker.internal:11434}
+      OLLAMA_ROUTER_MODEL: ${OLLAMA_ROUTER_MODEL:-gemma3:4b}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL:-bge-m3}
+      OLLAMA_VISION_MODEL: ${OLLAMA_VISION_MODEL:-gemma3:4b}
+      WHISPER_COMMAND: ${WHISPER_COMMAND:-}
+      WHISPER_ARGS: ${WHISPER_ARGS:-["{audio}"]}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "127.0.0.1:8789:8789"
+    volumes:
+      - ./.local:/app/.local
+    restart: unless-stopped
