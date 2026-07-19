@@ -640,7 +640,7 @@ const readResolveBody = async (request) => {
 const server = createServer(async (request, response) => {
   if (request.url === '/healthz' && request.method === 'GET') {
     response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
-    response.end(JSON.stringify({ status: 'ok' }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }

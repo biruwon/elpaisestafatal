@@ -3,6 +3,10 @@ const failures = [];
 
 const health = await fetch(`${base}/healthz`, { signal: AbortSignal.timeout(5000) }).catch(() => null);
 if (!health?.ok) failures.push('healthz did not return OK');
+else {
+  const healthBody = await health.json().catch(() => ({}));
+  if (healthBody.deterministic !== true) failures.push('healthz did not advertise deterministic fallback availability');
+}
 
 const resolve = async (text, inputType = 'text') => {
   const response = await fetch(`${base}/api/v1/resolve`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, inputType }), signal: AbortSignal.timeout(10000) });

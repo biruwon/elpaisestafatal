@@ -62,6 +62,7 @@ The user may write a claim in any wording, including blunt or politically loaded
 - Catalogue leads are now typed separately from official publications and render a concrete next step: open the distribution and verify its definition, period, population, and territorial coverage before treating it as evidence.
 - When local inference is unavailable, the deterministic fallback compiler now extracts claim type, entities, geography, period, amounts, retrieval hints, and implied reasoning instead of collapsing every input into one mixed proposition.
 - Uncovered responses now preserve and render that structured proposition breakdown in the browser; the UI labels it as provisional and keeps the limitation/next question visible instead of replacing it with a generic empty-result card.
+- Added a provider-neutral `/api/health` Pages Function and expanded the local health contract so monitoring can distinguish static/deterministic availability from optional dynamic availability without exposing origin or model details.
 - The unrelated untracked `docs/` directory is user-owned and must not be modified by this roadmap.
 
 ## Phase 1 — Knowledge contracts and migration
