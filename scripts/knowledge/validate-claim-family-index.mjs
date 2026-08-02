@@ -49,6 +49,16 @@ if (!match) {
       variants: ['la renta mediana ha subido', 'los ingresos medianos han aumentado', 'la renta de los hogares ha subido'],
     },
     {
+      slug: 'esperanza-vida-alta',
+      prompt: 'España supera los 84 años de esperanza de vida',
+      variants: ['la esperanza de vida en España supera los 84 años', 'vivimos más de 84 años', 'España tiene una esperanza de vida muy alta'],
+    },
+    {
+      slug: 'electricidad-hogares-sube',
+      prompt: 'El precio medio de la electricidad para hogares supera 0,28 €/kWh',
+      variants: ['la luz cuesta más de 28 céntimos', 'el precio de la electricidad supera 0,28 euros', 'la electricidad para hogares es cara'],
+    },
+    {
       slug: 'sobrecarga-vivienda-baja',
       prompt: 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015',
       variants: ['la sobrecarga de la vivienda ha bajado', 'el esfuerzo de vivienda ha bajado', 'los gastos de vivienda pesan menos'],

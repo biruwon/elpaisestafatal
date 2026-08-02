@@ -9,6 +9,8 @@ const knownSeeds = [
   ['espana-fecundidad-baja', 'quantity', 'España tiene menos de 1,2 hijos por mujer'],
   ['espana-menores-disminuyen', 'trend', 'En España hay cada vez menos menores de 15 años'],
   ['renta-mediana-sube', 'trend', 'La renta mediana disponible ha subido en España desde 2015'],
+  ['esperanza-vida-alta', 'trend', 'España supera los 84 años de esperanza de vida'],
+  ['electricidad-hogares-sube', 'trend', 'El precio medio de la electricidad para hogares supera 0,28 €/kWh'],
   ['sobrecarga-vivienda-baja', 'trend', 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015'],
   ['gasto-sanitario-habitante-sube', 'trend', 'España gasta más por habitante en sanidad que en 2015'],
   ['desigualdad-renta-baja', 'trend', 'La desigualdad de renta ha bajado en España desde 2015'],

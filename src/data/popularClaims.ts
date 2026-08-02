@@ -18,6 +18,8 @@ const popularSlugs = [
   'economia-crece-coste-vida',
   'precio-vivienda-sube',
   'cibercriminalidad-crece',
+  'esperanza-vida-alta',
+  'electricidad-hogares-sube',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

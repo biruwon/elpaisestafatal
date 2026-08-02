@@ -83,6 +83,8 @@
     {"evidenceId":"sobrecarga-vivienda-eurostat","propositionId":"prop-sobrecarga-vivienda-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"gasto-sanitario-eurostat","propositionId":"prop-gasto-sanitario-habitante-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"gini-eurostat","propositionId":"prop-gini-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
-    {"evidenceId":"pib-real-crece-eurostat","propositionId":"prop-pib-real-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"}
+    {"evidenceId":"pib-real-crece-eurostat","propositionId":"prop-pib-real-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
+    {"evidenceId":"esperanza-vida-eurostat","propositionId":"prop-esperanza-vida-alta-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"electricidad-hogares-eurostat","propositionId":"prop-electricidad-hogares-alta-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }

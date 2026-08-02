@@ -54,6 +54,8 @@ export const excludedMetricIdsForQuery = (query) => {
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const demographicContext = ['poblacion', 'demograf', 'inmigr', 'migracion', 'despobl', 'habitantes', 'natalidad', 'fecundidad', 'envejec'].some((term) => normalized.includes(term));
+  const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
   if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
   // Per-capita spending is useful context, but it cannot answer a broad claim
@@ -62,7 +64,7 @@ export const excludedMetricIdsForQuery = (query) => {
   // Total population and population-change rate are different questions. Keep
   // the change series out of generic population, migration, fertility, and
   // out-of-domain matches unless the wording explicitly asks about change.
-  if (!populationChangeRequested) excluded.add('population_change_rate');
-  if (!inflationRequested) excluded.add('inflation_rate');
+  if (demographicContext && !populationChangeRequested) excluded.add('population_change_rate');
+  if (priceContext && !inflationRequested) excluded.add('inflation_rate');
   return excluded;
 };

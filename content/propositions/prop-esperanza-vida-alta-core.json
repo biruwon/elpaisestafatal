@@ -1,0 +1,13 @@
+{
+  "id": "prop-esperanza-vida-alta-core",
+  "claimSlug": "esperanza-vida-alta",
+  "text": "La esperanza de vida al nacer en España alcanzó 84,0 años en 2024.",
+  "type": "trend",
+  "subject": "life_expectancy_at_birth",
+  "predicate": "reached",
+  "object": "84.0 years in 2024",
+  "geography": "España",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["esperanza-vida-eurostat"]
+}

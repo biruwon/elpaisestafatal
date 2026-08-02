@@ -1,0 +1,13 @@
+{
+  "id": "prop-electricidad-hogares-alta-core",
+  "claimSlug": "electricidad-hogares-sube",
+  "text": "El precio medio de la electricidad para hogares en España superó 0,28 €/kWh en el segundo semestre de 2025.",
+  "type": "trend",
+  "subject": "household_electricity_price",
+  "predicate": "exceeded",
+  "object": "0.28 EUR per kWh in 2025-S2",
+  "geography": "España",
+  "period": "2025-S2",
+  "status": "supported",
+  "evidenceIds": ["electricidad-hogares-eurostat"]
+}

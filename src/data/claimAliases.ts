@@ -35,6 +35,20 @@ export const claimAliases: Record<string, string[]> = {
     'la renta disponible es mayor que en 2015',
     'la renta de los hogares ha subido',
   ],
+  'esperanza-vida-alta': [
+    'España tiene más de 84 años de esperanza de vida',
+    'la esperanza de vida en España supera los 84 años',
+    'vivimos más de 84 años',
+    'España tiene una esperanza de vida muy alta',
+    'la longevidad en España supera los 84 años',
+  ],
+  'electricidad-hogares-sube': [
+    'la luz cuesta más de 28 céntimos',
+    'el precio de la electricidad supera 0,28 euros',
+    'la electricidad para hogares es cara',
+    'el precio de la luz en España supera 0,28',
+    'precio luz hogares España',
+  ],
   'sobrecarga-vivienda-baja': [
     'la sobrecarga de la vivienda ha bajado',
     'menos personas sufren sobrecarga de vivienda',
