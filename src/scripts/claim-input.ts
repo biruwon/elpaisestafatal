@@ -125,7 +125,7 @@ const blockEvidenceMarkup = (_plan: AnswerPlan, evidenceIds?: string[]): string 
   return `<div class="claim-plan-block-evidence"><span>Conecta con ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''} de evidencia</span></div>`;
 };
 
-const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((block) => {
+const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][number]): string => {
   if (block.type === 'key_number') {
     return `<div class="claim-plan-number claim-plan-card"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}${blockEvidenceMarkup(plan, [block.evidenceId])}</div>`;
   }
@@ -180,7 +180,30 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-sources"><span class="clarification-label">Fuentes vinculadas</span><p>${escapeHtml(block.sourceIds.join(' · '))}</p></div>`;
   }
   return '';
-}).join('');
+};
+
+const structuredBlocksMarkup = (plan: AnswerPlan): string => {
+  const secondaryTypes = new Set<AnswerPlan['blocks'][number]['type']>([
+    'evidence_ladder',
+    'legal_decision_tree',
+    'prediction_conditions',
+    'trade_offs',
+    'group_comparison_requirements',
+    'source_excerpt',
+    'sources',
+  ]);
+  const primary: string[] = [];
+  const secondary: string[] = [];
+  plan.blocks.forEach((block) => {
+    const markup = renderStructuredBlock(plan, block);
+    if (!markup) return;
+    (secondaryTypes.has(block.type) ? secondary : primary).push(markup);
+  });
+  const detailMarkup = secondary.length
+    ? `<details class="claim-result-details"><summary><span>Ver el análisis detallado</span><small>${secondary.length} bloque${secondary.length === 1 ? '' : 's'} sobre método, fuentes y límites</small></summary><div class="claim-result-secondary">${secondary.join('')}</div></details>`
+    : '';
+  return `${primary.join('')}${detailMarkup}`;
+};
 
 const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
   ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
@@ -207,7 +230,7 @@ const bindResultActions = (): void => {
   result?.querySelector<HTMLButtonElement>('[data-share-result]')?.addEventListener('click', async () => {
     const card = result.querySelector<HTMLElement>('.claim-result-card');
     const headline = card?.querySelector('h3')?.textContent || 'Aclaración sobre una afirmación';
-    const summary = card?.querySelector(':scope > p:not(.claim-result-input)')?.textContent || '';
+    const summary = card?.querySelector('.claim-result-summary, .claim-result-short-answer p')?.textContent || '';
     try {
       let shared = false;
       if (typeof navigator.share === 'function') {
@@ -224,7 +247,7 @@ const bindResultActions = (): void => {
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' = 'published'): void => {
   if (!result) return;
   const isDraft = state !== 'published';
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
@@ -258,7 +281,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'Este archivo no tiene un formato compatible.')}</strong></p><div class="claim-guidance"><span class="clarification-label">Formatos aceptados</span><ul><li>Capturas: PNG, JPEG, WebP o GIF</li><li>Audio: WAV, MP3, M4A, OGG, WebM o FLAC</li><li>Máximo: ${Math.round(INPUT_LIMITS.maxFileBytes / 1024 / 1024)} MB</li></ul></div>`
-      : `${visualMarkup(primary)}<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}${primary?.answer ? `<div class="claim-result-actions"><button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button></div>` : ''}`;
+      : `${visualMarkup(primary)}<div class="claim-result-short-answer"><span class="clarification-label">Orientación en una frase</span><p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary?.answer ? `<button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button>` : ''}</div>${primary ? resultLink(primary) : ''}`;
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const shareAction = primary?.answer ? '<button type="button" data-share-result>Compartir aclaración</button>' : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
