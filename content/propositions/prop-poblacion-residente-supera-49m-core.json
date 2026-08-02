@@ -1,0 +1,13 @@
+{
+  "id": "prop-poblacion-residente-supera-49m-core",
+  "claimSlug": "poblacion-residente-supera-49m",
+  "text": "España supera los 49 millones de residentes en la última observación anual disponible",
+  "type": "trend",
+  "subject": "población residente de España",
+  "predicate": "is_above",
+  "object": "49 millones",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-residente-supera-49m"]
+}

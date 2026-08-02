@@ -1,6 +1,7 @@
 import { claims, type ClaimVerification } from './claims';
 
 const popularSlugs = [
+  'poblacion-residente-supera-49m',
   'viviendas-vacias',
   'inmigrantes-ayudas',
   'empleo-record',

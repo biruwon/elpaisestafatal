@@ -1,5 +1,11 @@
 /** Common conversational phrasings for published, evidence-backed claims. */
 export const claimAliases: Record<string, string[]> = {
+  'poblacion-residente-supera-49m': [
+    'España ya tiene más de 49 millones de habitantes',
+    'la población de España supera los 49 millones',
+    'hay 49 millones de personas en España',
+    'España tiene más población que nunca',
+  ],
   'espana-pierde-poblacion': [
     'España pierde población',
     'la población de España está bajando',

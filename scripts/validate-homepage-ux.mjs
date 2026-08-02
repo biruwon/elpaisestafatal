@@ -18,6 +18,8 @@ requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
 requireText('data-example-source="warehouse"', 'fresh warehouse prompt entry points');
 requireText('class="warehouse-prompts"', 'fresh warehouse prompt section');
+if (!/<details class="warehouse-prompts"(?:\s[^>]*)?>/.test(homepage)) failures.push('homepage is missing collapsed secondary prompt section');
+if (/<details class="warehouse-prompts"[^>]*\sopen(?:\s|=|>)/.test(homepage)) failures.push('secondary warehouse prompts must remain collapsed by default');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');
 requireText('aria-current="page"', 'the active navigation state');
 if (!claimInput.includes('Comprobar otra frase') || !claimInput.includes('data-new-check')) failures.push('claim input is missing the repeat-check action');

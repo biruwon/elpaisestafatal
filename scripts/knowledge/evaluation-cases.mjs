@@ -1,4 +1,5 @@
 const knownSeeds = [
+  ['poblacion-residente-supera-49m', 'trend', 'España supera los 49 millones de residentes'],
   ['inmigracion-delincuencia', 'causal', 'Los inmigrantes crean inseguridad'],
   ['inmigrantes-ayudas', 'group_comparison', 'Los inmigrantes vienen a España a vivir de ayudas'],
   ['inmigrantes-patera', 'quantity', 'La mayoría de inmigrantes llega en patera'],
