@@ -183,6 +183,14 @@
     "notEquivalentTo": ["resident_population", "immigration_flows"],
     "dimensions": ["period", "geography", "age"]
   },
+  "old_age_dependency_ratio": {
+    "name": "Old-age dependency ratio",
+    "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida"],
+    "unit": "older persons per 100 working-age persons",
+    "population": "usual residents aged 65 years or over relative to residents aged 15 to 64",
+    "notEquivalentTo": ["resident_population", "fertility_rate"],
+    "dimensions": ["period", "geography", "indicator"]
+  },
   "gini_coefficient": {
     "name": "Gini coefficient of equivalised disposable income",
     "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],

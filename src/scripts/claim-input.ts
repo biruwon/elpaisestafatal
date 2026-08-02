@@ -207,7 +207,12 @@ const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][num
     return `<div class="claim-plan-concern"><span class="clarification-label">La preocupación válida</span><p>${escapeHtml(block.text)}</p></div>`;
   }
   if (block.type === 'evidence_ladder') {
-    return `<div class="claim-plan-method claim-plan-ladder"><span class="clarification-label">Qué haría falta para demostrar la causa</span><ol>${block.steps.map((step) => `<li data-status="${escapeHtml(step.status)}"><span>${escapeHtml(step.label)}</span><p>${escapeHtml(step.detail)}</p></li>`).join('')}</ol>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
+    const ladderLabel = block.steps[0]?.label === 'Resultado concreto'
+      ? 'Cómo concretarla para poder comprobarla'
+      : block.steps[0]?.label === 'Cambio observado'
+        ? 'Qué haría falta para demostrar la causa'
+        : 'Qué haría falta para comprobarla';
+    return `<div class="claim-plan-method claim-plan-ladder"><span class="clarification-label">${ladderLabel}</span><ol>${block.steps.map((step) => `<li data-status="${escapeHtml(step.status)}"><span>${escapeHtml(step.label)}</span><p>${escapeHtml(step.detail)}</p></li>`).join('')}</ol>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'legal_decision_tree') {
     return `<div class="claim-plan-method"><span class="clarification-label">Ruta para comprobar la regla</span><ol>${block.items.map((item) => `<li data-status="${escapeHtml(item.status)}"><span>${escapeHtml(item.label)}</span><p>${escapeHtml(item.detail)}</p></li>`).join('')}</ol></div>`;
@@ -258,10 +263,18 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => {
   ]);
   const primary: string[] = [];
   const secondary: string[] = [];
+  const coreGuidanceTypes = new Set<AnswerPlan['blocks'][number]['type']>([
+    'evidence_ladder',
+    'legal_decision_tree',
+    'prediction_conditions',
+    'trade_offs',
+    'group_comparison_requirements',
+  ]);
   plan.blocks.forEach((block) => {
     const markup = renderStructuredBlock(plan, block);
     if (!markup) return;
-    (secondaryTypes.has(block.type) ? secondary : primary).push(markup);
+    const coreGuidance = (plan.coverage === 'insufficient' || plan.coverage === 'values') && coreGuidanceTypes.has(block.type);
+    (secondaryTypes.has(block.type) && !coreGuidance ? secondary : primary).push(markup);
   });
   const detailMarkup = secondary.length
     ? `<details class="claim-result-details"><summary><span>Ver el análisis detallado</span><small>${secondary.length} bloque${secondary.length === 1 ? '' : 's'} sobre método, fuentes y límites</small></summary><div class="claim-result-secondary">${secondary.join('')}</div></details>`

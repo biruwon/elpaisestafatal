@@ -166,6 +166,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'hijos por mujer') failures.push('fertility warehouse: did not localize the unit');
   } catch (error) { failures.push(`fertility warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Cómo ha evolucionado el envejecimiento de la población española');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`ageing warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'old_age_dependency_ratio') failures.push('ageing warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('ageing warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'personas mayores por cada 100 en edad de trabajar') failures.push('ageing warehouse: did not localize the unit');
+  } catch (error) { failures.push(`ageing warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Cómo ha evolucionado la desigualdad de ingresos en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`Gini warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'gini_coefficient') failures.push('Gini warehouse: selected the wrong metric family');

@@ -55,6 +55,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['salud-longevidad', 'Cuántos años vive de media una persona al nacer', 'life_expectancy_at_birth'],
   ['demografia-fecundidad', 'Cómo ha evolucionado la fecundidad en España', 'fertility_rate'],
   ['demografia-hijos', 'Cuántos hijos tiene de media cada mujer en España', 'fertility_rate'],
+  ['demografia-envejecimiento', 'Cómo ha evolucionado el envejecimiento de la población española', 'old_age_dependency_ratio'],
+  ['demografia-mayores', 'Cuántas personas mayores hay por cada 100 en edad de trabajar', 'old_age_dependency_ratio'],
   ['desigualdad-gini', 'Cómo ha evolucionado la desigualdad de ingresos en España', 'gini_coefficient'],
   ['desigualdad-coeficiente', 'Cuál es el coeficiente de Gini español', 'gini_coefficient'],
   ['deficit-publico', 'Cómo ha cambiado el déficit público sobre el PIB', 'government_deficit_ratio'],

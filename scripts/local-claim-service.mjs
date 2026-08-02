@@ -61,6 +61,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gini_coefficient') return 'escala Gini 0–100';
   if (metricId === 'life_expectancy_at_birth') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
+  if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';

@@ -31,6 +31,8 @@ const required = [
   'claim-result-details',
   'Ver el análisis detallado',
   'secondaryTypes',
+  'coreGuidanceTypes',
+  'Cómo concretarla para poder comprobarla',
   'fallbackPublishedClaims',
   'La orientación de la frase sigue disponible',
   'estamos leyendo el texto de la captura',

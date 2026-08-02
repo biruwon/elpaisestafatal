@@ -143,6 +143,12 @@
       "metricId": "fertility_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?geo=ES&indic_de=OLDDEP1&sinceTimePeriod=2015",
+      "title": "Dependencia de personas mayores en España · Eurostat",
+      "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida"],
+      "metricId": "old_age_dependency_ratio"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di12?geo=ES&age=TOTAL&sinceTimePeriod=2015",
       "title": "Coeficiente de Gini de la renta disponible en España · Eurostat",
       "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],
