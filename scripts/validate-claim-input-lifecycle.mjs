@@ -30,6 +30,7 @@ const required = [
   'Siguiente paso',
   'claim-result-details',
   'Ver el análisis detallado',
+  'Orientación automática · provisional, no publicada',
   'secondaryTypes',
   'coreGuidanceTypes',
   'Cómo concretarla para poder comprobarla',
@@ -56,4 +57,5 @@ const required = [
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
 if (/if \(data\.status === 'processing'\)[\s\S]{0,180}renderCard\('unavailable'/.test(source)) throw new Error('Processing timeout replaces the deterministic result with an unavailable card');
+if (source.includes('Pendiente de revisión · no es un veredicto publicado')) throw new Error('Provisional structured results still use pending language');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');
