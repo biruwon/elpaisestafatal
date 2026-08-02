@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-menores-disminuyen-core",
+  "claimSlug": "espana-menores-disminuyen",
+  "text": "La proporción de población menor de 15 años en España disminuyó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "young_population_share",
+  "predicate": "decreased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-menor-15-eurostat"]
+}

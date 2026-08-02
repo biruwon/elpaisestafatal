@@ -39,6 +39,11 @@ if (!match) {
       variants: ['España tiene una fecundidad muy baja', 'cada mujer tiene menos de 1,2 hijos', 'la natalidad está por los suelos'],
     },
     {
+      slug: 'espana-menores-disminuyen',
+      prompt: 'En España hay cada vez menos menores de 15 años',
+      variants: ['cada vez hay menos niños en España', 'España tiene menos niños', 'la población infantil está bajando'],
+    },
+    {
       slug: 'alquileres-suben',
       prompt: 'Los alquileres han subido en España desde 2015',
       variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],

@@ -3,6 +3,7 @@ import { conversationMvpClaims } from './conversationMvp';
 import { concerns } from './concerns';
 import type { ClaimIndexEntry } from './claimIndex';
 import { claimAliases } from './claimAliases';
+import { getSource } from './registry';
 
 const topicVocabulary: Record<string, string[]> = {
   politica: [
@@ -48,6 +49,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     evidenceIds: claim.evidenceIds,
     propositionIds: claim.propositionIds,
     sourceRefs: claim.sourceRefs,
+    sourceLinks: claim.sourceRefs.map((id) => getSource(id)).filter((source): source is NonNullable<typeof source> => Boolean(source)).map((source) => ({ id: source.id, title: source.title, url: source.url })),
     relatedSlugs: claim.relatedSlugs,
     whatIsTrue: claim.whatIsTrue,
     whatIsMissing: claim.whatIsMissing,

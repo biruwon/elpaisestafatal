@@ -622,7 +622,12 @@ const getIndex = async () => {
 };
 
 const classify = async (text) => {
-  const key = canonicalSignatureFor(text);
+  // Do not reuse a result generated for a different conversational wrapper.
+  // “La sanidad está colapsada” and “¿Es verdad que la sanidad está
+  // colapsada?” share a canonical signature, but the compiler can make
+  // different decisions for them. Meaning-level caching can be reintroduced
+  // only for validated, representation-independent answer plans.
+  const key = normalise(text);
   const cached = answerCache.get(key);
   if (cached && cached.expiresAt > Date.now()) { telemetry.cacheHits += 1; return cached.value; }
   if (cached) answerCache.delete(key);
@@ -683,7 +688,13 @@ const classify = async (text) => {
     const matches = phraseTokens.length === queryMeaningfulTokens.length && phraseTokens.every((phraseToken) => queryMeaningfulTokens.some((queryToken) => oneEditAway(queryToken, phraseToken)));
     return matches && phraseTokens.some((phraseToken) => !queryMeaningfulTokens.includes(phraseToken));
   });
-  const directPhraseCandidate = suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry)));
+  // Curated titles and aliases are an explicit publication contract. Resolve
+  // them before handler compatibility, metric routing, or semantic ranking
+  // can redirect an exact user phrase to an adjacent warehouse result.
+  const exactPublishedCandidate = suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && item.entry.kind === 'claim' && [item.entry.title, ...(item.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery));
+  const conversationalWrapper = /\b(?:es verdad que|en el grupo dicen que|mi cunado insiste|segun los datos|no me creo que|de verdad|he leido|que hay de cierto en que)\b/.test(normalizedQuery);
+  const openQuestionIntent = /\b(?:como|cuanto|cuanta|cuantos|cuantas|cual|cuales|donde|cuando|por que)\b/.test(normalizedQuery);
+  const directPhraseCandidate = exactPublishedCandidate || (suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry) || conversationalWrapper || !openQuestionIntent)));
   const decisionRanked = directPhraseCandidate
     ? [directPhraseCandidate, ...publicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
     : publicRanked;
@@ -715,7 +726,7 @@ const classify = async (text) => {
   // phrase merely because its conversational wording is classified slightly
   // differently from the claim's broad metadata type.
   const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
-  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
+  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || directPhraseCandidate?.entry.slug === top.entry.slug || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
   const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
   // A new measurable question must not be swallowed by a broad published
   // claim just because both use a topic word such as "desigualdad". Let the
@@ -728,7 +739,7 @@ const classify = async (text) => {
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.
     if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(decisionRanked) };
-    return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
+    return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [], sourceLinks: top.entry.sourceLinks || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = queryMeaningfulTokens;
@@ -739,7 +750,7 @@ const classify = async (text) => {
   const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && compatibleEntry(entry));
   const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
-  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
   return result;
@@ -750,7 +761,10 @@ const requestId = (text) => digest(normalise(text)).slice(0, 24);
 const startResolveJob = (text) => {
   const id = requestId(text);
   const signature = canonicalSignatureFor(text);
-  const existing = resolveJobs.get(id) || [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && (!item.completedAt || item.completedAt + cacheTtlMs > Date.now()));
+  // Coalesce exact duplicate submissions only. A canonical signature removes
+  // useful conversational context and can make a prefixed variant inherit an
+  // uncovered result from another wording.
+  const existing = resolveJobs.get(id);
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
@@ -1080,7 +1094,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     limitation: valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
-    ...(sourceLinks.length ? { sourceLinks } : {}),
+    ...(primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),
     knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };

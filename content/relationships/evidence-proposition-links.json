@@ -77,6 +77,7 @@
     {"evidenceId":"vivienda-indice-de-precios-de-vivienda-t1-2026","propositionId":"prop-viviendas-vacias-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1","propositionId":"prop-viviendas-vacias-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"poblacion-mayores-eurostat","propositionId":"prop-espana-envejece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
-    {"evidenceId":"fecundidad-eurostat","propositionId":"prop-espana-fecundidad-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"}
+    {"evidenceId":"fecundidad-eurostat","propositionId":"prop-espana-fecundidad-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
+    {"evidenceId":"poblacion-menor-15-eurostat","propositionId":"prop-espana-menores-disminuyen-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"}
   ]
 }

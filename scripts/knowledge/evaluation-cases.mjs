@@ -7,6 +7,7 @@ const knownSeeds = [
   ['espana-pierde-poblacion', 'trend', 'España está perdiendo población'],
   ['espana-envejece', 'trend', 'España está cada vez más envejecida'],
   ['espana-fecundidad-baja', 'quantity', 'España tiene menos de 1,2 hijos por mujer'],
+  ['espana-menores-disminuyen', 'trend', 'En España hay cada vez menos menores de 15 años'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],
   ['empleo-record', 'trend', 'España tiene más empleo que nunca'],
   ['fijos-discontinuos', 'definition', 'Los fijos discontinuos son parados ocultos'],

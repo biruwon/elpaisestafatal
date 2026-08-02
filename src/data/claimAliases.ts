@@ -21,6 +21,13 @@ export const claimAliases: Record<string, string[]> = {
     'en España nacen muy pocos niños',
     'España no tiene hijos',
   ],
+  'espana-menores-disminuyen': [
+    'cada vez hay menos niños en España',
+    'España tiene menos niños',
+    'hay menos menores',
+    'la población infantil está bajando',
+    'España se está quedando sin niños',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

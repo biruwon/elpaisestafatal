@@ -15,6 +15,7 @@ export type ClaimIndexEntry = {
   evidenceIds?: string[];
   propositionIds?: string[];
   sourceRefs?: string[];
+  sourceLinks?: Array<{ id: string; title: string; url: string }>;
   relatedSlugs?: string[];
   whatIsTrue?: string;
   whatIsMissing?: string;
