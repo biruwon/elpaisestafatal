@@ -18,6 +18,7 @@ const knownSeeds = [
   ['paro-epa-supera-10', 'trend', 'La tasa de paro de la EPA sigue por encima del 10%'],
   ['paro-epa-t2-2026-baja-10', 'trend', 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026'],
   ['ocupacion-aumenta-t2-2026', 'descriptive', 'España ganó 486.000 ocupados en el segundo trimestre de 2026'],
+  ['brecha-salarial-genero-no-es-mito', 'comparison', 'La brecha salarial de género es un mito'],
   ['precios-hoteles-sube-junio-2026', 'comparison', 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026'],
   ['tasa-empleo-sube', 'trend', 'La tasa de empleo de 20 a 64 años ha subido desde 2015'],
   ['paro-espana-supera-ue', 'ranking', 'España tiene más paro que la media de la Unión Europea'],

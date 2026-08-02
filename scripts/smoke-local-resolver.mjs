@@ -44,6 +44,7 @@ const cases = [
   { text: 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
   { text: 'El desempleo EPA bajó del diez por ciento.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
   { text: 'España ganó 486.000 ocupados en el segundo trimestre de 2026.', status: 'complete', slug: 'ocupacion-aumenta-t2-2026' },
+  { text: 'La brecha salarial de género es un mito.', status: 'complete', slug: 'brecha-salarial-genero-no-es-mito' },
   { text: 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026.', status: 'complete', slug: 'precios-hoteles-sube-junio-2026' },
   { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
   { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },

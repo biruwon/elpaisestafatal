@@ -34,6 +34,13 @@ export const claimAliases: Record<string, string[]> = {
     'hay 22,779 millones de ocupados',
     'récord de ocupación segundo trimestre 2026',
   ],
+  'brecha-salarial-genero-no-es-mito': [
+    'la brecha salarial de género no existe',
+    'la brecha salarial es un invento',
+    'mujeres y hombres cobran lo mismo',
+    'brecha salarial de genero mito',
+    'no hay brecha salarial entre hombres y mujeres',
+  ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
     'el precio de los hoteles sube y las pernoctaciones bajan',

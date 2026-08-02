@@ -1,0 +1,13 @@
+{
+  "id": "prop-brecha-salarial-genero-core",
+  "claimSlug": "brecha-salarial-genero-no-es-mito",
+  "text": "Existe una diferencia salarial media entre mujeres y hombres en España, aunque el indicador bruto no identifica por sí solo sus causas",
+  "type": "comparative",
+  "subject": "salarios de mujeres y hombres",
+  "predicate": "differ_on_average",
+  "object": "salario anual y salario bruto por hora",
+  "geography": "España",
+  "period": "2022",
+  "status": "supported",
+  "evidenceIds": ["ees-2022-brecha-salarial"]
+}

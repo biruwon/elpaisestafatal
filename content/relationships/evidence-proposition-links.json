@@ -99,6 +99,7 @@
     {"evidenceId":"economia-ipc-junio-2026","propositionId":"prop-ipc-junio-2026-positivo-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"empleo-epa-segundo-trimestre-2026","propositionId":"prop-paro-epa-t2-2026-baja-10-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"turismo-hotelero-junio-2026","propositionId":"prop-precios-hoteleros-sube-junio-2026-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"empleo-epa-segundo-trimestre-2026","propositionId":"prop-ocupacion-aumenta-t2-2026-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"empleo-epa-segundo-trimestre-2026","propositionId":"prop-ocupacion-aumenta-t2-2026-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ees-2022-brecha-salarial","propositionId":"prop-brecha-salarial-genero-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }
