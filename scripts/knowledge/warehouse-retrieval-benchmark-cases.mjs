@@ -51,6 +51,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['vivienda-gastos', 'Cómo ha cambiado el esfuerzo de vivienda en España', 'housing_cost_overburden_rate'],
   ['sanidad-gasto', 'Cuánto se gasta en sanidad por habitante en España', 'health_expenditure_per_capita'],
   ['sanidad-recursos', 'Evolución del gasto sanitario por persona', 'health_expenditure_per_capita'],
+  ['salud-vida', 'Cómo ha evolucionado la esperanza de vida en España', 'life_expectancy_at_birth'],
+  ['salud-longevidad', 'Cuántos años vive de media una persona al nacer', 'life_expectancy_at_birth'],
   ['desigualdad-gini', 'Cómo ha evolucionado la desigualdad de ingresos en España', 'gini_coefficient'],
   ['desigualdad-coeficiente', 'Cuál es el coeficiente de Gini español', 'gini_coefficient'],
   ['deficit-publico', 'Cómo ha cambiado el déficit público sobre el PIB', 'government_deficit_ratio'],

@@ -59,6 +59,7 @@ const boundedExcerpt = (value, limit = 900) => {
 const displayUnit = (value, metricId = '') => {
   const unit = normalise(value);
   if (metricId === 'gini_coefficient') return 'escala Gini 0–100';
+  if (metricId === 'life_expectancy_at_birth') return 'años';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';

@@ -152,6 +152,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/health care expenditure by financing scheme/i.test(result.result?.headline || '')) failures.push('health expenditure warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`health expenditure warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Cómo ha evolucionado la esperanza de vida en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`life expectancy warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'life_expectancy_at_birth') failures.push('life expectancy warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('life expectancy warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'años') failures.push('life expectancy warehouse: did not localize the unit');
+  } catch (error) { failures.push(`life expectancy warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Cómo ha evolucionado la desigualdad de ingresos en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`Gini warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'gini_coefficient') failures.push('Gini warehouse: selected the wrong metric family');

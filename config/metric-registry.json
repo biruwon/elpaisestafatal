@@ -167,6 +167,14 @@
     "notEquivalentTo": ["government_expenditure_ratio"],
     "dimensions": ["period", "geography", "financing_scheme"]
   },
+  "life_expectancy_at_birth": {
+    "name": "Life expectancy at birth",
+    "aliases": ["esperanza de vida", "esperanza de vida al nacer", "años de vida", "vida media", "cuántos años vive", "longevidad"],
+    "unit": "years",
+    "population": "newborn cohort under current mortality conditions",
+    "notEquivalentTo": ["health_expenditure_per_capita"],
+    "dimensions": ["period", "geography", "sex"]
+  },
   "gini_coefficient": {
     "name": "Gini coefficient of equivalised disposable income",
     "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],
