@@ -181,6 +181,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/no coincide/i.test(result.result?.headline || '')) failures.push('older-population warehouse: age threshold was treated as a claimed value');
   } catch (error) { failures.push(`older-population warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Qué porcentaje de la población tiene menos de 15 años');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`young-population warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'young_population_share') failures.push('young-population warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('young-population warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '% de la población') failures.push('young-population warehouse: did not localize the unit');
+  } catch (error) { failures.push(`young-population warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Cómo ha evolucionado la desigualdad de ingresos en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`Gini warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'gini_coefficient') failures.push('Gini warehouse: selected the wrong metric family');

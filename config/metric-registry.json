@@ -199,6 +199,14 @@
     "notEquivalentTo": ["old_age_dependency_ratio", "resident_population", "fertility_rate"],
     "dimensions": ["period", "geography", "indicator"]
   },
+  "young_population_share": {
+    "name": "Population aged 0 to 14 years",
+    "aliases": ["población de 0 a 14 años", "menores de 15", "población infantil", "porcentaje de niños", "proporción de menores"],
+    "unit": "percent of population",
+    "population": "usual residents aged 0 to 14 years as a share of total population",
+    "notEquivalentTo": ["older_population_share", "resident_population", "fertility_rate", "youth_unemployment_rate"],
+    "dimensions": ["period", "geography", "indicator"]
+  },
   "gini_coefficient": {
     "name": "Gini coefficient of equivalised disposable income",
     "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],

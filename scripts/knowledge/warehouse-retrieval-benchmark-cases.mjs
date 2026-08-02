@@ -59,6 +59,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['demografia-mayores', 'Cuántas personas mayores hay por cada 100 en edad de trabajar', 'old_age_dependency_ratio'],
   ['demografia-mayores-porcentaje', 'Qué porcentaje de personas mayores de 65 años hay en España', 'older_population_share'],
   ['demografia-poblacion-mayor', 'Cómo ha cambiado la proporción de población mayor', 'older_population_share'],
+  ['demografia-menores', 'Qué porcentaje de la población tiene menos de 15 años', 'young_population_share'],
+  ['demografia-infantil', 'Cómo ha cambiado la población infantil en España', 'young_population_share'],
   ['desigualdad-gini', 'Cómo ha evolucionado la desigualdad de ingresos en España', 'gini_coefficient'],
   ['desigualdad-coeficiente', 'Cuál es el coeficiente de Gini español', 'gini_coefficient'],
   ['deficit-publico', 'Cómo ha cambiado el déficit público sobre el PIB', 'government_deficit_ratio'],
