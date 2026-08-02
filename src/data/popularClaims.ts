@@ -13,6 +13,8 @@ const popularSlugs = [
   'airbnb-vivienda',
   'fijos-discontinuos',
   'paro-historico',
+  'juventud-emancipacion',
+  'economia-crece-coste-vida',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

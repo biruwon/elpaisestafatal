@@ -49,7 +49,7 @@ const populationAliases = [
 const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
-  if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
+  if (includesAny(text, ['que significa', 'que se entiende por', 'significado de', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'aumenta la', 'reduce los', 'destruye'])) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico', 'va a'])) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho'])) return 'legal';

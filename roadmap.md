@@ -71,8 +71,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 202 Markdown claim records exist; 20 are published.
-- The 20 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- 204 Markdown claim records exist; 22 are published.
+- The 22 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- Two additional public claim families now cover youth emancipation and the distinction between economic growth and the cost of living, with evidence-linked static pages and popular-entry coverage.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 28 evidence records and 28 source records are currently linked.
@@ -131,6 +132,8 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Popular unresolved query clusters now produce a review-only materialization queue with suggested slugs, counts, recent activity, growth, priority, source references, neutralized wording, and required review actions. The queue can merge local learning records with an exported production D1 snapshot, preserving review/coverage/link state instead of treating each environment as a separate backlog. It cannot publish directly: evidence must first be promoted into reviewed Git records and pass the existing relation/build gates.
 - Added an explicit D1 cluster-promotion command that requires owner approval, a neutral canonical wording, a published linked claim, and covered evidence before a cluster can enter the public popularity feed; raw submissions cannot be promoted directly.
 - The browser now preserves its deterministic result while dynamic analysis is pending, timed out, cancelled, or unavailable; completed structured results can still upgrade it automatically, but users are no longer left with a generic pending/unavailable replacement.
+- The claim result UI now uses a scan-first hierarchy: published versus automatic state, concise summary, evidence-backed points, explicit limits, one useful next question, source trail, and a conversation-ready reply without repeating source links inside every card.
+- The deterministic compiler no longer treats the negated phrase “no significa que” as a definition question, so claims such as economic growth versus cost of living can resolve to their exact published claim instead of being downgraded to a generic topic.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.
 - The local evaluation runner now accepts either the Pages API path or the local service path, so the required Spanish corpus can be measured against the actual target boundary rather than silently recording 404s.
 - Fallback entity extraction now uses word/phrase boundaries; short aliases such as `UE` cannot match inside ordinary words and distort handler compatibility or retrieval.
@@ -144,7 +147,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 20 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 22 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
 
 Create and enforce shared contracts for:
 

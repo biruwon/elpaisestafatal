@@ -93,15 +93,14 @@ const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][
   return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label: string, index: number) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
 };
 
-const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
-  if (!evidenceIds?.length || !plan.sourceLinks?.length) return '';
-  const links = plan.sourceLinks.slice(0, 2).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('');
-  return `<div class="claim-plan-block-evidence"><span>Fuente${evidenceIds.length > 1 ? 's' : ''} · ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''}</span>${links}</div>`;
+const blockEvidenceMarkup = (_plan: AnswerPlan, evidenceIds?: string[]): string => {
+  if (!evidenceIds?.length) return '';
+  return `<div class="claim-plan-block-evidence"><span>Conecta con ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''} de evidencia</span></div>`;
 };
 
 const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((block) => {
   if (block.type === 'key_number') {
-    return `<div class="claim-plan-number"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}${blockEvidenceMarkup(plan, [block.evidenceId])}</div>`;
+    return `<div class="claim-plan-number claim-plan-card"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}${blockEvidenceMarkup(plan, [block.evidenceId])}</div>`;
   }
   if (block.type === 'claim_breakdown') {
     const items = block.items?.length
@@ -111,7 +110,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
   }
   if (block.type === 'confirmed') {
     const linked = block.evidenceIds?.length || block.propositionIds.length;
-    return `<div class="claim-plan-confirmed"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
+    return `<div class="claim-plan-confirmed claim-plan-card"><span class="clarification-label">Lo que sí está respaldado</span>${block.points?.length ? `<ul>${block.points.slice(0, 3).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>` : `<p>${escapeHtml(`${linked} registro${linked === 1 ? '' : 's'} de evidencia vinculado${linked === 1 ? '' : 's'}`)}</p>`}${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'strongest_valid_concern') {
     return `<div class="claim-plan-concern"><span class="clarification-label">La preocupación válida</span><p>${escapeHtml(block.text)}</p></div>`;
@@ -132,7 +131,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => plan.blocks.map((bl
     return `<div class="claim-plan-method"><span class="clarification-label">Comprobación de comparabilidad</span><ul>${block.items.map((item) => `<li data-status="${escapeHtml(item.status)}"><span>${escapeHtml(item.label)}</span><p>${escapeHtml(item.detail)}</p></li>`).join('')}</ul></div>`;
   }
   if (block.type === 'cannot_conclude') {
-    return `<div class="claim-plan-limit"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
+    return `<div class="claim-plan-limit claim-plan-card"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'money_flow') {
     return `<div class="claim-plan-flow"><span class="clarification-label">Flujo descrito en la fuente localizada</span>${block.amount ? `<strong>${escapeHtml(block.amount)}</strong>` : ''}<div><strong>${escapeHtml(block.origin || 'Origen')}</strong><span>↓ transferencia</span><strong>${escapeHtml(block.destination || 'Destino')}</strong></div>${block.purpose ? `<small>Finalidad: ${escapeHtml(block.purpose)}</small>` : ''}<small>Contexto provisional; no demuestra por sí solo un recorte de servicios.</small>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
@@ -183,7 +182,7 @@ const bindResultActions = (): void => {
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
   if (!result) return;
   const isDraft = !primary && (Boolean(plan.sourceLinks?.length) || plan.coverage !== 'strong');
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p>${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">Pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-result-actions"><button type="button" data-share-result>Compartir aclaración</button></div><div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-result-state">${isDraft ? 'Automática · pendiente de revisión' : 'Basada en una ficha publicada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-result-actions"><button type="button" data-share-result>Compartir aclaración</button></div><div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
@@ -318,7 +317,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
-      setDynamicStatus('Comprobación adicional en curso; la orientación rápida sigue disponible.');
+      setDynamicStatus('Respuesta inicial lista; buscamos una ficha o datos adicionales.');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
       const waitMs = file ? 500 : 350;
@@ -334,7 +333,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      setDynamicStatus('La comprobación adicional está tardando más de lo previsto. La orientación rápida sigue disponible.');
+      setDynamicStatus('La búsqueda ampliada está tardando más de lo previsto. La respuesta inicial sigue disponible.');
       return;
     }
     if (data.status === 'unavailable') {

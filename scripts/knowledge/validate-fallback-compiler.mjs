@@ -13,6 +13,9 @@ const comparison = deterministicFallbackCompiler('España cobra más impuestos q
 assert(comparison.claimType === 'comparative' && comparison.period === '2025', 'Comparative claim or period was not detected');
 assert(comparison.numbers.length === 0, 'Year was incorrectly treated as a numeric amount');
 
+const growthAndCost = deterministicFallbackCompiler('La economía crece, pero eso no significa que el coste de vida haya bajado');
+assert(growthAndCost.claimType !== 'definition', 'A negated “significa” phrase must not be classified as a definition question');
+
 const normative = deterministicFallbackCompiler('Los españoles deberían tener prioridad en las ayudas');
 assert(normative.claimType === 'normative' && normative.propositions.some((item) => !item.explicit), 'Normative implication was not created');
 

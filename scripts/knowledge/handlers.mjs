@@ -17,7 +17,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';
-  if (includesAny(text, ['significa', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
+  if (includesAny(text, ['que significa', 'que se entiende por', 'significado de', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   return 'quantity';
 };
 

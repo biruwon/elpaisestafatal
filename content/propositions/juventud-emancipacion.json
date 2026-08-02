@@ -1,0 +1,17 @@
+{
+  "id": "prop-juventud-emancipacion-core",
+  "claimSlug": "juventud-emancipacion",
+  "text": "Casi la mitad de las personas de 26 a 34 años sigue viviendo con sus padres en España.",
+  "type": "descriptive",
+  "subject": "young_adults_spain",
+  "predicate": "live_with_parents",
+  "object": "parents",
+  "geography": "Spain",
+  "period": "2025-2026",
+  "status": "supported",
+  "evidenceIds": [
+    "juventud-observatorio-de-emancipacion",
+    "juventud-convivencia-con-progenitores-por-renta-26-34-labels-6-000-total-24-000-v",
+    "juventud-encuesta-de-poblacion-activa-t1-2026"
+  ]
+}

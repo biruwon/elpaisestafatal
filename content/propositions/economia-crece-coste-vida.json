@@ -1,0 +1,17 @@
+{
+  "id": "prop-economia-crecimiento-coste-vida-core",
+  "claimSlug": "economia-crece-coste-vida",
+  "text": "La economía española puede crecer mientras el coste de vida sigue siendo alto para muchos hogares.",
+  "type": "mixed",
+  "subject": "Spanish_economy",
+  "predicate": "grows_while_cost_of_living_remains_high",
+  "object": "households",
+  "geography": "Spain",
+  "period": "2026",
+  "status": "qualified",
+  "evidenceIds": [
+    "economia-variacion-interanual-t1-2026-labels-pib-real-horas-empleo-etc-values-2-7",
+    "economia-indicador-adelantado-del-ipc-junio-2026",
+    "desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"
+  ]
+}

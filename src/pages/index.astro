@@ -32,6 +32,26 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-plan-excerpt{grid-column:1/-1;background:var(--paper-deep)}.claim-plan-excerpt blockquote{margin:12px 0 8px;padding:12px 14px;border-left:3px solid var(--red);font:1rem/1.4 var(--serif)}.claim-plan-excerpt small{display:block;color:var(--muted);font:.68rem/1.35 var(--mono)}
 </style>
 <style>
+  #conversation-result{max-width:820px}
+  .claim-result-top>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}
+  .claim-result-state{font:600 .58rem var(--mono);text-transform:uppercase;color:var(--muted)}
+  .claim-result-summary{font-size:1.08rem!important;max-width:700px!important}
+  .claim-plan-blocks{background:transparent;gap:12px;margin:24px 0}
+  .claim-plan-blocks>div{border:1px solid var(--line);border-top:2px solid var(--ink);padding:20px;min-height:0}
+  .claim-plan-card{min-height:150px!important}
+  .claim-plan-confirmed{border-top-color:#247044!important;background:#f0f4ed!important}
+  .claim-plan-limit{border-top-color:var(--red)!important;background:#f8ebe6!important}
+  .claim-plan-limit ul{margin-top:14px}
+  .claim-plan-reply{background:var(--ink)!important;color:var(--paper);border-color:var(--ink)!important}
+  .claim-plan-reply .clarification-label{color:var(--yellow)}
+  .claim-plan-reply p{font-size:1.3rem!important;line-height:1.25!important}
+  .claim-plan-reply button{border-color:var(--paper);color:var(--paper)}
+  .claim-plan-block-evidence{border-top:0;margin-top:14px;padding-top:0;text-transform:none;font-size:.58rem}
+  .claim-plan-source-links{background:var(--paper-deep);padding:16px;border-top:0;margin-top:20px}
+  .claim-plan-source-links .clarification-label{margin-bottom:4px}
+  @media(max-width:650px){.claim-result-top{align-items:flex-start}.claim-result-top>div{display:block}.claim-result-state{display:block;margin-top:6px}.claim-plan-card{min-height:0!important}.claim-plan-reply p{font-size:1.15rem!important}}
+</style>
+<style>
   .homepage-hero{min-height:0!important;padding-top:clamp(70px,9vw,120px)!important;padding-bottom:clamp(55px,7vw,90px)!important}
   @media(max-width:700px){.homepage-hero{min-height:0!important;padding-top:65px!important}}
 </style>
