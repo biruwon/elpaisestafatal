@@ -1,0 +1,13 @@
+{
+  "id": "prop-sobrecarga-vivienda-baja-core",
+  "claimSlug": "sobrecarga-vivienda-baja",
+  "text": "La proporción de población en hogares con sobrecarga del coste de la vivienda disminuyó en España entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "housing_cost_overburden_rate",
+  "predicate": "decreased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["sobrecarga-vivienda-eurostat"]
+}

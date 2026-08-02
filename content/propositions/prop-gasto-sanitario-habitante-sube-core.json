@@ -1,0 +1,13 @@
+{
+  "id": "prop-gasto-sanitario-habitante-sube-core",
+  "claimSlug": "gasto-sanitario-habitante-sube",
+  "text": "España gasta más por habitante en sanidad en 2023 que en 2015.",
+  "type": "trend",
+  "subject": "health_expenditure_per_capita",
+  "predicate": "increased",
+  "object": "2015-2023",
+  "geography": "España",
+  "period": "2015-2023",
+  "status": "supported",
+  "evidenceIds": ["gasto-sanitario-eurostat"]
+}

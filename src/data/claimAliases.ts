@@ -28,6 +28,27 @@ export const claimAliases: Record<string, string[]> = {
     'la población infantil está bajando',
     'España se está quedando sin niños',
   ],
+  'renta-mediana-sube': [
+    'la renta mediana ha subido',
+    'los ingresos medianos han aumentado',
+    'las rentas de los hogares han crecido',
+    'la renta disponible es mayor que en 2015',
+    'la renta de los hogares ha subido',
+  ],
+  'sobrecarga-vivienda-baja': [
+    'la sobrecarga de la vivienda ha bajado',
+    'menos personas sufren sobrecarga de vivienda',
+    'el esfuerzo de vivienda ha bajado',
+    'los gastos de vivienda pesan menos',
+    'el coste de la vivienda pesa menos',
+  ],
+  'gasto-sanitario-habitante-sube': [
+    'España gasta más en sanidad por persona',
+    'el gasto sanitario por habitante ha subido',
+    'se gasta más en salud que en 2015',
+    'el gasto sanitario ha aumentado',
+    'España invierte más en sanidad',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

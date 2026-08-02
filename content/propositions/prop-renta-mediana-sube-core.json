@@ -1,0 +1,13 @@
+{
+  "id": "prop-renta-mediana-sube-core",
+  "claimSlug": "renta-mediana-sube",
+  "text": "La renta disponible mediana equivalente en España aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "median_equivalised_income",
+  "predicate": "increased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["renta-mediana-eurostat"]
+}

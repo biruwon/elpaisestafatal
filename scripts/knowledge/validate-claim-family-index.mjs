@@ -44,6 +44,21 @@ if (!match) {
       variants: ['cada vez hay menos niños en España', 'España tiene menos niños', 'la población infantil está bajando'],
     },
     {
+      slug: 'renta-mediana-sube',
+      prompt: 'La renta mediana disponible ha subido en España desde 2015',
+      variants: ['la renta mediana ha subido', 'los ingresos medianos han aumentado', 'la renta de los hogares ha subido'],
+    },
+    {
+      slug: 'sobrecarga-vivienda-baja',
+      prompt: 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015',
+      variants: ['la sobrecarga de la vivienda ha bajado', 'el esfuerzo de vivienda ha bajado', 'los gastos de vivienda pesan menos'],
+    },
+    {
+      slug: 'gasto-sanitario-habitante-sube',
+      prompt: 'España gasta más por habitante en sanidad que en 2015',
+      variants: ['España gasta más en sanidad por persona', 'el gasto sanitario por habitante ha subido', 'se gasta más en salud que en 2015'],
+    },
+    {
       slug: 'alquileres-suben',
       prompt: 'Los alquileres han subido en España desde 2015',
       variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],
