@@ -1,0 +1,13 @@
+{
+  "id": "prop-gasto-publico-alto-core",
+  "claimSlug": "gasto-publico-supera-45",
+  "text": "El gasto total de las administraciones públicas españolas superó el 45% del PIB en 2025.",
+  "type": "trend",
+  "subject": "government_expenditure_ratio",
+  "predicate": "exceeded",
+  "object": "45 percent of GDP in 2025",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["gasto-publico-eurostat"]
+}

@@ -22,6 +22,7 @@ const popularSlugs = [
   'electricidad-hogares-sube',
   'paro-juvenil-alto',
   'ingresos-publicos-superan-40',
+  'gasto-publico-supera-45',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

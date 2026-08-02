@@ -63,6 +63,13 @@ export const claimAliases: Record<string, string[]> = {
     'el Estado ingresa más del 40% del PIB',
     'ingresos públicos España',
   ],
+  'gasto-publico-supera-45': [
+    'España gasta más del 45% del PIB',
+    'el gasto público supera el 45 por ciento',
+    'el Estado gasta más del 45% del PIB',
+    'el gasto de las administraciones supera el 45%',
+    'gasto público España',
+  ],
   'sobrecarga-vivienda-baja': [
     'la sobrecarga de la vivienda ha bajado',
     'menos personas sufren sobrecarga de vivienda',

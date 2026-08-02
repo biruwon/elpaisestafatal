@@ -69,6 +69,11 @@ if (!match) {
       variants: ['España recauda más del 40% del PIB', 'los ingresos públicos superan el 40 por ciento', 'la recaudación pública supera el 40%'],
     },
     {
+      slug: 'gasto-publico-supera-45',
+      prompt: 'El gasto público de España supera el 45% del PIB',
+      variants: ['España gasta más del 45% del PIB', 'el gasto público supera el 45 por ciento', 'el gasto de las administraciones supera el 45%'],
+    },
+    {
       slug: 'sobrecarga-vivienda-baja',
       prompt: 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015',
       variants: ['la sobrecarga de la vivienda ha bajado', 'el esfuerzo de vivienda ha bajado', 'los gastos de vivienda pesan menos'],
