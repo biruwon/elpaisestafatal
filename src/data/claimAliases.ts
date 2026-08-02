@@ -22,6 +22,9 @@ export const claimAliases: Record<string, string[]> = {
     'la inmigración trae delincuencia',
     'desde que hay inmigrantes hay más crimen',
     'los inmigrantes hacen inseguro el barrio',
+    'los inmigrantes crean inseguridad',
+    'la inmigración genera inseguridad',
+    'la inmigración está destruyendo la seguridad',
   ],
   'viviendas-vacias': [
     'hay millones de casas vacías',
@@ -103,5 +106,27 @@ export const claimAliases: Record<string, string[]> = {
     'cada vez hay más delincuencia',
     'España es mucho más insegura que antes',
     'ya no se puede salir a la calle',
+    'España está más peligrosa que nunca',
+    'en España ya no se puede vivir',
+  ],
+  'economia-crece-coste-vida': [
+    'la economía va bien pero no llego a fin de mes',
+    'si la economía crece por qué todo está más caro',
+    'España crece pero la gente vive peor',
+  ],
+  'espana-recesion': [
+    'España está arruinada',
+    'la economía española se hunde',
+    'España se va a la ruina',
+  ],
+  'precio-vivienda-sube': [
+    'los pisos bajan de precio',
+    'la vivienda ya está bajando',
+    'el precio de las casas cae',
+  ],
+  'recaudacion-tributaria-crece': [
+    'Hacienda recauda menos',
+    'el Gobierno recauda menos impuestos',
+    'han bajado los ingresos fiscales',
   ],
 };

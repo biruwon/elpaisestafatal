@@ -8,6 +8,8 @@ const required = [
   "renderCard('invalid'",
   'validateInputMetadata',
   'form?.requestSubmit()',
+  'conversation-counter',
+  "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
   'La orientación rápida sigue disponible',
 ];

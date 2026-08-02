@@ -41,12 +41,17 @@ const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
 const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
 const fileName = document.querySelector<HTMLElement>('[data-file-name]');
+const counter = document.querySelector<HTMLElement>('#conversation-counter');
 const result = document.querySelector<HTMLElement>('#conversation-result');
 const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
 const advancedEnabled = catalogElement?.dataset.advanced === 'true';
 let activeRequest: AbortController | null = null;
 let requestVersion = 0;
 const responseCache = new Map<string, SearchResponse>();
+
+const updateCounter = (): void => {
+  if (counter) counter.textContent = `${input?.value.length || 0}/${INPUT_LIMITS.maxTextCharacters}`;
+};
 
 const coverageLabels: Record<string, string> = {
   strong: 'Evidencia directa',
@@ -238,6 +243,13 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
     }, 'Estamos comprobando si esta relación es la más útil.');
     return;
   }
+  if (primary?.kind === 'topic' && primary.score >= 36) {
+    renderCard('related', original, primary, alternatives, {
+      questions: ['¿Qué decisión, dato o consecuencia concreta quieres comprobar dentro de este tema?'],
+      limitation: 'La frase es amplia, pero este es el contexto más cercano que tenemos publicado. Concreta el hecho para comprobarlo mejor.',
+    }, primary.answer);
+    return;
+  }
   renderCard('uncovered', original, undefined, alternatives, {
     questions: [
       '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
@@ -399,3 +411,6 @@ fileInput?.addEventListener('change', () => {
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {
   if (input) { input.value = button.dataset.example || ''; form?.requestSubmit(); }
 }));
+
+input?.addEventListener('input', updateCounter);
+updateCounter();

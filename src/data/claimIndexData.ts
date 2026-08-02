@@ -8,7 +8,7 @@ const topicVocabulary: Record<string, string[]> = {
   politica: [
     'pedro sanchez', 'sanchez', 'presidente', 'gobierno', 'moncloa', 'psoe', 'pp', 'vox', 'sumar',
     'partidos', 'politicos', 'politica', 'corrupcion politica', 'destruye espana', 'destruyendo espana',
-    'ruina de espana', 'pais esta fatal', 'gestion del gobierno',
+    'pedro sanchez esta destruyendo espana', 'sanchez destruye espana', 'ruina de espana', 'pais esta fatal', 'gestion del gobierno',
   ],
   economia: ['coste de vida', 'precios', 'inflacion', 'salarios', 'economia', 'pobreza', 'crisis economica'],
   vivienda: ['alquiler', 'casa', 'casas', 'piso', 'pisos', 'hipoteca', 'vivienda', 'precio de la vivienda'],
