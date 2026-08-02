@@ -41,6 +41,7 @@
     "knowledge:trend": "node scripts/knowledge/validate-warehouse-trend.mjs",
     "knowledge:ranking": "node scripts/knowledge/validate-warehouse-ranking.mjs",
     "knowledge:signature": "node scripts/knowledge/validate-query-signature.mjs",
+    "knowledge:d1-semantic": "node scripts/knowledge/validate-d1-semantic-clusters.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",

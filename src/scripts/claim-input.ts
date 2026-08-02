@@ -2,6 +2,7 @@ import { isStrongClaimMatch, normaliseClaimText, rankClaimIndex, type ClaimIndex
 import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
+import { semanticQuerySignature } from '../lib/knowledge/querySignature';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
@@ -77,7 +78,7 @@ const recordUncoveredQuestion = (text: string, response: SearchResponse): void =
   void fetch('/api/questions', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ text, canonical: response.canonicalSignature, inputType: 'text', status: response.status, requestId: response.requestId }),
+    body: JSON.stringify({ text, canonical: response.input?.canonical || response.canonicalSignature, semanticSignature: semanticQuerySignature(response.input?.canonical || response.canonicalSignature || text), inputType: 'text', status: response.status, requestId: response.requestId }),
     keepalive: true,
   }).catch(() => { /* Operational learning is optional and never blocks the answer. */ });
 };

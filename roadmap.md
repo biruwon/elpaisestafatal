@@ -105,6 +105,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Text, URL, screenshot, and audio boundaries now share one input contract for character limits, request/file sizes, HTTPS-only links, and allowlisted MIME types; the local boundary enforces the same limits before buffering media.
 - The homepage now progressively displays approved popular query clusters from `/api/questions`, while the static popular-claim cards remain the offline fallback.
 - Query submissions now derive a deterministic sorted-term signature before entering D1, so punctuation, accents, stopwords, and word order do not create separate usage clusters; the original canonical wording remains the review/display text.
+- D1 operational submissions now also carry a coarse semantic family signature. Equivalent long-tail wording can share one production review cluster while the original surface signature remains available for audit and display; the API falls back to the pre-migration path until migration 0004 is applied.
 - Structured answers now collect optional usefulness feedback (`yes`, `partly`, or `no`) through a rate-limited `/api/feedback` endpoint backed by the existing D1 table; feedback never blocks or changes the answer.
 - The derived warehouse can now be loaded into an optional PostgreSQL backend with additive migrations and indexed `pg_trgm` search; the local resolver uses it when configured and falls back to the JSON warehouse when it is unavailable.
 - The optional PostgreSQL warehouse now has a rebuildable `pgvector` index and strict hybrid lexical/semantic reciprocal-rank fusion. Semantic-only candidates require a high similarity threshold, retain retrieval provenance, and fall back to trigram or JSON retrieval when vectors are unavailable.
@@ -424,7 +425,7 @@ Cluster inputs by canonical proposition signature. Track:
 
 Rank the owner review queue using frequency, growth, potential harm, evidence availability, and feasibility.
 
-The queue is a derived artifact, not a second source of truth. `knowledge:export-query-clusters` exports the current operational D1 clusters, and `knowledge:cluster --d1-input ...` merges them with local learning records. Each output cluster carries query count, seven-day activity, growth rate, coverage/review state, linked claim, input types, source IDs, a neutralized review text, and a reason for its priority. The materialization command accepts only candidates with enough demand and source references; newly covered clusters remain reviewable, while already published clusters do not re-enter the queue.
+The queue is a derived artifact, not a second source of truth. `knowledge:export-query-clusters` exports the current operational D1 clusters, including semantic family signatures, and `knowledge:cluster --d1-input ...` merges them with local learning records. Each output cluster carries query count, seven-day activity, growth rate, coverage/review state, linked claim, input types, source IDs, a neutralized review text, and a reason for its priority. The materialization command accepts only candidates with enough demand and source references; newly covered clusters remain reviewable, while already published clusters do not re-enter the queue.
 
 Do not expose raw insulting submissions as public popular claims. Use neutral canonical wording.
 
