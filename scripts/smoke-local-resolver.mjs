@@ -41,6 +41,8 @@ const resolveMultipart = async (inputType, mimeType, text = '') => {
 const cases = [
   { text: 'España cobra demasiados impuestos', status: 'complete', slug: 'espana-impuestos-europa' },
   { text: 'El paro registrado y el de la EPA son la misma cifra.', status: 'complete', slug: 'paro-epa-registro' },
+  { text: 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
+  { text: 'El desempleo EPA bajó del diez por ciento.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
   { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
   { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },
   { text: 'La cibercriminalidad crece más que la delincuencia convencional.', status: 'complete', slug: 'cibercriminalidad-crece' },
