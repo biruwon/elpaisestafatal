@@ -39,6 +39,22 @@
     "notEquivalentTo": ["gdp_current_prices"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
+  "government_revenue_ratio": {
+    "name": "General government total revenue as a share of GDP",
+    "aliases": ["ingresos públicos", "recaudación pública", "ingresos del Estado", "recaudación sobre PIB", "ingresos públicos sobre PIB", "porcentaje del PIB"],
+    "unit": "percent of GDP",
+    "population": "general government total revenue",
+    "notEquivalentTo": ["government_expenditure_ratio", "gdp_current_prices"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item"]
+  },
+  "government_expenditure_ratio": {
+    "name": "General government total expenditure as a share of GDP",
+    "aliases": ["gasto público", "gasto del Estado", "gasto público sobre PIB", "presupuesto público", "gastos públicos", "porcentaje del PIB"],
+    "unit": "percent of GDP",
+    "population": "general government total expenditure",
+    "notEquivalentTo": ["government_revenue_ratio", "gdp_current_prices"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item"]
+  },
   "youth_unemployment_rate": {
     "name": "Youth unemployment rate",
     "aliases": ["paro juvenil", "desempleo juvenil", "jóvenes sin trabajo", "paro de los jóvenes"],

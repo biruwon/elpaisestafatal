@@ -35,6 +35,18 @@
       "metricId": "government_debt_ratio"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_main?geo=ES&na_item=TR&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Ingresos públicos de España · Eurostat",
+      "aliases": ["ingresos públicos", "recaudación pública", "ingresos del Estado", "recaudación sobre PIB", "porcentaje del PIB"],
+      "metricId": "government_revenue_ratio"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_main?geo=ES&na_item=TE&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Gasto público de España · Eurostat",
+      "aliases": ["gasto público", "gasto del Estado", "presupuesto público", "gastos públicos", "porcentaje del PIB"],
+      "metricId": "government_expenditure_ratio"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-24&unit=PC_ACT&sinceTimePeriod=2015",
       "title": "Tasa de paro juvenil de España · Eurostat",
       "aliases": ["paro juvenil", "desempleo juvenil", "jóvenes sin trabajo"],

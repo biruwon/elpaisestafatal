@@ -377,14 +377,16 @@ const clearDynamicStatus = (): void => {
   result?.querySelector('[data-dynamic-status]')?.remove();
 };
 
-const setDynamicStatus = (message: string): void => {
+const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavailable' = 'running'): void => {
   if (!result) return;
   clearDynamicStatus();
-  const status = document.createElement('p');
-  status.className = 'classifier-status claim-result-status';
+  const status = document.createElement('div');
+  status.className = 'claim-result-enrichment';
   status.dataset.dynamicStatus = 'true';
+  status.dataset.statusState = state;
   status.setAttribute('aria-live', 'polite');
-  status.textContent = message;
+  status.setAttribute('role', 'status');
+  status.innerHTML = `<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Mejorando esta orientación' : state === 'slow' ? 'La orientación inicial permanece disponible' : 'Orientación rápida disponible'}</strong><span>${escapeHtml(message)}</span></div>`;
   result.querySelector('article')?.append(status);
 };
 
@@ -458,7 +460,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
           : inputType === 'url'
             ? 'La orientación inicial está lista; estamos leyendo la página enlazada.'
             : 'La orientación inicial está lista; buscamos una ficha o datos adicionales.';
-      setDynamicStatus(processingMessage);
+      setDynamicStatus(processingMessage, 'running');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
       const waitMs = file ? 500 : 350;
@@ -474,7 +476,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      setDynamicStatus('La búsqueda ampliada está tardando más de lo previsto. La respuesta inicial sigue disponible.');
+      setDynamicStatus('La ampliación está tardando más de lo previsto; no necesitas esperar ni volver a enviar la frase.', 'slow');
       return;
     }
     if (data.status === 'unavailable') {
@@ -482,7 +484,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       });
-      else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
+      else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
       return;
     }
     if (!file && cacheKey) {
@@ -495,7 +497,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (version === requestVersion) {
       if (file && query) setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
-      else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
+      else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
     }
   }
 };

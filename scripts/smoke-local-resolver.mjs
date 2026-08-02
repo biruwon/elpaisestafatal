@@ -124,6 +124,20 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/government debt|associated data/i.test(result.result?.headline || '')) failures.push('public debt warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`public debt warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Qué porcentaje del PIB representan los ingresos públicos españoles');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`public revenue warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_revenue_ratio') failures.push('public revenue warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('public revenue warehouse: missing a multi-period series');
+    if (/government revenue|associated data/i.test(result.result?.headline || '')) failures.push('public revenue warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`public revenue warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Qué porcentaje del PIB representa el gasto público español');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`public expenditure warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_expenditure_ratio') failures.push('public expenditure warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('public expenditure warehouse: missing a multi-period series');
+    if (/government expenditure|associated data/i.test(result.result?.headline || '')) failures.push('public expenditure warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`public expenditure warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de jóvenes activos está en paro en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`youth unemployment warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'youth_unemployment_rate') failures.push('youth unemployment warehouse: selected the wrong metric family');

@@ -85,6 +85,9 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   @media(max-width:900px){.hero-layout{grid-template-columns:1fr;gap:45px}.hero-checker{margin-top:0}.home-how{grid-template-columns:1fr;gap:30px}}
   @media(max-width:700px){.homepage-hero{padding-top:65px}.hero-copy-block h1{font-size:clamp(3.8rem,17vw,5.4rem)}.hero-dek{font-size:1.1rem;margin-top:25px}.conversation-input-wrap{grid-template-columns:1fr}.conversation-form button{padding:14px}.home-how{padding-top:65px;padding-bottom:65px}.home-how ol{grid-template-columns:1fr}.home-how li{min-height:0}.popular-home{padding-top:65px;padding-bottom:65px}}
 </style>
+<style>
+  .claim-result-enrichment{display:flex;align-items:flex-start;gap:10px;border-top:1px solid var(--line);margin-top:20px;padding:14px 0 2px;font:.7rem/1.4 var(--mono);color:var(--muted)}.claim-result-enrichment>div{display:grid;gap:2px}.claim-result-enrichment strong{font:600 .62rem var(--mono);text-transform:uppercase;color:var(--ink)}.claim-result-enrichment-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;background:var(--yellow);box-shadow:0 0 0 4px color-mix(in srgb,var(--yellow) 25%,transparent)}.claim-result-enrichment[data-status-state=unavailable] .claim-result-enrichment-dot{background:var(--muted);box-shadow:none}.claim-result-enrichment[data-status-state=slow] .claim-result-enrichment-dot{background:var(--red);box-shadow:none}
+</style>
 <script is:inline type="application/json" id="conversation-mvp-data" set:html={conversationPayload}></script>
 <script is:inline type="application/json" id="claim-index-data" data-advanced="true" set:html={claimIndexPayload}></script>
 <script src="../scripts/claim-input.ts"></script>
