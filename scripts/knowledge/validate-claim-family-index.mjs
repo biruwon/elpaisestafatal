@@ -133,6 +133,26 @@ if (!match) {
       prompt: 'España está en recesión',
       variants: ['la economía española está en recesión', 'España ya está en recesión'],
     },
+    {
+      slug: 'demasiados-graduados',
+      prompt: 'España tiene demasiados universitarios',
+      variants: ['hay demasiados universitarios', 'sobran graduados'],
+    },
+    {
+      slug: 'subida-vivienda-no-todas-igual',
+      prompt: 'Si la vivienda sube un 12,9%, todas las casas suben lo mismo',
+      variants: ['todas las casas suben un 12,9%', '12,9% en cada vivienda'],
+    },
+    {
+      slug: 'inmigracion-flujos-no-total',
+      prompt: 'Las llegadas irregulares representan toda la inmigración que vive en España',
+      variants: ['las pateras son toda la inmigración', 'todos los inmigrantes llegan irregularmente'],
+    },
+    {
+      slug: 'recaudacion-tributaria-crece',
+      prompt: 'La recaudación tributaria bajó en 2025',
+      variants: ['Hacienda recauda menos', 'los ingresos tributarios bajaron'],
+    },
   ];
 
   const publishedClaims = (entries || []).filter((entry) => entry.kind === 'claim');
