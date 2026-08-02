@@ -63,6 +63,36 @@ if (!match) {
       prompt: 'Si baja la espera media quirúrgica, las listas ya están resueltas',
       variants: ['baja la espera media sanidad resuelta', 'menos días de espera significa que no hay lista'],
     },
+    {
+      slug: 'fondos-vivienda',
+      prompt: 'Los fondos de inversión causan la crisis de vivienda',
+      variants: ['fondos buitre', 'Blackstone causa la crisis'],
+    },
+    {
+      slug: 'construir-vivienda',
+      prompt: 'Basta con construir más vivienda',
+      variants: ['hay que construir más casas', 'más oferta de vivienda'],
+    },
+    {
+      slug: 'empleo-record-calidad',
+      prompt: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad',
+      variants: ['más empleo significa buen empleo', 'más ocupados mejor trabajo'],
+    },
+    {
+      slug: 'cibercriminalidad-crece',
+      prompt: 'La cibercriminalidad crece más que la delincuencia convencional',
+      variants: ['delincuencia digital crece', 'fraude online aumenta'],
+    },
+    {
+      slug: 'espana-pobreza-cuarta-parte',
+      prompt: 'Uno de cada cuatro españoles vive en pobreza',
+      variants: ['una de cada cuatro personas pobreza', 'AROPE una de cada cuatro'],
+    },
+    {
+      slug: 'politica-no-es-mayoria',
+      prompt: 'La política es la preocupación de la mayoría de españoles',
+      variants: ['la mayoría está preocupada por la política', 'política principal problema mayoría'],
+    },
   ];
 
   const publishedClaims = (entries || []).filter((entry) => entry.kind === 'claim');

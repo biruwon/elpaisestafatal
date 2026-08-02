@@ -9,16 +9,18 @@ const requireText = (label, content, snippets) => {
   }
 };
 
-const [searchPage, searchSource, inputSource, investigationsPage, sourcesPage] = await Promise.all([
+const [searchPage, searchSource, searchScript, inputSource, investigationsPage, sourcesPage] = await Promise.all([
   read('dist/buscar/index.html'),
   read('src/pages/buscar.astro'),
+  read('src/scripts/site-search.ts'),
   read('src/scripts/claim-input.ts'),
   read('dist/investigaciones/index.html'),
   read('dist/fuentes/index.html'),
 ]);
 
 requireText('Search page', searchPage, ['site-search', 'search-output', 'search-noscript']);
-requireText('Search empty-state source', searchSource, ['search-continue', '/?q=', 'encodeURIComponent']);
+requireText('Search source', searchSource, ['claimIndexEntries', 'site-search.ts', 'search-page-data']);
+requireText('Search script', searchScript, ['rankClaimIndex', 'search-check-link', 'renderEmpty', 'Comprobar esta frase']);
 requireText('Claim checker handoff', inputSource, ['URLSearchParams(window.location.search)', 'requestSubmit()']);
 requireText('Investigation index', investigationsPage, ['investigation-index-actions', 'primary-index-action', 'planned-disclosure', '<details']);
 requireText('Sources page', sourcesPage, ['source-search', 'source-status', 'source-list', 'data-source-card']);
