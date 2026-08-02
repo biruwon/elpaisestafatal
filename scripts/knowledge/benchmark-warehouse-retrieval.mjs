@@ -44,7 +44,11 @@ const candidateEmbeddings = await embed(candidates.map((candidate) => candidate.
 const queryEmbeddings = await embed(warehouseRetrievalBenchmarkCases.map((item) => item.query));
 const outcomes = warehouseRetrievalBenchmarkCases.map((item, caseIndex) => {
   const lexical = lexicalRank(item.query);
-  const semantic = candidates.map((candidate, candidateIndex) => ({ ...candidate, score: cosine(queryEmbeddings[caseIndex], candidateEmbeddings[candidateIndex]) })).sort((left, right) => right.score - left.score);
+  const excluded = excludedMetricIdsForQuery(item.query);
+  const semantic = candidates
+    .map((candidate, candidateIndex) => ({ ...candidate, score: cosine(queryEmbeddings[caseIndex], candidateEmbeddings[candidateIndex]) }))
+    .filter((candidate) => !excluded.has(candidate.id))
+    .sort((left, right) => right.score - left.score);
   const resolved = resolveMetricConflict(lexical, semantic);
   const hybrid = reciprocalRankFusion(resolved.lexical, resolved.semantic, { limit: 5, preferredId: resolved.preferredId });
   const expected = registry[item.expectedMetricId];

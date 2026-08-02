@@ -150,5 +150,21 @@
     "population": "residential property transactions or valuations",
     "notEquivalentTo": ["cpi_index"],
     "dimensions": ["period", "geography", "property_type"]
+  },
+  "housing_cost_overburden_rate": {
+    "name": "Housing cost overburden rate",
+    "aliases": ["sobrecarga del coste de la vivienda", "coste de la vivienda", "gastos de vivienda", "esfuerzo de vivienda", "alquiler sobre ingresos"],
+    "unit": "percent of population",
+    "population": "usual residents with housing costs above the overburden threshold",
+    "notEquivalentTo": ["house_price_index", "cpi_index"],
+    "dimensions": ["period", "geography", "age", "sex", "poverty_status"]
+  },
+  "health_expenditure_per_capita": {
+    "name": "Current health expenditure per inhabitant",
+    "aliases": ["gasto sanitario por habitante", "gasto en sanidad", "gasto en salud", "recursos sanitarios", "salud pública"],
+    "unit": "EUR per inhabitant",
+    "population": "all current health expenditure financed by all schemes per inhabitant",
+    "notEquivalentTo": ["government_expenditure_ratio"],
+    "dimensions": ["period", "geography", "financing_scheme"]
   }
 }

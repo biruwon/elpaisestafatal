@@ -11,6 +11,8 @@ const metricHints = [
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
+  { ids: ['housing_cost_overburden_rate'], terms: ['sobrecarga', 'coste de la vivienda', 'gastos de vivienda', 'esfuerzo de vivienda'] },
+  { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios'] },
 ];
 
 export const preferredMetricIdsForQuery = (query) => {
@@ -24,5 +26,12 @@ export const excludedMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
   const youthRequested = metricHints[0].terms.some((term) => normalized.includes(normalise(term)));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
-  return genericUnemployment && !youthRequested ? new Set(['youth_unemployment_rate']) : new Set();
+  const healthSpendRequested = metricHints.at(-1).terms.some((term) => normalized.includes(normalise(term)));
+  const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
+  const excluded = new Set();
+  if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
+  // Per-capita spending is useful context, but it cannot answer a broad claim
+  // that the health system has collapsed or that access has deteriorated.
+  if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');
+  return excluded;
 };

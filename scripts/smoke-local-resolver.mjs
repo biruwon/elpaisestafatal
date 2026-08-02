@@ -138,6 +138,20 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/government expenditure|associated data/i.test(result.result?.headline || '')) failures.push('public expenditure warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`public expenditure warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Qué porcentaje de personas soporta una sobrecarga del coste de la vivienda');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`housing affordability warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'housing_cost_overburden_rate') failures.push('housing affordability warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('housing affordability warehouse: missing a multi-period series');
+    if (/housing cost overburden rate by age/i.test(result.result?.headline || '')) failures.push('housing affordability warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`housing affordability warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cuánto se gasta en sanidad por habitante en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`health expenditure warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('health expenditure warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('health expenditure warehouse: missing a multi-period series');
+    if (/health care expenditure by financing scheme/i.test(result.result?.headline || '')) failures.push('health expenditure warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`health expenditure warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de jóvenes activos está en paro en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`youth unemployment warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'youth_unemployment_rate') failures.push('youth unemployment warehouse: selected the wrong metric family');

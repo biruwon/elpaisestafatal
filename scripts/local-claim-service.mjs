@@ -56,7 +56,14 @@ const boundedExcerpt = (value, limit = 900) => {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
 };
-const displayUnit = (value) => normalise(value) === 'percentage of population in the labour force' ? '%' : String(value || '');
+const displayUnit = (value) => {
+  const unit = normalise(value);
+  if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
+  if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
+  if (unit.includes('percentage of gross domestic product')) return '% del PIB';
+  if (unit.includes('percentage of population')) return '% de la población';
+  return String(value || '');
+};
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'cuñado', 'cunado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const includesAny = (value, words) => words.some((word) => value.includes(word));
