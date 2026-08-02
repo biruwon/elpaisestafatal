@@ -10,7 +10,7 @@ type SearchResponse = {
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
-  guidance?: { questions?: string[]; limitation?: string };
+  guidance?: { questions?: string[]; limitation?: string; suggestions?: Array<{ title: string; href: string }> };
   result?: AnswerPlan;
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
@@ -88,6 +88,16 @@ const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-l
 const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
   ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
   : '';
+
+const broadTopicSuggestions = (original: string): Array<{ title: string; href: string }> => {
+  if (normaliseClaimText(original).length < 12) return [];
+  const preferred = ['politica', 'economia', 'vivienda', 'empleo', 'inmigracion', 'sanidad'];
+  return preferred
+    .map((slug) => claimIndex.find((entry) => entry.kind === 'topic' && entry.slug === slug))
+    .filter((entry): entry is ClaimIndexEntry => Boolean(entry))
+    .slice(0, 4)
+    .map((entry) => ({ title: entry.title, href: entry.href }));
+};
 
 const visualMarkup = (entry?: ClaimIndexEntry): string => {
   if (!entry) return '';
@@ -240,7 +250,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}`
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">Puedes concretarla por un tema</span><div>${guidance.suggestions.slice(0, 4).map((suggestion) => `<a href="${escapeHtml(suggestion.href)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
     : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
@@ -281,6 +291,7 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
       '¿Qué fuente o publicación quieres que revisemos?',
     ],
     limitation: 'No tenemos una comprobación publicada de esta afirmación. Puedes concretarla para encontrar una orientación más útil.',
+    suggestions: broadTopicSuggestions(original),
   });
 };
 
@@ -333,10 +344,14 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
       renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
       return;
     }
-    renderCard('uncovered', original, undefined, [], response.guidance || {
+    const guidance = {
+      ...(response.guidance || {
       questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
       limitation: response.result?.limitation,
-    });
+      }),
+      suggestions: response.guidance?.suggestions || broadTopicSuggestions(original),
+    };
+    renderCard('uncovered', original, undefined, [], guidance);
     return;
   }
   renderDeterministic(original, fallback);

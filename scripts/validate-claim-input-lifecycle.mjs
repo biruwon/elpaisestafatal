@@ -16,6 +16,8 @@ const required = [
   'const resetChecker',
   'data-new-check',
   'input?.focus()',
+  'broadTopicSuggestions',
+  'claim-guidance-suggestions',
   'history.replaceState',
   'encodeURIComponent(query)',
   'aria-labelledby="claim-result-title"',
