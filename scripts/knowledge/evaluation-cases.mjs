@@ -11,6 +11,8 @@ const knownSeeds = [
   ['renta-mediana-sube', 'trend', 'La renta mediana disponible ha subido en España desde 2015'],
   ['sobrecarga-vivienda-baja', 'trend', 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015'],
   ['gasto-sanitario-habitante-sube', 'trend', 'España gasta más por habitante en sanidad que en 2015'],
+  ['desigualdad-renta-baja', 'trend', 'La desigualdad de renta ha bajado en España desde 2015'],
+  ['pib-real-sigue-creciendo', 'trend', 'El PIB real de España sigue creciendo'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],
   ['empleo-record', 'trend', 'España tiene más empleo que nunca'],
   ['fijos-discontinuos', 'definition', 'Los fijos discontinuos son parados ocultos'],

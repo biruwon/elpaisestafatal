@@ -49,6 +49,19 @@ export const claimAliases: Record<string, string[]> = {
     'el gasto sanitario ha aumentado',
     'España invierte más en sanidad',
   ],
+  'desigualdad-renta-baja': [
+    'la desigualdad de ingresos ha bajado',
+    'el Gini ha bajado',
+    'hay menos desigualdad de renta',
+    'la distribución de la renta ha mejorado',
+    'España es menos desigual',
+  ],
+  'pib-real-sigue-creciendo': [
+    'la economía española sigue creciendo',
+    'el PIB real sigue subiendo',
+    'España sigue creciendo económicamente',
+    'el PIB de España crece',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

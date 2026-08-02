@@ -81,6 +81,8 @@
     {"evidenceId":"poblacion-menor-15-eurostat","propositionId":"prop-espana-menores-disminuyen-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"renta-mediana-eurostat","propositionId":"prop-renta-mediana-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"sobrecarga-vivienda-eurostat","propositionId":"prop-sobrecarga-vivienda-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
-    {"evidenceId":"gasto-sanitario-eurostat","propositionId":"prop-gasto-sanitario-habitante-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"}
+    {"evidenceId":"gasto-sanitario-eurostat","propositionId":"prop-gasto-sanitario-habitante-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
+    {"evidenceId":"gini-eurostat","propositionId":"prop-gini-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
+    {"evidenceId":"pib-real-crece-eurostat","propositionId":"prop-pib-real-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"}
   ]
 }

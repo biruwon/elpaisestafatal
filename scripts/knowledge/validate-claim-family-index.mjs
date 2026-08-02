@@ -59,6 +59,16 @@ if (!match) {
       variants: ['España gasta más en sanidad por persona', 'el gasto sanitario por habitante ha subido', 'se gasta más en salud que en 2015'],
     },
     {
+      slug: 'desigualdad-renta-baja',
+      prompt: 'La desigualdad de renta ha bajado en España desde 2015',
+      variants: ['la desigualdad de ingresos ha bajado', 'el Gini ha bajado', 'España es menos desigual'],
+    },
+    {
+      slug: 'pib-real-sigue-creciendo',
+      prompt: 'El PIB real de España sigue creciendo',
+      variants: ['la economía española sigue creciendo', 'el PIB real sigue subiendo', 'el PIB de España crece'],
+    },
+    {
       slug: 'alquileres-suben',
       prompt: 'Los alquileres han subido en España desde 2015',
       variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],
