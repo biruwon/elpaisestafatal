@@ -71,9 +71,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 204 Markdown claim records exist; 22 are published.
-- The 22 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
-- Two additional public claim families now cover youth emancipation and the distinction between economic growth and the cost of living, with evidence-linked static pages and popular-entry coverage.
+- 207 Markdown claim records exist; 25 are published.
+- The 25 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- Five additional public claim families now cover youth emancipation, the distinction between economic growth and the cost of living, EPA versus registered unemployment, employment records versus job quality, and irregular arrivals versus total immigration. They are evidence-linked and the unemployment-measure claim is included in the compact popular-entry set.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 28 evidence records and 28 source records are currently linked.
@@ -147,7 +147,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 22 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 25 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
 
 Create and enforce shared contracts for:
 

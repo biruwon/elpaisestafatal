@@ -585,6 +585,8 @@ const classify = async (text) => {
   };
   const requestedGroupContrast = explicitGroupContrast(text);
   const compatibleEntry = (entry) => {
+    const exactCanonicalTitle = entry.kind === 'claim' && normalise(entry.title) === normalise(text);
+    if (exactCanonicalTitle) return true;
     if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
     // A published group claim about eligibility or participation must not
     // answer a stronger comparative statement unless the published wording
@@ -611,7 +613,13 @@ const classify = async (text) => {
   // decision. This is limited to a very high lexical match and a compatible
   // handler, so a phrase that merely shares a topic still goes through the
   // cautious related/uncovered path.
-  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && top.lexical >= 0.9 && compatibleHandlers);
+  const normalizedQuery = normalise(text);
+  const exactCanonicalWording = Boolean(top && normalise(top.entry.title) === normalizedQuery);
+  // An exact canonical wording is authoritative even when a broad keyword
+  // makes the inferred handler look different. The published claim itself
+  // defines the evidence contract; handler compatibility is for paraphrase
+  // candidates, not for rejecting the claim the user literally entered.
+  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && exactCanonicalWording && top.lexical >= 0.9);
   const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers);
   if (canonicalPhrase || strongMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep

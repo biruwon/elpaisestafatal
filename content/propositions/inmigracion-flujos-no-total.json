@@ -1,0 +1,16 @@
+{
+  "id": "prop-inmigracion-flujos-no-total-core",
+  "claimSlug": "inmigracion-flujos-no-total",
+  "text": "Las llegadas irregulares son un flujo distinto del conjunto de residentes nacidos fuera de España.",
+  "type": "comparative",
+  "subject": "irregular_arrivals_and_foreign_born_residents",
+  "predicate": "are_not_the_same_population_measure",
+  "object": "immigration_in_spain",
+  "geography": "Spain",
+  "period": "2025-2026",
+  "status": "supported",
+  "evidenceIds": [
+    "inmigracion-estadistica-continua-de-poblacion-t1-2026",
+    "inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"
+  ]
+}

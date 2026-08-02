@@ -13,6 +13,7 @@ const popularSlugs = [
   'airbnb-vivienda',
   'fijos-discontinuos',
   'paro-historico',
+  'paro-epa-registro',
   'juventud-emancipacion',
   'economia-crece-coste-vida',
 ];

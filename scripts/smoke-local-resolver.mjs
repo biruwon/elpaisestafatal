@@ -39,6 +39,9 @@ const resolveMultipart = async (inputType, mimeType) => {
 
 const cases = [
   { text: 'España cobra demasiados impuestos', status: 'complete', slug: 'espana-impuestos-europa' },
+  { text: 'El paro registrado y el de la EPA son la misma cifra.', status: 'complete', slug: 'paro-epa-registro' },
+  { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
+  { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },
   { text: 'España está destruida', status: 'uncovered', slug: null },
 ];
 for (const item of cases) {

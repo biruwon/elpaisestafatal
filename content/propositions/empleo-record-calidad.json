@@ -1,0 +1,16 @@
+{
+  "id": "prop-empleo-record-calidad-core",
+  "claimSlug": "empleo-record-calidad",
+  "text": "Un máximo histórico de personas ocupadas no demuestra por sí solo que todo el empleo sea de calidad.",
+  "type": "mixed",
+  "subject": "employment_spain",
+  "predicate": "record_does_not_establish_quality",
+  "object": "job_quality",
+  "geography": "Spain",
+  "period": "2025-2026",
+  "status": "qualified",
+  "evidenceIds": [
+    "empleo-encuesta-de-poblacion-activa-t1-2026",
+    "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"
+  ]
+}

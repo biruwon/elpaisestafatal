@@ -1,0 +1,16 @@
+{
+  "id": "prop-paro-epa-registro-core",
+  "claimSlug": "paro-epa-registro",
+  "text": "El paro registrado y el desempleo medido por la EPA no son la misma medida.",
+  "type": "definition",
+  "subject": "unemployment_measure_spain",
+  "predicate": "uses_different_definitions",
+  "object": "registered_unemployment_and_lfs_unemployment",
+  "geography": "Spain",
+  "period": "2025-2026",
+  "status": "supported",
+  "evidenceIds": [
+    "empleo-encuesta-de-poblacion-activa-t1-2026",
+    "empleo-microdatos-del-barometro-de-abril-de-2026-md3557"
+  ]
+}
