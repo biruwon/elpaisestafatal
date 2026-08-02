@@ -27,6 +27,13 @@ export const claimAliases: Record<string, string[]> = {
     'paro EPA segundo trimestre 2026',
     'la EPA marca menos de un 10% de paro',
   ],
+  'precios-hoteles-sube-junio-2026': [
+    'los hoteles son más caros aunque reciben menos turistas',
+    'el precio de los hoteles sube y las pernoctaciones bajan',
+    'los hoteles subieron un 5,6% en junio',
+    'el turismo hotelero bajó en junio de 2026',
+    'hoteles más caros menos pernoctaciones',
+  ],
   'espana-pierde-poblacion': [
     'España pierde población',
     'la población de España está bajando',

@@ -132,8 +132,15 @@ const visualMarkup = (entry?: ClaimIndexEntry): string => {
   const visual = conversationVisuals.find((item) => item.slug === entry.slug)?.visuals;
   if (!visual?.key) return '';
   const comparison = visual.comparison;
-  const max = comparison ? Math.max(...comparison.values, 1) : 1;
-  return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparison.labels.slice(0, 3).map((label, index) => `<div><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((comparison.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`).join('')}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
+  const signedComparison = Boolean(comparison?.values.some((value) => value < 0));
+  const max = comparison ? Math.max(...comparison.values.map((value) => Math.abs(value)), 1) : 1;
+  const comparisonRows = comparison?.labels.slice(0, 3).map((label, index) => {
+    const value = Number(comparison.values[index] || 0);
+    const width = signedComparison ? Math.max(5, Math.round((Math.abs(value) / max) * 50)) : Math.max(6, Math.round((value / max) * 100));
+    const left = signedComparison ? (value < 0 ? 50 - width : 50) : 0;
+    return `<div><span>${escapeHtml(label)}</span><i${signedComparison ? ' class="is-signed"' : ''}><b style="width:${width}%;${signedComparison ? `left:${left}%;` : ''}"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`;
+  }).join('');
+  return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison${signedComparison ? ' is-signed' : ''}"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparisonRows}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
 };
 
 const formatChartValue = (value: number): string => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });

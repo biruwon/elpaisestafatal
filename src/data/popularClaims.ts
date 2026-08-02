@@ -8,6 +8,7 @@ const popularSlugs = [
   'inmigrantes-ayudas',
   'empleo-record',
   'paro-epa-t2-2026-baja-10',
+  'precios-hoteles-sube-junio-2026',
   'sanidad-colapsada',
   'espana-mas-peligrosa',
   'espana-impuestos-europa',

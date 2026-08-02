@@ -1,0 +1,13 @@
+{
+  "id": "prop-precios-hoteleros-sube-junio-2026-core",
+  "claimSlug": "precios-hoteles-sube-junio-2026",
+  "text": "Los precios hoteleros subieron mientras las pernoctaciones bajaron en España en junio de 2026",
+  "type": "comparative",
+  "subject": "sector hotelero",
+  "predicate": "price_up_while_nights_down",
+  "object": "junio de 2026 frente a junio de 2025",
+  "geography": "España",
+  "period": "2026-06",
+  "status": "supported",
+  "evidenceIds": ["turismo-hotelero-junio-2026"]
+}

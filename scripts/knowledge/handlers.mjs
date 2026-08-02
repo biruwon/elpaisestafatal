@@ -18,6 +18,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'trend') return 'trend';
   if (claimType === 'definition' || impliedDefinition) return 'definition';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
+  if (claimType === 'comparative') return 'ranking';
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';
