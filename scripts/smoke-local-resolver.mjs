@@ -95,6 +95,18 @@ if (process.env.SMOKE_DEDUPE === '1') {
 
 if (process.env.SMOKE_WAREHOUSE === '1') {
   try {
+    const result = await resolve('Cómo ha cambiado el precio de la luz para los hogares');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`electricity warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'household_electricity_price') failures.push('electricity warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('electricity warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '€ por kWh') failures.push('electricity warehouse: did not localize the unit');
+  } catch (error) { failures.push(`electricity warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('La electricidad es más cara para las familias');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`electricity-language warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'household_electricity_price') failures.push('electricity-language warehouse: failed to route an informal family phrasing');
+  } catch (error) { failures.push(`electricity-language warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Cuál es la inflación anual en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`inflation warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'inflation_rate') failures.push('inflation warehouse: selected the wrong metric family');

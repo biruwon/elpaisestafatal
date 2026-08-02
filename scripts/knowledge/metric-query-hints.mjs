@@ -7,6 +7,7 @@ const normalise = (value) => String(value || '')
   .trim();
 
 const metricHints = [
+  { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz mas cara'] },
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
   { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'precios aumentan'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion'] },
@@ -25,6 +26,8 @@ const metricHints = [
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares'] },
+  { ids: ['cpi_index'], terms: ['coste de vida', 'cesta de la compra', 'precios de consumo'] },
+  { ids: ['house_price_index'], terms: ['casas mas caras', 'casas son mas caras', 'casas mucho mas caras', 'casas son mucho mas caras', 'precio de las casas', 'precios de las casas'] },
 ];
 
 export const preferredMetricIdsForQuery = (query) => {
@@ -35,13 +38,16 @@ export const preferredMetricIdsForQuery = (query) => {
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
-  if (preferred.has('harmonised_price_index') && preferred.has('inflation_rate')) preferred.delete('inflation_rate');
+  if (preferred.has('harmonised_price_index')) {
+    preferred.delete('inflation_rate');
+    preferred.delete('cpi_index');
+  }
   return preferred;
 };
 
 export const excludedMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
-  const youthRequested = metricHints[0].terms.some((term) => normalized.includes(normalise(term)));
+  const youthRequested = metricHints.find((hint) => hint.ids.includes('youth_unemployment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));

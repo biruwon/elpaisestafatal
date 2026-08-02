@@ -65,6 +65,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'inflation_rate') return '% interanual';
+  if (metricId === 'household_electricity_price') return '€ por kWh';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
@@ -1097,6 +1098,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || [])].join(' ').slice(0, 6000);
+  const explicitMetricRoute = preferredMetricIdsForQuery(retrievalText).size > 0;
+  const topicFallback = classified.primary?.kind === 'topic';
+  // A broad topic suggestion must not block a direct warehouse answer when
+  // the user has supplied an explicit metric phrase such as “precio de la
+  // luz” or “inflación anual”. Keep the topic as a related result instead.
+  const retrievalClassified = explicitMetricRoute && topicFallback
+    ? { ...classified, primary: undefined, alternatives: [classified.primary, ...(classified.alternatives || [])] }
+    : classified;
   const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
   // A bare number is often a dimension label in statistical indexes (for
   // example, an index with base year 100). Keep exact amounts for budget
@@ -1110,11 +1119,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
-  const warehouse = !classified.primary && !suppressUnrelatedContext ? await findWarehouseEvidence(warehouseQuery, classified.compiler, queryEmbedding) : { observations: [], source: undefined };
-  const liveLegal = !classified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
+  const warehouse = !retrievalClassified.primary && !suppressUnrelatedContext ? await findWarehouseEvidence(warehouseQuery, retrievalClassified.compiler, queryEmbedding) : { observations: [], source: undefined };
+  const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
-  const indexedSource = !classified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const indexedSource = !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
@@ -1126,7 +1135,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
   const observations = warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
-  const deterministic = toResolveResult(text, classified, source, resultRequestId, observations);
+  const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);
   return upgraded === deterministic.result ? deterministic : { ...deterministic, result: upgraded };

@@ -23,6 +23,14 @@
     "notEquivalentTo": ["cpi_index", "harmonised_price_index"],
     "dimensions": ["period", "geography", "consumption_group"]
   },
+  "household_electricity_price": {
+    "name": "Household electricity price per kilowatt-hour",
+    "aliases": ["precio de la luz", "factura de la luz", "precio de la electricidad", "coste de la electricidad", "tarifa eléctrica", "electricidad", "electricidad para las familias", "luz más cara"],
+    "unit": "EUR per kWh",
+    "population": "household consumers, all electricity consumption bands, taxes included",
+    "notEquivalentTo": ["cpi_index", "inflation_rate", "house_price_index"],
+    "dimensions": ["period", "geography", "consumption_band", "taxes"]
+  },
   "gdp_current_prices": {
     "name": "Gross domestic product at current prices",
     "aliases": ["PIB", "GDP", "economía", "producción"],
