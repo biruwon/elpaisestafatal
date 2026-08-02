@@ -22,11 +22,13 @@ for (const file of pages) {
     ['claim-snapshot', 'missing answer-first snapshot'],
     ['claim-answer', 'missing concise answer visual'],
     ['claim-data', 'missing data section'],
+    ['claim-evidence', 'missing claim-specific evidence trail'],
     ['response-title', 'missing response action panel'],
     ['claim-sources', 'missing source section'],
   ];
   for (const [marker, message] of required) if (!source.includes(`id="${marker}"`)) failures.push(`${route}: ${message}`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
+  if (!/evidence-trail-card/.test(source)) failures.push(`${route}: evidence trail has no records`);
   if (!/<details|class="deep-link"/.test(source)) failures.push(`${route}: missing path to deeper context`);
   const snapshotPosition = source.indexOf('id="claim-snapshot"');
   const responsePosition = source.indexOf('id="response-title"');

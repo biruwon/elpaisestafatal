@@ -1,0 +1,56 @@
+---
+import type { ClaimVerification } from '../data/claims';
+import { getEvidence, getSource } from '../data/registry';
+import { sourceTypeLabel } from '../data/sourceTitle';
+
+interface Props { claim: ClaimVerification }
+const { claim } = Astro.props;
+const evidence = claim.evidenceIds.map(getEvidence).filter((item): item is NonNullable<typeof item> => Boolean(item));
+const kindLabels: Record<string, string> = {
+  'official-report': 'Registro oficial',
+  'statistical-series': 'Serie estadística',
+  calculation: 'Cálculo reproducible',
+  definition: 'Definición',
+  legal: 'Referencia legal',
+};
+const sourceFor = (ids: string[]) => ids.map(getSource).find((source): source is NonNullable<typeof source> => Boolean(source));
+const uniqueSources = [...new Set(evidence.flatMap((item) => item.sourceIds))].map(getSource).filter((source): source is NonNullable<typeof source> => Boolean(source));
+---
+
+{evidence.length > 0 && <section id="claim-evidence" class="claim-evidence" aria-labelledby="claim-evidence-title">
+  <header class="evidence-heading">
+    <div><p class="eyebrow">La base de esta ficha</p><h2 id="claim-evidence-title">Qué hemos<br /><em>utilizado.</em></h2></div>
+    <p>Estos registros son la evidencia enlazada a esta afirmación. Cada uno mantiene su periodo, territorio y definición para que no se confunda una cifra de contexto con una prueba de causalidad.</p>
+  </header>
+  <div class="evidence-trail-grid">
+    {evidence.map((item, index) => {
+      const source = sourceFor(item.sourceIds);
+      return <article class="evidence-trail-card">
+        <div class="evidence-trail-top"><span>{String(index + 1).padStart(2, '0')}</span><strong>{kindLabels[item.kind] || 'Registro de evidencia'}</strong></div>
+        <h3>{source?.title || 'Fuente pública vinculada'}</h3>
+        <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div></dl>
+        {source && <a href={source.url} target="_blank" rel="noreferrer">{sourceTypeLabel(source.type)} · Abrir fuente <span aria-hidden="true">↗</span></a>}
+      </article>;
+    })}
+  </div>
+  {uniqueSources.length > 0 && <p class="evidence-source-count">{uniqueSources.length} fuente{uniqueSources.length === 1 ? '' : 's'} original{uniqueSources.length === 1 ? '' : 'es'} enlazada{uniqueSources.length === 1 ? '' : 's'} a {evidence.length} registro{evidence.length === 1 ? '' : 's'} de evidencia.</p>}
+</section>}
+
+<style>
+  .claim-evidence{padding:85px 0 65px;border-bottom:1px solid var(--line)}
+  .evidence-heading{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:end}
+  .evidence-heading h2{font:400 clamp(2.4rem,5vw,5rem)/.88 var(--serif);letter-spacing:-.06em;margin:16px 0 0}
+  .evidence-heading>p{max-width:470px;color:var(--muted);font-size:.95rem;line-height:1.45;margin:0}
+  .evidence-trail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);margin-top:35px}
+  .evidence-trail-card{background:var(--paper-deep);padding:23px;min-height:220px}
+  .evidence-trail-top{display:flex;justify-content:space-between;gap:12px;color:var(--red);font:600 .62rem var(--mono);text-transform:uppercase}
+  .evidence-trail-top strong{color:var(--ink);font-weight:600}
+  .evidence-trail-card h3{font:400 1.35rem/1.05 var(--serif);margin:28px 0 20px}
+  .evidence-trail-card dl{display:flex;flex-wrap:wrap;gap:12px 20px;margin:0 0 22px}
+  .evidence-trail-card dt{font:600 .58rem var(--mono);text-transform:uppercase;color:var(--muted)}
+  .evidence-trail-card dd{font:.72rem var(--mono);margin:4px 0 0}
+  .evidence-trail-card a{font:600 .65rem var(--mono);color:var(--red)}
+  .evidence-trail-card a span{margin-left:5px}
+  .evidence-source-count{color:var(--muted);font:.68rem/1.4 var(--mono);margin:18px 0 0}
+  @media(max-width:700px){.evidence-heading{grid-template-columns:1fr;gap:20px}.evidence-trail-grid{grid-template-columns:1fr}.claim-evidence{padding:65px 0 45px}}
+</style>
