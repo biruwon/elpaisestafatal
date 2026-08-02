@@ -102,6 +102,20 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (new Set(series?.labels || []).size !== (series?.labels || []).length) failures.push('warehouse: mixed incompatible observations into one time series');
     if (String(series?.unit || '').toLocaleLowerCase().includes('rate of change')) failures.push('warehouse: selected a rate-of-change series for a level-price query');
   } catch (error) { failures.push(`warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cuál fue el crecimiento interanual del PIB real de España en el último trimestre');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`real GDP warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'gdp_real_growth_quarterly') failures.push('real GDP warehouse: selected the wrong metric family');
+    if (!result.result?.sourceLinks?.some((source) => /eurostat/i.test(`${source.title} ${source.url}`))) failures.push('real GDP warehouse: missing Eurostat source trail');
+    if (/gross domestic|quarterly data/i.test(result.result?.headline || '')) failures.push('real GDP warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`real GDP warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Qué porcentaje de residentes está en AROPE en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`AROPE warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'arope_rate') failures.push('AROPE warehouse: selected the wrong metric family');
+    if (!result.result?.sourceLinks?.some((source) => /eurostat/i.test(`${source.title} ${source.url}`))) failures.push('AROPE warehouse: missing Eurostat source trail');
+    if (/persons at risk|age and sex/i.test(result.result?.headline || '')) failures.push('AROPE warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`AROPE warehouse: ${error.message}`); }
 }
 
 if (process.env.SMOKE_OFFICIAL === '1') {

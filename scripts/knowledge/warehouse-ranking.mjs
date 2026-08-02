@@ -1,5 +1,6 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const displayMetric = (item) => String(item.source?.title || item.metric || item.datasetId || 'Indicador comparado');
 const comparableDimensions = (item) => Object.entries(item.dimensions || {})
   .filter(([key]) => !['geo', 'time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
   .sort(([left], [right]) => left.localeCompare(right));
@@ -28,7 +29,7 @@ export const summarizeWarehouseRanking = (text, observations) => {
   if (rows.length < 2) return null;
   const spainIndex = rows.findIndex((item) => normalise(countryName(item)) === 'es' || normalise(countryName(item)).includes('espana') || item.dimensions?.geo === 'ES');
   const spain = spainIndex >= 0 ? rows[spainIndex] : null;
-  const metric = String(spain?.metric || spain?.datasetId || rows[0].source?.title || 'Indicador comparado');
+  const metric = displayMetric(spain || rows[0]);
   const rawUnit = String(spain?.unit || rows[0].unit || '').trim();
   const unit = normalise(rawUnit) === 'percentage of population in the labour force' ? '%' : rawUnit;
   const suffix = unit ? ` ${unit}` : '';

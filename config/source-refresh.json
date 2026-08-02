@@ -23,6 +23,12 @@
       "metricId": "gdp_current_prices"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=ES&na_item=B1GQ&unit=CLV_PCH_SM&s_adj=SCA&sinceTimePeriod=2015",
+      "title": "Crecimiento interanual del PIB real de España · Eurostat",
+      "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "recesión"],
+      "metricId": "gdp_real_growth_quarterly"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2015",
       "title": "Tasa de desempleo de España · Eurostat",
       "aliases": ["paro", "desempleo", "empleo", "tasa de paro"],
@@ -51,6 +57,12 @@
       "title": "Población por país de nacimiento en España · Eurostat",
       "aliases": ["inmigración", "inmigrantes", "extranjeros", "nacidos en el extranjero", "país de nacimiento"],
       "metricId": "foreign_born_population"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_peps01n?geo=ES&unit=PC&age=TOTAL&sex=T&sinceTimePeriod=2015",
+      "title": "Riesgo de pobreza o exclusión social (AROPE) en España · Eurostat",
+      "aliases": ["AROPE", "riesgo de pobreza", "pobreza o exclusión", "exclusión social"],
+      "metricId": "arope_rate"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_imm8?geo=ES&age=TOTAL&sex=T&unit=NR&sinceTimePeriod=2015",

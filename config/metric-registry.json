@@ -23,6 +23,14 @@
     "notEquivalentTo": [],
     "dimensions": ["period", "geography", "national_account_item"]
   },
+  "gdp_real_growth_quarterly": {
+    "name": "Real GDP year-on-year growth",
+    "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "recesión", "economía crece"],
+    "unit": "percent year-on-year",
+    "population": "national economy",
+    "notEquivalentTo": ["gdp_current_prices"],
+    "dimensions": ["period", "geography", "seasonal_adjustment", "national_account_item"]
+  },
   "unemployment_rate": {
     "name": "Unemployment rate",
     "aliases": ["paro", "desempleo", "tasa de paro"],
@@ -62,6 +70,14 @@
     "population": "usual residents by country of birth",
     "notEquivalentTo": ["immigration_flows", "resident_population"],
     "dimensions": ["period", "geography", "country_of_birth", "age", "sex"]
+  },
+  "arope_rate": {
+    "name": "At-risk-of-poverty-or-social-exclusion rate",
+    "aliases": ["AROPE", "riesgo de pobreza", "pobreza o exclusión", "exclusión social", "pobreza relativa"],
+    "unit": "percent of total population",
+    "population": "usual residents aged all ages",
+    "notEquivalentTo": [],
+    "dimensions": ["period", "geography", "age", "sex"]
   },
   "immigration_flows": {
     "name": "Annual immigration flows",

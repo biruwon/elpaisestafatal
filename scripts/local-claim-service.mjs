@@ -967,7 +967,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
     values: seriesForVisual.map((item) => Number(item.value)),
-    label: String(numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
+    label: String(numericObservations[0].source?.title || numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
     unit: displayUnit(numericObservations[0].unit),
     metricId: numericObservations[0].metricId,
     population: numericObservations[0].population,

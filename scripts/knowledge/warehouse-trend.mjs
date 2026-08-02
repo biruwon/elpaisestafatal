@@ -1,6 +1,7 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
 const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const displayMetric = (item) => String(item.source?.title || item.metric || item.datasetId || 'La serie localizada');
 
 const comparableDimensions = (item) => Object.entries(item.dimensions || {})
   .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
@@ -34,7 +35,7 @@ export const summarizeWarehouseTrend = (text, observations) => {
   const delta = latest.value - first.value;
   const unit = String(latest.unit || first.unit || '').trim();
   const suffix = unit ? ` ${unit}` : '';
-  const metric = String(latest.metric || latest.datasetId || latest.source?.title || 'La serie localizada');
+  const metric = displayMetric(latest);
   const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
   const change = `${formatNumber(Math.abs(delta))}${suffix}`;
   const directionWords = normalise(text);
