@@ -123,10 +123,41 @@ export const claimAliases: Record<string, string[]> = {
     'los pisos bajan de precio',
     'la vivienda ya está bajando',
     'el precio de las casas cae',
+    'el precio del alquiler y de la vivienda cae',
   ],
   'recaudacion-tributaria-crece': [
     'Hacienda recauda menos',
     'el Gobierno recauda menos impuestos',
     'han bajado los ingresos fiscales',
+  ],
+  'cibercriminalidad-crece': [
+    'hay más estafas por internet',
+    'la ciberdelincuencia se ha disparado',
+    'los delitos digitales son cada vez más frecuentes',
+  ],
+  'empleo-record-calidad': [
+    'hay más trabajo pero es peor',
+    'el récord de empleo no significa empleo de calidad',
+    'tener más ocupados no quiere decir que se cobre bien',
+  ],
+  'inmigracion-flujos-no-total': [
+    'las llegadas de inmigrantes son toda la inmigración',
+    'todos los inmigrantes llegan ilegalmente',
+    'la inmigración irregular es la mayoría',
+  ],
+  'juventud-emancipacion': [
+    'los jóvenes no pueden independizarse',
+    'la mitad de los jóvenes vive con sus padres',
+    'en España los jóvenes no se emancipan',
+  ],
+  'paro-epa-registro': [
+    'el paro de la EPA y el paro registrado son iguales',
+    'por qué no coincide el paro del INE con el del SEPE',
+    'el Gobierno maquilla el paro con dos cifras',
+  ],
+  'riesgo-pobreza-no-desaparece': [
+    'la pobreza está bajando pero sigue siendo alta',
+    'el crecimiento acabó con la pobreza',
+    'España ya no tiene un problema de pobreza',
   ],
 };

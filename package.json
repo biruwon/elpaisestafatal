@@ -14,6 +14,7 @@
     "smoke:production": "node scripts/smoke-production.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
     "ux:homepage": "node scripts/validate-homepage-ux.mjs",
+    "ux:claims": "node scripts/validate-published-claim-ux.mjs",
     "container:validate": "node scripts/validate-local-container.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",

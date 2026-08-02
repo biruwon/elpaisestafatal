@@ -134,6 +134,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Added an explicit D1 cluster-promotion command that requires owner approval, a neutral canonical wording, a published linked claim, and covered evidence before a cluster can enter the public popularity feed; raw submissions cannot be promoted directly.
 - The browser now preserves its deterministic result while dynamic analysis is pending, timed out, cancelled, or unavailable; completed structured results can still upgrade it automatically, but users are no longer left with a generic pending/unavailable replacement.
 - The homepage now leads with the conversation itself (`¿De qué estáis discutiendo?`), surfaces popular prompts immediately after the checker, exposes the input character limit, marks the active navigation path, and gives broad political wording such as `Pedro Sánchez está destruyendo España` related political context without presenting it as a published verdict. Existing evidence-backed claim families also carry more informal Spanish aliases for long-tail matching.
+- Published claim pages now use a reusable answer-first layout: the claim is followed immediately by a visual short answer, supported/not-established/missing-evidence cards, visible review metadata, and response actions before the deeper data and investigation context. The public claim catalogue now shows only published, usable entries and exposes its count and return path to the checker.
 - The claim result UI now uses a scan-first hierarchy: published versus automatic state, concise summary, evidence-backed points, explicit limits, one useful next question, source trail, and a conversation-ready reply without repeating source links inside every card.
 - The deterministic compiler no longer treats the negated phrase “no significa que” as a definition question, so claims such as economic growth versus cost of living can resolve to their exact published claim instead of being downgraded to a generic topic.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.
@@ -189,7 +190,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage and broad-topic guidance slice are implemented alongside the deterministic match, fallback, input, and timeout states. More semantic clustering and richer result personalization remain pending.
+Status: started; the conversation-first homepage, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. More semantic clustering and richer result personalization remain pending.
 
 Before using a model:
 
