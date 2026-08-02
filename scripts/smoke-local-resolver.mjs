@@ -152,6 +152,27 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/health care expenditure by financing scheme/i.test(result.result?.headline || '')) failures.push('health expenditure warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`health expenditure warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Cómo ha evolucionado la desigualdad de ingresos en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Gini warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'gini_coefficient') failures.push('Gini warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('Gini warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'escala Gini 0–100') failures.push('Gini warehouse: did not localize the unit');
+  } catch (error) { failures.push(`Gini warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cómo ha cambiado el déficit público sobre el PIB');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`public deficit warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_deficit_ratio') failures.push('public deficit warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('public deficit warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '% del PIB') failures.push('public deficit warehouse: did not localize the unit');
+  } catch (error) { failures.push(`public deficit warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cómo ha evolucionado la renta mediana de los hogares');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`median income warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'median_equivalised_income') failures.push('median income warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('median income warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '€ por persona') failures.push('median income warehouse: did not localize the unit');
+  } catch (error) { failures.push(`median income warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de jóvenes activos está en paro en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`youth unemployment warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'youth_unemployment_rate') failures.push('youth unemployment warehouse: selected the wrong metric family');

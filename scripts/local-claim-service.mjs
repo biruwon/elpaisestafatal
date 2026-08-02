@@ -56,12 +56,15 @@ const boundedExcerpt = (value, limit = 900) => {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
 };
-const displayUnit = (value) => {
+const displayUnit = (value, metricId = '') => {
   const unit = normalise(value);
+  if (metricId === 'gini_coefficient') return 'escala Gini 0–100';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
+  if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
   if (unit.includes('percentage of gross domestic product')) return '% del PIB';
   if (unit.includes('percentage of population')) return '% de la población';
+  if (unit.includes('gini scale')) return 'escala Gini 0–100';
   return String(value || '');
 };
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'cuñado', 'cunado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
@@ -657,7 +660,12 @@ const classify = async (text) => {
   // candidates, not for rejecting the claim the user literally entered.
   const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
   const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase) && top.lexical >= 0.9);
-  const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers);
+  const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
+  // A new measurable question must not be swallowed by a broad published
+  // claim just because both use a topic word such as "desigualdad". Let the
+  // warehouse answer the requested metric unless the user entered the
+  // published claim's exact wording or alias.
+  const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers && (!explicitMetricRoute || canonicalPhrase));
   if (canonicalPhrase || strongMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
@@ -672,7 +680,7 @@ const classify = async (text) => {
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && compatibleEntry(entry));
-  const selected = selectedCandidate && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
+  const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
@@ -986,7 +994,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
     values: seriesForVisual.map((item) => Number(item.value)),
     label: String(numericObservations[0].source?.title || numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
-    unit: displayUnit(numericObservations[0].unit),
+    unit: displayUnit(numericObservations[0].unit, numericObservations[0].metricId),
     metricId: numericObservations[0].metricId,
     population: numericObservations[0].population,
   } : undefined;

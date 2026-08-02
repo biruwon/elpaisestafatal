@@ -16,6 +16,8 @@ requireText('class="examples-heading"', 'the popular prompt heading');
 requireText('data-example-filter="all"', 'the popular prompt filters');
 requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
+requireText('data-example-source="warehouse"', 'fresh warehouse prompt entry points');
+requireText('class="warehouse-prompts"', 'fresh warehouse prompt section');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');
 requireText('aria-current="page"', 'the active navigation state');
 if (!claimInput.includes('Comprobar otra frase') || !claimInput.includes('data-new-check')) failures.push('claim input is missing the repeat-check action');
