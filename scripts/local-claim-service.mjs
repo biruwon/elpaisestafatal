@@ -62,6 +62,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'life_expectancy_at_birth') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
+  if (metricId === 'older_population_share') return '% de la población';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
@@ -510,6 +511,10 @@ const claimedNumericValue = (text, compiler) => {
     if (value === null) continue;
     const position = normalise(text).indexOf(normalise(raw));
     const context = normalise(text).slice(Math.max(0, position - 18), position + 40);
+    const isAgeDimension = (includesAny(context, ['mayor', 'menor']) && includesAny(context, ['anos', 'edad']))
+      || (includesAny(context, ['de mas de', 'de menos de', 'mas de', 'menos de']) && includesAny(context, ['anos', 'edad']));
+    const isDenominator = includesAny(context, ['por cada', 'cada']) && includesAny(context, ['edad', 'trabajar', 'poblacion', 'personas']);
+    if (isAgeDimension || isDenominator) continue;
     let multiplier = 1;
     if (includesAny(context, ['billones', 'billon'])) multiplier = 1e9;
     else if (includesAny(context, ['millones', 'millon'])) multiplier = 1e6;

@@ -191,6 +191,14 @@
     "notEquivalentTo": ["resident_population", "fertility_rate"],
     "dimensions": ["period", "geography", "indicator"]
   },
+  "older_population_share": {
+    "name": "Population aged 65 years or more",
+    "aliases": ["población de 65 años o más", "mayores de 65", "porcentaje de personas mayores", "personas de más de 65", "proporción de mayores", "población mayor"],
+    "unit": "percent of population",
+    "population": "usual residents aged 65 years or more as a share of total population",
+    "notEquivalentTo": ["old_age_dependency_ratio", "resident_population", "fertility_rate"],
+    "dimensions": ["period", "geography", "indicator"]
+  },
   "gini_coefficient": {
     "name": "Gini coefficient of equivalised disposable income",
     "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],

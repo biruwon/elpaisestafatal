@@ -173,6 +173,14 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'personas mayores por cada 100 en edad de trabajar') failures.push('ageing warehouse: did not localize the unit');
   } catch (error) { failures.push(`ageing warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Qué porcentaje de personas mayores de 65 años hay en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`older-population warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'older_population_share') failures.push('older-population warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('older-population warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '% de la población') failures.push('older-population warehouse: did not localize the unit');
+    if (/no coincide/i.test(result.result?.headline || '')) failures.push('older-population warehouse: age threshold was treated as a claimed value');
+  } catch (error) { failures.push(`older-population warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Cómo ha evolucionado la desigualdad de ingresos en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`Gini warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'gini_coefficient') failures.push('Gini warehouse: selected the wrong metric family');
