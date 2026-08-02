@@ -13,6 +13,7 @@ status: published
 sourceTopic: inmigracion
 sourceRefs: ["inmigracion-estadistica-continua-de-poblacion-t1-2026","inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
 evidenceIds: ["inmigracion-estadistica-continua-de-poblacion-t1-2026","inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+propositionIds: ["prop-inmigrantes-patera-core"]
 ---
 
 ## Qué es cierto

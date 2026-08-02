@@ -1,0 +1,13 @@
+{
+  "id": "prop-smi-destruye-empleo-core",
+  "claimSlug": "smi-destruye-empleo",
+  "text": "Subir el salario mínimo destruyó el empleo agregado.",
+  "type": "causal",
+  "subject": "salario_minimo",
+  "predicate": "destroys",
+  "object": "empleo_agregado",
+  "geography": "España",
+  "period": "2019-2026",
+  "status": "insufficient",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

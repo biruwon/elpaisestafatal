@@ -1,0 +1,13 @@
+{
+  "id": "prop-fijos-discontinuos-core",
+  "claimSlug": "fijos-discontinuos",
+  "text": "Las personas con contrato fijo discontinuo son paradas ocultas.",
+  "type": "definition",
+  "subject": "fijo_discontinuo",
+  "predicate": "equals",
+  "object": "paro_oculto",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "contradicted",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

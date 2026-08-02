@@ -1,0 +1,13 @@
+{
+  "id": "prop-sanidad-colapsada-core",
+  "claimSlug": "sanidad-colapsada",
+  "text": "La sanidad pública española está colapsada en su conjunto.",
+  "type": "descriptive",
+  "subject": "sanidad_publica",
+  "predicate": "is",
+  "object": "colapsada",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "qualified",
+  "evidenceIds": ["sanidad-listas-de-espera-diciembre-2025", "sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119"]
+}

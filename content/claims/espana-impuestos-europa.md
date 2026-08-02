@@ -13,6 +13,7 @@ status: published
 sourceTopic: impuestos
 sourceRefs: ["impuestos-recaudacion-tributaria","impuestos-base-de-datos-estadistica","impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
 evidenceIds: ["impuestos-recaudacion-tributaria","impuestos-base-de-datos-estadistica","impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
+propositionIds: ["prop-espana-impuestos-europa-core"]
 ---
 
 ## Qué es cierto

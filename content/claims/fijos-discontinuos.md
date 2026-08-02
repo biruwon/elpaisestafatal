@@ -13,6 +13,7 @@ status: published
 sourceTopic: empleo
 sourceRefs: ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557","empleo-encuesta-de-poblacion-activa-t1-2026","empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
 evidenceIds: ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557","empleo-encuesta-de-poblacion-activa-t1-2026","empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+propositionIds: ["prop-fijos-discontinuos-core"]
 ---
 
 ## Qué es cierto

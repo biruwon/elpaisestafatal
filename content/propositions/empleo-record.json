@@ -1,0 +1,13 @@
+{
+  "id": "prop-empleo-record-core",
+  "claimSlug": "empleo-record",
+  "text": "España nunca ha tenido tanta gente trabajando.",
+  "type": "descriptive",
+  "subject": "ocupacion",
+  "predicate": "reaches_record",
+  "object": "España",
+  "geography": "España",
+  "period": "2026-T1",
+  "status": "supported",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

@@ -13,6 +13,7 @@ status: published
 sourceTopic: desigualdad
 sourceRefs: ["desigualdad-encuesta-de-condiciones-de-vida-2025","desigualdad-base-de-datos-de-eurostat","desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"]
 evidenceIds: ["desigualdad-encuesta-de-condiciones-de-vida-2025","desigualdad-base-de-datos-de-eurostat","desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"]
+propositionIds: ["prop-espana-pobreza-cuarta-parte-core"]
 ---
 
 ## Qué es cierto

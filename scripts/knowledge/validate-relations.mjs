@@ -38,6 +38,33 @@ const evidence = new Map(records.filter(({ file }) => file.includes('/evidence/'
 }));
 const claims = records.filter(({ file }) => file.includes('/claims/')).map(({ file, raw }) => ({ file, ...frontmatter(raw) }));
 const failures = [];
+const propositions = [];
+try {
+  const propositionDirectory = join(contentRoot, 'propositions');
+  for (const file of await readdir(propositionDirectory)) {
+    if (!file.endsWith('.json')) continue;
+    try { propositions.push({ file: join(propositionDirectory, file), data: JSON.parse(await readFile(join(propositionDirectory, file), 'utf8')) }); }
+    catch { failures.push(`${join(propositionDirectory, file)}: proposition is not valid JSON`); }
+  }
+} catch { /* The directory is optional while the migration is in progress. */ }
+const propositionMap = new Map();
+const propositionTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
+const propositionStatuses = new Set(['supported', 'contradicted', 'qualified', 'insufficient', 'unreviewed']);
+
+for (const item of propositions) {
+  const data = item.data || {};
+  if (!data.id || typeof data.id !== 'string') failures.push(`${item.file}: proposition is missing id`);
+  else if (propositionMap.has(data.id)) failures.push(`${item.file}: duplicate proposition id ${data.id}`);
+  else propositionMap.set(data.id, data);
+  if (!data.claimSlug || typeof data.claimSlug !== 'string') failures.push(`${item.file}: proposition is missing claimSlug`);
+  if (!data.text || typeof data.text !== 'string') failures.push(`${item.file}: proposition is missing text`);
+  if (!propositionTypes.has(data.type)) failures.push(`${item.file}: proposition has invalid type ${data.type}`);
+  if (!propositionStatuses.has(data.status)) failures.push(`${item.file}: proposition has invalid status ${data.status}`);
+  if (!Array.isArray(data.evidenceIds) || data.evidenceIds.length === 0) failures.push(`${item.file}: proposition has no evidence references`);
+  for (const evidenceId of Array.isArray(data.evidenceIds) ? data.evidenceIds : []) {
+    if (!evidence.has(evidenceId)) failures.push(`${item.file}: proposition references missing evidence ${evidenceId}`);
+  }
+}
 
 for (const item of records.filter(({ file }) => file.includes('/evidence/'))) {
   const data = frontmatter(item.raw);
@@ -57,6 +84,16 @@ for (const claim of claims) {
   if (claim.status === 'published' && list(claim.evidenceIds).length === 0) {
     failures.push(`${claim.file}: published claim has no evidence references`);
   }
+  const propositionIds = list(claim.propositionIds);
+  if (claim.status === 'published' && propositionIds.length === 0) failures.push(`${claim.file}: published claim has no proposition references`);
+  for (const propositionId of propositionIds) {
+    const proposition = propositionMap.get(propositionId);
+    if (!proposition) failures.push(`${claim.file}: claim references missing proposition ${propositionId}`);
+    else {
+      if (proposition.claimSlug !== claim.slug) failures.push(`${claim.file}: proposition ${propositionId} belongs to ${proposition.claimSlug}`);
+      for (const evidenceId of list(proposition.evidenceIds)) if (!list(claim.evidenceIds).includes(evidenceId)) failures.push(`${claim.file}: proposition ${propositionId} evidence ${evidenceId} is not linked by the claim`);
+    }
+  }
 }
 
 if (failures.length) {
@@ -64,4 +101,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Knowledge relations passed: ${claims.length} claims, ${evidence.size} evidence records, ${sources.size} sources.`);
+console.log(`Knowledge relations passed: ${claims.length} claims, ${propositions.length} propositions, ${evidence.size} evidence records, ${sources.size} sources.`);

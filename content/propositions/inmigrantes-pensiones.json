@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigrantes-pensiones-core",
+  "claimSlug": "inmigrantes-pensiones",
+  "text": "Las personas inmigrantes pagarán por sí solas nuestras pensiones.",
+  "type": "predictive",
+  "subject": "personas_inmigrantes",
+  "predicate": "sustain_alone",
+  "object": "pensiones",
+  "geography": "España",
+  "period": "futuro",
+  "status": "qualified",
+  "evidenceIds": ["inmigracion-estadistica-continua-de-poblacion-t1-2026", "inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+}

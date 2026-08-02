@@ -3,14 +3,14 @@ import { concernSources } from './provenance';
 import { evidenceId } from './evidence';
 import { markdownClaims } from './content';
 export type ClaimAssessment='true'|'mostly-true'|'misleading'|'unsupported'|'uncertain'|'false';
-export type ClaimType='descriptive'|'comparative'|'causal'|'predictive'|'legal'|'normative'|'mixed';
+export type ClaimType='descriptive'|'comparative'|'definition'|'trend'|'causal'|'predictive'|'legal'|'normative'|'mixed';
 export type EvidenceStrength='high'|'medium'|'limited'|'insufficient';
 export type ClaimVerification={
   slug:string; claim:string; assessment:ClaimAssessment; topic:string; topicSlug:string; topicSlugs:string[];
   whatIsTrue:string; whatIsMissing:string; scale:string; cannotProve:string; shareable:string; keywords:string[]; aliases:string[];
   claimType:ClaimType; evidenceStrength:EvidenceStrength; decisiveEvidence:string; competingExplanations:string[];
   whyItCirculates:string; unknowns:string; evidenceCouldChange:string; valueDisagreement?:string;
-  relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[]; geography:string; period:string;
+  propositionIds:string[]; relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[]; geography:string; period:string;
   reviewed:string; published:boolean; sources:Source[]; sourceRefs:string[]; evidenceIds:string[];
 };
 type LegacyClaimVerification={slug:string;claim:string;assessment:ClaimAssessment;topic:string;topicSlug:string;whatIsTrue:string;whatIsMissing:string;scale:string;cannotProve:string;shareable:string;keywords:string[];sources:Source[]};
@@ -61,14 +61,14 @@ export const claims:ClaimVerification[]=legacyClaims.map((claim)=>{ const md=mar
   whyItCirculates:'La afirmación combina una experiencia visible, una formulación política o una simplificación de una estadística.',
   unknowns:claim.cannotProve,
   evidenceCouldChange:'Una nueva fuente primaria comparable, una revisión metodológica o un cambio relevante en el periodo analizado.',
-  relatedSlugs:md?.relatedSlugs || [], supports:md?.supports || [], contradicts:md?.contradicts || [], dependsOn:md?.dependsOn || [], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
+  propositionIds:md?.propositionIds || [], relatedSlugs:md?.relatedSlugs || [], supports:md?.supports || [], contradicts:md?.contradicts || [], dependsOn:md?.dependsOn || [], geography:md?.geography || 'España', period:md?.period || '2025-2026', published:md?.status === 'published',
   reviewed:md?.reviewed || '2026-07-12', sourceRefs:md?.sourceRefs || [],
   evidenceIds:md?.evidenceIds?.length ? md.evidenceIds : claim.sources.map(evidenceId),
 }); });
 for(const claim of claims){
   claim.relatedSlugs=claims.filter((other)=>other.slug!==claim.slug&&other.published&&(other.topicSlugs.some((slug)=>claim.topicSlugs.includes(slug))||other.keywords.some((keyword)=>claim.keywords.includes(keyword)))).slice(0,6).map((other)=>other.slug);
 }
-const validClaimTypes=new Set<ClaimType>(['descriptive','comparative','causal','predictive','legal','normative','mixed']);
+const validClaimTypes=new Set<ClaimType>(['descriptive','comparative','definition','trend','causal','predictive','legal','normative','mixed']);
 const validEvidenceStrengths=new Set<EvidenceStrength>(['high','medium','limited','insufficient']);
 const claimFailures=claims.flatMap((claim)=>[
   !claim.slug||!claim.claim?`${claim.slug||'unknown'}: missing identity`:null,

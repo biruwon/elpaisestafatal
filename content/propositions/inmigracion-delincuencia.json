@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigracion-delincuencia-core",
+  "claimSlug": "inmigracion-delincuencia",
+  "text": "La inmigración es la causa del aumento de la delincuencia.",
+  "type": "causal",
+  "subject": "inmigracion",
+  "predicate": "causes",
+  "object": "aumento_delincuencia",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "insufficient",
+  "evidenceIds": ["seguridad-balance-de-criminalidad-t1-2026", "seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+}

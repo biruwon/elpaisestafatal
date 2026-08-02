@@ -13,6 +13,7 @@ status: published
 sourceTopic: corrupcion
 sourceRefs: ["corrupcion-estadistica-judicial","corrupcion-fiscalia-contra-la-corrupcion","corrupcion-indice-de-percepcion-de-corrupcion-labels-2023-2024-2025-values-60-56-55"]
 evidenceIds: ["corrupcion-estadistica-judicial","corrupcion-fiscalia-contra-la-corrupcion","corrupcion-indice-de-percepcion-de-corrupcion-labels-2023-2024-2025-values-60-56-55"]
+propositionIds: ["prop-politicos-corruptos-core"]
 ---
 
 ## Qué es cierto

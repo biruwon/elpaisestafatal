@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigrantes-ayudas-core",
+  "claimSlug": "inmigrantes-ayudas",
+  "text": "Las personas inmigrantes vienen a España a vivir de ayudas.",
+  "type": "comparative",
+  "subject": "personas_inmigrantes",
+  "predicate": "depend_on",
+  "object": "ayudas_publicas",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "qualified",
+  "evidenceIds": ["inmigracion-estadistica-continua-de-poblacion-t1-2026", "inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "prop-demasiados-graduados-core",
+  "claimSlug": "demasiados-graduados",
+  "text": "España tiene demasiadas personas con estudios universitarios.",
+  "type": "comparative",
+  "subject": "personas_graduadas",
+  "predicate": "exceeds_need",
+  "object": "necesidades_laborales",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "insufficient",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

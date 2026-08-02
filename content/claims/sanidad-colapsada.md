@@ -13,6 +13,7 @@ status: published
 sourceTopic: sanidad
 sourceRefs: ["sanidad-listas-de-espera-diciembre-2025","sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119"]
 evidenceIds: ["sanidad-listas-de-espera-diciembre-2025","sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119"]
+propositionIds: ["prop-sanidad-colapsada-core"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigrantes-patera-core",
+  "claimSlug": "inmigrantes-patera",
+  "text": "La mayoría de las personas inmigrantes llega a España en patera.",
+  "type": "comparative",
+  "subject": "llegadas_inmigracion",
+  "predicate": "mostly_use",
+  "object": "llegada_irregular_por_mar",
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["inmigracion-estadistica-continua-de-poblacion-t1-2026", "inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+}

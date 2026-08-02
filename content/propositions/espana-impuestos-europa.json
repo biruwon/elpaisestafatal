@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-impuestos-europa-core",
+  "claimSlug": "espana-impuestos-europa",
+  "text": "España es el país que más impuestos cobra de Europa.",
+  "type": "comparative",
+  "subject": "presion_fiscal",
+  "predicate": "ranks_highest",
+  "object": "Europa",
+  "geography": "Europa",
+  "period": "2025-2026",
+  "status": "contradicted",
+  "evidenceIds": ["impuestos-recaudacion-tributaria", "impuestos-base-de-datos-estadistica", "impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
+}

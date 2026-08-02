@@ -46,6 +46,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     claimType: claim.claimType,
     evidenceStrength: claim.evidenceStrength,
     evidenceIds: claim.evidenceIds,
+    propositionIds: claim.propositionIds,
     sourceRefs: claim.sourceRefs,
     relatedSlugs: claim.relatedSlugs,
     whatIsTrue: claim.whatIsTrue,

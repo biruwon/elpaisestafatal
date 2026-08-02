@@ -1,5 +1,5 @@
 export type PublicationStatus = 'published' | 'planned' | 'in-progress';
-export type ClaimType = 'descriptive' | 'comparative' | 'causal' | 'predictive' | 'legal' | 'normative' | 'mixed';
+export type ClaimType = 'descriptive' | 'comparative' | 'definition' | 'trend' | 'causal' | 'predictive' | 'legal' | 'normative' | 'mixed';
 export type EvidenceStrength = 'high' | 'medium' | 'limited' | 'insufficient';
 
 import { normaliseSourceTitle } from './sourceTitle';
@@ -15,7 +15,7 @@ export type TopicRecord = {
 export type MarkdownClaimRecord = {
   slug:string; claim:string; assessment:string; topicSlugs:string[]; aliases:string[]; claimType:ClaimType;
   evidenceStrength:EvidenceStrength; geography:string; period:string; reviewed:string; status:PublicationStatus;
-  sourceRefs:string[]; evidenceIds:string[]; relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[];
+  sourceRefs:string[]; evidenceIds:string[]; propositionIds:string[]; relatedSlugs:string[]; supports:string[]; contradicts:string[]; dependsOn:string[];
   body:string; whatIsTrue?:string; whatIsMissing?:string; scale?:string; cannotProve?:string; shareable?:string;
 };
 export type MarkdownSourceRecord = { id:string; title:string; url:string; date:string; type:string; body:string };
@@ -74,7 +74,7 @@ export const markdownClaims: MarkdownClaimRecord[] = Object.entries(claimFiles).
     slug:data.slug || path.split('/').pop()!.replace(/\.md$/, ''), claim:String(structured(data.claim) || ''), assessment:data.assessment || '',
     topicSlugs:(structured(data.topicSlugs) as string[]) || [], aliases:(structured(data.aliases) as string[]) || [], claimType:(data.claimType || 'mixed') as ClaimType,
     evidenceStrength:(data.evidenceStrength || 'medium') as EvidenceStrength, geography:data.geography || 'España', period:data.period || '', reviewed:data.reviewed || '', status:(data.status || 'planned') as PublicationStatus,
-    sourceRefs:(structured(data.sourceRefs) as string[]) || [], evidenceIds:(structured(data.evidenceIds) as string[]) || [], relatedSlugs:(structured(data.relatedSlugs) as string[]) || [], supports:(structured(data.supports) as string[]) || [], contradicts:(structured(data.contradicts) as string[]) || [], dependsOn:(structured(data.dependsOn) as string[]) || [], body:parsed.body,
+    sourceRefs:(structured(data.sourceRefs) as string[]) || [], evidenceIds:(structured(data.evidenceIds) as string[]) || [], propositionIds:(structured(data.propositionIds) as string[]) || [], relatedSlugs:(structured(data.relatedSlugs) as string[]) || [], supports:(structured(data.supports) as string[]) || [], contradicts:(structured(data.contradicts) as string[]) || [], dependsOn:(structured(data.dependsOn) as string[]) || [], body:parsed.body,
     whatIsTrue:section(parsed.body,'Qué es cierto'), whatIsMissing:section(parsed.body,'Qué falta'), scale:section(parsed.body,'Escala'), cannotProve:section(parsed.body,'Límite'), shareable:section(parsed.body,'Respuesta compartible'),
   };
 }).sort((a,b)=>a.slug.localeCompare(b.slug));

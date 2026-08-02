@@ -1,0 +1,13 @@
+{
+  "id": "prop-viviendas-vacias-core",
+  "claimSlug": "viviendas-vacias",
+  "text": "Como España tiene millones de viviendas vacías, no hace falta construir.",
+  "type": "causal",
+  "subject": "viviendas_vacias",
+  "predicate": "eliminates_need_for",
+  "object": "nueva_construccion",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "qualified",
+  "evidenceIds": ["vivienda-indice-de-precios-de-vivienda-t1-2026", "vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+}

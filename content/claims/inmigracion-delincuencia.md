@@ -13,6 +13,7 @@ status: published
 sourceTopic: seguridad
 sourceRefs: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
 evidenceIds: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+propositionIds: ["prop-inmigracion-delincuencia-core"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-mas-peligrosa-core",
+  "claimSlug": "espana-mas-peligrosa",
+  "text": "España se está volviendo mucho más peligrosa en general.",
+  "type": "trend",
+  "subject": "delincuencia",
+  "predicate": "increases",
+  "object": "inseguridad_general",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "contradicted",
+  "evidenceIds": ["seguridad-balance-de-criminalidad-t1-2026", "seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+}

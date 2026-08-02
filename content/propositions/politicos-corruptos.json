@@ -1,0 +1,13 @@
+{
+  "id": "prop-politicos-corruptos-core",
+  "claimSlug": "politicos-corruptos",
+  "text": "Todos los políticos españoles son corruptos.",
+  "type": "comparative",
+  "subject": "politicos",
+  "predicate": "are",
+  "object": "corruptos",
+  "geography": "España",
+  "period": "actual",
+  "status": "contradicted",
+  "evidenceIds": ["corrupcion-estadistica-judicial", "corrupcion-fiscalia-contra-la-corrupcion", "corrupcion-indice-de-percepcion-de-corrupcion-labels-2023-2024-2025-values-60-56-55"]
+}

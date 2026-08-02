@@ -13,6 +13,7 @@ export type ClaimIndexEntry = {
   claimType?: string;
   evidenceStrength?: string;
   evidenceIds?: string[];
+  propositionIds?: string[];
   sourceRefs?: string[];
   relatedSlugs?: string[];
   whatIsTrue?: string;

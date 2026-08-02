@@ -1,0 +1,13 @@
+{
+  "id": "prop-precio-vivienda-caera-core",
+  "claimSlug": "precio-vivienda-caera",
+  "text": "La vivienda caerá como en 2008.",
+  "type": "predictive",
+  "subject": "precios_vivienda",
+  "predicate": "will_fall_like",
+  "object": "crisis_2008",
+  "geography": "España",
+  "period": "futuro",
+  "status": "insufficient",
+  "evidenceIds": ["vivienda-indice-de-precios-de-vivienda-t1-2026", "vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+}

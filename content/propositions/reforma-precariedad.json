@@ -1,0 +1,13 @@
+{
+  "id": "prop-reforma-precariedad-core",
+  "claimSlug": "reforma-precariedad",
+  "text": "La reforma laboral acabó con la precariedad.",
+  "type": "causal",
+  "subject": "reforma_laboral",
+  "predicate": "ends",
+  "object": "precariedad",
+  "geography": "España",
+  "period": "2022-2026",
+  "status": "contradicted",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

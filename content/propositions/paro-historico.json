@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-historico-core",
+  "claimSlug": "paro-historico",
+  "text": "El paro está en mínimos históricos según cualquier medida.",
+  "type": "comparative",
+  "subject": "desempleo",
+  "predicate": "reaches_historical_minimum",
+  "object": "España",
+  "geography": "España",
+  "period": "2026-T1",
+  "status": "qualified",
+  "evidenceIds": ["empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

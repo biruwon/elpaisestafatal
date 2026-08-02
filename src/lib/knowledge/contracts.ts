@@ -1,6 +1,8 @@
 export type ClaimType =
   | 'descriptive'
   | 'comparative'
+  | 'definition'
+  | 'trend'
   | 'causal'
   | 'predictive'
   | 'legal'
