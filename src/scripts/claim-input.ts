@@ -183,6 +183,7 @@ const resetChecker = (): void => {
   if (fileName) fileName.textContent = 'Añadir captura o audio';
   updateCounter();
   if (result) result.innerHTML = '';
+  window.history.replaceState({}, '', '/#comprobar');
   input?.focus();
 };
 
@@ -405,6 +406,7 @@ form?.addEventListener('submit', (event) => {
   const query = input?.value.trim() || '';
   const file = fileInput?.files?.[0];
   if ((!query && !file) || !result) return;
+  window.history.replaceState({}, '', query ? `/?q=${encodeURIComponent(query)}#comprobar` : '/#comprobar');
   if (file) {
     const inputType = file.type.startsWith('audio/') ? 'audio' : 'image';
     const validation = validateInputMetadata({ text: query, inputType, hasFile: true, fileSize: file.size, mimeType: file.type });

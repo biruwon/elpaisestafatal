@@ -16,6 +16,8 @@ const required = [
   'const resetChecker',
   'data-new-check',
   'input?.focus()',
+  'history.replaceState',
+  'encodeURIComponent(query)',
   'aria-labelledby="claim-result-title"',
   "const alternativesMarkup = ['published', 'related', 'unavailable']",
   "renderCard('uncovered', original, undefined, [],",
