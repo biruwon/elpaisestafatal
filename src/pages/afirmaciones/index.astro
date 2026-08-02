@@ -2,9 +2,51 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TopicBadge from '../../components/TopicBadge.astro';
 import { claims, assessmentLabels } from '../../data/claims';
+import { getTopicPresentation } from '../../data/topicPresentation';
+
 const publishedClaims = claims.filter((claim) => claim.published);
-const topicCount = new Set(publishedClaims.flatMap((claim) => claim.topicSlugs)).size;
+const topicSlugs = [...new Set(publishedClaims.flatMap((claim) => claim.topicSlugs))].sort((a, b) => getTopicPresentation(a).label.localeCompare(getTopicPresentation(b).label, 'es'));
+const topicCount = topicSlugs.length;
+const searchable = (claim: typeof publishedClaims[number]): string => [claim.claim, claim.topic, ...claim.topicSlugs, ...claim.aliases, ...claim.keywords].join(' ');
 ---
-<BaseLayout title="Afirmaciones — El país está fatal" description="Afirmaciones sobre España comprobadas con contexto y fuentes originales."><article class="prose affirmation-index"><p class="eyebrow">Preguntas comprobadas</p><h1>Afirmaciones,<br /><em>puestas a prueba.</em></h1><p class="lead">Escribe una frase como te la han enviado. Aquí encontrarás respuestas breves, datos decisivos y los límites de lo que se puede afirmar.</p><div class="affirmation-index-intro"><div><strong>{publishedClaims.length}</strong><span>fichas publicadas</span></div><div><strong>{topicCount}</strong><span>temas conectados</span></div><a href="/#comprobar">Comprobar otra frase <span aria-hidden="true">↗</span></a></div><div class="affirmation-grid">{publishedClaims.map((item) => <a href={`/afirmaciones/${item.slug}`}><TopicBadge slug={item.topicSlug} compact /><h2>{item.claim.replace(/[“”]/g,'')}</h2><span>{assessmentLabels[item.assessment]} · Ver ficha →</span></a>)}</div></article></BaseLayout>
-<style>.affirmation-index-intro{display:grid;grid-template-columns:repeat(2,1fr) 1.6fr;gap:1px;background:var(--line);margin-top:45px}.affirmation-index-intro>div,.affirmation-index-intro>a{background:var(--paper-deep);padding:20px}.affirmation-index-intro strong,.affirmation-index-intro span{display:block}.affirmation-index-intro strong{font:400 2.8rem/.9 var(--serif);color:var(--red)}.affirmation-index-intro span{font:.68rem/1.3 var(--mono);margin-top:10px;text-transform:uppercase}.affirmation-index-intro>a{display:flex;justify-content:space-between;align-items:center;font:1.15rem var(--serif)}.affirmation-index-intro>a:hover{background:var(--ink);color:var(--paper)}.affirmation-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);margin-top:35px}.affirmation-grid a{background:var(--paper);padding:24px;min-height:190px}.affirmation-grid a:hover{background:var(--paper-deep)}.affirmation-grid h2{font:400 1.7rem/1 var(--serif);letter-spacing:-.04em;margin:28px 0}.affirmation-grid a>span:last-child{font:600 .65rem var(--mono);color:var(--red)}@media(max-width:650px){.affirmation-index-intro{grid-template-columns:1fr 1fr}.affirmation-index-intro>a{grid-column:1/-1}.affirmation-grid{grid-template-columns:1fr}}
+
+<BaseLayout title="Afirmaciones — El país está fatal" description="Afirmaciones sobre España comprobadas con contexto y fuentes originales.">
+  <article class="prose affirmation-index">
+    <p class="eyebrow">Preguntas comprobadas</p>
+    <h1>Afirmaciones,<br /><em>puestas a prueba.</em></h1>
+    <p class="lead">Escribe una frase como te la han enviado. Aquí encontrarás respuestas breves, datos decisivos y los límites de lo que se puede afirmar.</p>
+
+    <div class="affirmation-index-intro">
+      <div><strong>{publishedClaims.length}</strong><span>fichas publicadas</span></div>
+      <div><strong>{topicCount}</strong><span>temas conectados</span></div>
+      <a href="/#comprobar">Comprobar otra frase <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <section class="catalogue-tools" aria-labelledby="catalogue-tools-title">
+      <div class="catalogue-tools-heading">
+        <div><p class="eyebrow">Encuentra una conversación</p><h2 id="catalogue-tools-title">Busca por frase<br /><em>o por tema.</em></h2></div>
+        <p>La búsqueda entiende títulos, palabras habituales y formulaciones alternativas. Las fichas publicadas son la base revisada; las preguntas nuevas se comprueban desde la portada.</p>
+      </div>
+      <label class="catalogue-search-label" for="claim-catalog-search">Buscar una afirmación</label>
+      <div class="catalogue-search-wrap"><input id="claim-catalog-search" type="search" placeholder="Ej.: ayudas, vivienda, paro…" autocomplete="off" /><button id="claim-catalog-clear" type="button" hidden>Limpiar</button></div>
+      <div class="catalogue-filter-row" role="group" aria-label="Filtrar por tema"><span>Filtrar:</span><button type="button" data-topic-filter="all" aria-pressed="true">Todos <small>{publishedClaims.length}</small></button>{topicSlugs.map((slug) => <button type="button" data-topic-filter={slug} aria-pressed="false"><TopicBadge slug={slug} compact /><small>{publishedClaims.filter((claim) => claim.topicSlugs.includes(slug)).length}</small></button>)}</div>
+      <p id="claim-catalog-status" class="catalogue-status" aria-live="polite">{publishedClaims.length} fichas visibles</p>
+    </section>
+
+    <div class="affirmation-grid" id="claim-catalog-grid">
+      {publishedClaims.map((item) => <a data-claim-card data-topics={item.topicSlugs.join(' ')} data-search={searchable(item)} href={`/afirmaciones/${item.slug}`}><TopicBadge slug={item.topicSlug} compact /><h2>{item.claim.replace(/[“”]/g, '')}</h2><span>{assessmentLabels[item.assessment]} · Ver ficha →</span></a>)}
+    </div>
+    <p id="claim-catalog-empty" class="catalogue-empty" hidden>No hay una ficha con esa búsqueda. <a href="/#comprobar">Comprueba la frase directamente <span aria-hidden="true">↗</span></a></p>
+    <noscript><p class="catalogue-noscript">La búsqueda necesita JavaScript. Todas las fichas publicadas aparecen abajo.</p></noscript>
+  </article>
+</BaseLayout>
+
+<script src="../../scripts/claim-catalog.ts"></script>
+
+<style>
+  .affirmation-index-intro{display:grid;grid-template-columns:repeat(2,1fr) 1.6fr;gap:1px;background:var(--line);margin-top:45px}.affirmation-index-intro>div,.affirmation-index-intro>a{background:var(--paper-deep);padding:20px}.affirmation-index-intro strong,.affirmation-index-intro span{display:block}.affirmation-index-intro strong{font:400 2.8rem/.9 var(--serif);color:var(--red)}.affirmation-index-intro span{font:.68rem/1.3 var(--mono);margin-top:10px;text-transform:uppercase}.affirmation-index-intro>a{display:flex;justify-content:space-between;align-items:center;font:1.15rem var(--serif)}.affirmation-index-intro>a:hover{background:var(--ink);color:var(--paper)}
+  .catalogue-tools{border-top:2px solid var(--ink);border-bottom:1px solid var(--line);margin-top:55px;padding:35px 0 25px}.catalogue-tools-heading{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:end}.catalogue-tools-heading h2{font:400 clamp(2.2rem,4vw,4rem)/.9 var(--serif);letter-spacing:-.06em;margin:14px 0 0}.catalogue-tools-heading>p{color:var(--muted);font-size:.9rem;line-height:1.45;margin:0 0 4px}.catalogue-search-label{display:block;font:600 .65rem var(--mono);text-transform:uppercase;margin-top:30px}.catalogue-search-wrap{display:flex;border:2px solid var(--ink);background:var(--paper);margin-top:8px}.catalogue-search-wrap input{min-width:0;flex:1;border:0;background:transparent;outline:0;padding:14px 15px;font:1rem var(--sans)}.catalogue-search-wrap input:focus{box-shadow:inset 0 0 0 2px var(--focus)}.catalogue-search-wrap button{border:0;border-left:1px solid var(--line);background:transparent;padding:0 14px;font:600 .63rem var(--mono);cursor:pointer}.catalogue-search-wrap button:hover{background:var(--paper-deep)}.catalogue-filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:18px}.catalogue-filter-row>span{font:600 .62rem var(--mono);text-transform:uppercase;color:var(--muted);margin-right:3px}.catalogue-filter-row button{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);padding:7px 9px;cursor:pointer;font:600 .63rem var(--mono)}.catalogue-filter-row button:hover,.catalogue-filter-row button[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:var(--paper)}.catalogue-filter-row button[aria-pressed=true] .topic-badge{color:var(--paper)}.catalogue-filter-row .topic-badge{border:0;padding:0;background:transparent;color:inherit}.catalogue-filter-row small{font-size:.6rem;color:inherit;opacity:.7}.catalogue-status{color:var(--muted);font:.65rem var(--mono);margin:18px 0 0}.catalogue-empty{border-top:2px solid var(--ink);padding:22px 0;font:1.2rem var(--serif);margin-top:35px}.catalogue-empty a{color:var(--red)}.catalogue-noscript{color:var(--muted);font:.68rem var(--mono);margin-top:20px}
+  .affirmation-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);margin-top:35px}.affirmation-grid a{background:var(--paper);padding:24px;min-height:190px}.affirmation-grid a:hover{background:var(--paper-deep)}.affirmation-grid h2{font:400 1.7rem/1 var(--serif);letter-spacing:-.04em;margin:28px 0}.affirmation-grid a>span:last-child{font:600 .65rem var(--mono);color:var(--red)}.affirmation-grid a[hidden]{display:none}
+  @media(max-width:760px){.catalogue-tools-heading{grid-template-columns:1fr;gap:20px}.catalogue-tools{margin-top:45px}}
+  @media(max-width:650px){.affirmation-index-intro{grid-template-columns:1fr 1fr}.affirmation-index-intro>a{grid-column:1/-1}.affirmation-grid{grid-template-columns:1fr}.catalogue-filter-row{align-items:flex-start}.catalogue-filter-row>span{width:100%;margin-bottom:2px}}
 </style>
