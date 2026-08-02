@@ -82,10 +82,11 @@ const recordText = (record) => [
   JSON.stringify(record.dimensionLabels || {}),
 ].join(' ');
 
-export const rankWarehouseObservations = (query, records, limit = 12) => {
+export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2) return [];
-  return records.map((record) => {
+  const scopedRecords = metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records;
+  return scopedRecords.map((record) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
     return { record, score: matched.length / wanted.length, matched: matched.length, matchedTokens: matched };
@@ -115,10 +116,10 @@ export const rankWarehouseObservations = (query, records, limit = 12) => {
     }));
 };
 
-export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding } = {}) => {
+export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding, metricIds } = {}) => {
   if (postgresEnabled()) {
     const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
     if (results) return results;
   }
-  return rankWarehouseObservations(query, await readRecords(), limit);
+  return rankWarehouseObservations(query, await readRecords(), limit, { metricIds });
 };

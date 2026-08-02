@@ -64,6 +64,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
+  if (metricId === 'inflation_rate') return '% interanual';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
@@ -435,7 +436,9 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
-  const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding })).filter((item) => {
+  const hintedMetricIds = preferredMetricIdsForQuery(normalizedQuery);
+  const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
+  const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     if (item.evidenceFit === 'weak' && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
@@ -451,8 +454,6 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // Prefer an explicit population/subject signal before selecting a compatible
   // series, otherwise the larger generic family can win on tie-breaks and
   // silently answer a different question.
-  const hintedMetricIds = preferredMetricIdsForQuery(normalizedQuery);
-  const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
   const metricCandidates = hintedMetricIds.size
     ? candidates.filter((item) => hintedMetricIds.has(item.metricId))
     : candidates.filter((item) => !excludedMetricIds.has(item.metricId));

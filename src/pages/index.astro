@@ -10,6 +10,7 @@ import { claimIndexEntries } from '../data/claimIndexData';
 const featuredConcerns = concerns.filter((item) => ['vivienda','inmigracion','empleo','politica','sanidad'].includes(item.slug));
 const publishedClaimCount = claims.filter((item) => item.published).length;
 const warehousePrompts = [
+  '¿Cuál es la inflación anual en España?',
   '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
   '¿Cómo ha cambiado el déficit público sobre el PIB?',
   '¿Cómo ha evolucionado la renta mediana de los hogares?',

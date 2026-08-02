@@ -15,6 +15,14 @@
     "notEquivalentTo": ["house_price_index", "harmonised_price_index"],
     "dimensions": ["period", "geography", "consumption_group"]
   },
+  "inflation_rate": {
+    "name": "Harmonised annual inflation rate",
+    "aliases": ["inflación anual", "tasa de inflación", "subida de precios", "ritmo de los precios", "precios aumentan"],
+    "unit": "percent year-on-year",
+    "population": "consumer prices for all items, annual rate of change",
+    "notEquivalentTo": ["cpi_index", "harmonised_price_index"],
+    "dimensions": ["period", "geography", "consumption_group"]
+  },
   "gdp_current_prices": {
     "name": "Gross domestic product at current prices",
     "aliases": ["PIB", "GDP", "economía", "producción"],

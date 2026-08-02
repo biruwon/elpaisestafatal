@@ -95,6 +95,13 @@ if (process.env.SMOKE_DEDUPE === '1') {
 
 if (process.env.SMOKE_WAREHOUSE === '1') {
   try {
+    const result = await resolve('Cuál es la inflación anual en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`inflation warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'inflation_rate') failures.push('inflation warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('inflation warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== '% interanual') failures.push('inflation warehouse: did not localize the unit');
+  } catch (error) { failures.push(`inflation warehouse: ${error.message}`); }
+  try {
     const result = await resolve('precios de la vivienda en España');
     const series = result.result?.warehouseSeries;
     if (!['draft', 'partial'].includes(result.status)) failures.push(`warehouse: expected a provisional result, received ${result.status}`);

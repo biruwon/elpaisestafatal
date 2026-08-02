@@ -1,4 +1,6 @@
 export const warehouseRetrievalBenchmarkCases = [
+  ['inflacion-anual', 'Cuál es la inflación anual en España', 'inflation_rate'],
+  ['inflacion-precios', 'La tasa de inflación española sigue alta', 'inflation_rate'],
   ['ipc-cesta', 'Cuánto se ha encarecido la cesta de la compra en España', 'cpi_index'],
   ['ipc-precios', 'Los precios cotidianos no dejan de subir', 'cpi_index'],
   ['ipc-coste', 'Evolución del coste de vida de los hogares españoles', 'cpi_index'],

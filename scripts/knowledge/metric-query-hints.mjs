@@ -7,6 +7,8 @@ const normalise = (value) => String(value || '')
   .trim();
 
 const metricHints = [
+  { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
+  { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'precios aumentan'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion'] },
   { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt'] },
@@ -27,9 +29,14 @@ const metricHints = [
 
 export const preferredMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
-  return new Set(metricHints
+  const preferred = new Set(metricHints
     .filter((hint) => hint.terms.some((term) => normalized.includes(normalise(term))))
     .flatMap((hint) => hint.ids));
+  // “Inflation” can mean either the annual rate or the harmonised index.
+  // When the user explicitly asks for European comparability, the index is
+  // the intended family and must win over the generic inflation hint.
+  if (preferred.has('harmonised_price_index') && preferred.has('inflation_rate')) preferred.delete('inflation_rate');
+  return preferred;
 };
 
 export const excludedMetricIdsForQuery = (query) => {
@@ -39,6 +46,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const excluded = new Set();
   if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
   // Per-capita spending is useful context, but it cannot answer a broad claim
@@ -48,5 +56,6 @@ export const excludedMetricIdsForQuery = (query) => {
   // the change series out of generic population, migration, fertility, and
   // out-of-domain matches unless the wording explicitly asks about change.
   if (!populationChangeRequested) excluded.add('population_change_rate');
+  if (!inflationRequested) excluded.add('inflation_rate');
   return excluded;
 };
