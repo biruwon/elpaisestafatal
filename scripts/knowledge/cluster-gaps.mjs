@@ -59,6 +59,7 @@ const parseD1Clusters = (value) => {
   return asArray(possible).map((item) => ({
     id: item.id,
     signature: item.canonical_signature || item.signature,
+    semanticSignature: item.semantic_signature || item.semanticSignature,
     text: item.canonical_text || item.text,
     count: Number(item.query_count ?? item.count ?? 0),
     count7d: Number(item.count_7d ?? item.count7d ?? 0),
@@ -79,7 +80,8 @@ const clusterRecords = (records) => {
     const createdAt = item.createdAt || item.lastSeen || item.lastSeenAt || new Date().toISOString();
     const normalized = item.canonical || item.normalized || item.signature || normalise(item.input || item.extractedText || item.text);
     if (!normalized) continue;
-    let clusterKey = item.signature || normalized;
+    let clusterKey = item.semanticSignature || item.signature || normalized;
+    const surfaceSignature = item.signature || item.canonical || item.normalized || normalized;
     if (!clusters.has(clusterKey) && !item.fromD1) {
       const related = [...clusters.values()].find((candidate) => candidate.count >= 1 && similarity(candidate.signature, normalized) >= 0.62);
       if (related) clusterKey = related.signature;
@@ -87,6 +89,7 @@ const clusterRecords = (records) => {
     const current = clusters.get(clusterKey) || {
       id: item.id || `cluster-${normalise(clusterKey).replace(/ /g, '-').slice(0, 72)}`,
       signature: clusterKey,
+      surfaceSignatures: surfaceSignature !== clusterKey ? [surfaceSignature] : [],
       text: publicText(item.text || item.canonical || item.normalized || normalized),
       count: 0,
       count7d: 0,
@@ -112,6 +115,7 @@ const clusterRecords = (records) => {
       current.reviewStatus = item.reviewStatus || current.reviewStatus;
       current.linkedClaimSlug = item.linkedClaimSlug || current.linkedClaimSlug;
       current.sourceIds = [...new Set([...current.sourceIds, ...asArray(item.sourceIds)])].slice(0, 20);
+      if (surfaceSignature !== current.signature) current.surfaceSignatures = [...new Set([...current.surfaceSignatures, surfaceSignature])].slice(0, 10);
       clusters.set(clusterKey, current);
       continue;
     }
@@ -125,6 +129,7 @@ const clusterRecords = (records) => {
     current.firstSeen = earliest(current.firstSeen, createdAt);
     current.lastSeen = latest(current.lastSeen, createdAt);
     current.sourceIds = [...new Set([...current.sourceIds, ...asArray(item.sourceIds)])].slice(0, 20);
+    if (surfaceSignature !== current.signature) current.surfaceSignatures = [...new Set([...current.surfaceSignatures, surfaceSignature])].slice(0, 10);
     if (status === 'complete' || status === 'covered') current.coverageStatus = 'covered';
     else if (status === 'partial' && current.coverageStatus !== 'covered') current.coverageStatus = 'partial';
     clusters.set(clusterKey, current);

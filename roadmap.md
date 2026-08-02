@@ -128,6 +128,8 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - An unattended daily GitHub Actions refresh now fetches the approved public source set, validates the derived warehouse and SQL export, and retains a short-lived snapshot artifact for rebuilding the local retrieval copy without an editorial team.
 - Warehouse observations now carry schedule-aware source freshness; stale or future-dated snapshots are excluded from provisional retrieval, while missing timestamps are retained only as unknown and flagged by validation.
 - Uncovered responses now preserve and render that structured proposition breakdown in the browser; the UI labels it as provisional and keeps the limitation/next question visible instead of replacing it with a generic empty-result card.
+- Local compiler outputs now include a deterministic semantic family signature built from claim type, normalized concepts, entities, population, geography, period, and numeric dimensions; equivalent long-tail wording can enter one review cluster without exposing the signature publicly.
+- The knowledge-gap queue now groups by that semantic signature while retaining the original surface signatures, so future editorial work can see both the reusable family and the wording people actually submitted.
 - Quantity and proportion inputs now use a deterministic numeric comparison path: generic numeric index labels are removed from retrieval, claimed values are scaled for Spanish `mil`/`millones` wording, compatible units are required, and the result distinguishes an approximate match from a measurable mismatch before rendering the source.
 - The local service now has an explicit bounded evidence-packet contract and an opt-in answer-planner upgrade. The planner can rewrite presentation only after deterministic enrichment, while evidence IDs, source links, visual blocks, and unsupported numbers remain controlled by the deterministic plan; timeout or malformed output falls back automatically.
 - Popular unresolved query clusters now produce a review-only materialization queue with suggested slugs, counts, recent activity, growth, priority, source references, neutralized wording, and required review actions. The queue can merge local learning records with an exported production D1 snapshot, preserving review/coverage/link state instead of treating each environment as a separate backlog. It cannot publish directly: evidence must first be promoted into reviewed Git records and pass the existing relation/build gates.
@@ -165,7 +167,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 34 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses; richer semantic decomposition and evidence-level relationship metadata remain pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 34 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses and emits deterministic semantic family signatures; richer semantic decomposition and evidence-level relationship metadata remain pending.
 
 Create and enforce shared contracts for:
 
@@ -409,7 +411,7 @@ Add SSRF protection, size limits, MIME validation, timeouts, temporary media ret
 
 ## Phase 9 — Learning, popularity, and materialisation
 
-Status: started; durable review-queue merge and recency ranking are implemented; public promotion and static materialisation remain owner-approved.
+Status: started; durable review-queue merge, recency ranking, and deterministic semantic-family merging are implemented; public promotion and static materialisation remain owner-approved.
 
 Cluster inputs by canonical proposition signature. Track:
 

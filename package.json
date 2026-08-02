@@ -51,6 +51,7 @@
     "knowledge:answer-plan": "node scripts/knowledge/validate-answer-plan.mjs",
     "knowledge:evidence-packet": "node scripts/knowledge/validate-evidence-packet.mjs",
     "knowledge:fallback-compiler": "node scripts/knowledge/validate-fallback-compiler.mjs",
+    "knowledge:semantic-clustering": "node scripts/knowledge/validate-semantic-clustering.mjs",
     "knowledge:safe-url": "node scripts/knowledge/validate-safe-url.mjs",
     "knowledge:warehouse:sql": "node scripts/knowledge/export-warehouse-sql.mjs",
     "knowledge:warehouse:postgres": "node scripts/knowledge/load-warehouse-postgres.mjs",

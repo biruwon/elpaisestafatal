@@ -29,6 +29,49 @@ const entityAliases = [
   ['Europa', ['europa', 'europeo', 'europea', 'ue']],
 ];
 
+// These concepts are deliberately broader than editorial claim aliases. They
+// give equivalent long-tail wording one stable family key without pretending
+// that every semantically related sentence is the same published claim.
+const semanticConceptAliases = [
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'patera', 'pateras', 'asilo']],
+  ['crime', ['delincuencia', 'delito', 'delitos', 'crimen', 'inseguridad', 'inseguro', 'peligrosa', 'peligro', 'violencia', 'robos']],
+  ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
+  ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
+  ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'recaudación', 'presion fiscal']],
+  ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
+  ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
+  ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara']],
+  ['benefits', ['ayudas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio']],
+  ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
+  ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política']],
+];
+
+const semanticConcepts = (value) => semanticConceptAliases
+  .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
+  .map(([concept]) => concept);
+
+const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
+
+export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [] } = {}) => {
+  const explicit = propositions.filter((item) => item && item.explicit !== false);
+  const comparisonLike = claimType === 'comparative' || claimType === 'mixed' || explicit.some((item) => item.type === 'comparative');
+  const propositionKeys = explicit.map((item) => {
+    const concepts = semanticConcepts(item.text);
+    const terms = concepts.length ? concepts : semanticTermFallback(item.text);
+    return `${item.type || 'mixed'}:${[...new Set(terms)].sort().join('+')}`;
+  }).filter((value) => !value.endsWith(':'));
+  const dimensions = [
+    claimType || 'unknown',
+    ...[...new Set(entities.flatMap((entity) => semanticConcepts(entity)))].map((value) => `entity:${value}`),
+    ...(geography ? [`geo:${normalise(geography)}`] : []),
+    ...(population && comparisonLike ? [`population:${normalise(population)}`] : []),
+    ...(period ? [`period:${normalise(period)}`] : []),
+    ...numbers.slice(0, 4).map((value) => `number:${normalise(value)}`),
+    ...[...new Set(propositionKeys)].sort(),
+  ];
+  return [...new Set(dimensions)].join('|').slice(0, 600);
+};
+
 const regions = ['andalucia', 'aragon', 'asturias', 'baleares', 'canarias', 'cantabria', 'castilla la mancha', 'castilla y leon', 'cataluna', 'comunidad valenciana', 'extremadura', 'galicia', 'madrid', 'murcia', 'navarra', 'pais vasco', 'rioja', 'ceuta', 'melilla'];
 
 const populationAliases = [
@@ -154,6 +197,7 @@ export const deterministicFallbackCompiler = (text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints,
+    semanticSignature: semanticSignatureFor({ claimType, propositions, entities, geography, period, population, numbers }),
     clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !original,
   };
 };

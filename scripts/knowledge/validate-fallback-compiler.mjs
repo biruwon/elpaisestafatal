@@ -3,7 +3,9 @@ import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const causal = deterministicFallbackCompiler('Los inmigrantes crean inseguridad en España');
+const equivalentCausal = deterministicFallbackCompiler('La inmigración aumenta la delincuencia en España');
 assert(causal.claimType === 'causal', 'Causal claim type was not detected');
+assert(causal.semanticSignature === equivalentCausal.semanticSignature, 'Equivalent causal wording did not receive the same semantic signature');
 assert(causal.entities.includes('inmigración') && causal.geography === 'España', 'Causal entities/geography were not detected');
 assert(causal.population === 'personas inmigrantes o extranjeras', 'Causal population was not detected');
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
@@ -43,5 +45,6 @@ assert(trend.claimType === 'trend', 'Trend claim type was not detected');
 const broad = deterministicFallbackCompiler('España está destruida');
 assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');
 assert(broad.clarificationRequired === true, 'Broad evaluative claim did not require clarification');
+assert(broad.semanticSignature !== causal.semanticSignature, 'Broad evaluative wording collapsed into an unrelated causal family');
 
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');

@@ -12,7 +12,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
-import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
+import { deterministicFallbackCompiler, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
@@ -94,13 +94,14 @@ const percentile = (values, fraction) => {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
 };
 
-const recordKnowledgeGap = async (text, result, inputType = 'text') => {
+const recordKnowledgeGap = async (text, result, inputType = 'text', classified) => {
   if (!['uncovered', 'draft', 'partial'].includes(result.status)) return;
   await appendFile(knowledgeGapPath, `${JSON.stringify({
     createdAt: new Date().toISOString(),
     inputType,
     normalized: normalise(text),
     canonical: result.canonicalSignature || canonicalSignatureFor(text),
+    semanticSignature: classified?.compiler?.semanticSignature || '',
     status: result.status,
     requestId: result.requestId,
     sourceIds: result.result?.sourceIds || [],
@@ -161,6 +162,7 @@ const compilerSchema = {
     period: { type: ['string', 'null'] },
     population: { type: ['string', 'null'] },
     retrievalHints: { type: 'array', items: { type: 'string' } },
+    semanticSignature: { type: 'string' },
     clarificationRequired: { type: 'boolean' },
     routing: {
       type: 'object',
@@ -203,6 +205,9 @@ const normalizeCompiler = (value, text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
+    semanticSignature: typeof value.semanticSignature === 'string' && value.semanticSignature.trim()
+      ? value.semanticSignature.slice(0, 600)
+      : semanticSignatureFor({ claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed', propositions, entities: Array.isArray(value.entities) ? value.entities : [], geography: typeof value.geography === 'string' ? value.geography : null, period: typeof value.period === 'string' ? value.period : null, population: typeof value.population === 'string' ? value.population : null, numbers: Array.isArray(value.numbers) ? value.numbers : [] }),
     clarificationRequired: value.clarificationRequired === true,
     routing: value.routing && typeof value.routing === 'object' ? {
       status: ['published', 'related', 'uncovered'].includes(value.routing.status) ? value.routing.status : 'uncovered',
@@ -666,7 +671,7 @@ const startResolveJob = (text) => {
     const completed = { ...await enrichResolve(text, classified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
-    void recordKnowledgeGap(text, completed);
+    void recordKnowledgeGap(text, completed, 'text', classified);
   }).catch(() => {
     const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
@@ -688,10 +693,11 @@ const startMediaResolveJob = (text, inputType, media) => {
     const extracted = inputType === 'image' ? await extractImageText(media) : await transcribeAudio(media);
     if (!extracted) throw new Error('No text extracted');
     const combined = [text, extracted].filter(Boolean).join('\n\n');
-    const completed = { ...await enrichResolve(combined, await classify(combined), undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
+    const classified = await classify(combined);
+    const completed = { ...await enrichResolve(combined, classified, undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
-    void recordKnowledgeGap(combined, completed, inputType);
+    void recordKnowledgeGap(combined, completed, inputType, classified);
   })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }; resolveJobs.set(id, completed); recordCompletion(job.createdAt, completed.status); });
   return job;
 };
