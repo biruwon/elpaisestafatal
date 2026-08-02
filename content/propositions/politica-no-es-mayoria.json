@@ -1,0 +1,13 @@
+{
+  "id": "prop-politica-no-es-mayoria-core",
+  "claimSlug": "politica-no-es-mayoria",
+  "text": "El peso de una categoría política en las menciones de una encuesta no demuestra que sea la preocupación de la mayoría absoluta.",
+  "type": "mixed",
+  "subject": "political_concern_category",
+  "predicate": "does_not_establish",
+  "object": "absolute_majority",
+  "geography": "Spain",
+  "period": "2026",
+  "status": "supported",
+  "evidenceIds": ["politica-preocupacion-no-mayoria"]
+}

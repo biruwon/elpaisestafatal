@@ -1,0 +1,13 @@
+{
+  "id": "prop-espera-media-baja-listas-resueltas-core",
+  "claimSlug": "espera-media-baja-listas-resueltas",
+  "text": "Una reducción de la espera media quirúrgica no demuestra que las listas de espera estén resueltas.",
+  "type": "mixed",
+  "subject": "surgical_waiting_list",
+  "predicate": "is_not_proven_resolved_by",
+  "object": "lower_average_wait",
+  "geography": "Spain",
+  "period": "2024-2025",
+  "status": "supported",
+  "evidenceIds": ["sanidad-espera-baja-no-resuelta"]
+}

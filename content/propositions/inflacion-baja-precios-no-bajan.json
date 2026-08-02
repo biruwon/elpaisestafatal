@@ -1,0 +1,13 @@
+{
+  "id": "prop-inflacion-baja-precios-no-bajan-core",
+  "claimSlug": "inflacion-baja-precios-no-bajan",
+  "text": "Una menor inflación no equivale a una caída general del nivel de precios.",
+  "type": "definition",
+  "subject": "inflation_rate",
+  "predicate": "is_not_equivalent_to",
+  "object": "price_level_decline",
+  "geography": "Spain",
+  "period": "2026",
+  "status": "supported",
+  "evidenceIds": ["economia-inflacion-no-deflacion"]
+}

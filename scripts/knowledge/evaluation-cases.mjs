@@ -18,6 +18,9 @@ const knownSeeds = [
   ['record-empleo-no-resuelve-paro', 'trend', 'Un récord de ocupación significa que el paro ya está resuelto'],
   ['subida-vivienda-no-todas-igual', 'definition', 'Si la vivienda sube un 12,9%, todas las casas suben lo mismo'],
   ['recaudacion-no-factura-hogar', 'definition', 'Si la recaudación tributaria sube un 10,4%, todos pagan un 10,4% más'],
+  ['inflacion-baja-precios-no-bajan', 'definition', 'Si baja la inflación, los precios están bajando'],
+  ['espera-media-baja-listas-resueltas', 'definition', 'Si baja la espera media quirúrgica, las listas ya están resueltas'],
+  ['politica-no-es-mayoria', 'quantity', 'La política es la preocupación de la mayoría de españoles'],
 ];
 
 // These are deliberately present in the corpus as unpublished claims. The
