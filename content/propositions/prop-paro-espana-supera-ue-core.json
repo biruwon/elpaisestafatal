@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-espana-supera-ue-core",
+  "claimSlug": "paro-espana-supera-ue",
+  "text": "La tasa de desempleo de España supera la media de la Unión Europea",
+  "type": "comparative",
+  "subject": "España",
+  "predicate": "has_higher_unemployment_than",
+  "object": "UE-27",
+  "geography": "España y UE-27",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["paro-espana-ue-eurostat"]
+}

@@ -22,6 +22,7 @@ const popularSlugs = [
   'electricidad-hogares-sube',
   'paro-juvenil-alto',
   'paro-epa-supera-10',
+  'paro-espana-supera-ue',
   'ingresos-publicos-superan-40',
   'gasto-publico-supera-45',
   'deficit-publico-baja-3',

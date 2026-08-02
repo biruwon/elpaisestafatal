@@ -89,6 +89,7 @@
     ,{"evidenceId":"paro-juvenil-eurostat","propositionId":"prop-paro-juvenil-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"paro-epa-supera-10","propositionId":"prop-paro-epa-supera-10-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"deuda-publica-eurostat","propositionId":"prop-deuda-publica-supera-100-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    ,{"evidenceId":"paro-espana-ue-eurostat","propositionId":"prop-paro-espana-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"ingresos-publicos-eurostat","propositionId":"prop-ingresos-publicos-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"gasto-publico-eurostat","propositionId":"prop-gasto-publico-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deficit-publico-eurostat","propositionId":"prop-deficit-publico-bajo-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}

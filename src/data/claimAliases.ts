@@ -63,6 +63,13 @@ export const claimAliases: Record<string, string[]> = {
     'el paro real está por encima del 10%',
     'la tasa de paro sigue alta',
   ],
+  'paro-espana-supera-ue': [
+    'España tiene más desempleo que Europa',
+    'el paro español supera la media europea',
+    'España está peor que la UE en paro',
+    'la tasa de paro de España es mayor que la europea',
+    'España lidera el paro europeo',
+  ],
   'ingresos-publicos-superan-40': [
     'España recauda más del 40% del PIB',
     'los ingresos públicos superan el 40 por ciento',
