@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-juvenil-alto-core",
+  "claimSlug": "paro-juvenil-alto",
+  "text": "La tasa de paro de las personas de 15 a 24 años en España fue 24,9% en 2025.",
+  "type": "trend",
+  "subject": "youth_unemployment_rate",
+  "predicate": "was",
+  "object": "24.9 percent in 2025",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["paro-juvenil-eurostat"]
+}

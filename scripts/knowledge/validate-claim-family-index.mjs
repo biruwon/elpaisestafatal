@@ -59,6 +59,16 @@ if (!match) {
       variants: ['la luz cuesta más de 28 céntimos', 'el precio de la electricidad supera 0,28 euros', 'la electricidad para hogares es cara'],
     },
     {
+      slug: 'paro-juvenil-alto',
+      prompt: 'Casi uno de cada cuatro jóvenes activos está en paro',
+      variants: ['el paro juvenil sigue por encima del 20%', 'uno de cada cuatro jóvenes está en paro', 'los jóvenes tienen mucho paro'],
+    },
+    {
+      slug: 'ingresos-publicos-superan-40',
+      prompt: 'Los ingresos públicos de España superan el 40% del PIB',
+      variants: ['España recauda más del 40% del PIB', 'los ingresos públicos superan el 40 por ciento', 'la recaudación pública supera el 40%'],
+    },
+    {
       slug: 'sobrecarga-vivienda-baja',
       prompt: 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015',
       variants: ['la sobrecarga de la vivienda ha bajado', 'el esfuerzo de vivienda ha bajado', 'los gastos de vivienda pesan menos'],

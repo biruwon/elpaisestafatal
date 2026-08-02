@@ -1,0 +1,13 @@
+{
+  "id": "prop-ingresos-publicos-alto-core",
+  "claimSlug": "ingresos-publicos-superan-40",
+  "text": "Los ingresos totales de las administraciones públicas españolas superaron el 40% del PIB en 2025.",
+  "type": "trend",
+  "subject": "government_revenue_ratio",
+  "predicate": "exceeded",
+  "object": "40 percent of GDP in 2025",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["ingresos-publicos-eurostat"]
+}

@@ -20,6 +20,8 @@ const popularSlugs = [
   'cibercriminalidad-crece',
   'esperanza-vida-alta',
   'electricidad-hogares-sube',
+  'paro-juvenil-alto',
+  'ingresos-publicos-superan-40',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

@@ -49,6 +49,20 @@ export const claimAliases: Record<string, string[]> = {
     'el precio de la luz en España supera 0,28',
     'precio luz hogares España',
   ],
+  'paro-juvenil-alto': [
+    'el paro juvenil sigue por encima del 20%',
+    'uno de cada cuatro jóvenes está en paro',
+    'los jóvenes tienen mucho paro',
+    'el desempleo juvenil en España es del 25%',
+    'paro entre los jóvenes',
+  ],
+  'ingresos-publicos-superan-40': [
+    'España recauda más del 40% del PIB',
+    'los ingresos públicos superan el 40 por ciento',
+    'la recaudación pública supera el 40%',
+    'el Estado ingresa más del 40% del PIB',
+    'ingresos públicos España',
+  ],
   'sobrecarga-vivienda-baja': [
     'la sobrecarga de la vivienda ha bajado',
     'menos personas sufren sobrecarga de vivienda',
