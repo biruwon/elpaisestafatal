@@ -301,10 +301,15 @@ const oneEditAway = (left, right) => {
 };
 const lexicalScore = (query, entry) => {
   const queryText = normalise(query);
+  const phrases = [entry.title, ...(entry.aliases || [])].map(normalise).filter(Boolean);
   const haystack = normalise(searchText(entry));
   if (!queryText || !haystack) return 0;
-  if (haystack === queryText) return 1;
-  if (haystack.includes(queryText) || queryText.includes(haystack)) return 0.9;
+  // Score a complete title/alias before token overlap. Joining every alias
+  // into one haystack can make an unrelated family look like an exact match
+  // when its words happen to occur across different aliases.
+  if (phrases.some((phrase) => phrase === queryText)) return 1;
+  const phraseContained = (text, phrase) => ` ${text} `.includes(` ${phrase} `);
+  if (phrases.some((phrase) => phrase.length >= 10 && (phraseContained(phrase, queryText) || phraseContained(queryText, phrase)))) return 0.9;
   const wanted = tokens(queryText).filter((token) => !lowSignalTokens.has(token));
   const available = new Set(tokens(haystack));
   return wanted.length ? wanted.filter((token) => available.has(token) || [...available].some((candidate) => oneEditAway(token, candidate))).length / wanted.length : 0;
@@ -632,7 +637,8 @@ const classify = async (text) => {
   // makes the inferred handler look different. The published claim itself
   // defines the evidence contract; handler compatibility is for paraphrase
   // candidates, not for rejecting the claim the user literally entered.
-  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && exactCanonicalWording && top.lexical >= 0.9);
+  const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
+  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase) && top.lexical >= 0.9);
   const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers);
   if (canonicalPhrase || strongMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
@@ -751,7 +757,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const quantity = isQuantityLike ? quantityAssessment(text, classified.compiler, observations) : null;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || isDefinition;
   const usableSource = suppressGenericSource ? undefined : source;
-  const status = classified.status === 'published' ? 'complete' : classified.status === 'related' ? 'partial' : usableSource ? 'draft' : 'uncovered';
+  const status = classified.status === 'published'
+    ? 'complete'
+    : isGroupComparison
+      ? (usableSource ? 'draft' : 'uncovered')
+      : classified.status === 'related'
+        ? 'partial'
+        : usableSource ? 'draft' : 'uncovered';
   const ranking = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : null;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
@@ -948,8 +960,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const relatedTopic = !primary ? classified.alternatives?.find((item) => item.kind === 'topic') : undefined;
   const result = {
     schemaVersion: '1',
-    headline: primary?.title || (relatedTopic ? 'La conversación apunta a un tema político amplio' : valuesContext?.headline || groupContext?.headline || quantityContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.')),
-    summary: primary ? answer : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    headline: primary?.title || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || quantityContext ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: primary.propositionIds || [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...relatedGuidanceBlocks, ...(provisionalBlocks.length ? provisionalBlocks : relatedGuidanceBlocks.length ? [] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
@@ -962,7 +974,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
   const validation = validateAnswerPlan(result, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,

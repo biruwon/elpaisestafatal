@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run deployment:validate && astro build && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run deployment:validate && astro build && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -44,6 +44,7 @@
     "knowledge:d1-semantic": "node scripts/knowledge/validate-d1-semantic-clusters.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
+    "knowledge:family-index": "node scripts/knowledge/validate-claim-family-index.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:backfill-signatures": "node scripts/knowledge/backfill-gap-signatures.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
