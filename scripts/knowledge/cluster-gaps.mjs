@@ -49,6 +49,24 @@ const latest = (left, right) => !left ? right : !right ? left : timestamp(left) 
 const increment = (map, key, amount = 1) => { if (!key) return; map[key] = (map[key] || 0) + amount; };
 const asArray = (value) => Array.isArray(value) ? value : [];
 
+const meaningfulTokens = (value) => [...tokens(value)].filter((token) => token.length >= 3);
+const operationalFailurePattern = /ollama|local transcription|transcription (?:is )?unavailable|audio input requires|no se ejecuto|fetch failed|provider|runtime (?:is )?not installed|screenshot attached/i;
+const excludedOrigins = new Set(['evaluation', 'smoke', 'fixture', 'test']);
+const isReviewableRecord = (item) => {
+  if (item?.fromD1) return true;
+  if (excludedOrigins.has(String(item?.origin || '').toLowerCase())) return false;
+  const inputType = String(item?.inputType || 'text').toLowerCase();
+  const rawText = [item?.input, item?.text, item?.normalized, item?.extractedText, item?.classification?.reason].filter(Boolean).join(' ');
+  const candidateText = item?.canonical || item?.normalized || item?.extractedText || item?.input || item?.text || '';
+  if (!candidateText || meaningfulTokens(candidateText).length < 2) return false;
+  if (inputType === 'audio' && (!item?.extractedText || operationalFailurePattern.test(rawText))) return false;
+  if (inputType === 'image' && operationalFailurePattern.test(rawText)) return false;
+  if (operationalFailurePattern.test(rawText)) return false;
+  if (/^(?:audio|screenshot|image|archivo|file)\b/i.test(String(candidateText).trim())) return false;
+  if (/^(?:\/|[a-z]:\\|https?:\/\/localhost)/i.test(String(item?.input || ''))) return false;
+  return true;
+};
+
 const readText = async (path) => {
   try { return await readFile(path, 'utf8'); } catch { return ''; }
 };
@@ -158,8 +176,15 @@ const clusterRecords = (records) => {
 };
 
 const localRaw = await readText(inputPath);
-const localRecords = localRaw.split('\n').filter(Boolean).flatMap((line) => {
+const parsedLocalRecords = localRaw.split('\n').filter(Boolean).flatMap((line) => {
   try { return [JSON.parse(line)]; } catch { return []; }
+});
+const excludedReasons = {};
+const localRecords = parsedLocalRecords.filter((item) => {
+  if (isReviewableRecord(item)) return true;
+  const reason = item?.inputType === 'audio' && !item?.extractedText ? 'media_without_text' : operationalFailurePattern.test([item?.input, item?.text, item?.extractedText, item?.classification?.reason].filter(Boolean).join(' ')) ? 'operational_failure' : 'low_signal';
+  increment(excludedReasons, reason);
+  return false;
 });
 const d1Records = d1InputPath ? parseD1Clusters(await readText(d1InputPath)) : [];
 if (!localRecords.length && !d1Records.length) {
@@ -167,5 +192,5 @@ if (!localRecords.length && !d1Records.length) {
   process.exit(0);
 }
 const result = clusterRecords([...localRecords, ...d1Records]);
-await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, d1Clusters: d1Records.length }, clusters: result }, null, 2));
-console.log(`Knowledge-gap review queue written: ${result.length} clusters from ${localRecords.length} local records and ${d1Records.length} D1 clusters.`);
+await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length }, clusters: result }, null, 2));
+console.log(`Knowledge-gap review queue written: ${result.length} clusters from ${localRecords.length} reviewable local records and ${d1Records.length} D1 clusters; excluded ${parsedLocalRecords.length - localRecords.length} low-signal or failed records.`);

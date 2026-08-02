@@ -17,6 +17,8 @@ const records = [
   { id: 'gap-1', input: 'Los inmigrantes crean inseguridad en España', canonical: 'crean espana inmigrantes inseguridad', semanticSignature: first.semanticSignature, status: 'uncovered', createdAt: new Date().toISOString() },
   { id: 'gap-2', input: 'La inmigración aumenta la delincuencia en España', canonical: 'aumenta delincuencia espana inmigracion', semanticSignature: equivalent.semanticSignature, status: 'uncovered', createdAt: new Date().toISOString() },
   { id: 'gap-3', input: 'España cobra demasiados impuestos', canonical: 'cobra demasiados espana impuestos', semanticSignature: unrelated.semanticSignature, status: 'uncovered', createdAt: new Date().toISOString() },
+  { id: 'gap-media-failure', inputType: 'audio', input: '/tmp/example.m4a', extractedText: 'Audio transcription is not available because no local transcription runtime is installed.', classification: { reason: 'Audio input requires a local transcription runtime.' }, status: 'uncovered', createdAt: new Date().toISOString() },
+  { id: 'gap-test-origin', input: 'La brecha salarial de genero es un mito', origin: 'evaluation', semanticSignature: 'descriptive|descriptive:brecha+genero+mito+salarial', status: 'uncovered', createdAt: new Date().toISOString() },
 ].map((record) => JSON.stringify(record)).join('\n');
 try {
   await writeFile(input, `${records}\n`);
@@ -26,6 +28,8 @@ try {
   const merged = result.clusters.find((cluster) => cluster.signature === first.semanticSignature);
   assert(merged?.exampleCount === 2, 'Equivalent causal inputs were not merged into one review cluster');
   assert(merged.surfaceSignatures.length === 2, 'Merged cluster did not retain both surface signatures');
+  assert(!result.clusters.some((cluster) => /audio|transcription|example m4a/i.test(cluster.text)), 'Failed media input entered the review queue');
+  assert(!result.clusters.some((cluster) => /brecha salarial/i.test(cluster.text)), 'Evaluation-origin input entered the review queue');
 } finally {
   await rm(directory, { recursive: true, force: true });
 }

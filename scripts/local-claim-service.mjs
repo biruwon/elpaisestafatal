@@ -114,10 +114,11 @@ const percentile = (values, fraction) => {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
 };
 
-const recordKnowledgeGap = async (text, result, inputType = 'text', classified) => {
+const recordKnowledgeGap = async (text, result, inputType = 'text', classified, origin = 'runtime') => {
   if (!['uncovered', 'draft', 'partial'].includes(result.status)) return;
   await appendFile(knowledgeGapPath, `${JSON.stringify({
     createdAt: new Date().toISOString(),
+    origin,
     inputType,
     normalized: normalise(text),
     canonical: result.canonicalSignature || canonicalSignatureFor(text),
@@ -758,7 +759,7 @@ const classify = async (text) => {
 
 const requestId = (text) => digest(normalise(text)).slice(0, 24);
 
-const startResolveJob = (text) => {
+const startResolveJob = (text, origin = 'runtime') => {
   const id = requestId(text);
   const signature = canonicalSignatureFor(text);
   // Coalesce exact duplicate submissions only. A canonical signature removes
@@ -774,7 +775,7 @@ const startResolveJob = (text) => {
     const completed = { ...await enrichResolve(text, classified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
-    void recordKnowledgeGap(text, completed, 'text', classified);
+    void recordKnowledgeGap(text, completed, 'text', classified, origin);
   }).catch(() => {
     const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
@@ -783,7 +784,7 @@ const startResolveJob = (text) => {
   return job;
 };
 
-const startMediaResolveJob = (text, inputType, media) => {
+const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
   const id = requestId(`${inputType}:${media?.sha || text}`);
   const existing = resolveJobs.get(id);
   if (existing) return existing;
@@ -800,7 +801,7 @@ const startMediaResolveJob = (text, inputType, media) => {
     const completed = { ...await enrichResolve(combined, classified, undefined, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
-    void recordKnowledgeGap(combined, completed, inputType, classified);
+    void recordKnowledgeGap(combined, completed, inputType, classified, origin);
   })().catch(async (error) => {
     console.error('Media extraction failed:', error instanceof Error ? error.message : error);
     // A typed caption is already a valid claim input. If local media
@@ -812,7 +813,7 @@ const startMediaResolveJob = (text, inputType, media) => {
         const completed = { ...await enrichResolve(text, classified, undefined, id), inputType, createdAt: job.createdAt, completedAt: Date.now() };
         resolveJobs.set(id, completed);
         recordCompletion(job.createdAt, completed.status);
-        void recordKnowledgeGap(text, completed, inputType, classified);
+        void recordKnowledgeGap(text, completed, inputType, classified, origin);
         return;
       } catch (fallbackError) {
         console.error('Typed media fallback failed:', fallbackError instanceof Error ? fallbackError.message : fallbackError);
@@ -1221,7 +1222,8 @@ const server = createServer(async (request, response) => {
       if (body.tooLarge) { response.writeHead(413, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable', relatedClaims: [] })); return; }
       const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: body.hasFile, fileSize: body.media?.base64 ? Buffer.byteLength(body.media.base64, 'base64') : 0, mimeType: body.media?.mime });
       if (!validation.ok) { response.writeHead(validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'empty' || validation.code === 'invalid_url' ? 400 : 415, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: validation.code === 'empty' || validation.code === 'text_too_large' ? 'uncovered' : 'unavailable', relatedClaims: [] })); return; }
-      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
+      const origin = typeof request.headers['x-knowledge-gap-origin'] === 'string' ? request.headers['x-knowledge-gap-origin'].slice(0, 32) : 'runtime';
+      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media, origin) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text, origin) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text || body.hasFile ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

@@ -9,4 +9,5 @@ if (candidates.length !== 1 || candidates[0].clusterId !== 'popular') throw new 
 if (candidates[0].reviewStatus !== 'needs_review' || !candidates[0].suggestedSlug || candidates[0].requiredActions.length < 3 || candidates[0].count7d !== 4 || candidates[0].growthRate !== 1.33 || !candidates[0].reason) throw new Error('candidate lacks review metadata');
 if (rankMaterializationCandidates([{ id: 'covered', text: 'Ya cubierta', count: 8, sourceIds: ['e3'], coverageStatus: 'covered' }]).length !== 0) throw new Error('covered cluster bypassed materialization gate');
 if (rankMaterializationCandidates([{ id: 'newly-covered', text: 'Cobertura nueva', count: 8, sourceIds: ['e4'], coverageStatus: 'covered', newlyCovered: true }]).length !== 1) throw new Error('newly covered cluster was lost from review queue');
+if (rankMaterializationCandidates([{ id: 'noisy', text: 'Audio transcription unavailable', count: 80, sourceIds: ['e5'], coverageStatus: 'partial', reviewable: false }]).length !== 0) throw new Error('non-reviewable cluster entered materialization queue');
 console.log('Materialization candidate validation passed: popularity never bypasses review gates.');

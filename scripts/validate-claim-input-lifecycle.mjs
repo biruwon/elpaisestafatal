@@ -11,7 +11,7 @@ const required = [
   'conversation-counter',
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
-  'Mejorando esta orientación',
+  'Añadiendo contexto',
   'Orientación rápida disponible',
   'claim-result-enrichment',
   'statusState',

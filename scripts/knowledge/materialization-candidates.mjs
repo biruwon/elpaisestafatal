@@ -22,7 +22,7 @@ const slugify = (value) => String(value || '')
   .slice(0, 72) || 'aclaracion-sin-titulo';
 
 export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50 } = {}) => (Array.isArray(clusters) ? clusters : [])
-  .filter((cluster) => cluster && Number(cluster.count ?? cluster.exampleCount) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published' && (cluster.coverageStatus !== 'covered' || cluster.newlyCovered))
+  .filter((cluster) => cluster && cluster.reviewable !== false && Number(cluster.count ?? cluster.exampleCount) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published' && (cluster.coverageStatus !== 'covered' || cluster.newlyCovered))
   .map((cluster) => ({
     clusterId: String(cluster.id || `cluster-${slugify(cluster.signature)}`),
     canonicalText: String(cluster.text || cluster.signature || '').slice(0, 400),

@@ -15,7 +15,7 @@ let cursor = 0;
 const resolve = async (item) => {
   const started = performance.now();
   try {
-    const response = await fetch(`${base}${resolvePath}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: item.input, inputType: 'text' }), signal: AbortSignal.timeout(15000) });
+    const response = await fetch(`${base}${resolvePath}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-knowledge-gap-origin': 'evaluation' }, body: JSON.stringify({ text: item.input, inputType: 'text' }), signal: AbortSignal.timeout(15000) });
     if (!response.ok) throw new Error(`POST ${response.status}`);
     let result = await response.json();
     for (let attempt = 0; attempt < 40 && result.status === 'processing'; attempt += 1) {

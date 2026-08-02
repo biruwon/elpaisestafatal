@@ -436,7 +436,7 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   status.dataset.statusState = state;
   status.setAttribute('aria-live', 'polite');
   status.setAttribute('role', 'status');
-  status.innerHTML = `<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Mejorando esta orientación' : state === 'slow' ? 'La orientación inicial permanece disponible' : 'Orientación rápida disponible'}</strong><span>${escapeHtml(message)}</span></div>`;
+  status.innerHTML = `<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Añadiendo contexto' : state === 'slow' ? 'La orientación inicial es el resultado disponible' : 'La orientación inicial se conserva'}</strong><span>${escapeHtml(message)}</span></div>`;
   result.querySelector('article')?.append(status);
 };
 
@@ -530,7 +530,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      setDynamicStatus('La ampliación está tardando más de lo previsto; no necesitas esperar ni volver a enviar la frase.', 'slow');
+      setDynamicStatus('No hemos podido añadir una ficha automática ahora. Esto no significa que la afirmación sea verdadera o falsa; puedes usar la orientación visible y concretarla cuando tengas una fecha, lugar o fuente.', 'slow');
       return;
     }
     if (data.status === 'unavailable') {
