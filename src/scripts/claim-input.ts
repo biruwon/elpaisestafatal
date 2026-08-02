@@ -466,7 +466,10 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   status.dataset.statusState = state;
   status.setAttribute('aria-live', 'polite');
   status.setAttribute('role', 'status');
-  status.innerHTML = `<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Añadiendo contexto' : state === 'slow' ? 'La orientación inicial es el resultado disponible' : 'La orientación inicial se conserva'}</strong><span>${escapeHtml(message)}</span></div>`;
+  const progress = state === 'running'
+    ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
+    : '';
+  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Orientación inicial disponible' : state === 'slow' ? 'La orientación inicial es el resultado disponible' : 'La orientación inicial se conserva'}</strong><span>${escapeHtml(message)}</span></div>`;
   result.querySelector('article')?.append(status);
 };
 
@@ -543,7 +546,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
           ? 'La orientación inicial está lista; estamos transcribiendo el audio.'
           : inputType === 'url'
             ? 'La orientación inicial está lista; estamos leyendo la página enlazada.'
-            : 'La orientación inicial está lista; buscamos una ficha o datos adicionales.';
+            : 'La respuesta rápida ya está lista; añadimos contexto automático si encontramos una ficha o datos útiles.';
       setDynamicStatus(processingMessage, 'running');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
