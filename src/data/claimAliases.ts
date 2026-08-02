@@ -14,6 +14,13 @@ export const claimAliases: Record<string, string[]> = {
     'la población española está envejecida',
     'cada vez hay más jubilados',
   ],
+  'espana-fecundidad-baja': [
+    'España tiene una fecundidad muy baja',
+    'la natalidad está por los suelos',
+    'cada mujer tiene menos de 1,2 hijos',
+    'en España nacen muy pocos niños',
+    'España no tiene hijos',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

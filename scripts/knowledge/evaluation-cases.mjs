@@ -6,6 +6,7 @@ const knownSeeds = [
   ['alquileres-suben', 'trend', 'Los alquileres han subido en España desde 2015'],
   ['espana-pierde-poblacion', 'trend', 'España está perdiendo población'],
   ['espana-envejece', 'trend', 'España está cada vez más envejecida'],
+  ['espana-fecundidad-baja', 'quantity', 'España tiene menos de 1,2 hijos por mujer'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],
   ['empleo-record', 'trend', 'España tiene más empleo que nunca'],
   ['fijos-discontinuos', 'definition', 'Los fijos discontinuos son parados ocultos'],

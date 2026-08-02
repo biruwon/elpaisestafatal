@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-fecundidad-baja-core",
+  "claimSlug": "espana-fecundidad-baja",
+  "text": "La tasa global de fecundidad de España fue inferior a 1,2 hijos por mujer en 2024.",
+  "type": "descriptive",
+  "subject": "fertility_rate",
+  "predicate": "was_below",
+  "object": "1.2_children_per_woman",
+  "geography": "España",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["fecundidad-eurostat"]
+}
