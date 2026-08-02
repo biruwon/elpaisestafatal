@@ -1,0 +1,13 @@
+{
+  "id": "prop-deuda-publica-supera-100-core",
+  "claimSlug": "deuda-publica-supera-100",
+  "text": "La deuda bruta consolidada de las administraciones públicas supera el 100% del PIB en España",
+  "type": "trend",
+  "subject": "deuda pública",
+  "predicate": "is_above",
+  "object": "100% del PIB",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["deuda-publica-eurostat"]
+}

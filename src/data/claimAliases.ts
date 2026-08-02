@@ -84,6 +84,13 @@ export const claimAliases: Record<string, string[]> = {
     'España reduce el déficit público',
     'déficit público España',
   ],
+  'deuda-publica-supera-100': [
+    'España tiene una deuda pública superior al 100% del PIB',
+    'la deuda de España supera el 100 por cien',
+    'la deuda pública sigue por encima del PIB',
+    'España debe más de un año de PIB',
+    'deuda pública española',
+  ],
   'sobrecarga-vivienda-baja': [
     'la sobrecarga de la vivienda ha bajado',
     'menos personas sufren sobrecarga de vivienda',
