@@ -7,6 +7,7 @@ const popularSlugs = [
   'viviendas-vacias',
   'inmigrantes-ayudas',
   'empleo-record',
+  'ocupacion-aumenta-t2-2026',
   'paro-epa-t2-2026-baja-10',
   'precios-hoteles-sube-junio-2026',
   'sanidad-colapsada',

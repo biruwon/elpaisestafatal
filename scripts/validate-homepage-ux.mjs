@@ -18,6 +18,8 @@ requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
 requireText('data-example-source="warehouse"', 'fresh warehouse prompt entry points');
 requireText('class="warehouse-prompts"', 'fresh warehouse prompt section');
+requireText('class="latest-home"', 'automatic recent-clarifications section');
+requireText('data-latest-claim=', 'recent claim cards sourced from published content');
 if (!/<details class="warehouse-prompts"(?:\s[^>]*)?>/.test(homepage)) failures.push('homepage is missing collapsed secondary prompt section');
 if (/<details class="warehouse-prompts"[^>]*\sopen(?:\s|=|>)/.test(homepage)) failures.push('secondary warehouse prompts must remain collapsed by default');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');

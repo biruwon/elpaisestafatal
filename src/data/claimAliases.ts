@@ -27,6 +27,13 @@ export const claimAliases: Record<string, string[]> = {
     'paro EPA segundo trimestre 2026',
     'la EPA marca menos de un 10% de paro',
   ],
+  'ocupacion-aumenta-t2-2026': [
+    'se crearon 486000 empleos en el segundo trimestre',
+    'España ganó 486.000 empleos',
+    'la ocupación subió en 486000 personas',
+    'hay 22,779 millones de ocupados',
+    'récord de ocupación segundo trimestre 2026',
+  ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
     'el precio de los hoteles sube y las pernoctaciones bajan',
