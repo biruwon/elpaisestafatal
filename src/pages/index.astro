@@ -113,6 +113,9 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
 <style>
   .claim-result-card[data-state=related] .claim-result-overview>div:first-child{border-left:3px solid var(--muted)}
 </style>
+<style>
+  .claim-result-use{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:11px 0;margin:14px 0 2px}.claim-result-use>span{font:600 .6rem var(--mono);text-transform:uppercase;color:var(--muted)}.claim-result-use>div{display:flex;gap:6px;flex-wrap:wrap}.claim-result-use button{border:1px solid var(--line);background:var(--paper);padding:8px 10px;font:600 .62rem var(--mono);cursor:pointer}.claim-result-use button:hover,.claim-result-use button:focus-visible{border-color:var(--ink);background:var(--ink);color:var(--paper)}.claim-result-use button span{color:var(--red);margin-left:4px}.claim-result-focus{animation:claim-result-focus 1.5s ease-out}@keyframes claim-result-focus{0%{outline:3px solid var(--yellow);outline-offset:4px}100%{outline:3px solid transparent;outline-offset:10px}}
+</style>
 <script is:inline type="application/json" id="conversation-mvp-data" set:html={conversationPayload}></script>
 <script is:inline type="application/json" id="claim-index-data" data-advanced="true" set:html={claimIndexPayload}></script>
 <script src="../scripts/claim-input.ts"></script>

@@ -248,7 +248,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. More semantic clustering and richer result personalization remain pending.
+Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. Results now offer context-specific jumps to the reply, next question, and sources; deeper semantic clustering remains pending.
 
 Before using a model:
 

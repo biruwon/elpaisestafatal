@@ -251,7 +251,7 @@ const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][num
     return chart ? chart.slice(0, -6) + blockEvidenceMarkup(plan, block.evidenceIds) + '</div>' : '';
   }
   if (block.type === 'conversation_reply') {
-    return `<div class="claim-plan-reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
+    return `<div class="claim-plan-reply" data-result-target="reply"><span class="clarification-label">Una forma de explicarlo</span><p>${escapeHtml(block.text)}</p><button type="button" data-copy-answer="${escapeHtml(block.text)}">Copiar respuesta</button>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
   }
   if (block.type === 'sources') {
     return `<div class="claim-plan-sources"><span class="clarification-label">Fuentes vinculadas</span><p>${escapeHtml(block.sourceIds.join(' · '))}</p></div>`;
@@ -291,8 +291,17 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => {
 };
 
 const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
-  ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
+  ? `<div class="claim-plan-source-links" data-result-target="sources"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
   : '';
+
+const resultUseActionsMarkup = (plan: AnswerPlan): string => {
+  const actions: Array<{ target: 'reply' | 'question' | 'sources'; label: string }> = [];
+  if (plan.blocks.some((block) => block.type === 'conversation_reply')) actions.push({ target: 'reply', label: 'Responder' });
+  if (plan.clarificationQuestion) actions.push({ target: 'question', label: 'Seguir comprobando' });
+  if (plan.sourceLinks?.length) actions.push({ target: 'sources', label: 'Ver fuentes' });
+  if (!actions.length) return '';
+  return `<div class="claim-result-use" aria-label="Elige qué hacer con esta aclaración"><span>¿Qué necesitas ahora?</span><div>${actions.map((action) => `<button type="button" data-focus-result="${action.target}">${action.label} <span aria-hidden="true">→</span></button>`).join('')}</div></div>`;
+};
 
 const definitionChoiceMarkup = (plan: AnswerPlan): string => {
   const isBroadDefinition = plan.coverage === 'insufficient'
@@ -341,6 +350,17 @@ const bindResultActions = (): void => {
     } catch { /* Sharing is optional and must not interrupt the result. */ }
   });
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
+  result?.querySelectorAll<HTMLButtonElement>('[data-focus-result]').forEach((button) => button.addEventListener('click', () => {
+    const targetName = button.dataset.focusResult;
+    const target = [...(result?.querySelectorAll<HTMLElement>('[data-result-target]') || [])].find((element) => element.dataset.resultTarget === targetName);
+    if (!target) return;
+    const details = target.closest('details');
+    if (details) details.open = true;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.remove('claim-result-focus');
+    window.requestAnimationFrame(() => target.classList.add('claim-result-focus'));
+    window.setTimeout(() => target.classList.remove('claim-result-focus'), 1500);
+  }));
   result?.querySelectorAll<HTMLButtonElement>('[data-clarification-choice]').forEach((button) => button.addEventListener('click', () => {
     const choice = button.dataset.clarificationChoice;
     if (!choice || !input || !form) return;
@@ -359,7 +379,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   const nextStep = plan.clarificationQuestion
     || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
