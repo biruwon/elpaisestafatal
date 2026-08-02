@@ -8,17 +8,42 @@ const container = document.querySelector<HTMLElement>('#dynamic-popular-claims')
 const input = document.querySelector<HTMLInputElement>('#conversation-input');
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 
+const examplePrompts = [...document.querySelectorAll<HTMLButtonElement>('[data-example-topic]')];
+const exampleMore = document.querySelector<HTMLButtonElement>('[data-example-more]');
+let examplesExpanded = false;
+let selectedExampleTopic = 'all';
+
+const updateExampleVisibility = (): void => {
+  const matches = examplePrompts.filter((prompt) => selectedExampleTopic === 'all' || prompt.dataset.exampleTopic === selectedExampleTopic);
+  examplePrompts.forEach((prompt, index) => {
+    const topicMatches = selectedExampleTopic === 'all' || prompt.dataset.exampleTopic === selectedExampleTopic;
+    prompt.hidden = !topicMatches || (selectedExampleTopic === 'all' && !examplesExpanded && index >= 8);
+  });
+  const canExpand = selectedExampleTopic === 'all' && matches.length > 8;
+  if (exampleMore) {
+    exampleMore.hidden = !canExpand;
+    exampleMore.setAttribute('aria-expanded', String(examplesExpanded));
+    exampleMore.innerHTML = examplesExpanded ? 'Mostrar menos <span aria-hidden="true">−</span>' : 'Ver más afirmaciones <span aria-hidden="true">＋</span>';
+  }
+};
+
 document.querySelectorAll<HTMLButtonElement>('[data-example-filter]').forEach((filter) => filter.addEventListener('click', () => {
   const selected = filter.dataset.exampleFilter || 'all';
+  selectedExampleTopic = selected;
+  examplesExpanded = false;
   document.querySelectorAll<HTMLButtonElement>('[data-example-filter]').forEach((button) => {
     const active = button === filter;
     button.classList.toggle('is-selected', active);
     button.setAttribute('aria-pressed', String(active));
   });
-  document.querySelectorAll<HTMLButtonElement>('[data-example-topic]').forEach((prompt) => {
-    prompt.hidden = selected !== 'all' && prompt.dataset.exampleTopic !== selected;
-  });
+  updateExampleVisibility();
 }));
+
+exampleMore?.addEventListener('click', () => {
+  examplesExpanded = !examplesExpanded;
+  updateExampleVisibility();
+});
+updateExampleVisibility();
 
 if (container && input && form) {
   void fetch('/api/questions', { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(1800) })

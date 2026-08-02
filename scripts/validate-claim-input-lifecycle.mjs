@@ -23,6 +23,8 @@ const required = [
   'aria-labelledby="claim-result-title"',
   "const alternativesMarkup = ['published', 'related', 'unavailable']",
   "renderCard('uncovered', original, undefined, [],",
+  "response.status === 'draft' && response.result",
+  "response.requestId, 'draft'",
 ];
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);

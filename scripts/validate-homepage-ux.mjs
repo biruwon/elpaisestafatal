@@ -14,6 +14,7 @@ requireText('id="conversation-form"', 'the claim form');
 requireText('id="conversation-counter"', 'the input character counter');
 requireText('class="examples-heading"', 'the popular prompt heading');
 requireText('data-example-filter="all"', 'the popular prompt filters');
+requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');
 requireText('aria-current="page"', 'the active navigation state');
@@ -21,7 +22,7 @@ if (!claimInput.includes('Comprobar otra frase') || !claimInput.includes('data-n
 order('id="afirmaciones"', 'class="home-how"', 'popular prompts before methodology');
 if (!homepage.includes('hero-promises')) failures.push('homepage is missing the result promise list');
 if (!styles.includes('max-width:900px')) failures.push('homepage is missing the responsive checker layout');
-if (!popularScript.includes('data-example-filter') || !popularScript.includes('aria-pressed')) failures.push('popular prompt filter behavior is missing');
+if (!popularScript.includes('data-example-filter') || !popularScript.includes('aria-pressed') || !popularScript.includes('updateExampleVisibility')) failures.push('popular prompt filter behavior is missing');
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log('Homepage UX validation passed: conversation entry, popular prompts, navigation state, and responsive checker markers are present.');

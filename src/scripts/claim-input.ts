@@ -221,9 +221,9 @@ const bindResultActions = (): void => {
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
 };
 
-const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
+const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' = 'published'): void => {
   if (!result) return;
-  const isDraft = !primary && (Boolean(plan.sourceLinks?.length) || plan.coverage !== 'strong');
+  const isDraft = state !== 'published';
   result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
@@ -319,7 +319,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
   const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
   if (response.status === 'complete' && response.result && primary) {
-    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
+    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'published');
     return;
   }
   if (response.status === 'complete' && primary) {
@@ -327,7 +327,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     return;
   }
   if (response.status === 'draft' && response.result) {
-    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
+    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'draft');
     return;
   }
   if (response.status === 'partial' && primary) {
@@ -344,7 +344,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   }
   if (response.status === 'uncovered') {
     if (response.result?.blocks?.some((block) => block.type === 'claim_breakdown')) {
-      renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
+      renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'draft');
       return;
     }
     const guidance = {
