@@ -6,6 +6,13 @@ export const claimAliases: Record<string, string[]> = {
     'hay 49 millones de personas en España',
     'España tiene más población que nunca',
   ],
+  'poblacion-nacida-fuera-sube': [
+    'hay más personas nacidas fuera de España',
+    'ha aumentado la población inmigrante',
+    'España tiene más residentes nacidos en el extranjero',
+    'cada vez hay más gente nacida fuera',
+    'la población extranjera ha crecido',
+  ],
   'espana-pierde-poblacion': [
     'España pierde población',
     'la población de España está bajando',
