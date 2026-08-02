@@ -174,6 +174,18 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
   ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
   : '';
 
+const resetChecker = (): void => {
+  activeRequest?.abort();
+  activeRequest = null;
+  requestVersion += 1;
+  if (input) input.value = '';
+  if (fileInput) fileInput.value = '';
+  if (fileName) fileName.textContent = 'Añadir captura o audio';
+  updateCounter();
+  if (result) result.innerHTML = '';
+  input?.focus();
+};
+
 const bindResultActions = (): void => {
   result?.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Respuesta copiada'; } catch { button.textContent = 'Selecciona el texto para copiarlo'; }
@@ -192,12 +204,13 @@ const bindResultActions = (): void => {
       if (button) button.textContent = shared ? 'Compartido' : 'Enlace y resumen copiados';
     } catch { /* Sharing is optional and must not interrupt the result. */ }
   });
+  result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
 };
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
   if (!result) return;
   const isDraft = !primary && (Boolean(plan.sourceLinks?.length) || plan.coverage !== 'strong');
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-result-actions"><button type="button" data-share-result>Compartir aclaración</button></div><div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
@@ -235,7 +248,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const shareAction = primary?.answer ? '<button type="button" data-share-result>Compartir aclaración</button>' : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}${primary?.answer ? `<div class="claim-result-actions">${shareAction}</div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
   bindResultActions();
 };
 
