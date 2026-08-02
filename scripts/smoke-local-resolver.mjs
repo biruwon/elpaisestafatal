@@ -58,6 +58,7 @@ for (const item of cases) {
     if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
     if (item.slug && item.status === 'complete' && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
+    if (item.text.toLocaleLowerCase().includes('destruyendo españa') && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push(`${item.text}: related political guidance did not retain its structured method plan`);
     if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
     if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
@@ -106,6 +107,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!['draft', 'partial'].includes(result.status)) failures.push(`electricity-language warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'household_electricity_price') failures.push('electricity-language warehouse: failed to route an informal family phrasing');
   } catch (error) { failures.push(`electricity-language warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cómo han subido los alquileres en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`rental warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'rental_price_index') failures.push('rental warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('rental warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'índice (2015=100)') failures.push('rental warehouse: did not localize the unit');
+  } catch (error) { failures.push(`rental warehouse: ${error.message}`); }
   try {
     const result = await resolve('Cuál es la inflación anual en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`inflation warehouse: expected provisional result, received ${result.status}`);

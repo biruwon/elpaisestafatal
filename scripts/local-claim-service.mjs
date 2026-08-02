@@ -66,6 +66,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'household_electricity_price') return '€ por kWh';
+  if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';

@@ -1,6 +1,8 @@
 export const warehouseRetrievalBenchmarkCases = [
   ['luz-precio', 'Cómo ha cambiado el precio de la luz para los hogares', 'household_electricity_price'],
   ['luz-electricidad', 'La electricidad es más cara para las familias', 'household_electricity_price'],
+  ['alquiler-precio', 'Cómo han subido los alquileres en España', 'rental_price_index'],
+  ['alquiler-caros', 'El precio del alquiler se ha disparado', 'rental_price_index'],
   ['inflacion-anual', 'Cuál es la inflación anual en España', 'inflation_rate'],
   ['inflacion-precios', 'La tasa de inflación española sigue alta', 'inflation_rate'],
   ['ipc-cesta', 'Cuánto se ha encarecido la cesta de la compra en España', 'cpi_index'],

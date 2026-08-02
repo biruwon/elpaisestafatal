@@ -31,6 +31,14 @@
     "notEquivalentTo": ["cpi_index", "inflation_rate", "house_price_index"],
     "dimensions": ["period", "geography", "consumption_band", "taxes"]
   },
+  "rental_price_index": {
+    "name": "Actual rentals for housing price index",
+    "aliases": ["precio del alquiler", "precios del alquiler", "alquiler", "alquileres", "rentas de alquiler", "alquiler más caro", "sube el alquiler"],
+    "unit": "index",
+    "population": "household consumption of actual rentals for housing under the harmonised price index",
+    "notEquivalentTo": ["house_price_index", "housing_cost_overburden_rate", "cpi_index", "inflation_rate"],
+    "dimensions": ["period", "geography", "consumption_group"]
+  },
   "gdp_current_prices": {
     "name": "Gross domestic product at current prices",
     "aliases": ["PIB", "GDP", "economía", "producción"],

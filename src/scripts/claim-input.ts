@@ -99,7 +99,7 @@ const recordUncoveredQuestion = (text: string, response: SearchResponse): void =
 
 const findEntry = (slug: string | undefined): ClaimIndexEntry | undefined => slug ? claimIndex.find((entry) => entry.slug === slug) : undefined;
 
-const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">Ver datos y fuentes <span aria-hidden="true">→</span></a>`;
+const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">${entry.kind === 'topic' ? 'Ver contexto del tema' : 'Ver datos y fuentes'} <span aria-hidden="true">→</span></a>`;
 
 const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
   ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
@@ -343,12 +343,12 @@ const bindResultActions = (): void => {
   }));
 };
 
-const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'uncovered' = 'published'): void => {
+const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'related' | 'uncovered' = 'published'): void => {
   if (!result) return;
-  const resultLabel = state === 'published' ? 'Ficha publicada' : state === 'uncovered' ? 'Sin coincidencia directa' : 'Resultado automático';
-  const resultState = state === 'published' ? 'Basada en una ficha revisada' : state === 'uncovered' ? 'No hay una comprobación publicada de esta afirmación' : 'Orientación automática · provisional, no publicada';
+  const resultLabel = state === 'published' ? 'Ficha publicada' : state === 'related' ? 'Orientación relacionada' : state === 'uncovered' ? 'Sin coincidencia directa' : 'Resultado automático';
+  const resultState = state === 'published' ? 'Basada en una ficha revisada' : state === 'related' ? 'No es una comprobación exacta; ayuda a concretar la discusión' : state === 'uncovered' ? 'No hay una comprobación publicada de esta afirmación' : 'Orientación automática · provisional, no publicada';
   const nextStep = plan.clarificationQuestion
-    || (primary ? 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
+    || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
@@ -455,6 +455,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   }
   if (response.status === 'draft' && response.result) {
     renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'draft');
+    return;
+  }
+  if (response.status === 'partial' && response.result) {
+    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'related');
     return;
   }
   if (response.status === 'partial' && primary) {

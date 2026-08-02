@@ -11,6 +11,7 @@ const featuredConcerns = concerns.filter((item) => ['vivienda','inmigracion','em
 const publishedClaimCount = claims.filter((item) => item.published).length;
 const warehousePrompts = [
   '¿Cómo ha cambiado el precio de la luz para los hogares?',
+  '¿Cómo han cambiado los alquileres en España?',
   '¿Cuál es la inflación anual en España?',
   '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
   '¿Cómo ha cambiado el déficit público sobre el PIB?',
@@ -104,6 +105,9 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
 <style>
   .claim-result-enrichment{display:flex;align-items:flex-start;gap:10px;border-top:1px solid var(--line);margin-top:20px;padding:14px 0 2px;font:.7rem/1.4 var(--mono);color:var(--muted)}.claim-result-enrichment>div{display:grid;gap:2px}.claim-result-enrichment strong{font:600 .62rem var(--mono);text-transform:uppercase;color:var(--ink)}.claim-result-enrichment-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;background:var(--yellow);box-shadow:0 0 0 4px color-mix(in srgb,var(--yellow) 25%,transparent)}.claim-result-enrichment[data-status-state=unavailable] .claim-result-enrichment-dot{background:var(--muted);box-shadow:none}.claim-result-enrichment[data-status-state=slow] .claim-result-enrichment-dot{background:var(--red);box-shadow:none}
   .warehouse-prompts{border-top:1px solid var(--line);margin-top:18px;padding-top:15px}.warehouse-prompts>span{display:block;font:600 .6rem var(--mono);text-transform:uppercase;color:var(--red);margin-bottom:9px}.warehouse-prompts>div{display:flex;flex-wrap:wrap;gap:6px}.warehouse-prompts button{background:var(--paper)!important;border-color:var(--ink)!important}.warehouse-prompts button:hover{background:var(--yellow)!important}
+</style>
+<style>
+  .claim-result-card[data-state=related] .claim-result-overview>div:first-child{border-left:3px solid var(--muted)}
 </style>
 <script is:inline type="application/json" id="conversation-mvp-data" set:html={conversationPayload}></script>
 <script is:inline type="application/json" id="claim-index-data" data-advanced="true" set:html={claimIndexPayload}></script>

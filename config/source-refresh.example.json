@@ -29,6 +29,12 @@
       "metricId": "household_electricity_price"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP041&sinceTimePeriod=2015",
+      "title": "Índice de precios del alquiler en España · Eurostat",
+      "aliases": ["precio del alquiler", "precios del alquiler", "alquiler", "alquileres", "rentas de alquiler", "alquiler más caro", "sube el alquiler"],
+      "metricId": "rental_price_index"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?geo=ES&na_item=B1GQ&unit=CP_MEUR&sinceTimePeriod=2015",
       "title": "Producto interior bruto de España · Eurostat",
       "aliases": ["PIB", "GDP", "economía", "producción"],
