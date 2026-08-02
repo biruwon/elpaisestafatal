@@ -16,6 +16,7 @@ const containsPhrase = (value, phrase) => {
   const wanted = ` ${normalise(phrase)} `;
   return text.includes(wanted);
 };
+const hasNegation = (value) => /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(normalise(value));
 
 const entityAliases = [
   ['gobierno de España', ['gobierno', 'moncloa', 'sanchez', 'presidencia']],
@@ -52,7 +53,7 @@ const semanticConcepts = (value) => semanticConceptAliases
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
 
-export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [] } = {}) => {
+export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [], negated = false } = {}) => {
   const explicit = propositions.filter((item) => item && item.explicit !== false);
   const comparisonLike = claimType === 'comparative' || claimType === 'mixed' || explicit.some((item) => item.type === 'comparative');
   const propositionKeys = explicit.map((item) => {
@@ -62,6 +63,7 @@ export const semanticSignatureFor = ({ claimType, propositions = [], entities = 
   }).filter((value) => !value.endsWith(':'));
   const dimensions = [
     claimType || 'unknown',
+    `polarity:${negated ? 'negative' : 'positive'}`,
     ...[...new Set(entities.flatMap((entity) => semanticConcepts(entity)))].map((value) => `entity:${value}`),
     ...(geography ? [`geo:${normalise(geography)}`] : []),
     ...(population && comparisonLike ? [`population:${normalise(population)}`] : []),
@@ -197,7 +199,7 @@ export const deterministicFallbackCompiler = (text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints,
-    semanticSignature: semanticSignatureFor({ claimType, propositions, entities, geography, period, population, numbers }),
+    semanticSignature: semanticSignatureFor({ claimType, propositions, entities, geography, period, population, numbers, negated: hasNegation(original) }),
     clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !original,
   };
 };

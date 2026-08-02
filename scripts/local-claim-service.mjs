@@ -207,7 +207,7 @@ const normalizeCompiler = (value, text) => {
     retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
     semanticSignature: typeof value.semanticSignature === 'string' && value.semanticSignature.trim()
       ? value.semanticSignature.slice(0, 600)
-      : semanticSignatureFor({ claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed', propositions, entities: Array.isArray(value.entities) ? value.entities : [], geography: typeof value.geography === 'string' ? value.geography : null, period: typeof value.period === 'string' ? value.period : null, population: typeof value.population === 'string' ? value.population : null, numbers: Array.isArray(value.numbers) ? value.numbers : [] }),
+      : semanticSignatureFor({ claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed', propositions, entities: Array.isArray(value.entities) ? value.entities : [], geography: typeof value.geography === 'string' ? value.geography : null, period: typeof value.period === 'string' ? value.period : null, population: typeof value.population === 'string' ? value.population : null, numbers: Array.isArray(value.numbers) ? value.numbers : [], negated: /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(String(value.normalized || text)) }),
     clarificationRequired: value.clarificationRequired === true,
     routing: value.routing && typeof value.routing === 'object' ? {
       status: ['published', 'related', 'uncovered'].includes(value.routing.status) ? value.routing.status : 'uncovered',

@@ -44,6 +44,7 @@
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
+    "knowledge:backfill-signatures": "node scripts/knowledge/backfill-gap-signatures.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs && node scripts/knowledge/validate-boe-legal-discovery.mjs",
     "knowledge:freshness": "node scripts/knowledge/validate-source-freshness.mjs",

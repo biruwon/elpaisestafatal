@@ -43,8 +43,10 @@ const trend = deterministicFallbackCompiler('La vivienda sube cada vez más');
 assert(trend.claimType === 'trend', 'Trend claim type was not detected');
 
 const broad = deterministicFallbackCompiler('España está destruida');
+const negatedBroad = deterministicFallbackCompiler('España no está destruida');
 assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');
 assert(broad.clarificationRequired === true, 'Broad evaluative claim did not require clarification');
 assert(broad.semanticSignature !== causal.semanticSignature, 'Broad evaluative wording collapsed into an unrelated causal family');
+assert(broad.semanticSignature !== negatedBroad.semanticSignature, 'Opposing claim polarity collapsed into the same semantic family');
 
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');
