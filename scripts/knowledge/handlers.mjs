@@ -4,6 +4,10 @@ const includesAny = (value, words) => words.some((word) => value.includes(word))
 
 export const handlerForInput = (input, claimType = '') => {
   const text = normalized([input, ...(input?.retrievalHints || []), ...(input?.entities || [])].join(' '));
+  const propositions = Array.isArray(input?.impliedPropositions)
+    ? input.impliedPropositions
+    : Array.isArray(input?.propositions) ? input.propositions : [];
+  const impliedDefinition = propositions.some((item) => item && item.explicit === false && item.type === 'definition');
   const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'ministerio', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo'])
     || (includesAny(text, ['quita', 'recorta']) && includesAny(text, ['gobierno', 'educacion', 'presidencia']));
   if (budgetSignal) return 'budget_transfer';
@@ -12,7 +16,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
   if (claimType === 'trend') return 'trend';
-  if (claimType === 'definition') return 'definition';
+  if (claimType === 'definition' || impliedDefinition) return 'definition';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';

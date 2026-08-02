@@ -948,6 +948,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Ajustes relevantes', status: 'missing', detail: 'Comprobar edad, renta, composición familiar u otras diferencias que afecten al resultado.' },
       ] },
     ] : []),
+    ...(isDefinition ? [
+      { type: 'strongest_valid_concern', text: 'La preocupación puede ser real, pero una valoración tan amplia reúne problemas distintos. Separarlos permite comprobarlos sin convertir una impresión en un veredicto.' },
+      { type: 'evidence_ladder', evidenceIds: [], steps: [
+        { label: 'Resultado concreto', status: 'missing', detail: 'Elegir qué se quiere medir: empleo, vivienda, precios, sanidad, seguridad u otro resultado.' },
+        { label: 'Periodo y comparación', status: 'missing', detail: 'Indicar desde cuándo y frente a qué año, territorio o país se quiere comparar.' },
+        { label: 'Territorio', status: 'missing', detail: 'Aclarar si se habla de España entera o de una comunidad, provincia o barrio.' },
+      ] },
+    ] : []),
   ] : [];
   const provisionalBlocks = observations.length ? (() => {
     if (isQuantityLike && quantityClaim && quantity) return [

@@ -288,6 +288,14 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('no coincide')) failures.push('mismatched quantity: did not show the numerical mismatch');
     if (!result.result?.blocks?.some((block) => block.type === 'cannot_conclude')) failures.push('mismatched quantity: missing explicit limitation');
   } catch (error) { failures.push(`mismatched quantity: ${error.message}`); }
+  try {
+    const result = await resolve('España está destruida');
+    if (result.status !== 'uncovered') failures.push(`broad evaluative claim: expected uncovered, received ${result.status}`);
+    if (result.result?.relatedClaims?.length || result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('broad evaluative claim: leaked unrelated evidence');
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('significa')) failures.push('broad evaluative claim: did not ask to define the expression');
+    if (!result.result?.blocks?.some((block) => block.type === 'strongest_valid_concern')) failures.push('broad evaluative claim: missing strongest valid concern');
+    if (!result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push('broad evaluative claim: missing concrete definition ladder');
+  } catch (error) { failures.push(`broad evaluative claim: ${error.message}`); }
 }
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
