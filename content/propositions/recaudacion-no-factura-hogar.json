@@ -1,0 +1,13 @@
+{
+  "id": "prop-recaudacion-no-factura-hogar-core",
+  "claimSlug": "recaudacion-no-factura-hogar",
+  "text": "El crecimiento agregado de la recaudación no equivale a un aumento uniforme de la factura de cada hogar.",
+  "type": "definition",
+  "subject": "tax_revenue_aggregate",
+  "predicate": "does_not_equal",
+  "object": "household_tax_bill_change",
+  "geography": "Spain",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["impuestos-recaudacion-no-hogar"]
+}

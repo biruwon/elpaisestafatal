@@ -1,0 +1,13 @@
+{
+  "id": "prop-record-empleo-no-resuelve-paro-core",
+  "claimSlug": "record-empleo-no-resuelve-paro",
+  "text": "Un récord absoluto de ocupación no demuestra que el desempleo esté resuelto.",
+  "type": "trend",
+  "subject": "employment_record",
+  "predicate": "does_not_prove",
+  "object": "unemployment_resolved",
+  "geography": "Spain",
+  "period": "2026-Q1",
+  "status": "supported",
+  "evidenceIds": ["empleo-record-no-resuelve-paro"]
+}

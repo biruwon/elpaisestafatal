@@ -14,6 +14,10 @@ const knownSeeds = [
   ['paro-historico', 'trend', 'España tiene el paro más bajo de la historia'],
   ['precio-vivienda-caera', 'prediction', 'El precio de la vivienda va a caer como en 2008'],
   ['construir-vivienda', 'normative', 'Basta con construir más vivienda'],
+  ['arope-no-es-pobreza-absoluta', 'definition', 'El AROPE mide pobreza absoluta'],
+  ['record-empleo-no-resuelve-paro', 'trend', 'Un récord de ocupación significa que el paro ya está resuelto'],
+  ['subida-vivienda-no-todas-igual', 'definition', 'Si la vivienda sube un 12,9%, todas las casas suben lo mismo'],
+  ['recaudacion-no-factura-hogar', 'definition', 'Si la recaudación tributaria sube un 10,4%, todos pagan un 10,4% más'],
 ];
 
 // These are deliberately present in the corpus as unpublished claims. The

@@ -1,0 +1,13 @@
+{
+  "id": "prop-subida-vivienda-no-todas-igual-core",
+  "claimSlug": "subida-vivienda-no-todas-igual",
+  "text": "Una subida media nacional del precio de la vivienda no implica que todas las viviendas suban igual.",
+  "type": "definition",
+  "subject": "national_house_price_index",
+  "predicate": "does_not_describe_every_property",
+  "object": "all_homes",
+  "geography": "Spain",
+  "period": "2026-Q1",
+  "status": "supported",
+  "evidenceIds": ["vivienda-media-no-todas"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "prop-arope-no-es-pobreza-absoluta-core",
+  "claimSlug": "arope-no-es-pobreza-absoluta",
+  "text": "El indicador AROPE no equivale a una medida única de pobreza absoluta.",
+  "type": "definition",
+  "subject": "arope_indicator",
+  "predicate": "is_not_equivalent_to",
+  "object": "absolute_poverty_measure",
+  "geography": "Spain",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["desigualdad-arope-definicion"]
+}
