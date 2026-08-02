@@ -8,6 +8,18 @@ const container = document.querySelector<HTMLElement>('#dynamic-popular-claims')
 const input = document.querySelector<HTMLInputElement>('#conversation-input');
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 
+document.querySelectorAll<HTMLButtonElement>('[data-example-filter]').forEach((filter) => filter.addEventListener('click', () => {
+  const selected = filter.dataset.exampleFilter || 'all';
+  document.querySelectorAll<HTMLButtonElement>('[data-example-filter]').forEach((button) => {
+    const active = button === filter;
+    button.classList.toggle('is-selected', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-example-topic]').forEach((prompt) => {
+    prompt.hidden = selected !== 'all' && prompt.dataset.exampleTopic !== selected;
+  });
+}));
+
 if (container && input && form) {
   void fetch('/api/questions', { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(1800) })
     .then(async (response) => response.ok ? response.json() as Promise<{ status?: string; claims?: PopularCluster[] }> : null)

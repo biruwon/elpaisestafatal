@@ -41,6 +41,7 @@ const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
 const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
 const fileName = document.querySelector<HTMLElement>('[data-file-name]');
+const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
 const result = document.querySelector<HTMLElement>('#conversation-result');
 const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
@@ -191,6 +192,7 @@ const resetChecker = (): void => {
   if (input) input.value = '';
   if (fileInput) fileInput.value = '';
   if (fileName) fileName.textContent = 'Añadir captura o audio';
+  if (mediaHelp) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
   updateCounter();
   if (result) result.innerHTML = '';
   window.history.replaceState({}, '', '/#comprobar');
@@ -446,6 +448,8 @@ form?.addEventListener('submit', (event) => {
 fileInput?.addEventListener('change', () => {
   const selected = fileInput.files?.[0];
   if (fileName) fileName.textContent = selected ? selected.name : 'Añadir captura o audio';
+  if (mediaHelp && selected) mediaHelp.textContent = 'Archivo listo: se está enviando automáticamente para buscar una orientación.';
+  if (mediaHelp && !selected) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
   if (selected && !input?.value.trim()) form?.requestSubmit();
 });
 

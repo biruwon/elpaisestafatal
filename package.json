@@ -19,6 +19,7 @@
     "ux:topics": "node scripts/validate-topic-ux.mjs",
     "ux:journeys": "node scripts/validate-public-journeys.mjs",
     "container:validate": "node scripts/validate-local-container.mjs",
+    "media:validate": "node scripts/validate-local-media.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",
     "backup:operations": "node scripts/backup-operations.mjs",

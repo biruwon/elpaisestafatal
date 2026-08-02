@@ -135,6 +135,8 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The browser now preserves its deterministic result while dynamic analysis is pending, timed out, cancelled, or unavailable; completed structured results can still upgrade it automatically, but users are no longer left with a generic pending/unavailable replacement.
 - The live checker now translates assessment codes into the public Spanish labels, exposes automatic versus published result semantics, offers sharing for fast-path answers, and suppresses weak fallback alternatives when no exact claim has been found.
 - The homepage now leads with the conversation itself (`¿De qué estáis discutiendo?`), surfaces popular prompts immediately after the checker, exposes the input character limit, marks the active navigation path, and gives broad political wording such as `Pedro Sánchez está destruyendo España` related political context without presenting it as a published verdict. Existing evidence-backed claim families also carry more informal Spanish aliases for long-tail matching.
+- The homepage prompt starter now covers additional published everyday claims across healthcare access, unemployment definitions, inflation, housing prices, irregular arrivals, and tax aggregates; compact topic filters keep those prompts discoverable without turning the checker into a wall of links.
+- Screenshot and audio selection now state that submission is automatic and expose a live status message; the local speech adapter accepts a provider-neutral command/argument contract with bounded execution time while retaining compatibility with the previous development variables.
 - Published claim pages now use a reusable answer-first layout: the claim is followed immediately by a visual short answer, supported/not-established/missing-evidence cards, visible review metadata, and response actions before the deeper data and investigation context. The public claim catalogue now shows only published, usable entries and exposes its count and return path to the checker.
 - Published claim pages now expose the claim-specific evidence trail behind the answer, including each record's period, geography, unit, source type, and direct source link; broad topic charts remain explicitly labelled as context rather than proof.
 - The published claim catalogue now scales through client-side search, accent-insensitive matching, topic filters, live result counts, and a direct empty-state path back to the checker; it remains fully usable as a static page without JavaScript.
@@ -203,7 +205,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. More semantic clustering and richer result personalization remain pending.
+Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. More semantic clustering and richer result personalization remain pending.
 
 Before using a model:
 
@@ -389,7 +391,7 @@ Reusable video/animated scenes are deferred until deterministic charts are relia
 
 ## Phase 8 — Links, screenshots, and audio
 
-Status: started; browser media validation and automatic file submission are implemented, and the local link adapter now supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional and fail back without blocking deterministic text guidance.
+Status: started; browser media validation, automatic file submission, and live media status guidance are implemented, and the local link adapter now supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional, use a provider-neutral speech command contract, and fail back without blocking deterministic text guidance.
 
 All inputs end in the same compiler:
 

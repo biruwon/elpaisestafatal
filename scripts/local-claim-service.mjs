@@ -27,10 +27,11 @@ const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
 const semanticWarehouseEnabled = process.env.WAREHOUSE_SEMANTIC_SEARCH === '1';
-const whisperCommand = process.env.WHISPER_COMMAND || '';
-const whisperArgs = (() => {
-  try { return process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
+const speechCommand = process.env.LOCAL_SPEECH_COMMAND || process.env.WHISPER_COMMAND || '';
+const speechArgs = (() => {
+  try { return process.env.LOCAL_SPEECH_ARGS ? JSON.parse(process.env.LOCAL_SPEECH_ARGS) : process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
 })();
+const speechTimeoutMs = Math.min(60000, Math.max(10000, Number(process.env.LOCAL_SPEECH_TIMEOUT_MS || 45000)));
 const allowedInferenceHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
 const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
@@ -232,14 +233,14 @@ const extractImageText = async (media) => {
 };
 
 const transcribeAudio = async (media) => {
-  if (!media?.base64 || !whisperCommand) throw new Error('No local transcription runtime configured');
+  if (!media?.base64 || !speechCommand) throw new Error('No local speech runtime configured');
   const directory = await mkdtemp(join(root, '.local/audio-'));
   const extension = media.mime === 'audio/wav' ? '.wav' : media.mime === 'audio/ogg' ? '.ogg' : media.mime === 'audio/webm' ? '.webm' : '.m4a';
   const audioPath = join(directory, `input${extension}`);
   try {
     await writeFile(audioPath, Buffer.from(media.base64, 'base64'));
-    const args = whisperArgs.map((arg) => String(arg).replaceAll('{audio}', audioPath));
-    const response = await execFileAsync(whisperCommand, args, { timeout: 45000, maxBuffer: 2 * 1024 * 1024, windowsHide: true });
+    const args = speechArgs.map((arg) => String(arg).replaceAll('{audio}', audioPath));
+    const response = await execFileAsync(speechCommand, args, { timeout: speechTimeoutMs, maxBuffer: 2 * 1024 * 1024, windowsHide: true });
     const text = String(response.stdout || '').trim().slice(0, 12000);
     if (!text) throw new Error('Transcription returned no text');
     return text;
