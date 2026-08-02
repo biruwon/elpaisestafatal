@@ -75,6 +75,18 @@ const assessmentLabels: Record<string, string> = {
 
 const coverageLabel = (value?: string): string => coverageLabels[value || ''] || 'Aclaración provisional';
 
+const propositionTypeLabels: Record<string, string> = {
+  descriptive: 'Hecho',
+  comparative: 'Comparación',
+  definition: 'Definición',
+  trend: 'Evolución',
+  causal: 'Causa',
+  predictive: 'Predicción',
+  legal: 'Regla',
+  normative: 'Prioridad',
+  mixed: 'Afirmación',
+};
+
 const recordUncoveredQuestion = (text: string, response: SearchResponse): void => {
   if (response.status !== 'uncovered' && response.status !== 'partial' && response.status !== 'draft') return;
   void fetch('/api/questions', {
@@ -183,7 +195,7 @@ const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][num
   }
   if (block.type === 'claim_breakdown') {
     const items = block.items?.length
-      ? `<ul>${block.items.map((item) => `<li><strong>${item.explicit ? 'Afirmación' : 'Implicación'}</strong><span>${escapeHtml(item.text)}</span></li>`).join('')}</ul>`
+      ? `<ul>${block.items.map((item) => `<li data-explicit="${item.explicit}" data-proposition-type="${escapeHtml(item.type)}"><strong>${item.explicit ? (propositionTypeLabels[item.type] || 'Afirmación') : 'Implicación'}</strong><span>${escapeHtml(item.text)}</span></li>`).join('')}</ul>`
       : `<p>${escapeHtml(block.propositionIds.join(' · '))}</p>`;
     return `<div class="claim-plan-breakdown"><span class="clarification-label">Qué estamos comprobando</span>${items}</div>`;
   }

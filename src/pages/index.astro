@@ -74,6 +74,8 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-plan-reply .clarification-label{color:var(--yellow)}
   .claim-plan-reply p{font-size:1.3rem!important;line-height:1.25!important}
   .claim-plan-reply button{border-color:var(--paper);color:var(--paper)}
+  .claim-plan-breakdown li[data-explicit=false]{background:var(--paper-deep);padding:10px 10px 10px 0;border-top-color:var(--yellow)}
+  .claim-plan-breakdown li[data-explicit=false] strong{color:#8b5b0a}
   .claim-plan-block-evidence{border-top:0;margin-top:14px;padding-top:0;text-transform:none;font-size:.58rem}
   .claim-plan-source-links{background:var(--paper-deep);padding:16px;border-top:0;margin-top:20px}
   .claim-plan-source-links .clarification-label{margin-bottom:4px}

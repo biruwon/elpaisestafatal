@@ -1,4 +1,4 @@
-import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
+import { deterministicFallbackCompiler, propositionShapeFor } from './fallback-compiler.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -14,6 +14,14 @@ assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.le
 const comparison = deterministicFallbackCompiler('España cobra más impuestos que Europa en 2025');
 assert(comparison.claimType === 'comparative' && comparison.period === '2025', 'Comparative claim or period was not detected');
 assert(comparison.numbers.length === 0, 'Year was incorrectly treated as a numeric amount');
+assert(comparison.explicitPropositions[0].predicate === 'more_than', 'Comparative relation direction was not extracted');
+assert(comparison.explicitPropositions[0].subject.includes('espana') && comparison.explicitPropositions[0].object.includes('europa'), 'Comparative subject/object were not extracted');
+const reversedComparison = deterministicFallbackCompiler('Europa cobra más impuestos que España');
+assert(reversedComparison.claimType === 'comparative', 'A comparison mentioning España was misclassified as a definition');
+assert(comparison.semanticSignature !== reversedComparison.semanticSignature, 'Reversed comparison collapsed into the same semantic family');
+
+const causalShape = propositionShapeFor('La inmigración aumenta la delincuencia en España');
+assert(causalShape.predicate === 'causes' && causalShape.subject === 'immigration' && causalShape.object === 'crime', 'Causal subject, relation, or object was not normalized');
 
 const growthAndCost = deterministicFallbackCompiler('La economía crece, pero eso no significa que el coste de vida haya bajado');
 assert(growthAndCost.claimType !== 'definition', 'A negated “significa” phrase must not be classified as a definition question');

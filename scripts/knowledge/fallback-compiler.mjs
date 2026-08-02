@@ -53,13 +53,51 @@ const semanticConcepts = (value) => semanticConceptAliases
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
 
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'destruye', 'destruyen', 'representa', 'representan']);
+
+const relationShapeText = (value) => {
+  const concepts = semanticConcepts(value);
+  if (concepts.length) return [...new Set(concepts)].sort().join('+');
+  const terms = tokens(value).filter((token) => !relationStopWords.has(token)).slice(0, 4);
+  return terms.length ? [...new Set(terms)].sort().join('+') : 'unknown';
+};
+
+// Keep the compiler's intermediate representation small but directional. A
+// topic-only signature is unsafe for comparisons: reversing the two groups
+// can reverse the conclusion while leaving all the same vocabulary behind.
+export const propositionShapeFor = (value) => {
+  const text = normalise(value);
+  const comparison = text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
+  if (comparison) {
+    return {
+      subject: relationShapeText(comparison[1]),
+      predicate: comparison[2] === 'mas' ? 'more_than' : 'less_than',
+      object: relationShapeText(comparison[4]),
+    };
+  }
+  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|reduce|reducen|destruye|destruyen)\s+(.+)$/);
+  if (causal) {
+    const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
+    return {
+      subject: relationShapeText(causal[1]),
+      predicate,
+      object: relationShapeText(causal[3]),
+    };
+  }
+  return {};
+};
+
 export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [], negated = false } = {}) => {
   const explicit = propositions.filter((item) => item && item.explicit !== false);
   const comparisonLike = claimType === 'comparative' || claimType === 'mixed' || explicit.some((item) => item.type === 'comparative');
   const propositionKeys = explicit.map((item) => {
     const concepts = semanticConcepts(item.text);
     const terms = concepts.length ? concepts : semanticTermFallback(item.text);
-    return `${item.type || 'mixed'}:${[...new Set(terms)].sort().join('+')}`;
+    const shape = item.subject && item.predicate && item.object ? item : propositionShapeFor(item.text);
+    const relation = shape.subject && shape.predicate && shape.object
+      ? `:${shape.predicate}:${shape.subject}:${shape.object}`
+      : '';
+    return `${item.type || 'mixed'}:${[...new Set(terms)].sort().join('+')}${relation}`;
   }).filter((value) => !value.endsWith(':'));
   const dimensions = [
     claimType || 'unknown',
@@ -94,7 +132,7 @@ const populationAliases = [
 const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
-  if (includesAny(text, ['que significa', 'que se entiende por', 'significado de', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
+  if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'aumenta la', 'reduce los', 'destruye'])) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico', 'va a'])) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho'])) return 'legal';
@@ -166,7 +204,7 @@ export const deterministicFallbackCompiler = (text) => {
   const original = String(text || '').trim().slice(0, 300);
   const normalized = normalise(original);
   const explicitTexts = splitExplicitClauses(original);
-  const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true }));
+  const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true, ...propositionShapeFor(clause) }));
   const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
   const claimType = explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);

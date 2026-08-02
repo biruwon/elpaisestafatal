@@ -12,7 +12,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-
 import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
-import { deterministicFallbackCompiler, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
+import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
@@ -168,7 +168,7 @@ const compilerSchema = {
   properties: {
     normalized: { type: 'string' },
     claimType: { type: 'string', enum: ['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed'] },
-    propositions: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['text', 'type', 'explicit'], properties: { text: { type: 'string' }, type: { type: 'string', enum: ['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed'] }, explicit: { type: 'boolean' } } } },
+    propositions: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['text', 'type', 'explicit'], properties: { text: { type: 'string' }, type: { type: 'string', enum: ['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed'] }, explicit: { type: 'boolean' }, subject: { type: 'string' }, predicate: { type: 'string' }, object: { type: 'string' } } } },
     entities: { type: 'array', items: { type: 'string' } },
     numbers: { type: 'array', items: { type: 'string' } },
     geography: { type: ['string', 'null'] },
@@ -197,11 +197,17 @@ const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'tren
 const normalizeCompiler = (value, text) => {
   if (!value || typeof value !== 'object') return fallbackCompiler(text);
   const propositions = Array.isArray(value.propositions)
-    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => ({
-      text: item.text.slice(0, 300),
-      type: compilerTypes.has(item.type) ? item.type : 'mixed',
-      explicit: item.explicit !== false,
-    }))
+    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => {
+      const shape = propositionShapeFor(item.text);
+      return {
+        text: item.text.slice(0, 300),
+        type: compilerTypes.has(item.type) ? item.type : 'mixed',
+        explicit: item.explicit !== false,
+        subject: typeof item.subject === 'string' && item.subject.trim() ? item.subject.slice(0, 120) : shape.subject,
+        predicate: typeof item.predicate === 'string' && item.predicate.trim() ? item.predicate.slice(0, 80) : shape.predicate,
+        object: typeof item.object === 'string' && item.object.trim() ? item.object.slice(0, 120) : shape.object,
+      };
+    })
     : [];
   if (!propositions.length) return fallbackCompiler(text);
   const explicitPropositions = propositions.filter((item) => item.explicit);

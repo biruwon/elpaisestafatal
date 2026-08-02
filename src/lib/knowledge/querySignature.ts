@@ -31,7 +31,7 @@ const containsAlias = (text: string, alias: string): boolean => {
 
 const claimType = (text: string): string => {
   if (/(deberia|deberian|justo|prioridad|merecen)/.test(text)) return 'normative';
-  if (/(que significa|que es|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
+  if (/(que significa|que se entiende por|significado de|(?:^|\s)que es(?:\s|$)|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
   if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relaciona|aumenta la|reduce los|destruye)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico|va a)/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
@@ -43,6 +43,26 @@ const claimType = (text: string): string => {
 const semanticTokens = (text: string): string[] => [...new Set(
   text.split(' ').filter((token) => token.length > 3 && !stopWords.has(token) && !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)),
 )].slice(0, 4);
+
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'destruye', 'destruyen', 'representa', 'representan']);
+
+const relationShape = (value: string): string => {
+  const concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
+  if (concepts.length) return [...new Set(concepts)].sort().join('+');
+  const terms = normalize(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token) && !relationStopWords.has(token) && !['pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
+  return terms.length ? terms.sort().join('+') : 'unknown';
+};
+
+const directionalRelation = (text: string): string | null => {
+  const comparison = text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
+  if (comparison) return `comparison:${comparison[2]}:${relationShape(comparison[1])}:${relationShape(comparison[4])}`;
+  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|reduce|reducen|destruye|destruyen)\s+(.+)$/);
+  if (causal) {
+    const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
+    return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
+  }
+  return null;
+};
 
 export const canonicalQuerySignature = (value: string): string => [...new Set(
   normalize(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)),
@@ -64,9 +84,11 @@ export const semanticQuerySignature = (value: string): string => {
     .map(([concept]) => concept);
   const fallback = concepts.length ? [] : semanticTokens(text);
   const polarity = /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
+  const relation = directionalRelation(text);
   const signature = [
     'type:' + claimType(text),
     'polarity:' + polarity,
+    ...(relation ? ['relation:' + relation] : []),
     ...[...new Set(concepts)].sort().map((concept) => 'concept:' + concept),
     ...fallback.sort().map((token) => 'term:' + token),
   ];
