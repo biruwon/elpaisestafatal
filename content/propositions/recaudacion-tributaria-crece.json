@@ -1,0 +1,13 @@
+{
+  "id": "prop-recaudacion-tributaria-crece-core",
+  "claimSlug": "recaudacion-tributaria-crece",
+  "text": "La recaudación tributaria agregada bajó durante 2025.",
+  "type": "trend",
+  "subject": "ingresos_tributarios",
+  "predicate": "decreases",
+  "object": "España",
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["impuestos-crecimiento-anual-2025-labels-ingresos-bases-medidas-values-10-4-7-2-7-u"]
+}

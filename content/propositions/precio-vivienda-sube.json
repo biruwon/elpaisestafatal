@@ -1,0 +1,13 @@
+{
+  "id": "prop-precio-vivienda-sube-core",
+  "claimSlug": "precio-vivienda-sube",
+  "text": "El precio nacional de la vivienda libre está bajando.",
+  "type": "trend",
+  "subject": "precio_vivienda_libre",
+  "predicate": "decreases",
+  "object": "España",
+  "geography": "España",
+  "period": "2024-2026",
+  "status": "contradicted",
+  "evidenceIds": ["vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+}

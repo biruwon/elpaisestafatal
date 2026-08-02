@@ -16,6 +16,8 @@ const popularSlugs = [
   'paro-epa-registro',
   'juventud-emancipacion',
   'economia-crece-coste-vida',
+  'precio-vivienda-sube',
+  'cibercriminalidad-crece',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

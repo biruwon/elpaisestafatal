@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-recesion-core",
+  "claimSlug": "espana-recesion",
+  "text": "España está en recesión durante el primer trimestre de 2026.",
+  "type": "descriptive",
+  "subject": "actividad_economica",
+  "predicate": "is_in_recession",
+  "object": "España",
+  "geography": "España",
+  "period": "2026-T1",
+  "status": "contradicted",
+  "evidenceIds": ["economia-variacion-interanual-t1-2026-labels-pib-real-horas-empleo-etc-values-2-7"]
+}

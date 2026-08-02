@@ -71,9 +71,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 207 Markdown claim records exist; 25 are published.
-- The 25 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
-- Five additional public claim families now cover youth emancipation, the distinction between economic growth and the cost of living, EPA versus registered unemployment, employment records versus job quality, and irregular arrivals versus total immigration. They are evidence-linked and the unemployment-measure claim is included in the compact popular-entry set.
+- 212 Markdown claim records exist; 30 are published.
+- The 30 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- Ten additional public claim families now cover youth emancipation, the distinction between economic growth and the cost of living, EPA versus registered unemployment, employment records versus job quality, irregular arrivals versus total immigration, cybercrime versus conventional crime, poverty-risk trends, housing-price trends, recession claims, and tax-revenue trends. They reuse the existing reviewed evidence warehouse and several are included in the compact popular-entry set.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
 - Compound fallback inputs now expose up to four explicit propositions for common contrast/result structures while preserving ordinary noun lists as one claim; each clause keeps its own detected type before handler selection.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.

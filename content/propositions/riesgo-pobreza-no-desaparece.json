@@ -1,0 +1,13 @@
+{
+  "id": "prop-riesgo-pobreza-no-desaparece-core",
+  "claimSlug": "riesgo-pobreza-no-desaparece",
+  "text": "La pobreza ha desaparecido porque la tasa AROPE ha bajado.",
+  "type": "trend",
+  "subject": "riesgo_pobreza_exclusion",
+  "predicate": "has_disappeared",
+  "object": "España",
+  "geography": "España",
+  "period": "2021-2025",
+  "status": "contradicted",
+  "evidenceIds": ["desigualdad-tasa-arope-labels-2021-2022-2023-2024-2025-values-27-8-26-26-5-25-8-25-7"]
+}

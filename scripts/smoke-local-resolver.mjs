@@ -42,6 +42,11 @@ const cases = [
   { text: 'El paro registrado y el de la EPA son la misma cifra.', status: 'complete', slug: 'paro-epa-registro' },
   { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
   { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },
+  { text: 'La cibercriminalidad crece más que la delincuencia convencional.', status: 'complete', slug: 'cibercriminalidad-crece' },
+  { text: 'La pobreza ha desaparecido porque baja el riesgo AROPE.', status: 'complete', slug: 'riesgo-pobreza-no-desaparece' },
+  { text: 'La vivienda está bajando de precio en España.', status: 'complete', slug: 'precio-vivienda-sube' },
+  { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
+  { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
   { text: 'España está destruida', status: 'uncovered', slug: null },
 ];
 for (const item of cases) {

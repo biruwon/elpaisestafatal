@@ -1,0 +1,13 @@
+{
+  "id": "prop-cibercriminalidad-crece-core",
+  "claimSlug": "cibercriminalidad-crece",
+  "text": "La cibercriminalidad creció más que el resto de la criminalidad registrada en el periodo de la fuente.",
+  "type": "comparative",
+  "subject": "cibercriminalidad",
+  "predicate": "grows_faster_than",
+  "object": "resto_criminalidad_registrada",
+  "geography": "España",
+  "period": "2026",
+  "status": "supported",
+  "evidenceIds": ["seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+}
