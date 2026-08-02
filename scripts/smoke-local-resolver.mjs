@@ -100,6 +100,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.metricId !== 'inflation_rate') failures.push('inflation warehouse: selected the wrong metric family');
     if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('inflation warehouse: missing a multi-period series');
     if (result.result?.warehouseSeries?.unit !== '% interanual') failures.push('inflation warehouse: did not localize the unit');
+    if (String(result.result?.warehouseSeries?.labels?.at(-1) || '') < '2025') failures.push('inflation warehouse: candidate cap truncated the recent periods');
   } catch (error) { failures.push(`inflation warehouse: ${error.message}`); }
   try {
     const result = await resolve('precios de la vivienda en España');

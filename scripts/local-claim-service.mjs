@@ -438,7 +438,12 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
   const hintedMetricIds = preferredMetricIdsForQuery(normalizedQuery);
   const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
-  const candidates = (await findWarehouseObservations(query, 100, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
+  // A hinted metric can legitimately have more than 100 observations (for
+  // example monthly inflation). Keep the broad path small, but let an
+  // explicit metric retrieve enough of its own series to retain the latest
+  // periods for the chart.
+  const candidateLimit = hintedMetricIds.size ? 250 : 100;
+  const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     if (item.evidenceFit === 'weak' && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
