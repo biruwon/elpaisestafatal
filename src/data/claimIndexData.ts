@@ -2,6 +2,7 @@ import { claims } from './claims';
 import { conversationMvpClaims } from './conversationMvp';
 import { concerns } from './concerns';
 import type { ClaimIndexEntry } from './claimIndex';
+import { claimAliases } from './claimAliases';
 
 const topicVocabulary: Record<string, string[]> = {
   politica: [
@@ -37,7 +38,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     slug: claim.slug,
     title: clean(claim.claim),
     href: `/afirmaciones/${claim.slug}`,
-    aliases: [...(conversationAliases.get(claim.slug) ?? []), ...claim.aliases, ...(scalableAliases[claim.slug] ?? []), claim.topic],
+    aliases: [...(conversationAliases.get(claim.slug) ?? []), ...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? []), claim.topic],
     keywords: [...claim.keywords, ...claim.topicSlugs],
     assessment: claim.assessment,
     answer: claim.shareable,

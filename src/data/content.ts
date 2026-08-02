@@ -2,6 +2,8 @@ export type PublicationStatus = 'published' | 'planned' | 'in-progress';
 export type ClaimType = 'descriptive' | 'comparative' | 'causal' | 'predictive' | 'legal' | 'normative' | 'mixed';
 export type EvidenceStrength = 'high' | 'medium' | 'limited' | 'insufficient';
 
+import { normaliseSourceTitle } from './sourceTitle';
+
 export type TopicRecord = {
   slug: string;
   title: string;
@@ -40,7 +42,7 @@ function section(body:string,title:string){const match=body.match(new RegExp(`##
 
 export const markdownSources: MarkdownSourceRecord[] = Object.entries(sourceFiles).map(([path, raw]) => {
   const parsed=parseFrontmatter(raw); const data=parsed.data;
-  return { id:data.id || path.split('/').pop()!.replace(/\.md$/, ''), title:data.title || '', url:data.url || '', date:data.date || '', type:data.type || '', body:parsed.body };
+  return { id:data.id || path.split('/').pop()!.replace(/\.md$/, ''), title:normaliseSourceTitle(data.title || ''), url:data.url || '', date:data.date || '', type:data.type || '', body:parsed.body };
 });
 export const markdownEvidence: MarkdownEvidenceRecord[] = Object.entries(evidenceFiles).map(([path, raw]) => {
   const parsed=parseFrontmatter(raw); const data=parsed.data;

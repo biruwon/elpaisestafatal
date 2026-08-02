@@ -1,0 +1,107 @@
+/** Common conversational phrasings for published, evidence-backed claims. */
+export const claimAliases: Record<string, string[]> = {
+  'inmigrantes-ayudas': [
+    'los extranjeros cobran todas las ayudas',
+    'dan las ayudas antes a los inmigrantes',
+    'los inmigrantes viven de paguitas',
+    'ayudas para extranjeros',
+  ],
+  'inmigrantes-patera': [
+    'todos los inmigrantes vienen en patera',
+    'la mayoría llega en barco',
+    'la inmigración entra ilegalmente',
+    'cuantos inmigrantes llegan en patera',
+  ],
+  'inmigrantes-pensiones': [
+    'los inmigrantes nos pagarán la jubilación',
+    'sin inmigración no hay pensiones',
+    'los extranjeros pagan nuestras pensiones',
+  ],
+  'inmigracion-delincuencia': [
+    'los extranjeros delinquen más',
+    'la inmigración trae delincuencia',
+    'desde que hay inmigrantes hay más crimen',
+    'los inmigrantes hacen inseguro el barrio',
+  ],
+  'viviendas-vacias': [
+    'hay millones de casas vacías',
+    'sobran pisos vacíos en España',
+    'no hace falta construir porque hay casas vacías',
+    'las viviendas vacías solucionarían el alquiler',
+  ],
+  'fondos-vivienda': [
+    'los fondos buitre tienen la culpa de la vivienda',
+    'blackstone controla todas las casas',
+    'los grandes fondos provocan los alquileres caros',
+  ],
+  'airbnb-vivienda': [
+    'los pisos turísticos han causado la crisis',
+    'airbnb está expulsando a los vecinos',
+    'el alquiler vacacional dispara la vivienda',
+  ],
+  'construir-vivienda': [
+    'hay que construir más casas',
+    'la solución a la vivienda es construir',
+    'faltan viviendas porque no se construye',
+  ],
+  'precio-vivienda-caera': [
+    'la vivienda va a bajar como en 2008',
+    'estamos ante otra burbuja inmobiliaria',
+    'los precios de las casas caerán pronto',
+  ],
+  'empleo-record': [
+    'nunca ha trabajado tanta gente en España',
+    'hay récord de empleo',
+    'España crea empleo como nunca',
+  ],
+  'fijos-discontinuos': [
+    'los fijos discontinuos son parados encubiertos',
+    'maquillan el paro con fijos discontinuos',
+    'los fijos discontinuos no trabajan',
+  ],
+  'smi-destruye-empleo': [
+    'el salario mínimo destruye puestos de trabajo',
+    'subir el smi provoca paro',
+    'el sueldo mínimo deja a gente sin empleo',
+  ],
+  'reforma-precariedad': [
+    'la reforma laboral acabó con los contratos temporales',
+    'ya no existe precariedad laboral',
+    'la reforma laboral solucionó el trabajo precario',
+  ],
+  'paro-historico': [
+    'España tiene el paro más bajo de la historia',
+    'el desempleo está en mínimos históricos',
+    'el paro registrado nunca fue tan bajo',
+  ],
+  'demasiados-graduados': [
+    'sobran universitarios en España',
+    'hay demasiada gente con carrera',
+    'faltan oficios porque todos van a la universidad',
+  ],
+  'espana-impuestos-europa': [
+    'España es un infierno fiscal',
+    'somos el país que más impuestos paga',
+    'en España se pagan más impuestos que en toda Europa',
+  ],
+  'sanidad-colapsada': [
+    'la sanidad española está totalmente hundida',
+    'la sanidad pública no funciona',
+    'los hospitales están colapsados',
+  ],
+  'espana-pobreza-cuarta-parte': [
+    'uno de cada cuatro españoles es pobre',
+    'la cuarta parte de España vive en la pobreza',
+    'España está llena de pobres',
+  ],
+  'politicos-corruptos': [
+    'todos los políticos roban',
+    'no hay ningún político honrado',
+    'la política española es toda corrupción',
+  ],
+  'espana-mas-peligrosa': [
+    'cada vez hay más delincuencia',
+    'España es mucho más insegura que antes',
+    'ya no se puede salir a la calle',
+  ],
+};

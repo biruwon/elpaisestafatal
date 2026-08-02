@@ -1,6 +1,6 @@
 # Scalable claim clarification roadmap
 
-Updated: 2026-07-19
+Updated: 2026-08-02
 
 ## Product goal
 
@@ -11,6 +11,32 @@ The promise is not that every claim receives a confident verdict. The promise is
 > Ask anything. We show what reliable public evidence establishes, what it does not establish, and what information is missing.
 
 The user may write a claim in any wording, including blunt or politically loaded language. The system must preserve the user’s dignity, avoid repeating unnecessary insults, and never use an adjacent statistic as if it directly answered the claim.
+
+## Product and coverage expansion directive
+
+Status: started.
+
+The roadmap now includes a full product-management and UX workstream. The site must feel like a useful daily claim checker for Spain, not a catalogue of investigations.
+
+The experience must:
+
+- make **Comprobar** the primary navigation and homepage action;
+- accept a blunt, incomplete, pasted, linked, screenshot, or audio claim without demanding a special formulation;
+- make the first result scannable in seconds: what matched, what the evidence supports, what remains open, and what to say next;
+- keep provisional analysis visibly separate from published evidence;
+- expose popular claims and topic entry points without turning the homepage into a wall of text;
+- provide clear paths for checking, browsing claims, exploring themes, and reading the method;
+- meet keyboard, focus, mobile, reduced-motion, and screen-reader expectations;
+- preserve the user’s original wording while using neutral wording for public popularity surfaces;
+- remove confusing implementation/status language from the public interface;
+- keep source labels, dates, populations, units, and limits human-readable and attributable.
+
+Remaining model capacity is reserved for two controlled uses:
+
+1. expanding high-demand Spanish claim phrasings, aliases, and claim families from the existing evidence base;
+2. improving the local evaluation corpus, answer plans, and reviewed data coverage.
+
+Generated claims must not be published merely because a model can write them. New public claims require source records, evidence relations, limitations, and the existing validation gates. When evidence is missing, the system should improve the “not yet established” experience and add the gap to the review queue.
 
 ## Architectural principles
 
@@ -99,7 +125,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Uncovered responses now preserve and render that structured proposition breakdown in the browser; the UI labels it as provisional and keeps the limitation/next question visible instead of replacing it with a generic empty-result card.
 - Quantity and proportion inputs now use a deterministic numeric comparison path: generic numeric index labels are removed from retrieval, claimed values are scaled for Spanish `mil`/`millones` wording, compatible units are required, and the result distinguishes an approximate match from a measurable mismatch before rendering the source.
 - The local service now has an explicit bounded evidence-packet contract and an opt-in answer-planner upgrade. The planner can rewrite presentation only after deterministic enrichment, while evidence IDs, source links, visual blocks, and unsupported numbers remain controlled by the deterministic plan; timeout or malformed output falls back automatically.
-- Popular unresolved query clusters now produce a review-only materialization queue with suggested slugs, counts, priority, source references, and required review actions. The queue cannot publish directly: evidence must first be promoted into reviewed Git records and pass the existing relation/build gates.
+- Popular unresolved query clusters now produce a review-only materialization queue with suggested slugs, counts, recent activity, growth, priority, source references, neutralized wording, and required review actions. The queue can merge local learning records with an exported production D1 snapshot, preserving review/coverage/link state instead of treating each environment as a separate backlog. It cannot publish directly: evidence must first be promoted into reviewed Git records and pass the existing relation/build gates.
 - Added an explicit D1 cluster-promotion command that requires owner approval, a neutral canonical wording, a published linked claim, and covered evidence before a cluster can enter the public popularity feed; raw submissions cannot be promoted directly.
 - The browser now preserves its deterministic result while dynamic analysis is pending, timed out, cancelled, or unavailable; completed structured results can still upgrade it automatically, but users are no longer left with a generic pending/unavailable replacement.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.
@@ -357,6 +383,8 @@ Add SSRF protection, size limits, MIME validation, timeouts, temporary media ret
 
 ## Phase 9 — Learning, popularity, and materialisation
 
+Status: started; durable review-queue merge and recency ranking are implemented; public promotion and static materialisation remain owner-approved.
+
 Cluster inputs by canonical proposition signature. Track:
 
 - most asked;
@@ -366,6 +394,8 @@ Cluster inputs by canonical proposition signature. Track:
 - high-impact knowledge gaps.
 
 Rank the owner review queue using frequency, growth, potential harm, evidence availability, and feasibility.
+
+The queue is a derived artifact, not a second source of truth. `knowledge:export-query-clusters` exports the current operational D1 clusters, and `knowledge:cluster --d1-input ...` merges them with local learning records. Each output cluster carries query count, seven-day activity, growth rate, coverage/review state, linked claim, input types, source IDs, a neutralized review text, and a reason for its priority. The materialization command accepts only candidates with enough demand and source references; newly covered clusters remain reviewable, while already published clusters do not re-enter the queue.
 
 Do not expose raw insulting submissions as public popular claims. Use neutral canonical wording.
 

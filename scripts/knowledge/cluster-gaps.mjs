@@ -2,14 +2,36 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
-const inputPath = join(root, '.local/knowledge-gaps.jsonl');
-const outputPath = join(root, '.local/query-clusters.json');
-let raw;
-try { raw = await readFile(inputPath, 'utf8'); } catch { console.log('No local knowledge gaps yet.'); process.exit(0); }
+const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
+  if (value.startsWith('--')) pairs.push([value.slice(2), values[index + 1] && !values[index + 1].startsWith('--') ? values[index + 1] : 'true']);
+  return pairs;
+}, []));
+const inputPath = args.get('input') || join(root, '.local/knowledge-gaps.jsonl');
+const d1InputPath = args.get('d1-input') || '';
+const outputPath = args.get('output') || join(root, '.local/query-clusters.json');
 
-const clusters = new Map();
-const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim().slice(0, 12000);
-const tokens = (value) => new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'datos', 'todo', 'va', 'peor'].includes(token)));
+const now = Date.now();
+const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+const normalise = (value) => String(value || '')
+  .toLocaleLowerCase('es')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/ñ/g, 'n')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim()
+  .slice(0, 12000);
+const publicText = (value) => String(value || '')
+  .replace(/[\u0000-\u001f\u007f]/g, ' ')
+  .replace(/\b(?:gilipollas|idiota|idiotas|imbecil|imbeciles|subnormal|basura|mierda|puto|puta|p mierda)\b/gi, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 400);
+const tokens = (value) => new Set(normalise(value).split(' ').filter((token) => token.length > 2 && ![
+  'como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las',
+  'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'datos', 'todo',
+  'va', 'peor', 'verdad', 'cierto', 'cierta', 'esto', 'eso', 'sobre', 'ser', 'son', 'esta',
+].includes(token)));
 const similarity = (left, right) => {
   const a = tokens(left); const b = tokens(right);
   if (!a.size || !b.size) return 0;
@@ -18,35 +40,127 @@ const similarity = (left, right) => {
   return overlap / (a.size + b.size - overlap);
 };
 const harmWeight = (value) => /inmigr|delinc|crimen|violenc|salud|eleccion|corrup|ayuda|viviend/.test(normalise(value)) ? 1.5 : 1;
-for (const line of raw.split('\n')) {
-  if (!line.trim()) continue;
-  try {
-    const item = JSON.parse(line);
-    const normalized = item.canonical || item.normalized || normalise(item.input || item.extractedText);
+const timestamp = (value) => {
+  const parsed = Date.parse(String(value || ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+const earliest = (left, right) => !left ? right : !right ? left : timestamp(left) <= timestamp(right) ? left : right;
+const latest = (left, right) => !left ? right : !right ? left : timestamp(left) >= timestamp(right) ? left : right;
+const increment = (map, key, amount = 1) => { if (!key) return; map[key] = (map[key] || 0) + amount; };
+const asArray = (value) => Array.isArray(value) ? value : [];
+
+const readText = async (path) => {
+  try { return await readFile(path, 'utf8'); } catch { return ''; }
+};
+const parseD1Clusters = (value) => {
+  let parsed;
+  try { parsed = JSON.parse(value); } catch { return []; }
+  const possible = Array.isArray(parsed) ? parsed.flatMap((item) => item?.results || []) : parsed?.results || parsed?.clusters || [];
+  return asArray(possible).map((item) => ({
+    id: item.id,
+    signature: item.canonical_signature || item.signature,
+    text: item.canonical_text || item.text,
+    count: Number(item.query_count ?? item.count ?? 0),
+    count7d: Number(item.count_7d ?? item.count7d ?? 0),
+    count30d: Number(item.count_30d ?? item.count30d ?? item.count ?? 0),
+    lastSeen: item.last_seen_at || item.lastSeenAt,
+    firstSeen: item.first_seen_at || item.firstSeenAt,
+    coverageStatus: item.coverage_status || item.coverageStatus || 'uncovered',
+    reviewStatus: item.review_status || item.reviewStatus || 'unreviewed',
+    linkedClaimSlug: item.linked_claim_slug || item.linkedClaimSlug || null,
+    sourceIds: asArray(item.source_ids || item.sourceIds),
+    fromD1: true,
+  })).filter((item) => item.signature || item.text);
+};
+
+const clusterRecords = (records) => {
+  const clusters = new Map();
+  for (const item of records) {
+    const createdAt = item.createdAt || item.lastSeen || item.lastSeenAt || new Date().toISOString();
+    const normalized = item.canonical || item.normalized || item.signature || normalise(item.input || item.extractedText || item.text);
     if (!normalized) continue;
-    let clusterKey = normalized;
-    if (!clusters.has(clusterKey)) {
+    let clusterKey = item.signature || normalized;
+    if (!clusters.has(clusterKey) && !item.fromD1) {
       const related = [...clusters.values()].find((candidate) => candidate.count >= 1 && similarity(candidate.signature, normalized) >= 0.62);
       if (related) clusterKey = related.signature;
     }
-    const current = clusters.get(clusterKey) || { signature: clusterKey, text: normalized, count: 0, statuses: {}, inputTypes: {}, firstSeen: item.createdAt, lastSeen: item.createdAt, sourceIds: [] };
+    const current = clusters.get(clusterKey) || {
+      id: item.id || `cluster-${normalise(clusterKey).replace(/ /g, '-').slice(0, 72)}`,
+      signature: clusterKey,
+      text: publicText(item.text || item.canonical || item.normalized || normalized),
+      count: 0,
+      count7d: 0,
+      count30d: 0,
+      statuses: {},
+      inputTypes: {},
+      firstSeen: '',
+      lastSeen: '',
+      sourceIds: [],
+      coverageStatus: 'uncovered',
+      reviewStatus: 'unreviewed',
+      linkedClaimSlug: null,
+    };
+    if (item.fromD1) {
+      current.count = Math.max(current.count, Number(item.count) || 0);
+      current.count7d = Math.max(current.count7d, Number(item.count7d) || 0);
+      current.count30d = Math.max(current.count30d, Number(item.count30d) || 0);
+      current.id = item.id || current.id;
+      current.text = publicText(item.text || current.text);
+      current.firstSeen = earliest(current.firstSeen, item.firstSeen);
+      current.lastSeen = latest(current.lastSeen, item.lastSeen);
+      current.coverageStatus = item.coverageStatus || current.coverageStatus;
+      current.reviewStatus = item.reviewStatus || current.reviewStatus;
+      current.linkedClaimSlug = item.linkedClaimSlug || current.linkedClaimSlug;
+      current.sourceIds = [...new Set([...current.sourceIds, ...asArray(item.sourceIds)])].slice(0, 20);
+      clusters.set(clusterKey, current);
+      continue;
+    }
     current.count += 1;
+    if (timestamp(createdAt) >= sevenDaysAgo) current.count7d += 1;
+    if (timestamp(createdAt) >= thirtyDaysAgo) current.count30d += 1;
     const status = item.status || (item.classification?.slug === 'none' ? 'uncovered' : item.classification?.slug) || 'unreviewed';
     const inputType = item.inputType || 'text';
-    current.statuses[status] = (current.statuses[status] || 0) + 1;
-    current.inputTypes[inputType] = (current.inputTypes[inputType] || 0) + 1;
-    current.firstSeen = current.firstSeen < item.createdAt ? current.firstSeen : item.createdAt;
-    current.lastSeen = current.lastSeen > item.createdAt ? current.lastSeen : item.createdAt;
-    current.sourceIds = [...new Set([...current.sourceIds, ...(Array.isArray(item.sourceIds) ? item.sourceIds : [])])].slice(0, 10);
+    increment(current.statuses, status);
+    increment(current.inputTypes, inputType);
+    current.firstSeen = earliest(current.firstSeen, createdAt);
+    current.lastSeen = latest(current.lastSeen, createdAt);
+    current.sourceIds = [...new Set([...current.sourceIds, ...asArray(item.sourceIds)])].slice(0, 20);
+    if (status === 'complete' || status === 'covered') current.coverageStatus = 'covered';
+    else if (status === 'partial' && current.coverageStatus !== 'covered') current.coverageStatus = 'partial';
     clusters.set(clusterKey, current);
-  } catch { /* Ignore one malformed local record. */ }
-}
+  }
+  return [...clusters.values()].map((cluster) => {
+    const unresolved = (cluster.statuses.uncovered || 0) + (cluster.statuses.draft || 0) + (cluster.statuses.partial || 0) || (cluster.coverageStatus !== 'covered' ? cluster.count : 0);
+    const unresolvedRate = cluster.count ? unresolved / cluster.count : 0;
+    const recentCount = cluster.count7d || (timestamp(cluster.lastSeen) >= sevenDaysAgo ? cluster.count : 0);
+    const baseline = Math.max(1, cluster.count30d - recentCount);
+    const growthRate = recentCount ? Math.round((recentCount / baseline) * 100) / 100 : 0;
+    const newlyCovered = cluster.coverageStatus === 'covered' && cluster.reviewStatus !== 'published';
+    const evidenceAvailability = cluster.sourceIds.length ? 1.2 : 1;
+    const momentum = 1 + Math.min(growthRate, 4) * 0.15;
+    const priorityScore = Math.round(cluster.count * Math.max(unresolvedRate, newlyCovered ? 0.25 : 0) * evidenceAvailability * harmWeight(cluster.text) * momentum * 100) / 100;
+    return {
+      ...cluster,
+      text: cluster.text || `Afirmación sobre ${cluster.signature}`,
+      exampleCount: cluster.count,
+      growthRate,
+      newlyCovered,
+      unresolved: !newlyCovered && cluster.coverageStatus !== 'covered',
+      reason: newlyCovered ? 'Nueva cobertura disponible: necesita revisión antes de publicarse.' : cluster.sourceIds.length ? 'Tiene fuentes candidatas: comprobar cobertura directa y límites.' : 'Sin fuentes vinculadas: investigar o marcar como no verificable.',
+      priorityScore,
+    };
+  }).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
+};
 
-const result = [...clusters.values()].map((cluster) => {
-  const unresolved = (cluster.statuses.uncovered || 0) + (cluster.statuses.draft || 0) + (cluster.statuses.partial || 0);
-  const unresolvedRate = cluster.count ? unresolved / cluster.count : 0;
-  const evidenceAvailability = cluster.sourceIds.length ? 1.2 : 1;
-  return { ...cluster, priorityScore: Math.round(cluster.count * unresolvedRate * evidenceAvailability * harmWeight(cluster.text) * 100) / 100 };
-}).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
-await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), clusters: result }, null, 2));
-console.log(`Knowledge-gap clusters written: ${result.length} clusters from ${raw.split('\n').filter(Boolean).length} records.`);
+const localRaw = await readText(inputPath);
+const localRecords = localRaw.split('\n').filter(Boolean).flatMap((line) => {
+  try { return [JSON.parse(line)]; } catch { return []; }
+});
+const d1Records = d1InputPath ? parseD1Clusters(await readText(d1InputPath)) : [];
+if (!localRecords.length && !d1Records.length) {
+  console.log('No local or exported operational knowledge gaps yet.');
+  process.exit(0);
+}
+const result = clusterRecords([...localRecords, ...d1Records]);
+await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, d1Clusters: d1Records.length }, clusters: result }, null, 2));
+console.log(`Knowledge-gap review queue written: ${result.length} clusters from ${localRecords.length} local records and ${d1Records.length} D1 clusters.`);

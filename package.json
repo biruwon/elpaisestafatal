@@ -56,6 +56,7 @@
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
     "knowledge:materialization-candidates": "node scripts/knowledge/materialization-candidates.mjs",
     "knowledge:materialization-candidates:validate": "node scripts/knowledge/validate-materialization-candidates.mjs",
+    "knowledge:export-query-clusters": "node scripts/knowledge/export-query-clusters.mjs",
     "knowledge:promote-cluster": "node scripts/knowledge/promote-cluster.mjs",
     "knowledge:promote-cluster:validate": "node scripts/knowledge/validate-cluster-promotion.mjs",
     "migrate:claims": "node scripts/migrate-legacy-claims.mjs",

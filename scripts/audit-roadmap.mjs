@@ -29,7 +29,7 @@ const clarifierPages = html.filter((file) => file.includes('/aclarar/') && file.
 if (concernPages.length < 14) failures.push(`expected at least 14 concern pages, found ${concernPages.length}`);
 if (claimPages.length < 20) failures.push(`expected at least 20 affirmation pages, found ${claimPages.length}`);
 if (verificationPages.length < 20) failures.push(`expected at least 20 verification pages, found ${verificationPages.length}`);
-if (clarifierPages.length !== 3) failures.push(`expected 3 clarifier pages, found ${clarifierPages.length}`);
+if (clarifierPages.length < 3) failures.push(`expected at least 3 clarifier pages, found ${clarifierPages.length}`);
 for (const file of clarifierPages) {
   const source = await readFile(file, 'utf8');
   const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');

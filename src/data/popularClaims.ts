@@ -9,6 +9,10 @@ const popularSlugs = [
   'espana-impuestos-europa',
   'politicos-corruptos',
   'demasiados-graduados',
+  'inmigrantes-patera',
+  'airbnb-vivienda',
+  'fijos-discontinuos',
+  'paro-historico',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

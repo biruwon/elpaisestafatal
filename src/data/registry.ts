@@ -1,3 +1,5 @@
+import { normaliseSourceTitle } from './sourceTitle';
+
 export type SourceRecord = {
   id: string;
   title: string;
@@ -38,7 +40,7 @@ function list(value = ''): string[] {
 
 export const sourceRecords: SourceRecord[] = Object.entries(sourceFiles).map(([path, raw]) => {
   const { data, body } = parse(raw);
-  return { id: data.id || path.split('/').pop()!.replace(/\.md$/, ''), title: data.title || '', url: data.url || '', date: data.date || '', type: data.type || 'other', body };
+  return { id: data.id || path.split('/').pop()!.replace(/\.md$/, ''), title: normaliseSourceTitle(data.title || ''), url: data.url || '', date: data.date || '', type: data.type || 'other', body };
 });
 
 export const evidenceRecords: EvidenceRecord[] = Object.entries(evidenceFiles).map(([path, raw]) => {

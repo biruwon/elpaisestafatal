@@ -22,16 +22,20 @@ const slugify = (value) => String(value || '')
   .slice(0, 72) || 'aclaracion-sin-titulo';
 
 export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50 } = {}) => (Array.isArray(clusters) ? clusters : [])
-  .filter((cluster) => cluster && Number(cluster.count) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published')
+  .filter((cluster) => cluster && Number(cluster.count ?? cluster.exampleCount) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published' && (cluster.coverageStatus !== 'covered' || cluster.newlyCovered))
   .map((cluster) => ({
     clusterId: String(cluster.id || `cluster-${slugify(cluster.signature)}`),
     canonicalText: String(cluster.text || cluster.signature || '').slice(0, 400),
     suggestedSlug: slugify(cluster.text || cluster.signature),
-    queryCount: Number(cluster.count),
+    queryCount: Number(cluster.count ?? cluster.exampleCount),
+    count7d: Number(cluster.count7d || 0),
+    growthRate: Number(cluster.growthRate || 0),
+    newlyCovered: Boolean(cluster.newlyCovered),
     priorityScore: Number(cluster.priorityScore || 0),
     coverageStatus: String(cluster.coverageStatus || 'unresolved'),
     sourceIds: cluster.sourceIds.slice(0, 20),
     reviewStatus: 'needs_review',
+    reason: String(cluster.reason || 'Requiere revisión de evidencia antes de publicarse.'),
     requiredActions: [
       'Confirm the canonical wording and separate its propositions.',
       'Promote only direct evidence and source records into reviewed Git content.',

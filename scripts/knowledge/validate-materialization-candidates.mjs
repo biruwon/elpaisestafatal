@@ -1,10 +1,12 @@
 import { rankMaterializationCandidates } from './materialization-candidates.mjs';
 
 const candidates = rankMaterializationCandidates([
-  { id: 'popular', text: 'España tiene demasiados impuestos', signature: 'espana demasiados impuestos', count: 7, priorityScore: 10, sourceIds: ['e1'] },
+  { id: 'popular', text: 'España tiene demasiados impuestos', signature: 'espana demasiados impuestos', count: 7, count7d: 4, growthRate: 1.33, priorityScore: 10, sourceIds: ['e1'], coverageStatus: 'partial', reason: 'Tiene fuentes candidatas.' },
   { id: 'rare', text: 'Pregunta rara', signature: 'pregunta rara', count: 2, priorityScore: 99, sourceIds: ['e2'] },
   { id: 'no-source', text: 'Sin fuente', signature: 'sin fuente', count: 8, priorityScore: 20, sourceIds: [] },
 ], { minCount: 3, max: 10 });
 if (candidates.length !== 1 || candidates[0].clusterId !== 'popular') throw new Error('candidate ranking did not enforce popularity and source gates');
-if (candidates[0].reviewStatus !== 'needs_review' || !candidates[0].suggestedSlug || candidates[0].requiredActions.length < 3) throw new Error('candidate lacks review metadata');
+if (candidates[0].reviewStatus !== 'needs_review' || !candidates[0].suggestedSlug || candidates[0].requiredActions.length < 3 || candidates[0].count7d !== 4 || candidates[0].growthRate !== 1.33 || !candidates[0].reason) throw new Error('candidate lacks review metadata');
+if (rankMaterializationCandidates([{ id: 'covered', text: 'Ya cubierta', count: 8, sourceIds: ['e3'], coverageStatus: 'covered' }]).length !== 0) throw new Error('covered cluster bypassed materialization gate');
+if (rankMaterializationCandidates([{ id: 'newly-covered', text: 'Cobertura nueva', count: 8, sourceIds: ['e4'], coverageStatus: 'covered', newlyCovered: true }]).length !== 1) throw new Error('newly covered cluster was lost from review queue');
 console.log('Materialization candidate validation passed: popularity never bypasses review gates.');
