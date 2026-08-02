@@ -85,7 +85,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - Shared knowledge contracts and relation validation are now part of the build.
 - `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
-- `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine. The current local evaluation corpus contains 492 Spanish inputs across 11 categories; the latest run reached 369/372 known-family retrieval and 116/120 unknown-safety cases, with the remaining misses retained as follow-up long-tail regressions rather than hidden.
+- `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine. The current local evaluation corpus contains 492 Spanish inputs across 11 categories; the latest run reaches 372/372 known-family retrieval, 120/120 unknown-safety cases, 0 irrelevant matches, and 372/492 traceable outcomes. Adjacent-letter transposition typos now resolve to the intended published family, while local/private claims suppress unrelated national guidance and sources. The remaining traceability gap belongs to uncovered/no-evidence responses and remains an intentional follow-up for richer structured decomposition.
 - The source warehouse now preserves real dated observations from INE `DATOS_TABLA` responses instead of indexing row metadata as measurements.
 - Refresh resources can carry source-specific titles and aliases, which are included in derived retrieval indexes for long-tail wording such as `inflación`, `IPC`, and `PIB`.
 - BOE daily summaries are normalized into searchable publication records with date, department, identifier, title, and direct document URL; document matches remain provisional until their content is checked.
@@ -168,6 +168,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Every result state now includes a visible “Comprobar otra frase” action that clears the previous result, cancels any pending analysis, resets media selection, updates the character counter, and returns focus to the checker.
 - Text results now preserve the submitted claim in the shareable `?q=…#comprobar` URL, so copied links reopen the same checker state; media content is deliberately kept out of the URL.
 - Broad uncovered claims now receive a bounded “concretar por un tema” set of published topic links when enough text is present. This provides a useful next action without presenting a topic as a match or inventing evidence.
+- Truly uncovered structured results now say “Sin coincidencia directa” in the checker UI, distinct from “Resultado automático” for provisional evidence; the evidence state and next step remain visible before secondary analysis details.
 - The deterministic compiler now recognizes broad evaluative phrases such as “España está destruida” as requiring a definition/context clarification, preserving the complaint while refusing to turn it into an unsupported national verdict.
 - The deterministic compiler no longer treats the negated phrase “no significa que” as a definition question, so claims such as economic growth versus cost of living can resolve to their exact published claim instead of being downgraded to a generic topic.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.
@@ -223,7 +224,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. More semantic clustering and richer result personalization remain pending.
+Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. More semantic clustering and richer result personalization remain pending.
 
 Before using a model:
 
@@ -355,7 +356,7 @@ Never expose a fake truth percentage.
 
 ## Phase 6 — Newly published and long-tail claims
 
-Status: in progress. Unknown measurable claims progressively use the local warehouse and constrained official discovery. Unknown legal claims now search BOE's consolidated-legislation collection with bounded wildcard title pairs, reject expired or outdated consolidations, download at most two bounded official texts, select only current directly matching articles, cache the result, and retain scenario/jurisprudence limitations. Broader current-event coverage and persistent knowledge-gap promotion remain pending.
+Status: in progress. Unknown measurable claims progressively use the local warehouse and constrained official discovery. Unknown legal claims now search BOE's consolidated-legislation collection with bounded wildcard title pairs, reject expired or outdated consolidations, download at most two bounded official texts, select only current directly matching articles, cache the result, and retain scenario/jurisprudence limitations. Evaluation-driven routing now resolves typo variants without combining unrelated aliases, and refuses to attach national context to local/private claims that require unavailable records. Broader current-event coverage and persistent knowledge-gap promotion remain pending.
 
 Use progressive retrieval:
 

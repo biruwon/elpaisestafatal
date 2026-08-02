@@ -80,6 +80,7 @@ const evidenceUnavailableSignal = (value) => includesAny(normalise(value), [
   'mi experiencia demuestra', 'depende de que poblacion', 'depende del denominador',
   'no sabemos que significa', 'no indica el periodo', 'definiciones diferentes',
 ]);
+const localSpecificClaim = (value) => ['mi calle', 'mi barrio', 'mi portal', 'mi municipio', 'mi pueblo', 'mi edificio', 'mi zona', 'en mi barrio', 'en mi municipio', 'en mi pueblo'].some((phrase) => normalise(value).includes(phrase));
 
 const pruneRuntimeState = () => {
   const now = Date.now();
@@ -299,6 +300,11 @@ const searchText = (entry) => [entry.title, ...(entry.aliases || []), ...(entry.
 const oneEditAway = (left, right) => {
   if (left === right) return true;
   if (Math.abs(left.length - right.length) > 1 || Math.min(left.length, right.length) < 4) return false;
+  if (left.length === right.length) {
+    for (let index = 0; index < left.length - 1; index += 1) {
+      if (left[index] === right[index + 1] && left[index + 1] === right[index] && left.slice(0, index) === right.slice(0, index) && left.slice(index + 2) === right.slice(index + 2)) return true;
+    }
+  }
   let edits = 0; let i = 0; let j = 0;
   while (i < left.length && j < right.length) {
     if (left[i] === right[j]) { i += 1; j += 1; continue; }
@@ -322,8 +328,14 @@ const lexicalScore = (query, entry) => {
   const phraseContained = (text, phrase) => ` ${text} `.includes(` ${phrase} `);
   if (phrases.some((phrase) => phrase.length >= 10 && (phraseContained(phrase, queryText) || phraseContained(queryText, phrase)))) return 0.9;
   const wanted = tokens(queryText).filter((token) => !lowSignalTokens.has(token));
-  const available = new Set(tokens(haystack));
-  return wanted.length ? wanted.filter((token) => available.has(token) || [...available].some((candidate) => oneEditAway(token, candidate))).length / wanted.length : 0;
+  if (!wanted.length) return 0;
+  // Keep aliases as separate phrases. Joining every alias into one token set
+  // can create a false exact match from words that never appeared together
+  // in the same published formulation.
+  return Math.max(...phrases.map((phrase) => {
+    const available = new Set(tokens(phrase));
+    return wanted.filter((token) => available.has(token) || [...available].some((candidate) => oneEditAway(token, candidate))).length / wanted.length;
+  }), 0);
 };
 
 const warehouseTokens = (value) => tokens(value).filter((token) => token.length > 3);
@@ -634,16 +646,33 @@ const classify = async (text) => {
     if (deterministicHandler === 'group_comparison' && requestedGroupContrast && !explicitGroupContrast(searchText(entry))) return false;
     return handlerForEntry(entry) === deterministicHandler;
   };
-  const publicRanked = ranked.filter((item) => item.entry.published && compatibleEntry(item.entry));
+  const normalizedQuery = normalise(text);
+  const suppressPublishedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
+  const nearCanonicalEntry = ({ entry, lexical }) => entry.kind === 'claim' && lexical >= 0.9;
+  const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));
+  const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
+  const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
+    const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
+    return phraseTokens.length === queryMeaningfulTokens.length && phraseTokens.every((phraseToken) => queryMeaningfulTokens.some((queryToken) => oneEditAway(queryToken, phraseToken)));
+  });
+  const phraseTokenHasTypo = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
+    const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
+    const matches = phraseTokens.length === queryMeaningfulTokens.length && phraseTokens.every((phraseToken) => queryMeaningfulTokens.some((queryToken) => oneEditAway(queryToken, phraseToken)));
+    return matches && phraseTokens.some((phraseToken) => !queryMeaningfulTokens.includes(phraseToken));
+  });
+  const directPhraseCandidate = suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry)));
+  const decisionRanked = directPhraseCandidate
+    ? [directPhraseCandidate, ...publicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
+    : publicRanked;
   const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score }));
-  const top = publicRanked[0];
+  const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
   // fallback guidance, but it must not force an exact claim paraphrase through
   // the slow model path. Measure ambiguity against the next published claim;
   // a competing topic is not a competing factual answer.
   const competitor = top?.entry.kind === 'claim'
-    ? publicRanked.find((item) => item.entry.kind === 'claim' && item.entry.slug !== top.entry.slug)
-    : publicRanked[1];
+    ? decisionRanked.find((item) => item.entry.kind === 'claim' && item.entry.slug !== top.entry.slug)
+    : decisionRanked[1];
   const margin = top ? top.score - (competitor?.score || 0) : 0;
   const lexicalMargin = top ? top.lexical - (competitor?.lexical || 0) : 0;
   const topHandler = top ? handlerForEntry(top.entry) : '';
@@ -652,29 +681,29 @@ const classify = async (text) => {
   // decision. This is limited to a very high lexical match and a compatible
   // handler, so a phrase that merely shares a topic still goes through the
   // cautious related/uncovered path.
-  const normalizedQuery = normalise(text);
   const exactCanonicalWording = Boolean(top && normalise(top.entry.title) === normalizedQuery);
   // An exact canonical wording is authoritative even when a broad keyword
   // makes the inferred handler look different. The published claim itself
   // defines the evidence contract; handler compatibility is for paraphrase
   // candidates, not for rejecting the claim the user literally entered.
-  const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
-  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase) && top.lexical >= 0.9);
+  const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9 && compatibleHandlers);
+  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
   const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
   // A new measurable question must not be swallowed by a broad published
   // claim just because both use a topic word such as "desigualdad". Let the
   // warehouse answer the requested metric unless the user entered the
   // published claim's exact wording or alias.
-  const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && compatibleHandlers && (!explicitMetricRoute || canonicalPhrase));
+  const nearCanonicalPhrase = Boolean(top && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
+  const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
   if (canonicalPhrase || strongMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.
-    if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(publicRanked) };
-    return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(publicRanked.slice(1)) };
+    if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(decisionRanked) };
+    return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
-  const meaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
+  const meaningfulTokens = queryMeaningfulTokens;
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
   const compiled = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
@@ -682,7 +711,7 @@ const classify = async (text) => {
   const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && compatibleEntry(entry));
   const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
-  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(publicRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
   return result;
@@ -1044,25 +1073,26 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.
   const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
+  const suppressUnrelatedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
   let queryEmbedding;
-  if (!classified.primary && semanticWarehouseEnabled) {
+  if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
     try {
       const embedded = await ollama('/api/embed', { model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: -1 }, 1800);
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
-  const warehouse = !classified.primary ? await findWarehouseEvidence(warehouseQuery, classified.compiler, queryEmbedding) : { observations: [], source: undefined };
-  const liveLegal = !classified.primary && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
+  const warehouse = !classified.primary && !suppressUnrelatedContext ? await findWarehouseEvidence(warehouseQuery, classified.compiler, queryEmbedding) : { observations: [], source: undefined };
+  const liveLegal = !classified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
-  const indexedSource = !classified.primary && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const indexedSource = !classified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
   // typed record or explain what is missing instead of attaching a topical
   // publication.
   const discoveryEligible = new Set(['budget_transfer', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
-  const discovered = discoveryEligible.has(handlerId) && !evidenceUnavailableSignal(text) && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discovered = discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;

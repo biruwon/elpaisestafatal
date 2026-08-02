@@ -198,6 +198,27 @@ if (process.env.SMOKE_OFFICIAL === '1') {
 }
 
 if (process.env.SMOKE_LONG_TAIL === '1') {
+  for (const item of [
+    ['La mayoría de inmigratnes llega en patera', 'inmigrantes-patera'],
+    ['Los inmigratnes pagarán nuestras pensiones', 'inmigrantes-pensiones'],
+    ['Si la vivenda sube un 12,9%, todas las casas suben lo mismo', 'subida-vivienda-no-todas-igual'],
+  ]) {
+    try {
+      const result = await resolve(item[0]);
+      if (result.status !== 'complete' || result.relatedClaims?.[0]?.slug !== item[1]) failures.push(`typo published match: expected ${item[1]}, received ${result.status}/${result.relatedClaims?.[0]?.slug || 'none'}`);
+    } catch (error) { failures.push(`typo published match ${item[1]}: ${error.message}`); }
+  }
+  for (const text of [
+    'En mi calle todos los pisos sociales se los dan a extranjeros',
+    'En mi barrio ha subido la inseguridad este mes',
+    'No se puede saber la intención privada de una persona con este dato',
+  ]) {
+    try {
+      const result = await resolve(text);
+      if (result.status !== 'uncovered') failures.push(`specific unknown claim: expected uncovered for “${text}”, received ${result.status}`);
+      if (result.relatedClaims?.length || result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push(`specific unknown claim: leaked unrelated context for “${text}”`);
+    } catch (error) { failures.push(`specific unknown claim: ${error.message}`); }
+  }
   try {
     const result = await resolve('Los precios de la vivienda causan la crisis en España');
     if (result.status !== 'draft') failures.push(`causal long-tail: expected draft, received ${result.status}`);

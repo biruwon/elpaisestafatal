@@ -59,7 +59,11 @@ const matchesToken = (queryToken: string, searchableTokens: Set<string>): boolea
   if (searchableTokens.has(queryToken)) return true;
   if (queryToken.length < 5) return false;
   const allowedDistance = queryToken.length >= 8 ? 2 : 1;
-  return [...searchableTokens].some((token) => Math.abs(token.length - queryToken.length) <= allowedDistance && editDistance(queryToken, token) <= allowedDistance);
+  return [...searchableTokens].some((token) => {
+    if (Math.abs(token.length - queryToken.length) > allowedDistance) return false;
+    if (queryToken.length === token.length && [...queryToken].some((_, index) => index < queryToken.length - 1 && queryToken[index] === token[index + 1] && queryToken[index + 1] === token[index] && queryToken.slice(0, index) === token.slice(0, index) && queryToken.slice(index + 2) === token.slice(index + 2))) return true;
+    return editDistance(queryToken, token) <= allowedDistance;
+  });
 };
 
 export const normaliseClaimText = (value: string): string => value
