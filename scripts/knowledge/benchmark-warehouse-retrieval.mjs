@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
 import { warehouseRetrievalBenchmarkCases } from './warehouse-retrieval-benchmark-cases.mjs';
+import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const endpoint = (process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434').replace(/\/$/, '');
 const model = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
@@ -16,10 +17,14 @@ const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'una',
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 const lexicalRank = (query) => {
   const wanted = tokens(query);
+  const preferred = preferredMetricIdsForQuery(query);
+  const excluded = excludedMetricIdsForQuery(query);
   return candidates.map((candidate) => {
     const available = new Set(tokens(candidate.text));
     const matched = wanted.filter((token) => available.has(token));
-    return { ...candidate, score: wanted.length ? matched.length / wanted.length : 0 };
+    const baseScore = wanted.length ? matched.length / wanted.length : 0;
+    const affinity = preferred.has(candidate.id) ? 0.5 : excluded.has(candidate.id) ? -0.5 : 0;
+    return { ...candidate, score: Math.max(0, baseScore + affinity) };
   }).filter((candidate) => candidate.score > 0).sort((left, right) => right.score - left.score);
 };
 const cosine = (left, right) => {

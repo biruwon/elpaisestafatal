@@ -1,4 +1,5 @@
 import { populationEvidenceFit, rankWarehouseObservations, warehouseEvidenceFit } from './warehouse-query.mjs';
+import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const records = [
   { id: 'obs-1', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 68.2, unit: '%', period: '2026-Q1', dimensions: { geography: 'Spain' }, source: { id: 'source-ine', publisher: 'INE', url: 'https://www.ine.es/' } },
@@ -16,6 +17,9 @@ const residentObservation = { population: 'Resident population', dimensions: { g
 if (populationEvidenceFit('personas inmigrantes o extranjeras', immigrantObservation) !== 'direct') throw new Error('Warehouse population fit did not recognize the requested group');
 if (populationEvidenceFit('personas inmigrantes o extranjeras', residentObservation) !== 'context') throw new Error('Warehouse population fit did not protect total-population context');
 if (populationEvidenceFit('personas beneficiarias', { population: 'households receiving rent assistance' }) !== 'mismatch') throw new Error('Warehouse population fit did not reject a mismatched population');
+if (!preferredMetricIdsForQuery('paro juvenil en España').has('youth_unemployment_rate')) throw new Error('Metric hints did not prefer youth unemployment for youth wording');
+if (!excludedMetricIdsForQuery('evolución del desempleo en España').has('youth_unemployment_rate')) throw new Error('Metric hints did not suppress youth unemployment for generic wording');
+if (excludedMetricIdsForQuery('desempleo juvenil en España').size) throw new Error('Metric hints incorrectly suppressed youth unemployment when youth wording was explicit');
 
 const publication = rankWarehouseObservations('Banco de España tipos hipotecarios', [
   { id: 'doc-1', kind: 'official_publication', metric: 'Resolución del Banco de España sobre tipos de interés hipotecarios', value: null, period: '20260718', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-1', dimensions: { department: 'BANCO DE ESPAÑA' }, source: { id: 'source-boe', title: 'BOE', url: 'https://www.boe.es/' } },

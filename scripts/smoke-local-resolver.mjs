@@ -116,6 +116,24 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.sourceLinks?.some((source) => /eurostat/i.test(`${source.title} ${source.url}`))) failures.push('AROPE warehouse: missing Eurostat source trail');
     if (/persons at risk|age and sex/i.test(result.result?.headline || '')) failures.push('AROPE warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`AROPE warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cómo ha evolucionado la deuda pública española sobre el PIB');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`public debt warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_debt_ratio') failures.push('public debt warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('public debt warehouse: missing a multi-period series');
+    if (/government debt|associated data/i.test(result.result?.headline || '')) failures.push('public debt warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`public debt warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Qué porcentaje de jóvenes activos está en paro en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`youth unemployment warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'youth_unemployment_rate') failures.push('youth unemployment warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('youth unemployment warehouse: missing a multi-period series');
+    if (/unemployment by sex and age/i.test(result.result?.headline || '')) failures.push('youth unemployment warehouse: leaked raw dataset title into the public headline');
+  } catch (error) { failures.push(`youth unemployment warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Qué porcentaje de la población activa no encuentra trabajo');
+    if (result.result?.warehouseSeries?.metricId === 'youth_unemployment_rate') failures.push('general unemployment warehouse: incorrectly selected the youth metric without youth wording');
+  } catch (error) { failures.push(`general unemployment warehouse: ${error.message}`); }
 }
 
 if (process.env.SMOKE_OFFICIAL === '1') {

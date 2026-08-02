@@ -17,6 +17,7 @@ import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvide
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
+import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -413,7 +414,17 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     item.populationFit = populationFit;
     return true;
   });
-  const observations = rankingQuery ? candidates : compiler?.claimType === 'legal' ? candidates : selectCompatibleWarehouseSeries(query, candidates);
+  // A shared word such as "paro" can match both the all-age and youth series.
+  // Prefer an explicit population/subject signal before selecting a compatible
+  // series, otherwise the larger generic family can win on tie-breaks and
+  // silently answer a different question.
+  const hintedMetricIds = preferredMetricIdsForQuery(normalizedQuery);
+  const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
+  const metricCandidates = hintedMetricIds.size
+    ? candidates.filter((item) => hintedMetricIds.has(item.metricId))
+    : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
+  const compatibleCandidates = metricCandidates.length >= 2 ? metricCandidates : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
+  const observations = rankingQuery ? compatibleCandidates : compiler?.claimType === 'legal' ? compatibleCandidates : selectCompatibleWarehouseSeries(query, compatibleCandidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };

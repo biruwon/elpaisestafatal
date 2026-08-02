@@ -8,7 +8,10 @@ const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) 
   return pairs;
 }, []));
 const configuredPath = args.get('config') || process.env.SOURCE_REFRESH_CONFIG;
-const configCandidates = configuredPath ? [configuredPath] : ['.local/source-refresh.json', 'config/source-refresh.json'];
+// The checked-in source set is authoritative. A local override is still
+// supported, but only after the canonical configuration has been tried, so a
+// stale ignored file cannot silently hide newly added feeds during development.
+const configCandidates = configuredPath ? [configuredPath] : ['config/source-refresh.json', '.local/source-refresh.json'];
 let config;
 for (const candidate of configCandidates) {
   try {
