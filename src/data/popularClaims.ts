@@ -7,6 +7,7 @@ const popularSlugs = [
   'viviendas-vacias',
   'inmigrantes-ayudas',
   'empleo-record',
+  'paro-epa-t2-2026-baja-10',
   'sanidad-colapsada',
   'espana-mas-peligrosa',
   'espana-impuestos-europa',

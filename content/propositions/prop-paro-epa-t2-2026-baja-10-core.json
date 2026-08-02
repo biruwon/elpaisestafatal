@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-epa-t2-2026-baja-10-core",
+  "claimSlug": "paro-epa-t2-2026-baja-10",
+  "text": "La tasa de paro de la EPA bajó del 10% en España en el segundo trimestre de 2026",
+  "type": "trend",
+  "subject": "tasa de paro de la EPA",
+  "predicate": "fell_below",
+  "object": "10%",
+  "geography": "España",
+  "period": "2026-T2",
+  "status": "supported",
+  "evidenceIds": ["empleo-epa-segundo-trimestre-2026"]
+}

@@ -67,11 +67,19 @@ const matchesToken = (queryToken: string, searchableTokens: Set<string>): boolea
   });
 };
 
-export const normaliseClaimText = (value: string): string => value
+const numberWords: Record<string, string> = {
+  cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5',
+  seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12',
+  trece: '13', catorce: '14', quince: '15', veinte: '20', cien: '100', ciento: '100',
+};
+
+const normalizeNumberWords = (value: string): string => value.replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|cien|ciento)\b/g, (word) => numberWords[word] || word);
+
+export const normaliseClaimText = (value: string): string => normalizeNumberWords(value
   .toLocaleLowerCase('es')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
-  .replace(/ñ/g, 'n')
+  .replace(/ñ/g, 'n'))
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
 
