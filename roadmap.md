@@ -378,7 +378,7 @@ Popular provisional answers become permanent static pages only after the owner r
 
 ## Phase 7 — Visual answer composition
 
-Status: in progress. The shared renderer now supports claim breakdowns, key numbers, charts, money flows, confirmed/unknown cards, source excerpts, strongest-valid-concern cards, evidence ladders, legal decision paths, prediction conditions, normative trade-offs, group-comparability checklists, conversation replies, source links, and answer-first topic-page chapters. Richer reviewed chart coverage and reusable animated scenes remain pending.
+Status: in progress. The shared renderer now supports claim breakdowns, key numbers, accessible inline SVG trend/comparison charts with expandable value tables, money flows, confirmed/unknown cards, source excerpts, strongest-valid-concern cards, evidence ladders, legal decision paths, prediction conditions, normative trade-offs, group-comparability checklists, conversation replies, source links, and answer-first topic-page chapters. Broader reviewed chart coverage and reusable animated scenes remain pending.
 
 Render structured, reusable components:
 

@@ -25,6 +25,8 @@ type ConversationVisual = {
   };
 };
 
+let chartSequence = 0;
+
 const readJson = <T>(id: string, fallback: T): T => {
   try {
     const element = document.querySelector(`#${id}`);
@@ -114,14 +116,60 @@ const visualMarkup = (entry?: ClaimIndexEntry): string => {
   return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparison.labels.slice(0, 3).map((label, index) => `<div><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((comparison.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`).join('')}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
 };
 
+const formatChartValue = (value: number): string => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+
+const chartDataMarkup = (entries: Array<{ label: string; value: number }>, unit: string): string => `<details class="claim-chart-data"><summary>Ver valores</summary><table><thead><tr><th>Periodo o grupo</th><th>Valor</th></tr></thead><tbody>${entries.map((entry) => `<tr><th scope="row">${escapeHtml(entry.label)}</th><td>${escapeHtml(formatChartValue(entry.value))} ${escapeHtml(unit)}</td></tr>`).join('')}</tbody></table></details>`;
+
 const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
   const visual = conversationVisuals.find((item) => item.slug === block.visualId)?.visuals;
   const series = block.visualId === 'warehouse-observation'
     ? plan.warehouseSeries
     : block.type === 'line_chart' ? visual?.trend : visual?.comparison;
   if (!series || !series.values.length) return '';
-  const max = Math.max(...series.values, 1);
-  return `<div class="claim-plan-chart"><span class="clarification-label">${escapeHtml(series.label)}</span>${series.labels.slice(0, 6).map((label: string, index: number) => `<div class="claim-plan-chart-row"><span>${escapeHtml(label)}</span><i><b style="width:${Math.max(6, Math.round((series.values[index] / max) * 100))}%"></b></i><em>${escapeHtml(String(series.values[index]))}</em></div>`).join('')}<small>${escapeHtml(series.unit)}</small></div>`;
+  const entries = series.labels.slice(0, 8).map((label: string, index: number) => ({ label: String(label), value: Number(series.values[index]) })).filter((entry) => Number.isFinite(entry.value));
+  if (!entries.length) return '';
+  const width = 640;
+  const height = 230;
+  const left = 54;
+  const right = 18;
+  const top = 18;
+  const bottom = 48;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const values = entries.map((entry) => entry.value);
+  const rawMin = block.type === 'line_chart' ? Math.min(...values) : Math.min(0, ...values);
+  const rawMax = Math.max(...values, 0);
+  const padding = rawMax === rawMin ? Math.max(Math.abs(rawMax) * 0.12, 1) : (rawMax - rawMin) * 0.08;
+  const domainMin = rawMin - padding;
+  const domainMax = rawMax + padding;
+  const yAt = (value: number): number => top + ((domainMax - value) / (domainMax - domainMin)) * plotHeight;
+  const xAt = (index: number): number => entries.length === 1 ? left + plotWidth / 2 : left + (index / (entries.length - 1)) * plotWidth;
+  const chartId = `claim-chart-${chartSequence += 1}`;
+  const title = `${series.label}: ${entries[0].label} a ${entries.at(-1)?.label || entries[0].label}`;
+  const tickMarkup = [0, 0.5, 1].map((fraction) => {
+    const value = domainMax - (domainMax - domainMin) * fraction;
+    const y = top + plotHeight * fraction;
+    return `<line class="claim-chart-grid" x1="${left}" y1="${y.toFixed(2)}" x2="${width - right}" y2="${y.toFixed(2)}"></line><text class="claim-chart-axis-label" x="${left - 8}" y="${(y + 4).toFixed(2)}" text-anchor="end">${escapeHtml(formatChartValue(value))}</text>`;
+  }).join('');
+  const xLabels = entries.map((entry, index) => {
+    if (entries.length > 4 && index !== 0 && index !== entries.length - 1 && index % 2 !== 0) return '';
+    const label = entry.label.length > 15 ? `${entry.label.slice(0, 14)}…` : entry.label;
+    return `<text class="claim-chart-axis-label" x="${xAt(index).toFixed(2)}" y="${height - 17}" text-anchor="middle">${escapeHtml(label)}</text>`;
+  }).join('');
+  const lineMarkup = entries.length > 1
+    ? `<polyline class="claim-chart-series" points="${entries.map((entry, index) => `${xAt(index).toFixed(2)},${yAt(entry.value).toFixed(2)}`).join(' ')}"></polyline>${entries.map((entry, index) => `<circle class="claim-chart-point" cx="${xAt(index).toFixed(2)}" cy="${yAt(entry.value).toFixed(2)}" r="4"><title>${escapeHtml(`${entry.label}: ${formatChartValue(entry.value)} ${series.unit}`)}</title></circle>`).join('')}`
+    : `<circle class="claim-chart-point" cx="${xAt(0).toFixed(2)}" cy="${yAt(entries[0].value).toFixed(2)}" r="5"><title>${escapeHtml(`${entries[0].label}: ${formatChartValue(entries[0].value)} ${series.unit}`)}</title></circle>`;
+  const baseline = yAt(0);
+  const barsMarkup = entries.map((entry, index) => {
+    const x = left + ((index + 0.5) / entries.length) * plotWidth;
+    const barWidth = Math.min(70, (plotWidth / entries.length) * 0.62);
+    const y = yAt(entry.value);
+    const rectY = Math.min(y, baseline);
+    const rectHeight = Math.max(1, Math.abs(y - baseline));
+    return `<rect class="claim-chart-bar" x="${(x - barWidth / 2).toFixed(2)}" y="${rectY.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${rectHeight.toFixed(2)}"><title>${escapeHtml(`${entry.label}: ${formatChartValue(entry.value)} ${series.unit}`)}</title></rect>`;
+  }).join('');
+  const plotMarkup = block.type === 'line_chart' ? lineMarkup : `${barsMarkup}<line class="claim-chart-baseline" x1="${left}" y1="${baseline.toFixed(2)}" x2="${width - right}" y2="${baseline.toFixed(2)}"></line>`;
+  return `<div class="claim-plan-chart ${block.type === 'line_chart' ? 'claim-plan-chart-line' : 'claim-plan-chart-bars'}"><span class="clarification-label">${escapeHtml(series.label)}</span><svg class="claim-plan-chart-svg" role="img" aria-labelledby="${chartId}-title ${chartId}-description" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><title id="${chartId}-title">${escapeHtml(title)}</title><desc id="${chartId}-description">${escapeHtml(`Valores de ${series.label} expresados en ${series.unit}.`)}</desc>${tickMarkup}${plotMarkup}${xLabels}</svg>${chartDataMarkup(entries, series.unit)}<small>${escapeHtml(series.unit)}</small></div>`;
 };
 
 const blockEvidenceMarkup = (_plan: AnswerPlan, evidenceIds?: string[]): string => {

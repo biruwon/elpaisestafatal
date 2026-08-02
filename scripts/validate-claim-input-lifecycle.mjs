@@ -34,6 +34,13 @@ const required = [
   "renderCard('uncovered', original, undefined, [],",
   "response.status === 'draft' && response.result",
   "response.requestId, 'draft'",
+  'claim-plan-chart-svg',
+  'claim-chart-data',
+  'role="img"',
+  'aria-labelledby=',
+  'claim-chart-series',
+  'claim-chart-bar',
+  'Ver valores',
 ];
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
