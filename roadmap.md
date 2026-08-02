@@ -138,6 +138,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Published claim pages now use a reusable answer-first layout: the claim is followed immediately by a visual short answer, supported/not-established/missing-evidence cards, visible review metadata, and response actions before the deeper data and investigation context. The public claim catalogue now shows only published, usable entries and exposes its count and return path to the checker.
 - Published claim pages now expose the claim-specific evidence trail behind the answer, including each record's period, geography, unit, source type, and direct source link; broad topic charts remain explicitly labelled as context rather than proof.
 - The published claim catalogue now scales through client-side search, accent-insensitive matching, topic filters, live result counts, and a direct empty-state path back to the checker; it remains fully usable as a static page without JavaScript.
+- Topic pages now keep their 60-second answer, evidence, and source trail above the fold while collapsing the long investigation into accessible chapter accordions. The first chapter opens as a continuation, the rest open on demand, and chapter deep links automatically expand their destination.
 - The claim result UI now uses a scan-first hierarchy: published versus automatic state, concise summary, evidence-backed points, explicit limits, one useful next question, source trail, and a conversation-ready reply without repeating source links inside every card.
 - The deterministic compiler no longer treats the negated phrase “no significa que” as a definition question, so claims such as economic growth versus cost of living can resolve to their exact published claim instead of being downgraded to a generic topic.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.
@@ -355,7 +356,7 @@ Popular provisional answers become permanent static pages only after the owner r
 
 ## Phase 7 — Visual answer composition
 
-Status: in progress. The shared renderer now supports claim breakdowns, key numbers, charts, money flows, confirmed/unknown cards, source excerpts, strongest-valid-concern cards, evidence ladders, legal decision paths, prediction conditions, normative trade-offs, group-comparability checklists, conversation replies, and source links. Richer reviewed chart coverage and reusable animated scenes remain pending.
+Status: in progress. The shared renderer now supports claim breakdowns, key numbers, charts, money flows, confirmed/unknown cards, source excerpts, strongest-valid-concern cards, evidence ladders, legal decision paths, prediction conditions, normative trade-offs, group-comparability checklists, conversation replies, source links, and answer-first topic-page chapters. Richer reviewed chart coverage and reusable animated scenes remain pending.
 
 Render structured, reusable components:
 

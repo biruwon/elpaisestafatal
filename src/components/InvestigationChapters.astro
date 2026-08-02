@@ -1,0 +1,97 @@
+---
+import { epistemicLabels, resolveEpistemic } from '../data/epistemic';
+import type { Concern } from '../data/concerns';
+
+type Investigation = NonNullable<Concern['investigation']>;
+const { investigation } = Astro.props as { investigation?: Investigation };
+---
+
+{investigation && <div class="investigation">
+  <header class="investigation-head">
+    <span class="epistemic epistemic-interpretation">{epistemicLabels.interpretation}</span>
+    <p class="eyebrow">{investigation.kicker}</p>
+    <h2>{investigation.title}</h2>
+    <p>{investigation.standfirst}</p>
+    <blockquote>{investigation.finding}</blockquote>
+  </header>
+  <p class="investigation-guide">The concise answer above is the starting point. Open only the chapters you need; the complete evidence remains available below.</p>
+  <nav class="chapter-index" aria-label="Índice de la investigación">
+    {investigation.sections.map((section) => <a href={`#${section.id}`}><span>{section.number}</span>{section.title}</a>)}
+  </nav>
+  <div class="chapters">
+    {investigation.sections.map((section, index) => {
+      const chartMax = section.chart ? Math.max(...section.chart.values.map(Math.abs)) : 1;
+      const epistemic = resolveEpistemic(section);
+      return <details class="chapter" id={section.id} open={index === 0}>
+        <summary class="chapter-summary">
+          <span class="chapter-number">{section.number}</span>
+          <span class="chapter-summary-copy">
+            <span class={`epistemic epistemic-${epistemic}`}>{epistemicLabels[epistemic]}</span>
+            <span class="eyebrow">Capítulo {section.number}</span>
+            <span class="chapter-title" role="heading" aria-level="2">{section.title}</span>
+            <span class="chapter-intro">{section.intro}</span>
+          </span>
+          <span class="chapter-toggle" aria-hidden="true"></span>
+        </summary>
+        <div class="chapter-body">
+          {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          {section.metrics && <div class="chapter-metrics">{section.metrics.map((metric) => <div><span class="epistemic epistemic-measured-fact">{epistemicLabels['measured-fact']}</span><strong>{metric.value}</strong><span>{metric.label}</span></div>)}</div>}
+          {section.chart && <figure class="chapter-chart"><figcaption><b>{section.chart.title}</b><span>{section.chart.unit}</span></figcaption><div>{section.chart.values.map((value, valueIndex) => <p><span>{section.chart!.labels[valueIndex]}</span><i><b style={`width:${Math.max(3, Math.abs(value) / chartMax * 100)}%`}></b></i><strong>{String(value).replace('.', ',')}</strong></p>)}</div><small>Fuente: <a href={section.chart.source.url} target="_blank" rel="noreferrer">{section.chart.source.publisher} ↗</a></small></figure>}
+          {section.bullets && <ul>{section.bullets.map((item) => <li>{item}</li>)}</ul>}
+          {section.verdict && <blockquote>{section.verdict}</blockquote>}
+          {section.source && <a class="chapter-source" href={section.source.url} target="_blank" rel="noreferrer">Fuente principal: {section.source.publisher} · {section.source.date} ↗</a>}
+        </div>
+      </details>;
+    })}
+  </div>
+</div>}
+
+<style>
+  .investigation { padding-top: 100px; }
+  .investigation-head { max-width: 920px; margin-bottom: 65px; }
+  .investigation-head > p { font: clamp(1.2rem, 2vw, 1.65rem)/1.4 var(--serif); max-width: 760px; }
+  .investigation blockquote, .chapter-body blockquote { margin: 32px 0; padding: 22px 26px; border-left: 5px solid var(--red); background: #e9e1d4; font: 1.25rem/1.35 var(--serif); }
+  .investigation-guide { max-width: 760px; margin: -35px 0 28px; font: .78rem/1.5 var(--mono); color: var(--muted); }
+  .chapter-index { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--ink); margin-bottom: 90px; }
+  .chapter-index a { display: flex; gap: 14px; padding: 14px 8px; border-bottom: 1px solid var(--line); font: .78rem/1.3 var(--sans); }
+  .chapter-index span { font: 600 .7rem var(--mono); color: var(--red); }
+  .chapter { display: block; padding: 0; border-top: 1px solid var(--ink); scroll-margin-top: 30px; }
+  .chapter-summary { display: grid; grid-template-columns: 100px minmax(0, 800px) 30px; gap: 30px; align-items: start; padding: 70px 0; cursor: pointer; list-style: none; }
+  .chapter-summary::-webkit-details-marker { display: none; }
+  .chapter-summary:focus-visible { outline: 2px solid var(--red); outline-offset: 8px; }
+  .chapter-summary-copy { display: block; }
+  .chapter-summary .chapter-number { display: block; font: clamp(3rem, 7vw, 7rem)/.8 var(--serif); color: #c8bfb1; }
+  .chapter-title { display: block; font: clamp(2.2rem, 4vw, 4.2rem)/.92 var(--serif); letter-spacing: -.055em; margin: 0 0 22px; }
+  .chapter-intro { display: block; font: 1.25rem/1.4 var(--serif); max-width: 760px; }
+  .chapter-toggle { font: 700 1.5rem/1 var(--mono); text-align: center; }
+  .chapter-toggle::before { content: '+'; }
+  .chapter[open] .chapter-toggle::before { content: '−'; }
+  .chapter-body { max-width: 800px; margin: 0 0 80px 130px; }
+  .chapter-body > p { font: 1.05rem/1.65 var(--sans); max-width: 720px; }
+  .chapter-body ul { padding-left: 1.2rem; line-height: 1.6; }
+  .chapter-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); margin: 34px 0; }
+  .chapter-metrics div { background: #f5efe5; padding: 22px; }
+  .chapter-metrics strong { display: block; font: 2rem/.95 var(--serif); color: var(--red); }
+  .chapter-metrics span { font: .72rem/1.3 var(--mono); }
+  .chapter-chart { margin: 36px 0; padding: 24px; background: #e9e1d4; }
+  .chapter-chart figcaption { display: flex; justify-content: space-between; margin-bottom: 20px; font: .75rem var(--mono); text-transform: uppercase; }
+  .chapter-chart figcaption span { color: var(--muted); }
+  .chapter-chart p { display: grid; grid-template-columns: 130px 1fr 45px; gap: 12px; align-items: center; margin: 10px 0; font: .72rem var(--mono); }
+  .chapter-chart i { height: 13px; background: #d8cfc2; }
+  .chapter-chart i b { display: block; height: 100%; background: var(--red); }
+  .chapter-chart small, .chapter-source { font: .7rem/1.4 var(--mono); color: var(--muted); }
+  .chapter-source { text-decoration: underline; }
+  @media (max-width: 700px) {
+    .investigation { padding-top: 65px; }
+    .investigation-guide { margin: -20px 0 20px; font-size: .7rem; }
+    .chapter-index { grid-template-columns: 1fr; }
+    .chapter-summary { grid-template-columns: 1fr 30px; gap: 0; padding: 55px 0; }
+    .chapter-summary .chapter-number { grid-column: 1 / -1; font-size: 3rem; margin-bottom: 20px; }
+    .chapter-title { font-size: 2.2rem; }
+    .chapter-intro { font-size: 1.05rem; }
+    .chapter-body { margin: 0 0 55px; }
+    .chapter-metrics { grid-template-columns: 1fr; }
+    .chapter-chart { padding: 16px; }
+    .chapter-chart p { grid-template-columns: 90px 1fr 34px; }
+  }
+</style>
