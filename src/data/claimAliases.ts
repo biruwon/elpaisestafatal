@@ -7,6 +7,13 @@ export const claimAliases: Record<string, string[]> = {
     'cada vez hay menos gente en España',
     'España se está despoblando',
   ],
+  'espana-envejece': [
+    'España envejece',
+    'hay cada vez más personas mayores',
+    'España tiene cada vez más mayores',
+    'la población española está envejecida',
+    'cada vez hay más jubilados',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

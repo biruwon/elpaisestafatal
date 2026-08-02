@@ -29,6 +29,11 @@ if (!match) {
       variants: ['España pierde población', 'la población está bajando', 'España se está despoblando'],
     },
     {
+      slug: 'espana-envejece',
+      prompt: 'España está cada vez más envejecida',
+      variants: ['España envejece', 'hay cada vez más personas mayores', 'cada vez hay más jubilados'],
+    },
+    {
       slug: 'alquileres-suben',
       prompt: 'Los alquileres han subido en España desde 2015',
       variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],

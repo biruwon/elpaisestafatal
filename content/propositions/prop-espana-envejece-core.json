@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-envejece-core",
+  "claimSlug": "espana-envejece",
+  "text": "La proporción de población de 65 años o más en España aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "older_population_share",
+  "predicate": "increased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-mayores-eurostat"]
+}
