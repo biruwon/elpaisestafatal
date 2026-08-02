@@ -60,6 +60,15 @@ const coverageLabels: Record<string, string> = {
   insufficient: 'Evidencia insuficiente',
 };
 
+const assessmentLabels: Record<string, string> = {
+  true: 'Verdadero',
+  'mostly-true': 'Mayormente cierto',
+  misleading: 'Generalización engañosa',
+  unsupported: 'Sin respaldo suficiente',
+  uncertain: 'Incierto',
+  false: 'Falso',
+};
+
 const coverageLabel = (value?: string): string => coverageLabels[value || ''] || 'Aclaración provisional';
 
 const recordUncoveredQuestion = (text: string, response: SearchResponse): void => {
@@ -188,7 +197,7 @@ const bindResultActions = (): void => {
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string): void => {
   if (!result) return;
   const isDraft = !primary && (Boolean(plan.sourceLinks?.length) || plan.coverage !== 'strong');
-  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Aclaración provisional' : 'Aclaración estructurada'}</span><span class="claim-result-state">${isDraft ? 'Automática · pendiente de revisión' : 'Basada en una ficha publicada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-result-actions"><button type="button" data-share-result>Compartir aclaración</button></div><div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${isDraft ? 'draft' : 'published'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${isDraft ? 'Resultado automático' : 'Ficha publicada'}</span><span class="claim-result-state">${isDraft ? 'Pendiente de revisión · no es un veredicto publicado' : 'Basada en una ficha revisada'}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-result-actions"><button type="button" data-share-result>Compartir aclaración</button></div><div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
@@ -223,8 +232,10 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
       : state === 'invalid'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'Este archivo no tiene un formato compatible.')}</strong></p><div class="claim-guidance"><span class="clarification-label">Formatos aceptados</span><ul><li>Capturas: PNG, JPEG, WebP o GIF</li><li>Audio: WAV, MP3, M4A, OGG, WebM o FLAC</li><li>Máximo: ${Math.round(INPUT_LIMITS.maxFileBytes / 1024 / 1024)} MB</li></ul></div>`
       : `${visualMarkup(primary)}<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}${primary?.answer ? `<div class="claim-result-actions"><button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button></div>` : ''}`;
-  const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(primary.assessment)}</span>` : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(title)}</h3>${body}${alternativeMarkup(alternatives)}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}</article>`;
+  const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
+  const shareAction = primary?.answer ? '<button type="button" data-share-result>Compartir aclaración</button>' : '';
+  const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}${primary?.answer ? `<div class="claim-result-actions">${shareAction}</div>` : ''}</article>`;
   bindResultActions();
 };
 
@@ -250,7 +261,7 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
     }, primary.answer);
     return;
   }
-  renderCard('uncovered', original, undefined, alternatives, {
+  renderCard('uncovered', original, undefined, [], {
     questions: [
       '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
       '¿Qué fuente o publicación quieres que revisemos?',
@@ -305,10 +316,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   }
   if (response.status === 'uncovered') {
     if (response.result?.blocks?.some((block) => block.type === 'claim_breakdown')) {
-      renderStructuredPlan(original, response.result, primary, alternatives.length ? alternatives : fallback.slice(0, 2), response.requestId);
+      renderStructuredPlan(original, response.result, primary, alternatives, response.requestId);
       return;
     }
-    renderCard('uncovered', original, undefined, alternatives.length ? alternatives : fallback.slice(0, 2), response.guidance || {
+    renderCard('uncovered', original, undefined, [], response.guidance || {
       questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
       limitation: response.result?.limitation,
     });

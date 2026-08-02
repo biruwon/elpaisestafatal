@@ -12,6 +12,10 @@ const required = [
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
   'La orientación rápida sigue disponible',
+  'const assessmentLabels',
+  'aria-labelledby="claim-result-title"',
+  "const alternativesMarkup = ['published', 'related', 'unavailable']",
+  "renderCard('uncovered', original, undefined, [],",
 ];
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
