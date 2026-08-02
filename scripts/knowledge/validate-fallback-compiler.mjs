@@ -23,4 +23,10 @@ assert(budget.propositions.some((item) => item.explicit === false && item.type =
 const benefits = deterministicFallbackCompiler('¿Cuántas personas beneficiarias reciben ayudas en España?');
 assert(benefits.population === 'personas beneficiarias', 'Benefit population was not detected');
 
+const definition = deterministicFallbackCompiler('Los fijos discontinuos son parados ocultos');
+assert(definition.claimType === 'definition', 'Definition claim type was not detected');
+
+const trend = deterministicFallbackCompiler('La vivienda sube cada vez más');
+assert(trend.claimType === 'trend', 'Trend claim type was not detected');
+
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');

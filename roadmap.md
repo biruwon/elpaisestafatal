@@ -72,7 +72,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 - 14 investigation/topic routes remain available.
 - 202 Markdown claim records exist; 20 are published.
-- The 20 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs and the build validates the claim → proposition → evidence → source chain.
+- The 20 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
+- Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 28 evidence records and 28 source records are currently linked.
 - The browser has a deterministic claim index and automatic local classification support.
 - Uncovered inputs now receive a structured proposition breakdown; when no plausible indexed candidate exists, model extraction and reranking are skipped for a fast deterministic result.
@@ -142,7 +144,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration is implemented for all 20 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 20 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
 
 Create and enforce shared contracts for:
 

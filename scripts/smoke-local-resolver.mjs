@@ -1,8 +1,9 @@
 const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
 const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/v1/resolve';
+const healthPath = process.env.SMOKE_HEALTH_PATH || '/healthz';
 const failures = [];
 
-const health = await fetch(`${base}/healthz`, { signal: AbortSignal.timeout(5000) }).catch(() => null);
+const health = await fetch(`${base}${healthPath}`, { signal: AbortSignal.timeout(5000) }).catch(() => null);
 if (!health?.ok) failures.push('healthz did not return OK');
 else {
   const healthBody = await health.json().catch(() => ({}));
@@ -46,6 +47,7 @@ for (const item of cases) {
     if (result.status === 'processing') failures.push(`${item.text}: request remained processing after polling`);
     if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
+    if (item.slug && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
     if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
     if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
