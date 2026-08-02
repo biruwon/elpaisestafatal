@@ -13,6 +13,7 @@ const knownSeeds = [
   ['electricidad-hogares-sube', 'trend', 'El precio medio de la electricidad para hogares supera 0,28 €/kWh'],
   ['paro-juvenil-alto', 'trend', 'Casi uno de cada cuatro jóvenes activos está en paro'],
   ['paro-epa-supera-10', 'trend', 'La tasa de paro de la EPA sigue por encima del 10%'],
+  ['tasa-empleo-sube', 'trend', 'La tasa de empleo de 20 a 64 años ha subido desde 2015'],
   ['paro-espana-supera-ue', 'ranking', 'España tiene más paro que la media de la Unión Europea'],
   ['ingresos-publicos-superan-40', 'trend', 'Los ingresos públicos de España superan el 40% del PIB'],
   ['gasto-publico-supera-45', 'trend', 'El gasto público de España supera el 45% del PIB'],

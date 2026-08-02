@@ -1,0 +1,13 @@
+{
+  "id": "prop-tasa-empleo-20-64-sube-core",
+  "claimSlug": "tasa-empleo-sube",
+  "text": "La tasa de empleo de las personas de 20 a 64 años aumentó en España entre 2015 y 2025",
+  "type": "trend",
+  "subject": "tasa de empleo de 20 a 64 años",
+  "predicate": "increased_between",
+  "object": "2015 y 2025",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "supported",
+  "evidenceIds": ["tasa-empleo-20-64-sube"]
+}

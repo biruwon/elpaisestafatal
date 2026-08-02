@@ -92,6 +92,7 @@
     ,{"evidenceId":"paro-espana-ue-eurostat","propositionId":"prop-paro-espana-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"ingresos-publicos-eurostat","propositionId":"prop-ingresos-publicos-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"gasto-publico-eurostat","propositionId":"prop-gasto-publico-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"deficit-publico-eurostat","propositionId":"prop-deficit-publico-bajo-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"deficit-publico-eurostat","propositionId":"prop-deficit-publico-bajo-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"tasa-empleo-20-64-sube","propositionId":"prop-tasa-empleo-20-64-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }

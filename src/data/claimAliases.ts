@@ -63,6 +63,13 @@ export const claimAliases: Record<string, string[]> = {
     'el paro real está por encima del 10%',
     'la tasa de paro sigue alta',
   ],
+  'tasa-empleo-sube': [
+    'ha subido la tasa de empleo',
+    'hay más empleo entre 20 y 64 años',
+    'la tasa de ocupación ha aumentado',
+    'España tiene más empleo que en 2015',
+    'la tasa de empleo mejora',
+  ],
   'paro-espana-supera-ue': [
     'España tiene más desempleo que Europa',
     'el paro español supera la media europea',
