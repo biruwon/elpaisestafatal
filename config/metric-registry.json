@@ -25,10 +25,10 @@
   },
   "gdp_real_growth_quarterly": {
     "name": "Real GDP year-on-year growth",
-    "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "recesión", "economía crece"],
+    "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "actividad económica", "actividad económica cae", "actividad económica está cayendo", "economía cae", "crecimiento negativo", "recesión", "economía crece"],
     "unit": "percent year-on-year",
     "population": "national economy",
-    "notEquivalentTo": ["gdp_current_prices"],
+    "notEquivalentTo": ["gdp_current_prices", "unemployment_rate", "youth_unemployment_rate"],
     "dimensions": ["period", "geography", "seasonal_adjustment", "national_account_item"]
   },
   "government_debt_ratio": {
@@ -36,7 +36,7 @@
     "aliases": ["deuda pública", "deuda del Estado", "deuda sobre PIB", "deuda española", "endeudamiento público"],
     "unit": "percent of GDP",
     "population": "general government consolidated gross debt",
-    "notEquivalentTo": ["gdp_current_prices"],
+    "notEquivalentTo": ["gdp_current_prices", "government_revenue_ratio"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
   "government_revenue_ratio": {
@@ -44,7 +44,7 @@
     "aliases": ["ingresos públicos", "recaudación pública", "ingresos del Estado", "recaudación sobre PIB", "ingresos públicos sobre PIB", "porcentaje del PIB"],
     "unit": "percent of GDP",
     "population": "general government total revenue",
-    "notEquivalentTo": ["government_expenditure_ratio", "gdp_current_prices"],
+    "notEquivalentTo": ["government_expenditure_ratio", "government_debt_ratio", "gdp_current_prices"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
   "government_expenditure_ratio": {
@@ -205,6 +205,14 @@
     "unit": "percent of population",
     "population": "usual residents aged 0 to 14 years as a share of total population",
     "notEquivalentTo": ["older_population_share", "resident_population", "fertility_rate", "youth_unemployment_rate"],
+    "dimensions": ["period", "geography", "indicator"]
+  },
+  "population_change_rate": {
+    "name": "Crude rate of total population change",
+    "aliases": ["crecimiento demográfico", "crecimiento poblacional", "variación de población", "variación demográfica", "crecimiento de la población", "crece la población", "la población está creciendo", "población creciendo", "pierde población", "perdiendo población", "España está perdiendo población", "despoblación", "cambio demográfico", "cambio poblacional"],
+    "unit": "per 1,000 inhabitants",
+    "population": "annual total population change per 1,000 usual residents",
+    "notEquivalentTo": ["resident_population", "fertility_rate", "immigration_flows", "young_population_share"],
     "dimensions": ["period", "geography", "indicator"]
   },
   "gini_coefficient": {

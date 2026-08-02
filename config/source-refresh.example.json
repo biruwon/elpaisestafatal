@@ -25,7 +25,7 @@
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=ES&na_item=B1GQ&unit=CLV_PCH_SM&s_adj=SCA&sinceTimePeriod=2015",
       "title": "Crecimiento interanual del PIB real de España · Eurostat",
-      "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "recesión"],
+      "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "actividad económica", "actividad económica cae", "actividad económica está cayendo", "economía cae", "crecimiento negativo", "recesión"],
       "metricId": "gdp_real_growth_quarterly"
     },
     {
@@ -129,6 +129,12 @@
       "title": "Población de 0 a 14 años en España · Eurostat",
       "aliases": ["población de 0 a 14 años", "menores de 15", "población infantil", "porcentaje de niños", "proporción de menores"],
       "metricId": "young_population_share"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?geo=ES&indic_de=GROWRT&sinceTimePeriod=2015",
+      "title": "Tasa de crecimiento de la población de España · Eurostat",
+      "aliases": ["crecimiento demográfico", "crecimiento poblacional", "variación de población", "variación demográfica", "crecimiento de la población", "crece la población", "la población está creciendo", "población creciendo", "pierde población", "perdiendo población", "España está perdiendo población", "despoblación", "cambio demográfico", "cambio poblacional"],
+      "metricId": "population_change_rate"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di12?geo=ES&age=TOTAL&sinceTimePeriod=2015",

@@ -44,13 +44,20 @@ const candidateEmbeddings = await embed(candidates.map((candidate) => candidate.
 const queryEmbeddings = await embed(warehouseRetrievalBenchmarkCases.map((item) => item.query));
 const outcomes = warehouseRetrievalBenchmarkCases.map((item, caseIndex) => {
   const lexical = lexicalRank(item.query);
+  const preferred = preferredMetricIdsForQuery(item.query);
   const excluded = excludedMetricIdsForQuery(item.query);
   const semantic = candidates
     .map((candidate, candidateIndex) => ({ ...candidate, score: cosine(queryEmbeddings[caseIndex], candidateEmbeddings[candidateIndex]) }))
     .filter((candidate) => !excluded.has(candidate.id))
     .sort((left, right) => right.score - left.score);
-  const resolved = resolveMetricConflict(lexical, semantic);
-  const hybrid = reciprocalRankFusion(resolved.lexical, resolved.semantic, { limit: 5, preferredId: resolved.preferredId });
+  // An explicit language hint is a deterministic routing signal. Do not let
+  // a semantically broad neighbour (for example all-age unemployment) erase
+  // a lexical metric whose wording the user explicitly selected.
+  const resolved = preferred.has(lexical[0]?.id)
+    ? { lexical, semantic, winner: 'lexical', preferredId: lexical[0].id }
+    : resolveMetricConflict(lexical, semantic);
+  const hintedPreference = [...preferred].find((metricId) => candidates.some((candidate) => candidate.id === metricId)) || null;
+  const hybrid = reciprocalRankFusion(resolved.lexical, resolved.semantic, { limit: 5, preferredId: resolved.preferredId || hintedPreference });
   const expected = registry[item.expectedMetricId];
   const forbidden = new Set(expected?.notEquivalentTo || []);
   return {
