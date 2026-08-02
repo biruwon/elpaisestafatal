@@ -93,6 +93,46 @@ if (!match) {
       prompt: 'La política es la preocupación de la mayoría de españoles',
       variants: ['la mayoría está preocupada por la política', 'política principal problema mayoría'],
     },
+    {
+      slug: 'precio-vivienda-caera',
+      prompt: 'La vivienda acabará cayendo como en 2008',
+      variants: ['la vivienda va a caer como en 2008', 'otra burbuja inmobiliaria'],
+    },
+    {
+      slug: 'reforma-precariedad',
+      prompt: 'La reforma laboral acabó con la precariedad',
+      variants: ['la reforma laboral terminó con la precariedad', 'ya no hay contratos precarios'],
+    },
+    {
+      slug: 'record-empleo-no-resuelve-paro',
+      prompt: 'Un récord de ocupación significa que el paro ya está resuelto',
+      variants: ['récord de empleo significa pleno empleo', 'el paro está resuelto'],
+    },
+    {
+      slug: 'juventud-emancipacion',
+      prompt: 'Casi la mitad de las personas de 26 a 34 años sigue viviendo con sus padres',
+      variants: ['jóvenes viven con sus padres', 'la mitad de los jóvenes no se emancipa'],
+    },
+    {
+      slug: 'politicos-corruptos',
+      prompt: 'Todos los políticos son corruptos',
+      variants: ['todos los políticos roban', 'la política está llena de corruptos'],
+    },
+    {
+      slug: 'recaudacion-no-factura-hogar',
+      prompt: 'Si la recaudación tributaria sube un 10,4%, todos pagan un 10,4% más',
+      variants: ['todos pagan un 10,4% más', 'Hacienda sube los impuestos a todos'],
+    },
+    {
+      slug: 'arope-no-es-pobreza-absoluta',
+      prompt: 'El AROPE mide pobreza absoluta',
+      variants: ['AROPE es pobreza absoluta', 'AROPE significa indigencia'],
+    },
+    {
+      slug: 'espana-recesion',
+      prompt: 'España está en recesión',
+      variants: ['la economía española está en recesión', 'España ya está en recesión'],
+    },
   ];
 
   const publishedClaims = (entries || []).filter((entry) => entry.kind === 'claim');
