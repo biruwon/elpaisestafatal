@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-pierde-poblacion-core",
+  "claimSlug": "espana-pierde-poblacion",
+  "text": "La tasa de cambio total de la población española fue positiva en 2025.",
+  "type": "trend",
+  "subject": "resident_population",
+  "predicate": "had_positive_total_change_rate",
+  "object": "2025",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-cambio-eurostat"]
+}

@@ -24,6 +24,11 @@ if (!match) {
 
   const families = [
     {
+      slug: 'espana-pierde-poblacion',
+      prompt: 'España está perdiendo población',
+      variants: ['España pierde población', 'la población está bajando', 'España se está despoblando'],
+    },
+    {
       slug: 'alquileres-suben',
       prompt: 'Los alquileres han subido en España desde 2015',
       variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],

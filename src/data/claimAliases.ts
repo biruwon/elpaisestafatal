@@ -1,5 +1,12 @@
 /** Common conversational phrasings for published, evidence-backed claims. */
 export const claimAliases: Record<string, string[]> = {
+  'espana-pierde-poblacion': [
+    'España pierde población',
+    'la población de España está bajando',
+    'la población está bajando',
+    'cada vez hay menos gente en España',
+    'España se está despoblando',
+  ],
   'inmigrantes-ayudas': [
     'los extranjeros cobran todas las ayudas',
     'dan las ayudas antes a los inmigrantes',

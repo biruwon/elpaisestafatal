@@ -217,7 +217,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== '% de la población') failures.push('young-population warehouse: did not localize the unit');
   } catch (error) { failures.push(`young-population warehouse: ${error.message}`); }
   try {
-    const result = await resolve('España está perdiendo población');
+    const result = await resolve('Cuál fue la tasa de crecimiento de la población de España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`population-change warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'population_change_rate') failures.push('population-change warehouse: selected the wrong metric family');
     if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('population-change warehouse: missing a multi-period series');

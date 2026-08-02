@@ -4,6 +4,7 @@ const knownSeeds = [
   ['inmigrantes-patera', 'quantity', 'La mayoría de inmigrantes llega en patera'],
   ['viviendas-vacias', 'causal', 'Hay millones de viviendas vacías, así que no hace falta construir'],
   ['alquileres-suben', 'trend', 'Los alquileres han subido en España desde 2015'],
+  ['espana-pierde-poblacion', 'trend', 'España está perdiendo población'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],
   ['empleo-record', 'trend', 'España tiene más empleo que nunca'],
   ['fijos-discontinuos', 'definition', 'Los fijos discontinuos son parados ocultos'],
