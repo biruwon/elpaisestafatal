@@ -5,6 +5,9 @@ const required = [
   'const clearDynamicStatus',
   'const setDynamicStatus',
   'data-dynamic-status',
+  "renderCard('invalid'",
+  'validateInputMetadata',
+  'form?.requestSubmit()',
   "if (data.status === 'unavailable')",
   'La orientación rápida sigue disponible',
 ];

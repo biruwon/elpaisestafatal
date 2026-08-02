@@ -16,6 +16,7 @@ import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
+import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -249,10 +250,16 @@ const transcribeAudio = async (media) => {
 
 const sourceHostAllowed = (hostname) => approvedSourceHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
 const extractPageText = async (value) => {
-  const url = new URL(value);
-  if (url.protocol !== 'https:' || !sourceHostAllowed(url.hostname)) throw new Error('Source host is not approved');
-  const response = await fetch(url, { redirect: 'error', headers: { accept: 'text/html,application/json;q=0.9' }, signal: AbortSignal.timeout(12000) });
-  if (!response.ok) throw new Error(`Source returned ${response.status}`);
+  let url = await resolvePublicHttpsUrl(value);
+  let response;
+  for (let redirect = 0; redirect <= 2; redirect += 1) {
+    response = await fetch(url, { redirect: 'manual', headers: { accept: 'text/html,application/json,text/plain;q=0.9' }, signal: AbortSignal.timeout(12000) });
+    if (response.status < 300 || response.status >= 400) break;
+    const location = response.headers.get('location');
+    if (!location || redirect === 2) throw new Error('Too many redirects');
+    url = await resolvePublicHttpsUrl(new URL(location, url).toString());
+  }
+  if (!response?.ok) throw new Error(`Source returned ${response?.status || 502}`);
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('html') && !contentType.includes('json') && !contentType.includes('text/')) throw new Error('Unsupported source format');
   const reader = response.body?.getReader();
@@ -700,7 +707,8 @@ const startUrlResolveJob = (url) => {
   void (async () => {
     const extracted = await extractPageText(url);
     if (!extracted) throw new Error('No source text extracted');
-    const source = { id: `url-${digest(url).slice(0, 20)}`, title: `Fuente oficial: ${new URL(url).hostname}`, url };
+    const hostname = new URL(url).hostname;
+    const source = { id: `url-${digest(url).slice(0, 20)}`, title: `${sourceHostAllowed(hostname) ? 'Fuente oficial' : 'Página enlazada'}: ${hostname}`, url };
     const completed = { ...await enrichResolve(extracted, await classify(extracted), source, id), createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);

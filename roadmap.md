@@ -374,6 +374,8 @@ Reusable video/animated scenes are deferred until deterministic charts are relia
 
 ## Phase 8 — Links, screenshots, and audio
 
+Status: started; browser media validation and automatic file submission are implemented, and the local link adapter now supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional and fail back without blocking deterministic text guidance.
+
 All inputs end in the same compiler:
 
 ```text

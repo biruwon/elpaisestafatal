@@ -1,6 +1,7 @@
 import { isStrongClaimMatch, normaliseClaimText, rankClaimIndex, type ClaimIndexEntry, type RankedClaimIndexEntry } from '../data/claimIndex';
 import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
+import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
@@ -197,7 +198,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   }));
 };
 
-const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
+const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
   if (!result) return;
   const labels = {
     loading: 'Procesando el archivo',
@@ -205,14 +206,17 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
     related: 'Orientación más cercana',
     uncovered: 'Aún no hay una ficha exacta',
     unavailable: 'Orientación rápida disponible',
+    invalid: 'Archivo no compatible',
   };
-  const title = primary?.title || (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
+  const title = primary?.title || (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
       ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}`
-      : state === 'unavailable'
+    : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
+      : state === 'invalid'
+        ? `<p><strong>${escapeHtml(guidance?.limitation || 'Este archivo no tiene un formato compatible.')}</strong></p><div class="claim-guidance"><span class="clarification-label">Formatos aceptados</span><ul><li>Capturas: PNG, JPEG, WebP o GIF</li><li>Audio: WAV, MP3, M4A, OGG, WebM o FLAC</li><li>Máximo: ${Math.round(INPUT_LIMITS.maxFileBytes / 1024 / 1024)} MB</li></ul></div>`
       : `${visualMarkup(primary)}<p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary ? resultLink(primary) : ''}${primary?.answer ? `<div class="claim-result-actions"><button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button></div>` : ''}`;
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(primary.assessment)}</span>` : '';
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3>${escapeHtml(title)}</h3>${body}${alternativeMarkup(alternatives)}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}</article>`;
@@ -338,7 +342,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (data.status === 'unavailable') {
       if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), {
-        limitation: 'La comprobación automática no está disponible ahora. Puedes volver a intentarlo más tarde.',
+        limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       });
       else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
       return;
@@ -351,7 +355,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
     if (version === requestVersion) {
-      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), { limitation: 'La comprobación automática no está disponible ahora. Puedes volver a intentarlo más tarde.' });
+      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
       else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
     }
   }
@@ -365,6 +369,19 @@ form?.addEventListener('submit', (event) => {
   const query = input?.value.trim() || '';
   const file = fileInput?.files?.[0];
   if ((!query && !file) || !result) return;
+  if (file) {
+    const inputType = file.type.startsWith('audio/') ? 'audio' : 'image';
+    const validation = validateInputMetadata({ text: query, inputType, hasFile: true, fileSize: file.size, mimeType: file.type });
+    if (!validation.ok) {
+      const limitation = validation.code === 'file_too_large'
+        ? `El archivo supera el máximo de ${Math.round(INPUT_LIMITS.maxFileBytes / 1024 / 1024)} MB.`
+        : validation.code === 'invalid_audio'
+          ? 'El audio debe estar en WAV, MP3, M4A, OGG, WebM o FLAC.'
+          : 'La imagen debe estar en PNG, JPEG, WebP o GIF.';
+      renderCard('invalid', file.name, undefined, [], { limitation });
+      return;
+    }
+  }
   const ranked = query ? rankClaimIndex(query, claimIndex) : [];
   if (query) renderDeterministic(query, ranked);
   else renderCard('loading', file?.name || 'Archivo enviado');
@@ -376,6 +393,7 @@ form?.addEventListener('submit', (event) => {
 fileInput?.addEventListener('change', () => {
   const selected = fileInput.files?.[0];
   if (fileName) fileName.textContent = selected ? selected.name : 'Añadir captura o audio';
+  if (selected && !input?.value.trim()) form?.requestSubmit();
 });
 
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {

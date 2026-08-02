@@ -70,6 +70,15 @@ if (process.env.SMOKE_MEDIA === '1') {
   }
 }
 
+if (process.env.SMOKE_URL === '1') {
+  try {
+    const result = await resolve('https://example.com/', 'url');
+    if (result.status === 'processing') failures.push('url: request remained processing after polling');
+    if (!['complete', 'draft', 'partial', 'uncovered', 'unavailable'].includes(result.status)) failures.push(`url: unexpected terminal status ${result.status}`);
+    if (JSON.stringify(result).toLocaleLowerCase().includes('ollama')) failures.push('url: provider detail leaked into response');
+  } catch (error) { failures.push(`url: ${error.message}`); }
+}
+
 if (process.env.SMOKE_DEDUPE === '1') {
   try {
     const submit = (text) => fetch(`${base}${resolvePath}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, inputType: 'text' }), signal: AbortSignal.timeout(10000) }).then((response) => response.json());
@@ -163,4 +172,4 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
 }
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_DEDUPE === '1' ? ' + dedupe' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''}${process.env.SMOKE_LONG_TAIL === '1' ? ' + long-tail' : ''} cases at ${base}`);
+console.log(`Local resolver smoke passed: ${cases.length}${process.env.SMOKE_MEDIA === '1' ? ' + media' : ''}${process.env.SMOKE_URL === '1' ? ' + url' : ''}${process.env.SMOKE_DEDUPE === '1' ? ' + dedupe' : ''}${process.env.SMOKE_WAREHOUSE === '1' ? ' + warehouse' : ''}${process.env.SMOKE_OFFICIAL === '1' ? ' + official' : ''}${process.env.SMOKE_LONG_TAIL === '1' ? ' + long-tail' : ''} cases at ${base}`);

@@ -13,7 +13,12 @@ export const validateInputMetadata = ({ text = '', inputType = 'text', hasFile =
   if (!['text', 'image', 'audio', 'url'].includes(type)) return { ok: false, code: 'invalid_type' };
   if (!value && !hasFile) return { ok: false, code: 'empty' };
   if (value.length > INPUT_LIMITS.maxTextCharacters) return { ok: false, code: 'text_too_large' };
-  if (type === 'url' && !/^https:\/\//i.test(value)) return { ok: false, code: 'invalid_url' };
+  if (type === 'url') {
+    try {
+      const url = new URL(value);
+      if (url.protocol !== 'https:' || !url.hostname || url.username || url.password) return { ok: false, code: 'invalid_url' };
+    } catch { return { ok: false, code: 'invalid_url' }; }
+  }
   if (type === 'text' && hasFile) return { ok: false, code: 'unexpected_file' };
   if (type === 'image' && (!hasFile || !INPUT_LIMITS.imageMimeTypes.includes(mime))) return { ok: false, code: 'invalid_image' };
   if (type === 'audio' && (!hasFile || !INPUT_LIMITS.audioMimeTypes.includes(mime))) return { ok: false, code: 'invalid_audio' };

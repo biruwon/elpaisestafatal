@@ -11,4 +11,6 @@ assert(validateInputMetadata({ inputType: 'image', hasFile: true, fileSize: INPU
 assert(validateInputMetadata({ text: 'x'.repeat(INPUT_LIMITS.maxTextCharacters + 1), inputType: 'text' }).code === 'text_too_large', 'oversized text was not rejected');
 assert(!validateInputMetadata({ text: 'caption', inputType: 'text', hasFile: true, fileSize: 1, mimeType: 'image/png' }).ok, 'text plus file was accepted');
 assert(!validateInputMetadata({ text: 'http://example.com', inputType: 'url' }).ok, 'HTTP URL was accepted');
+assert(!validateInputMetadata({ text: 'https://', inputType: 'url' }).ok, 'Malformed HTTPS URL was accepted');
+assert(!validateInputMetadata({ text: 'https://user:pass@example.com', inputType: 'url' }).ok, 'Credential-bearing URL was accepted');
 console.log('Input contract validation passed: text, URL, screenshot, audio, size, and MIME gates are enforced.');
