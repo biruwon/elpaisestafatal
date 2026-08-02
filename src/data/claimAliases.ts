@@ -70,6 +70,13 @@ export const claimAliases: Record<string, string[]> = {
     'el gasto de las administraciones supera el 45%',
     'gasto público España',
   ],
+  'deficit-publico-baja-3': [
+    'España tiene un déficit inferior al 3%',
+    'el déficit público baja del 3 por ciento',
+    'el déficit del Estado es menor del 3%',
+    'España reduce el déficit público',
+    'déficit público España',
+  ],
   'sobrecarga-vivienda-baja': [
     'la sobrecarga de la vivienda ha bajado',
     'menos personas sufren sobrecarga de vivienda',

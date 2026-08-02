@@ -23,6 +23,7 @@ const popularSlugs = [
   'paro-juvenil-alto',
   'ingresos-publicos-superan-40',
   'gasto-publico-supera-45',
+  'deficit-publico-baja-3',
 ];
 
 export const popularClaims: ClaimVerification[] = popularSlugs

@@ -1,0 +1,13 @@
+{
+  "id": "prop-deficit-publico-bajo-core",
+  "claimSlug": "deficit-publico-baja-3",
+  "text": "El déficit de las administraciones públicas españolas fue inferior al 3% del PIB en 2025.",
+  "type": "trend",
+  "subject": "government_deficit_ratio",
+  "predicate": "fell_below",
+  "object": "3 percent of GDP in 2025",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["deficit-publico-eurostat"]
+}

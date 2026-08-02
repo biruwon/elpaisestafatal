@@ -74,6 +74,11 @@ if (!match) {
       variants: ['España gasta más del 45% del PIB', 'el gasto público supera el 45 por ciento', 'el gasto de las administraciones supera el 45%'],
     },
     {
+      slug: 'deficit-publico-baja-3',
+      prompt: 'El déficit público de España baja del 3% del PIB',
+      variants: ['España tiene un déficit inferior al 3%', 'el déficit público baja del 3 por ciento', 'España reduce el déficit público'],
+    },
+    {
       slug: 'sobrecarga-vivienda-baja',
       prompt: 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015',
       variants: ['la sobrecarga de la vivienda ha bajado', 'el esfuerzo de vivienda ha bajado', 'los gastos de vivienda pesan menos'],
