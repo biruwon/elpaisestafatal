@@ -709,7 +709,12 @@ const classify = async (text) => {
   // makes the inferred handler look different. The published claim itself
   // defines the evidence contract; handler compatibility is for paraphrase
   // candidates, not for rejecting the claim the user literally entered.
-  const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9 && compatibleHandlers);
+  // A curated title or alias is an explicit publication contract. Let it
+  // win over inferred handler compatibility: the handler gate protects
+  // approximate semantic matches, but must not downgrade an exact published
+  // phrase merely because its conversational wording is classified slightly
+  // differently from the claim's broad metadata type.
+  const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
   const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
   const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
   // A new measurable question must not be swallowed by a broad published

@@ -18,7 +18,6 @@ export const claimAliases: Record<string, string[]> = {
     'los extranjeros pagan nuestras pensiones',
   ],
   'inmigracion-delincuencia': [
-    'los extranjeros delinquen más',
     'la inmigración trae delincuencia',
     'desde que hay inmigrantes hay más crimen',
     'los inmigrantes hacen inseguro el barrio',
@@ -88,6 +87,7 @@ export const claimAliases: Record<string, string[]> = {
     'en España se pagan más impuestos que en toda Europa',
   ],
   'sanidad-colapsada': [
+    'La sanidad española está colapsada',
     'la sanidad española está totalmente hundida',
     'la sanidad pública no funciona',
     'los hospitales están colapsados',

@@ -24,6 +24,11 @@ if (!match) {
 
   const families = [
     {
+      slug: 'alquileres-suben',
+      prompt: 'Los alquileres han subido en España desde 2015',
+      variants: ['el alquiler ha subido', 'los alquileres son más caros', 'el alquiler está igual que en 2015'],
+    },
+    {
       slug: 'airbnb-vivienda',
       prompt: 'Airbnb es la causa de toda la crisis de vivienda',
       variants: ['los pisos turísticos han causado la crisis de vivienda', 'airbnb está expulsando a los vecinos'],

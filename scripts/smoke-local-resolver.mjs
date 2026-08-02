@@ -46,6 +46,7 @@ const cases = [
   { text: 'La cibercriminalidad crece más que la delincuencia convencional.', status: 'complete', slug: 'cibercriminalidad-crece' },
   { text: 'La pobreza ha desaparecido porque baja el riesgo AROPE.', status: 'complete', slug: 'riesgo-pobreza-no-desaparece' },
   { text: 'La vivienda está bajando de precio en España.', status: 'complete', slug: 'precio-vivienda-sube' },
+  { text: 'Los alquileres son más caros que en 2015.', status: 'complete', slug: 'alquileres-suben' },
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },

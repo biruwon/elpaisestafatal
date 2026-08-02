@@ -1,0 +1,13 @@
+{
+  "id": "prop-alquileres-suben-core",
+  "claimSlug": "alquileres-suben",
+  "text": "El índice armonizado de precios de los alquileres efectivos en España aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "actual_rentals_for_housing",
+  "predicate": "increased_between",
+  "object": "2015_and_2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["alquileres-serie-eurostat"]
+}
