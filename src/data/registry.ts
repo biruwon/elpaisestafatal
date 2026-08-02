@@ -17,10 +17,27 @@ export type EvidenceRecord = {
   geography: string;
   unit: string;
   body: string;
+  relationships: EvidencePropositionLink[];
+};
+
+export type EvidencePropositionLink = {
+  evidenceId: string;
+  propositionId: string;
+  relationship: 'supports' | 'contradicts' | 'qualifies' | 'context' | 'insufficient';
+  reviewStatus: 'unreviewed' | 'reviewed' | 'superseded';
+  reviewedAt?: string;
 };
 
 const sourceFiles = import.meta.glob('../../content/sources/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const evidenceFiles = import.meta.glob('../../content/evidence/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
+import relationshipManifest from '../../content/relationships/evidence-proposition-links.json';
+
+const relationshipsByEvidence = new Map<string, EvidencePropositionLink[]>();
+for (const link of relationshipManifest.links as EvidencePropositionLink[]) {
+  const existing = relationshipsByEvidence.get(link.evidenceId) || [];
+  existing.push(link);
+  relationshipsByEvidence.set(link.evidenceId, existing);
+}
 
 function parse(raw: string) {
   const match = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
@@ -45,7 +62,8 @@ export const sourceRecords: SourceRecord[] = Object.entries(sourceFiles).map(([p
 
 export const evidenceRecords: EvidenceRecord[] = Object.entries(evidenceFiles).map(([path, raw]) => {
   const { data, body } = parse(raw);
-  return { id: data.id || path.split('/').pop()!.replace(/\.md$/, ''), kind: data.kind || 'other', sourceIds: list(data.sourceIds), period: data.period || '', geography: data.geography || 'España', unit: data.unit || '', body };
+  const id = data.id || path.split('/').pop()!.replace(/\.md$/, '');
+  return { id, kind: data.kind || 'other', sourceIds: list(data.sourceIds), period: data.period || '', geography: data.geography || 'España', unit: data.unit || '', body, relationships: relationshipsByEvidence.get(id) || [] };
 });
 
 export const getSource = (id: string) => sourceRecords.find((source) => source.id === id);

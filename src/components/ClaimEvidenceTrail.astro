@@ -15,6 +15,14 @@ const kindLabels: Record<string, string> = {
 };
 const sourceFor = (ids: string[]) => ids.map(getSource).find((source): source is NonNullable<typeof source> => Boolean(source));
 const uniqueSources = [...new Set(evidence.flatMap((item) => item.sourceIds))].map(getSource).filter((source): source is NonNullable<typeof source> => Boolean(source));
+const propositionIds = new Set(claim.propositionIds);
+const relationshipLabels: Record<string, string> = {
+  supports: 'Apoya la proposición',
+  contradicts: 'Contradice la proposición',
+  qualifies: 'La matiza',
+  context: 'Aporta contexto',
+  insufficient: 'No basta para comprobarla',
+};
 ---
 
 {evidence.length > 0 && <section id="claim-evidence" class="claim-evidence" aria-labelledby="claim-evidence-title">
@@ -29,6 +37,7 @@ const uniqueSources = [...new Set(evidence.flatMap((item) => item.sourceIds))].m
         <div class="evidence-trail-top"><span>{String(index + 1).padStart(2, '0')}</span><strong>{kindLabels[item.kind] || 'Registro de evidencia'}</strong></div>
         <h3>{source?.title || 'Fuente pública vinculada'}</h3>
         <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div></dl>
+        {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span>)}
         {source && <a href={source.url} target="_blank" rel="noreferrer">{sourceTypeLabel(source.type)} · Abrir fuente <span aria-hidden="true">↗</span></a>}
       </article>;
     })}
@@ -51,6 +60,8 @@ const uniqueSources = [...new Set(evidence.flatMap((item) => item.sourceIds))].m
   .evidence-trail-card dd{font:.72rem var(--mono);margin:4px 0 0}
   .evidence-trail-card a{font:600 .65rem var(--mono);color:var(--red)}
   .evidence-trail-card a span{margin-left:5px}
+  .evidence-relation{display:inline-block;margin:0 6px 16px 0;padding:5px 7px;border:1px solid var(--line);font:600 .58rem var(--mono);text-transform:uppercase}
+  .evidence-relation-supports{background:#d9ead5}.evidence-relation-contradicts{background:#f1b4aa}.evidence-relation-qualifies,.evidence-relation-insufficient{background:var(--yellow)}.evidence-relation-context{background:var(--paper)}
   .evidence-source-count{color:var(--muted);font:.68rem/1.4 var(--mono);margin:18px 0 0}
   @media(max-width:700px){.evidence-heading{grid-template-columns:1fr;gap:20px}.evidence-trail-grid{grid-template-columns:1fr}.claim-evidence{padding:65px 0 45px}}
 </style>

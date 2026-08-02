@@ -172,6 +172,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The sources index now derives from the claim/evidence source registry, exposes source type and dates, and provides client-side filtering so the evidence trail scales beyond topic-level source lists.
 - The claim result UI now uses a scan-first hierarchy: published versus automatic state, concise summary, evidence-backed points, explicit limits, one useful next question, source trail, and a conversation-ready reply without repeating source links inside every card.
 - Related structured results now keep their proposition breakdown, method guidance, limits, next question, and share/copy actions instead of collapsing to a thin nearest-topic card; the interface labels them as related guidance rather than an exact published match.
+- Published evidence trails now label each linked source by its relationship to the relevant proposition (`Apoya`, `Contradice`, `La matiza`, `Aporta contexto`, or `No basta para comprobarla`) instead of presenting every linked source as equivalent proof.
 - Structured result cards now make the short answer and copy action prominent, while secondary method, source-excerpt, legal, prediction, trade-off, and comparability blocks are grouped inside an accessible expandable analysis section. Provisional results are labelled as automatic and unpublished rather than “pending”, so a slow enrichment job cannot make the user think the first answer is blocked. This keeps the first answer useful without hiding the evidence path.
 - Every result state now includes a visible “Comprobar otra frase” action that clears the previous result, cancels any pending analysis, resets media selection, updates the character counter, and returns focus to the checker.
 - Text results now preserve the submitted claim in the shareable `?q=…#comprobar` URL, so copied links reopen the same checker state; media content is deliberately kept out of the URL.
@@ -192,7 +193,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 34 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures; evidence-level relationship metadata remains pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 34 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures. Evidence-to-proposition relationships are now stored in a versioned manifest, validated against proposition status and references, and exposed to the published evidence trail; richer per-link limitations and independent review remain future work.
 
 Create and enforce shared contracts for:
 
@@ -217,6 +218,8 @@ Migrate the 20 published claims first. Each claim must identify:
 - review and knowledge versions.
 
 Keep the existing TypeScript/Markdown bridge until the migrated output is equivalent. Do not publish a claim with missing evidence relations.
+
+Keep evidence relationships at proposition level: a source may support one proposition, qualify another, and be insufficient for a third.
 
 Required checks:
 
@@ -306,7 +309,7 @@ Store:
 - observations and data series;
 - government events and budget transfers;
 - legal rules with effective dates;
-- evidence relationships;
+- evidence relationships, including proposition-level support, contradiction, qualification, context, or insufficiency;
 - ingestion runs and parser versions;
 - canonical claim clusters.
 

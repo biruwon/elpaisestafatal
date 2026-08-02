@@ -12,6 +12,14 @@ export type ClaimType =
 export type CoverageStatus = 'strong' | 'qualified' | 'partial' | 'insufficient' | 'values';
 export type EvidenceRelationship = 'supports' | 'contradicts' | 'qualifies' | 'context' | 'insufficient';
 
+export type EvidencePropositionLink = {
+  evidenceId: string;
+  propositionId: string;
+  relationship: EvidenceRelationship;
+  reviewStatus: 'unreviewed' | 'reviewed' | 'superseded';
+  reviewedAt?: string;
+};
+
 export type Proposition = {
   id: string;
   text: string;
@@ -29,7 +37,7 @@ export type EvidenceRecord = {
   id: string;
   title: string;
   sourceId: string;
-  relationship: EvidenceRelationship;
+  relationships: EvidencePropositionLink[];
   finding: Record<string, unknown>;
   geography?: string;
   period?: string;

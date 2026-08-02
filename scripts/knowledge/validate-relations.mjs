@@ -66,6 +66,50 @@ for (const item of propositions) {
   }
 }
 
+const relationshipPath = join(contentRoot, 'relationships', 'evidence-proposition-links.json');
+let relationshipManifest;
+try {
+  relationshipManifest = JSON.parse(await readFile(relationshipPath, 'utf8'));
+} catch {
+  failures.push(`${relationshipPath}: evidence relationship manifest is missing or invalid JSON`);
+  relationshipManifest = { schemaVersion: 0, links: [] };
+}
+
+const relationshipTypes = new Set(['supports', 'contradicts', 'qualifies', 'context', 'insufficient']);
+const relationshipStatuses = new Set(['unreviewed', 'reviewed', 'superseded']);
+const expectedRelationshipForStatus = {
+  supported: 'supports',
+  contradicted: 'contradicts',
+  qualified: 'qualifies',
+  insufficient: 'insufficient',
+  unreviewed: 'context',
+};
+const relationshipMap = new Map();
+if (relationshipManifest.schemaVersion !== 1) failures.push(`${relationshipPath}: schemaVersion must be 1`);
+if (!Array.isArray(relationshipManifest.links)) failures.push(`${relationshipPath}: links must be an array`);
+for (const link of Array.isArray(relationshipManifest.links) ? relationshipManifest.links : []) {
+  const key = `${link.evidenceId}::${link.propositionId}`;
+  if (!link.evidenceId || !link.propositionId) failures.push(`${relationshipPath}: relationship is missing evidenceId or propositionId`);
+  if (relationshipMap.has(key)) failures.push(`${relationshipPath}: duplicate relationship ${key}`);
+  relationshipMap.set(key, link);
+  if (!relationshipTypes.has(link.relationship)) failures.push(`${relationshipPath}: invalid relationship ${link.relationship} for ${key}`);
+  if (!relationshipStatuses.has(link.reviewStatus)) failures.push(`${relationshipPath}: invalid reviewStatus for ${key}`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(link.reviewedAt || '')) failures.push(`${relationshipPath}: ${key} is missing reviewedAt`);
+  if (!evidence.has(link.evidenceId)) failures.push(`${relationshipPath}: relationship references missing evidence ${link.evidenceId}`);
+  const proposition = propositionMap.get(link.propositionId);
+  if (!proposition) failures.push(`${relationshipPath}: relationship references missing proposition ${link.propositionId}`);
+  else if (expectedRelationshipForStatus[proposition.status] !== link.relationship) {
+    failures.push(`${relationshipPath}: ${key} relationship ${link.relationship} does not match proposition status ${proposition.status}`);
+  }
+}
+
+for (const proposition of propositions.map((item) => item.data)) {
+  for (const evidenceId of Array.isArray(proposition.evidenceIds) ? proposition.evidenceIds : []) {
+    const key = `${evidenceId}::${proposition.id}`;
+    if (!relationshipMap.has(key)) failures.push(`${relationshipPath}: missing relationship for ${key}`);
+  }
+}
+
 for (const item of records.filter(({ file }) => file.includes('/evidence/'))) {
   const data = frontmatter(item.raw);
   if (!data.id) failures.push(`${item.file}: evidence is missing id`);
@@ -102,3 +146,4 @@ if (failures.length) {
 }
 
 console.log(`Knowledge relations passed: ${claims.length} claims, ${propositions.length} propositions, ${evidence.size} evidence records, ${sources.size} sources.`);
+console.log(`Evidence relationships passed: ${relationshipMap.size} proposition links.`);
