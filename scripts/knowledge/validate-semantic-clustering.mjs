@@ -30,6 +30,18 @@ try {
   assert(merged.surfaceSignatures.length === 2, 'Merged cluster did not retain both surface signatures');
   assert(!result.clusters.some((cluster) => /audio|transcription|example m4a/i.test(cluster.text)), 'Failed media input entered the review queue');
   assert(!result.clusters.some((cluster) => /brecha salarial/i.test(cluster.text)), 'Evaluation-origin input entered the review queue');
+
+  const d1Input = join(directory, 'd1.json');
+  const d1Output = join(directory, 'd1-clusters.json');
+  await writeFile(d1Input, JSON.stringify({ clusters: [
+    { id: 'd1-causal', canonical_text: 'La inmigración aumenta la delincuencia', canonical_signature: 'legacy-surface', semantic_signature: `${equivalent.semanticSignature}|legacy`, query_count: 4, count_7d: 3, count_30d: 4, coverage_status: 'uncovered', review_status: 'unreviewed' },
+    { id: 'd1-opposite', canonical_text: 'La inmigración no aumenta la delincuencia', canonical_signature: 'opposite-surface', semantic_signature: deterministicFallbackCompiler('La inmigración no aumenta la delincuencia').semanticSignature, query_count: 2, count_7d: 2, count_30d: 2, coverage_status: 'uncovered', review_status: 'unreviewed' },
+  ] }));
+  await execFileAsync(process.execPath, ['scripts/knowledge/cluster-gaps.mjs', '--input', input, '--d1-input', d1Input, '--output', d1Output]);
+  const d1Result = JSON.parse(await readFile(d1Output, 'utf8'));
+  const mergedD1 = d1Result.clusters.find((cluster) => cluster.signature === first.semanticSignature);
+  assert(mergedD1?.exampleCount === 4, 'A D1 semantic family did not merge with an equivalent local family');
+  assert(d1Result.clusters.length === 3, 'Cross-source clustering merged or split incompatible families');
 } finally {
   await rm(directory, { recursive: true, force: true });
 }

@@ -39,6 +39,37 @@ const similarity = (left, right) => {
   for (const token of a) if (b.has(token)) overlap += 1;
   return overlap / (a.size + b.size - overlap);
 };
+const signatureParts = (value) => {
+  const parts = new Set(String(value || '').split('|').filter(Boolean));
+  const claimType = [...parts][0] || '';
+  const polarity = [...parts].find((part) => part.startsWith('polarity:')) || '';
+  const geo = [...parts].find((part) => part.startsWith('geo:')) || '';
+  const population = [...parts].find((part) => part.startsWith('population:')) || '';
+  const period = [...parts].find((part) => part.startsWith('period:')) || '';
+  const relations = [...parts].filter((part) => /:(?:more_than|less_than|causes|reduces):/.test(part));
+  const numbers = [...parts].filter((part) => part.startsWith('number:'));
+  return { claimType, polarity, geo, population, period, relations, numbers };
+};
+const compatibleSemanticFamily = (left, right) => {
+  const a = signatureParts(left); const b = signatureParts(right);
+  if (!a.claimType || !b.claimType || a.claimType !== b.claimType) return false;
+  if (a.polarity && b.polarity && a.polarity !== b.polarity) return false;
+  for (const field of ['geo', 'population', 'period']) {
+    if (a[field] && b[field] && a[field] !== b[field]) return false;
+  }
+  if (a.relations.length && b.relations.length && a.relations.some((relation) => !b.relations.includes(relation))) return false;
+  if (a.numbers.length && b.numbers.length && a.numbers.some((number) => !b.numbers.includes(number))) return false;
+  return true;
+};
+const relatedClusterFor = (clusters, signature, normalized) => [...clusters.values()]
+  .map((candidate) => ({
+    candidate,
+    score: compatibleSemanticFamily(candidate.signature, signature)
+      ? Math.max(similarity(candidate.signature, normalized), similarity(candidate.signature, signature), similarity(signature, normalized))
+      : 0,
+  }))
+  .filter(({ score }) => score >= 0.78)
+  .sort((left, right) => right.score - left.score)[0]?.candidate || null;
 const harmWeight = (value) => /inmigr|delinc|crimen|violenc|salud|eleccion|corrup|ayuda|viviend/.test(normalise(value)) ? 1.5 : 1;
 const timestamp = (value) => {
   const parsed = Date.parse(String(value || ''));
@@ -100,8 +131,8 @@ const clusterRecords = (records) => {
     if (!normalized) continue;
     let clusterKey = item.semanticSignature || item.signature || normalized;
     const surfaceSignature = item.signature || item.canonical || item.normalized || normalized;
-    if (!clusters.has(clusterKey) && !item.fromD1) {
-      const related = [...clusters.values()].find((candidate) => candidate.count >= 1 && similarity(candidate.signature, normalized) >= 0.62);
+    if (!clusters.has(clusterKey)) {
+      const related = relatedClusterFor(clusters, clusterKey, normalized);
       if (related) clusterKey = related.signature;
     }
     const current = clusters.get(clusterKey) || {

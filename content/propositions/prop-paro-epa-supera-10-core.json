@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-epa-supera-10-core",
+  "claimSlug": "paro-epa-supera-10",
+  "text": "La tasa de paro de la EPA supera el 10% en España",
+  "type": "trend",
+  "subject": "tasa de paro de la EPA",
+  "predicate": "is_above",
+  "object": "10%",
+  "geography": "España",
+  "period": "2026-T1",
+  "status": "supported",
+  "evidenceIds": ["paro-epa-supera-10"]
+}

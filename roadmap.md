@@ -71,9 +71,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 229 Markdown claim records exist; 53 are published.
-- The 53 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
-- All 53 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, prices, taxes, inequality, security, politics, youth, corruption, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
+- 230 Markdown claim records exist; 54 are published.
+- The 54 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- All 54 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, prices, taxes, inequality, security, politics, youth, corruption, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
 - Compound fallback inputs now expose up to four explicit propositions for common contrast/result structures while preserving ordinary noun lists as one claim; each clause keeps its own detected type before handler selection.
 - The fallback compiler now preserves a directional proposition shape for common comparisons and causal statements (`subject`, `predicate`, `object`), so reversed comparisons cannot silently share a semantic family with the original formulation; the checker labels breakdown rows as facts, comparisons, causes, definitions, predictions, rules, priorities, or implications.
@@ -168,12 +168,12 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Screenshot and audio selection now state that submission is automatic and expose a live status message; the local speech adapter accepts a provider-neutral command/argument contract with bounded execution time while retaining compatibility with the previous development variables.
 - Published claim pages now use a reusable answer-first layout: the claim is followed immediately by a visual short answer, supported/not-established/missing-evidence cards, visible review metadata, and response actions before the deeper data and investigation context. The public claim catalogue now shows only published, usable entries and exposes its count and return path to the checker.
 - Published claim pages now expose the claim-specific evidence trail behind the answer, including each record's period, geography, unit, source type, and direct source link; broad topic charts remain explicitly labelled as context rather than proof.
-- Published claim pages now use the same deterministic accessible SVG/value-table chart pattern as dynamic answers, replacing text-only evidence bars across all 53 published claim pages.
+- Published claim pages now use the same deterministic accessible SVG/value-table chart pattern as dynamic answers, replacing text-only evidence bars across all 54 published claim pages.
 - The published claim catalogue now scales through client-side search, accent-insensitive matching, topic filters, live result counts, and a direct empty-state path back to the checker; it remains fully usable as a static page without JavaScript.
-- The conversation starter library now covers all 53 published, evidence-backed claim families across immigration, housing, employment, healthcare, prices, taxes, inequality, security, politics, youth, corruption, and everyday economic debates. The homepage keeps the first eight prompts scannable, then lets people reveal the rest or filter by topic instead of creating a wall of prompts.
+- The conversation starter library now covers all 54 published, evidence-backed claim families across immigration, housing, employment, healthcare, prices, taxes, inequality, security, politics, youth, corruption, and everyday economic debates. The homepage keeps the first eight prompts scannable, then lets people reveal the rest or filter by topic instead of creating a wall of prompts.
 - Provisional structured results now use the response state as the publication authority: a draft remains labelled automatic even when it links to a related published topic, so contextual guidance cannot be mistaken for a reviewed verdict.
 - The local resolver now prioritizes complete title/alias phrases over aggregate token overlap, respects numeric phrase boundaries, and treats a unique published alias as a safe fast-path match; this prevents unrelated claim families from winning by shared words such as `España`, `millones`, or `empleo`.
-- The built claim index now has a CI/build regression gate covering representative aliases for all 53 published families, including unique canonical ownership and variant presence; missing or ambiguous routing coverage fails the build before publication.
+- The built claim index now has a CI/build regression gate covering representative aliases for all 54 published families, including unique canonical ownership and variant presence; missing or ambiguous routing coverage fails the build before publication.
 - The site-wide search now consumes the same shared claim index and ranking logic as the homepage checker. Weak or empty search results provide a direct handoff to check the exact phrase, preventing the catalogue from becoming a dead end or surfacing an unrelated claim through simple word overlap.
 - Broad evaluative inputs such as `España está destruida` now route through definition guidance when the compiler identifies an implied definition. Their uncovered result explains the legitimate concern and shows a concrete evidence ladder for choosing a measurable outcome, period, comparison, and territory instead of returning only a generic no-match message.
 - Four new evidence-backed claims now cover recurring measurement mistakes: AROPE versus absolute poverty, record employment versus resolved unemployment, national housing averages versus every home, and aggregate tax revenue versus each household's bill. Each is linked to a source, evidence record, and proposition and is included in the Spanish evaluation corpus.
@@ -206,7 +206,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 53 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures. Evidence-to-proposition relationships are now stored in a versioned manifest, validated against proposition status and references, and exposed to the published evidence trail; richer per-link limitations and independent review remain future work.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 54 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures. Evidence-to-proposition relationships are now stored in a versioned manifest, validated against proposition status and references, and exposed to the published evidence trail; richer per-link limitations and independent review remain future work.
 
 Create and enforce shared contracts for:
 
@@ -452,7 +452,7 @@ Add SSRF protection, size limits, MIME validation, timeouts, temporary media ret
 
 ## Phase 9 — Learning, popularity, and materialisation
 
-Status: started; durable review-queue merge, recency ranking, and deterministic semantic-family merging are implemented; public promotion and static materialisation remain owner-approved.
+Status: started; durable review-queue merge, recency ranking, and deterministic semantic-family merging are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved.
 
 Cluster inputs by canonical proposition signature. Track:
 

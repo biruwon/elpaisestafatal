@@ -56,6 +56,13 @@ export const claimAliases: Record<string, string[]> = {
     'el desempleo juvenil en España es del 25%',
     'paro entre los jóvenes',
   ],
+  'paro-epa-supera-10': [
+    'el paro de la EPA supera el 10%',
+    'la EPA todavía marca más de un 10% de paro',
+    'el desempleo EPA sigue por encima del 10%',
+    'el paro real está por encima del 10%',
+    'la tasa de paro sigue alta',
+  ],
   'ingresos-publicos-superan-40': [
     'España recauda más del 40% del PIB',
     'los ingresos públicos superan el 40 por ciento',

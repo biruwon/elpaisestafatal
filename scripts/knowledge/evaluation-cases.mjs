@@ -12,6 +12,7 @@ const knownSeeds = [
   ['esperanza-vida-alta', 'trend', 'España supera los 84 años de esperanza de vida'],
   ['electricidad-hogares-sube', 'trend', 'El precio medio de la electricidad para hogares supera 0,28 €/kWh'],
   ['paro-juvenil-alto', 'trend', 'Casi uno de cada cuatro jóvenes activos está en paro'],
+  ['paro-epa-supera-10', 'trend', 'La tasa de paro de la EPA sigue por encima del 10%'],
   ['ingresos-publicos-superan-40', 'trend', 'Los ingresos públicos de España superan el 40% del PIB'],
   ['gasto-publico-supera-45', 'trend', 'El gasto público de España supera el 45% del PIB'],
   ['deficit-publico-baja-3', 'trend', 'El déficit público de España baja del 3% del PIB'],
