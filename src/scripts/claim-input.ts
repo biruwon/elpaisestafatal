@@ -286,6 +286,19 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
   ? `<div class="claim-plan-source-links"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
   : '';
 
+const definitionChoiceMarkup = (plan: AnswerPlan): string => {
+  const isBroadDefinition = plan.coverage === 'insufficient'
+    && plan.blocks.some((block) => block.type === 'evidence_ladder' && block.steps[0]?.label === 'Resultado concreto');
+  if (!isBroadDefinition) return '';
+  const choices = [
+    '¿Ha empeorado el acceso a la vivienda en España?',
+    '¿Ha subido el coste de vida en España?',
+    '¿Está aumentando el paro en España?',
+    '¿Ha empeorado la seguridad en España?',
+  ];
+  return `<div class="claim-plan-choices"><span class="clarification-label">Elige por dónde concretarla</span><p>Si no sabes qué dato buscar, empieza por una de estas preguntas:</p><div>${choices.map((choice) => `<button type="button" data-clarification-choice="${escapeHtml(choice)}">${escapeHtml(choice)} <span aria-hidden="true">→</span></button>`).join('')}</div></div>`;
+};
+
 const resetChecker = (): void => {
   activeRequest?.abort();
   activeRequest = null;
@@ -319,6 +332,15 @@ const bindResultActions = (): void => {
     } catch { /* Sharing is optional and must not interrupt the result. */ }
   });
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
+  result?.querySelectorAll<HTMLButtonElement>('[data-clarification-choice]').forEach((button) => button.addEventListener('click', () => {
+    const choice = button.dataset.clarificationChoice;
+    if (!choice || !input || !form) return;
+    if (fileInput) fileInput.value = '';
+    if (fileName) fileName.textContent = 'Añadir captura o audio';
+    if (mediaHelp) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
+    input.value = choice;
+    form.requestSubmit();
+  }));
 };
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'uncovered' = 'published'): void => {
@@ -327,7 +349,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   const resultState = state === 'published' ? 'Basada en una ficha revisada' : state === 'uncovered' ? 'No hay una comprobación publicada de esta afirmación' : 'Pendiente de revisión · no es un veredicto publicado';
   const nextStep = plan.clarificationQuestion
     || (primary ? 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div><div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? '<button type="button" data-share-result>Compartir aclaración</button>' : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
