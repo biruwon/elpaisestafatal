@@ -53,9 +53,52 @@ const claimTypeFor = (value) => {
   if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'aumenta la', 'reduce los', 'destruye'])) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico', 'va a'])) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho'])) return 'legal';
-  if (includesAny(text, ['cada vez', 'sube', 'baja', 'aumento', 'disminuye', 'record', 'historico', 'se esta volviendo'])) return 'trend';
+  if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'record', 'historico', 'se esta volviendo'])) return 'trend';
   if (includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'el que menos', 'ranking', 'puesto', 'europa'])) return 'comparative';
   return 'descriptive';
+};
+
+const cleanClause = (value) => String(value || '')
+  .replace(/^[\s,;:]+|[\s,;:.!?]+$/g, '')
+  .replace(/^(?:pero|aunque|sin embargo|mientras que|por eso|por tanto|por ello)\s+/i, '')
+  .trim();
+
+const hasIndependentPredicate = (value) => {
+  const text = normalise(value);
+  return includesAny(text, [
+    ' es ', ' son ', ' hay ', ' tiene ', ' tienen ', ' recibe ', ' reciben ',
+    ' causa ', ' causan ', ' genera ', ' generan ', ' crea ', ' crean ',
+    ' sube ', ' baja ', ' crece ', ' aumenta ', ' disminuye ', ' reduce ',
+    ' recorta ', ' quita ', ' transfiere ', ' llega ', ' llegan ',
+    ' cobra ', ' cobran ', ' representa ', ' representan ', ' demuestra ',
+  ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra)\b/.test(text);
+};
+
+const splitExplicitClauses = (value) => {
+  const original = String(value || '').trim();
+  if (!original) return [];
+
+  // First split only on discourse markers that usually join separate claims.
+  // This deliberately avoids splitting every "y": lists such as "empleo,
+  // vivienda y sanidad" are context, not three independent propositions.
+  let clauses = original
+    .replace(/\s*;\s*/g, ' | ')
+    .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras que|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
+    .split('|')
+    .map(cleanClause)
+    .filter((clause) => clause.length >= 8);
+
+  // A bounded second pass handles the common two-claim form "X y Y" only
+  // when both sides look like clauses. This prevents ordinary noun lists
+  // from becoming noisy claim breakdowns.
+  if (clauses.length === 1) {
+    const match = clauses[0].match(/^(.*?)\s+y\s+(.*)$/i);
+    if (match && match[1].length >= 8 && match[2].length >= 8 && hasIndependentPredicate(match[1]) && hasIndependentPredicate(match[2])) {
+      clauses = [cleanClause(match[1]), cleanClause(match[2])].filter((clause) => clause.length >= 8);
+    }
+  }
+
+  return clauses.length > 1 ? clauses.slice(0, 4) : [original];
 };
 
 const impliedFor = (claimType, value) => {
@@ -74,7 +117,10 @@ const impliedFor = (claimType, value) => {
 export const deterministicFallbackCompiler = (text) => {
   const original = String(text || '').trim().slice(0, 300);
   const normalized = normalise(original);
-  const claimType = claimTypeFor(original);
+  const explicitTexts = splitExplicitClauses(original);
+  const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true }));
+  const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
+  const claimType = explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
   const geography = normalized.includes('espana') || normalized.includes('nacional')
     ? 'España'
@@ -84,12 +130,15 @@ export const deterministicFallbackCompiler = (text) => {
   const period = years.length ? [...new Set(years)].join('–') : /hace\s+(\d+)\s+anos?/.exec(normalized)?.[0] || null;
   const numbers = [...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)).slice(0, 12);
   const retrievalHints = [...new Set([...tokens(original).slice(0, 10), ...entities, ...(geography ? [geography] : [])])].slice(0, 12);
+  const impliedPropositions = [...new Map(
+    explicitTypes
+      .flatMap((type) => impliedFor(type, original))
+      .map((item) => [item.text, item]),
+  ).values()];
   const propositions = [
-    ...(original ? [{ text: original, type: claimType, explicit: true }] : []),
-    ...impliedFor(claimType, original),
+    ...explicitPropositions,
+    ...impliedPropositions,
   ];
-  const explicitPropositions = propositions.filter((item) => item.explicit);
-  const impliedPropositions = propositions.filter((item) => !item.explicit);
   return {
     normalized: original || 'Afirmación vacía',
     claimType,

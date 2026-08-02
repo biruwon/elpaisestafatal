@@ -15,6 +15,14 @@ assert(comparison.numbers.length === 0, 'Year was incorrectly treated as a numer
 
 const growthAndCost = deterministicFallbackCompiler('La economía crece, pero eso no significa que el coste de vida haya bajado');
 assert(growthAndCost.claimType !== 'definition', 'A negated “significa” phrase must not be classified as a definition question');
+assert(growthAndCost.explicitPropositions.length === 2, 'Contrast clauses were not decomposed into two explicit propositions');
+assert(growthAndCost.explicitPropositions.every((item) => item.type === 'trend'), 'Contrast clauses did not retain their individual claim types');
+
+const semicolon = deterministicFallbackCompiler('Hay más empleo; el paro sigue alto');
+assert(semicolon.explicitPropositions.length === 2, 'Semicolon clauses were not decomposed');
+
+const nounList = deterministicFallbackCompiler('Empleo, vivienda y sanidad');
+assert(nounList.explicitPropositions.length === 1, 'A noun list was incorrectly split into multiple claims');
 
 const normative = deterministicFallbackCompiler('Los españoles deberían tener prioridad en las ayudas');
 assert(normative.claimType === 'normative' && normative.propositions.some((item) => !item.explicit), 'Normative implication was not created');

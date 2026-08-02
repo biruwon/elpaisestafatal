@@ -75,6 +75,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The 25 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
 - Five additional public claim families now cover youth emancipation, the distinction between economic growth and the cost of living, EPA versus registered unemployment, employment records versus job quality, and irregular arrivals versus total immigration. They are evidence-linked and the unemployment-measure claim is included in the compact popular-entry set.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
+- Compound fallback inputs now expose up to four explicit propositions for common contrast/result structures while preserving ordinary noun lists as one claim; each clause keeps its own detected type before handler selection.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 28 evidence records and 28 source records are currently linked.
 - The browser has a deterministic claim index and automatic local classification support.
@@ -147,7 +148,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 25 published claims; richer multi-proposition decomposition and evidence-level relationship metadata remain pending.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 25 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses; richer semantic decomposition and evidence-level relationship metadata remain pending.
 
 Create and enforce shared contracts for:
 
@@ -210,7 +211,7 @@ No weak match may be presented as an answer. For example, `España está destrui
 
 ## Phase 3 — Local claim compiler
 
-Status: boundary implemented; first compiler-result slice complete; richer extraction expansion pending.
+Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses before model escalation; richer semantic extraction expansion remains pending.
 
 Run the local service on a dedicated always-on machine. Package it with Docker Compose so the current Mac remains suitable for development.
 
