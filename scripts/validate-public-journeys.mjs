@@ -18,7 +18,7 @@ const [searchPage, searchSource, searchScript, inputSource, investigationsPage, 
   read('dist/fuentes/index.html'),
 ]);
 
-requireText('Search page', searchPage, ['site-search', 'search-output', 'search-noscript']);
+requireText('Search page', searchPage, ['site-search', 'search-output', 'search-noscript', 'frase es nueva', 'orientación rápida']);
 requireText('Search source', searchSource, ['claimIndexEntries', 'site-search.ts', 'search-page-data']);
 requireText('Search script', searchScript, ['rankClaimIndex', 'search-check-link', 'renderEmpty', 'Comprobar esta frase']);
 requireText('Claim checker handoff', inputSource, ['URLSearchParams(window.location.search)', 'requestSubmit()']);
