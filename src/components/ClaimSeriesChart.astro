@@ -1,0 +1,88 @@
+---
+interface Props {
+  id: string;
+  series: { label: string; labels: string[]; values: number[]; unit: string };
+}
+
+const { id, series } = Astro.props;
+const entries = series.labels
+  .slice(0, 8)
+  .map((label, index) => ({ label: String(label), value: Number(series.values[index]) }))
+  .filter((entry) => Number.isFinite(entry.value));
+const width = 640;
+const height = 230;
+const left = 54;
+const right = 18;
+const top = 18;
+const bottom = 48;
+const plotWidth = width - left - right;
+const plotHeight = height - top - bottom;
+const values = entries.map((entry) => entry.value);
+const sequential = entries.length > 3 && entries.every((entry) => /\d|t[1-4]|ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic/i.test(entry.label));
+const rawMin = sequential ? Math.min(...values) : Math.min(0, ...values);
+const rawMax = Math.max(...values, 0);
+const padding = rawMax === rawMin ? Math.max(Math.abs(rawMax) * 0.12, 1) : (rawMax - rawMin) * 0.08;
+const domainMin = rawMin - padding;
+const domainMax = rawMax + padding;
+const yAt = (value: number): number => top + ((domainMax - value) / (domainMax - domainMin)) * plotHeight;
+const xAt = (index: number): number => entries.length === 1 ? left + plotWidth / 2 : left + (index / (entries.length - 1)) * plotWidth;
+const chartId = `claim-series-${id.replace(/[^a-z0-9_-]/gi, '-')}`;
+const formatValue = (value: number): string => value.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const tickMarkup = [0, 0.5, 1].map((fraction) => {
+  const value = domainMax - (domainMax - domainMin) * fraction;
+  const y = top + plotHeight * fraction;
+  return `<line class="claim-series-grid" x1="${left}" y1="${y.toFixed(2)}" x2="${width - right}" y2="${y.toFixed(2)}"></line><text class="claim-series-axis-label" x="${left - 8}" y="${(y + 4).toFixed(2)}" text-anchor="end">${formatValue(value)}</text>`;
+}).join('');
+const xLabels = entries.map((entry, index) => {
+  if (entries.length > 4 && index !== 0 && index !== entries.length - 1 && index % 2 !== 0) return '';
+  const label = entry.label.length > 15 ? `${entry.label.slice(0, 14)}…` : entry.label;
+  return `<text class="claim-series-axis-label" x="${xAt(index).toFixed(2)}" y="${height - 17}" text-anchor="middle">${label}</text>`;
+}).join('');
+const lineMarkup = entries.length > 1
+  ? `<polyline class="claim-series-line" points="${entries.map((entry, index) => `${xAt(index).toFixed(2)},${yAt(entry.value).toFixed(2)}`).join(' ')}"></polyline>${entries.map((entry, index) => `<circle class="claim-series-point" cx="${xAt(index).toFixed(2)}" cy="${yAt(entry.value).toFixed(2)}" r="4"><title>${entry.label}: ${formatValue(entry.value)} ${series.unit}</title></circle>`).join('')}`
+  : `<circle class="claim-series-point" cx="${xAt(0).toFixed(2)}" cy="${yAt(entries[0]?.value || 0).toFixed(2)}" r="5"><title>${entries[0]?.label || ''}: ${formatValue(entries[0]?.value || 0)} ${series.unit}</title></circle>`;
+const baseline = yAt(0);
+const barsMarkup = entries.map((entry, index) => {
+  const x = left + ((index + 0.5) / entries.length) * plotWidth;
+  const barWidth = Math.min(70, (plotWidth / entries.length) * 0.62);
+  const y = yAt(entry.value);
+  const rectY = Math.min(y, baseline);
+  const rectHeight = Math.max(1, Math.abs(y - baseline));
+  return `<rect class="claim-series-bar" x="${(x - barWidth / 2).toFixed(2)}" y="${rectY.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${rectHeight.toFixed(2)}"><title>${entry.label}: ${formatValue(entry.value)} ${series.unit}</title></rect>`;
+}).join('');
+const plotMarkup = sequential ? lineMarkup : `${barsMarkup}<line class="claim-series-baseline" x1="${left}" y1="${baseline.toFixed(2)}" x2="${width - right}" y2="${baseline.toFixed(2)}"></line>`;
+const dataRows = entries.map((entry) => `<tr><th scope="row">${entry.label}</th><td>${formatValue(entry.value)} ${series.unit}</td></tr>`).join('');
+---
+
+<figure class="claim-series-chart" aria-labelledby={`${chartId}-caption`}>
+  <figcaption id={`${chartId}-caption`}><strong>{series.label}</strong><span>{series.unit}</span></figcaption>
+  <svg role="img" aria-labelledby={`${chartId}-title ${chartId}-description`} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+    <title id={`${chartId}-title`}>{series.label}</title>
+    <desc id={`${chartId}-description`}>Valores expresados en {series.unit}.</desc>
+    <Fragment set:html={tickMarkup} />
+    <Fragment set:html={plotMarkup} />
+    <Fragment set:html={xLabels} />
+  </svg>
+  <details class="claim-series-data"><summary>Ver valores exactos</summary><table><thead><tr><th>Periodo o grupo</th><th>Valor</th></tr></thead><tbody><Fragment set:html={dataRows} /></tbody></table></details>
+  <small>Fuente y límites: la serie pertenece a la investigación del tema.</small>
+</figure>
+
+<style>
+  .claim-series-chart{background:var(--paper-deep);padding:25px;margin:28px 0 0}
+  .claim-series-chart figcaption{display:flex;justify-content:space-between;gap:20px;margin-bottom:12px;font:.72rem var(--mono);text-transform:uppercase}
+  .claim-series-chart figcaption span{color:var(--muted)}
+  .claim-series-chart svg{display:block;width:100%;height:auto;min-height:190px;overflow:visible}
+  .claim-series-chart svg text{font:10px var(--mono);fill:var(--muted)}
+  .claim-series-grid{stroke:var(--line);stroke-width:1}
+  .claim-series-line{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .claim-series-point{fill:var(--paper-deep);stroke:var(--red);stroke-width:3}
+  .claim-series-bar{fill:var(--red);opacity:.82}
+  .claim-series-bar:hover{opacity:1}
+  .claim-series-baseline{stroke:var(--ink);stroke-width:1}
+  .claim-series-data{margin-top:8px;border-top:1px solid var(--line)}
+  .claim-series-data summary{cursor:pointer;padding:9px 0;font:600 .62rem var(--mono);color:var(--red)}
+  .claim-series-data table{width:100%;border-collapse:collapse;font:.68rem var(--mono)}
+  .claim-series-data th,.claim-series-data td{text-align:left;padding:7px 0;border-top:1px solid var(--line)}
+  .claim-series-data td{text-align:right}
+  .claim-series-chart small{display:block;color:var(--muted);font:.68rem/1.45 var(--mono);margin-top:18px}
+</style>
