@@ -175,6 +175,14 @@
     "notEquivalentTo": ["health_expenditure_per_capita"],
     "dimensions": ["period", "geography", "sex"]
   },
+  "fertility_rate": {
+    "name": "Total fertility rate",
+    "aliases": ["fecundidad", "tasa de fecundidad", "natalidad", "tasa de natalidad", "hijos por mujer", "nacimientos por mujer"],
+    "unit": "live births per woman",
+    "population": "women under the total fertility rate definition",
+    "notEquivalentTo": ["resident_population", "immigration_flows"],
+    "dimensions": ["period", "geography", "age"]
+  },
   "gini_coefficient": {
     "name": "Gini coefficient of equivalised disposable income",
     "aliases": ["coeficiente de Gini", "desigualdad de ingresos", "desigualdad", "distribución de la renta"],

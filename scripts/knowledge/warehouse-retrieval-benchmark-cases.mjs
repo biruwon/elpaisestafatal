@@ -53,6 +53,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['sanidad-recursos', 'Evolución del gasto sanitario por persona', 'health_expenditure_per_capita'],
   ['salud-vida', 'Cómo ha evolucionado la esperanza de vida en España', 'life_expectancy_at_birth'],
   ['salud-longevidad', 'Cuántos años vive de media una persona al nacer', 'life_expectancy_at_birth'],
+  ['demografia-fecundidad', 'Cómo ha evolucionado la fecundidad en España', 'fertility_rate'],
+  ['demografia-hijos', 'Cuántos hijos tiene de media cada mujer en España', 'fertility_rate'],
   ['desigualdad-gini', 'Cómo ha evolucionado la desigualdad de ingresos en España', 'gini_coefficient'],
   ['desigualdad-coeficiente', 'Cuál es el coeficiente de Gini español', 'gini_coefficient'],
   ['deficit-publico', 'Cómo ha cambiado el déficit público sobre el PIB', 'government_deficit_ratio'],
