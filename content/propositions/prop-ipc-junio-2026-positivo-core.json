@@ -1,0 +1,13 @@
+{
+  "id": "prop-ipc-junio-2026-positivo-core",
+  "claimSlug": "ipc-junio-2026-positivo",
+  "text": "Los precios de consumo aumentaron un 3,2% interanual en España en junio de 2026",
+  "type": "trend",
+  "subject": "IPC general",
+  "predicate": "increased_by",
+  "object": "3,2% interanual",
+  "geography": "España",
+  "period": "junio 2026",
+  "status": "supported",
+  "evidenceIds": ["economia-ipc-junio-2026"]
+}

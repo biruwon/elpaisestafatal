@@ -13,6 +13,13 @@ export const claimAliases: Record<string, string[]> = {
     'cada vez hay más gente nacida fuera',
     'la población extranjera ha crecido',
   ],
+  'ipc-junio-2026-positivo': [
+    'el IPC de junio fue del 3,2%',
+    'la inflación anual fue del 3,2% en junio',
+    'los precios subieron un 3,2% en junio',
+    'IPC 3,2 junio 2026',
+    'la inflación de junio se mantuvo en 3,2',
+  ],
   'espana-pierde-poblacion': [
     'España pierde población',
     'la población de España está bajando',
