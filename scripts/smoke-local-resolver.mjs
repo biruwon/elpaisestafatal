@@ -22,8 +22,9 @@ const resolve = async (text, inputType = 'text') => {
   return result;
 };
 
-const resolveMultipart = async (inputType, mimeType) => {
+const resolveMultipart = async (inputType, mimeType, text = '') => {
   const form = new FormData();
+  if (text) form.set('text', text);
   form.set('inputType', inputType);
   form.set('file', new Blob(['smoke-test'], { type: mimeType }), 'smoke-test.bin');
   const response = await fetch(`${base}${resolvePath}`, { method: 'POST', body: form, signal: AbortSignal.timeout(10000) });
@@ -65,8 +66,9 @@ for (const item of cases) {
 if (process.env.SMOKE_MEDIA === '1') {
   for (const [inputType, mimeType] of [['image', 'image/png'], ['audio', 'audio/wav']]) {
     try {
-      const result = await resolveMultipart(inputType, mimeType);
+      const result = await resolveMultipart(inputType, mimeType, 'España está en recesión');
       if (result.status === 'processing') failures.push(`${inputType}: multipart request remained processing after polling`);
+      if (result.status === 'unavailable') failures.push(`${inputType}: typed caption did not retain a useful fallback when media extraction was unavailable`);
     } catch (error) { failures.push(`${inputType}: ${error.message}`); }
   }
 }

@@ -704,7 +704,27 @@ const startMediaResolveJob = (text, inputType, media) => {
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(combined, completed, inputType, classified);
-  })().catch((error) => { console.error('Media extraction failed:', error instanceof Error ? error.message : error); const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() }; resolveJobs.set(id, completed); recordCompletion(job.createdAt, completed.status); });
+  })().catch(async (error) => {
+    console.error('Media extraction failed:', error instanceof Error ? error.message : error);
+    // A typed caption is already a valid claim input. If local media
+    // extraction is unavailable, keep that deterministic/text path useful
+    // instead of turning an otherwise answerable submission into a dead end.
+    if (text) {
+      try {
+        const classified = await classify(text);
+        const completed = { ...await enrichResolve(text, classified, undefined, id), inputType, createdAt: job.createdAt, completedAt: Date.now() };
+        resolveJobs.set(id, completed);
+        recordCompletion(job.createdAt, completed.status);
+        void recordKnowledgeGap(text, completed, inputType, classified);
+        return;
+      } catch (fallbackError) {
+        console.error('Typed media fallback failed:', fallbackError instanceof Error ? fallbackError.message : fallbackError);
+      }
+    }
+    const completed = { status: 'unavailable', requestId: id, inputType, createdAt: job.createdAt, completedAt: Date.now() };
+    resolveJobs.set(id, completed);
+    recordCompletion(job.createdAt, completed.status);
+  });
   return job;
 };
 

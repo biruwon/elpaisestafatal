@@ -17,6 +17,8 @@ requireText(service, 'LOCAL_SPEECH_COMMAND', 'local media service');
 requireText(service, 'LOCAL_SPEECH_ARGS', 'local media service');
 requireText(service, 'LOCAL_SPEECH_TIMEOUT_MS', 'local media service');
 requireText(service, "inputType === 'image' ? await extractImageText(media) : await transcribeAudio(media)", 'shared media pipeline');
+requireText(service, 'Typed media fallback failed:', 'typed-caption fallback');
+requireText(service, "if (text) {", 'typed-caption fallback');
 requireText(compose, 'LOCAL_SPEECH_COMMAND', 'local compose contract');
 requireText(compose, 'LOCAL_SPEECH_TIMEOUT_MS', 'local compose contract');
 requireText(homepage, 'conversation-media-help', 'media submission guidance');

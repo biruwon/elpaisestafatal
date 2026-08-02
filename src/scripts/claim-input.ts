@@ -101,6 +101,10 @@ const broadTopicSuggestions = (original: string): Array<{ title: string; href: s
     .map((entry) => ({ title: entry.title, href: entry.href }));
 };
 
+const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
+  .filter((entry) => entry.kind === 'claim')
+  .slice(0, 2);
+
 const visualMarkup = (entry?: ClaimIndexEntry): string => {
   if (!entry) return '';
   const visual = conversationVisuals.find((item) => item.slug === entry.slug)?.visuals;
@@ -399,7 +403,14 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
-      setDynamicStatus('Respuesta inicial lista; buscamos una ficha o datos adicionales.');
+      const processingMessage = inputType === 'image'
+        ? 'La orientación inicial está lista; estamos leyendo el texto de la captura.'
+        : inputType === 'audio'
+          ? 'La orientación inicial está lista; estamos transcribiendo el audio.'
+          : inputType === 'url'
+            ? 'La orientación inicial está lista; estamos leyendo la página enlazada.'
+            : 'La orientación inicial está lista; buscamos una ficha o datos adicionales.';
+      setDynamicStatus(processingMessage);
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
       const waitMs = file ? 500 : 350;
@@ -419,7 +430,8 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       return;
     }
     if (data.status === 'unavailable') {
-      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), {
+      if (file && query) setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.');
+      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       });
       else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
@@ -433,7 +445,8 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
     if (version === requestVersion) {
-      if (file) renderCard('unavailable', query || file.name, undefined, ranked.slice(0, 2), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
+      if (file && query) setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.');
+      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
       else setDynamicStatus('La orientación rápida sigue disponible; no hemos podido añadir la comprobación automática ahora.');
     }
   }

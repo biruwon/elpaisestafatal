@@ -402,7 +402,7 @@ Reusable video/animated scenes are deferred until deterministic charts are relia
 
 ## Phase 8 — Links, screenshots, and audio
 
-Status: started; browser media validation, automatic file submission, and live media status guidance are implemented, and the local link adapter now supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional, use a provider-neutral speech command contract, and fail back without blocking deterministic text guidance.
+Status: started; browser media validation, automatic file submission, live media status guidance, and typed-caption fallback are implemented. A screenshot/audio submission with a typed claim now retains that claim's deterministic guidance when local extraction is unavailable, while file-only failures offer published alternatives instead of a dead end. The local link adapter supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional, use a provider-neutral speech command contract, and fail back without blocking deterministic text guidance.
 
 All inputs end in the same compiler:
 
@@ -480,6 +480,7 @@ Required regression cases:
 - `El Gobierno quita 310 millones...` separates the verified transfer from unverified implications.
 - No provider or model name appears in public UI or errors.
 - No request stays indefinitely in a processing state.
+- A screenshot/audio submission with a typed caption keeps its useful text result when media extraction is unavailable; file-only failure offers a retry path and published alternatives.
 - Every factual visual and sentence is traceable to evidence.
 
 ## Cost model
