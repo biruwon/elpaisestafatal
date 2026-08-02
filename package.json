@@ -17,6 +17,7 @@
     "ux:claims": "node scripts/validate-published-claim-ux.mjs",
     "ux:catalogue": "node scripts/validate-claim-catalog-ux.mjs",
     "ux:topics": "node scripts/validate-topic-ux.mjs",
+    "ux:journeys": "node scripts/validate-public-journeys.mjs",
     "container:validate": "node scripts/validate-local-container.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",

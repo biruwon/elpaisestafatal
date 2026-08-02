@@ -71,7 +71,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 212 Markdown claim records exist; 30 are published.
+- 216 Markdown claim records exist; 34 are published.
 - The 34 published claims now expose one typed, evidence-linked core proposition each; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
 - Ten additional public claim families now cover youth emancipation, the distinction between economic growth and the cost of living, EPA versus registered unemployment, employment records versus job quality, irregular arrivals versus total immigration, cybercrime versus conventional crime, poverty-risk trends, housing-price trends, recession claims, and tax-revenue trends. They reuse the existing reviewed evidence warehouse and several are included in the compact popular-entry set.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
@@ -140,6 +140,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The published claim catalogue now scales through client-side search, accent-insensitive matching, topic filters, live result counts, and a direct empty-state path back to the checker; it remains fully usable as a static page without JavaScript.
 - Four new evidence-backed claims now cover recurring measurement mistakes: AROPE versus absolute poverty, record employment versus resolved unemployment, national housing averages versus every home, and aggregate tax revenue versus each household's bill. Each is linked to a source, evidence record, and proposition and is included in the Spanish evaluation corpus.
 - Topic pages now keep their 60-second answer, evidence, and source trail above the fold while collapsing the long investigation into accessible chapter accordions. The first chapter opens as a continuation, the rest open on demand, and chapter deep links automatically expand their destination.
+- The search journey now hands an unmatched formulation directly to the claim checker through `/?q=...#comprobar`; the checker pre-fills and submits it automatically, so search no longer ends in a dead end.
+- The investigations index now foregrounds the claim checker and published context while keeping the 182-item planned backlog behind an explicit disclosure, so unfinished work is available without presenting it as published guidance.
+- The sources index now derives from the claim/evidence source registry, exposes source type and dates, and provides client-side filtering so the evidence trail scales beyond topic-level source lists.
 - The claim result UI now uses a scan-first hierarchy: published versus automatic state, concise summary, evidence-backed points, explicit limits, one useful next question, source trail, and a conversation-ready reply without repeating source links inside every card.
 - The deterministic compiler no longer treats the negated phrase “no significa que” as a definition question, so claims such as economic growth versus cost of living can resolve to their exact published claim instead of being downgraded to a generic topic.
 - The evaluation runner now reports known retrieval recall, irrelevant matches, unsupported-conclusion rate, proposition-breakdown coverage, answer-plan traceability, coverage distribution, cache-hit telemetry, and latency alongside the existing 300-case safety metrics.

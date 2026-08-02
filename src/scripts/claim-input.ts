@@ -425,3 +425,9 @@ document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) 
 
 input?.addEventListener('input', updateCounter);
 updateCounter();
+const initialQuery = new URLSearchParams(window.location.search).get('q')?.trim() || '';
+if (initialQuery && input) {
+  input.value = initialQuery.slice(0, INPUT_LIMITS.maxTextCharacters);
+  updateCounter();
+  window.setTimeout(() => form?.requestSubmit(), 0);
+}
