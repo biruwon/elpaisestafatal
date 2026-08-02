@@ -40,4 +40,8 @@ assert(definition.claimType === 'definition', 'Definition claim type was not det
 const trend = deterministicFallbackCompiler('La vivienda sube cada vez más');
 assert(trend.claimType === 'trend', 'Trend claim type was not detected');
 
+const broad = deterministicFallbackCompiler('España está destruida');
+assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');
+assert(broad.clarificationRequired === true, 'Broad evaluative claim did not require clarification');
+
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');
