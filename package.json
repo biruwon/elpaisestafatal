@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-  "build": "npm run validate:content && npm run claim-catalog:validate && npm run legacy:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run health:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && npm run knowledge:semantic-clustering && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
+  "build": "npm run validate:content && npm run claim-catalog:validate && npm run legacy:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run health:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && npm run knowledge:release:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -72,7 +72,8 @@
     "knowledge:local-compiler": "node scripts/knowledge/validate-local-compiler-contract.mjs",
     "knowledge:compiler:benchmark": "node scripts/knowledge/benchmark-local-compiler.mjs",
     "knowledge:compiler:benchmark:validate": "node scripts/knowledge/validate-local-compiler-benchmark.mjs",
-    "knowledge:semantic-clustering": "node scripts/knowledge/validate-semantic-clustering.mjs",
+  "knowledge:semantic-clustering": "node scripts/knowledge/validate-semantic-clustering.mjs",
+  "knowledge:release:validate": "npm run knowledge:normalizer && npm run knowledge:warehouse && npm run knowledge:warehouse:query && npm run knowledge:warehouse:index && npm run knowledge:warehouse:cache && npm run knowledge:trend && npm run knowledge:ranking && npm run knowledge:signature && npm run knowledge:d1-semantic && npm run knowledge:evaluate:metrics && npm run knowledge:handlers && npm run knowledge:answer-plan && npm run knowledge:evidence-packet && npm run knowledge:fallback-compiler && npm run knowledge:safe-url && npm run knowledge:hybrid && npm run knowledge:discovery && npm run knowledge:materialization-candidates:validate && npm run knowledge:review-queue:validate && npm run knowledge:cluster:validate && npm run knowledge:promote-cluster:validate && npm run knowledge:semantic-clustering",
     "knowledge:safe-url": "node scripts/knowledge/validate-safe-url.mjs",
     "knowledge:warehouse:sql": "node scripts/knowledge/export-warehouse-sql.mjs",
     "knowledge:warehouse:postgres": "node scripts/knowledge/load-warehouse-postgres.mjs",

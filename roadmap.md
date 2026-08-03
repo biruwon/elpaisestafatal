@@ -44,6 +44,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Closed the local-only semantic-clustering release gate: non-loopback embedding endpoints are rejected before any gap text is sent, the rejection is covered by the clustering regression suite, and `npm run build` now runs that suite on every release.
 
+- Consolidated the previously standalone warehouse, handler, answer-plan, evidence-packet, retrieval, URL-safety, clustering, review-queue, and promotion validators into `knowledge:release:validate`, now required by the production build. Roadmap contracts that already pass locally can no longer be skipped by a release.
+
 - Hardened the public health boundary: upstream operational telemetry is now reduced to bounded provider-neutral counters, latency, hit rate, queue depth, and known status counts before it reaches `/api/health`. Unexpected metrics, negative values, implementation fields, and oversized values are discarded, with a build-time regression validator protecting the contract.
 
 - Tightened the same health boundary to fail closed on malformed `200` responses: dynamic availability is now reported only when the origin returns the expected `status`, deterministic, and dynamic fields, while valid optional telemetry remains filtered and bounded.
