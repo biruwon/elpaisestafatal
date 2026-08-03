@@ -29,11 +29,15 @@ for (const file of pages) {
   for (const [marker, message] of required) if (!source.includes(`id="${marker}"`)) failures.push(`${route}: ${message}`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
   if (!/evidence-trail-card/.test(source)) failures.push(`${route}: evidence trail has no records`);
-  if (!/class="claim-series-chart"/.test(source)) failures.push(`${route}: missing accessible evidence chart`);
-  if (!/<svg\b[^>]*role="img"[^>]*aria-labelledby=/.test(source)) failures.push(`${route}: chart is missing an accessible SVG label`);
-  if (!/<title\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a title`);
-  if (!source.includes('Ver valores exactos')) failures.push(`${route}: chart is missing exact-value fallback`);
-  if (!/<table\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a data table`);
+  const hasChart = /class="claim-series-chart"/.test(source);
+  const hasDirectVisual = /class="claim-data-direct"/.test(source);
+  if (!hasChart && !hasDirectVisual) failures.push(`${route}: missing accessible evidence visual`);
+  if (hasChart) {
+    if (!/<svg\b[^>]*role="img"[^>]*aria-labelledby=/.test(source)) failures.push(`${route}: chart is missing an accessible SVG label`);
+    if (!/<title\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a title`);
+    if (!source.includes('Ver valores exactos')) failures.push(`${route}: chart is missing exact-value fallback`);
+    if (!/<table\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a data table`);
+  } else if (!/Evidencia directa/.test(source)) failures.push(`${route}: direct visual is missing its evidence label`);
   if (!/<details|class="deep-link"/.test(source)) failures.push(`${route}: missing path to deeper context`);
   const snapshotPosition = source.indexOf('id="claim-snapshot"');
   const responsePosition = source.indexOf('id="response-title"');

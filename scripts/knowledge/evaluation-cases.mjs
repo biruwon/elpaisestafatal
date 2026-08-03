@@ -69,6 +69,7 @@ const knownSeeds = [
   ['inflacion-baja-precios-no-bajan', 'definition', 'Si baja la inflación, los precios están bajando'],
   ['espera-media-baja-listas-resueltas', 'definition', 'Si baja la espera media quirúrgica, las listas ya están resueltas'],
   ['politica-no-es-mayoria', 'quantity', 'La política es la preocupación de la mayoría de españoles'],
+  ['gobierno-transfiere-310-millones-educacion-presidencia', 'descriptive', 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia'],
 ];
 
 // Keep this list for future planned-only regressions. A planned legacy file

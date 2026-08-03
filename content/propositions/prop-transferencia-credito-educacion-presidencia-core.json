@@ -1,0 +1,13 @@
+{
+  "id": "prop-transferencia-credito-educacion-presidencia-core",
+  "claimSlug": "gobierno-transfiere-310-millones-educacion-presidencia",
+  "text": "El Gobierno autorizó una transferencia aproximada de 310 millones de euros desde Educación al Ministerio de la Presidencia, Justicia y Relaciones con las Cortes para gastos de personal.",
+  "type": "descriptive",
+  "subject": "government_budget_transfer",
+  "predicate": "transferred_credit",
+  "object": "309840377.20 EUR for chapter 1 personnel expenditure",
+  "geography": "España",
+  "period": "2026-07-14",
+  "status": "supported",
+  "evidenceIds": ["transferencia-credito-educacion-presidencia"]
+}

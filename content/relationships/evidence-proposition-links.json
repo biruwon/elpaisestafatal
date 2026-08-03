@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "links": [
     {
+      "evidenceId": "transferencia-credito-educacion-presidencia",
+      "propositionId": "prop-transferencia-credito-educacion-presidencia-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1",
       "propositionId": "prop-precio-vivienda-ha-subido-core",
       "relationship": "supports",

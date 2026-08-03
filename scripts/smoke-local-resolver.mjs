@@ -40,6 +40,7 @@ const resolveMultipart = async (inputType, mimeType, text = '') => {
 
 const cases = [
   { text: 'España cobra demasiados impuestos', status: 'complete', slug: 'espana-impuestos-europa' },
+  { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'El paro registrado y el de la EPA son la misma cifra.', status: 'complete', slug: 'paro-epa-registro' },
   { text: 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
   { text: 'El desempleo EPA bajó del diez por ciento.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
