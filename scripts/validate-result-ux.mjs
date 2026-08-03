@@ -7,7 +7,7 @@ const required = [
   'const resultActionsMarkup',
   'claim-result-actions-primary',
   'data-result-target="actions"',
-  'resultActionsMarkup(requestId ? shareUrl : undefined)',
+  'resultActionsMarkup(requestId ? shareUrl : undefined, Boolean(storyMarkup))',
   'resultActionsMarkup(primary?.answer ? shareUrlFor',
   'Fuente: ${sourceLinks[0].title}',
   'data-focus-result="sources"',
@@ -15,13 +15,16 @@ const required = [
   'class="claim-visual-story"',
   'La idea en ${steps.length} pasos',
   'claim-story-mini-chart',
+  'data-download-story',
+  'canvas.toBlob',
+  'aclaracion-visual.png',
 ];
 
 for (const snippet of required) {
   if (!source.includes(snippet)) failures.push(`claim input is missing ${snippet}`);
 }
 
-const structuredActions = source.indexOf('resultActionsMarkup(requestId ? shareUrl : undefined)');
+const structuredActions = source.indexOf('resultActionsMarkup(requestId ? shareUrl : undefined, Boolean(storyMarkup))');
 const structuredBlocks = source.indexOf('<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>');
 if (structuredActions < 0 || structuredBlocks < 0 || structuredActions > structuredBlocks) {
   failures.push('structured results place the primary action row after the analysis blocks');

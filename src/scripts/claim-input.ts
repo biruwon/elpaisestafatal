@@ -630,7 +630,7 @@ const resultUseActionsMarkup = (plan: AnswerPlan): string => {
   return `<div class="claim-result-use" aria-label="Elige cómo quieres usar esta aclaración"><span>Verlo como</span><div role="group" aria-label="Modo de la aclaración"><button type="button" data-result-mode-button="understand" aria-pressed="true">Entender</button>${hasReply ? '<button type="button" data-result-mode-button="reply" aria-pressed="false">Responder</button>' : ''}${hasSources ? '<button type="button" data-result-mode-button="sources" aria-pressed="false">Fuentes</button>' : ''}</div></div>`;
 };
 
-const resultActionsMarkup = (shareUrl?: string): string => `<div class="claim-result-actions claim-result-actions-primary" data-result-target="actions"><button type="button" data-new-check>Comprobar otra frase</button>${shareUrl ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}</div>`;
+const resultActionsMarkup = (shareUrl?: string, hasStory = false): string => `<div class="claim-result-actions claim-result-actions-primary" data-result-target="actions"><button type="button" data-new-check>Comprobar otra frase</button>${shareUrl ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}${hasStory ? '<button type="button" data-download-story>Descargar resumen visual</button>' : ''}<span class="claim-result-action-status" aria-live="polite"></span></div>`;
 
 const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
   const isBroadDefinition = plan.coverage === 'insufficient'
@@ -770,6 +770,103 @@ const bindResultActions = (): void => {
       if (button) button.textContent = shared ? 'Compartido' : 'Enlace y resumen copiados';
     } catch { /* Sharing is optional and must not interrupt the result. */ }
   });
+  result?.querySelector<HTMLButtonElement>('[data-download-story]')?.addEventListener('click', async () => {
+    const card = result.querySelector<HTMLElement>('.claim-result-card');
+    const story = card?.querySelector<HTMLElement>('.claim-visual-story');
+    const status = card?.querySelector<HTMLElement>('.claim-result-action-status');
+    if (!card || !story) return;
+    const headline = card.querySelector('h3')?.textContent?.trim() || 'Aclaración sobre una afirmación';
+    const summary = card.querySelector('.claim-result-summary')?.textContent?.trim() || '';
+    const steps = [...story.querySelectorAll<HTMLElement>('li')].map((step) => ({
+      title: step.querySelector('strong')?.textContent?.trim() || '',
+      text: step.querySelector('p')?.textContent?.trim() || '',
+      number: step.querySelector('.claim-visual-story-number')?.textContent?.trim() || '',
+    }));
+    if (!steps.length) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 675;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    const colors = { paper: '#f5f1e8', ink: '#171512', muted: '#68635b', red: '#c53526', line: '#d7d0c3' };
+    context.fillStyle = colors.paper;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = colors.red;
+    context.fillRect(0, 0, 1200, 12);
+    const wrap = (text: string, maxWidth: number, font: string): string[] => {
+      context.font = font;
+      const words = text.split(/\s+/).filter(Boolean);
+      const lines: string[] = [];
+      let line = '';
+      for (const word of words) {
+        const next = line ? `${line} ${word}` : word;
+        if (context.measureText(next).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else line = next;
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+    const drawLines = (lines: string[], x: number, y: number, lineHeight: number): number => {
+      lines.forEach((line, index) => context.fillText(line, x, y + index * lineHeight));
+      return y + lines.length * lineHeight;
+    };
+    context.fillStyle = colors.muted;
+    context.font = '600 16px monospace';
+    context.fillText('EL PAÍS ESTÁ FATAL · ACLARACIÓN VISUAL', 64, 58);
+    context.fillStyle = colors.ink;
+    context.font = '700 40px Georgia, serif';
+    const headlineLines = wrap(headline, 1070, '700 40px Georgia, serif').slice(0, 2);
+    let cursorY = drawLines(headlineLines, 64, 112, 46);
+    context.fillStyle = colors.muted;
+    context.font = '20px Arial, sans-serif';
+    cursorY = drawLines(wrap(summary, 1070, '20px Arial, sans-serif').slice(0, 3), 64, cursorY + 22, 29);
+    const gap = 16;
+    const cardTop = cursorY + 28;
+    const cardWidth = (1072 - gap * (steps.length - 1)) / steps.length;
+    const cardHeight = 258;
+    steps.slice(0, 3).forEach((step, index) => {
+      const x = 64 + index * (cardWidth + gap);
+      context.fillStyle = '#ebe5d9';
+      context.fillRect(x, cardTop, cardWidth, cardHeight);
+      context.fillStyle = colors.red;
+      context.font = '600 15px monospace';
+      context.fillText(step.number || `0${index + 1}`, x + 20, cardTop + 30);
+      context.fillStyle = colors.ink;
+      context.font = '700 24px Georgia, serif';
+      const titleLines = wrap(step.title, cardWidth - 40, '700 24px Georgia, serif').slice(0, 3);
+      let stepY = drawLines(titleLines, x + 20, cardTop + 72, 28);
+      context.fillStyle = colors.muted;
+      context.font = '15px Arial, sans-serif';
+      drawLines(wrap(step.text, cardWidth - 40, '15px Arial, sans-serif').slice(0, 5), x + 20, stepY + 18, 21);
+    });
+    context.strokeStyle = colors.line;
+    context.beginPath();
+    context.moveTo(64, 620);
+    context.lineTo(1136, 620);
+    context.stroke();
+    context.fillStyle = colors.muted;
+    context.font = '600 14px monospace';
+    context.fillText('Orientación basada en evidencia enlazada · elpaisestafatal.es', 64, 650);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) return;
+    const file = new File([blob], 'aclaracion-visual.png', { type: 'image/png' });
+    try {
+      if (typeof navigator.share === 'function' && typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        await navigator.share({ title: headline, text: summary, files: [file] });
+        if (status) status.textContent = 'Resumen visual compartido';
+        return;
+      }
+    } catch { /* Fall back to a download when sharing is cancelled or unavailable. */ }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.name;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (status) status.textContent = 'Resumen visual descargado';
+  });
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
   result?.querySelectorAll<HTMLButtonElement>('[data-result-mode-button]').forEach((button) => button.addEventListener('click', () => {
     const mode = button.dataset.resultModeButton;
@@ -820,7 +917,8 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
     || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
   const limitation = plan.limitation || 'La evidencia disponible no permite responder a todas las implicaciones de la frase.';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${visualStoryMarkup(plan)}${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined)}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  const storyMarkup = visualStoryMarkup(plan);
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${storyMarkup}${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined, Boolean(storyMarkup))}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
