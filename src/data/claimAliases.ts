@@ -41,6 +41,13 @@ export const claimAliases: Record<string, string[]> = {
     'brecha salarial de genero mito',
     'no hay brecha salarial entre hombres y mujeres',
   ],
+  'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control': [
+    'la ley trans no exige ningún requisito',
+    'cualquiera puede cambiar de sexo sin control',
+    'cambiar de sexo sin requisitos en España',
+    'la autodeterminación de género no tiene controles',
+    'la ley trans permite cambiar el sexo sin control',
+  ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
     'el precio de los hoteles sube y las pernoctaciones bajan',

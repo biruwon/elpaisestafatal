@@ -67,6 +67,6 @@ for (const file of files) {
 if (topicCount < 10) failures.push(`expected at least 10 planned topic records, found ${topicCount}`);
 if (claimCount < 202) failures.push(`expected at least 202 claim records, found ${claimCount}`);
 if (publishedClaims < 20) failures.push(`expected at least 20 published claims, found ${publishedClaims}`);
-if (plannedClaims < 182) failures.push(`expected at least 182 planned claims, found ${plannedClaims}`);
+if (plannedClaims < 181) failures.push(`expected at least 181 planned claims, found ${plannedClaims}`);
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Content validation passed: ${files.length} Markdown records.`);

@@ -1,0 +1,14 @@
+{
+  "id": "prop-ley-trans-no-control-core",
+  "claimSlug": "la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control",
+  "text": "La rectificación registral del sexo tiene un procedimiento y requisitos, aunque no exige informe médico ni tratamiento hormonal como condición previa.",
+  "type": "legal",
+  "subject": "rectificación registral del sexo",
+  "predicate": "requires_procedure_without_medical_prerequisite",
+  "object": "procedimiento registral",
+  "geography": "España",
+  "period": "vigente desde 2023",
+  "verificationRequirements": ["texto legal vigente", "instrucción registral", "reglas de edad"],
+  "evidenceIds": ["ley-4-2023-rectificacion-sexo"],
+  "status": "qualified"
+}
