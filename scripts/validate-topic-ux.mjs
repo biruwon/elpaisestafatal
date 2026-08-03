@@ -3,6 +3,10 @@ import { join, relative } from 'node:path';
 
 const root = new URL('../dist/', import.meta.url).pathname;
 const pages = [];
+const assetsRoot = join(root, '_astro');
+const bundledStyles = (await Promise.all((await readdir(assetsRoot, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.css'))
+  .map((entry) => readFile(join(assetsRoot, entry.name), 'utf8')))).join('\n') + await readFile(join(root, 'topic.css'), 'utf8').catch(() => '');
 
 async function walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -25,6 +29,10 @@ for (const file of pages) {
   ];
   for (const [marker, message] of required) if (!source.includes(marker)) failures.push(`${route}: ${message}`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
+  if (source.includes('class="chart"')) {
+    if (!source.includes('class="chart-data"')) failures.push(`${route}: chart is missing exact-value fallback`);
+    if (!bundledStyles.includes('topic-bar-rise') || !bundledStyles.includes('prefers-reduced-motion')) failures.push(`${route}: chart motion is missing reduced-motion-safe behavior`);
+  }
 
   if (source.includes('class="investigation"')) {
     for (const [marker, message] of [
