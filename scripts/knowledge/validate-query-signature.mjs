@@ -25,5 +25,8 @@ for (const paraphrase of causalParaphrases) {
 if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') === module.semanticQuerySignature('La inmigración y la delincuencia están relacionadas')) throw new Error('Association wording was incorrectly collapsed into a causal family');
 if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') === module.semanticQuerySignature('La inmigración no aumenta la delincuencia en España')) throw new Error('Opposing semantic families produced the same signature');
 if (module.semanticQuerySignature('España cobra más impuestos que Europa') === module.semanticQuerySignature('Europa cobra más impuestos que España')) throw new Error('Reversed comparison families produced the same signature');
+if (module.semanticQuerySignature('Cada vez hay más empleo en España') !== module.semanticQuerySignature('El empleo sube en España')) throw new Error('Natural rising-trend paraphrases produced different signatures');
+if (module.semanticQuerySignature('Cada vez hay más empleo en España') === module.semanticQuerySignature('Cada vez hay menos empleo en España')) throw new Error('Opposing trend directions produced the same signature');
+if (module.semanticQuerySignature('España está por encima de Europa en impuestos') === module.semanticQuerySignature('Europa está por encima de España en impuestos')) throw new Error('Reversed positional comparisons produced the same signature');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
 console.log('Query signature validation passed.');

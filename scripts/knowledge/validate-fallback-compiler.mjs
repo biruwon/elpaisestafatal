@@ -63,6 +63,19 @@ assert(definition.claimType === 'definition', 'Definition claim type was not det
 const trend = deterministicFallbackCompiler('La vivienda sube cada vez más');
 assert(trend.claimType === 'trend', 'Trend claim type was not detected');
 
+const risingTrend = deterministicFallbackCompiler('Cada vez hay más empleo en España');
+const equivalentRisingTrend = deterministicFallbackCompiler('El empleo sube en España');
+const fallingTrend = deterministicFallbackCompiler('Cada vez hay menos empleo en España');
+assert(risingTrend.semanticSignature === equivalentRisingTrend.semanticSignature, 'Natural rising-trend paraphrases did not receive the same semantic signature');
+assert(risingTrend.semanticSignature !== fallingTrend.semanticSignature, 'Opposing trend directions collapsed into the same semantic family');
+assert(deterministicFallbackCompiler('El empleo va a peor en España').claimType === 'trend', 'A worsening trend was incorrectly classified as a prediction');
+
+const positionalComparison = deterministicFallbackCompiler('España está por encima de Europa en impuestos');
+const reversedPositionalComparison = deterministicFallbackCompiler('Europa está por encima de España en impuestos');
+assert(positionalComparison.claimType === 'comparative', 'Positional comparison was not detected');
+assert(positionalComparison.explicitPropositions[0].predicate === 'more_than' && positionalComparison.explicitPropositions[0].metric === 'taxes', 'Positional comparison direction or metric was not extracted');
+assert(positionalComparison.semanticSignature !== reversedPositionalComparison.semanticSignature, 'Reversed positional comparisons collapsed into the same semantic family');
+
 const broad = deterministicFallbackCompiler('España está destruida');
 const negatedBroad = deterministicFallbackCompiler('España no está destruida');
 assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');

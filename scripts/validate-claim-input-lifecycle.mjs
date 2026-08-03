@@ -31,7 +31,7 @@ const required = [
   'input?.focus()',
   'broadTopicSuggestions',
   'suggestionsLabel',
-  'Si quieres empezar por una comprobación publicada',
+  'Keep an uncovered result honest',
   'claim-guidance-suggestions',
   'history.replaceState',
   'encodeURIComponent(query)',

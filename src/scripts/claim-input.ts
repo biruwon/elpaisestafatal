@@ -126,12 +126,11 @@ const broadTopicSuggestions = (original: string): { items: Array<{ title: string
     .map((entry) => ({ title: entry.title, href: entry.href }));
   if (matchedTopics.length) return { items: matchedTopics, label: 'Puedes concretarla por un tema' };
 
-  const popularSlugs = ['inmigrantes-ayudas', 'viviendas-vacias', 'empleo-record', 'espana-impuestos-europa'];
-  const popularChecks = popularSlugs
-    .map((slug) => claimIndex.find((entry) => entry.kind === 'claim' && entry.slug === slug))
-    .filter((entry): entry is ClaimIndexEntry => Boolean(entry))
-    .map((entry) => ({ title: entry.title, href: entry.href }));
-  return { items: popularChecks, label: 'Si quieres empezar por una comprobación publicada' };
+  // Keep an uncovered result honest. Popular checks are already discoverable
+  // in the homepage examples; attaching one here to a misspelled or unrelated
+  // input makes the result look like a recommendation and was the source of
+  // misleading “closest” answers for genuinely unknown text.
+  return { items: [], label: '' };
 };
 
 const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
