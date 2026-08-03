@@ -318,6 +318,8 @@ The compiler must produce strict JSON containing:
 
 The deterministic fallback now preserves common written Spanish quantities and percentages such as `tres millones` and `treinta por ciento`, so numeric claims remain clusterable and comparable even when local inference is unavailable.
 
+The client fallback now keeps broad complaints from receiving arbitrary topic suggestions: detected topics get relevant context, while topic-free inputs get a clearly labelled set of published starting checks. Common political formulations such as `España está destruida` also route to the political context family.
+
 - original and normalized input;
 - explicit propositions;
 - implied propositions;

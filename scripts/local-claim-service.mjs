@@ -890,7 +890,8 @@ const startUrlResolveJob = (url) => {
 };
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
-  const relatedClaims = (classified.alternatives || []).map((item) => ({
+  const broadTopicGuidance = classified.status === 'related' && !classified.primary && classified.alternatives?.some((item) => item.kind === 'topic');
+  const relatedClaims = (classified.alternatives || []).filter((item) => !broadTopicGuidance || item.kind === 'topic').map((item) => ({
     kind: item.kind,
     slug: item.slug,
     title: item.title,

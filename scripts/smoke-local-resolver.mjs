@@ -63,7 +63,7 @@ const cases = [
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
-  { text: 'España está destruida', status: 'uncovered', slug: null },
+  { text: 'España está destruida', status: 'partial', slug: 'politica' },
 ];
 for (const item of cases) {
   try {
@@ -78,6 +78,7 @@ for (const item of cases) {
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.headline?.toLocaleLowerCase('es').includes('cambios demográficos')) failures.push(`${item.text}: population-replacement result did not lead with the evidence distinction`);
     if (item.text.toLocaleLowerCase().includes('destruyendo españa') && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push(`${item.text}: related political guidance did not retain its structured method plan`);
     if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
+    if (item.text === 'España está destruida' && result.relatedClaims?.some((claim) => claim.kind !== 'topic')) failures.push(`${item.text}: broad political guidance returned a non-topic claim`);
     if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
 }
@@ -469,9 +470,9 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
   } catch (error) { failures.push(`mismatched quantity: ${error.message}`); }
   try {
     const result = await resolve('España está destruida');
-    if (result.status !== 'uncovered') failures.push(`broad evaluative claim: expected uncovered, received ${result.status}`);
+    if (result.status !== 'partial' || result.result?.relatedClaims?.length) failures.push(`broad evaluative claim: expected topic-only political guidance, received ${result.status}`);
     if (result.result?.relatedClaims?.length || result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('broad evaluative claim: leaked unrelated evidence');
-    if (!result.result?.headline?.toLocaleLowerCase('es').includes('significa')) failures.push('broad evaluative claim: did not ask to define the expression');
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('político')) failures.push('broad evaluative claim: did not identify the political context');
     if (!result.result?.blocks?.some((block) => block.type === 'strongest_valid_concern')) failures.push('broad evaluative claim: missing strongest valid concern');
     if (!result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push('broad evaluative claim: missing concrete definition ladder');
   } catch (error) { failures.push(`broad evaluative claim: ${error.message}`); }

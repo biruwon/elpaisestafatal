@@ -30,6 +30,8 @@ const required = [
   'url: shareUrl',
   'input?.focus()',
   'broadTopicSuggestions',
+  'suggestionsLabel',
+  'Si quieres empezar por una comprobación publicada',
   'claim-guidance-suggestions',
   'history.replaceState',
   'encodeURIComponent(query)',
