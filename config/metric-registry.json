@@ -63,6 +63,14 @@
     "notEquivalentTo": ["gdp_current_prices", "median_equivalised_income"],
     "dimensions": ["period", "geography", "unit", "national_account_item"]
   },
+  "gdp_per_capita_europe": {
+    "name": "Gross domestic product per capita: Spain and the European Union",
+    "aliases": ["PIB por habitante frente a Europa", "PIB per cápita frente a Europa", "España tiene más PIB por habitante que Europa", "España tiene menos PIB por habitante que Europa", "PIB por persona frente a la Unión Europea"],
+    "unit": "PPS per capita",
+    "population": "gross domestic product per resident in purchasing power standards at current prices for Spain and the European Union",
+    "notEquivalentTo": ["gdp_per_capita_current_prices", "gdp_real_growth_europe", "median_equivalised_income_europe", "government_revenue_ratio_europe"],
+    "dimensions": ["period", "geography", "national_account_item", "currency"]
+  },
   "gdp_real_growth_quarterly": {
     "name": "Real GDP year-on-year growth",
     "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "actividad económica", "actividad económica cae", "actividad económica está cayendo", "economía cae", "crecimiento negativo", "recesión", "economía crece"],

@@ -33,6 +33,12 @@ const gdpComparisonRecords = [
 ];
 const gdpComparison = summarizeWarehouseEuropeanComparison('¿Crece España más que la Unión Europea?', gdpComparisonRecords);
 if (!gdpComparison || !gdpComparison.european || !gdpComparison.summary.includes('2,7') || !gdpComparison.summary.includes('1,2') || !gdpComparison.reply.includes('España creció más')) throw new Error('European GDP comparison did not preserve the same-period Spain/EU comparison');
+const gdpPerCapitaRecords = [
+  { id: 'gdp-capita-es-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 38135.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'gdp-capita-eu-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 41565.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const gdpPerCapitaComparison = summarizeWarehouseEuropeanComparison('¿Tiene España más PIB por habitante que la Unión Europea?', gdpPerCapitaRecords);
+if (!gdpPerCapitaComparison || gdpPerCapitaComparison.metricId !== 'gdp_per_capita_europe' || !gdpPerCapitaComparison.summary.includes('38.135,7') || !gdpPerCapitaComparison.summary.includes('41.565,7') || !gdpPerCapitaComparison.summary.includes('por debajo de la Unión Europea') || !gdpPerCapitaComparison.points.some((point) => point.includes('3430 PPS por habitante menos')) || !gdpPerCapitaComparison.reply.includes('PIB por habitante español fue más bajo')) throw new Error('European GDP-per-capita comparison did not preserve the same-period comparison or metric caveat');
 const inflationRecords = [
   { id: 'inflation-es-2026-06', metricId: 'inflation_rate_europe', datasetId: 'Harmonised inflation comparison', value: 2.3, unit: 'Percentage change compared to same period in previous year', period: '2026-06', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
   { id: 'inflation-eu-2026-06', metricId: 'inflation_rate_europe', datasetId: 'Harmonised inflation comparison', value: 2, unit: 'Percentage change compared to same period in previous year', period: '2026-06', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },

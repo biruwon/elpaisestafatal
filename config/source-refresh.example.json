@@ -53,6 +53,12 @@
       "metricId": "gdp_per_capita_current_prices"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_pc?geo=ES&geo=EU27_2020&na_item=B1GQ&unit=CP_PPS_EU27_2020_HAB&sinceTimePeriod=2015",
+      "title": "PIB por habitante: España y Unión Europea · Eurostat",
+      "aliases": ["PIB por habitante frente a Europa", "PIB per cápita frente a Europa", "España tiene más PIB por habitante que Europa", "España tiene menos PIB por habitante que Europa", "PIB por persona frente a la Unión Europea"],
+      "metricId": "gdp_per_capita_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=ES&na_item=B1GQ&unit=CLV_PCH_SM&s_adj=SCA&sinceTimePeriod=2015",
       "title": "Crecimiento interanual del PIB real de España · Eurostat",
       "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "actividad económica", "actividad económica cae", "actividad económica está cayendo", "economía cae", "crecimiento negativo", "recesión"],

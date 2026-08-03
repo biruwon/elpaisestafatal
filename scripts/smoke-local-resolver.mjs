@@ -261,6 +261,15 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU GDP comparison: did not render a comparison visual');
   } catch (error) { failures.push(`Spain/EU GDP comparison: ${error.message}`); }
   try {
+    const result = await resolve('¿Tiene España más PIB por habitante que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push('Spain/EU GDP-per-capita comparison: expected provisional result, received ' + result.status);
+    if (result.result?.warehouseSeries?.metricId !== 'gdp_per_capita_europe') failures.push('Spain/EU GDP-per-capita comparison: selected the wrong metric family');
+    if (result.result?.warehouseSeries?.unit !== 'PPS por habitante') failures.push('Spain/EU GDP-per-capita comparison: did not localize the comparison unit');
+    if (!/España.*Unión Europea|Unión Europea.*España/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push('Spain/EU GDP-per-capita comparison: lost the named comparison in the public answer');
+    if (!/PIB por habitante español fue más bajo|por debajo de/i.test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push('Spain/EU GDP-per-capita comparison: did not calculate the direction of the comparison');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU GDP-per-capita comparison: did not render a comparison visual');
+  } catch (error) { failures.push(`Spain/EU GDP-per-capita comparison: ${error.message}`); }
+  try {
     const result = await resolve('¿Está la inflación de España por encima de la Unión Europea?');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU inflation comparison: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'inflation_rate_europe') failures.push('Spain/EU inflation comparison: selected the Spain-only inflation family');

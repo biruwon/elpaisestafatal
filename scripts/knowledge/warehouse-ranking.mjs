@@ -85,6 +85,17 @@ const isEuropeanUnionObservation = (item) => {
 };
 
 const europeanComparisonDefinitions = {
+  gdp_per_capita_europe: {
+    label: 'PIB por habitante en poder adquisitivo',
+    verb: 'registró un PIB por habitante equivalente',
+    replyLead: 'el PIB por habitante equivalente fue de',
+    differenceVerb: ['el PIB por habitante español fue más alto', 'el PIB por habitante español fue más bajo', 'España y la Unión Europea registraron el mismo PIB por habitante'],
+    unit: 'PPS por habitante',
+    replyUnit: 'PPS por habitante',
+    differenceUnit: 'PPS por habitante',
+    method: 'La comparación usa el PIB por habitante a precios corrientes expresado en estándares de poder adquisitivo (PPS) según Eurostat; no equivale a la renta disponible de los hogares, al salario medio ni al crecimiento real de la economía.',
+    caveat: 'Es una medida agregada de producción económica ajustada por poder adquisitivo, no una medida directa de lo que ingresa o puede gastar cada familia.',
+  },
   gdp_real_growth_europe: {
     label: 'PIB real',
     verb: 'creció',

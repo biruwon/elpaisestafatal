@@ -60,6 +60,8 @@ if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life
 if (!preferredMetricIdsForQuery('Cuál es el tamaño de la economía española').has('gdp_current_prices')) throw new Error('Metric hints did not prefer nominal GDP for economy-size wording');
 if (!preferredMetricIdsForQuery('¿Crece España más que la Unión Europea?').has('gdp_real_growth_europe')) throw new Error('Metric hints did not prefer the Spain/EU real-GDP comparison family');
 if (preferredMetricIdsForQuery('¿Crece España más que la Unión Europea?').has('gdp_real_growth_quarterly')) throw new Error('Metric hints kept the Spain-only GDP family alongside the Spain/EU comparison');
+if (!preferredMetricIdsForQuery('¿Tiene España más PIB por habitante que la Unión Europea?').has('gdp_per_capita_europe')) throw new Error('Metric hints did not prefer the Spain/EU GDP-per-capita comparison family');
+if (preferredMetricIdsForQuery('¿Tiene España más PIB por habitante que la Unión Europea?').has('gdp_per_capita_current_prices')) throw new Error('Metric hints kept nominal Spain-only GDP per capita alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿Está la inflación de España por encima de la Unión Europea?').has('inflation_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU inflation comparison family');
 if (preferredMetricIdsForQuery('¿Está la inflación de España por encima de la Unión Europea?').has('inflation_rate')) throw new Error('Metric hints kept the Spain-only inflation family alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('Porcentaje población menos años').has('young_population_share')) throw new Error('Metric hints did not prefer young population for compressed wording');
