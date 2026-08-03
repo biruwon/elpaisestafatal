@@ -48,6 +48,7 @@ const longTailBenchmarkCases = [
   ['salario-hora', '¿Cuál es el salario mediano por hora en España?', 'median_hourly_earnings'],
   ['sueldo-hora', 'Lo que se cobra por hora en España', 'median_hourly_earnings'],
   ['salario-hora-ue', '¿España cobra menos por hora que Europa?', 'median_hourly_earnings_europe'],
+  ['salario-hora-ue-directo', 'España cobra menos por hora que Europa', 'median_hourly_earnings_europe'],
   ['salario-hora-comparacion', 'Comparación europea del salario bruto por hora', 'median_hourly_earnings_europe'],
   ['sobrecarga-vivienda-europa', '¿España tiene más sobrecarga de vivienda que Europa?', 'housing_cost_overburden_rate_europe'],
   ['esfuerzo-vivienda-europa', 'Comparación europea del esfuerzo de vivienda', 'housing_cost_overburden_rate_europe'],

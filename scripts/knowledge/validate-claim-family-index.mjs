@@ -84,6 +84,11 @@ if (!match) {
       variants: ['España tiene más desempleo juvenil que Europa', 'el paro juvenil español supera al europeo', 'comparación europea del paro juvenil'],
     },
     {
+      slug: 'espana-cobra-menos-por-hora-europa',
+      prompt: 'España cobra menos por hora que Europa',
+      variants: ['España gana menos por hora que la UE', 'el sueldo bruto por hora español está por debajo del europeo', 'comparación europea del salario bruto por hora'],
+    },
+    {
       slug: 'abandono-escolar-espana-ue',
       prompt: 'España tiene más abandono escolar temprano que la Unión Europea',
       variants: ['España tiene más abandono escolar que Europa', 'el abandono educativo español supera al europeo', 'comparación europea del abandono escolar'],

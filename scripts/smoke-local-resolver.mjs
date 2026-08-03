@@ -62,6 +62,7 @@ const cases = [
   { text: 'La mayoría del empleo en España es temporal.', status: 'complete', slug: 'la-mayoria-del-empleo-es-temporal' },
   { text: 'España tiene menos empleo a tiempo parcial que la Unión Europea.', status: 'complete', slug: 'espana-menos-empleo-tiempo-parcial-europa' },
   { text: 'España tiene más empleo temporal que la Unión Europea.', status: 'complete', slug: 'espana-mas-empleo-temporal-europa' },
+  { text: 'España cobra menos por hora que Europa.', status: 'complete', slug: 'espana-cobra-menos-por-hora-europa' },
   { text: 'España tiene 100 millones de habitantes.', status: 'complete', slug: 'espana-no-tiene-100-millones' },
   { text: 'El 7,2% de la población soporta una sobrecarga del coste de la vivienda en España.', status: 'complete', slug: 'sobrecarga-vivienda-2025' },
   { text: 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026.', status: 'complete', slug: 'precios-hoteles-sube-junio-2026' },

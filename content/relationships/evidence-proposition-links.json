@@ -44,6 +44,13 @@
       "reviewedAt": "2026-08-03"
     },
     {
+      "evidenceId": "salario-hora-mediano-espana-europa-eurostat",
+      "propositionId": "prop-espana-cobra-menos-por-hora-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "pensiones-vejez-supervivencia-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-pensiones-europa-core",
       "relationship": "supports",

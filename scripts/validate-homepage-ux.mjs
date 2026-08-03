@@ -21,6 +21,8 @@ for (const prompt of ['Los inmigrantes crean inseguridad', 'Los inmigrantes reci
   requireText(`data-example="${prompt}"`, `a first-use everyday debate prompt (${prompt})`);
 }
 requireText('¿Tiene España más paro juvenil que la Unión Europea?', 'the visible Spain/EU youth-employment comparison prompt');
+requireText('data-example="¿España tiene menos empleo parcial que la Unión Europea?"', 'the correctly directed Spain/EU part-time comparison prompt');
+if (homepage.includes('data-example="¿España tiene más empleo parcial que la Unión Europea?"')) failures.push('homepage must not present the part-time Spain/EU comparison in the wrong direction');
 if (homepage.indexOf('data-example="Los inmigrantes crean inseguridad"') > homepage.indexOf('data-example="¿Cómo ha cambiado el precio de la luz para los hogares?"')) failures.push('everyday debate prompts should appear before warehouse indicator prompts');
 requireText('data-example-filter="all"', 'the popular prompt filters');
 requireText('data-example-filter="seguridad"', 'the security popular prompt filter');

@@ -21,6 +21,7 @@ const popularSlugs = [
   'sobrecarga-vivienda-2025',
   'inmigrantes-ayudas',
   'empleo-record',
+  'espana-cobra-menos-por-hora-europa',
   'ocupacion-aumenta-t2-2026',
   'brecha-salarial-genero-no-es-mito',
   'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control',

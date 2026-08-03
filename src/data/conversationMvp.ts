@@ -407,6 +407,19 @@ definitions['espana-cobra-igual-por-hora-que-europa'] = {
   visuals: { key: { value: '11,02 €', label: 'España · ganancia bruta mediana por hora', period: '2022' }, trend: { available: false, labels: [], values: [], label: 'Ganancias por hora', unit: 'Última observación comparable: 2022' }, comparison: { labels: ['España', 'Unión Europea'], values: [11.02, 14.91], label: 'Ganancia bruta mediana por hora', unit: '€ por hora · empresas de 10 o más personas · 2022' }, caveat: 'La comparación es una mediana bruta de 2022. No equivale al salario neto, al salario mínimo ni a la renta disponible.' },
 };
 
+definitions['espana-cobra-menos-por-hora-europa'] = {
+  prompt: 'España cobra menos por hora que Europa',
+  aliases: ['España tiene un salario por hora menor que Europa', 'España gana menos por hora que la UE', 'el sueldo bruto por hora español está por debajo del europeo', 'comparación europea del salario bruto por hora'],
+  propositions: ['En 2022, la mediana de las ganancias brutas por hora fue de 11,02 euros en España y 14,91 euros en la Unión Europea.', 'La mediana española quedó por debajo de la europea en esta medida comparable.', 'La mediana de ganancias brutas por hora equivale al salario neto o a la renta de cada hogar.'],
+  concern: 'La comparación disponible muestra una diferencia salarial por hora, pero una mediana bruta de 2022 no resume el sueldo neto, la renta familiar ni la situación actual de cada trabajador.',
+  supports: 'Eurostat registra 11,02 euros de ganancia bruta mediana por hora en España y 14,91 en la Unión Europea en 2022, para empresas de diez o más personas y el total de sexos.',
+  limit: 'La medida no es el salario medio, el salario neto, el salario mínimo ni la renta disponible. Además, 2022 es la última observación comparable de esta serie.',
+  question: '¿Quieres comparar la mediana bruta por hora, el salario neto, el salario mínimo o la renta disponible de los hogares?',
+  reply: 'Sí, en esta medida: en 2022 la ganancia bruta mediana por hora fue de 11,02 euros en España frente a 14,91 en la UE. Es una mediana para empresas de diez o más personas, no el salario neto ni la renta de cada hogar.',
+  visualLabel: 'La mediana bruta por hora no es el salario de cada persona',
+  visuals: { key: { value: '−3,89 €', label: 'España frente a la Unión Europea', period: '2022' }, trend: { available: false, labels: [], values: [], label: 'Ganancias por hora', unit: 'Última observación comparable: 2022' }, comparison: { labels: ['España', 'Unión Europea'], values: [11.02, 14.91], label: 'Ganancia bruta mediana por hora', unit: '€ por hora · empresas de 10 o más personas · 2022' }, caveat: 'La comparación es una mediana bruta de 2022. No equivale al salario neto, al salario mínimo ni a la renta disponible.' },
+};
+
 definitions['espana-sobrecarga-vivienda-europa'] = {
   prompt: 'En España la vivienda pesa más que en Europa',
   aliases: ['España soporta más esfuerzo de vivienda que Europa', 'la vivienda pesa más en España que en Europa', 'España tiene más sobrecarga de vivienda que la UE', 'en España se gasta más renta en vivienda que en Europa'],
