@@ -44,6 +44,7 @@ if (!preferredMetricIdsForQuery('Mi cuñado insiste: España tiene más empleo q
 if (!preferredMetricIdsForQuery('España tasa de paro alta en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for compressed comparison wording');
 if (!preferredMetricIdsForQuery('España millones habitantes').has('resident_population')) throw new Error('Metric hints did not prefer resident population for compressed population wording');
 if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life_expectancy_at_birth')) throw new Error('Metric hints did not prefer life expectancy for compressed wording');
+if (!preferredMetricIdsForQuery('Cuál es el tamaño de la economía española').has('gdp_current_prices')) throw new Error('Metric hints did not prefer nominal GDP for economy-size wording');
 if (!preferredMetricIdsForQuery('Porcentaje población menos años').has('young_population_share')) throw new Error('Metric hints did not prefer young population for compressed wording');
 if (!preferredMetricIdsForQuery('Cómo ha evolucionado la criminalidad registrada en España').has('recorded_offences')) throw new Error('Metric hints did not prefer recorded offences for explicit crime wording');
 if (!excludedMetricIdsForQuery('Los inmigrantes crean inseguridad').has('recorded_offences')) throw new Error('Metric hints allowed recorded offences to answer an immigration-causality claim');

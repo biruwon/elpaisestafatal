@@ -12,6 +12,7 @@ const publishedClaimCount = claims.filter((item) => item.published).length;
 const latestPublishedClaims = claims.filter((item) => item.published).sort((a, b) => b.reviewed.localeCompare(a.reviewed)).slice(0, 4);
 const warehousePrompts = [
   '¿Cómo ha cambiado el precio de la luz para los hogares?',
+  '¿Cuál es el tamaño de la economía española?',
   '¿Cómo han cambiado los alquileres en España?',
   '¿Cuál es la inflación anual en España?',
   '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
@@ -40,6 +41,7 @@ const warehousePrompts = [
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
+  { label: 'Economía', prompt: '¿Cuál es el tamaño de la economía española?', detail: 'PIB a precios corrientes, separado del crecimiento real.' },
   { label: 'Vivienda', prompt: '¿Cómo han cambiado los alquileres en España?', detail: 'Una serie para separar sensación y tendencia.' },
   { label: 'Empleo', prompt: '¿Cómo ha evolucionado el desempleo en España?', detail: 'La medida y el periodo aparecen junto al dato.' },
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },

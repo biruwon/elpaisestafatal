@@ -65,6 +65,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
+  if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';

@@ -10,6 +10,7 @@ const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-
 });
 const metricLabels = {
   inflation_rate: 'Inflación anual en España',
+  gdp_current_prices: 'Tamaño nominal de la economía española',
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
   rental_price_index: 'Precios del alquiler en España',
   gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
@@ -65,6 +66,7 @@ export const displayMetric = (item) => {
 const displayUnit = (item) => {
   const metricId = String(item.metricId || '');
   const unit = normalise(item.unit);
+  if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'house_price_index') return 'índice (2015=100)';

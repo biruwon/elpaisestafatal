@@ -11,6 +11,7 @@ const metricHints = [
   { ids: ['rental_price_index'], terms: ['precio del alquiler', 'precios del alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'alquiler mas caro', 'sube el alquiler'] },
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
   { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'precios aumentan'] },
+  { ids: ['gdp_current_prices'], terms: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'producto interior bruto en euros', 'produccion economica nacional'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
   { ids: ['employment_rate'], terms: ['tasa de empleo', 'tasa de ocupacion', 'personas ocupadas', 'personas que tienen empleo', 'encuentra trabajo', 'tiene empleo', 'ocupacion en espana', 'empleo en espana', 'mas empleo', 'empleo nunca', 'empleo record'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },

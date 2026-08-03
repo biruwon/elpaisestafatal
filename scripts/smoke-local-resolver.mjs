@@ -146,6 +146,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cuántos habitantes viven normalmente en España', 'resident_population', 'personas'],
     ['Cuántos residentes nacieron fuera de España', 'foreign_born_population', 'personas'],
     ['Cuántas personas inmigraron a España durante el último año', 'immigration_flows', 'personas'],
+    ['Cuál es el tamaño de la economía española', 'gdp_current_prices', 'millones de euros'],
   ]) {
     try {
       const result = await resolve(text);
