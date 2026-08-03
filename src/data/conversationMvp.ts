@@ -511,6 +511,19 @@ definitions['en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios'] 
   visuals: { key: { value: '52,5 %', label: 'Personas de 25 a 34 con educación terciaria', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Formación y vacantes', unit: 'La proporción de titulados no mide por sí sola la demanda de oficios' }, caveat: 'La evidencia distingue nivel educativo, sobrecualificación, vacantes, especialidad, salarios y territorio.' },
 };
 
+definitions['el-envejecimiento-hara-inevitable-retrasar-la-jubilacion'] = {
+  prompt: 'El envejecimiento hará inevitable retrasar la jubilación',
+  aliases: ['habrá que jubilarse cada vez más tarde por el envejecimiento', 'la población envejecida obliga a retrasar la jubilación', 'con tantos mayores será inevitable trabajar más años'],
+  propositions: ['España está envejeciendo y aumenta la presión potencial sobre pensiones y cuidados.', 'El envejecimiento demuestra que retrasar la jubilación es inevitable.', 'Retrasar la jubilación es la única respuesta posible al cambio demográfico.'],
+  concern: 'El envejecimiento es real y plantea un problema de sostenibilidad y cuidados, pero no decide por sí solo una única respuesta política.',
+  supports: 'La población de 65 años o más pasó del 18,4% en 2015 al 20,7% en 2025.',
+  limit: 'Las cifras demográficas no son una proyección financiera ni comparan escenarios de empleo, productividad, cotizaciones, ingresos o edad de retiro.',
+  question: '¿Quieres comparar envejecimiento, dependencia, gasto en pensiones o distintas opciones de reforma?',
+  reply: 'España sí envejece y eso complica el equilibrio entre personas ocupadas, pensiones y cuidados. Pero no demuestra que retrasar la jubilación sea inevitable: es una decisión política que depende también de empleo, productividad, cotizaciones, ingresos y del diseño de las prestaciones.',
+  visualLabel: 'Un cambio demográfico no decide una política única',
+  visuals: { key: { value: '20,7 %', label: 'Población de 65 años o más', period: '2025' }, trend: { available: true, labels: ['2015', '2025'], values: [18.4, 20.7], label: 'Población de 65 años o más', unit: '% de la población' }, caveat: 'El envejecimiento no es una proyección financiera ni demuestra por sí solo qué edad de jubilación debe aplicarse.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

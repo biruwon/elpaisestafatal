@@ -1,0 +1,13 @@
+{
+  "id": "prop-envejecimiento-obliga-retrasar-jubilacion-core",
+  "claimSlug": "el-envejecimiento-hara-inevitable-retrasar-la-jubilacion",
+  "text": "El envejecimiento de España hace inevitable retrasar la edad de jubilación.",
+  "type": "causal",
+  "subject": "envejecimiento_demografico",
+  "predicate": "makes_inevitable",
+  "object": "retrasar_jubilacion",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "insufficient",
+  "evidenceIds": ["poblacion-mayores-eurostat", "pensiones-vejez-supervivencia-europa-eurostat"]
+}

@@ -62,6 +62,7 @@ const cases = [
   { text: 'La mayoría del empleo en España es temporal.', status: 'complete', slug: 'la-mayoria-del-empleo-es-temporal' },
   { text: 'España tiene menos empleo a tiempo parcial que la Unión Europea.', status: 'complete', slug: 'espana-menos-empleo-tiempo-parcial-europa' },
   { text: 'En España sobran universitarios y faltan trabajadores de oficios.', status: 'complete', slug: 'en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios' },
+  { text: 'El envejecimiento hará inevitable retrasar la jubilación.', status: 'complete', slug: 'el-envejecimiento-hara-inevitable-retrasar-la-jubilacion' },
   { text: 'España tiene más empleo temporal que la Unión Europea.', status: 'complete', slug: 'espana-mas-empleo-temporal-europa' },
   { text: 'España cobra menos por hora que Europa.', status: 'complete', slug: 'espana-cobra-menos-por-hora-europa' },
   { text: 'España tiene 100 millones de habitantes.', status: 'complete', slug: 'espana-no-tiene-100-millones' },
