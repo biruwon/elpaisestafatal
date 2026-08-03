@@ -6,6 +6,7 @@ const fallback = await readFile('src/lib/knowledge/deterministic-api-fallback.mj
 const publicResponse = await readFile('src/lib/knowledge/public-response.mjs', 'utf8');
 const gateway = await readFile('scripts/local-dev-gateway.mjs', 'utf8');
 const client = await readFile('src/scripts/claim-input.ts', 'utf8');
+const publishedFallback = await readFile('functions/lib/published-claim-fallback.ts', 'utf8');
 
 if (!classifyPolling.includes('export const onRequestGet')) failures.push('/api/classify/:requestId must expose the polling handler');
 
@@ -13,6 +14,10 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
   if (!classify.includes(fragment)) failures.push(`/api/classify is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');
+if (!classify.includes('publishedClaimFallback') || !classify.includes("body.inputType === 'text'") || !classify.includes('request')) failures.push('/api/classify must resolve published text claims before optional enrichment');
+for (const fragment of ['claim-catalog.json', 'rankClaimIndex', 'isStrongClaimMatch']) {
+  if (!publishedFallback.includes(fragment)) failures.push(`published claim fallback is missing ${fragment}`);
+}
 for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'RUNTIME_VERSIONS.fallbackKnowledge']) {
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
 }

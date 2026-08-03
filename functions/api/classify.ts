@@ -5,6 +5,7 @@ import { allowRateLimitedRequest } from '../lib/rate-limit';
 import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
+import { publishedClaimFallback } from '../lib/published-claim-fallback';
 
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
@@ -46,6 +47,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (!validation.ok) {
     if (validation.code === 'empty') return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }), 400);
     return json({ status: validation.code === 'text_too_large' || validation.code === 'invalid_url' ? 'uncovered' : 'unavailable', relatedClaims: [] }, validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'invalid_url' ? 400 : 415);
+  }
+  if (body.inputType === 'text') {
+    const published = await publishedClaimFallback(body.text, request).catch(() => undefined);
+    if (published) return json(published);
   }
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   try {

@@ -61,6 +61,15 @@ const apiChecks = [
   },
   {
     path: '/api/classify',
+    init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'España cobra menos impuestos sobre renta y riqueza que la Unión Europea', inputType: 'text' }) },
+    validate(response, body) {
+      if (response.status !== 200) failures.push(`/api/classify published fallback: expected 200, received ${response.status}`);
+      if (body?.status !== 'published' || body?.primary?.kind !== 'claim' || body?.primary?.slug !== 'espana-cobra-menos-impuestos-renta-riqueza-europa') failures.push('/api/classify published fallback: did not resolve the published claim index');
+      if (forbidden.test(JSON.stringify(body))) failures.push('/api/classify published fallback: exposed implementation details');
+    },
+  },
+  {
+    path: '/api/classify',
     init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'España está destruida', inputType: 'text' }) },
     validate(response, body) {
       if (response.status !== 200) failures.push(`/api/classify broad political fallback: expected 200, received ${response.status}`);
