@@ -301,6 +301,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto en prestaciones de protección social para vejez y supervivencia por habitante según Eurostat, con el último año común disponible; no equivale a la pensión media ni al gasto de una administración concreta.',
     caveat: 'Es un promedio agregado comparable, no la pensión de cada persona ni una prueba por sí sola de la sostenibilidad del sistema.',
   },
+  social_protection_benefits_per_capita_europe: {
+    label: 'Gasto en prestaciones de protección social por habitante',
+    verb: 'registró un gasto en prestaciones de protección social por habitante',
+    replyLead: 'el gasto en prestaciones de protección social por habitante fue de',
+    differenceVerb: ['el gasto español fue más alto', 'el gasto español fue más bajo', 'España y la Unión Europea registraron el mismo gasto'],
+    unit: '€ por habitante',
+    replyUnit: '€ por habitante',
+    differenceUnit: '€ por habitante',
+    method: 'La comparación usa el gasto en prestaciones de protección social para todas las funciones y esquemas por habitante según Eurostat, con el último año común disponible; no equivale al gasto total de los gobiernos ni a la ayuda que recibe una persona.',
+    caveat: 'Es un promedio agregado nominal: no identifica beneficiarios, requisitos, importes individuales, composición de precios ni la función que explica la diferencia.',
+  },
   government_current_taxes_income_wealth_europe: {
     label: 'Impuestos corrientes sobre renta y riqueza',
     verb: 'registró una recaudación de impuestos corrientes sobre renta y riqueza',

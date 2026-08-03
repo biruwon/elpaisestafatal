@@ -199,6 +199,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices', '€ por habitante'],
     ['¿Cómo ha cambiado el salario mínimo en España?', 'minimum_wage_monthly', '€ al mes'],
     ['¿Cuánto gasta España en prestaciones de protección social por habitante?', 'social_protection_benefits_per_capita', '€ por habitante'],
+    ['¿España gasta menos por habitante en protección social que la Unión Europea?', 'social_protection_benefits_per_capita_europe', '€ por habitante'],
     ['¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?', 'old_age_survivors_benefits_per_capita', '€ por habitante'],
   ]) {
     try {
@@ -457,6 +458,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.status !== 'known' || result.result?.claimSlug !== 'prestaciones-proteccion-social-sube') failures.push('published social-protection claim: did not resolve the canonical claim');
     if (!/8.221,52|8\.221,52|8221,52/.test(JSON.stringify(result.result || {}))) failures.push('published social-protection claim: lost the measured value');
   } catch (error) { failures.push(`published social-protection claim: ${error.message}`); }
+  try {
+    const result = await resolve('España gasta menos por habitante en protección social que la Unión Europea');
+    if (result.status !== 'known' || result.result?.claimSlug !== 'espana-gasta-menos-proteccion-social-europa') failures.push('published social-protection Europe claim: did not resolve the canonical claim');
+    if (!/10\.256,99|10256,99/.test(JSON.stringify(result.result || {}))) failures.push('published social-protection Europe claim: lost the comparison value');
+  } catch (error) { failures.push(`published social-protection Europe claim: ${error.message}`); }
   try {
     const result = await resolve('La población de España creció en 2025');
     if (result.status !== 'known' || result.result?.claimSlug !== 'espana-poblacion-crece-2025') failures.push('published population-growth claim: did not resolve the canonical claim');

@@ -27,6 +27,7 @@ const metricHints = [
   { ids: ['median_hourly_earnings_europe'], terms: ['salario por hora frente a europa', 'salario por hora frente a la union europea', 'sueldo por hora frente a europa', 'sueldo por hora frente a la ue', 'espana cobra mas por hora que europa', 'espana cobra menos por hora que europa', 'comparacion europea del salario por hora', 'comparacion europea del salario bruto por hora', 'salario por hora europa'] },
   { ids: ['minimum_wage_monthly'], terms: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'cuanto es el salario minimo', 'ha subido el salario minimo', 'sube el salario minimo', 'salario minimo en espana'] },
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
+  { ids: ['social_protection_benefits_per_capita_europe'], terms: ['gasto en proteccion social frente a europa', 'gasto en proteccion social frente a la union europea', 'prestaciones sociales frente a europa', 'prestaciones sociales frente a la union europea', 'ayudas sociales frente a europa', 'espana gasta mas en proteccion social que europa', 'espana gasta menos en proteccion social que europa', 'comparacion europea del gasto social', 'proteccion social europa'] },
   { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
   { ids: ['old_age_survivors_benefits_per_capita_europe'], terms: ['gasto en pensiones frente a europa', 'gasto en pensiones por habitante frente a europa', 'como queda el gasto en pensiones espanol frente a europa', 'gasto espanol en pensiones por persona comparado con europa', 'pensiones de espana frente a europa', 'pensiones por habitante frente a europa', 'espana gasta mas en pensiones que europa', 'espana gasta menos en pensiones que europa', 'espana gasta mas por habitante en pensiones que la union europea', 'espana gasta menos por habitante en pensiones que la union europea', 'pensiones por habitante que europa', 'pensiones frente a la union europea', 'pensiones y supervivencia frente a la union europea', 'comparacion europea del gasto en pensiones'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
@@ -103,6 +104,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('arope', 'pobreza', 'exclusion')) preferred.add('arope_rate_europe');
   if (hasEuropeReference && hasAny('lista de espera', 'espera sanitaria', 'necesidades medicas')) preferred.add('unmet_healthcare_waiting_list_rate_europe');
   if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
+  if (hasEuropeReference && hasAny('proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto social', 'prestaciones publicas') && hasAny('gasto', 'gasta', 'ayudas', 'prestaciones')) preferred.add('social_protection_benefits_per_capita_europe');
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
@@ -244,6 +246,12 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('immigration_flows');
   }
   if (preferred.has('social_protection_benefits_per_capita')) {
+    preferred.delete('government_expenditure_ratio');
+    preferred.delete('health_expenditure_per_capita');
+    preferred.delete('median_equivalised_income');
+  }
+  if (preferred.has('social_protection_benefits_per_capita_europe')) {
+    preferred.delete('social_protection_benefits_per_capita');
     preferred.delete('government_expenditure_ratio');
     preferred.delete('health_expenditure_per_capita');
     preferred.delete('median_equivalised_income');

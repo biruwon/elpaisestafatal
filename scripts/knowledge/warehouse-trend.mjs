@@ -35,6 +35,7 @@ const metricLabels = {
   life_expectancy_at_birth_europe: 'Esperanza de vida al nacer: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
+  social_protection_benefits_per_capita_europe: 'Gasto en prestaciones de protección social por habitante: España y la Unión Europea',
   old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',
   old_age_survivors_benefits_per_capita_europe: 'Gasto en prestaciones de vejez y supervivencia por habitante: España y la Unión Europea',
   government_current_taxes_income_wealth_europe: 'Impuestos corrientes sobre renta y riqueza: España y la Unión Europea',
@@ -103,6 +104,7 @@ const displayUnit = (item) => {
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
   if (metricId === 'minimum_wage_monthly') return '€ al mes';
   if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
+  if (metricId === 'social_protection_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante';
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_current_taxes_income_wealth_europe') return '% del PIB';

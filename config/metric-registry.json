@@ -279,6 +279,14 @@
     "notEquivalentTo": ["government_expenditure_ratio", "health_expenditure_per_capita", "median_equivalised_income"],
     "dimensions": ["period", "geography", "social_protection_function", "expenditure_type", "currency"]
   },
+  "social_protection_benefits_per_capita_europe": {
+    "name": "Social protection benefits expenditure per inhabitant: Spain and the European Union",
+    "aliases": ["gasto en protección social frente a Europa", "prestaciones sociales frente a Europa", "ayudas sociales frente a la Unión Europea", "España gasta más en protección social que Europa", "España gasta menos en protección social que Europa"],
+    "unit": "EUR per inhabitant",
+    "population": "social protection benefits expenditure for all functions and schemes per inhabitant in Spain and the European Union",
+    "notEquivalentTo": ["social_protection_benefits_per_capita", "government_expenditure_ratio", "health_expenditure_per_capita", "median_equivalised_income"],
+    "dimensions": ["period", "geography", "social_protection_function", "expenditure_type", "currency"]
+  },
   "old_age_survivors_benefits_per_capita": {
     "name": "Old-age and survivors social protection benefits expenditure per inhabitant",
     "aliases": ["gasto en pensiones", "prestaciones de vejez", "pensiones por habitante", "gasto en jubilación", "pensiones y supervivencia"],

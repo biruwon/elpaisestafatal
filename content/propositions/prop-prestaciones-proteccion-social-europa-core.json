@@ -1,0 +1,13 @@
+{
+  "id": "prop-prestaciones-proteccion-social-europa-core",
+  "claimSlug": "espana-gasta-menos-proteccion-social-europa",
+  "text": "España registró menos gasto por habitante en prestaciones de protección social que la Unión Europea en 2024.",
+  "type": "comparative",
+  "subject": "social_protection_benefits_per_capita_europe",
+  "predicate": "was_below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["prestaciones-proteccion-social-europa-eurostat"]
+}

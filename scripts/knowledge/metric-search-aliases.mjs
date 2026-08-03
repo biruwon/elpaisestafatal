@@ -17,6 +17,7 @@ export const metricSearchAliases = Object.freeze({
   housing_cost_overburden_rate_europe: ['sobrecarga vivienda', 'esfuerzo vivienda', 'coste vivienda', 'europa', 'union europea', 'comparacion europea'],
   minimum_wage_monthly: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'euros al mes'],
   social_protection_benefits_per_capita: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'euros por habitante'],
+  social_protection_benefits_per_capita_europe: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto social', 'europa', 'union europea', 'comparacion europea', 'euros por habitante'],
   old_age_survivors_benefits_per_capita: ['pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'euros por habitante'],
   old_age_survivors_benefits_per_capita_europe: ['pensiones', 'gasto en pensiones', 'pensiones frente a europa', 'europa', 'union europea', 'comparacion europea', 'euros por habitante'],
   government_revenue_ratio_europe: ['ingresos', 'recaudacion', 'publicos', 'europa', 'union europea', 'comparacion europea'],

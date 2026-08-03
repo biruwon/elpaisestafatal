@@ -601,6 +601,19 @@ definitions['prestaciones-proteccion-social-sube'] = {
   visuals: { key: { value: '8.221,52 €', label: 'Prestaciones de protección social por habitante', period: '2024' }, trend: { available: true, labels: ['2015', '2024'], values: [5630.92, 8221.52], label: 'Gasto en prestaciones de protección social por habitante', unit: '€ por habitante · euros corrientes' }, caveat: 'La comparación usa únicamente los años respaldados por la ficha; el agregado no identifica beneficiarios, requisitos, importes individuales ni la función concreta que explica el cambio.' },
 };
 
+definitions['espana-gasta-menos-proteccion-social-europa'] = {
+  prompt: 'España gasta menos por habitante en protección social que la Unión Europea',
+  aliases: ['España gasta menos en protección social que Europa', 'España gasta menos por persona en ayudas sociales que la UE', 'el gasto social español está por debajo de Europa'],
+  propositions: ['En 2024 España registró 8.221,52 € por habitante en protección social frente a 10.256,99 € en la Unión Europea.', 'La diferencia demuestra por sí sola que las ayudas españolas son insuficientes.', 'El agregado identifica cuánto recibe cada persona o qué política explica la diferencia.'],
+  concern: 'España aparece por debajo de la Unión Europea en este gasto agregado por habitante, pero la comparación no mide la prestación media ni los resultados sociales.',
+  supports: 'Eurostat registra 8.221,52 € por habitante en España y 10.256,99 € en la Unión Europea en 2024.',
+  limit: 'Es gasto nominal agregado de todas las funciones de protección social. No identifica beneficiarios, requisitos, importes individuales, precios ni resultados.',
+  question: '¿Quieres comparar gasto, cobertura, importe de una prestación concreta o resultados sociales?',
+  reply: 'En 2024 España registró 8.221,52 € por habitante en prestaciones de protección social frente a 10.256,99 € en la Unión Europea. Es un promedio agregado nominal, no la ayuda media que recibe cada persona ni una medida completa de resultados.',
+  visualLabel: 'El gasto agregado no es la ayuda de cada persona',
+  visuals: { key: { value: '−2.035,47 €', label: 'Diferencia frente a la Unión Europea', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Protección social por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [8221.52, 10256.99], label: 'Prestaciones de protección social por habitante', unit: '€ por habitante · euros corrientes' }, caveat: 'La comparación usa el gasto nominal agregado en todas las funciones de protección social; no mide cobertura, suficiencia, resultados ni la prestación media.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

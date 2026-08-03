@@ -58,6 +58,7 @@ const longTailBenchmarkCases = [
   ['proteccion-ayudas', '¿Cuánto se dedica por persona a las prestaciones sociales?', 'social_protection_benefits_per_capita'],
   ['proteccion-gasto', '¿Ha aumentado el gasto en protección social?', 'social_protection_benefits_per_capita'],
   ['proteccion-publica', 'Gasto público en ayudas y prestaciones sociales', 'social_protection_benefits_per_capita'],
+  ['proteccion-europa', '¿España gasta menos por habitante en protección social que la Unión Europea?', 'social_protection_benefits_per_capita_europe'],
   ['pensiones-persona', '¿Cuánto se gasta por habitante en prestaciones de vejez?', 'old_age_survivors_benefits_per_capita'],
   ['pensiones-gasto', '¿Ha aumentado el gasto de jubilación y supervivencia?', 'old_age_survivors_benefits_per_capita'],
   ['pensiones-vejez', 'Gasto español en pensiones y prestaciones de vejez', 'old_age_survivors_benefits_per_capita'],
