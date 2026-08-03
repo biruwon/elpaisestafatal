@@ -261,6 +261,15 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU GDP comparison: did not render a comparison visual');
   } catch (error) { failures.push(`Spain/EU GDP comparison: ${error.message}`); }
   try {
+    const result = await resolve('¿Está la inflación de España por encima de la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU inflation comparison: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'inflation_rate_europe') failures.push('Spain/EU inflation comparison: selected the Spain-only inflation family');
+    if (result.result?.warehouseSeries?.unit !== '% interanual') failures.push('Spain/EU inflation comparison: did not localize the comparison unit');
+    if (!/España.*Unión Europea|Unión Europea.*España/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push('Spain/EU inflation comparison: lost the named comparison in the public answer');
+    if (!/inflación española fue más alta|por encima de/i.test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push('Spain/EU inflation comparison: did not calculate the direction of the comparison');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU inflation comparison: did not render a comparison visual');
+  } catch (error) { failures.push(`Spain/EU inflation comparison: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de residentes está en AROPE en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`AROPE warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'arope_rate') failures.push('AROPE warehouse: selected the wrong metric family');

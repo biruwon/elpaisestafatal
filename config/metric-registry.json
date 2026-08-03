@@ -20,7 +20,15 @@
     "aliases": ["inflación anual", "tasa de inflación", "subida de precios", "ritmo de los precios", "precios aumentan"],
     "unit": "percent year-on-year",
     "population": "consumer prices for all items, annual rate of change",
-    "notEquivalentTo": ["cpi_index", "harmonised_price_index"],
+    "notEquivalentTo": ["cpi_index", "harmonised_price_index", "inflation_rate_europe"],
+    "dimensions": ["period", "geography", "consumption_group"]
+  },
+  "inflation_rate_europe": {
+    "name": "Harmonised annual inflation rate: Spain and the European Union",
+    "aliases": ["inflación de España frente a Europa", "inflación frente a la Unión Europea", "inflación más alta que Europa", "inflación más baja que Europa", "precios suben más que Europa", "inflación comparable con Europa"],
+    "unit": "percent year-on-year",
+    "population": "consumer prices for all items, annual rate of change in Spain and the European Union",
+    "notEquivalentTo": ["inflation_rate", "cpi_index", "harmonised_price_index", "gdp_real_growth_europe"],
     "dimensions": ["period", "geography", "consumption_group"]
   },
   "household_electricity_price": {

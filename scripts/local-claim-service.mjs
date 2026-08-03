@@ -69,7 +69,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gdp_per_capita_current_prices') return '€ por habitante';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
   if (metricId === 'inflation_rate') return '% interanual';
-  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe') return '% interanual';
+  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'early_school_leaving_rate') return '% de jóvenes de 18 a 24 años';
   if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
@@ -89,6 +89,12 @@ const displayUnit = (value, metricId = '') => {
   if (unit.includes('percentage of population')) return '% de la población';
   if (unit.includes('gini scale')) return 'escala Gini 0–100';
   return String(value || '');
+};
+const displayWarehouseGroup = (item) => {
+  const value = normalise(item.dimensionLabels?.geo || item.dimensions?.geo || item.geo || '');
+  if (value === 'es' || value === 'espana' || value === 'spain') return 'España';
+  if (value === 'eu27 2020' || value === 'eu27_2020' || value.includes('union europea') || value.includes('european union')) return 'Unión Europea';
+  return String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id || 'Territorio');
 };
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'cuñado', 'cunado', 'he', 'leido', 'hay', 'datos', 'más', 'mas', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
@@ -488,7 +494,8 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // example monthly inflation). Keep the broad path small, but let an
   // explicit metric retrieve enough of its own series to retain the latest
   // periods for the chart.
-  const candidateLimit = hintedMetricIds.size ? 250 : 100;
+  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('inflation_rate_europe');
+  const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
@@ -1238,7 +1245,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const evidenceObservations = isGroupComparison ? groupObservations : isQuantityLike ? (quantity?.observations || (!quantityClaim ? observations : [])) : isLegal ? legalObservations : (isDefinition ? [] : observations);
   const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
-    labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
+    labels: seriesForVisual.map((item) => ranking ? displayWarehouseGroup(item) : String(item.period || item.id)),
     values: seriesForVisual.map((item) => Number(item.value)),
     label: displayMetric(numericObservations[0]),
     unit: displayUnit(numericObservations[0].unit, numericObservations[0].metricId),

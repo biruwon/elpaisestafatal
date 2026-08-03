@@ -5,6 +5,7 @@ export const metricSearchAliases = Object.freeze({
   employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
   unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],
   unemployment_rate_europe: ['paro', 'desempleo', 'europa', 'comparacion europea'],
+  inflation_rate_europe: ['inflacion', 'precios', 'europa', 'union europea', 'comparacion europea'],
   resident_population: ['poblacion', 'habitantes', 'residentes', 'viven', 'normalmente'],
   foreign_born_population: ['inmigracion', 'inmigrantes', 'extranjeros', 'nacidos', 'nacieron', 'fuera', 'residentes'],
   immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],

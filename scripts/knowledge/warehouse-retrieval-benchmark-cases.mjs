@@ -5,6 +5,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['alquiler-caros', 'El precio del alquiler se ha disparado', 'rental_price_index'],
   ['inflacion-anual', 'Cuál es la inflación anual en España', 'inflation_rate'],
   ['inflacion-precios', 'La tasa de inflación española sigue alta', 'inflation_rate'],
+  ['inflacion-europa', '¿Está la inflación de España por encima de la Unión Europea?', 'inflation_rate_europe'],
+  ['inflacion-europa-baja', '¿España tiene una inflación más baja que Europa?', 'inflation_rate_europe'],
   ['ipc-cesta', 'Cuánto se ha encarecido la cesta de la compra en España', 'cpi_index'],
   ['ipc-precios', 'Los precios cotidianos no dejan de subir', 'cpi_index'],
   ['ipc-coste', 'Evolución del coste de vida de los hogares españoles', 'cpi_index'],

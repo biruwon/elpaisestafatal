@@ -84,8 +84,32 @@ const isEuropeanUnionObservation = (item) => {
   return code === 'eu27 2020' || code === 'eu27_2020' || label.includes('european union') || label.includes('union europea');
 };
 
+const europeanComparisonDefinitions = {
+  gdp_real_growth_europe: {
+    label: 'PIB real',
+    verb: 'creció',
+    replyLead: 'el PIB real creció un',
+    differenceVerb: ['España creció más', 'España creció menos', 'España y la Unión Europea crecieron al mismo ritmo'],
+    unit: '% interanual',
+    method: 'La comparación usa el PIB real interanual desestacionalizado; no demuestra por sí sola que los hogares tengan el mismo bienestar.',
+    caveat: 'Es una medida de actividad agregada, no de bienestar de cada hogar.',
+  },
+  inflation_rate_europe: {
+    label: 'Inflación armonizada',
+    verb: 'registró una inflación',
+    replyLead: 'la inflación armonizada fue del',
+    differenceVerb: ['la inflación española fue más alta', 'la inflación española fue más baja', 'España y la Unión Europea registraron la misma inflación'],
+    unit: '% interanual',
+    method: 'La comparación usa la tasa armonizada de precios de consumo para todos los bienes; no representa exactamente la cesta de cada hogar.',
+    caveat: 'Es una medida comparable de precios, no el coste de vida completo de cada hogar.',
+  },
+};
+
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
-  const candidate = observations.filter((item) => item.metricId === 'gdp_real_growth_europe' && typeof item.value === 'number' && Number.isFinite(item.value) && item.period);
+  const definition = observations.map((item) => europeanComparisonDefinitions[item.metricId]).find(Boolean);
+  if (!definition) return null;
+  const metricId = Object.keys(europeanComparisonDefinitions).find((id) => europeanComparisonDefinitions[id] === definition);
+  const candidate = observations.filter((item) => item.metricId === metricId && typeof item.value === 'number' && Number.isFinite(item.value) && item.period);
   if (!candidate.length) return null;
   const byPeriod = new Map();
   candidate.forEach((item) => {
@@ -102,22 +126,23 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
   const spain = rows.find(isSpainObservation);
   const europeanUnion = rows.find(isEuropeanUnionObservation);
   if (!spain || !europeanUnion) return null;
-  const unit = '% interanual';
   const difference = Number(spain.value) - Number(europeanUnion.value);
-  const direction = Math.abs(difference) < 0.000001 ? 'al mismo ritmo que' : difference > 0 ? 'por encima de' : 'por debajo de';
-  const comparison = `${formatNumber(spain.value)} ${unit} en España frente a ${formatNumber(europeanUnion.value)} ${unit} en la Unión Europea`;
+  const directionIndex = Math.abs(difference) < 0.000001 ? 2 : difference > 0 ? 0 : 1;
+  const direction = directionIndex === 2 ? 'al mismo ritmo que' : directionIndex === 0 ? 'por encima de' : 'por debajo de';
+  const comparison = `${formatNumber(spain.value)} ${definition.unit} en España frente a ${formatNumber(europeanUnion.value)} ${definition.unit} en la Unión Europea`;
   return {
     european: true,
+    metricId,
     observations: [spain, europeanUnion],
-    headline: `PIB real: España frente a la Unión Europea (${period})`,
-    summary: `En ${period}, España creció ${direction} la Unión Europea: ${comparison}.`,
+    headline: `${definition.label}: España frente a la Unión Europea (${period})`,
+    summary: `En ${period}, España ${definition.verb} ${direction} la Unión Europea: ${comparison}.`,
     points: [
-      `España: ${formatNumber(spain.value)} ${unit}.`,
-      `Unión Europea: ${formatNumber(europeanUnion.value)} ${unit}.`,
+      `España: ${formatNumber(spain.value)} ${definition.unit}.`,
+      `Unión Europea: ${formatNumber(europeanUnion.value)} ${definition.unit}.`,
       `Diferencia: ${formatNumber(Math.abs(difference))} puntos porcentuales ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
-      'La comparación usa el PIB real interanual desestacionalizado; no demuestra por sí sola que los hogares tengan el mismo bienestar.',
+      definition.method,
     ],
-    reply: `En ${period}, el PIB real creció un ${formatNumber(spain.value)}% interanual en España y un ${formatNumber(europeanUnion.value)}% en la Unión Europea: ${difference >= 0 ? 'España creció más' : 'España creció menos'} en esa comparación. Es una medida de actividad agregada, no de bienestar de cada hogar.`,
+    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value)}% interanual en España y ${formatNumber(europeanUnion.value)}% en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
 };

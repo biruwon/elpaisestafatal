@@ -23,6 +23,12 @@
       "metricId": "inflation_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=ES&geo=EU27_2020&coicop=CP00&sinceTimePeriod=2015",
+      "title": "Inflación armonizada: España y Unión Europea · Eurostat",
+      "aliases": ["inflación de España frente a Europa", "inflación frente a la Unión Europea", "inflación más alta que Europa", "inflación más baja que Europa", "precios suben más que Europa", "inflación comparable con Europa"],
+      "metricId": "inflation_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_204?geo=ES&siec=E7000&nrg_cons=TOT_KWH&unit=KWH&tax=I_TAX&currency=EUR&sinceTimePeriod=2015",
       "title": "Precio de la electricidad para hogares en España · Eurostat",
       "aliases": ["precio de la luz", "factura de la luz", "precio de la electricidad", "coste de la electricidad", "tarifa eléctrica", "electricidad", "electricidad para las familias", "luz más cara"],

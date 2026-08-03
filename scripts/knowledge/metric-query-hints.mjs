@@ -11,6 +11,7 @@ const metricHints = [
   { ids: ['rental_price_index'], terms: ['precio del alquiler', 'precios del alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'alquiler mas caro', 'sube el alquiler'] },
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
   { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'precios aumentan'] },
+  { ids: ['inflation_rate_europe'], terms: ['inflacion de espana frente a europa', 'inflacion de espana por encima de europa', 'inflacion de espana por encima de la union europea', 'inflacion frente a europa', 'inflacion frente a la union europea', 'inflacion espanola mas alta que europa', 'inflacion espanola mas alta que la union europea', 'inflacion mas alta que europa', 'inflacion mas baja que europa', 'precios suben mas que europa', 'inflacion comparable con europa', 'inflacion comparable europa'] },
   { ids: ['gdp_current_prices'], terms: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'producto interior bruto en euros', 'produccion economica nacional'] },
   { ids: ['gdp_per_capita_current_prices'], terms: ['pib por habitante', 'pib per capita', 'producto interior bruto por persona', 'economia por habitante', 'pib por persona'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
@@ -71,6 +72,11 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
   if (preferred.has('government_debt_current_prices')) preferred.delete('government_debt_ratio');
   if (preferred.has('gdp_real_growth_europe')) preferred.delete('gdp_real_growth_quarterly');
+  if (preferred.has('inflation_rate_europe')) {
+    preferred.delete('inflation_rate');
+    preferred.delete('cpi_index');
+    preferred.delete('harmonised_price_index');
+  }
   return preferred;
 };
 

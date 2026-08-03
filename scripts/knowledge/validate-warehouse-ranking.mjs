@@ -33,4 +33,10 @@ const gdpComparisonRecords = [
 ];
 const gdpComparison = summarizeWarehouseEuropeanComparison('¿Crece España más que la Unión Europea?', gdpComparisonRecords);
 if (!gdpComparison || !gdpComparison.european || !gdpComparison.summary.includes('2,7') || !gdpComparison.summary.includes('1,2') || !gdpComparison.reply.includes('España creció más')) throw new Error('European GDP comparison did not preserve the same-period Spain/EU comparison');
+const inflationRecords = [
+  { id: 'inflation-es-2026-06', metricId: 'inflation_rate_europe', datasetId: 'Harmonised inflation comparison', value: 2.3, unit: 'Percentage change compared to same period in previous year', period: '2026-06', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'inflation-eu-2026-06', metricId: 'inflation_rate_europe', datasetId: 'Harmonised inflation comparison', value: 2, unit: 'Percentage change compared to same period in previous year', period: '2026-06', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const inflationComparison = summarizeWarehouseEuropeanComparison('¿Está la inflación de España por encima de la Unión Europea?', inflationRecords);
+if (!inflationComparison || inflationComparison.metricId !== 'inflation_rate_europe' || !inflationComparison.summary.includes('2,3') || !inflationComparison.summary.includes('2') || !inflationComparison.reply.includes('inflación española fue más alta')) throw new Error('European inflation comparison did not preserve the same-period Spain/EU comparison');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

@@ -357,6 +357,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿Sigue creciendo el PIB real de España?',
               '¿Crece España más que la Unión Europea?',
               '¿Cuál es la inflación anual en España?',
+              '¿Está la inflación de España por encima de la Unión Europea?',
               '¿España recauda más o menos que la media europea?',
             ]
             : [
