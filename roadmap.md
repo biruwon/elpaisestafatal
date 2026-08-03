@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Fixed the local compiler benchmark report path: it now parses and records the configured local endpoint before running model cases, so a completed benchmark can produce a valid report and recommendation instead of failing at report serialization. The benchmark contract now protects this initialization.
+
 - Corrected the local screenshot-extraction request to use the same numeric keep-alive contract as text compilation and embeddings. The local-container release gate now checks every local chat/embed path so a runtime-specific duration string cannot silently disable image enrichment.
 
 - Removed three orphaned modules from the retired catalogue/search implementation (`src/data/search.ts`, `src/data/concernComparison.ts`, and `src/data/evidence.ts`). The current site has no imports for them, and the release build now fails if they are reintroduced.

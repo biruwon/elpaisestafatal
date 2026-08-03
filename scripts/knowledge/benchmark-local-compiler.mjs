@@ -10,6 +10,7 @@ const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) 
   return pairs;
 }, []));
 const endpoint = args.get('endpoint') || process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
+const endpointUrl = new URL(endpoint);
 const outputPath = args.get('output') || join(root, '.local/compiler-benchmark.json');
 const timeoutMs = Math.min(30000, Math.max(1500, Number(args.get('timeout-ms') || process.env.COMPILER_BENCHMARK_TIMEOUT_MS || 10000)));
 const minimumQuality = Math.min(1, Math.max(0, Number(args.get('min-quality') || process.env.COMPILER_BENCHMARK_MIN_QUALITY || 0.8)));
