@@ -40,7 +40,8 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (!allowRequest(request)) return json({ status: 'unavailable' }, 429);
   if (Number(request.headers.get('content-length') || 0) > 64 * 1024) return json({ status: 'invalid' }, 413);
   if (!env.DB) return json({ status: 'unavailable' }, 503);
-  const body = await request.json() as { text?: unknown; canonical?: unknown; semanticSignature?: unknown; inputType?: unknown; status?: unknown; requestId?: unknown };
+  let body: { text?: unknown; canonical?: unknown; semanticSignature?: unknown; inputType?: unknown; status?: unknown; requestId?: unknown };
+  try { body = await request.json() as typeof body; } catch { return json({ status: 'invalid' }, 400); }
   const text = typeof body.text === 'string' ? body.text.trim().slice(0, 12000) : '';
   if (!text) return json({ status: 'invalid' }, 400);
   const normalized = normalise(text);

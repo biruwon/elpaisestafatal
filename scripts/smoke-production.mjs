@@ -52,6 +52,21 @@ const apiChecks = [
       if (forbidden.test(JSON.stringify(body))) failures.push('/api/classify: exposed implementation details');
     },
   },
+  ...['image', 'audio'].map((inputType) => ({
+    path: '/api/classify',
+    init: (() => {
+      const form = new FormData();
+      form.set('text', 'España está en recesión');
+      form.set('inputType', inputType);
+      form.set('file', new Blob(['smoke-test'], { type: inputType === 'image' ? 'image/png' : 'audio/wav' }), `smoke-test.${inputType === 'image' ? 'png' : 'wav'}`);
+      return { method: 'POST', body: form };
+    })(),
+    validate(response, body) {
+      if (![200, 400, 415].includes(response.status)) failures.push(`/api/classify ${inputType}: expected a handled response, received ${response.status}`);
+      if (!body || typeof body !== 'object' || typeof body.status !== 'string') failures.push(`/api/classify ${inputType}: missing generic status payload`);
+      if (forbidden.test(JSON.stringify(body))) failures.push(`/api/classify ${inputType}: exposed implementation details`);
+    },
+  })),
   {
     path: '/api/questions',
     init: { method: 'GET' },
