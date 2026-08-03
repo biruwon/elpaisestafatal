@@ -12,7 +12,7 @@ export const handlerForInput = (input, claimType = '') => {
     || (includesAny(text, ['quita', 'recorta']) && includesAny(text, ['gobierno', 'educacion', 'presidencia']));
   if (budgetSignal) return 'budget_transfer';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
-  if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido'])) return 'legal_rule';
+  if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
   if (claimType === 'trend') return 'trend';

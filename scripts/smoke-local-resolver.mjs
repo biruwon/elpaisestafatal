@@ -340,6 +340,17 @@ if (process.env.SMOKE_OFFICIAL === '1') {
     if (!reply?.evidenceIds?.length) failures.push('official transfer: conversation reply lost its evidence IDs');
     if (!result.result?.sourceLinks?.length || !result.result.sourceLinks.every((source) => /^https:\/\//i.test(source.url))) failures.push('official transfer: source link is missing or not attributable');
   } catch (error) { failures.push(`official transfer: ${error.message}`); }
+  try {
+    const result = await resolve('¿La información pública se puede reutilizar sin condiciones?');
+    const legalTree = result.result?.blocks?.find((block) => block.type === 'legal_decision_tree');
+    const reply = result.result?.blocks?.find((block) => block.type === 'conversation_reply');
+    const excerpts = result.result?.blocks?.filter((block) => block.type === 'source_excerpt') || [];
+    if (result.status !== 'draft') failures.push(`public information reuse: expected draft, received ${result.status}`);
+    if (!legalTree?.items?.some((item) => item.label === 'Condiciones' && item.status === 'known')) failures.push('public information reuse: operative conditions were not shown');
+    if (!reply?.evidenceIds?.length) failures.push('public information reuse: conversation reply lost its evidence IDs');
+    if (!excerpts.length || !excerpts.some((block) => /art[ií]culo 4/i.test(block.title))) failures.push('public information reuse: relevant BOE article excerpt is missing');
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('no:')) failures.push('public information reuse: result did not clearly reject the overbroad claim');
+  } catch (error) { failures.push(`public information reuse: ${error.message}`); }
 }
 
 if (process.env.SMOKE_LONG_TAIL === '1') {

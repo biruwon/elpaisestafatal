@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { isPublicReuseQuery } from './boe-legal-discovery.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -73,6 +74,7 @@ const publishedClaimForCluster = (cluster) => {
   }) || null;
 };
 const warehouseRouteForCluster = (cluster) => preferredMetricIdsForQuery(clusterPhrases(cluster).join(' ')).size > 0;
+const legalRouteForCluster = (cluster) => isPublicReuseQuery(clusterPhrases(cluster).join(' '));
 const discoverySourceId = (value) => /(?:^|-)discovery-/i.test(String(value || ''));
 const directSourceIdsForCluster = (cluster) => (Array.isArray(cluster?.sourceIds) ? cluster.sourceIds : []).filter((id) => !discoverySourceId(id));
 const localSpecificClaim = (cluster) => /(?:mi|en mi|de mi)\s+(?:calle|barrio|portal|municipio|pueblo|edificio|zona|ciudad)|\b(?:barrio|municipio|pueblo|portal|edificio)\b|\b(?:en la zona|delitos zona|inseguridad zona)\b/i.test(clusterPhrases(cluster).join(' '));
@@ -103,6 +105,7 @@ const slugify = (value) => String(value || '')
 export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50 } = {}) => (Array.isArray(clusters) ? clusters : [])
   .map(reconcileMaterializationCluster)
   .filter((cluster) => !warehouseRouteForCluster(cluster))
+  .filter((cluster) => !legalRouteForCluster(cluster))
   .filter((cluster) => cluster && cluster.reviewable !== false && !localSpecificClaim(cluster) && directSourceIdsForCluster(cluster).length > 0 && Number(cluster.count ?? cluster.exampleCount) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published' && (cluster.coverageStatus !== 'covered' || cluster.newlyCovered))
   .map((cluster) => ({
     clusterId: String(cluster.id || `cluster-${slugify(cluster.signature)}`),

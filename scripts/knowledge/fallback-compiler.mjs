@@ -135,7 +135,7 @@ const claimTypeFor = (value) => {
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'aumenta la', 'reduce los', 'destruye'])) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico', 'va a'])) return 'predictive';
-  if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho'])) return 'legal';
+  if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'record', 'historico', 'se esta volviendo'])) return 'trend';
   if (includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'el que menos', 'ranking', 'puesto', 'europa'])) return 'comparative';
   return 'descriptive';

@@ -15,7 +15,7 @@ import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
-import { discoverBoeLegalRules } from './knowledge/boe-legal-discovery.mjs';
+import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 
@@ -774,7 +774,12 @@ const startResolveJob = (text, origin = 'runtime') => {
   // signature. The signature removes conversational wrappers such as “mi
   // cuñado insiste”, while preserving meaningful words and polarity, so one
   // local inference job can serve the same claim phrased in several ways.
-  const existing = resolveJobs.get(id) || [...resolveJobs.values()].find((item) => item.canonicalSignature === signature);
+  const existingById = resolveJobs.get(id);
+  const existingEquivalent = [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && !['uncovered', 'unavailable'].includes(item.status));
+  // An uncovered result can mean that discovery timed out or a provider was
+  // temporarily unavailable. Do not reuse that failure for every paraphrase
+  // in the same semantic cluster; the next request should get one retry.
+  const existing = existingById && !['uncovered', 'unavailable'].includes(existingById.status) ? existingById : existingEquivalent;
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
@@ -879,6 +884,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
   const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document' || item.kind === 'legal_rule') : [];
+  const publicReuseClaim = isLegal && isPublicReuseQuery(text);
+  const publicReuseRules = publicReuseClaim
+    ? legalObservations
+      .filter((item) => item.kind === 'legal_rule')
+      .sort((left, right) => Number(right.topicScore || 0) - Number(left.topicScore || 0) || Number(right.score || 0) - Number(left.score || 0))
+    : [];
   const currentLegalRule = selectCurrentLegalRule(legalObservations);
   const legalPrimaryBlock = isLegal ? {
     type: 'legal_decision_tree',
@@ -905,6 +916,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Vía civil para ciertos titulares', status: 'known', detail: 'La Ley 5/2018 prevé tutela sumaria para determinadas personas físicas, entidades sin ánimo de lucro y entidades públicas de vivienda social.' },
         { label: 'Límite de la vía rápida', status: 'known', detail: 'La Fiscalía distingue el delito leve de usurpación, que continúa por el juicio sobre delitos leves; “rápido” no significa lanzamiento automático.' },
         { label: 'Caso concreto', status: 'missing', detail: 'Para estimar el recorrido hacen falta el tipo de inmueble, la relación con quien lo ocupa, los hechos acreditables y el procedimiento iniciado.' },
+      ]
+      : publicReuseClaim
+        ? [
+        { label: 'Ámbito de la ley', status: 'known', detail: 'La Ley 37/2007 regula la reutilización de documentos elaborados o custodiados por sujetos del sector público; no convierte automáticamente toda información pública en reutilizable.' },
+        { label: 'Condiciones', status: publicReuseRules.some((item) => /art[ií]culo 4/i.test(item.metric)) ? 'known' : 'missing', detail: 'La reutilización puede quedar sin condiciones, someterse a licencia o requerir solicitud. Las condiciones deben ser objetivas, proporcionadas, no discriminatorias y justificadas por interés público.' },
+        { label: 'Límites', status: publicReuseRules.some((item) => /art[ií]culo 3/i.test(item.metric)) ? 'known' : 'missing', detail: 'Quedan fuera, entre otros, documentos con límites de acceso, información reservada o confidencial y documentos con derechos de terceros.' },
+        { label: 'Uso responsable', status: publicReuseRules.some((item) => /art[ií]culo 8/i.test(item.metric)) ? 'known' : 'missing', detail: 'Las condiciones pueden exigir no alterar el contenido, no desnaturalizarlo, citar la fuente y señalar la fecha de actualización.' },
       ]
       : [
         { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? 'Hay una fuente jurídica localizada para el territorio y periodo indicados.' : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
@@ -958,8 +976,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     summary: 'Una serie histórica puede aportar contexto, pero no confirma por sí sola lo que ocurrirá. Para evaluar la predicción hay que fijar una fecha, un indicador, una magnitud y las condiciones que podrían cambiar el resultado.',
   } : null;
   const legalContext = isLegal && !primary ? {
-    headline: 'La respuesta legal depende del supuesto concreto',
-    summary: 'No basta con una frase general sobre lo que “permite” o “prohíbe” la ley. Hay que identificar la jurisdicción, el procedimiento, las fechas, las excepciones y la situación concreta.',
+    headline: publicReuseClaim ? 'No: la información pública no es automáticamente reutilizable sin condiciones' : 'La respuesta legal depende del supuesto concreto',
+    summary: publicReuseClaim
+      ? 'La ley española permite reutilizar determinados documentos del sector público, pero distingue entre documentos accesibles y documentos reutilizables. Puede haber licencias, solicitudes, límites de acceso, derechos de terceros y condiciones sobre el uso.'
+      : 'No basta con una frase general sobre lo que “permite” o “prohíbe” la ley. Hay que identificar la jurisdicción, el procedimiento, las fechas, las excepciones y la situación concreta.',
   } : null;
   const definitionContext = isDefinition && !primary ? {
     headline: 'Primero hay que fijar qué significa la expresión',
@@ -994,8 +1014,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       ] },
     ] : []),
     ...(isLegal ? [
-      { type: 'strongest_valid_concern', text: 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
-      { type: 'legal_decision_tree', items: [
+      { type: 'strongest_valid_concern', text: publicReuseClaim ? 'Que un documento sea público o accesible no significa que pueda reutilizarse de cualquier manera. La preocupación es válida, pero la frase elimina límites que la propia ley mantiene.' : 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
+      { type: 'legal_decision_tree', items: publicReuseClaim ? [
+        { label: 'Norma y ámbito', status: legalObservations.length ? 'known' : 'missing', detail: 'Ley 37/2007 · reutilización de documentos del sector público, sin modificar por sí sola el régimen de acceso.' },
+        { label: 'Modalidad de reutilización', status: publicReuseRules.some((item) => /art[ií]culo 4/i.test(item.metric)) ? 'known' : 'missing', detail: 'Puede ser sin condiciones, con licencia-tipo, previa solicitud o mediante otros regímenes previstos por la ley.' },
+        { label: 'Condiciones de uso', status: publicReuseRules.some((item) => /art[ií]culo 4|art[ií]culo 8/i.test(item.metric)) ? 'known' : 'missing', detail: 'Pueden exigirse condiciones objetivas y proporcionadas, como citar la fuente, indicar la actualización y no alterar ni desnaturalizar el contenido.' },
+        { label: 'Exclusiones', status: publicReuseRules.some((item) => /art[ií]culo 3/i.test(item.metric)) ? 'known' : 'missing', detail: 'Hay límites por acceso restringido, seguridad, confidencialidad, datos personales y derechos de propiedad intelectual de terceros.' },
+      ] : [
         { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? `${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'Norma estatal localizada'} · ${currentLegalRule?.datasetId || legalObservations[0].metric}` : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
         { label: 'Artículo aplicable', status: currentLegalRule ? 'known' : 'missing', detail: currentLegalRule ? `${currentLegalRule.metric} · versión vigente desde ${currentLegalRule.dimensions?.effectiveFrom || currentLegalRule.period}` : 'Localizar el precepto que regula exactamente el supuesto.' },
         { label: 'Situación jurídica', status: 'missing', detail: 'Distinguir la condición de las partes y los hechos relevantes del caso.' },
@@ -1051,15 +1076,24 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     if (isGroupComparison && !groupObservations.length) return [
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
     ];
-    if (isLegal && legalObservations.length) return [
-      ...(currentLegalRule?.excerpt ? [{ type: 'source_excerpt', evidenceIds: [currentLegalRule.id], title: `${currentLegalRule.metric} · texto consolidado`, excerpt: boundedExcerpt(currentLegalRule.excerpt) }] : []),
-      { type: 'data_finding', evidenceIds: legalObservations.map((item) => item.id), points: [
-        `Norma localizada: ${String(currentLegalRule?.datasetId || legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
-        `Ámbito: ${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'estatal'}; versión localizada desde: ${currentLegalRule?.dimensions?.effectiveFrom || legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
-        legalObservations.some((item) => item.dimensions?.repealed) ? 'La ficha indica que la norma está derogada.' : 'La ficha localizada no indica derogación total.',
-      ] },
-      { type: 'cannot_conclude', evidenceIds: legalObservations.map((item) => item.id), points: [currentLegalRule ? 'El artículo aporta el texto aplicable, pero no decide por sí solo cómo encaja el caso concreto.' : 'La ficha identifica la norma, pero no resuelve por sí sola el supuesto planteado.', 'Falta comprobar otros artículos, excepciones, jurisprudencia y la situación concreta.'] },
-    ];
+    if (isLegal && legalObservations.length) {
+      const excerptRules = publicReuseClaim ? publicReuseRules.filter((item) => item.excerpt).slice(0, 3) : (currentLegalRule?.excerpt ? [currentLegalRule] : []);
+      const evidenceIds = legalObservations.map((item) => item.id);
+      return [
+        ...excerptRules.map((item) => ({ type: 'source_excerpt', evidenceIds: [item.id], title: `${item.metric} · texto consolidado`, excerpt: boundedExcerpt(item.excerpt) })),
+        { type: 'data_finding', evidenceIds, points: publicReuseClaim ? [
+          'La Ley 37/2007 distingue el acceso a la información de su reutilización posterior.',
+          'La reutilización puede autorizarse sin condiciones, con licencia o previa solicitud; cuando hay condiciones deben ser objetivas, proporcionadas y no discriminatorias.',
+          'La norma contempla límites de acceso, confidencialidad, datos personales y derechos de terceros, además de obligaciones sobre la integridad y la cita de la fuente.',
+        ] : [
+          `Norma localizada: ${String(currentLegalRule?.datasetId || legalObservations[0].metric).replace(/[.\s]+$/, '')}.`,
+          `Ámbito: ${legalObservations.find((item) => item.dimensions?.jurisdiction)?.dimensions?.jurisdiction || 'estatal'}; versión localizada desde: ${currentLegalRule?.dimensions?.effectiveFrom || legalObservations[0].dimensions?.effectiveFrom || 'fecha no indicada'}.`,
+          legalObservations.some((item) => item.dimensions?.repealed) ? 'La ficha indica que la norma está derogada.' : 'La ficha localizada no indica derogación total.',
+        ] },
+        ...(publicReuseClaim ? [{ type: 'conversation_reply', evidenceIds, text: 'No exactamente. La Ley 37/2007 permite reutilizar determinados documentos del sector público, pero no toda información pública queda libre de condiciones: puede haber licencia, solicitud, límites de acceso, derechos de terceros y obligaciones como citar la fuente y no alterar el contenido.' }] : []),
+        { type: 'cannot_conclude', evidenceIds, points: publicReuseClaim ? ['La ley no permite asumir que cualquier documento público puede reutilizarse sin revisar su acceso, licencia, datos personales y derechos de terceros.', 'Para un documento concreto todavía hay que comprobar su licencia, organismo responsable y posibles restricciones.'] : [currentLegalRule ? 'El artículo aporta el texto aplicable, pero no decide por sí solo cómo encaja el caso concreto.' : 'La ficha identifica la norma, pero no resuelve por sí sola el supuesto planteado.', 'Falta comprobar otros artículos, excepciones, jurisprudencia y la situación concreta.'] },
+      ];
+    }
     if (isLegal || isDefinition) return [
       { type: 'cannot_conclude', evidenceIds: [], points: [
         isLegal ? 'No hemos localizado una regla o resolución que corresponda exactamente al supuesto descrito.' : 'No hemos localizado una fuente que fije la definición exacta de la expresión utilizada.',
@@ -1143,11 +1177,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     schemaVersion: '1',
     headline: primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
-    coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || quantityContext ? 'qualified' : valuesContext ? 'values' : 'insufficient',
+    coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || quantityContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: primary.propositionIds || [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(legalPrimaryBlock ? [legalPrimaryBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...relatedGuidanceBlocks, ...(provisionalBlocks.length ? provisionalBlocks : relatedGuidanceBlocks.length ? [] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
-    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, derechos de terceros o restricciones de acceso adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
     ...(primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),

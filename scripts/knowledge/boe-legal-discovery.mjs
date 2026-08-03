@@ -10,7 +10,46 @@ const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token)
 const asArray = (value) => Array.isArray(value) ? value : value && typeof value === 'object' ? [value] : [];
 const stem = (value) => normalise(value).replace(/(amientos|imientos|aciones|adores|adoras|mente|acion|ucion|idades|idad|icos|icas|ico|ica|es|os|as|ar|er|ir)$/i, '').slice(0, 10);
 
+const includesAny = (value, values) => values.some((item) => String(value || '').includes(item));
+const publicReuseArticles = new Map([
+  ['artículo 3', 0.45],
+  ['articulo 3', 0.45],
+  ['artículo 4', 0.75],
+  ['articulo 4', 0.75],
+  ['artículo 7', 0.2],
+  ['articulo 7', 0.2],
+  ['artículo 8', 0.7],
+  ['articulo 8', 0.7],
+  ['artículo 9', 0.45],
+  ['articulo 9', 0.45],
+  ['artículo 10', 0.25],
+  ['articulo 10', 0.25],
+]);
+
+export const isPublicReuseQuery = (query) => {
+  const text = normalise(query);
+  const hasReuse = includesAny(text, ['reutiliz', 'usar', 'utilizar', 'datos abiertos']);
+  const hasPublicMaterial = includesAny(text, ['documentos public', 'informacion public', 'dato public', 'datos abiertos']);
+  return hasReuse && hasPublicMaterial;
+};
+
+const publicReuseScore = (record, query) => {
+  if (!isPublicReuseQuery(query)) return 0;
+  const metric = normalise(record.metric);
+  const excerpt = normalise(record.excerpt);
+  const articleBonus = publicReuseArticles.get(metric) || 0;
+  const operativeTextBonus = includesAny(metric, ['anexo', 'disposicion adicional', 'disposicion transitoria']) ? -0.35 : 0;
+  const directTextBonus = includesAny(excerpt, ['reutilizacion de los documentos', 'condiciones de reutilizacion', 'sin sujecion a condiciones']) ? 0.25 : 0;
+  return articleBonus + operativeTextBonus + directTextBonus;
+};
+
 const titleQueries = (query) => {
+  if (isPublicReuseQuery(query)) {
+    return [
+      JSON.stringify({ query: { query_string: { query: 'titulo:(reutiliz* and informacion*)' }, range: {} }, sort: [] }),
+      JSON.stringify({ query: { query_string: { query: 'titulo:(reutiliz* and sector*)' }, range: {} }, sort: [] }),
+    ];
+  }
   const wanted = tokens(query).map(stem).filter((item) => item.length >= 4);
   const pairs = [];
   for (let left = 0; left < wanted.length; left += 1) for (let right = left + 1; right < wanted.length; right += 1) pairs.push([wanted[left], wanted[right]]);
@@ -44,9 +83,11 @@ export const rankLegalRules = (records, query, limit = 6) => {
   }
   return [...current.values()].map((record) => {
     const searchable = normalise(`${record.metric} ${record.excerpt}`);
-    const matchedTerms = wanted.filter((token) => searchable.includes(token));
-    return { ...record, matchedTerms, score: matchedTerms.length / Math.max(1, wanted.length) };
-  }).filter((item) => item.matchedTerms.length >= 2 && item.score >= 0.4).sort((left, right) => right.score - left.score || String(right.period || '').localeCompare(String(left.period || ''))).slice(0, limit);
+    const matchedTerms = wanted.filter((token) => searchable.includes(token) || searchable.includes(stem(token)));
+    const lexicalScore = matchedTerms.length / Math.max(1, wanted.length);
+    const topicScore = publicReuseScore(record, query);
+    return { ...record, matchedTerms, score: lexicalScore + topicScore, lexicalScore, topicScore };
+  }).filter((item) => item.matchedTerms.length >= 2 && item.lexicalScore >= 0.4).sort((left, right) => right.score - left.score || String(right.period || '').localeCompare(String(left.period || ''))).slice(0, limit);
 };
 
 const fetchJson = async (url, timeout) => {
