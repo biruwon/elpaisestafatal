@@ -20,4 +20,10 @@ const minimumWageRecords = [
 ];
 const minimumWage = summarizeWarehouseTrend('¿Ha subido el salario mínimo en España?', minimumWageRecords);
 if (!minimumWage || !minimumWage.headline.includes('primer semestre de 2015') || !minimumWage.headline.includes('primer semestre de 2026') || !minimumWage.points.some((point) => point.includes('€ al mes')) || !minimumWage.reply.includes('no demuestra la causa')) throw new Error('Trend handler did not keep minimum wage distinct, readable, and caveated');
+const socialProtectionRecords = [
+  { id: 'social-2015', datasetId: 'spr_exp_func', metricId: 'social_protection_benefits_per_capita', value: 5630.92, unit: 'Euro per inhabitant', period: '2015', dimensions: { geo: 'ES', spdeps: 'SPR', spfunc: 'TOTAL', unit: 'EUR_HAB' }, source },
+  { id: 'social-2024', datasetId: 'spr_exp_func', metricId: 'social_protection_benefits_per_capita', value: 8221.52, unit: 'Euro per inhabitant', period: '2024', dimensions: { geo: 'ES', spdeps: 'SPR', spfunc: 'TOTAL', unit: 'EUR_HAB' }, source },
+];
+const socialProtection = summarizeWarehouseTrend('¿Cuánto gasta España en prestaciones de protección social por habitante?', socialProtectionRecords);
+if (!socialProtection || !socialProtection.headline.includes('2015') || !socialProtection.headline.includes('2024') || !socialProtection.points.some((point) => point.includes('€ por habitante')) || !socialProtection.reply.includes('no demuestra la causa')) throw new Error('Trend handler did not keep social protection benefits distinct, readable, and caveated');
 console.log('Warehouse trend validation passed: compatible dimensions are isolated.');

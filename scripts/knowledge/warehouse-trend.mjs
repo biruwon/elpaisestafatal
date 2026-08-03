@@ -21,6 +21,7 @@ const metricLabels = {
   employment_rate: 'Tasa de empleo en España',
   employment_rate_europe: 'Tasa de empleo: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
+  social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
@@ -79,6 +80,7 @@ const displayUnit = (item) => {
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
   if (metricId === 'minimum_wage_monthly') return '€ al mes';
+  if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';

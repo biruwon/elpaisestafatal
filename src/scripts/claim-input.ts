@@ -368,6 +368,13 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
             '¿La inmigración aumenta la inseguridad?',
             '¿Las personas inmigrantes reciben prioridad en las ayudas?',
           ]
+          : query.includes('ayuda') || query.includes('prestacion') || query.includes('proteccion social') || query.includes('gasto social')
+            ? [
+              '¿Cuánto gasta España en prestaciones de protección social por habitante?',
+              '¿Las personas inmigrantes reciben prioridad en las ayudas?',
+              '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
+              '¿Cómo han evolucionado los ingresos públicos sobre el PIB?',
+            ]
           : query.includes('impuesto') || query.includes('econom') || query.includes('pib') || query.includes('precio') || query.includes('inflac')
             ? [
               '¿Cuál es el tamaño de la economía española?',

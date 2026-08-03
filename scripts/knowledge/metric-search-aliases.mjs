@@ -5,6 +5,7 @@ export const metricSearchAliases = Object.freeze({
   employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
   employment_rate_europe: ['empleo', 'ocupacion', 'europa', 'union europea', 'comparacion europea'],
   minimum_wage_monthly: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'euros al mes'],
+  social_protection_benefits_per_capita: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'euros por habitante'],
   government_revenue_ratio_europe: ['ingresos', 'recaudacion', 'publicos', 'europa', 'union europea', 'comparacion europea'],
   government_expenditure_ratio_europe: ['gasto', 'presupuesto', 'publico', 'europa', 'union europea', 'comparacion europea'],
   unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],

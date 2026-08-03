@@ -183,6 +183,14 @@
     "notEquivalentTo": ["median_equivalised_income", "employment_rate", "unemployment_rate"],
     "dimensions": ["period", "geography", "currency", "frequency"]
   },
+  "social_protection_benefits_per_capita": {
+    "name": "Social protection benefits expenditure per inhabitant",
+    "aliases": ["gasto en protección social", "prestaciones sociales", "ayudas sociales", "gasto en ayudas", "gasto social", "prestaciones públicas"],
+    "unit": "EUR per inhabitant",
+    "population": "social protection benefits expenditure for all functions and schemes per inhabitant",
+    "notEquivalentTo": ["government_expenditure_ratio", "health_expenditure_per_capita", "median_equivalised_income"],
+    "dimensions": ["period", "geography", "social_protection_function", "expenditure_type", "currency"]
+  },
   "resident_population": {
     "name": "Resident population",
     "aliases": ["población", "habitantes", "demografía", "residentes"],

@@ -165,6 +165,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cuál es el tamaño de la economía española', 'gdp_current_prices', 'millones de euros'],
     ['Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices', '€ por habitante'],
     ['¿Cómo ha cambiado el salario mínimo en España?', 'minimum_wage_monthly', '€ al mes'],
+    ['¿Cuánto gasta España en prestaciones de protección social por habitante?', 'social_protection_benefits_per_capita', '€ por habitante'],
   ]) {
     try {
       const result = await resolve(text);

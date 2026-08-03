@@ -69,6 +69,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gdp_per_capita_current_prices') return '€ por habitante';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
   if (metricId === 'minimum_wage_monthly') return '€ al mes';
+  if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate_europe') return '% interanual';

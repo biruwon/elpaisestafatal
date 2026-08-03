@@ -23,6 +23,12 @@
       "metricId": "minimum_wage_monthly"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&spdeps=SPR&spfunc=TOTAL&unit=EUR_HAB&sinceTimePeriod=2015",
+      "title": "Gasto en prestaciones de protección social por habitante en España · Eurostat",
+      "aliases": ["gasto en protección social", "prestaciones sociales", "ayudas sociales", "gasto en ayudas", "gasto social", "prestaciones públicas"],
+      "metricId": "social_protection_benefits_per_capita"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=ES&coicop=CP00&sinceTimePeriod=2015",
       "title": "Inflación anual armonizada de España · Eurostat",
       "aliases": ["inflación anual", "tasa de inflación", "subida de precios", "ritmo de los precios", "precios aumentan"],
