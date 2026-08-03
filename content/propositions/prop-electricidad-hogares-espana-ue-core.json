@@ -1,0 +1,13 @@
+{
+  "id": "prop-electricidad-hogares-espana-ue-core",
+  "claimSlug": "electricidad-espana-europa",
+  "text": "En 2025-S2, el precio doméstico medio de la electricidad fue algo menor en España que en la Unión Europea.",
+  "type": "comparative",
+  "subject": "household_electricity_price_europe",
+  "predicate": "was_lower_in_spain_than_european_union",
+  "object": "0.2872 EUR/kWh versus 0.2942 EUR/kWh",
+  "geography": "España y Unión Europea",
+  "period": "2025-S2",
+  "status": "supported",
+  "evidenceIds": ["electricidad-hogares-espana-ue-eurostat"]
+}

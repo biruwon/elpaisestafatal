@@ -459,6 +459,19 @@ definitions['esperanza-vida-espana-ue'] = {
   visuals: { key: { value: '+2,5 años', label: 'España frente a la Unión Europea', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Esperanza de vida al nacer', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [84, 81.5], label: 'Esperanza de vida al nacer', unit: 'años · 2024' }, caveat: 'La esperanza de vida resume mortalidad poblacional; no equivale a años vividos con buena salud ni a acceso sanitario igual.' },
 };
 
+definitions['electricidad-espana-europa'] = {
+  prompt: 'España paga menos por la electricidad doméstica que la Unión Europea',
+  aliases: ['la luz en España es más cara que en Europa', 'España paga más por la electricidad que Europa', 'España paga menos por la luz que Europa', 'precio de la luz frente a Europa', 'comparación europea del precio de la electricidad'],
+  propositions: ['El precio doméstico medio de la electricidad en España puede compararse con el de la UE-27.', 'España tuvo un precio medio de 0,2872 €/kWh en 2025-S2.', 'La factura de cada hogar es igual a ese precio.', 'España tiene el precio más alto de toda Europa.'],
+  concern: 'La factura eléctrica es una preocupación cotidiana, pero el precio por kWh y el importe mensual no son la misma medida.',
+  supports: 'Eurostat sitúa el precio medio doméstico en 0,2872 €/kWh en España y 0,2942 en la UE-27 en 2025-S2, con impuestos incluidos.',
+  limit: 'La serie no es la factura de cada hogar ni demuestra que España sea el país más caro de Europa; consumo, tarifa y potencia cambian el importe.',
+  question: '¿Quieres comparar el precio por kWh, la factura de un hogar o todos los países europeos?',
+  reply: 'En 2025-S2, el precio doméstico medio fue algo menor en España (0,2872 €/kWh) que en la UE-27 (0,2942). Eso no equivale a la factura de cada hogar.',
+  visualLabel: 'España frente a la Unión Europea',
+  visuals: { key: { value: '−0,0070 €', label: 'Diferencia media por kWh', period: '2025-S2' }, trend: { available: false, labels: [], values: [], label: 'Precio doméstico de la electricidad', unit: 'Comparación puntual España–UE · impuestos incluidos' }, comparison: { labels: ['España', 'UE-27'], values: [0.2872, 0.2942], label: 'Precio doméstico medio de la electricidad', unit: '€ por kWh · impuestos incluidos · 2025-S2' }, caveat: 'El precio por kWh no es la factura mensual: consumo, tarifa, potencia y otros componentes cambian el importe.' },
+};
+
 definitions['necesidades-medicas-lista-espera-espana-ue'] = {
   prompt: 'España tiene más necesidades médicas no atendidas por lista de espera que la Unión Europea',
   aliases: ['España tiene más espera sanitaria que Europa', 'España tiene más lista de espera que la UE', 'necesidades médicas no atendidas frente a Europa', 'comparación europea de listas de espera'],

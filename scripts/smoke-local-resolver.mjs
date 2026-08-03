@@ -536,6 +536,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!/1,6/.test(JSON.stringify(result.result)) || !/1,2/.test(JSON.stringify(result.result))) failures.push('Spain/EU healthcare access: lost the reviewed values');
   } catch (error) { failures.push(`Spain/EU healthcare access: ${error.message}`); }
   try {
+    const result = await resolve('¿España paga más por la luz que Europa?');
+    if (result.status !== 'complete') failures.push(`Spain/EU household electricity: expected complete, received ${result.status}`);
+    if (result.relatedClaims?.[0]?.slug !== 'electricidad-espana-europa') failures.push('Spain/EU household electricity: did not route to the reviewed claim');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU household electricity: comparison visual missing');
+    if (!/0,2872/.test(JSON.stringify(result.result)) || !/0,2942/.test(JSON.stringify(result.result))) failures.push('Spain/EU household electricity: lost the reviewed values');
+  } catch (error) { failures.push(`Spain/EU household electricity: ${error.message}`); }
+  try {
   const result = await resolve('El salario mínimo ha subido en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'minimum_wage_monthly') failures.push('minimum wage warehouse: selected the wrong metric family');

@@ -1,5 +1,6 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
-const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const metricPrecision = { household_electricity_price_europe: 4 };
+const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-ES', { maximumFractionDigits: metricPrecision[metricId] || 2 });
 const displayMetric = (item) => String(item.source?.title || item.metric || item.datasetId || 'Indicador comparado');
 const comparableDimensions = (item) => Object.entries(item.dimensions || {})
   .filter(([key]) => !['geo', 'time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
@@ -223,6 +224,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la proporción de personas de 16 años o más que declaran una necesidad médica no atendida por estar en una lista de espera, con la misma definición de Eurostat para España y la Unión Europea; no es el número administrativo de pacientes ni la espera media.',
     caveat: 'Es una barrera de acceso declarada y comparable, no una medida completa de la calidad sanitaria, de todas las listas administrativas ni de la espera de cada paciente.',
   },
+  household_electricity_price_europe: {
+    label: 'Precio de la electricidad para hogares',
+    verb: 'registró un precio doméstico medio de',
+    replyLead: 'el precio doméstico medio fue de',
+    differenceVerb: ['el precio doméstico medio español fue más alto', 'el precio doméstico medio español fue más bajo', 'España y la Unión Europea registraron el mismo precio doméstico medio'],
+    unit: '€ por kWh',
+    replyUnit: '€ por kWh',
+    differenceUnit: '€ por kWh',
+    method: 'La comparación usa el precio medio de la electricidad para hogares con todos los impuestos incluidos y el consumo total indicado por Eurostat; no equivale a la factura de cada hogar ni a la posición de España frente a todos los países europeos.',
+    caveat: 'El importe por kWh no es la factura mensual de un hogar: cambian el consumo, la tarifa, la potencia y otros componentes.',
+  },
   median_equivalised_income_europe: {
     label: 'Renta disponible mediana por persona equivalente',
     verb: 'registró una renta disponible mediana por persona equivalente',
@@ -282,7 +294,7 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
   const difference = Number(spain.value) - Number(europeanUnion.value);
   const directionIndex = Math.abs(difference) < 0.000001 ? 2 : difference > 0 ? 0 : 1;
   const direction = directionIndex === 2 ? 'al mismo ritmo que' : directionIndex === 0 ? 'por encima de' : 'por debajo de';
-  const comparison = `${formatNumber(spain.value)} ${definition.unit} en España frente a ${formatNumber(europeanUnion.value)} ${definition.unit} en la Unión Europea`;
+  const comparison = `${formatNumber(spain.value, metricId)} ${definition.unit} en España frente a ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} en la Unión Europea`;
   return {
     european: true,
     metricId,
@@ -290,12 +302,12 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
     headline: `${definition.label}: España frente a la Unión Europea (${period})`,
     summary: `En ${period}, España ${definition.verb} ${direction} la Unión Europea: ${comparison}.`,
     points: [
-      `España: ${formatNumber(spain.value)} ${definition.unit}.`,
-      `Unión Europea: ${formatNumber(europeanUnion.value)} ${definition.unit}.`,
-      `Diferencia: ${formatNumber(Math.abs(difference))} ${definition.differenceUnit || 'puntos porcentuales'} ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
+      `España: ${formatNumber(spain.value, metricId)} ${definition.unit}.`,
+      `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`,
+      `Diferencia: ${formatNumber(Math.abs(difference), metricId)} ${definition.differenceUnit || 'puntos porcentuales'} ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
       definition.method,
     ],
-    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
+    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value, metricId)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value, metricId)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
 };

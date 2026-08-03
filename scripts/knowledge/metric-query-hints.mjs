@@ -49,6 +49,7 @@ const metricHints = [
   { ids: ['housing_cost_overburden_rate_europe'], terms: ['sobrecarga de vivienda frente a europa', 'sobrecarga de vivienda frente a la union europea', 'esfuerzo de vivienda frente a europa', 'esfuerzo de vivienda frente a la union europea', 'espana tiene mas sobrecarga de vivienda que europa', 'espana tiene menos sobrecarga de vivienda que europa', 'comparacion europea del esfuerzo de vivienda', 'sobrecarga vivienda europa'] },
   { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por habitante', 'gasto sanitario por persona', 'gasto por habitante en sanidad', 'gasta en sanidad por habitante', 'gasta sanidad por habitante', 'gasta sanidad habitante', 'cuanto gasta sanidad habitante', 'sanidad por habitante', 'gasto por persona en sanidad', 'dinero por persona en sanidad', 'cuanto dinero se dedica a sanidad', 'cuanto dinero se dedica por persona a la sanidad', 'cuanto se gasta en sanidad', 'cuanto se gasta en salud'] },
   { ids: ['health_expenditure_per_capita_europe'], terms: ['gasto sanitario frente a europa', 'gasto sanitario frente a la union europea', 'como se compara el gasto sanitario de espana con europa', 'comparacion europea del gasto de salud por habitante', 'gasto en sanidad frente a europa', 'gasto en sanidad frente a la union europea', 'espana gasta mas en sanidad que europa', 'espana gasta menos en sanidad que europa', 'espana gasta mas en sanidad que la union europea', 'espana gasta menos en sanidad que la union europea', 'espana gasta mas por habitante en sanidad', 'espana gasta menos por habitante en sanidad', 'gasto sanitario europa', 'sanidad europa'] },
+  { ids: ['household_electricity_price_europe'], terms: ['precio de la luz frente a europa', 'electricidad frente a europa', 'precio de la electricidad frente a europa', 'espana paga mas por la electricidad que europa', 'espana paga menos por la luz que europa', 'comparacion europea del precio de la electricidad', 'electricidad europa'] },
   { ids: ['unmet_healthcare_waiting_list_rate_europe'], terms: ['lista de espera frente a europa', 'lista de espera frente a la union europea', 'espera sanitaria frente a europa', 'necesidades medicas no atendidas frente a europa', 'espana tiene mas espera sanitaria que europa', 'espana tiene menos espera sanitaria que europa', 'espana tiene mas lista de espera que europa', 'comparacion europea de listas de espera', 'comparacion europea de la espera sanitaria', 'lista de espera europa'] },
   { ids: ['unmet_healthcare_waiting_list_rate'], terms: ['lista de espera medica', 'lista de espera sanitaria', 'no recibe atencion por lista de espera', 'personas sin atencion por lista de espera', 'espera medica impide atencion', 'necesidad medica no atendida por espera'] },
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
@@ -95,6 +96,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
   if (hasEuropeReference && hasAny('arope', 'pobreza', 'exclusion')) preferred.add('arope_rate_europe');
   if (hasEuropeReference && hasAny('lista de espera', 'espera sanitaria', 'necesidades medicas')) preferred.add('unmet_healthcare_waiting_list_rate_europe');
+  if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
@@ -183,6 +185,7 @@ export const preferredMetricIdsForQuery = (query) => {
   }
   if (preferred.has('government_expenditure_ratio_europe')) preferred.delete('government_expenditure_ratio');
   if (preferred.has('health_expenditure_per_capita_europe')) preferred.delete('health_expenditure_per_capita');
+  if (preferred.has('household_electricity_price_europe')) preferred.delete('household_electricity_price');
   if (preferred.has('government_debt_current_prices')) preferred.delete('government_debt_ratio');
   if (preferred.has('median_equivalised_income_europe')) preferred.delete('median_equivalised_income');
   if (preferred.has('youth_unemployment_rate')) preferred.delete('unemployment_rate');
@@ -258,6 +261,8 @@ export const excludedMetricIdsForQuery = (query) => {
   const healthSpendEuropeRequested = preferred.has('health_expenditure_per_capita_europe');
   const unmetWaitingListRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const unmetWaitingListEuropeRequested = preferred.has('unmet_healthcare_waiting_list_rate_europe');
+  const householdElectricityRequested = metricHints.find((hint) => hint.ids.includes('household_electricity_price'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const householdElectricityEuropeRequested = preferred.has('household_electricity_price_europe');
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -289,6 +294,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (vagueHealthOutcome && !unmetWaitingListRequested) excluded.add('unmet_healthcare_waiting_list_rate');
   if (vagueHealthOutcome && !unmetWaitingListEuropeRequested) excluded.add('unmet_healthcare_waiting_list_rate_europe');
   if (unmetWaitingListRequested && !unmetWaitingListEuropeRequested) excluded.add('unmet_healthcare_waiting_list_rate_europe');
+  if (householdElectricityEuropeRequested) excluded.add('household_electricity_price');
+  if (householdElectricityRequested && !householdElectricityEuropeRequested) excluded.add('household_electricity_price_europe');
   // Total population and population-change rate are different questions. Keep
   // the change series out of generic population, migration, fertility, and
   // out-of-domain matches unless the wording explicitly asks about change.

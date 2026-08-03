@@ -125,6 +125,13 @@ export const claimAliases: Record<string, string[]> = {
     'el precio de la luz en España supera 0,28',
     'precio luz hogares España',
   ],
+  'electricidad-espana-europa': [
+    'la luz en España es más cara que en Europa',
+    'España paga más por la electricidad que Europa',
+    'España paga menos por la luz que Europa',
+    'precio de la luz frente a Europa',
+    'comparación europea del precio de la electricidad',
+  ],
   'paro-juvenil-alto': [
     'el paro juvenil sigue por encima del 20%',
     'uno de cada cuatro jóvenes está en paro',

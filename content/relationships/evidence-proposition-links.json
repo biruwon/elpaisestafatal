@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "links": [
     {
+      "evidenceId": "electricidad-hogares-espana-ue-eurostat",
+      "propositionId": "prop-electricidad-hogares-espana-ue-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "empleo-tiempo-parcial-espana-ue-eurostat",
       "propositionId": "prop-empleo-creado-tiempo-parcial-core",
       "relationship": "insufficient",

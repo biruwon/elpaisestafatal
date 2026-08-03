@@ -39,6 +39,14 @@
     "notEquivalentTo": ["cpi_index", "inflation_rate", "house_price_index"],
     "dimensions": ["period", "geography", "consumption_band", "taxes"]
   },
+  "household_electricity_price_europe": {
+    "name": "Household electricity price per kilowatt-hour: Spain and the European Union",
+    "aliases": ["precio de la luz frente a Europa", "electricidad frente a Europa", "España paga más por la electricidad que Europa", "España paga menos por la electricidad que Europa", "comparación europea del precio de la electricidad"],
+    "unit": "EUR per kWh",
+    "population": "household consumers, all electricity consumption bands, taxes included, in Spain and the European Union",
+    "notEquivalentTo": ["household_electricity_price", "cpi_index", "inflation_rate", "house_price_index"],
+    "dimensions": ["period", "geography", "consumption_band", "taxes"]
+  },
   "rental_price_index": {
     "name": "Actual rentals for housing price index",
     "aliases": ["precio del alquiler", "precios del alquiler", "alquiler", "alquileres", "rentas de alquiler", "alquiler más caro", "sube el alquiler"],

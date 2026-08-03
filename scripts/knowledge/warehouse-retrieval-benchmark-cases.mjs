@@ -2,6 +2,8 @@ const longTailBenchmarkCases = [
   ['electricidad-hogares', '¿La factura de electricidad de los hogares ha subido?', 'household_electricity_price'],
   ['electricidad-domestica', 'Precio de la luz para las familias españolas', 'household_electricity_price'],
   ['electricidad-coste', '¿Cómo cambia el coste de la electricidad doméstica?', 'household_electricity_price'],
+  ['electricidad-europa', '¿España paga más por la luz que Europa?', 'household_electricity_price_europe'],
+  ['electricidad-comparacion', 'Comparación europea del precio doméstico de la electricidad', 'household_electricity_price_europe'],
   ['alquiler-evolucion', '¿Ha subido el precio del alquiler en España?', 'rental_price_index'],
   ['alquiler-residencial', 'El alquiler residencial es más caro que antes', 'rental_price_index'],
   ['alquiler-renta', '¿Cómo evoluciona el precio de las rentas de alquiler?', 'rental_price_index'],

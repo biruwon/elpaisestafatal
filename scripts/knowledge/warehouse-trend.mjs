@@ -2,6 +2,7 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 
 const metricPrecision = {
   household_electricity_price: 4,
+  household_electricity_price_europe: 4,
   fertility_rate: 2,
   life_expectancy_at_birth: 1,
   minimum_wage_monthly: 0,
@@ -14,6 +15,7 @@ const metricLabels = {
   inflation_rate_europe: 'Inflación armonizada: España y la Unión Europea',
   gdp_current_prices: 'Tamaño nominal de la economía española',
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
+  household_electricity_price_europe: 'Precio de la electricidad para hogares: España y la Unión Europea',
   rental_price_index: 'Precios del alquiler en España',
   gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
   gdp_real_growth_europe: 'Crecimiento interanual del PIB real: España y la Unión Europea',
@@ -116,7 +118,7 @@ const displayUnit = (item) => {
   if (metricId === 'life_expectancy_at_birth' || metricId === 'life_expectancy_at_birth_europe') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
-  if (metricId === 'household_electricity_price') return '€ por kWh';
+  if (metricId === 'household_electricity_price' || metricId === 'household_electricity_price_europe') return '€ por kWh';
   if (metricId === 'recorded_offences') return 'delitos registrados';
   if (metricId === 'regional_population_density') return 'personas por km²';
   if (unit === 'percentage' || unit === 'percentage of population' || unit === 'percentage of population in the labour force') return '%';
