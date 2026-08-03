@@ -219,9 +219,11 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-plan-chart-svg text{font:10px var(--mono);fill:var(--muted)}
   .claim-chart-grid{stroke:var(--line);stroke-width:1}
   .claim-chart-axis-label{font-size:10px}
-  .claim-chart-series{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-  .claim-chart-point{fill:var(--paper);stroke:var(--red);stroke-width:3}
-  .claim-chart-bar{fill:var(--red);opacity:.82}
+  .claim-chart-series{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000;animation:claim-chart-draw .9s cubic-bezier(.2,.8,.2,1) forwards}
+  .claim-chart-point{fill:var(--paper);stroke:var(--red);stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center;animation:claim-chart-point-in .35s ease-out forwards}
+  .claim-chart-point:nth-of-type(2n){animation-delay:.08s}.claim-chart-point:nth-of-type(3n){animation-delay:.16s}.claim-chart-point:nth-of-type(4n){animation-delay:.24s}
+  .claim-chart-bar{fill:var(--red);opacity:.82;transform-box:fill-box;transform-origin:center bottom;animation:claim-chart-bar-in .55s cubic-bezier(.2,.8,.2,1) both}
+  .claim-chart-bar:nth-of-type(2n){animation-delay:.08s}.claim-chart-bar:nth-of-type(3n){animation-delay:.16s}.claim-chart-bar:nth-of-type(4n){animation-delay:.24s}
   .claim-chart-bar:hover{opacity:1}
   .claim-chart-baseline{stroke:var(--ink);stroke-width:1}
   .claim-chart-data{margin-top:8px;border-top:1px solid var(--line)}
@@ -229,7 +231,7 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-chart-data table{width:100%;border-collapse:collapse;font:.68rem var(--mono)}
   .claim-chart-data th,.claim-chart-data td{text-align:left;padding:7px 0;border-top:1px solid var(--line)}
   .claim-chart-data td{text-align:right}
-  @media(max-width:650px){.claim-plan-chart-svg{min-height:180px}.claim-chart-axis-label{font-size:9px}}
+  @keyframes claim-chart-draw{to{stroke-dashoffset:0}}@keyframes claim-chart-point-in{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}@keyframes claim-chart-bar-in{from{opacity:0;transform:scaleY(.04)}to{opacity:.82;transform:scaleY(1)}}@media(prefers-reduced-motion:reduce){.claim-chart-series,.claim-chart-point,.claim-chart-bar{animation:none;opacity:1;stroke-dashoffset:0;transform:none}}@media(max-width:650px){.claim-plan-chart-svg{min-height:180px}.claim-chart-axis-label{font-size:9px}}
 </style>
 <style>
   .claim-result-short-answer{background:var(--yellow);padding:16px 18px;margin:20px 0 4px}.claim-result-short-answer p{font:1.18rem/1.35 var(--serif);margin:9px 0 13px;max-width:700px}.claim-result-short-answer button{border:1px solid var(--ink);background:transparent;padding:8px 11px;font:600 .62rem var(--mono);cursor:pointer}.claim-result-short-answer button:hover{background:var(--ink);color:var(--paper)}.claim-result-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);margin:14px 0 4px}.claim-result-overview>div{background:var(--paper-deep);padding:14px 16px;min-width:0}.claim-result-overview span{display:block;font:600 .59rem var(--mono);text-transform:uppercase;color:var(--muted);margin-bottom:8px}.claim-result-overview strong{display:block;font:1rem/1.18 var(--serif);font-weight:400}.claim-result-card[data-state=draft] .claim-result-overview>div:first-child,.claim-result-card[data-state=uncovered] .claim-result-overview>div:first-child{border-left:3px solid var(--yellow)}.claim-result-card[data-state=published] .claim-result-overview>div:first-child{border-left:3px solid #247044}.claim-result-details{grid-column:1/-1;border-top:1px solid var(--line);margin-top:8px}.claim-result-details summary{display:flex;align-items:baseline;justify-content:space-between;gap:16px;cursor:pointer;padding:14px 0;font:600 .68rem var(--mono);list-style:none}.claim-result-details summary::-webkit-details-marker{display:none}.claim-result-details summary:after{content:'＋';color:var(--red);font-size:1rem}.claim-result-details[open] summary:after{content:'−'}.claim-result-details summary small{margin-left:auto;color:var(--muted);font:600 .58rem var(--mono);text-transform:uppercase}.claim-result-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-bottom:8px}.claim-result-secondary>div{background:var(--paper-deep)}

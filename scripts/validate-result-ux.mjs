@@ -46,6 +46,9 @@ for (const snippet of [
 ]) {
   if (!page.includes(snippet) && !source.includes(snippet)) failures.push(`result modes are missing ${snippet}`);
 }
+for (const snippet of ['@keyframes claim-chart-draw', 'prefers-reduced-motion', 'claim-chart-bar-in']) {
+  if (!page.includes(snippet)) failures.push(`dynamic chart motion is missing ${snippet}`);
+}
 
 if (!page.includes('id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="off"')) {
   failures.push('the dynamic result region should be focusable without announcing the entire long card twice');

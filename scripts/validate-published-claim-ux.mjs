@@ -3,6 +3,11 @@ import { join, relative } from 'node:path';
 
 const root = new URL('../dist/', import.meta.url).pathname;
 const pages = [];
+const assetsRoot = join(root, '_astro');
+const styleSources = (await readdir(assetsRoot, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.css'))
+  .map((entry) => readFile(join(assetsRoot, entry.name), 'utf8'));
+const bundledStyles = (await Promise.all(styleSources)).join('\n');
 
 async function walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -48,6 +53,7 @@ for (const file of pages) {
     if (!/<title\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a title`);
     if (!source.includes('Ver valores exactos')) failures.push(`${route}: chart is missing exact-value fallback`);
     if (!/<table\b[^>]*>/.test(source)) failures.push(`${route}: chart is missing a data table`);
+    if (!bundledStyles.includes('claim-series-draw') || !bundledStyles.includes('prefers-reduced-motion')) failures.push(`${route}: chart animation is missing reduced-motion-safe behavior`);
   } else if (!/Evidencia directa/.test(source)) failures.push(`${route}: direct visual is missing its evidence label`);
   if (!/<details|class="deep-link"/.test(source)) failures.push(`${route}: missing path to deeper context`);
   const snapshotPosition = source.indexOf('id="claim-snapshot"');
