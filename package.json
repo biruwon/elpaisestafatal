@@ -34,7 +34,7 @@
     "origin:validate": "node scripts/validate-local-origin.mjs",
     "input:validate": "node scripts/validate-input-contract.mjs",
     "learning:validate": "node scripts/validate-learning-capture.mjs",
-    "deploy:pages": "npm run build && npx wrangler pages deploy dist --project-name elpaisestafatal",
+    "deploy:pages": "node scripts/deploy-pages.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "claim-catalog:validate": "node scripts/validate-claim-catalog-source.mjs",

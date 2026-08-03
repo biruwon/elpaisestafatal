@@ -21,6 +21,24 @@ try {
 }
 if (wrangler && !/['"]pages_build_output_dir['"]\s*:\s*["']\.\/dist["']/.test(wrangler)) failures.push('wrangler.jsonc must retain the static Pages build output');
 
+let packageJson;
+try {
+  packageJson = JSON.parse(await readFile('package.json', 'utf8'));
+} catch (error) {
+  failures.push(`package.json is not valid JSON: ${error.message}`);
+}
+if (packageJson?.scripts?.['deploy:pages'] !== 'node scripts/deploy-pages.mjs') failures.push('deploy:pages must use the fail-closed canonical verification wrapper');
+
+let deployScript;
+try {
+  deployScript = await readFile('scripts/deploy-pages.mjs', 'utf8');
+} catch (error) {
+  failures.push(`scripts/deploy-pages.mjs cannot be read: ${error.message}`);
+}
+for (const fragment of ['npm', 'wrangler', 'smoke:production', 'Canonical deployment did not become verifiable']) {
+  if (deployScript && !deployScript.includes(fragment)) failures.push(`deploy wrapper is missing ${fragment}`);
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
