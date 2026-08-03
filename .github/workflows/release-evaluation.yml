@@ -1,0 +1,65 @@
+name: Evaluate clarification release
+
+on:
+  schedule:
+    - cron: '47 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EVALUATION_LIMIT: '300'
+      EVALUATION_CONCURRENCY: '4'
+      EVALUATION_MAX_P95_MS: '15000'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build release candidate
+        run: npm run build
+
+      - name: Start local deterministic release resolver
+        run: |
+          OLLAMA_ENDPOINT=http://127.0.0.1:1 LOCAL_CLASSIFIER_PORT=8906 node scripts/local-claim-service.mjs > /tmp/release-resolver.log 2>&1 &
+          echo $! > /tmp/release-resolver.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8906/healthz > /dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/release-resolver.log
+          exit 1
+
+      - name: Run Spanish evaluation corpus against release resolver
+        env:
+          EVALUATION_BASE_URL: http://127.0.0.1:8906
+          EVALUATION_RESOLVE_PATH: /v1/classify
+        run: npm run knowledge:evaluate:run
+
+      - name: Stop local release resolver
+        if: always()
+        run: kill "$(cat /tmp/release-resolver.pid)" 2>/dev/null || true
+
+      - name: Enforce quality thresholds
+        run: npm run knowledge:evaluate:report
+
+      - name: Upload evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evaluation-${{ github.run_id }}
+          path: .local/evaluation-latest.json
+          if-no-files-found: error
+          retention-days: 30

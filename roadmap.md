@@ -74,6 +74,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Extended the visual answer contract to all 14 topic pages: their evidence bars now have reduced-motion-safe entrance motion and an expandable exact-value table, so the long-form topic layer remains scannable and accessible rather than relying on visual height alone.
 - Hardened operational backups with a versioned manifest containing file sizes and SHA-256 checksums, plus `npm run backup:artifact:validate` to verify an existing backup before restoration or transfer.
 - Added a manual GitHub Actions operations-backup workflow that uses only runtime Cloudflare/PostgreSQL secrets, requires the D1 export, verifies the resulting artifact, and uploads it with a bounded retention period. No credential, tunnel hostname, or database URL is committed.
+- Added a thresholded release evaluation monitor: the existing Spanish corpus now runs against the freshly built local resolver with inference disabled, uploads its report, and fails on retrieval recall, unknown-claim safety, irrelevant matches, unsupported-conclusion rate, evidence traceability, or p95 latency regressions. Pages boundary availability remains covered separately by the smoke monitor.
 - Validation completed: `npm run check`, `npm run build` (350 static pages), the 50-case local resolver smoke suite, roadmap audit, all public UX audits, media/input validation, and the 324-case warehouse benchmark. The local-only inference path remains unchanged; persistent production tunnelling is still explicitly todo.
 
 ## Architectural principles
@@ -641,6 +642,7 @@ dynamic answer
 - Client-side enrichment polling now has bounded per-request and total deadlines, and the lifecycle contract verifies that a slow optional analysis cannot leave the first deterministic result pending indefinitely.
 - A scheduled production monitor now re-runs the public smoke contract outside deploys, so static availability, generic health, handled text/media requests, and deterministic operational fallback are checked continuously rather than only during pushes.
 - The production smoke contract now measures each route/API request and enforces configurable latency budgets (`SMOKE_MAX_ROUTE_MS` and `SMOKE_MAX_API_MS`), making regressions visible without exposing provider or origin details publicly.
+- A scheduled release-evaluation workflow now checks 300 Spanish cases against the current deterministic resolver build and applies explicit quality thresholds before accepting the release report; it does not require Ollama, a tunnel, or a stale deployed catalogue.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements

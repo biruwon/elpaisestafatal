@@ -79,6 +79,7 @@
     "knowledge:hybrid:benchmark": "node scripts/knowledge/benchmark-warehouse-retrieval.mjs",
     "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
+    "knowledge:evaluate:report": "node scripts/validate-evaluation-report.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
     "knowledge:materialize:validate": "node scripts/knowledge/validate-materialization-contract.mjs",
     "knowledge:materialization-candidates": "node scripts/knowledge/materialization-candidates.mjs",
