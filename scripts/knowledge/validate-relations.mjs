@@ -46,7 +46,8 @@ try {
     try { propositions.push({ file: join(propositionDirectory, file), data: JSON.parse(await readFile(join(propositionDirectory, file), 'utf8')) }); }
     catch { failures.push(`${join(propositionDirectory, file)}: proposition is not valid JSON`); }
   }
-} catch { /* The directory is optional while the migration is in progress. */ }
+} catch { failures.push(`${join(contentRoot, 'propositions')}: proposition directory is missing`); }
+if (propositions.length === 0) failures.push(`${join(contentRoot, 'propositions')}: no proposition records found`);
 const propositionMap = new Map();
 const propositionTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 const propositionStatuses = new Set(['supported', 'contradicted', 'qualified', 'insufficient', 'unreviewed']);

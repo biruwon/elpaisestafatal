@@ -17,7 +17,7 @@ requireText(questions, 'const isNewRequest =', 'idempotent request detection');
 requireText(questions, 'if (isNewRequest)', 'count-once cluster update gate');
 requireText(questions, 'ON CONFLICT(semantic_signature)', 'semantic cluster persistence');
 
-if (input.includes('recordUncoveredQuestion')) failures.push('legacy late-only learning helper remains');
+if (input.includes('recordUncoveredQuestion')) failures.push('obsolete late-only learning helper remains');
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
