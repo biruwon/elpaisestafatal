@@ -11,9 +11,11 @@ const required = [
   'conversation-counter',
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
-  'Añadimos contexto',
+  'Comprobación adicional en curso',
+  'Tiempo de espera agotado',
+  'status.dataset.statusMode',
   'data-stop-enrichment',
-  'Quedarme con lo rápido',
+  'Seguir solo con esta orientación',
   'claim-result-progress',
   'Orientación rápida disponible',
   'claim-result-enrichment',
@@ -21,7 +23,6 @@ const required = [
   'result.setAttribute(\'tabindex\', \'-1\')',
   'result.focus({ preventScroll: true })',
   "'enrichment' | 'media'",
-  'Leyendo archivo',
   'statusState',
   'const assessmentLabels',
   'const displayedAssessment',
@@ -73,7 +74,6 @@ const required = [
   'data-clarification-choice',
   'Elige por dónde concretarla',
   'fallbackPublishedClaims',
-  'La orientación de la frase sigue disponible',
   'leemos la captura para comprobar si añade contexto',
   'transcribimos el audio para comprobar si añade contexto',
   'leemos la página enlazada para comprobar si añade contexto',
@@ -96,4 +96,6 @@ if (source.includes('Pendiente de revisión · no es un veredicto publicado')) t
 if (source.includes("state === 'running' ? 'Respuesta disponible'")) throw new Error('Enrichment state still presents the initial result as if it were the completed answer');
 if (source.includes('La orientación rápida está lista; comprobamos si podemos añadir contexto.')) throw new Error('File loading state still claims that a quick result is already ready');
 if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
+if (source.includes("state === 'running' && mode === 'enrichment'")) throw new Error('Media enrichment has no way to stop the optional background request');
+if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');

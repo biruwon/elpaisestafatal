@@ -48,6 +48,13 @@ const warehousePrompts = [
   '¿Cuánto ingresan de media los hogares?',
   '¿Cómo ha evolucionado la fecundidad en España?',
   '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
+  '¿España recauda más o menos que la media europea?',
+  '¿Cuánto gasta el sector público sobre el PIB?',
+  '¿Cómo ha cambiado el PIB medido en euros corrientes?',
+  '¿Cuál es el coeficiente de Gini de España?',
+  '¿Cómo ha cambiado el precio de la electricidad para los hogares?',
+  '¿Cuánto ingresan de media los hogares en España?',
+  '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?',
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
@@ -64,6 +71,10 @@ const warehouseHighlights = [
   { label: 'Juventud', prompt: '¿Qué porcentaje de jóvenes activos no encuentra trabajo?', detail: 'Desempleo de 15 a 24 años, separado del paro general.' },
   { label: 'Demografía', prompt: '¿Cómo ha evolucionado la fecundidad en España?', detail: 'Hijos por mujer y evolución temporal.' },
   { label: 'Desigualdad', prompt: '¿Cómo ha evolucionado la desigualdad de ingresos en España?', detail: 'Coeficiente de Gini y límites de lo que resume.' },
+  { label: 'Ingresos públicos', prompt: '¿España recauda más o menos que la media europea?', detail: 'Ingresos públicos sobre el PIB, con países y año comparables.' },
+  { label: 'Gasto público', prompt: '¿Cuánto gasta el sector público sobre el PIB?', detail: 'Gasto agregado separado de la factura de cada hogar.' },
+  { label: 'Renta', prompt: '¿Cuánto ingresan de media los hogares en España?', detail: 'Renta mediana equivalente, no una media que oculte la distribución.' },
+  { label: 'Envejecimiento', prompt: '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?', detail: 'Dependencia demográfica y límites de una proporción agregada.' },
 ];
 const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');
@@ -148,6 +159,7 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
 </style>
 <style>
   .claim-result-enrichment{display:flex;align-items:flex-start;gap:10px;border-top:1px solid var(--line);margin-top:20px;padding:14px 0 2px;font:.7rem/1.4 var(--mono);color:var(--muted)}.claim-result-enrichment>div{display:grid;gap:2px;flex:1}.claim-result-enrichment strong{font:600 .62rem var(--mono);text-transform:uppercase;color:var(--ink)}.claim-result-enrichment-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;background:var(--yellow);box-shadow:0 0 0 4px color-mix(in srgb,var(--yellow) 25%,transparent)}.claim-result-enrichment[data-status-state=unavailable] .claim-result-enrichment-dot{background:var(--muted);box-shadow:none}.claim-result-enrichment[data-status-state=slow]{background:var(--paper-deep);border-top:0;margin-top:18px;padding:14px}.claim-result-enrichment[data-status-state=slow] .claim-result-enrichment-dot{background:var(--red);box-shadow:none}.claim-result-progress{display:inline-flex;align-items:center;gap:5px;margin-top:1px;color:var(--muted)}.claim-result-progress b{display:grid;place-items:center;width:17px;height:17px;border:1px solid var(--line);border-radius:50%;font:600 .58rem var(--mono)}.claim-result-progress b:first-child{background:#247044;border-color:#247044;color:var(--paper)}.claim-result-progress b.is-active{border-color:var(--red);color:var(--red)}.claim-result-progress i{width:13px;border-top:1px solid var(--line)}.claim-result-enrichment-stop{border:1px solid var(--line);background:transparent;padding:7px 9px;color:var(--ink);font:600 .58rem var(--mono);white-space:nowrap;cursor:pointer}.claim-result-enrichment-stop:hover,.claim-result-enrichment-stop:focus-visible{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .claim-result-enrichment[data-status-state=running]{background:color-mix(in srgb,var(--paper-deep) 55%,transparent);padding:14px}.claim-result-enrichment[data-status-mode=media] .claim-result-progress b:first-child{background:var(--muted);border-color:var(--muted)}.claim-result-enrichment[data-status-state=unavailable]{border-top:1px dashed var(--line);padding-top:12px}.claim-result-enrichment[data-status-state=unavailable] strong{color:var(--muted)}
   .warehouse-prompts{border-top:1px solid var(--line);margin-top:18px;padding-top:0}.warehouse-prompts summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:14px 0;font:600 .6rem var(--mono);text-transform:uppercase;color:var(--red);list-style:none}.warehouse-prompts summary::-webkit-details-marker{display:none}.warehouse-prompts summary small{margin-left:auto;color:var(--muted);font:600 .58rem var(--mono);text-transform:none}.warehouse-prompts summary b{font-size:1rem;font-weight:400;color:var(--ink)}.warehouse-prompts[open] summary b{transform:rotate(45deg)}.warehouse-prompts>div{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 4px}.warehouse-prompts button{background:var(--paper)!important;border-color:var(--ink)!important}.warehouse-prompts button:hover{background:var(--yellow)!important}
 </style>
 <style>

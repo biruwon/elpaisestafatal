@@ -539,22 +539,25 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   status.className = 'claim-result-enrichment';
   status.dataset.dynamicStatus = 'true';
   status.dataset.statusState = state;
+  status.dataset.statusMode = mode;
   status.setAttribute('aria-live', 'polite');
   status.setAttribute('role', 'status');
   const progress = state === 'running'
     ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
     : '';
   const title = mode === 'media'
-    ? state === 'running' ? 'Leyendo archivo' : 'No hemos podido leer el archivo'
-    : state === 'running' ? 'Añadimos contexto' : 'Lectura rápida conservada';
-  const action = state === 'running' && mode === 'enrichment' ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Quedarme con lo rápido</button>' : '';
+    ? state === 'running' ? 'Comprobación adicional en curso' : state === 'slow' ? 'Lectura del archivo no disponible' : 'Comprobación adicional no disponible'
+    : state === 'running' ? 'Comprobación adicional en curso' : state === 'slow' ? 'Tiempo de espera agotado' : 'Comprobación adicional no disponible';
+  const action = state === 'running'
+    ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Seguir solo con esta orientación</button>'
+    : '';
   status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>${action}`;
   result.querySelector('article')?.append(status);
   status.querySelector<HTMLButtonElement>('[data-stop-enrichment]')?.addEventListener('click', () => {
     activeRequest?.abort();
     activeRequest = null;
     requestVersion += 1;
-    clearDynamicStatus();
+    setDynamicStatus('La orientación visible ya está lista. Hemos detenido la comprobación adicional.', 'unavailable', mode);
   });
 };
 
@@ -656,7 +659,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       return;
     }
     if (data.status === 'unavailable') {
-      if (file && query) setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.');
+      if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       });
@@ -671,7 +674,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
     if (version === requestVersion) {
-      if (file && query) setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.');
+      if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
       else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
     }
