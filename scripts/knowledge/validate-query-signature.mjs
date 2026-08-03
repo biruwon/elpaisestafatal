@@ -40,6 +40,13 @@ if (module.semanticQuerySignature('España tiene el paro más alto de Europa') !
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') === module.semanticQuerySignature('España tiene el paro más bajo de Europa')) throw new Error('Highest and lowest ranking claims produced the same signature');
 if (module.semanticQuerySignature('España está peor que hace diez años') !== module.semanticQuerySignature('España está peor que hace diez años')) throw new Error('Relative comparison signature was not stable');
 if (module.semanticQuerySignature('España está peor que hace diez años') === module.semanticQuerySignature('España está mejor que hace diez años')) throw new Error('Better and worse relative comparisons produced the same signature');
+const debtStockSignature = module.semanticQuerySignature('La deuda pública en euros aumenta');
+if (debtStockSignature !== module.semanticQuerySignature('La deuda de España en euros aumenta')) throw new Error('Absolute public-debt wording did not share a semantic family');
+if (!debtStockSignature.includes('concept:public_debt_stock')) throw new Error('Absolute public-debt signature did not expose its specific concept');
+if (debtStockSignature === module.semanticQuerySignature('La deuda pública supera el 100% del PIB')) throw new Error('Absolute public-debt stock was merged with debt-to-GDP ratio');
+if (!module.semanticQuerySignature('Cuánto debe España en euros').includes('concept:public_debt_stock')) throw new Error('Absolute debt question was not routed to the debt-stock family');
+if (!module.semanticQuerySignature('La deuda pública supera el 100% del PIB').includes('concept:public_debt_ratio')) throw new Error('Debt-to-GDP comparison was not routed to the ratio family');
+if (!module.semanticQuerySignature('La deuda pública sobre el PIB sigue por encima del 100%').includes('concept:public_debt_ratio')) throw new Error('Debt-to-GDP wording was not routed to the ratio family');
 const longTailFamilies = [
   ['Cada vez cuesta más llegar a fin de mes en España', 'La vida se ha encarecido en España'],
   ['La deuda pública de España crece', 'España está cada vez más endeudada'],

@@ -22,6 +22,8 @@ const conceptAliases: Array<[string, string[]]> = [
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'partido', 'politica']],
   ['cost_of_living', ['coste de vida', 'llegar a fin de mes', 'no llega para vivir', 'no alcanza para vivir', 'cesta de la compra', 'poder adquisitivo', 'encarecido', 'encarecida', 'caro', 'cara']],
   ['public_finance', ['deuda publica', 'deuda', 'endeudado', 'endeudada', 'deficit publico', 'presupuesto publico', 'recaudacion', 'gasto publico', 'presion fiscal', 'fiscalidad']],
+  ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
+  ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
   ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'esperas largas', 'esperas enormes']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
@@ -134,6 +136,9 @@ export const semanticQuerySignature = (value: string): string => {
     .filter(([, aliases]) => aliases.some((alias) => containsAlias(text, alias)))
     .map(([concept]) => concept);
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
+  if (containsAlias(text, 'deuda publica') && containsAlias(text, 'pib')) concepts.push('public_debt_ratio');
+  if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
+  if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
   const fallback = concepts.length ? [] : semanticTokens(text);
   const polarity = /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
   const relation = directionalRelation(text);
