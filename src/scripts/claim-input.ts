@@ -1246,7 +1246,10 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
         // a second time. File-only requests have no earlier identity.
         requestId: query ? undefined : data.requestId,
         canonical: data.input?.canonical || capturedText,
-        semanticSignature: data.canonicalSignature,
+        // Keep typed claims on the deterministic signature captured before
+        // optional enrichment. A model-generated canonical signature may be
+        // different and must not create a second cluster for the same request.
+        semanticSignature: query ? semanticQuerySignature(query) : data.canonicalSignature,
       });
     }
     applyResponse(data, query, ranked);

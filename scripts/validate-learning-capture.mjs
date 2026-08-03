@@ -13,6 +13,7 @@ requireText(input, "recordQuestion(query, { inputType: 'text', status: 'received
 requireText(input, 'const capturedText = query || data.input?.canonical ||', 'terminal capture identity');
 requireText(input, 'status: data.status', 'terminal status update');
 requireText(input, 'requestId: query ? undefined : data.requestId', 'idempotent typed/media request identity');
+requireText(input, 'semanticSignature: query ? semanticQuerySignature(query) : data.canonicalSignature', 'stable typed semantic signature');
 requireText(input, 'data-learning-note', 'uncovered-result learning feedback');
 requireText(input, 'if (file) rememberRecentCheck(data.input?.canonical || capturedText)', 'media-derived learning capture');
 requireText(input, 'canonical: data.input?.canonical || capturedText', 'media-derived canonical claim capture');
