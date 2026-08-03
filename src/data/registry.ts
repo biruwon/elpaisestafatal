@@ -17,6 +17,8 @@ export type EvidenceRecord = {
   geography: string;
   unit: string;
   body: string;
+  summary: string;
+  limitation: string;
   relationships: EvidencePropositionLink[];
 };
 
@@ -55,6 +57,16 @@ function list(value = ''): string[] {
   try { return JSON.parse(value); } catch { return value ? value.split(',').map((item) => item.trim()) : []; }
 }
 
+function section(body: string, heading: string): string {
+  const match = body.match(new RegExp(`## ${heading}\\s*\\n+([\\s\\S]*?)(?=\\n## |$)`));
+  return match?.[1].replace(/\\s+/g, ' ').trim() || '';
+}
+
+function evidenceSummary(body: string): string {
+  const paragraph = body.split(/\\n\\s*\\n/).map((item) => item.replace(/\\s+/g, ' ').trim()).find((item) => item && !item.startsWith('##'));
+  return paragraph || body.replace(/\\s+/g, ' ').trim();
+}
+
 export const sourceRecords: SourceRecord[] = Object.entries(sourceFiles).map(([path, raw]) => {
   const { data, body } = parse(raw);
   return { id: data.id || path.split('/').pop()!.replace(/\.md$/, ''), title: normaliseSourceTitle(data.title || ''), url: data.url || '', date: data.date || '', type: data.type || 'other', body };
@@ -63,7 +75,7 @@ export const sourceRecords: SourceRecord[] = Object.entries(sourceFiles).map(([p
 export const evidenceRecords: EvidenceRecord[] = Object.entries(evidenceFiles).map(([path, raw]) => {
   const { data, body } = parse(raw);
   const id = data.id || path.split('/').pop()!.replace(/\.md$/, '');
-  return { id, kind: data.kind || 'other', sourceIds: list(data.sourceIds), period: data.period || '', geography: data.geography || 'España', unit: data.unit || '', body, relationships: relationshipsByEvidence.get(id) || [] };
+  return { id, kind: data.kind || 'other', sourceIds: list(data.sourceIds), period: data.period || '', geography: data.geography || 'España', unit: data.unit || '', body, summary: evidenceSummary(body), limitation: section(body, 'Límite') || section(body, 'Limitación'), relationships: relationshipsByEvidence.get(id) || [] };
 });
 
 export const getSource = (id: string) => sourceRecords.find((source) => source.id === id);
