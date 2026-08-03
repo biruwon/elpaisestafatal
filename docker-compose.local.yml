@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.local
     environment:
       LOCAL_CLASSIFIER_PORT: 8789
+      LOCAL_CLASSIFIER_BIND_HOST: 0.0.0.0
       LOCAL_CLASSIFIER_TOKEN: ${LOCAL_CLASSIFIER_TOKEN:-}
       LOCAL_CATALOG_URL: ${LOCAL_CATALOG_URL:-http://host.docker.internal:4321/claim-catalog.json}
       OLLAMA_ENDPOINT: ${OLLAMA_ENDPOINT:-http://host.docker.internal:11434}
@@ -52,6 +53,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  tunnel:
+    image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
+    profiles: ["tunnel"]
+    environment:
+      CLOUDFLARED_TUNNEL_TOKEN: ${CLOUDFLARED_TUNNEL_TOKEN:-}
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN:-}
+    depends_on:
+      claim-resolver:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

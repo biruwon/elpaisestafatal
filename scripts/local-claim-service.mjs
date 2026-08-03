@@ -22,6 +22,7 @@ import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowled
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
+const bindHost = process.env.LOCAL_CLASSIFIER_BIND_HOST || '127.0.0.1';
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
@@ -1419,4 +1420,4 @@ const server = createServer(async (request, response) => {
   } catch { response.writeHead(200, { 'content-type': 'application/json' }); response.end(JSON.stringify({ status: 'unavailable' })); }
 });
 
-server.listen(port, '127.0.0.1', () => console.log(`Local claim service listening on 127.0.0.1:${port}`));
+server.listen(port, bindHost, () => console.log(`Local claim service listening on ${bindHost}:${port}`));
