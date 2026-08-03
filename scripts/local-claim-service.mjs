@@ -13,7 +13,7 @@ import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowled
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
-import { compilerSchema, normalizeCompilerOutput } from './knowledge/local-compiler-contract.mjs';
+import { compilerSchema, normalizeCompilerOutput, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -790,7 +790,8 @@ const classify = async (text) => {
   // destruida” and can leave the UI looking stuck. Keep the fast clarification
   // path synchronous; reserve model extraction for claims that can benefit
   // from proposition parsing or candidate disambiguation.
-  const needsModelCompilation = !deterministicCompiler.clarificationRequired && (hasPlausibleCandidate || compilerNeedsStructure);
+  const needsModelCompilation = shouldUseLocalCompiler({ text, deterministic: deterministicCompiler, hasPlausibleCandidate })
+    || (!deterministicCompiler.clarificationRequired && compilerNeedsStructure);
   const compiledCandidate = !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);

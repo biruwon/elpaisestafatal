@@ -153,3 +153,23 @@ export const compilerContractFacts = {
   maxPropositions: 6,
   maxRetrievalHints: 8,
 };
+
+const compilerSignalWords = new Set(['espana', 'pais', 'gente', 'cosa', 'cosas', 'problema', 'problemas', 'verdad', 'cierto', 'cierta']);
+const compilerSignalTokens = (value) => [...new Set(String(value || '')
+  .toLocaleLowerCase('es')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .match(/[a-z0-9]{3,}/g) || [])].filter((token) => !compilerSignalWords.has(token));
+
+// Model extraction is useful for a genuinely new, ordinary sentence, but it
+// should not add latency to empty/random input, explicit warehouse questions,
+// or broad complaints that already have a safe deterministic path. Keep this
+// policy in the shared contract so the local service and its tests agree on
+// when model work is justified.
+export const shouldUseLocalCompiler = ({ text, deterministic, hasPlausibleCandidate = false } = {}) => {
+  if (!String(text || '').trim() || deterministic?.clarificationRequired === true) return false;
+  if (hasPlausibleCandidate || (deterministic?.propositions?.length || 0) > 1) return true;
+  if (['mixed', 'causal', 'legal', 'normative', 'predictive'].includes(deterministic?.claimType)) return true;
+  const signalCount = compilerSignalTokens(text).length;
+  return signalCount >= 3 && String(text).trim().length >= 18;
+};

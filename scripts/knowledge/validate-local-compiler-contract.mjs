@@ -1,4 +1,4 @@
-import { compilerContractFacts, compilerSchema, normalizeCompilerOutput } from './local-compiler-contract.mjs';
+import { compilerContractFacts, compilerSchema, normalizeCompilerOutput, shouldUseLocalCompiler } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -46,6 +46,9 @@ assert(compilerSchema.additionalProperties === false, 'Compiler schema allows un
 assert(compilerSchema.properties.propositions.maxItems === 6, 'Compiler schema does not bound proposition output');
 assert(compilerSchema.properties.retrievalHints.maxItems === 8, 'Compiler schema does not bound retrieval hints');
 assert(compilerContractFacts.deterministicOnly.includes('numbers') && compilerContractFacts.deterministicOnly.includes('semanticSignature'), 'Deterministic-only compiler fields are not documented');
+assert(shouldUseLocalCompiler({ text: 'asdasdfasd', deterministic: { clarificationRequired: false, claimType: 'descriptive', propositions: [{ type: 'descriptive' }] } }) === false, 'Low-signal input should not trigger local model extraction');
+assert(shouldUseLocalCompiler({ text: 'El gobierno oculta cifras sobre las ayudas', deterministic: { clarificationRequired: false, claimType: 'descriptive', propositions: [{ type: 'descriptive' }] } }) === true, 'Uncovered multi-term claims should reach the local compiler');
+assert(shouldUseLocalCompiler({ text: 'España está destruida', deterministic: { clarificationRequired: true, claimType: 'definition', propositions: [{ type: 'definition' }] } }) === false, 'Broad complaints should retain the deterministic clarification path');
 
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');
