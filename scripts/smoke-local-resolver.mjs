@@ -434,6 +434,10 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'inmigracion-delincuencia') failures.push('group comparison: accepted a causal published claim as an exact match');
   } catch (error) { failures.push(`group comparison compatibility: ${error.message}`); }
   try {
+    const result = await resolve('Los inmigrantes crean inseguridad');
+    if (result.status !== 'complete' || !/relaci[oó]n afirmada|causalidad/i.test(result.result?.headline || '')) failures.push('causal published claim: headline repeated the claim instead of summarizing its unsupported causal assessment');
+  } catch (error) { failures.push(`causal published claim: ${error.message}`); }
+  try {
     const result = await resolve('La ley permite echar a cualquiera de su casa');
     if (result.status !== 'uncovered') failures.push(`legal long-tail: expected uncovered, received ${result.status}`);
     if (result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push('legal long-tail: leaked unrelated evidence');

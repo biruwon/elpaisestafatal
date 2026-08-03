@@ -1199,6 +1199,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const sourceLinks = [...sourceLinkMap.values()].slice(0, 5);
   const relatedTopic = !primary ? classified.alternatives?.find((item) => item.kind === 'topic') : undefined;
+  const primaryAssessmentHeadline = {
+    false: 'La afirmación no coincide con los datos disponibles',
+    unsupported: 'La relación afirmada no está demostrada por esos datos',
+    misleading: 'La frase mezcla un dato real con una conclusión más amplia',
+    uncertain: 'La evidencia disponible todavía no permite decidir',
+    'mostly-true': 'La afirmación es básicamente correcta, con una precisión importante',
+  }[primary?.assessment];
   const primaryHeadline = primary?.slug === 'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control'
     ? 'La ley elimina un requisito médico, pero mantiene un procedimiento'
     : primary?.slug === 'la-amnistia-rompe-la-igualdad-ante-la-ley'
@@ -1207,7 +1214,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         ? 'No hay un plazo único: el tipo de caso determina la vía de desalojo'
       : primary?.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional'
         ? 'Hay cambios demográficos, pero no una métrica de “reemplazo”'
-    : primary?.title;
+    : primaryAssessmentHeadline || primary?.title;
   const result = {
     schemaVersion: '1',
     headline: primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
