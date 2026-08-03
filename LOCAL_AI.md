@@ -39,7 +39,7 @@ npm run clarify:local -- --audio /absolute/path/recording.m4a
 
 ## Endpoint and local models
 
-The browser always submits to the same-origin `/api/resolve` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
+The browser always submits to the same-origin `/api/classify` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
 
 For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TOKEN` in the Pages Function environment and the local resolver environment. The token is optional for a loopback-only development setup.
 
@@ -49,7 +49,7 @@ For a later production iteration, create a named tunnel with an API token that h
 
 This tunnel is intentionally deferred. The current production deployment does not require local inference: it serves deterministic claim matching and evidence guidance through the static site and API fallback. A public health response with `dynamic: false` is therefore expected until the persistent origin is configured.
 
-The local development proxy keeps the local inference service behind the same-origin `/api/resolve` boundary. Set up the local models once:
+The local development proxy keeps the local inference service behind the same-origin `/api/classify` boundary. Set up the local models once:
 
 ```bash
 npm run ai:setup

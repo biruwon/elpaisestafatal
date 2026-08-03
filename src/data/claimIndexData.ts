@@ -73,7 +73,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
 ];
 
 // Keep the browser index complete even when a reviewed Markdown claim has not
-// yet been mirrored into the legacy TypeScript catalogue. This also prevents
+// yet been mirrored into the TypeScript catalogue. This also prevents
 // a published claim from becoming invisible to exact, alias, or fuzzy lookup.
 const indexedClaimSlugs = new Set(claimIndexEntries.filter((entry) => entry.kind === 'claim').map((entry) => entry.slug));
 claimIndexEntries.push(...markdownClaims

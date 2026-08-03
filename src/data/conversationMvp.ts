@@ -676,7 +676,7 @@ export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(defi
   };
 }).filter((item) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === item.slug);
-  // Markdown content is the canonical published source. The legacy claim
+  // Markdown content is the canonical published source. The catalogue
   // array is still used above for older records, but it must not hide newer
   // published families from the conversation library.
   return markdownClaim?.status === 'published';

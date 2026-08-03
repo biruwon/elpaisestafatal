@@ -4,7 +4,7 @@ import { evaluationCases } from './evaluation-cases.mjs';
 import { evaluateOutcome } from './evaluation-metrics.mjs';
 
 const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/v1/resolve';
+const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/classify';
 const offset = Math.min(evaluationCases.length, Math.max(0, Number(process.env.EVALUATION_OFFSET || 0)));
 const limit = Math.min(evaluationCases.length - offset, Math.max(1, Number(process.env.EVALUATION_LIMIT || evaluationCases.length)));
 const concurrency = Math.max(1, Math.min(8, Number(process.env.EVALUATION_CONCURRENCY || 3)));

@@ -9,7 +9,6 @@ const checks = [
   { path: '/datos/', status: 200, title: 'Datos' },
   { path: '/afirmaciones/inmigrantes-ayudas/', status: 200, title: 'El país está fatal' },
   { path: '/preocupaciones/vivienda/', status: 200, title: 'Vivienda' },
-  { path: '/verificaciones/inmigrantes-ayudas/', status: 301 },
 ];
 
 const failures = [];
@@ -35,15 +34,6 @@ const apiChecks = [
       if (!body || typeof body !== 'object' || (body.status !== 'ok' && body.status !== 'degraded')) failures.push('/api/health: missing generic health status');
       if (typeof body?.deterministic !== 'boolean') failures.push('/api/health: missing deterministic status');
       if (forbidden.test(JSON.stringify(body))) failures.push('/api/health: exposed implementation details');
-    },
-  },
-  {
-    path: '/api/resolve',
-    init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}) },
-    validate(response, body) {
-      if (![200, 400].includes(response.status)) failures.push(`/api/resolve: expected a handled response, received ${response.status}`);
-      if (!body || typeof body !== 'object' || typeof body.status !== 'string') failures.push('/api/resolve: missing generic status payload');
-      if (forbidden.test(JSON.stringify(body))) failures.push('/api/resolve: exposed implementation details');
     },
   },
   {

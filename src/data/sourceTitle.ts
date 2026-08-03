@@ -1,7 +1,7 @@
 /**
- * Some legacy source records were generated from chart objects and retained
+ * Some source records were generated from chart objects and retained
  * their internal `source: { label: ... }` representation as the title. Keep
- * the source registry backward-compatible while presenting a useful label to
+ * the source registry shape while presenting a useful label to
  * readers.
  */
 export const normaliseSourceTitle = (value: string): string => {

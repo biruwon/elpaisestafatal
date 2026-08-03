@@ -45,7 +45,7 @@ try {
   const d1Input = join(directory, 'd1.json');
   const d1Output = join(directory, 'd1-clusters.json');
   await writeFile(d1Input, JSON.stringify({ clusters: [
-    { id: 'd1-causal', canonical_text: 'La inmigración aumenta la delincuencia', canonical_signature: 'legacy-surface', semantic_signature: `${equivalent.semanticSignature}|legacy`, query_count: 4, count_7d: 3, count_30d: 4, coverage_status: 'uncovered', review_status: 'unreviewed' },
+    { id: 'd1-causal', canonical_text: 'La inmigración aumenta la delincuencia', canonical_signature: 'surface-v1', semantic_signature: `${equivalent.semanticSignature}|surface-v1`, query_count: 4, count_7d: 3, count_30d: 4, coverage_status: 'uncovered', review_status: 'unreviewed' },
     { id: 'd1-opposite', canonical_text: 'La inmigración no aumenta la delincuencia', canonical_signature: 'opposite-surface', semantic_signature: deterministicFallbackCompiler('La inmigración no aumenta la delincuencia').semanticSignature, query_count: 2, count_7d: 2, count_30d: 2, coverage_status: 'uncovered', review_status: 'unreviewed' },
   ] }));
   await execFileAsync(process.execPath, ['scripts/knowledge/cluster-gaps.mjs', '--input', input, '--d1-input', d1Input, '--output', d1Output]);

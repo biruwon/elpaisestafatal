@@ -1,5 +1,5 @@
 const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/v1/resolve';
+const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/classify';
 const healthPath = process.env.SMOKE_HEALTH_PATH || '/healthz';
 const failures = [];
 

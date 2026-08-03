@@ -2,17 +2,19 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ClarifierVisuals from '../../components/ClarifierVisuals.astro';
 import { conversationMvpClaims } from '../../data/conversationMvp';
+import { getClaim } from '../../data/claims';
 
 export function getStaticPaths() {
   return conversationMvpClaims.map((claim) => ({ params: { slug: claim.slug }, props: { claim } }));
 }
 
 const { claim } = Astro.props;
-const sourceClaim = `/afirmaciones/${claim.slug}`;
+const publishedClaim = getClaim(claim.slug)?.published === true;
+const sourceClaim = publishedClaim ? `/afirmaciones/${claim.slug}` : null;
 ---
 <BaseLayout title={`${claim.prompt} — Aclaración`} description="Una aclaración breve con contexto, datos y límites de la evidencia.">
   <article class="clarifier-page">
-    <noscript><p class="noscript-notice">Esta aclaración funciona mejor con JavaScript activado. <a href={sourceClaim}>Consulta directamente la investigación y sus fuentes.</a></p></noscript>
+    <noscript><p class="noscript-notice">Esta aclaración funciona mejor con JavaScript activado. {sourceClaim ? <a href={sourceClaim}>Consulta directamente la investigación y sus fuentes.</a> : 'Consulta las fuentes y el contexto incluidos en esta página.'}</p></noscript>
     <a class="back-link" href="/">← Volver a las discusiones</a>
     <header class="clarifier-hero">
       <p class="eyebrow">Aclaración rápida · España</p>
@@ -42,7 +44,7 @@ const sourceClaim = `/afirmaciones/${claim.slug}`;
 
     <section class="clarifier-section uncertainty-section"><div><p class="eyebrow">5 · Lo que sigue abierto</p><h2>Qué podría cambiar<br /><em>esta conclusión.</em></h2></div><div><p>{claim.limit}</p><p class="future-evidence"><strong>Para afinarla harían falta:</strong> datos más específicos del territorio, una definición común y una comparación que mida el mismo fenómeno durante el mismo periodo.</p></div></section>
 
-    <footer class="clarifier-footer"><a href={sourceClaim}>Ver la investigación y todas las fuentes →</a><a href="/">Comprobar otra afirmación →</a></footer>
+    <footer class="clarifier-footer">{sourceClaim ? <a href={sourceClaim}>Ver la investigación y todas las fuentes →</a> : <span>Fuentes y límites de la evidencia incluidos arriba</span>}<a href="/">Comprobar otra afirmación →</a></footer>
   </article>
 </BaseLayout>
 <script is:inline>

@@ -100,7 +100,7 @@ const knownSeeds = [
   ['gobierno-transfiere-310-millones-educacion-presidencia', 'descriptive', 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia'],
 ];
 
-// Keep this list for future planned-only regressions. A planned legacy file
+// Keep this list for future planned-only regressions. A planned source file
 // whose wording is now covered by a published claim must not be treated as an
 // unknown case: exact published coverage is the intended result.
 const unpublishedSeeds = [];

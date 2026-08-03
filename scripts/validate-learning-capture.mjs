@@ -16,7 +16,6 @@ requireText(input, 'recordQuestion(data.input.canonical', 'media-derived canonic
 requireText(questions, 'const isNewRequest =', 'idempotent request detection');
 requireText(questions, 'if (isNewRequest)', 'count-once cluster update gate');
 requireText(questions, 'ON CONFLICT(semantic_signature)', 'semantic cluster persistence');
-requireText(questions, 'ON CONFLICT(canonical_signature)', 'legacy cluster persistence fallback');
 
 if (input.includes('recordUncoveredQuestion')) failures.push('legacy late-only learning helper remains');
 if (failures.length) {

@@ -18,8 +18,8 @@ createServer((request, response) => {
     forward(request, response, classifierPort, '/healthz');
     return;
   }
-  if (request.url?.startsWith('/api/classify') || request.url?.startsWith('/api/resolve') || request.url?.startsWith('/api/v1/resolve')) {
-    const targetPath = request.url.startsWith('/api/v1/resolve') ? request.url.replace(/^\/api\/v1\/resolve/, '/v1/resolve') : request.url.startsWith('/api/resolve') ? request.url.replace(/^\/api\/resolve/, '/v1/resolve') : request.url.replace(/^\/api\/classify/, '/v1/resolve');
+  if (request.url?.startsWith('/api/classify')) {
+    const targetPath = request.url.replace(/^\/api\/classify/, '/v1/classify');
     forward(request, response, classifierPort, targetPath);
     return;
   }

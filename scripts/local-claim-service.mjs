@@ -1278,7 +1278,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
     ...(primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),
-    knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'legacy-index',
+    knowledgeVersion: observations.length ? 'warehouse-draft-1' : 'index-only',
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
   const validation = validateAnswerPlan(result, { provisional: status === 'draft' });
@@ -1391,12 +1391,12 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
-  if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/resolve')) { response.writeHead(404); response.end(); return; }
+  if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
   try {
     if (classifierToken && request.headers.authorization !== `Bearer ${classifierToken}`) { response.writeHead(401, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable' })); return; }
     const url = new URL(request.url, 'http://127.0.0.1');
-    if (request.url.startsWith('/v1/resolve')) {
-      const requestMatch = url.pathname.match(/^\/v1\/resolve\/([^/]+)$/);
+    if (request.url.startsWith('/v1/classify')) {
+      const requestMatch = url.pathname.match(/^\/v1\/classify\/([^/]+)$/);
       if (requestMatch && request.method === 'GET') {
         const job = resolveJobs.get(requestMatch[1]);
         response.writeHead(job ? 200 : 404, { 'content-type': 'application/json', 'cache-control': 'no-store' });

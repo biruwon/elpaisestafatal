@@ -43,7 +43,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Improved checker discoverability for the new evidence families: Spain–EU inequality and public-deficit questions now appear in the primary conversation prompts, warehouse prompt list, and homepage data highlights. The initial visible set remains bounded, while the new questions are still reachable through the expanded indicator list.
 - Added the reviewed Spain-versus-EU public-debt comparison family `España tiene más deuda pública que la Unión Europea`, backed by Eurostat's 2025 gross general-government debt ratio (100.7% of GDP in Spain versus 81.7% in the EU27). It now has a typed metric/source/evidence/proposition chain, an explicit stock-versus-deficit limitation, comparison routing and visual output, catalogue/homepage discovery, a static claim route, and local resolver/evaluation/smoke coverage.
 - Added the reviewed Spain-versus-EU fertility family `España tiene menos hijos por mujer que la Unión Europea`, backed by Eurostat's 2024 total fertility rate (1.10 versus 1.34 live births per woman). It now has a typed metric/source/evidence/proposition chain, a synthetic-rate limitation, comparison routing and visual output, catalogue/homepage discovery, a static claim route, and local resolver/evaluation/smoke coverage.
-- Added a reproducible Pages Functions smoke harness: `npm run smoke:pages` starts the built Astro output with local Wrangler, checks static routes plus `/api/health`, `/api/classify`, `/api/resolve`, media fallbacks, and the operational feed, and allows only the expected local no-D1 fallback. The production smoke still requires the operational database when run against the deployed site.
+- Added a reproducible Pages Functions smoke harness: `npm run smoke:pages` starts the built Astro output with local Wrangler, checks static routes plus `/api/health`, `/api/classify`, media fallbacks, and the operational feed, and allows only the expected local no-D1 fallback. The production smoke still requires the operational database when run against the deployed site.
 - Extended the local deployment bundle with an opt-in `tunnel` Compose profile. The resolver can bind to the container network while remaining host-loopback-only, and a token-based Cloudflare Tunnel sidecar waits for the resolver health check; no token, hostname, or credential is committed.
 - Added the reviewed Spain-versus-EU income-inequality family `España es más desigual que la Unión Europea`, backed by Eurostat's 2025 Gini comparison (30.8 versus 29.2). It has a typed metric/source/evidence/proposition chain, sign- and definition-aware comparison language, catalogue discovery, a static claim route, and local resolver/evaluation/smoke coverage. The answer explicitly separates relative income inequality from poverty, wealth, mean income, and every household's situation.
 - Promoted a high-demand social-protection metric into the published claim `España gasta más por habitante en prestaciones de protección social que en 2015`. It reuses the reviewed Eurostat 2015–2024 series, adds a typed proposition/evidence/source chain, a reusable trend visual, explicit limits between aggregate spending and individual benefits, catalogue discovery, and local resolver/evaluation coverage.
@@ -152,7 +152,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Exact published matches now use assessment-aware result headings for false, misleading, unsupported, uncertain, and mostly-true claims, so a causal claim such as `Los inmigrantes crean inseguridad` cannot render its unsupported conclusion as if it were the site's finding.
 - The homepage regional-data discovery rail now includes a one-click Madrid–Andalucía density comparison, making the new same-period comparison path discoverable without requiring users to know the exact query wording.
 - Shared knowledge contracts and relation validation are now part of the build.
-- `/api/classify` is now the public provider-neutral classifier boundary used by the claim input, with the same JSON/multipart validation, timeout, token forwarding, generic failures, and polling contract as the backward-compatible `/api/resolve` route.
+- `/api/classify` is the single public provider-neutral classifier boundary used by the claim input, with JSON/multipart validation, timeout, token forwarding, generic failures, and bounded polling.
 - `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine. The current local evaluation corpus contains 888 Spanish inputs across 13 categories; the last completed runtime run reached 744/744 known-family retrieval, 60/60 unknown-safety cases, 0 irrelevant matches, and 804/804 traceable outcomes before the latest education, healthcare-access, GDP-per-capita, absolute-debt, and debt-growth cases. The education, youth, healthcare-access, GDP-per-capita, absolute-debt, and debt-growth families now have runtime smoke coverage, while adjacent-letter transposition typos resolve to the intended published family, local/private claims suppress unrelated national guidance and sources, and published results carry reviewed HTTPS source links into the answer plan.
 - The source warehouse now preserves real dated observations from INE `DATOS_TABLA` responses instead of indexing row metadata as measurements.
 - Refresh resources can carry source-specific titles and aliases, which are included in derived retrieval indexes for long-tail wording such as `inflación`, `IPC`, and `PIB`.
@@ -183,7 +183,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Young-population coverage is now also a reviewed published claim: “En España hay cada vez menos menores de 15 años”, with a national Eurostat share series, an explicit proportion-versus-count distinction, and a claim-specific trend visual.
 - Ageing coverage is now also a reviewed published claim: “España está cada vez más envejecida”, with a national Eurostat 65+ series, explicit policy limits, and claim-specific trend values.
 - Query submissions now derive a deterministic sorted-term signature before entering D1, so punctuation, accents, stopwords, and word order do not create separate usage clusters; the original canonical wording remains the review/display text.
-- D1 operational submissions now also carry a coarse semantic family signature. Equivalent long-tail wording can share one production review cluster while the original surface signature remains available for audit and display; the API falls back to the pre-migration path until migration 0004 is applied.
+- D1 operational submissions now carry a coarse semantic family signature. Equivalent long-tail wording can share one production review cluster while the original surface signature remains available for audit and display; the current schema is required for production writes.
 - D1 migration 0004 is now applied to the production `elpaisestafatal-ops` database, and the remote schema exposes the semantic-signature columns plus the cluster uniqueness/index contract.
 - The review-queue clusterer now has an optional local embedding-assisted pass: it batches neutral cluster text to a local-only embedding endpoint, merges only compatible semantic families above a bounded cosine threshold, preserves the original surface signatures, and records whether the merge ran. Missing, failing, or non-local endpoints keep the deterministic clusters unchanged, so semantic clustering never becomes a prerequisite for the claim-checking path.
 - Structured answers now collect optional usefulness feedback (`yes`, `partly`, or `no`) through a rate-limited `/api/feedback` endpoint backed by the existing D1 table; feedback never blocks or changes the answer.
@@ -417,7 +417,7 @@ GET  /api/classify/:requestId
 
 The frontend submits once and polls automatically when a request is processing. There is no second classification click.
 
-`/api/resolve`, `/api/v1/resolve`, and the local `/v1/resolve` paths remain compatibility/internal routes so existing smoke tests and deployments do not break.
+The classifier has one public `/api/classify` route and one local `/v1/classify` contract; no compatibility classifier routes are retained.
 
 ## Phase 4 — Retrieval and evidence warehouse
 
@@ -621,7 +621,7 @@ dynamic answer
 - Preserve all existing public URLs and route behavior.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
 - Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
-- Run production smoke checks against both static routes and the generic `/api/health`, `/api/classify`, and backward-compatible `/api/resolve` boundaries without requiring dynamic inference to be available.
+- Run production smoke checks against both static routes and the generic `/api/health` and `/api/classify` boundaries without requiring dynamic inference to be available.
 - CI now also runs `npm run smoke:pages` against the built Pages Functions artifact, with a local compatibility-date override only for the installed Wrangler/workerd runtime; production configuration remains validated separately.
 - Exercise text, screenshot, and audio multipart requests against both the production `/api/classify` boundary and the local boundary in CI with inference unavailable; each request must finish with a useful result or generic unavailable state. Malformed operational submissions now return a generic client error instead of an uncaught runtime failure.
 - Source freshness now uses the real runtime clock, with an explicit deterministic test override; unregistered discovery snapshots do not block the authoritative freshness gate, while ad-hoc BOE consolidated-legislation snapshots use a weekly cadence instead of inheriting daily-summary freshness.
@@ -669,7 +669,7 @@ The system must remain useful when free limits or the home origin are unavailabl
 
 1. Work only in `/Users/antonio/projects/bulos/elpaisestafatal`.
 2. Implement one phase or vertical slice at a time.
-3. Preserve current static routes and compatibility data during migration.
+3. Preserve current static routes and reviewed knowledge during migration.
 4. Run `npm run check`, `npm run build`, `npm run validate:content`, `npm run audit:roadmap`, and relevant smoke tests after each slice.
 5. Run `git diff --check`.
 6. Commit and push each completed slice to `origin/main`.
