@@ -19,6 +19,7 @@ import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
+import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
@@ -165,26 +166,12 @@ const recordKnowledgeGap = async (text, result, inputType = 'text', classified, 
   })}\n`).catch(() => { /* Learning must never block the user response. */ });
 };
 
-const checkLocalEndpoint = () => {
-  const host = new URL(endpoint).hostname;
-  if (!allowedInferenceHosts.has(host)) throw new Error('Inference endpoint is not local');
-};
-
-const ollama = async (path, body, timeout = 5000) => {
-  checkLocalEndpoint();
-  if (Date.now() < inferenceDisabledUntil) throw new Error('Local inference temporarily unavailable');
-  try {
-    const response = await fetch(`${endpoint}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeout) });
-    if (!response.ok) throw new Error(`Inference request failed: ${response.status} ${String(await response.text()).slice(0, 240)}`);
-    return response.json();
-  } catch (error) {
-    // Embeddings are an optional ranking enhancement. Their timeout must not
-    // suppress the text compiler, which can still enrich a claim using
-    // lexical candidates and deterministic metadata.
-    if (path !== '/api/embed') inferenceDisabledUntil = Date.now() + inferenceBackoffMs;
-    throw error;
-  }
-};
+const inference = createLocalInferenceProvider({
+  endpoint,
+  allowedHosts: allowedInferenceHosts,
+  isDisabled: () => Date.now() < inferenceDisabledUntil,
+  disable: () => { inferenceDisabledUntil = Date.now() + inferenceBackoffMs; },
+});
 
 const parseModelJson = (value) => {
   const text = typeof value === 'string' ? value : JSON.stringify(value || '');
@@ -199,7 +186,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   if (!validateEvidencePacket(packet).ok) return result.result;
   const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
+    const response = await inference.chat({ model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
     const draft = parseModelJson(response.message?.content);
     const upgraded = applySafePlanUpgrade(result.result, draft, packet);
     return validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok ? upgraded : result.result;
@@ -219,7 +206,7 @@ const compileClaim = async (text, candidates = []) => {
     // This is background enrichment: the deterministic result is already
     // available to the user. Allow one bounded cold-start model load, while
     // keeping failures finite and configurable for slower local hardware.
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
+    const response = await inference.chat({ model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) {
       if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] Model response did not satisfy the compiler schema: ${boundedExcerpt(response.message?.content, 600)}`);
@@ -234,7 +221,7 @@ const compileClaim = async (text, candidates = []) => {
 
 const extractImageText = async (media) => {
   if (!media?.base64) return '';
-  const response = await ollama('/api/chat', { model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
+  const response = await inference.chat({ model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
   return String(response.message?.content || '').trim().slice(0, 8000);
 };
 
@@ -609,7 +596,7 @@ const getIndex = async () => {
       // Semantic hydration is an optimisation. Never make the first claim
       // wait for a batch embedding request; lexical matching is immediately
       // usable and the in-memory index is upgraded for later requests.
-      void ollama('/api/embed', { model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)
+      void inference.embed({ model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)
         .then((response) => {
           const embeddings = Array.isArray(response.embeddings) ? response.embeddings : [];
           if (embeddings.length !== entries.length) return;
@@ -653,7 +640,7 @@ const classify = async (text) => {
   // alias matches are already covered lexically; semantic retrieval is only
   // useful when the input has a plausible relation to the published index.
   if ((lexicalRanked[0]?.lexical || 0) >= 0.1) {
-    try { vector = (await ollama('/api/embed', { model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
+    try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({ entry, lexical, semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
@@ -1308,7 +1295,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
     try {
-      const embedded = await ollama('/api/embed', { model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: -1 }, 1800);
+      const embedded = await inference.embed({ model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: -1 }, 1800);
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }

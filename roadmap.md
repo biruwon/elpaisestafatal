@@ -390,6 +390,8 @@ Run the local service on a dedicated always-on machine. Package it with Docker C
 
 Initial model baseline:
 
+The resolver's local model calls now pass through a small provider contract with `local` and `unavailable` adapters. Claim compilation, media extraction, and embeddings depend on `chat`/`embed` capabilities rather than runtime-specific calls scattered through the service; non-local endpoints are rejected before any request. This keeps the current development path local-only while leaving a controlled seam for a future hosted adapter.
+
 - a small Spanish-capable local chat model for structured extraction and planning;
 - a local multilingual embedding model for retrieval;
 - a local vision model for screenshots later;
