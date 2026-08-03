@@ -1,3 +1,5 @@
+import { RUNTIME_VERSIONS } from '../../src/lib/knowledge/runtime-versions.mjs';
+
 const numberPattern = /\b\d[\d.,%]*\b/g;
 
 const boundedString = (value, maximum) => typeof value === 'string' ? value.trim().slice(0, maximum) : '';
@@ -27,7 +29,7 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
     source: item.source?.url ? { title: boundedString(item.source.title, 180), url: item.source.url } : undefined,
   })).filter((item) => item.id);
   return {
-    schemaVersion: '1',
+    schemaVersion: RUNTIME_VERSIONS.evidencePacketSchema,
     input: boundedString(text, 1200),
     claimType: boundedString(compiler?.claimType || 'mixed', 40),
     handlerId: boundedString(handlerId, 40),
@@ -50,7 +52,7 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
 };
 
 export const validateEvidencePacket = (packet) => {
-  if (!packet || packet.schemaVersion !== '1' || typeof packet.input !== 'string' || typeof packet.handlerId !== 'string') return { ok: false, errors: ['invalid packet header'] };
+  if (!packet || packet.schemaVersion !== RUNTIME_VERSIONS.evidencePacketSchema || typeof packet.input !== 'string' || typeof packet.handlerId !== 'string') return { ok: false, errors: ['invalid packet header'] };
   if (!Array.isArray(packet.evidence) || !Array.isArray(packet.sourceLinks)) return { ok: false, errors: ['packet evidence or sources are not arrays'] };
   const ids = new Set(packet.evidence.map((item) => item.id));
   const errors = [];

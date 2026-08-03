@@ -1,3 +1,5 @@
+import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
+
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
   if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destru|ruina|fatal|desastr|cuesta abajo/.test(value)) return '¿Hablas de una decisión del Gobierno, economía, vivienda, empleo, inmigración o instituciones?';
@@ -54,7 +56,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       limitation: guidance.limitation,
       evidenceIds: [],
       sourceIds: [],
-      knowledgeVersion: 'deterministic-fallback-2',
+      knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
     },
   };
 };

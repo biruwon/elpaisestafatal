@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises';
-
 const failures = [];
 const classify = await readFile('functions/api/classify.ts', 'utf8');
 const classifyPolling = await readFile('functions/api/classify/[requestId].ts', 'utf8');
@@ -14,7 +13,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
   if (!classify.includes(fragment)) failures.push(`/api/classify is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');
-for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'deterministic-fallback-2']) {
+for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'RUNTIME_VERSIONS.fallbackKnowledge']) {
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
 }
 for (const fragment of ['publicResolveResponse', 'schemaVersion', 'processing']) {

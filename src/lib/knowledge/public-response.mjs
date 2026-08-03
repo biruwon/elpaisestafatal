@@ -1,3 +1,5 @@
+import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
+
 const statuses = new Set(['published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial', 'processing']);
 const kinds = new Set(['claim', 'topic']);
 const forbidden = /ollama|localhost|127\.0\.0\.1|host\.docker\.internal|whisper_command|cloudflare_api_token|local_classifier|cors/i;
@@ -41,7 +43,7 @@ const cleanGuidance = (value) => {
 };
 
 const cleanPlan = (value) => {
-  if (!value || typeof value !== 'object' || value.schemaVersion !== '1'
+  if (!value || typeof value !== 'object' || value.schemaVersion !== RUNTIME_VERSIONS.answerPlanSchema
     || typeof value.headline !== 'string' || typeof value.summary !== 'string'
     || !Array.isArray(value.blocks) || !Array.isArray(value.evidenceIds)
     || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string') return undefined;

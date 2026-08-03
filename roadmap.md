@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Centralized internal answer, fallback, warehouse, and index versions so cache/result invalidation does not depend on scattered hardcoded strings. The release build now rejects stale runtime version literals and requires the deterministic API fallback and local resolver to use the same manifest; no provider or model identity is included.
+
 - The operational learning endpoint now validates input types and statuses, preserves an existing request’s semantic cluster across rewritten retries, and recreates a missing cluster row without incrementing demand. This keeps the review queue durable even when a browser retries after optional classification changes the wording.
 
 - Terminal classifier outcomes now update the original learning record for typed claims instead of creating a second cluster entry. File-only media keeps its resolver request identity, while typed text reuses the initial wording digest and deterministic semantic signature; model-generated canonical wording cannot split or orphan the request’s cluster. The review queue therefore sees the final status without inflating demand.

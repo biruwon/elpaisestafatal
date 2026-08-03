@@ -1,3 +1,5 @@
+import { RUNTIME_VERSIONS } from '../../src/lib/knowledge/runtime-versions.mjs';
+
 const evidenceBearingBlocks = new Set([
   'key_number',
   'line_chart',
@@ -18,7 +20,7 @@ const structuredItems = (value, allowedStatuses) => Array.isArray(value) && valu
 export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   const errors = [];
   if (!plan || typeof plan !== 'object') return { ok: false, errors: ['answer plan is not an object'] };
-  if (plan.schemaVersion !== '1') errors.push('unsupported schema version');
+  if (plan.schemaVersion !== RUNTIME_VERSIONS.answerPlanSchema) errors.push('unsupported schema version');
   if (typeof plan.headline !== 'string' || !plan.headline.trim()) errors.push('missing headline');
   if (typeof plan.summary !== 'string' || !plan.summary.trim()) errors.push('missing summary');
   if (!Array.isArray(plan.blocks)) errors.push('missing blocks');
