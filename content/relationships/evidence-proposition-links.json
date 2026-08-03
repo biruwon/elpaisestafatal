@@ -214,6 +214,7 @@
     {"evidenceId":"neet-eurostat","propositionId":"prop-neet-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"necesidades-medicas-lista-espera-eurostat","propositionId":"prop-necesidades-medicas-lista-espera-aumentan-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
   {"evidenceId":"pib-por-habitante-eurostat","propositionId":"prop-pib-por-habitante-supera-34000-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+  {"evidenceId":"pib-nominal-eurostat","propositionId":"prop-pib-nominal-supera-16-billones-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-supera-16-billones-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"inflacion-armonizada-espana-ue-eurostat","propositionId":"prop-espana-inflacion-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},

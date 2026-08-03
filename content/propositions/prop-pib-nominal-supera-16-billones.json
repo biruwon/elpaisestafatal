@@ -1,0 +1,13 @@
+{
+  "id": "prop-pib-nominal-supera-16-billones-core",
+  "claimSlug": "pib-nominal-supera-16-billones",
+  "text": "El PIB nominal de España superó 1,6 billones de euros en 2025.",
+  "type": "descriptive",
+  "subject": "gdp_current_prices",
+  "predicate": "exceeded",
+  "object": "1.6 trillion EUR",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["pib-nominal-eurostat"]
+}
