@@ -17,6 +17,7 @@ requireText('class="examples-heading"', 'the popular prompt heading');
 for (const prompt of ['Los inmigrantes crean inseguridad', 'Los inmigrantes reciben todas las ayudas', 'España es el país que más impuestos cobra de Europa']) {
   requireText(`data-example="${prompt}"`, `a first-use everyday debate prompt (${prompt})`);
 }
+requireText('¿Tiene España más paro juvenil que la Unión Europea?', 'the visible Spain/EU youth-employment comparison prompt');
 if (homepage.indexOf('data-example="Los inmigrantes crean inseguridad"') > homepage.indexOf('data-example="¿Cómo ha cambiado el precio de la luz para los hogares?"')) failures.push('everyday debate prompts should appear before warehouse indicator prompts');
 requireText('data-example-filter="all"', 'the popular prompt filters');
 requireText('data-example-filter="seguridad"', 'the security popular prompt filter');
