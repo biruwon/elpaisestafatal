@@ -115,6 +115,17 @@ if (!preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Un
 if (preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Unión Europea?').has('early_school_leaving_rate')) throw new Error('Metric hints kept Spain-only early school leaving alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU NEET comparison');
 if (preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate')) throw new Error('Metric hints kept Spain-only NEET alongside the Spain/EU comparison');
+for (const [query, expected, base] of [
+  ['Comparación europea del empleo a tiempo parcial', 'part_time_employment_rate_europe', 'part_time_employment_rate'],
+  ['Comparación europea del empleo temporal', 'temporary_employment_rate_europe', 'temporary_employment_rate'],
+  ['¿Tiene España más paro juvenil que la Unión Europea?', 'youth_unemployment_rate_europe', 'youth_unemployment_rate'],
+  ['Comparación europea del desempleo juvenil español', 'youth_unemployment_rate_europe', 'unemployment_rate_europe'],
+  ['El abandono educativo español supera al europeo', 'early_school_leaving_rate_europe', 'early_school_leaving_rate'],
+  ['La tasa AROPE española supera a la europea', 'arope_rate_europe', 'arope_rate'],
+]) {
+  const preferred = preferredMetricIdsForQuery(query);
+  if (!preferred.has(expected) || preferred.has(base)) throw new Error(`Metric hints did not protect reordered Spain/EU comparison wording for ${query}`);
+}
 if (!excludedMetricIdsForQuery('¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?').has('neet_rate_europe')) throw new Error('Metric hints did not keep Spain/EU NEET separate from the Spain-only question');
 if (!excludedMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('early_school_leaving_rate_europe')) throw new Error('Metric hints did not keep Spain/EU early school leaving separate from tertiary attainment');
 if (!preferredMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('tertiary_education_attainment_rate')) throw new Error('Metric hints did not prefer tertiary attainment for higher-education wording');

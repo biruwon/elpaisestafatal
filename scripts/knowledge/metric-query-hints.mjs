@@ -82,6 +82,19 @@ export const preferredMetricIdsForQuery = (query) => {
   const preferred = new Set(metricHints
     .filter((hint) => hint.terms.some((term) => normalized.includes(normalise(term))))
     .flatMap((hint) => hint.ids));
+  const hasEuropeReference = /\b(?:europa|europeo|europea|europeos|europeas|ue|union europea)\b/.test(normalized);
+  const hasAny = (...terms) => terms.some((term) => normalized.includes(normalise(term)));
+  // Phrase aliases are deliberately conservative, but users often reorder
+  // Spanish comparison wording (“comparación europea del empleo parcial”,
+  // “el abandono educativo supera al europeo”). Recover the comparison family
+  // from its subject plus the Europe marker before semantic retrieval can
+  // promote a Spain-only neighbour.
+  if (hasEuropeReference && hasAny('parcial', 'jornada parcial', 'tiempo parcial') && hasAny('empleo', 'trabajo', 'jornada')) preferred.add('part_time_employment_rate_europe');
+  if (hasEuropeReference && hasAny('temporal', 'temporalidad', 'duracion determinada') && hasAny('empleo', 'trabajo', 'contrato')) preferred.add('temporary_employment_rate_europe');
+  if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
+  if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
+  if (hasEuropeReference && hasAny('arope', 'pobreza', 'exclusion')) preferred.add('arope_rate_europe');
+  if (hasEuropeReference && hasAny('lista de espera', 'espera sanitaria', 'necesidades medicas')) preferred.add('unmet_healthcare_waiting_list_rate_europe');
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
@@ -227,23 +240,24 @@ export const preferredMetricIdsForQuery = (query) => {
 
 export const excludedMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
+  const preferred = preferredMetricIdsForQuery(query);
   const youthRequested = ['paro juvenil', 'desempleo juvenil', 'jovenes sin trabajo', 'jovenes activos', '15-24'].some((term) => normalized.includes(normalise(term)));
   const earlyEducationRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const earlyEducationEuropeRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const earlyEducationEuropeRequested = preferred.has('early_school_leaving_rate_europe');
   const tertiaryEducationRequested = metricHints.find((hint) => hint.ids.includes('tertiary_education_attainment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const neetEuropeRequested = metricHints.find((hint) => hint.ids.includes('neet_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const neetEuropeRequested = preferred.has('neet_rate_europe');
   const aropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const aropeEuropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const aropeEuropeRequested = preferred.has('arope_rate_europe');
   const lifeExpectancyRequested = metricHints.find((hint) => hint.ids.includes('life_expectancy_at_birth'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const lifeExpectancyEuropeRequested = metricHints.find((hint) => hint.ids.includes('life_expectancy_at_birth_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const lifeExpectancyEuropeRequested = preferred.has('life_expectancy_at_birth_europe');
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
-  const employmentEuropeRequested = metricHints.find((hint) => hint.ids.includes('employment_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const employmentEuropeRequested = preferred.has('employment_rate_europe');
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const healthSpendEuropeRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const healthSpendEuropeRequested = preferred.has('health_expenditure_per_capita_europe');
   const unmetWaitingListRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
-  const unmetWaitingListEuropeRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const unmetWaitingListEuropeRequested = preferred.has('unmet_healthcare_waiting_list_rate_europe');
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
