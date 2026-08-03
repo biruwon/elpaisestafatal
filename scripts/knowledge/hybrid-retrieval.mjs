@@ -33,7 +33,11 @@ export const reciprocalRankFusion = (lexical = [], semantic = [], { limit = 12, 
   lexical.forEach((item, index) => add(item, index, 'lexical'));
   semantic.forEach((item, index) => add(item, index, 'semantic'));
   return [...fused.values()]
-    .filter((item) => item.lexicalScore >= 0.34 || item.semanticScore >= 0.42)
+    // A semantic-only hit must be materially stronger than a lexical or
+    // cross-channel hit. Generic political language often sits just above
+    // the embedding floor for an unrelated metric; returning that candidate
+    // would turn “no match” into misleading context.
+    .filter((item) => item.lexicalScore >= 0.34 || item.semanticScore >= 0.5)
     .sort((left, right) => Number(right.id === preferredId) - Number(left.id === preferredId) || right.fusionScore - left.fusionScore || right.lexicalScore - left.lexicalScore || right.semanticScore - left.semanticScore)
     .slice(0, Math.max(1, limit))
     .map((item) => ({

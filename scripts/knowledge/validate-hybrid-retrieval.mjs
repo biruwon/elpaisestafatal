@@ -19,6 +19,7 @@ const fused = reciprocalRankFusion(lexical, semantic, { limit: 5 });
 if (fused[0]?.id !== 'shared') throw new Error('A candidate supported by both retrieval channels must rank first');
 if (!fused.some((item) => item.id === 'semantic-only' && item.evidenceFit === 'direct')) throw new Error('Strong semantic paraphrase was not retained');
 if (fused.some((item) => item.id === 'unsafe-low')) throw new Error('Weak semantic-only candidate passed the safety threshold');
+if (reciprocalRankFusion([], [{ id: 'borderline-semantic-only', score: 0.42 }]).length) throw new Error('Borderline semantic-only candidate passed the safety threshold');
 if (!fused.find((item) => item.id === 'shared')?.retrievalChannels.includes('lexical') || !fused.find((item) => item.id === 'shared')?.retrievalChannels.includes('semantic')) throw new Error('Fusion did not retain retrieval provenance');
 
 const semanticConflict = resolveMetricConflict(
