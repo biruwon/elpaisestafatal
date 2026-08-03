@@ -327,6 +327,14 @@
     "notEquivalentTo": ["gini_coefficient", "government_revenue_ratio"],
     "dimensions": ["period", "geography", "age", "currency"]
   },
+  "median_equivalised_income_europe": {
+    "name": "Median equivalised disposable income: Spain and the European Union",
+    "aliases": ["renta mediana frente a Europa", "ingresos de los hogares frente a Europa", "España tiene más renta que Europa", "España tiene menos renta que Europa", "ingresos medianos frente a la Unión Europea"],
+    "unit": "PPS per person",
+    "population": "median equivalised disposable income in purchasing power standards for the total population in Spain and the European Union",
+    "notEquivalentTo": ["median_equivalised_income", "gdp_per_capita_current_prices", "gini_coefficient", "government_revenue_ratio_europe"],
+    "dimensions": ["period", "geography", "age", "currency", "statistic"]
+  },
   "early_school_leaving_rate": {
     "name": "Early leavers from education and training",
     "aliases": ["abandono escolar temprano", "abandono educativo", "dejan los estudios", "dejan los estudios antes de tiempo", "jóvenes que abandonan los estudios", "fracaso escolar temprano"],

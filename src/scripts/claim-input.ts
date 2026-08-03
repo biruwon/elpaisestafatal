@@ -362,6 +362,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿España recauda más o menos que la media europea?',
               '¿España gasta más o menos que la media de la Unión Europea?',
               '¿España gasta más por habitante en sanidad que la Unión Europea?',
+              '¿España tiene más renta mediana que la Unión Europea?',
             ]
             : [
               '¿Ha empeorado el acceso a la vivienda en España?',
@@ -537,8 +538,14 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
 };
 
 const clearDynamicStatus = (): void => {
+  if (dynamicStatusTimer !== null) {
+    window.clearTimeout(dynamicStatusTimer);
+    dynamicStatusTimer = null;
+  }
   result?.querySelector('[data-dynamic-status]')?.remove();
 };
+
+let dynamicStatusTimer: number | null = null;
 
 const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavailable' = 'running', mode: 'enrichment' | 'media' = 'enrichment'): void => {
   if (!result) return;
@@ -554,19 +561,18 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
     ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
     : '';
   const title = mode === 'media'
-    ? state === 'running' ? 'Comprobación adicional en curso' : state === 'slow' ? 'Lectura del archivo no disponible' : 'Comprobación adicional no disponible'
-    : state === 'running' ? 'Comprobación adicional en curso' : state === 'slow' ? 'Tiempo de espera agotado' : 'Comprobación adicional no disponible';
-  const action = state === 'running'
-    ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Seguir solo con esta orientación</button>'
-    : '';
-  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>${action}`;
+    ? state === 'running' ? 'Añadiendo contexto en segundo plano' : state === 'slow' ? 'La orientación rápida sigue disponible' : 'Contexto adicional no disponible'
+    : state === 'running' ? 'Mejorando la orientación en segundo plano' : state === 'slow' ? 'La orientación rápida sigue disponible' : 'Contexto adicional no disponible';
+  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>`;
   result.querySelector('article')?.append(status);
-  status.querySelector<HTMLButtonElement>('[data-stop-enrichment]')?.addEventListener('click', () => {
-    activeRequest?.abort();
-    activeRequest = null;
-    requestVersion += 1;
-    setDynamicStatus('La orientación visible ya está lista. Hemos detenido la comprobación adicional.', 'unavailable', mode);
-  });
+  if (state === 'running') {
+    const fallbackMessage = mode === 'media'
+      ? 'La lectura del archivo está tardando más de lo previsto. Puedes usar la orientación visible o escribir la frase directamente; no hace falta esperar.'
+      : 'No hemos podido añadir más contexto todavía. Puedes usar la orientación visible; no hace falta esperar.';
+    dynamicStatusTimer = window.setTimeout(() => {
+      if (status.isConnected && status.dataset.statusState === 'running') setDynamicStatus(fallbackMessage, 'slow', mode);
+    }, mode === 'media' ? 12000 : 8000);
+  }
 };
 
 const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {
@@ -639,12 +645,12 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const processingMessage = inputType === 'image'
-        ? query ? 'La lectura rápida de la frase ya está lista; ahora leemos la captura para comprobar si añade contexto.' : 'Hemos recibido la captura; leemos su texto para encontrar una comprobación.'
+        ? query ? 'La orientación visible ya está lista; leemos la captura en segundo plano para comprobar si añade contexto.' : 'Hemos recibido la captura; leemos su texto en segundo plano para encontrar una comprobación.'
         : inputType === 'audio'
-          ? query ? 'La lectura rápida de la frase ya está lista; ahora transcribimos el audio para comprobar si añade contexto.' : 'Hemos recibido el audio; extraemos su contenido para encontrar una comprobación.'
+          ? query ? 'La orientación visible ya está lista; transcribimos el audio en segundo plano para comprobar si añade contexto.' : 'Hemos recibido el audio; extraemos su contenido en segundo plano para encontrar una comprobación.'
           : inputType === 'url'
-            ? 'La lectura rápida ya está lista; leemos la página enlazada para comprobar si añade contexto.'
-            : 'La lectura rápida ya está lista; buscamos una ficha publicada o datos directos para mejorarla automáticamente.';
+            ? 'La orientación visible ya está lista; leemos la página enlazada en segundo plano para comprobar si añade contexto.'
+            : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla.';
       setDynamicStatus(processingMessage, 'running', file && !query ? 'media' : 'enrichment');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
@@ -663,7 +669,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (data.status === 'processing') {
       setDynamicStatus(file && !query
         ? 'No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.'
-        : 'No hemos podido añadir contexto automático a tiempo. Esto no significa que la afirmación sea verdadera o falsa; la lectura rápida visible sigue disponible.', 'slow', file && !query ? 'media' : 'enrichment');
+        : 'No hemos podido añadir más contexto todavía. Esto no significa que la afirmación sea verdadera o falsa; la orientación rápida visible sigue disponible y no hace falta esperar.', 'slow', file && !query ? 'media' : 'enrichment');
       return;
     }
     if (data.status === 'unavailable') {

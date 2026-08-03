@@ -146,6 +146,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto sanitario corriente total por habitante, financiado por todos los esquemas, según Eurostat; no equivale al gasto de un hospital concreto ni mide por sí sola el acceso o la calidad de la atención.',
     caveat: 'Es un promedio nacional comparable, no el gasto de cada persona ni una medida directa de resultados sanitarios.',
   },
+  median_equivalised_income_europe: {
+    label: 'Renta disponible mediana por persona equivalente',
+    verb: 'registró una renta disponible mediana por persona equivalente',
+    replyLead: 'la renta disponible mediana por persona equivalente fue de',
+    differenceVerb: ['la renta mediana española fue más alta', 'la renta mediana española fue más baja', 'España y la Unión Europea registraron la misma renta mediana'],
+    unit: 'PPS por persona',
+    replyUnit: 'PPS por persona',
+    differenceUnit: 'PPS por persona',
+    method: 'La comparación usa la renta disponible mediana equivalente expresada en estándares de poder adquisitivo (PPS), con la misma población total y metodología de Eurostat; no equivale al salario medio, al PIB por habitante ni al ingreso de cada hogar.',
+    caveat: 'Es una mediana ajustada por el tamaño y composición del hogar; no describe por sí sola la desigualdad, la vivienda que puede pagar cada familia ni todos los costes locales.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {

@@ -11,11 +11,11 @@ const required = [
   'conversation-counter',
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
-  'Comprobación adicional en curso',
-  'Tiempo de espera agotado',
+  'Mejorando la orientación en segundo plano',
+  'La orientación rápida sigue disponible',
   'status.dataset.statusMode',
-  'data-stop-enrichment',
-  'Seguir solo con esta orientación',
+  'dynamicStatusTimer',
+  'window.setTimeout',
   'claim-result-progress',
   'Orientación rápida disponible',
   'claim-result-enrichment',
@@ -74,9 +74,9 @@ const required = [
   'data-clarification-choice',
   'Elige por dónde concretarla',
   'fallbackPublishedClaims',
-  'leemos la captura para comprobar si añade contexto',
-  'transcribimos el audio para comprobar si añade contexto',
-  'leemos la página enlazada para comprobar si añade contexto',
+  'leemos la captura en segundo plano para comprobar si añade contexto',
+  'transcribimos el audio en segundo plano para comprobar si añade contexto',
+  'leemos la página enlazada en segundo plano para comprobar si añade contexto',
   "const alternativesMarkup = ['published', 'related', 'unavailable']",
   "renderCard('uncovered', original, undefined, [],",
   "response.status === 'draft' && response.result",
@@ -100,7 +100,7 @@ if (source.includes('Pendiente de revisión · no es un veredicto publicado')) t
 if (source.includes("state === 'running' ? 'Respuesta disponible'")) throw new Error('Enrichment state still presents the initial result as if it were the completed answer');
 if (source.includes('La orientación rápida está lista; comprobamos si podemos añadir contexto.')) throw new Error('File loading state still claims that a quick result is already ready');
 if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
-if (source.includes("state === 'running' && mode === 'enrichment'")) throw new Error('Media enrichment has no way to stop the optional background request');
+if (source.includes('data-stop-enrichment') || source.includes('Seguir solo con esta orientación')) throw new Error('Background enrichment still asks the user to stop or advance it manually');
 if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
 if (source.includes("renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });")) throw new Error('Media failure state still presents the filename as a typed claim');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');

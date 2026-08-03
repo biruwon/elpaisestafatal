@@ -21,6 +21,7 @@ const metricLabels = {
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
+  median_equivalised_income_europe: 'Renta disponible mediana: España y la Unión Europea',
   unemployment_rate: 'Tasa de desempleo en España',
   unemployment_rate_europe: 'Tasa de desempleo de España frente a Europa',
   government_debt_ratio: 'Deuda pública sobre el PIB en España',
@@ -77,6 +78,7 @@ const displayUnit = (item) => {
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
   if (metricId === 'health_expenditure_per_capita_europe') return '€ por habitante';
+  if (metricId === 'median_equivalised_income_europe') return 'PPS por persona';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';

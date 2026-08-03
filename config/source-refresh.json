@@ -251,6 +251,12 @@
       "metricId": "median_equivalised_income"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di03?geo=ES&geo=EU27_2020&age=TOTAL&sex=T&statinfo=MED_EI&unit=PPS&sinceTimePeriod=2015",
+      "title": "Renta disponible mediana: España y Unión Europea · Eurostat",
+      "aliases": ["renta mediana frente a Europa", "ingresos de los hogares frente a Europa", "España tiene más renta que Europa", "España tiene menos renta que Europa", "ingresos medianos frente a la Unión Europea"],
+      "metricId": "median_equivalised_income_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/edat_lfse_14?geo=ES&sex=T&wstatus=POP&age=Y18-24&unit=PC&sinceTimePeriod=2015",
       "title": "Abandono escolar temprano en España · Eurostat",
       "aliases": ["abandono escolar temprano", "abandono educativo", "dejan los estudios", "jóvenes que abandonan los estudios"],

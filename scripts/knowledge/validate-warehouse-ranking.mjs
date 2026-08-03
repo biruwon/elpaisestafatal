@@ -63,4 +63,10 @@ const healthRecords = [
 ];
 const healthComparison = summarizeWarehouseEuropeanComparison('¿España gasta más por habitante en sanidad que la Unión Europea?', healthRecords);
 if (!healthComparison || healthComparison.metricId !== 'health_expenditure_per_capita_europe' || !healthComparison.summary.includes('2857,25') || !healthComparison.summary.includes('3836,68') || !healthComparison.summary.includes('por debajo de la Unión Europea') || !healthComparison.points.some((point) => point.includes('979,43 € por habitante menos')) || !healthComparison.reply.includes('gasto sanitario por habitante español fue más bajo')) throw new Error('European health-spending comparison did not preserve the same-period comparison or health caveat');
+const incomeRecords = [
+  { id: 'income-es-2025', metricId: 'median_equivalised_income_europe', datasetId: 'Median equivalised income comparison', value: 22408, unit: 'Purchasing power standard (PPS)', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'income-eu-2025', metricId: 'median_equivalised_income_europe', datasetId: 'Median equivalised income comparison', value: 22638, unit: 'Purchasing power standard (PPS)', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const incomeComparison = summarizeWarehouseEuropeanComparison('¿España tiene más renta mediana que la Unión Europea?', incomeRecords);
+if (!incomeComparison || incomeComparison.metricId !== 'median_equivalised_income_europe' || !incomeComparison.summary.includes('22.408') || !incomeComparison.summary.includes('22.638') || !incomeComparison.summary.includes('por debajo de la Unión Europea') || !incomeComparison.points.some((point) => point.includes('230 PPS por persona menos')) || !incomeComparison.reply.includes('renta mediana española fue más baja')) throw new Error('European median-income comparison did not preserve the same-period comparison or income caveat');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

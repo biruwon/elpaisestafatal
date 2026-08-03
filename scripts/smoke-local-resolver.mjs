@@ -282,6 +282,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['¿España recauda más o menos que la media de la Unión Europea?', 'government_revenue_ratio_europe', '% del PIB', 'ingresos públicos españoles fueron más bajos'],
     ['¿España gasta más o menos que la media de la Unión Europea?', 'government_expenditure_ratio_europe', '% del PIB', 'gasto público español fue más bajo'],
     ['¿España gasta más por habitante en sanidad que la Unión Europea?', 'health_expenditure_per_capita_europe', '€ por habitante', 'gasto sanitario por habitante español fue más bajo'],
+    ['¿España tiene más renta mediana que la Unión Europea?', 'median_equivalised_income_europe', 'PPS por persona', 'renta mediana española fue más baja'],
   ]) {
     try {
       const result = await resolve(text);

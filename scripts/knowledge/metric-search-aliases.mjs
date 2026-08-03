@@ -25,6 +25,7 @@ export const metricSearchAliases = Object.freeze({
   health_expenditure_per_capita: ['gasto sanitario por habitante', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por persona', 'dinero por persona en sanidad', 'cuánto dinero se dedica a sanidad', 'cuánto se gasta en salud'],
   health_expenditure_per_capita_europe: ['gasto sanitario', 'gasto', 'sanidad', 'habitante', 'europa', 'union europea', 'comparacion europea'],
   median_equivalised_income: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuánto ingresan los hogares'],
+  median_equivalised_income_europe: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'europa', 'union europea', 'comparacion europea', 'poder adquisitivo'],
 });
 
 export const searchAliasesForMetric = (metricId) => metricSearchAliases[metricId] || [];

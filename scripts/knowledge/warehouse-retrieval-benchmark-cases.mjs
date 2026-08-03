@@ -31,6 +31,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['gasto-europa-menos', '¿España gasta menos que Europa?', 'government_expenditure_ratio_europe'],
   ['sanidad-europa', '¿España gasta más por habitante en sanidad que la Unión Europea?', 'health_expenditure_per_capita_europe'],
   ['sanidad-europa-menos', '¿España gasta menos por persona en sanidad que Europa?', 'health_expenditure_per_capita_europe'],
+  ['renta-europa', '¿España tiene más renta mediana que la Unión Europea?', 'median_equivalised_income_europe'],
+  ['ingresos-europa-menos', '¿Los hogares españoles tienen menos ingresos medianos que Europa?', 'median_equivalised_income_europe'],
   ['paro-juvenil', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'youth_unemployment_rate'],
   ['paro-jovenes', 'Evolución del desempleo entre los jóvenes españoles', 'youth_unemployment_rate'],
   ['paro-gente', 'Qué porcentaje de la población activa no encuentra trabajo', 'unemployment_rate'],
