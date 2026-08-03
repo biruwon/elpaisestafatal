@@ -216,6 +216,16 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/health care expenditure by financing scheme/i.test(result.result?.headline || '')) failures.push('health expenditure warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`health expenditure warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Cuánto gasta sanidad habitante España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`conversational health expenditure: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('conversational health expenditure: selected the wrong metric family');
+  } catch (error) { failures.push(`conversational health expenditure: ${error.message}`); }
+  try {
+    const result = await resolve('Porcentaje de residentes AROPE en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`AROPE resident percentage: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'arope_rate') failures.push('AROPE resident percentage: selected the wrong metric family');
+  } catch (error) { failures.push(`AROPE resident percentage: ${error.message}`); }
+  try {
     const result = await resolve('Cómo ha evolucionado la esperanza de vida en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`life expectancy warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'life_expectancy_at_birth') failures.push('life expectancy warehouse: selected the wrong metric family');

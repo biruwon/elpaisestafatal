@@ -17,7 +17,7 @@ const metricHints = [
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
   { ids: ['housing_cost_overburden_rate'], terms: ['sobrecarga', 'coste de la vivienda', 'gastos de vivienda', 'esfuerzo de vivienda', 'sobrecarga coste vivienda', 'hogares soportan el coste de la vivienda', 'porcentaje de hogares soporta'] },
-  { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios'] },
+  { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por habitante', 'gasto por habitante en sanidad', 'gasta en sanidad por habitante', 'gasta sanidad por habitante', 'gasta sanidad habitante', 'cuanto gasta sanidad habitante', 'sanidad por habitante', 'gasto por persona en sanidad', 'cuanto se gasta en sanidad'] },
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad'] },
   { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos por mujer'] },
   { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida'] },
@@ -27,6 +27,7 @@ const metricHints = [
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares'] },
+  { ids: ['arope_rate'], terms: ['arope', 'riesgo de pobreza o exclusion', 'riesgo de pobreza y exclusion', 'pobreza o exclusion social', 'porcentaje en riesgo de pobreza', 'personas en riesgo de pobreza', 'porcentaje residentes arope', 'residentes arope'] },
   { ids: ['cpi_index'], terms: ['coste de vida', 'cesta de la compra', 'precios de consumo'] },
   { ids: ['house_price_index'], terms: ['casas mas caras', 'casas son mas caras', 'casas mucho mas caras', 'casas son mucho mas caras', 'precio de las casas', 'precios de las casas', 'precio vivienda', 'precios vivienda', 'vivienda precio', 'vivienda precios', 'precio vivienda espana', 'comprar una casa', 'precio de comprar una casa', 'comprar vivienda'] },
 ];

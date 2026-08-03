@@ -24,6 +24,8 @@ if (!preferredMetricIdsForQuery('evolución de la recaudación pública').has('g
 if (!preferredMetricIdsForQuery('gasto público sobre PIB').has('government_expenditure_ratio')) throw new Error('Metric hints did not prefer public expenditure for spending wording');
 if (!preferredMetricIdsForQuery('sobrecarga del coste de la vivienda').has('housing_cost_overburden_rate')) throw new Error('Metric hints did not prefer housing cost overburden for affordability wording');
 if (!preferredMetricIdsForQuery('gasto sanitario por habitante').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for resource wording');
+if (!preferredMetricIdsForQuery('cuánto gasta sanidad por habitante en España').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for conversational wording');
+if (!preferredMetricIdsForQuery('porcentaje de residentes AROPE en España').has('arope_rate')) throw new Error('Metric hints did not prefer AROPE for resident percentage wording');
 if (!excludedMetricIdsForQuery('La sanidad pública está completamente colapsada').has('health_expenditure_per_capita')) throw new Error('Metric hints allowed per-capita spending to answer a broad health-system outcome claim');
 if (!preferredMetricIdsForQuery('desigualdad de ingresos en España').has('gini_coefficient')) throw new Error('Metric hints did not prefer Gini for inequality wording');
 if (!preferredMetricIdsForQuery('déficit público sobre PIB').has('government_deficit_ratio')) throw new Error('Metric hints did not prefer public deficit for deficit wording');
