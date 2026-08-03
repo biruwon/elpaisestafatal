@@ -13,6 +13,9 @@ const order = (first, second, label) => { if (homepage.indexOf(first) < 0 || hom
 requireText('¿De qué estáis', 'the conversation-first heading');
 requireText('id="conversation-form"', 'the claim form');
 requireText('id="conversation-counter"', 'the input character counter');
+requireText('data-media-trigger="image"', 'the explicit screenshot upload action');
+requireText('data-media-trigger="audio"', 'the explicit audio upload action');
+requireText('data-media-dropzone', 'the drag-and-drop media surface');
 requireText('class="examples-heading"', 'the popular prompt heading');
 for (const prompt of ['Los inmigrantes crean inseguridad', 'Los inmigrantes reciben todas las ayudas', 'España es el país que más impuestos cobra de Europa']) {
   requireText(`data-example="${prompt}"`, `a first-use everyday debate prompt (${prompt})`);

@@ -50,8 +50,11 @@ for (const snippet of [
 if (!page.includes('id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="off"')) {
   failures.push('the dynamic result region should be focusable without announcing the entire long card twice');
 }
-if (source.includes('La frase que comprobamos: ${plan.headline}')) {
+if (source.includes('La frase que comprobamos:')) {
   failures.push('structured result headings should not repeat the user-facing phrase prefix');
+}
+for (const snippet of ['const submittedClaimMarkup', 'class="claim-result-submission"', 'resetMediaSelection()', 'const title = primary ? primary.title']) {
+  if (!source.includes(snippet)) failures.push(`result hierarchy is missing ${snippet}`);
 }
 
 if (failures.length) {

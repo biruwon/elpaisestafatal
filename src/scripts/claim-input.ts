@@ -48,6 +48,8 @@ const fileName = document.querySelector<HTMLElement>('[data-file-name]');
 const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
 const result = document.querySelector<HTMLElement>('#conversation-result');
+const mediaTriggers = document.querySelectorAll<HTMLElement>('[data-media-trigger]');
+const defaultMediaAccept = 'image/*,audio/*';
 const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
 const advancedEnabled = catalogElement?.dataset.advanced === 'true';
 let activeRequest: AbortController | null = null;
@@ -56,6 +58,16 @@ const responseCache = new Map<string, SearchResponse>();
 
 const updateCounter = (): void => {
   if (counter) counter.textContent = `${input?.value.length || 0}/${INPUT_LIMITS.maxTextCharacters}`;
+};
+
+const resetMediaSelection = (): void => {
+  if (fileInput) {
+    fileInput.value = '';
+    fileInput.accept = defaultMediaAccept;
+  }
+  if (fileName) fileName.textContent = 'Sin archivo seleccionado.';
+  if (mediaDropZone) mediaDropZone.classList.remove('is-dragging');
+  if (mediaHelp) mediaHelp.dataset.fileSelected = 'false';
 };
 
 const assignMediaFile = (file: File): void => {
@@ -286,6 +298,14 @@ const recordQuestion = (text: string, record: LearningRecord = {}): void => {
 const findEntry = (slug: string | undefined): ClaimIndexEntry | undefined => slug ? claimIndex.find((entry) => entry.slug === slug) : undefined;
 
 const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">${entry.kind === 'topic' ? 'Ver contexto del tema' : 'Ver datos y fuentes'} <span aria-hidden="true">→</span></a>`;
+
+const submittedClaimMarkup = (original: string, inputKind: 'text' | 'media' = 'text'): string => {
+  if (!original) return '';
+  const label = inputKind === 'media' ? 'Archivo recibido' : 'Frase recibida';
+  const text = `“${escapeHtml(original)}”`;
+  if (original.length <= 220) return `<p class="claim-result-input"><span class="clarification-label">${label}</span>${text}</p>`;
+  return `<details class="claim-result-submission"><summary>${label} · Ver texto completo</summary><p class="claim-result-input">${text}</p></details>`;
+};
 
 const shareUrlFor = (original: string, primary?: ClaimIndexEntry, state: 'published' | 'related' | 'draft' | 'uncovered' = 'published'): string => {
   if (state === 'published' && primary?.kind === 'claim') return new URL(primary.href, window.location.origin).toString();
@@ -613,10 +633,7 @@ const resetChecker = (): void => {
   activeRequest = null;
   requestVersion += 1;
   if (input) input.value = '';
-  if (fileInput) fileInput.value = '';
-  if (fileName) fileName.textContent = 'Añadir captura o audio';
-  if (mediaDropZone) mediaDropZone.classList.remove('is-dragging');
-  if (mediaHelp) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
+  resetMediaSelection();
   updateCounter();
   if (result) result.innerHTML = '';
   window.history.replaceState({}, '', '/#comprobar');
@@ -667,14 +684,13 @@ const bindResultActions = (): void => {
   result?.querySelectorAll<HTMLButtonElement>('[data-clarification-choice]').forEach((button) => button.addEventListener('click', () => {
     const choice = button.dataset.clarificationChoice;
     if (!choice || !input || !form) return;
-    if (fileInput) fileInput.value = '';
-    if (fileName) fileName.textContent = 'Añadir captura o audio';
-    if (mediaHelp) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
+    resetMediaSelection();
     input.value = choice;
     form.requestSubmit();
   }));
   result?.querySelectorAll<HTMLButtonElement>('[data-guidance-example]').forEach((button) => button.addEventListener('click', () => {
     if (!input) return;
+    resetMediaSelection();
     input.value = button.dataset.guidanceExample || '';
     updateCounter();
     form?.requestSubmit();
@@ -692,7 +708,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   const nextStep = plan.clarificationQuestion
     || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(original, plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(original, plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
@@ -717,7 +733,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
     unavailable: 'Orientación rápida disponible',
     invalid: 'Archivo no compatible',
   };
-  const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? guidance?.heading || 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
+  const title = primary ? primary.title : (state === 'uncovered' ? guidance?.heading || 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
   const stateDescription: Record<typeof state, string> = {
     loading: 'El archivo se está leyendo',
     published: 'Coincidencia con una ficha revisada',
@@ -737,9 +753,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
       : `${visualMarkup(primary)}<div class="claim-result-short-answer"><span class="clarification-label">Orientación en una frase</span><p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary?.answer ? `<button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button>` : ''}</div>${primary ? resultLink(primary) : ''}`;
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  const inputMarkup = inputKind === 'media'
-    ? `<p class="claim-result-input">Archivo recibido: “${escapeHtml(original)}”</p>`
-    : original ? `<p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p>` : '';
+  const inputMarkup = inputKind === 'media' ? submittedClaimMarkup(original, 'media') : submittedClaimMarkup(original);
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${resultActionsMarkup(primary?.answer ? shareUrlFor(original, primary, state === 'published' ? 'published' : 'related') : undefined)}${alternativesMarkup}</article>`;
   bindResultActions();
 };
@@ -1030,14 +1044,18 @@ form?.addEventListener('paste', (event) => {
 
 fileInput?.addEventListener('change', () => {
   const selected = fileInput.files?.[0];
-  if (fileName) fileName.textContent = selected ? selected.name : 'Añadir captura o audio';
-  if (mediaHelp && selected) mediaHelp.textContent = 'Archivo listo: se está enviando automáticamente para buscar una orientación.';
-  if (mediaHelp && !selected) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
+  if (fileName) fileName.textContent = selected ? selected.name : 'Sin archivo seleccionado.';
+  if (mediaHelp) mediaHelp.dataset.fileSelected = selected ? 'true' : 'false';
   if (selected) form?.requestSubmit();
 });
 
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {
-  if (input) { input.value = button.dataset.example || ''; form?.requestSubmit(); }
+  if (input) { resetMediaSelection(); input.value = button.dataset.example || ''; form?.requestSubmit(); }
+}));
+
+mediaTriggers.forEach((trigger) => trigger.addEventListener('click', () => {
+  if (!fileInput) return;
+  fileInput.accept = trigger.dataset.mediaTrigger === 'audio' ? 'audio/*' : 'image/*';
 }));
 
 input?.addEventListener('input', updateCounter);
