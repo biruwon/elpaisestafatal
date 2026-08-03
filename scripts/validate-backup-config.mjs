@@ -7,8 +7,22 @@ for (const required of ['elpaisestafatal-ops', 'source-warehouse', 'metric-regis
   if (!script.includes(required)) failures.push(`backup script is missing ${required}`);
 }
 if (script.includes('console.log(process.env.WAREHOUSE_DATABASE_URL)')) failures.push('backup script must not print the PostgreSQL connection string');
-for (const required of ["schedule:", "cron: '17 2 * * 0'", 'Check backup configuration', 'Scheduled backup skipped', 'Manual backup requires']) {
+for (const required of [
+  "schedule:",
+  "cron: '17 2 * * 0'",
+  'Check backup configuration',
+  'Scheduled backup skipped',
+  'Manual backup requires',
+  'BACKUP_REQUIRE_D1=1',
+  'npm run backup:artifact:validate',
+  'if-no-files-found: error',
+  'retention-days: 30',
+  'path: ${{ runner.temp }}/elpaisestafatal-operations-backup',
+]) {
   if (!workflow.includes(required)) failures.push(`backup workflow is missing ${required}`);
+}
+if (workflow.includes('echo "${CLOUDFLARE_API_TOKEN}"') || workflow.includes('echo "${WAREHOUSE_DATABASE_URL}"')) {
+  failures.push('backup workflow must not print runtime credentials');
 }
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log('Backup contract valid: scheduled/manual gating, D1, optional PostgreSQL, local warehouse, and configuration snapshots are covered.');

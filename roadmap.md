@@ -672,7 +672,7 @@ dynamic answer
 - API rate limits now use the operational D1 database across isolates, with scoped quotas and a bounded local fallback for offline/degraded runs.
 - Back up PostgreSQL, D1, R2, and configuration manifests.
 - Backup artifacts now carry integrity metadata and have a standalone verification command; remote credential setup and scheduled export remain deployment configuration rather than committed secrets.
-- A manual secret-backed export workflow now performs and verifies the remote D1/configuration/PostgreSQL backup when deployment credentials are configured; it is intentionally not scheduled until the operator supplies and tests those credentials.
+- A secret-backed export workflow now performs and verifies the remote D1/configuration/PostgreSQL backup when deployment credentials are configured. It runs weekly when credentials exist, skips safely for credentialless scheduled runs, fails clearly for manual misconfiguration, and retains only verified artifacts for 30 days; the release validator protects this schedule, gating, integrity check, and retention contract.
 - Version knowledge, schemas, handlers, parsers, and models.
 - Preserve canonical public routes and behavior; do not reintroduce obsolete duplicate pages or compatibility code.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
