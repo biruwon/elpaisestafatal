@@ -2,40 +2,18 @@
 
 The public site remains a static Astro build. Local AI is optional and runs outside Cloudflare Pages.
 
-## Text and links
+## The shared local pipeline
+
+Start the full local stack:
 
 ```bash
-npm run clarify:local -- "Los inmigrantes crean inseguridad"
-npm run clarify:local -- https://example.com/article
+npm run ai:setup
+npm run dev:ai
 ```
 
-The command extracts page text for URLs, asks Ollama to classify the input against the approved claim families, and appends the original input and result to `.local/knowledge-gaps.jsonl`.
+Then use the browser at `http://127.0.0.1:4321`. Typed claims, links, screenshots, and audio all enter the same same-origin `/api/classify` flow. The browser submits once, shows deterministic guidance immediately, and polls optional local enrichment automatically. There is no separate command or second classification path.
 
-## Screenshots
-
-```bash
-npm run clarify:local -- --image /absolute/path/screenshot.png
-```
-
-This uses `qwen3-vl:8b` by default. Override the model with `OLLAMA_MODEL`.
-
-## Audio
-
-```bash
-npm run clarify:local -- --audio /absolute/path/recording.m4a
-```
-
-Audio is transcribed only when `WHISPER_COMMAND` is configured to a local command that writes the transcript to stdout. Without it, the input is recorded as unsupported. No audio is sent to the public site.
-
-For a command that accepts the audio path as its first argument:
-
-```bash
-WHISPER_COMMAND=/path/to/local-transcriber \
-WHISPER_ARGS='["{audio}"]' \
-npm run clarify:local -- --audio /absolute/path/recording.m4a
-```
-
-`{audio}` is replaced with the supplied file path. The resulting transcript is then passed through the same approved-claim classifier as text and links.
+The local resolver accepts the same multipart media contract used by the deployed Pages Function. Screenshot extraction uses the configured local vision model when available; audio uses the configured local speech command. If either optional runtime is unavailable, the deterministic text/caption guidance remains usable and the failure is reported generically.
 
 ## Endpoint and local models
 
@@ -49,12 +27,7 @@ For a later production iteration, create a named tunnel with an API token that h
 
 This tunnel is intentionally deferred. The current production deployment does not require local inference: it serves deterministic claim matching and evidence guidance through the static site and API fallback. A public health response with `dynamic: false` is therefore expected until the persistent origin is configured.
 
-The local development proxy keeps the local inference service behind the same-origin `/api/classify` boundary. Set up the local models once:
-
-```bash
-npm run ai:setup
-npm run dev:ai
-```
+The local development proxy keeps the local inference service behind the same-origin `/api/classify` boundary.
 
 The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and does not run inference.
 

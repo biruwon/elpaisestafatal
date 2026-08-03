@@ -93,7 +93,6 @@
     "knowledge:promote-cluster:validate": "node scripts/knowledge/validate-cluster-promotion.mjs",
     "calculate:concerns": "node scripts/calculate-concerns.mjs",
     "cards": "node scripts/generate-social-cards.mjs",
-    "clarify:local": "node scripts/local-clarifier.mjs",
     "ai:setup": "node scripts/setup-local-ai.mjs",
     "dev:ai": "node scripts/dev-local-ai.mjs"
   },
