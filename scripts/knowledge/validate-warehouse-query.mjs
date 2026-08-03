@@ -30,9 +30,18 @@ if (!excludedMetricIdsForQuery('La sanidad pública está completamente colapsad
 if (!preferredMetricIdsForQuery('desigualdad de ingresos en España').has('gini_coefficient')) throw new Error('Metric hints did not prefer Gini for inequality wording');
 if (!preferredMetricIdsForQuery('déficit público sobre PIB').has('government_deficit_ratio')) throw new Error('Metric hints did not prefer public deficit for deficit wording');
 if (!preferredMetricIdsForQuery('renta mediana de los hogares').has('median_equivalised_income')) throw new Error('Metric hints did not prefer median income for household-income wording');
+if (!preferredMetricIdsForQuery('Porcentaje de la población activa que encuentra trabajo').has('employment_rate')) throw new Error('Metric hints did not prefer employment for everyday wording');
+if (!preferredMetricIdsForQuery('Evolución del desempleo en España').has('unemployment_rate')) throw new Error('Metric hints did not prefer unemployment for trend wording');
+if (!preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for comparison wording');
+if (preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate')) throw new Error('Metric hints kept generic unemployment alongside European comparison wording');
+if (!preferredMetricIdsForQuery('Qué porcentaje de jóvenes activos no encuentra trabajo').has('youth_unemployment_rate') || preferredMetricIdsForQuery('Qué porcentaje de jóvenes activos no encuentra trabajo').has('employment_rate')) throw new Error('Metric hints did not keep youth unemployment distinct from employment');
+if (!preferredMetricIdsForQuery('Cuántos habitantes viven normalmente en España').has('resident_population')) throw new Error('Metric hints did not prefer resident population');
+if (!preferredMetricIdsForQuery('Cuántos residentes nacieron fuera de España').has('foreign_born_population')) throw new Error('Metric hints did not prefer foreign-born population');
+if (!preferredMetricIdsForQuery('Cuántas personas inmigraron a España durante el último año').has('immigration_flows')) throw new Error('Metric hints did not prefer immigration flows');
 if (!preferredMetricIdsForQuery('Cómo ha evolucionado la criminalidad registrada en España').has('recorded_offences')) throw new Error('Metric hints did not prefer recorded offences for explicit crime wording');
 if (!excludedMetricIdsForQuery('Los inmigrantes crean inseguridad').has('recorded_offences')) throw new Error('Metric hints allowed recorded offences to answer an immigration-causality claim');
 if (excludedMetricIdsForQuery('En mi barrio ha subido la inseguridad').has('recorded_offences') !== true) throw new Error('Metric hints allowed recorded offences to answer a local insecurity claim');
+if (!excludedMetricIdsForQuery('Pedro Sánchez está destruyendo España').has('population_change_rate')) throw new Error('Metric hints allowed a broad subjective political claim to route to population change');
 if (recordedOffenceCategoryForQuery('Cómo han evolucionado los homicidios registrados').labels[0] !== 'intentional homicide') throw new Error('Recorded-offence category resolver did not identify homicide wording');
 
 const crimeRecords = [
@@ -43,6 +52,13 @@ const crimeRecords = [
 const homicideResults = rankWarehouseObservations('homicidios registrados en España', crimeRecords);
 if (homicideResults.length !== 2 || homicideResults.some((item) => item.dimensionLabels?.iccs !== 'Intentional homicide')) throw new Error('Warehouse query did not keep the requested offence category');
 if (rankWarehouseObservations('delincuencia registrada en España', crimeRecords).length !== 0) throw new Error('Warehouse query exposed an arbitrary offence category for a broad crime query');
+
+const birthRecords = [
+  { id: 'birth-total-2015', datasetId: 'Population by country of birth', metricId: 'foreign_born_population', value: 5883891, unit: 'Number', period: '2015', dimensions: { geo: 'ES', c_birth: 'TOTAL' }, dimensionLabels: { geo: 'Spain', c_birth: 'Foreign country' }, source: { id: 'source-eurostat-birth', title: 'Población por país de nacimiento en España · Eurostat', aliases: ['nacidos en el extranjero', 'inmigrantes'], url: 'https://ec.europa.eu/eurostat/' } },
+  { id: 'birth-belgium-2015', datasetId: 'Population by country of birth', metricId: 'foreign_born_population', value: 41952, unit: 'Number', period: '2015', dimensions: { geo: 'ES', c_birth: 'BE' }, dimensionLabels: { geo: 'Spain', c_birth: 'Belgium' }, source: { id: 'source-eurostat-birth', title: 'Población por país de nacimiento en España · Eurostat', aliases: ['nacidos en el extranjero', 'inmigrantes'], url: 'https://ec.europa.eu/eurostat/' } },
+];
+const birthResults = rankWarehouseObservations('residentes nacieron fuera de España', birthRecords);
+if (birthResults.length !== 1 || birthResults[0].id !== 'birth-total-2015') throw new Error('Warehouse query exposed a country category instead of the foreign-born total');
 
 const publication = rankWarehouseObservations('Banco de España tipos hipotecarios', [
   { id: 'doc-1', kind: 'official_publication', metric: 'Resolución del Banco de España sobre tipos de interés hipotecarios', value: null, period: '20260718', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-1', dimensions: { department: 'BANCO DE ESPAÑA' }, source: { id: 'source-boe', title: 'BOE', url: 'https://www.boe.es/' } },

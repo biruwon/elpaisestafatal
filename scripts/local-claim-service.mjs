@@ -67,10 +67,12 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly') return '% interanual';
+  if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate') return '% de la población';
   if (metricId === 'household_electricity_price') return '€ por kWh';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
+  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'recorded_offences') return 'delitos registrados';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
@@ -452,7 +454,8 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // periods for the chart.
   const candidateLimit = hintedMetricIds.size ? 250 : 100;
   const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
-    if (item.evidenceFit === 'weak' && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
+    const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
+    if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     if (item.freshness === 'stale' || item.freshness === 'invalid') return false;
     if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.

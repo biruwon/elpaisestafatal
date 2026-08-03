@@ -140,6 +140,21 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== '% interanual') failures.push('inflation warehouse: did not localize the unit');
     if (String(result.result?.warehouseSeries?.labels?.at(-1) || '') < '2025') failures.push('inflation warehouse: candidate cap truncated the recent periods');
   } catch (error) { failures.push(`inflation warehouse: ${error.message}`); }
+  for (const [text, metricId, unit] of [
+    ['Porcentaje de la población activa que encuentra trabajo', 'employment_rate', '%'],
+    ['Evolución del desempleo en España', 'unemployment_rate', '%'],
+    ['Cuántos habitantes viven normalmente en España', 'resident_population', 'personas'],
+    ['Cuántos residentes nacieron fuera de España', 'foreign_born_population', 'personas'],
+    ['Cuántas personas inmigraron a España durante el último año', 'immigration_flows', 'personas'],
+  ]) {
+    try {
+      const result = await resolve(text);
+      if (!['draft', 'partial'].includes(result.status)) failures.push(`${metricId} warehouse: expected provisional result, received ${result.status}`);
+      if (result.result?.warehouseSeries?.metricId !== metricId) failures.push(`${metricId} warehouse: selected the wrong metric family`);
+      if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push(`${metricId} warehouse: missing a multi-period series`);
+      if (result.result?.warehouseSeries?.unit !== unit) failures.push(`${metricId} warehouse: did not localize the unit`);
+    } catch (error) { failures.push(`${metricId} warehouse: ${error.message}`); }
+  }
   try {
     const result = await resolve('Cómo han evolucionado los homicidios registrados en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`recorded crime warehouse: expected provisional result, received ${result.status}`);

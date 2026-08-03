@@ -12,6 +12,9 @@ const metricHints = [
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
   { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'precios aumentan'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
+  { ids: ['employment_rate'], terms: ['tasa de empleo', 'tasa de ocupacion', 'personas ocupadas', 'personas que tienen empleo', 'encuentra trabajo', 'tiene empleo', 'ocupacion en espana', 'empleo en espana'] },
+  { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
+  { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo'] },
   { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
@@ -24,6 +27,9 @@ const metricHints = [
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
   { ids: ['young_population_share'], terms: ['poblacion de 0 a 14 anos', 'menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'proporcion de menores'] },
   { ids: ['population_change_rate'], terms: ['crecimiento demografico', 'crecimiento poblacional', 'variacion de poblacion', 'variacion demografica', 'crecimiento de la poblacion', 'crece la poblacion', 'esta creciendo', 'la poblacion esta creciendo', 'poblacion creciendo', 'pierde poblacion', 'perdiendo poblacion', 'espana esta perdiendo poblacion', 'despoblacion', 'cambio demografico', 'cambio poblacional'] },
+  { ids: ['resident_population'], terms: ['poblacion residente', 'residentes en espana', 'habitantes de espana', 'habitantes viven en espana', 'habitantes viven normalmente en espana', 'millones de habitantes', 'cuantos habitantes hay', 'numero de habitantes'] },
+  { ids: ['foreign_born_population'], terms: ['nacidos fuera de espana', 'nacidos en el extranjero', 'poblacion nacida fuera', 'personas nacidas fuera', 'residentes nacieron fuera', 'poblacion inmigrante por pais de nacimiento'] },
+  { ids: ['immigration_flows'], terms: ['llegadas de inmigrantes', 'personas inmigraron', 'flujos migratorios', 'entradas de inmigrantes', 'inmigracion anual'] },
   // This source is category-level. Keep the route explicit: generic
   // “inseguridad” and immigration-causality wording must not silently attach
   // one arbitrary offence category to the user's claim.
@@ -48,6 +54,9 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('inflation_rate');
     preferred.delete('cpi_index');
   }
+  if (preferred.has('unemployment_rate_europe')) preferred.delete('unemployment_rate');
+  if (preferred.has('youth_unemployment_rate')) preferred.delete('unemployment_rate');
+  if (preferred.has('youth_unemployment_rate')) preferred.delete('employment_rate');
   return preferred;
 };
 
@@ -63,6 +72,8 @@ export const excludedMetricIdsForQuery = (query) => {
   const crimeContext = ['insegur', 'delinc', 'criminal', 'crimen', 'delito', 'seguridad', 'homicid', 'asesinat', 'robo', 'fraude', 'corrup'].some((term) => normalized.includes(term));
   const localOrCausalCrime = ['inseguridad', 'inseguro', 'insegura', 'barrio', 'municipio', 'zona', 'inmigr', 'nacionalidad', 'caus', 'crea', 'provoc', 'culpa'].some((term) => normalized.includes(term));
   const demographicContext = ['poblacion', 'demograf', 'inmigr', 'migracion', 'despobl', 'habitantes', 'natalidad', 'fecundidad', 'envejec'].some((term) => normalized.includes(term));
+  const broadSubjectivePoliticalClaim = ['destruy', 'hundiendo', 'arruinando', 'fatal'].some((term) => normalized.includes(term))
+    && ['espana', 'pais', 'gobierno', 'sanchez', 'politic'].some((term) => normalized.includes(term));
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
   if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
@@ -73,6 +84,9 @@ export const excludedMetricIdsForQuery = (query) => {
   // the change series out of generic population, migration, fertility, and
   // out-of-domain matches unless the wording explicitly asks about change.
   if (demographicContext && !populationChangeRequested) excluded.add('population_change_rate');
+  // A broad subjective political complaint must not fall through to a nearby
+  // demographic series just because it contains “España” or “población”.
+  if (broadSubjectivePoliticalClaim) excluded.add('population_change_rate');
   if (priceContext && !inflationRequested) excluded.add('inflation_rate');
   // Recorded offences are useful for an explicit category/trend question,
   // never as a proxy for perceived insecurity, a local anecdote, or a causal

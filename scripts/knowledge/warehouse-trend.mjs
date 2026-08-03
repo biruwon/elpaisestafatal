@@ -6,6 +6,9 @@ const metricLabels = {
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
   rental_price_index: 'Precios del alquiler en España',
   gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
+  employment_rate: 'Tasa de empleo en España',
+  unemployment_rate: 'Tasa de desempleo en España',
+  unemployment_rate_europe: 'Tasa de desempleo de España frente a Europa',
   government_debt_ratio: 'Deuda pública sobre el PIB en España',
   government_revenue_ratio: 'Ingresos públicos sobre el PIB en España',
   government_expenditure_ratio: 'Gasto público sobre el PIB en España',
@@ -18,6 +21,9 @@ const metricLabels = {
   older_population_share: 'Población de 65 años o más en España',
   young_population_share: 'Población menor de 15 años en España',
   population_change_rate: 'Cambio anual de la población en España',
+  resident_population: 'Población residente en España',
+  foreign_born_population: 'Población nacida en el extranjero en España',
+  immigration_flows: 'Inmigración anual en España',
   arope_rate: 'Riesgo de pobreza o exclusión social en España',
 };
 const offenceLabels = {
@@ -52,10 +58,12 @@ const displayUnit = (item) => {
   const metricId = String(item.metricId || '');
   const unit = normalise(item.unit);
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'inflation_rate') return '% interanual';
+  if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
+  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'life_expectancy_at_birth') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';

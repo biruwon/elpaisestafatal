@@ -33,6 +33,16 @@ const recordedOffenceCategories = [
   { terms: ['ciberdelincuencia', 'delitos informaticos'], labels: ['acts against computer systems'] },
 ];
 
+const metricSearchAliases = {
+  youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
+  employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
+  unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],
+  unemployment_rate_europe: ['paro', 'desempleo', 'europa', 'comparacion europea'],
+  resident_population: ['poblacion', 'habitantes', 'residentes', 'viven', 'normalmente'],
+  foreign_born_population: ['inmigracion', 'inmigrantes', 'extranjeros', 'nacidos', 'nacieron', 'fuera', 'residentes'],
+  immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],
+};
+
 export const recordedOffenceCategoryForQuery = (query) => {
   const normalized = normalise(query);
   return recordedOffenceCategories.find((category) => category.terms.some((term) => normalized.includes(normalise(term))));
@@ -56,6 +66,15 @@ const filterRecordedOffenceObservations = (query, observations) => {
     return category.labels.some((candidate) => label.includes(normalise(candidate)));
   });
 };
+
+const filterForeignBornObservations = (observations) => observations.filter((item) => {
+  if (item.metricId !== 'foreign_born_population') return true;
+  // The feed contains one series per birth-country category plus a total.
+  // Generic “born abroad” wording must use the total, never the first country
+  // returned by the source ordering.
+  const birthCategory = normalise(item.dimensionLabels?.c_birth || item.dimensions?.c_birth || '');
+  return birthCategory === 'total' || birthCategory.includes('foreign country');
+});
 
 const populationVocabulary = [
   { aliases: ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'foreign', 'migrant', 'migrants', 'nacido en el extranjero'], terms: ['inmigr', 'extranj', 'foreign', 'migr', 'born abroad'] },
@@ -123,6 +142,7 @@ const recordText = (record) => [
   record.source?.url,
   record.url,
   record.excerpt,
+  ...(metricSearchAliases[record.metricId] || []),
   ...recordedOffenceSearchAliases(record),
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
@@ -131,7 +151,7 @@ const recordText = (record) => [
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2) return [];
-  const scopedRecords = (metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records).filter((record) => {
+  const scopedRecords = filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;
@@ -171,7 +191,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
 export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding, metricIds } = {}) => {
   if (postgresEnabled()) {
     const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
-    if (results) return filterRecordedOffenceObservations(query, results);
+    if (results) return filterForeignBornObservations(filterRecordedOffenceObservations(query, results));
   }
-  return filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds }));
+  return filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds })));
 };
