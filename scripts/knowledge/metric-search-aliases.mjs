@@ -23,6 +23,7 @@ export const metricSearchAliases = Object.freeze({
   recorded_offences: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'homicidios registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada'],
   government_debt_ratio: ['deuda pública', 'deuda del Estado', 'deuda sobre PIB', 'deuda española', 'endeudamiento público', 'cuánto debe España', 'deuda del país', 'nivel de deuda española'],
   health_expenditure_per_capita: ['gasto sanitario por habitante', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por persona', 'dinero por persona en sanidad', 'cuánto dinero se dedica a sanidad', 'cuánto se gasta en salud'],
+  health_expenditure_per_capita_europe: ['gasto sanitario', 'gasto', 'sanidad', 'habitante', 'europa', 'union europea', 'comparacion europea'],
   median_equivalised_income: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuánto ingresan los hogares'],
 });
 

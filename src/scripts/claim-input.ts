@@ -361,6 +361,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿Está la inflación de España por encima de la Unión Europea?',
               '¿España recauda más o menos que la media europea?',
               '¿España gasta más o menos que la media de la Unión Europea?',
+              '¿España gasta más por habitante en sanidad que la Unión Europea?',
             ]
             : [
               '¿Ha empeorado el acceso a la vivienda en España?',

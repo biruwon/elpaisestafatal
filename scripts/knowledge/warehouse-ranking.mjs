@@ -135,6 +135,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto total de las administraciones públicas como porcentaje del PIB según las cuentas nacionales de Eurostat; no identifica cuánto gasta un servicio concreto ni permite juzgar por sí sola su eficiencia.',
     caveat: 'Es un agregado de todas las administraciones públicas, no una medida directa de la calidad o del coste de un servicio.',
   },
+  health_expenditure_per_capita_europe: {
+    label: 'Gasto sanitario por habitante',
+    verb: 'registró un gasto sanitario por habitante',
+    replyLead: 'el gasto sanitario por habitante fue de',
+    differenceVerb: ['el gasto sanitario por habitante español fue más alto', 'el gasto sanitario por habitante español fue más bajo', 'España y la Unión Europea registraron el mismo gasto sanitario por habitante'],
+    unit: '€ por habitante',
+    replyUnit: '€ por habitante',
+    differenceUnit: '€ por habitante',
+    method: 'La comparación usa el gasto sanitario corriente total por habitante, financiado por todos los esquemas, según Eurostat; no equivale al gasto de un hospital concreto ni mide por sí sola el acceso o la calidad de la atención.',
+    caveat: 'Es un promedio nacional comparable, no el gasto de cada persona ni una medida directa de resultados sanitarios.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
@@ -171,7 +182,7 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
     points: [
       `España: ${formatNumber(spain.value)} ${definition.unit}.`,
       `Unión Europea: ${formatNumber(europeanUnion.value)} ${definition.unit}.`,
-      `Diferencia: ${formatNumber(Math.abs(difference))} puntos porcentuales ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
+      `Diferencia: ${formatNumber(Math.abs(difference))} ${definition.differenceUnit || 'puntos porcentuales'} ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
       definition.method,
     ],
     reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,

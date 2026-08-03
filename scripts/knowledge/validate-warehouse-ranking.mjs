@@ -57,4 +57,10 @@ const expenditureRecords = [
 ];
 const expenditureComparison = summarizeWarehouseEuropeanComparison('¿España gasta más o menos que la media de la Unión Europea?', expenditureRecords);
 if (!expenditureComparison || expenditureComparison.metricId !== 'government_expenditure_ratio_europe' || !expenditureComparison.summary.includes('45,3') || !expenditureComparison.summary.includes('49,5') || !expenditureComparison.reply.includes('gasto público español fue más bajo')) throw new Error('European public-expenditure comparison did not preserve the same-period comparison or public-aggregate caveat');
+const healthRecords = [
+  { id: 'health-es-2023', metricId: 'health_expenditure_per_capita_europe', datasetId: 'Health expenditure comparison', value: 2857.25, unit: 'Euro per inhabitant', period: '2023', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'health-eu-2023', metricId: 'health_expenditure_per_capita_europe', datasetId: 'Health expenditure comparison', value: 3836.68, unit: 'Euro per inhabitant', period: '2023', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const healthComparison = summarizeWarehouseEuropeanComparison('¿España gasta más por habitante en sanidad que la Unión Europea?', healthRecords);
+if (!healthComparison || healthComparison.metricId !== 'health_expenditure_per_capita_europe' || !healthComparison.summary.includes('2857,25') || !healthComparison.summary.includes('3836,68') || !healthComparison.summary.includes('por debajo de la Unión Europea') || !healthComparison.points.some((point) => point.includes('979,43 € por habitante menos')) || !healthComparison.reply.includes('gasto sanitario por habitante español fue más bajo')) throw new Error('European health-spending comparison did not preserve the same-period comparison or health caveat');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

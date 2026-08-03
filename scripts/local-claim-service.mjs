@@ -72,6 +72,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
+  if (metricId === 'health_expenditure_per_capita_europe') return '€ por habitante';
   if (metricId === 'early_school_leaving_rate') return '% de jóvenes de 18 a 24 años';
   if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
   if (metricId === 'neet_rate') return '% de jóvenes de 15 a 29 años';
@@ -495,7 +496,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // example monthly inflation). Keep the broad path small, but let an
   // explicit metric retrieve enough of its own series to retain the latest
   // periods for the chart.
-  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_expenditure_ratio_europe');
+  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe');
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;

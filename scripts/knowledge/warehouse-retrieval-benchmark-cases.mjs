@@ -29,6 +29,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['presupuesto-publico', 'Cómo ha cambiado el gasto del Estado en España', 'government_expenditure_ratio'],
   ['gasto-europa', '¿España gasta más o menos que la media de la Unión Europea?', 'government_expenditure_ratio_europe'],
   ['gasto-europa-menos', '¿España gasta menos que Europa?', 'government_expenditure_ratio_europe'],
+  ['sanidad-europa', '¿España gasta más por habitante en sanidad que la Unión Europea?', 'health_expenditure_per_capita_europe'],
+  ['sanidad-europa-menos', '¿España gasta menos por persona en sanidad que Europa?', 'health_expenditure_per_capita_europe'],
   ['paro-juvenil', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'youth_unemployment_rate'],
   ['paro-jovenes', 'Evolución del desempleo entre los jóvenes españoles', 'youth_unemployment_rate'],
   ['paro-gente', 'Qué porcentaje de la población activa no encuentra trabajo', 'unemployment_rate'],

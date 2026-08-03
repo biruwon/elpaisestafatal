@@ -278,15 +278,16 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!/tasa de empleo española fue más baja|por debajo de/i.test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push('Spain/EU employment comparison: did not calculate the direction of the comparison');
     if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU employment comparison: did not render a comparison visual');
   } catch (error) { failures.push(`Spain/EU employment comparison: ${error.message}`); }
-  for (const [text, metricId, direction] of [
-    ['¿España recauda más o menos que la media de la Unión Europea?', 'government_revenue_ratio_europe', 'ingresos públicos españoles fueron más bajos'],
-    ['¿España gasta más o menos que la media de la Unión Europea?', 'government_expenditure_ratio_europe', 'gasto público español fue más bajo'],
+  for (const [text, metricId, unit, direction] of [
+    ['¿España recauda más o menos que la media de la Unión Europea?', 'government_revenue_ratio_europe', '% del PIB', 'ingresos públicos españoles fueron más bajos'],
+    ['¿España gasta más o menos que la media de la Unión Europea?', 'government_expenditure_ratio_europe', '% del PIB', 'gasto público español fue más bajo'],
+    ['¿España gasta más por habitante en sanidad que la Unión Europea?', 'health_expenditure_per_capita_europe', '€ por habitante', 'gasto sanitario por habitante español fue más bajo'],
   ]) {
     try {
       const result = await resolve(text);
       if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU ${metricId} comparison: expected provisional result, received ${result.status}`);
       if (result.result?.warehouseSeries?.metricId !== metricId) failures.push(`Spain/EU ${metricId} comparison: selected the wrong metric family`);
-      if (result.result?.warehouseSeries?.unit !== '% del PIB') failures.push(`Spain/EU ${metricId} comparison: did not localize the comparison unit`);
+      if (result.result?.warehouseSeries?.unit !== unit) failures.push(`Spain/EU ${metricId} comparison: did not localize the comparison unit`);
       if (!/España.*Unión Europea|Unión Europea.*España/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push(`Spain/EU ${metricId} comparison: lost the named comparison in the public answer`);
       if (!new RegExp(direction).test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push(`Spain/EU ${metricId} comparison: did not calculate the direction of the comparison`);
       if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push(`Spain/EU ${metricId} comparison: did not render a comparison visual`);

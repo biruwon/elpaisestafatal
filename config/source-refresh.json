@@ -191,6 +191,12 @@
       "metricId": "health_expenditure_per_capita"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_sha11_hf?geo=ES&geo=EU27_2020&unit=EUR_HAB&icha11_hf=TOT_HF&sinceTimePeriod=2015",
+      "title": "Gasto sanitario por habitante: España y Unión Europea · Eurostat",
+      "aliases": ["gasto sanitario frente a Europa", "gasto en sanidad frente a Europa", "España gasta más en sanidad que Europa", "España gasta menos en sanidad que Europa", "gasto sanitario de España frente a la Unión Europea"],
+      "metricId": "health_expenditure_per_capita_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?geo=ES&sex=T&age=Y_LT1&sinceTimePeriod=2015",
       "title": "Esperanza de vida al nacer en España · Eurostat",
       "aliases": ["esperanza de vida", "esperanza de vida al nacer", "años de vida", "vida media", "cuántos años vive", "longevidad"],
