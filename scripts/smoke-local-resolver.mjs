@@ -289,6 +289,16 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('conversational health expenditure: selected the wrong metric family');
   } catch (error) { failures.push(`conversational health expenditure: ${error.message}`); }
   try {
+    const result = await resolve('Cuánto dinero se dedica por persona a la sanidad');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`colloquial health expenditure: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('colloquial health expenditure: selected the wrong metric family');
+  } catch (error) { failures.push(`colloquial health expenditure: ${error.message}`); }
+  try {
+    const result = await resolve('Cuánto debe España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`colloquial public debt: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_debt_ratio') failures.push('colloquial public debt: selected the wrong metric family');
+  } catch (error) { failures.push(`colloquial public debt: ${error.message}`); }
+  try {
     const result = await resolve('Porcentaje de residentes AROPE en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`AROPE resident percentage: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'arope_rate') failures.push('AROPE resident percentage: selected the wrong metric family');
@@ -357,6 +367,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('median income warehouse: missing a multi-period series');
     if (result.result?.warehouseSeries?.unit !== '€ por persona') failures.push('median income warehouse: did not localize the unit');
   } catch (error) { failures.push(`median income warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cuánto ingresan de media los hogares');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`colloquial median income: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'median_equivalised_income') failures.push('colloquial median income: selected the wrong metric family');
+  } catch (error) { failures.push(`colloquial median income: ${error.message}`); }
   try {
     const result = await resolve('Qué porcentaje de jóvenes activos está en paro en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`youth unemployment warehouse: expected provisional result, received ${result.status}`);

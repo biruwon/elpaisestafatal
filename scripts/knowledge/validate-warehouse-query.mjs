@@ -25,11 +25,14 @@ if (!preferredMetricIdsForQuery('gasto público sobre PIB').has('government_expe
 if (!preferredMetricIdsForQuery('sobrecarga del coste de la vivienda').has('housing_cost_overburden_rate')) throw new Error('Metric hints did not prefer housing cost overburden for affordability wording');
 if (!preferredMetricIdsForQuery('gasto sanitario por habitante').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for resource wording');
 if (!preferredMetricIdsForQuery('cuánto gasta sanidad por habitante en España').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for conversational wording');
+if (!preferredMetricIdsForQuery('cuánto dinero se dedica por persona a la sanidad').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for colloquial spending wording');
+if (!preferredMetricIdsForQuery('cuánto debe España').has('government_debt_ratio')) throw new Error('Metric hints did not prefer public debt for colloquial debt wording');
 if (!preferredMetricIdsForQuery('porcentaje de residentes AROPE en España').has('arope_rate')) throw new Error('Metric hints did not prefer AROPE for resident percentage wording');
 if (!excludedMetricIdsForQuery('La sanidad pública está completamente colapsada').has('health_expenditure_per_capita')) throw new Error('Metric hints allowed per-capita spending to answer a broad health-system outcome claim');
 if (!preferredMetricIdsForQuery('desigualdad de ingresos en España').has('gini_coefficient')) throw new Error('Metric hints did not prefer Gini for inequality wording');
 if (!preferredMetricIdsForQuery('déficit público sobre PIB').has('government_deficit_ratio')) throw new Error('Metric hints did not prefer public deficit for deficit wording');
 if (!preferredMetricIdsForQuery('renta mediana de los hogares').has('median_equivalised_income')) throw new Error('Metric hints did not prefer median income for household-income wording');
+if (!preferredMetricIdsForQuery('cuánto ingresan de media los hogares').has('median_equivalised_income')) throw new Error('Metric hints did not prefer median income for colloquial household wording');
 if (!preferredMetricIdsForQuery('Porcentaje de la población activa que encuentra trabajo').has('employment_rate')) throw new Error('Metric hints did not prefer employment for everyday wording');
 if (!preferredMetricIdsForQuery('Evolución del desempleo en España').has('unemployment_rate')) throw new Error('Metric hints did not prefer unemployment for trend wording');
 if (!preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for comparison wording');

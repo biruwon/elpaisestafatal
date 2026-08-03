@@ -57,7 +57,7 @@
   },
   "government_debt_ratio": {
     "name": "General government gross debt as a share of GDP",
-    "aliases": ["deuda pública", "deuda del Estado", "deuda sobre PIB", "deuda española", "endeudamiento público"],
+    "aliases": ["deuda pública", "deuda del Estado", "deuda sobre PIB", "deuda española", "endeudamiento público", "cuánto debe España", "deuda del país", "nivel de deuda española"],
     "unit": "percent of GDP",
     "population": "general government consolidated gross debt",
     "notEquivalentTo": ["gdp_current_prices", "government_revenue_ratio"],
@@ -185,7 +185,7 @@
   },
   "health_expenditure_per_capita": {
     "name": "Current health expenditure per inhabitant",
-    "aliases": ["gasto sanitario por habitante", "gasto en sanidad", "gasto en salud", "recursos sanitarios", "salud pública"],
+    "aliases": ["gasto sanitario por habitante", "gasto en sanidad", "gasto en salud", "recursos sanitarios", "salud pública", "gasto sanitario por persona", "dinero por persona en sanidad", "cuánto dinero se dedica a sanidad", "cuánto se gasta en salud"],
     "unit": "EUR per inhabitant",
     "population": "all current health expenditure financed by all schemes per inhabitant",
     "notEquivalentTo": ["government_expenditure_ratio"],
@@ -257,7 +257,7 @@
   },
   "median_equivalised_income": {
     "name": "Median equivalised disposable income",
-    "aliases": ["renta mediana", "ingresos medianos", "renta disponible", "ingresos de los hogares"],
+    "aliases": ["renta mediana", "ingresos medianos", "renta disponible", "ingresos de los hogares", "renta de las familias", "ingresos medianos de las familias", "cuánto ingresan los hogares"],
     "unit": "EUR per person",
     "population": "total population by equivalised disposable income",
     "notEquivalentTo": ["gini_coefficient", "government_revenue_ratio"],

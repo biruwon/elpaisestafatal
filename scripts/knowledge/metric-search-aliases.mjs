@@ -16,6 +16,9 @@ export const metricSearchAliases = Object.freeze({
   young_population_share: ['menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'poblacion menos anos'],
   population_change_rate: ['crecimiento demografico', 'variacion de poblacion', 'despoblacion', 'cambio demografico'],
   recorded_offences: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'homicidios registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada'],
+  government_debt_ratio: ['deuda pública', 'deuda del Estado', 'deuda sobre PIB', 'deuda española', 'endeudamiento público', 'cuánto debe España', 'deuda del país', 'nivel de deuda española'],
+  health_expenditure_per_capita: ['gasto sanitario por habitante', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por persona', 'dinero por persona en sanidad', 'cuánto dinero se dedica a sanidad', 'cuánto se gasta en salud'],
+  median_equivalised_income: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuánto ingresan los hogares'],
 });
 
 export const searchAliasesForMetric = (metricId) => metricSearchAliases[metricId] || [];
