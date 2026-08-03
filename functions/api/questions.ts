@@ -55,26 +55,38 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const inputType = typeof body.inputType === 'string' ? body.inputType.slice(0, 20) : 'text';
   const status = typeof body.status === 'string' ? body.status.slice(0, 30) : 'received';
   try {
-    const clusterId = 'cluster-' + (await digest(semanticSignature)).slice(0, 32);
-    try {
-      await env.DB.prepare('INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, semantic_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      const clusterId = 'cluster-' + (await digest(semanticSignature)).slice(0, 32);
+      try {
+      const inserted = await env.DB.prepare('INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, semantic_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
         .bind(id, normalized, signature, semanticSignature, inputType, status, now).run();
       await env.DB.prepare('UPDATE resolve_requests SET status = ?, canonical_signature = ?, semantic_signature = ? WHERE id = ?')
         .bind(status, signature, semanticSignature, id).run();
-      await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, ?, 1, ?, ?) ON CONFLICT(semantic_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END")
-        .bind(clusterId, canonical, signature, semanticSignature, now, status === 'complete' ? 'covered' : status).run();
+      const isNewRequest = Number((inserted as { meta?: { changes?: number } })?.meta?.changes || 0) > 0;
+      if (isNewRequest) {
+        await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, ?, 1, ?, ?) ON CONFLICT(semantic_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END")
+          .bind(clusterId, canonical, signature, semanticSignature, now, status === 'complete' ? 'covered' : status).run();
+      } else {
+        await env.DB.prepare("UPDATE query_clusters SET last_seen_at = ?, coverage_status = CASE WHEN coverage_status = 'covered' THEN 'covered' WHEN ? = 'complete' THEN 'covered' ELSE coverage_status END WHERE semantic_signature = ?")
+          .bind(now, status, semanticSignature).run();
+      }
       const cluster = await env.DB.prepare('SELECT id FROM query_clusters WHERE semantic_signature = ? LIMIT 1').bind(semanticSignature).all<{ id: string }>();
       const resolvedClusterId = cluster.results[0]?.id || clusterId;
       await env.DB.prepare('INSERT OR IGNORE INTO query_cluster_members (request_id, cluster_id) VALUES (?, ?)')
         .bind(id, resolvedClusterId).run();
     } catch {
       // Keep old deployments functional until migration 0004 is applied.
-      await env.DB.prepare('INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+      const inserted = await env.DB.prepare('INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?)')
         .bind(id, normalized, signature, inputType, status, now).run();
       await env.DB.prepare('UPDATE resolve_requests SET status = ?, canonical_signature = ? WHERE id = ?')
         .bind(status, signature, id).run();
-      await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, 1, ?, ?) ON CONFLICT(canonical_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END")
-        .bind(clusterId, canonical, signature, now, status === 'complete' ? 'covered' : status).run();
+      const isNewRequest = Number((inserted as { meta?: { changes?: number } })?.meta?.changes || 0) > 0;
+      if (isNewRequest) {
+        await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, 1, ?, ?) ON CONFLICT(canonical_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END")
+          .bind(clusterId, canonical, signature, now, status === 'complete' ? 'covered' : status).run();
+      } else {
+        await env.DB.prepare("UPDATE query_clusters SET last_seen_at = ?, coverage_status = CASE WHEN coverage_status = 'covered' THEN 'covered' WHEN ? = 'complete' THEN 'covered' ELSE coverage_status END WHERE canonical_signature = ?")
+          .bind(now, status, signature).run();
+      }
       const cluster = await env.DB.prepare('SELECT id FROM query_clusters WHERE canonical_signature = ? LIMIT 1').bind(signature).all<{ id: string }>();
       const resolvedClusterId = cluster.results[0]?.id || clusterId;
       await env.DB.prepare('INSERT OR IGNORE INTO query_cluster_members (request_id, cluster_id) VALUES (?, ?)')

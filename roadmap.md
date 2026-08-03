@@ -535,6 +535,8 @@ This iteration adds `knowledge:review-queue`, a maintainer-only JSON/Markdown sh
 
 Status: started; durable review-queue merge, recency ranking, deterministic semantic-family merging, and published-catalogue reconciliation are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved. The public popularity feed now returns the linked reviewed claim destination, so approved popular questions open their canonical answer directly and never expose raw unreviewed submissions. Warehouse-routable compressed and colloquial cluster signatures are now excluded from the manual materialisation queue, and metric search aliases are shared by local JSON, PostgreSQL, and SQL-export indexes so deployment paths keep the same long-tail coverage.
 
+Long-tail capture now starts as soon as a user submits an unresolved text claim, before optional background analysis finishes. This preserves the learning signal when the local runtime is slow or unavailable. Screenshot and audio results can add their extracted canonical wording later. The D1 ingestion path is idempotent by request ID, so retries and repeated UI callbacks update recency without inflating cluster popularity. `npm run learning:validate` protects these guarantees.
+
 Cluster inputs by canonical proposition signature. Track:
 
 - most asked;

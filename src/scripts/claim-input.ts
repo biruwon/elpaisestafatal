@@ -171,12 +171,27 @@ const propositionTypeLabels: Record<string, string> = {
   mixed: 'Afirmación',
 };
 
-const recordUncoveredQuestion = (text: string, response: SearchResponse): void => {
-  if (response.status !== 'uncovered' && response.status !== 'partial' && response.status !== 'draft') return;
+type LearningRecord = {
+  status?: string;
+  inputType?: 'text' | 'image' | 'audio' | 'url';
+  requestId?: string;
+  canonical?: string;
+  semanticSignature?: string;
+};
+
+const recordQuestion = (text: string, record: LearningRecord = {}): void => {
+  if (!text.trim()) return;
   void fetch('/api/questions', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ text, canonical: response.input?.canonical || response.canonicalSignature, semanticSignature: semanticQuerySignature(response.input?.canonical || response.canonicalSignature || text), inputType: 'text', status: response.status, requestId: response.requestId }),
+    body: JSON.stringify({
+      text,
+      canonical: record.canonical || text,
+      semanticSignature: record.semanticSignature || semanticQuerySignature(record.canonical || text),
+      inputType: record.inputType || 'text',
+      status: record.status || 'received',
+      requestId: record.requestId,
+    }),
     keepalive: true,
   }).catch(() => { /* Operational learning is optional and never blocks the answer. */ });
 };
@@ -627,7 +642,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p><p class="claim-guidance-learning" data-learning-note>Las preguntas sin coincidencia nos ayudan a decidir qué comprobar después.</p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
     : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
@@ -831,7 +846,15 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (!file && cacheKey) {
       responseCache.set(cacheKey, data);
-      recordUncoveredQuestion(query, data);
+    }
+    if (file && data.input?.canonical) {
+      recordQuestion(data.input.canonical, {
+        inputType,
+        status: data.status,
+        requestId: data.requestId,
+        canonical: data.input.canonical,
+        semanticSignature: data.canonicalSignature,
+      });
     }
     applyResponse(data, query, ranked);
   } catch (error) {
@@ -869,6 +892,11 @@ form?.addEventListener('submit', (event) => {
   const ranked = query ? rankClaimIndex(query, claimIndex) : [];
   if (query) renderDeterministic(query, ranked);
   else renderCard('loading', file?.name || 'Archivo enviado', undefined, [], undefined, '', 'media');
+  if (query && !(ranked[0] && isStrongClaimMatch(ranked[0]))) {
+    // Capture the gap before optional background classification. This keeps
+    // the learning loop useful when the runtime is slow or unavailable.
+    recordQuestion(query, { inputType: 'text', status: 'received' });
+  }
   result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   result.setAttribute('tabindex', '-1');
   result.focus({ preventScroll: true });

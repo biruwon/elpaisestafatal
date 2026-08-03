@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -30,6 +30,7 @@
     "backup:validate": "node scripts/validate-backup-config.mjs",
     "origin:validate": "node scripts/validate-local-origin.mjs",
     "input:validate": "node scripts/validate-input-contract.mjs",
+    "learning:validate": "node scripts/validate-learning-capture.mjs",
     "deploy:pages": "npm run build && npx wrangler pages deploy dist --project-name elpaisestafatal",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "validate:content": "node scripts/validate-content.mjs",
