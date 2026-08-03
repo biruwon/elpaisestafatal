@@ -24,6 +24,7 @@ const metricLabels = {
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
   old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',
   old_age_survivors_benefits_per_capita_europe: 'Gasto en prestaciones de vejez y supervivencia por habitante: España y la Unión Europea',
+  government_current_taxes_income_wealth_europe: 'Impuestos corrientes sobre renta y riqueza: España y la Unión Europea',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
@@ -85,6 +86,7 @@ const displayUnit = (item) => {
   if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
   if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante';
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
+  if (metricId === 'government_current_taxes_income_wealth_europe') return '% del PIB';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';

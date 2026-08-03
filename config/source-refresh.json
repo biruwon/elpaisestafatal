@@ -125,6 +125,12 @@
       "metricId": "government_revenue_ratio_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_taxag?geo=ES&geo=EU27_2020&unit=PC_GDP&na_item=D5&sector=S13&sinceTimePeriod=2015",
+      "title": "Impuestos corrientes sobre renta y riqueza: España y Unión Europea · Eurostat",
+      "aliases": ["impuestos sobre la renta y la riqueza frente a Europa", "impuestos de España frente a Europa", "España cobra más impuestos que Europa", "España cobra menos impuestos que Europa", "presión fiscal frente a la Unión Europea"],
+      "metricId": "government_current_taxes_income_wealth_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_main?geo=ES&geo=EU27_2020&na_item=TE&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
       "title": "Gasto público: España y Unión Europea · Eurostat",
       "aliases": ["gasto público frente a Europa", "gasto del Estado frente a Europa", "España gasta más que Europa", "España gasta menos que Europa", "gasto público de España frente a la Unión Europea"],

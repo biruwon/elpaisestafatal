@@ -127,6 +127,14 @@
     "notEquivalentTo": ["government_revenue_ratio", "government_expenditure_ratio", "government_debt_ratio"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
+  "government_current_taxes_income_wealth_europe": {
+    "name": "Current taxes on income, wealth, etc.: Spain and the European Union",
+    "aliases": ["impuestos sobre la renta y la riqueza frente a Europa", "impuestos de España frente a Europa", "España cobra más impuestos que Europa", "España cobra menos impuestos que Europa", "presión fiscal frente a la Unión Europea"],
+    "unit": "percent of GDP",
+    "population": "general government current taxes on income, wealth, etc. in Spain and the European Union",
+    "notEquivalentTo": ["government_revenue_ratio", "government_revenue_ratio_europe", "government_expenditure_ratio_europe", "median_equivalised_income_europe"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item", "tax_category"]
+  },
   "government_expenditure_ratio_europe": {
     "name": "General government total expenditure as a share of GDP: Spain and the European Union",
     "aliases": ["gasto público frente a Europa", "gasto del Estado frente a Europa", "España gasta más que Europa", "España gasta menos que Europa", "gasto público de España frente a la Unión Europea"],

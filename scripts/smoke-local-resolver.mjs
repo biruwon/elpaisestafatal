@@ -185,6 +185,14 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!/pension|vejez/i.test(`${result.result?.summary || ''} ${result.result?.reply || ''}`)) failures.push('old-age pension Europe warehouse: lost the pension-specific explanation');
   } catch (error) { failures.push(`old-age pension Europe warehouse: ${error.message}`); }
   try {
+    const result = await resolve('¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`current-taxes Europe warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_current_taxes_income_wealth_europe') failures.push('current-taxes Europe warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length !== 2) failures.push('current-taxes Europe warehouse: missing the Spain/EU comparison observations');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('current-taxes Europe warehouse: did not render a comparison visual');
+    if (!/impuestos|renta|riqueza/i.test(`${result.result?.summary || ''} ${result.result?.reply || ''}`)) failures.push('current-taxes Europe warehouse: lost the tax-specific explanation');
+  } catch (error) { failures.push(`current-taxes Europe warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Madrid tiene más densidad que Andalucía');
     const series = result.result?.warehouseSeries;
     const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'densidad-madrid-andalucia';

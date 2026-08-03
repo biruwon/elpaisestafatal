@@ -179,6 +179,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto en prestaciones de protección social para vejez y supervivencia por habitante según Eurostat, con el último año común disponible; no equivale a la pensión media ni al gasto de una administración concreta.',
     caveat: 'Es un promedio agregado comparable, no la pensión de cada persona ni una prueba por sí sola de la sostenibilidad del sistema.',
   },
+  government_current_taxes_income_wealth_europe: {
+    label: 'Impuestos corrientes sobre renta y riqueza',
+    verb: 'registró una recaudación de impuestos corrientes sobre renta y riqueza',
+    replyLead: 'la recaudación de impuestos corrientes sobre renta y riqueza fue del',
+    differenceVerb: ['la proporción española fue más alta', 'la proporción española fue más baja', 'España y la Unión Europea registraron la misma proporción'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa los impuestos corrientes sobre la renta, la riqueza y conceptos relacionados recaudados por las administraciones públicas como porcentaje del PIB según Eurostat, con el último año común disponible; no equivale a todos los ingresos públicos ni a la factura fiscal de un hogar.',
+    caveat: 'Es un agregado nacional comparable de una categoría tributaria amplia, no una medida de lo que paga cada persona ni un veredicto completo sobre la presión fiscal.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {

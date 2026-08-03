@@ -393,6 +393,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿Cuál es la inflación anual en España?',
               '¿Está la inflación de España por encima de la Unión Europea?',
               '¿España recauda más o menos que la media europea?',
+              '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
               '¿España gasta más o menos que la media de la Unión Europea?',
               '¿España gasta más por habitante en sanidad que la Unión Europea?',
               '¿España tiene más renta mediana que la Unión Europea?',
