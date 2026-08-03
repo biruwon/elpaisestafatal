@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -22,6 +22,7 @@
     "ux:journeys": "node scripts/validate-public-journeys.mjs",
     "ux:navigation": "node scripts/validate-global-navigation-ux.mjs",
     "ux:result": "node scripts/validate-result-ux.mjs",
+    "ux:static": "npm run input:validate && npm run claim-input:lifecycle && npm run ux:homepage && npm run ux:data && npm run ux:claims && npm run ux:catalogue && npm run ux:topics && npm run ux:journeys && npm run ux:navigation && npm run ux:result",
     "container:validate": "node scripts/validate-local-container.mjs",
     "media:validate": "node scripts/validate-local-media.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
