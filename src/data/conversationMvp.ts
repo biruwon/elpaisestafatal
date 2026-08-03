@@ -196,6 +196,19 @@ definitions['necesidades-medicas-lista-espera-aumentan'] = {
   visuals: { key: { value: '1,5 %', label: 'Población con necesidad médica no atendida por espera', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [0.4, 0.1, 0.2, 1.0, 1.6, 1.5], label: 'Necesidad médica no atendida por lista de espera', unit: '% de población de 16 años o más' }, caveat: 'Es una medida declarada. No cuenta por sí sola los pacientes en listas administrativas, la espera media ni la calidad completa de la atención.' },
 };
 
+definitions['pib-por-habitante-supera-34000'] = {
+  prompt: 'El PIB por habitante en España supera los 34.000 euros',
+  aliases: ['España supera los 34000 euros de PIB por habitante', 'el PIB per cápita de España supera los 34.000 euros', 'PIB por persona en España', 'PIB por habitante', 'cuánto produce España por habitante'],
+  propositions: ['El PIB por habitante de España alcanzó 34.210 euros en 2025 a precios corrientes.', 'El dato significa que cada persona gana o recibe 34.210 euros.', 'El aumento nominal demuestra que todos los hogares tienen más renta disponible.'],
+  concern: 'El PIB por habitante permite comparar la producción agregada con el tamaño de la población, pero no es la renta de cada persona ni una medida completa de bienestar.',
+  supports: 'Eurostat registra 34.210 euros por habitante en 2025, frente a 23.440 en 2015.',
+  limit: 'Es el PIB total dividido entre la población y está expresado a precios corrientes. No equivale a salario, renta disponible, riqueza o dinero recibido por cada hogar.',
+  question: '¿Quieres comparar PIB por habitante, renta disponible de los hogares o salarios?',
+  reply: 'Sí: el PIB por habitante de España llegó a 34.210 euros en 2025. Pero no significa que cada persona gane esa cantidad: es la producción económica total dividida entre la población y está expresada a precios corrientes.',
+  visualLabel: 'Producción por habitante y renta personal no son la misma medida',
+  visuals: { key: { value: '34.210 €', label: 'PIB por habitante a precios corrientes', period: '2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [23440, 24190, 25160, 25950, 26620, 23850, 26090, 28790, 30980, 32630, 34210], label: 'PIB por habitante', unit: '€ por habitante' }, caveat: 'La serie está a precios corrientes. El aumento nominal no demuestra que la renta disponible o la riqueza de cada hogar hayan aumentado en la misma proporción.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

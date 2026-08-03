@@ -66,6 +66,7 @@ const cases = [
   { text: 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado.', status: 'complete', slug: 'titulacion-superior-aumenta' },
   { text: 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan.', status: 'complete', slug: 'neet-baja' },
   { text: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera.', status: 'complete', slug: 'necesidades-medicas-lista-espera-aumentan' },
+  { text: 'El PIB por habitante en España supera los 34.000 euros.', status: 'complete', slug: 'pib-por-habitante-supera-34000' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
   { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },
@@ -135,10 +136,15 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   } catch (error) { failures.push(`electricity-language warehouse: ${error.message}`); }
   try {
     const result = await resolve('Cómo han subido los alquileres en España');
-    if (!['draft', 'partial'].includes(result.status)) failures.push(`rental warehouse: expected provisional result, received ${result.status}`);
-    if (result.result?.warehouseSeries?.metricId !== 'rental_price_index') failures.push('rental warehouse: selected the wrong metric family');
-    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('rental warehouse: missing a multi-period series');
-    if (result.result?.warehouseSeries?.unit !== 'índice (2015=100)') failures.push('rental warehouse: did not localize the unit');
+    const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'alquileres-suben';
+    if (!published && !['draft', 'partial'].includes(result.status)) failures.push(`rental warehouse: expected a published or provisional result, received ${result.status}`);
+    if (published) {
+      if (!result.result?.blocks?.some((block) => block.type === 'line_chart' && block.visualId === 'alquileres-suben')) failures.push('rental warehouse: published result lost its signed trend visual');
+    } else {
+      if (result.result?.warehouseSeries?.metricId !== 'rental_price_index') failures.push('rental warehouse: selected the wrong metric family');
+      if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('rental warehouse: missing a multi-period series');
+      if (result.result?.warehouseSeries?.unit !== 'índice (2015=100)') failures.push('rental warehouse: did not localize the unit');
+    }
   } catch (error) { failures.push(`rental warehouse: ${error.message}`); }
   try {
     const result = await resolve('Cuál es la inflación anual en España');
@@ -155,6 +161,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cuántos residentes nacieron fuera de España', 'foreign_born_population', 'personas'],
     ['Cuántas personas inmigraron a España durante el último año', 'immigration_flows', 'personas'],
     ['Cuál es el tamaño de la economía española', 'gdp_current_prices', 'millones de euros'],
+    ['Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices', '€ por habitante'],
   ]) {
     try {
       const result = await resolve(text);

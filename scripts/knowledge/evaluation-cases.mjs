@@ -55,6 +55,7 @@ const knownSeeds = [
   ['titulacion-superior-aumenta', 'trend', 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado'],
   ['neet-baja', 'trend', 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan'],
   ['necesidades-medicas-lista-espera-aumentan', 'trend', 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera'],
+  ['pib-por-habitante-supera-34000', 'descriptive', 'El PIB por habitante en España supera los 34.000 euros'],
   ['inmigracion-flujos-no-total', 'quantity', 'Las llegadas irregulares representan toda la inmigración que vive en España'],
   ['recaudacion-tributaria-crece', 'trend', 'La recaudación tributaria bajó en 2025'],
   ['construir-vivienda', 'normative', 'Basta con construir más vivienda'],

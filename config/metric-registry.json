@@ -47,6 +47,14 @@
     "notEquivalentTo": [],
     "dimensions": ["period", "geography", "national_account_item"]
   },
+  "gdp_per_capita_current_prices": {
+    "name": "Gross domestic product per capita at current prices",
+    "aliases": ["PIB por habitante", "PIB per cápita", "producto interior bruto por persona", "economía por habitante", "PIB por persona"],
+    "unit": "euro per capita",
+    "population": "gross domestic product divided by the resident population, at current prices",
+    "notEquivalentTo": ["gdp_current_prices", "median_equivalised_income"],
+    "dimensions": ["period", "geography", "unit", "national_account_item"]
+  },
   "gdp_real_growth_quarterly": {
     "name": "Real GDP year-on-year growth",
     "aliases": ["PIB real", "crecimiento del PIB", "crecimiento económico", "actividad económica", "actividad económica cae", "actividad económica está cayendo", "economía cae", "crecimiento negativo", "recesión", "economía crece"],

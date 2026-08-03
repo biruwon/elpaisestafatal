@@ -1,0 +1,13 @@
+{
+  "id": "prop-pib-por-habitante-supera-34000-core",
+  "claimSlug": "pib-por-habitante-supera-34000",
+  "text": "El PIB por habitante de España superó los 34.000 euros en 2025 a precios corrientes.",
+  "type": "descriptive",
+  "subject": "gdp_per_capita_current_prices",
+  "predicate": "exceeded",
+  "object": "34000 EUR per capita",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["pib-por-habitante-eurostat"]
+}
