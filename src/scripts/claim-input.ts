@@ -885,6 +885,21 @@ const clearDynamicStatus = (): void => {
   result?.querySelector('[data-dynamic-status]')?.remove();
 };
 
+const fetchWithTimeout = async (url: string, init: RequestInit, timeoutMs: number): Promise<Response> => {
+  const controller = new AbortController();
+  const parentSignal = init.signal;
+  const abortFromParent = (): void => controller.abort();
+  if (parentSignal?.aborted) controller.abort();
+  else parentSignal?.addEventListener('abort', abortFromParent, { once: true });
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeout);
+    parentSignal?.removeEventListener('abort', abortFromParent);
+  }
+};
+
 let dynamicStatusTimer: number | null = null;
 
 const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavailable' = 'running', mode: 'enrichment' | 'media' = 'enrichment'): void => {
@@ -992,7 +1007,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   try {
     const inputType = file?.type.startsWith('audio/') ? 'audio' : file ? 'image' : /^https:\/\//i.test(query) ? 'url' : 'text';
     const requestBody = file ? (() => { const body = new FormData(); body.set('text', query); body.set('inputType', inputType); body.set('file', file); return body; })() : JSON.stringify({ text: query, inputType });
-    const response = await fetch('/api/classify', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
+    const response = await fetchWithTimeout('/api/classify', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal }, file ? 15000 : 5000);
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const processingMessage = inputType === 'image'
@@ -1004,14 +1019,16 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
             : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla. Puedes continuar sin esperar.';
       setDynamicStatus(processingMessage, 'running', file && !query ? 'media' : 'enrichment');
       const pendingRequestId = data.requestId;
-      const maxAttempts = file ? 120 : 20;
+      const maxAttempts = file ? 30 : 16;
       const waitMs = file ? 500 : 350;
+      const pollingDeadline = Date.now() + (file ? 15000 : 6500);
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        if (Date.now() >= pollingDeadline) break;
         await new Promise((resolve, reject) => {
           const timeout = window.setTimeout(resolve, waitMs);
           activeRequest?.signal.addEventListener('abort', () => { window.clearTimeout(timeout); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
         });
-        const pending = await fetch(`/api/classify/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal });
+        const pending = await fetchWithTimeout(`/api/classify/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal }, 1500);
         data = await pending.json() as SearchResponse;
         if (data.status !== 'processing') break;
       }

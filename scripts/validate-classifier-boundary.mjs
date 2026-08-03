@@ -18,7 +18,7 @@ for (const fragment of ['export const deterministicApiFallback', 'claim_breakdow
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
 }
 if (!gateway.includes("replace(/^\\/api\\/classify/, '/v1/resolve')")) failures.push('local gateway must map /api/classify to the local /v1/resolve contract');
-if (!client.includes("fetch('/api/classify'")) failures.push('claim input must submit through /api/classify');
+if (!client.includes("'/api/classify'")) failures.push('claim input must submit through /api/classify');
 if (!client.includes('`/api/classify/${encodeURIComponent(pendingRequestId)}`')) failures.push('claim input must poll through /api/classify/:requestId');
 
 const publicDetails = /ollama|localhost|127\.0\.0\.1|host\.docker\.internal|local_classifier|whisper_command|cloudflare_api_token|cors/i;

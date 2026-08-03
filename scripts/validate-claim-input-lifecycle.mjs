@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 const source = await readFile(new URL('../src/scripts/claim-input.ts', import.meta.url), 'utf8');
 const required = [
   'const clearDynamicStatus',
+  'const fetchWithTimeout',
   'const setDynamicStatus',
   'data-dynamic-status',
   "renderCard('invalid'",
@@ -15,6 +16,8 @@ const required = [
   'Resultado inicial listo',
   'status.dataset.statusMode',
   'dynamicStatusTimer',
+  'pollingDeadline',
+  'fetchWithTimeout(`/api/classify/${encodeURIComponent(pendingRequestId)}`',
   'window.setTimeout',
   'data-stop-enrichment',
   'Usar solo este resultado',
