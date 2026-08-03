@@ -9,6 +9,13 @@
       "reviewedAt": "2026-08-03"
     },
     {
+      "evidenceId": "titulacion-superior-espana-ue-eurostat",
+      "propositionId": "prop-titulacion-superior-espana-ue-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "empleo-tiempo-parcial-espana-ue-eurostat",
       "propositionId": "prop-empleo-creado-tiempo-parcial-core",
       "relationship": "insufficient",

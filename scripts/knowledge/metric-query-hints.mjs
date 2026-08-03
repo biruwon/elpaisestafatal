@@ -94,6 +94,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('temporal', 'temporalidad', 'duracion determinada') && hasAny('empleo', 'trabajo', 'contrato')) preferred.add('temporary_employment_rate_europe');
   if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
+  if (hasEuropeReference && hasAny('universitari', 'graduad', 'titulad', 'titulacion', 'estudios superiores', 'educacion superior')) preferred.add('tertiary_education_attainment_rate_europe');
   if (hasEuropeReference && hasAny('arope', 'pobreza', 'exclusion')) preferred.add('arope_rate_europe');
   if (hasEuropeReference && hasAny('lista de espera', 'espera sanitaria', 'necesidades medicas')) preferred.add('unmet_healthcare_waiting_list_rate_europe');
   if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
@@ -165,6 +166,15 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('tertiary_education_attainment_rate');
     preferred.delete('neet_rate');
     preferred.delete('neet_rate_europe');
+  }
+  if (preferred.has('tertiary_education_attainment_rate_europe')) {
+    preferred.delete('tertiary_education_attainment_rate');
+    preferred.delete('early_school_leaving_rate');
+    preferred.delete('early_school_leaving_rate_europe');
+    preferred.delete('neet_rate');
+    preferred.delete('neet_rate_europe');
+    preferred.delete('youth_unemployment_rate');
+    preferred.delete('youth_unemployment_rate_europe');
   }
   if (preferred.has('neet_rate_europe')) {
     preferred.delete('neet_rate');
@@ -248,6 +258,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const earlyEducationRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const earlyEducationEuropeRequested = preferred.has('early_school_leaving_rate_europe');
   const tertiaryEducationRequested = metricHints.find((hint) => hint.ids.includes('tertiary_education_attainment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const tertiaryEducationEuropeRequested = preferred.has('tertiary_education_attainment_rate_europe');
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetEuropeRequested = preferred.has('neet_rate_europe');
   const aropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -278,11 +289,13 @@ export const excludedMetricIdsForQuery = (query) => {
   if (employmentEuropeRequested) excluded.add('employment_rate');
   if (educationContext && !youthRequested) excluded.add('youth_unemployment_rate');
   if (educationContext && !tertiaryEducationRequested) excluded.add('tertiary_education_attainment_rate');
+  if (educationContext && !tertiaryEducationEuropeRequested) excluded.add('tertiary_education_attainment_rate_europe');
   if (educationContext && !earlyEducationRequested) excluded.add('early_school_leaving_rate');
   if (educationContext && !earlyEducationEuropeRequested) excluded.add('early_school_leaving_rate_europe');
   if (educationContext && !neetRequested) excluded.add('neet_rate');
   if (educationContext && !neetEuropeRequested) excluded.add('neet_rate_europe');
   if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
+  if (tertiaryEducationEuropeRequested) excluded.add('tertiary_education_attainment_rate');
   if (aropeEuropeRequested) excluded.add('arope_rate');
   if (aropeRequested && !aropeEuropeRequested) excluded.add('arope_rate_europe');
   if (lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth');

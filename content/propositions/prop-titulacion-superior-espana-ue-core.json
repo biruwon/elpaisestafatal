@@ -1,0 +1,13 @@
+{
+  "id": "prop-titulacion-superior-espana-ue-core",
+  "claimSlug": "titulacion-superior-espana-ue",
+  "text": "En 2025, España tuvo una proporción de personas de 25 a 34 años con educación terciaria mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "tertiary_education_attainment_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "52.5 percent versus 44.8 percent",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["titulacion-superior-espana-ue-eurostat"]
+}

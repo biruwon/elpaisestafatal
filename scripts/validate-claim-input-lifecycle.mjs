@@ -78,7 +78,7 @@ const required = [
   'query.includes(\'sanidad\')',
   'query.includes(\'pension\')',
   'data-clarification-choice',
-  'Elige por dónde concretarla',
+  'Primero: ¿qué quieres decir exactamente?',
   'fallbackPublishedClaims',
   'leemos la captura en segundo plano para comprobar si añade contexto',
   'transcribimos el audio en segundo plano para comprobar si añade contexto',

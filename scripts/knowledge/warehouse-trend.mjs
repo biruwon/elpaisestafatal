@@ -30,6 +30,7 @@ const metricLabels = {
   median_hourly_earnings_europe: 'Salario bruto mediano por hora: España y la Unión Europea',
   youth_unemployment_rate_europe: 'Tasa de paro juvenil: España y la Unión Europea',
   early_school_leaving_rate_europe: 'Abandono escolar temprano: España y la Unión Europea',
+  tertiary_education_attainment_rate_europe: 'Titulación superior: España y la Unión Europea',
   neet_rate_europe: 'Jóvenes que ni estudian ni trabajan: España y la Unión Europea',
   life_expectancy_at_birth_europe: 'Esperanza de vida al nacer: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',

@@ -503,6 +503,14 @@
     "notEquivalentTo": ["early_school_leaving_rate", "employment_rate", "youth_unemployment_rate"],
     "dimensions": ["period", "geography", "age", "sex", "education_level"]
   },
+  "tertiary_education_attainment_rate_europe": {
+    "name": "Tertiary educational attainment among people aged 25 to 34: Spain and the European Union",
+    "aliases": ["estudios superiores frente a Europa", "titulación superior frente a Europa", "España tiene más universitarios que Europa", "España tiene más titulados superiores que la Unión Europea", "comparación europea de estudios superiores"],
+    "unit": "percent of population aged 25 to 34",
+    "population": "usual residents aged 25 to 34 with tertiary education levels 5 to 8 in Spain and the European Union",
+    "notEquivalentTo": ["tertiary_education_attainment_rate", "early_school_leaving_rate_europe", "employment_rate_europe", "youth_unemployment_rate_europe"],
+    "dimensions": ["period", "geography", "age", "sex", "education_level"]
+  },
   "neet_rate": {
     "name": "Young people neither in employment nor in education or training",
     "aliases": ["ni estudian ni trabajan", "jóvenes que ni estudian ni trabajan", "ni trabaja ni estudia", "ninis", "jóvenes ninis", "jóvenes fuera de estudio y empleo"],

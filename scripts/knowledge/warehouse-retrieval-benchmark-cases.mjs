@@ -78,6 +78,8 @@ const longTailBenchmarkCases = [
   ['abandono-escolar-ue', '¿Tiene España más abandono escolar temprano que la Unión Europea?', 'early_school_leaving_rate_europe'],
   ['abandono-educativo-europa', 'El abandono educativo español supera al europeo', 'early_school_leaving_rate_europe'],
   ['abandono-estudios-comparacion', 'Comparación europea del abandono escolar temprano', 'early_school_leaving_rate_europe'],
+  ['titulacion-superior-ue', '¿España tiene más titulados superiores que la Unión Europea?', 'tertiary_education_attainment_rate_europe'],
+  ['universitarios-europa', 'Comparación europea de estudios superiores', 'tertiary_education_attainment_rate_europe'],
   ['ninis-ue', '¿España tiene más ninis que la Unión Europea?', 'neet_rate_europe'],
   ['ninis-europa', 'La tasa española de jóvenes fuera del empleo y la educación supera a la europea', 'neet_rate_europe'],
   ['ninis-comparacion', 'Comparación europea de jóvenes que ni estudian ni trabajan', 'neet_rate_europe'],

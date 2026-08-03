@@ -30,6 +30,7 @@ const featuredConversationSlugs = [
   'esperanza-vida-espana-ue',
   'necesidades-medicas-lista-espera-espana-ue',
   'electricidad-espana-europa',
+  'titulacion-superior-espana-ue',
 ];
 const featuredConversation = featuredConversationSlugs
   .map((slug) => conversationMvpClaims.find((item) => item.slug === slug))
@@ -93,6 +94,7 @@ const warehousePrompts = [
   '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
   '¿Tiene España más paro juvenil que la Unión Europea?',
   '¿Tiene España más abandono escolar temprano que la Unión Europea?',
+  '¿España tiene más titulados superiores que la Unión Europea?',
   '¿España tiene más ninis que la Unión Europea?',
   '¿Cuánto debe España?',
   '¿Cuánto dinero se dedica por persona a la sanidad?',
@@ -138,6 +140,7 @@ const warehouseHighlights = [
   { label: 'Vivienda · esfuerzo · Europa', prompt: '¿España tiene más sobrecarga de vivienda que Europa?', detail: 'Costes totales de vivienda por encima del 40% de la renta disponible equivalente; la última comparación es de 2025.' },
   { label: 'Empleo juvenil · Europa', prompt: '¿Tiene España más paro juvenil que la Unión Europea?', detail: 'Misma población activa de 15 a 24 años y tasa comparable.' },
   { label: 'Educación · Europa', prompt: '¿Tiene España más abandono escolar temprano que la Unión Europea?', detail: 'Misma definición, población de 18 a 24 años y periodo para comparar España y la UE.' },
+  { label: 'Educación superior · Europa', prompt: '¿España tiene más titulados superiores que la Unión Europea?', detail: 'Misma definición de educación terciaria y cohorte de 25 a 34 años para comparar España y la UE.' },
   { label: 'Juventud · Europa', prompt: '¿España tiene más ninis que la Unión Europea?', detail: 'Misma población de 15 a 29 años y definición de personas fuera del empleo y la educación o formación.' },
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },
   { label: 'Inmigración · nacionalidad', prompt: '¿Cuántos residentes tienen ciudadanía extranjera en España?', detail: 'Nacionalidad y país de nacimiento son medidas distintas; tampoco equivale a llegadas anuales.' },
@@ -232,7 +235,7 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-plan-breakdown li[data-explicit=false]{background:var(--paper-deep);padding:10px 10px 10px 0;border-top-color:var(--yellow)}
   .claim-plan-breakdown li[data-explicit=false] strong{color:#8b5b0a}
   .claim-plan-block-evidence{border-top:0;margin-top:14px;padding-top:0;text-transform:none;font-size:.58rem}
-  .claim-plan-choices{grid-column:1/-1;background:var(--paper-deep);border:1px solid var(--line);padding:18px}.claim-plan-choices p{margin:8px 0 13px;font-size:.86rem;color:var(--muted)}.claim-plan-choices>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.claim-plan-choices button{border:1px solid var(--ink);background:var(--paper);padding:11px 12px;text-align:left;font:600 .66rem/1.3 var(--mono);cursor:pointer}.claim-plan-choices button:hover{background:var(--yellow)}.claim-plan-choices button span{color:var(--red);margin-left:5px}@media(max-width:650px){.claim-plan-choices>div{grid-template-columns:1fr}}
+  .claim-plan-choices{grid-column:1/-1;background:var(--yellow);border:1px solid var(--ink);padding:18px}.claim-plan-choices p{margin:8px 0 13px;font-size:.86rem;color:var(--muted);max-width:620px}.claim-plan-choices>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.claim-plan-choices button{border:1px solid var(--ink);background:var(--paper);padding:11px 12px;text-align:left;font:600 .66rem/1.3 var(--mono);cursor:pointer}.claim-plan-choices button:hover{background:var(--ink);color:var(--paper)}.claim-plan-choices button span{color:var(--red);margin-left:5px}.claim-plan-choices button:hover span{color:var(--yellow)}@media(max-width:650px){.claim-plan-choices>div{grid-template-columns:1fr}}
   .claim-plan-source-links{background:var(--paper-deep);padding:16px;border-top:0;margin-top:20px}
   .claim-plan-source-links .clarification-label{margin-bottom:4px}
   @media(max-width:650px){.claim-result-top{align-items:flex-start}.claim-result-top>div{display:block}.claim-result-state{display:block;margin-top:6px}.claim-plan-card{min-height:0!important}.claim-plan-reply p{font-size:1.15rem!important}}

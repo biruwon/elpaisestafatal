@@ -149,6 +149,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la proporción de personas de 18 a 24 años que abandonaron pronto la educación y la formación, según Eurostat; no es la tasa de paro juvenil ni una medida completa de calidad educativa.',
     caveat: 'Es un indicador de abandono temprano en la población de 18 a 24 años, no el rendimiento de todo el sistema ni la experiencia de cada joven.',
   },
+  tertiary_education_attainment_rate_europe: {
+    label: 'Titulación superior',
+    verb: 'registró una proporción de personas con titulación superior del',
+    replyLead: 'la proporción de personas con titulación superior fue del',
+    differenceVerb: ['la proporción española fue más alta', 'la proporción española fue más baja', 'España y la Unión Europea registraron la misma proporción'],
+    unit: '% de personas de 25 a 34 años',
+    replyUnit: '% de personas de 25 a 34 años',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la proporción de personas de 25 a 34 años con niveles de educación terciaria 5 a 8 según la definición comparable de Eurostat; no equivale a la calidad de la formación, al empleo ni a la sobrecualificación.',
+    caveat: 'Es un indicador de titulación superior en una cohorte de edad concreta, no una medida de que sobren universitarios ni de que cada título tenga el mismo resultado laboral.',
+  },
   neet_rate_europe: {
     label: 'Jóvenes que ni estudian ni trabajan',
     verb: 'registró una tasa de jóvenes que ni estudian ni trabajan del',

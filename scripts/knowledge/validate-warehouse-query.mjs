@@ -116,6 +116,8 @@ if (!preferredMetricIdsForQuery('Cómo ha evolucionado la criminalidad registrad
 if (!preferredMetricIdsForQuery('Cómo ha evolucionado el abandono escolar temprano en España').has('early_school_leaving_rate')) throw new Error('Metric hints did not prefer early school leaving for education wording');
 if (!preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Unión Europea?').has('early_school_leaving_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU early-school-leaving comparison');
 if (preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Unión Europea?').has('early_school_leaving_rate')) throw new Error('Metric hints kept Spain-only early school leaving alongside the Spain/EU comparison');
+if (!preferredMetricIdsForQuery('¿España tiene más titulados superiores que la Unión Europea?').has('tertiary_education_attainment_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU tertiary-attainment comparison');
+if (preferredMetricIdsForQuery('¿España tiene más titulados superiores que la Unión Europea?').has('tertiary_education_attainment_rate')) throw new Error('Metric hints kept Spain-only tertiary attainment alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU NEET comparison');
 if (preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate')) throw new Error('Metric hints kept Spain-only NEET alongside the Spain/EU comparison');
 for (const [query, expected, base] of [
@@ -132,6 +134,7 @@ for (const [query, expected, base] of [
 if (!excludedMetricIdsForQuery('¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?').has('neet_rate_europe')) throw new Error('Metric hints did not keep Spain/EU NEET separate from the Spain-only question');
 if (!excludedMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('early_school_leaving_rate_europe')) throw new Error('Metric hints did not keep Spain/EU early school leaving separate from tertiary attainment');
 if (!preferredMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('tertiary_education_attainment_rate')) throw new Error('Metric hints did not prefer tertiary attainment for higher-education wording');
+if (!excludedMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores en España').has('tertiary_education_attainment_rate_europe')) throw new Error('Metric hints did not keep Spain/EU tertiary attainment separate from the Spain-only question');
 if (preferredMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('youth_unemployment_rate')) throw new Error('Metric hints confused tertiary attainment with youth unemployment');
 if (!excludedMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('early_school_leaving_rate')) throw new Error('Metric hints did not keep early school leaving separate from tertiary attainment');
 for (const query of ['Cómo han evolucionado los robos registrados en España', 'Cómo han evolucionado las estafas registradas en España', 'Cómo han evolucionado las agresiones sexuales registradas en España']) {

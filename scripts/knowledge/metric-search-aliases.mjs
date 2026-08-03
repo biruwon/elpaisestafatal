@@ -4,6 +4,7 @@ export const metricSearchAliases = Object.freeze({
   youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
   youth_unemployment_rate_europe: ['paro juvenil', 'desempleo juvenil', 'jovenes', 'europa', 'union europea', 'comparacion europea'],
   early_school_leaving_rate_europe: ['abandono escolar', 'abandono escolar temprano', 'abandono educativo', 'dejan los estudios', 'europa', 'union europea', 'comparacion europea'],
+  tertiary_education_attainment_rate_europe: ['estudios superiores', 'educacion superior', 'titulacion superior', 'universitarios', 'graduados', 'titulados', 'europa', 'union europea', 'comparacion europea'],
   neet_rate_europe: ['ninis', 'ni estudian ni trabajan', 'fuera del empleo y de la educacion', 'europa', 'union europea', 'comparacion europea'],
   employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
   employment_rate_europe: ['empleo', 'ocupacion', 'europa', 'union europea', 'comparacion europea'],
