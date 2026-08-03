@@ -29,6 +29,7 @@
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",
     "backup:operations": "node scripts/backup-operations.mjs",
     "backup:validate": "node scripts/validate-backup-config.mjs",
+    "backup:artifact:validate": "node scripts/validate-backup-artifact.mjs",
     "origin:validate": "node scripts/validate-local-origin.mjs",
     "input:validate": "node scripts/validate-input-contract.mjs",
     "learning:validate": "node scripts/validate-learning-capture.mjs",

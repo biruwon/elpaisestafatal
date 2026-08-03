@@ -1,4 +1,5 @@
-import { cp, mkdir, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -41,7 +42,27 @@ if (process.env.WAREHOUSE_DATABASE_URL) {
   }
 }
 
-const manifest = { createdAt: new Date().toISOString(), destination, files: copied, d1: copied.includes('d1.sql'), postgres: copied.includes('postgres.sql') };
+const collectFiles = async (path, prefix = '') => {
+  const entries = [];
+  for (const entry of await readdir(path, { withFileTypes: true })) {
+    if (entry.name === 'manifest.json') continue;
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const fullPath = join(path, entry.name);
+    if (entry.isDirectory()) entries.push(...await collectFiles(fullPath, relativePath));
+    else if (entry.isFile()) entries.push({ path: relativePath, fullPath });
+  }
+  return entries;
+};
+
+const files = [];
+for (const item of await collectFiles(destination)) {
+  const contents = await readFile(item.fullPath);
+  const metadata = await stat(item.fullPath);
+  files.push({ path: item.path, bytes: metadata.size, sha256: createHash('sha256').update(contents).digest('hex') });
+}
+files.sort((left, right) => left.path.localeCompare(right.path));
+
+const manifest = { schemaVersion: 1, createdAt: new Date().toISOString(), destination, files: copied, entries: files, d1: copied.includes('d1.sql'), postgres: copied.includes('postgres.sql') };
 await writeFile(join(destination, 'manifest.json'), JSON.stringify(manifest, null, 2));
 console.log(`Operations backup created: ${destination}`);
 console.log(`Included: ${copied.join(', ') || 'no local files'}`);

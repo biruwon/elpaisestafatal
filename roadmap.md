@@ -72,6 +72,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Added a scheduled GitHub Actions production monitor that runs the live static/API smoke suite every 30 minutes and allows only the documented operational-database-unavailable fallback. It checks the generic health boundary, text classification, screenshot/audio multipart handling, popular-claims fallback, and representative public routes without exposing or requiring the deferred local-origin tunnel.
 - Added response-time budgets to the production smoke contract: static routes and dynamic API checks now fail the monitor when they exceed configurable limits, and successful runs report the slowest checks for lightweight operational visibility.
 - Extended the visual answer contract to all 14 topic pages: their evidence bars now have reduced-motion-safe entrance motion and an expandable exact-value table, so the long-form topic layer remains scannable and accessible rather than relying on visual height alone.
+- Hardened operational backups with a versioned manifest containing file sizes and SHA-256 checksums, plus `npm run backup:artifact:validate` to verify an existing backup before restoration or transfer.
 - Validation completed: `npm run check`, `npm run build` (350 static pages), the 50-case local resolver smoke suite, roadmap audit, all public UX audits, media/input validation, and the 324-case warehouse benchmark. The local-only inference path remains unchanged; persistent production tunnelling is still explicitly todo.
 
 ## Architectural principles
@@ -624,6 +625,7 @@ dynamic answer
 - Protect the local origin through Cloudflare Tunnel and authenticated requests.
 - Add rate limiting, request size limits, timeouts, retries, cancellation, and health checks.
 - Back up PostgreSQL, D1, R2, and configuration manifests.
+- Backup artifacts now carry integrity metadata and have a standalone verification command; remote credential setup and scheduled export remain deployment configuration rather than committed secrets.
 - Version knowledge, schemas, handlers, parsers, and models.
 - Preserve all existing public URLs and route behavior.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
