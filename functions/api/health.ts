@@ -1,6 +1,7 @@
+import { safeHealthMetrics, safeHealthQueue } from '../../src/lib/knowledge/safe-health.mjs';
+
 interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
 interface Context { request: Request; env: Env }
-interface SafeMetrics { received?: number; completed?: number; unavailable?: number; cacheHitRate?: number; p95LatencyMs?: number; statusCounts?: Record<string, number> }
 
 const response = (body: unknown): Response => Response.json(body, {
   headers: { 'Cache-Control': 'no-store' },
@@ -17,8 +18,10 @@ export const onRequestGet = async ({ env }: Context): Promise<Response> => {
       headers,
       signal: AbortSignal.timeout(1500),
     });
-    const body = await upstream.json().catch(() => ({})) as { metrics?: SafeMetrics; queue?: number };
-    return response({ status: upstream.ok ? 'ok' : 'degraded', deterministic: true, dynamic: upstream.ok, ...(body.metrics ? { metrics: body.metrics } : {}), ...(typeof body.queue === 'number' ? { queue: body.queue } : {}) });
+    const body = await upstream.json().catch(() => ({})) as { metrics?: unknown; queue?: unknown };
+    const metrics = safeHealthMetrics(body.metrics);
+    const queue = safeHealthQueue(body.queue);
+    return response({ status: upstream.ok ? 'ok' : 'degraded', deterministic: true, dynamic: upstream.ok, ...(metrics ? { metrics } : {}), ...(queue !== undefined ? { queue } : {}) });
   } catch {
     // The static application remains healthy when the optional dynamic origin
     // is unavailable. Do not expose the origin or failure details publicly.
