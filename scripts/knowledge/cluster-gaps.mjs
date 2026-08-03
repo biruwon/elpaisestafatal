@@ -131,6 +131,8 @@ const publishedClaimFor = (record, publishedClaims) => {
 const meaningfulTokens = (value) => [...tokens(value)].filter((token) => token.length >= 3);
 const operationalFailurePattern = /ollama|local transcription|transcription (?:is )?unavailable|audio input requires|no se ejecuto|fetch failed|provider|runtime (?:is )?not installed|screenshot attached/i;
 const excludedOrigins = new Set(['evaluation', 'smoke', 'fixture', 'test']);
+const discoverySourceId = (value) => /(?:^|-)discovery-/i.test(String(value || ''));
+const directSourceIds = (values) => asArray(values).filter((value) => !discoverySourceId(value));
 const isReviewableRecord = (item) => {
   if (item?.fromD1) return true;
   if (excludedOrigins.has(String(item?.origin || '').toLowerCase())) return false;
@@ -248,7 +250,8 @@ const clusterRecords = (records, publishedClaims = []) => {
     const baseline = Math.max(1, cluster.count30d - recentCount);
     const growthRate = recentCount ? Math.round((recentCount / baseline) * 100) / 100 : 0;
     const newlyCovered = cluster.coverageStatus === 'covered' && cluster.reviewStatus !== 'published';
-    const evidenceAvailability = cluster.sourceIds.length ? 1.2 : 1;
+    const directSources = directSourceIds(cluster.sourceIds);
+    const evidenceAvailability = directSources.length ? 1.2 : cluster.sourceIds.length ? 0.9 : 1;
     const momentum = 1 + Math.min(growthRate, 4) * 0.15;
     const priorityScore = Math.round(cluster.count * Math.max(unresolvedRate, newlyCovered ? 0.25 : 0) * evidenceAvailability * harmWeight(cluster.text) * momentum * 100) / 100;
     return {
@@ -262,8 +265,10 @@ const clusterRecords = (records, publishedClaims = []) => {
         ? cluster.linkedClaimReason || 'Ya existe una ficha publicada para esta formulación.'
         : newlyCovered
           ? 'Nueva cobertura disponible: necesita revisión antes de publicarse.'
-          : cluster.sourceIds.length
-            ? 'Tiene fuentes candidatas: comprobar cobertura directa y límites.'
+          : directSources.length
+            ? 'Tiene fuentes directas o candidatas: comprobar cobertura, geografía y límites.'
+            : cluster.sourceIds.length
+              ? 'Solo tiene fuentes de descubrimiento: sirven como pistas, no como evidencia suficiente.'
             : 'Sin fuentes vinculadas: investigar o marcar como no verificable.',
       priorityScore,
     };
