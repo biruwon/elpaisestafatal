@@ -63,6 +63,8 @@ const required = [
   'coreGuidanceTypes',
   'Cómo concretarla para poder comprobarla',
   'definitionChoiceMarkup',
+  'topicChoices',
+  'query.includes(\'sanidad\')',
   'data-clarification-choice',
   'Elige por dónde concretarla',
   'fallbackPublishedClaims',

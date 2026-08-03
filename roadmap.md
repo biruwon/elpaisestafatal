@@ -446,6 +446,8 @@ Status: in progress. The shared renderer now supports claim breakdowns, key numb
 
 Render structured, reusable components:
 
+The broad-definition UI now chooses one-click follow-up questions from the detected topic, so vague health, housing, employment, immigration, and economic complaints lead to relevant measurable checks instead of the same generic list.
+
 - claim breakdown;
 - key number;
 - trend line;
