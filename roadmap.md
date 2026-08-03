@@ -41,6 +41,7 @@ Generated claims must not be published merely because a model can write them. Ne
 ## Latest completed milestone — 2026-08-03
 
 - Improved checker discoverability for the new evidence families: Spain–EU inequality and public-deficit questions now appear in the primary conversation prompts, warehouse prompt list, and homepage data highlights. The initial visible set remains bounded, while the new questions are still reachable through the expanded indicator list.
+- Added a reusable replayable evidence scene to static clarifier pages. It sequences the existing key numbers, charts, and caveat cards without generating new claims or media, exposes an accessible replay control, and disables staged motion under reduced-motion preferences; the same verified visual components remain the only source of the scene.
 - Removed the obsolete duplicate visual stylesheet from the static clarifier route. `ClarifierVisuals.astro` is now the single source for its chart/grid presentation, avoiding conflicting legacy CSS variables and keeping the new visual system maintainable.
 - Completed the local inference boundary migration: the resolver, compiler benchmark, warehouse retrieval benchmark, PostgreSQL embedding indexer, and review-queue embedding pass now all depend on the same local/unavailable provider contract for chat, embeddings, and model inventory. Direct runtime calls are limited to that adapter, non-local endpoints are rejected centrally, and a regression validator prevents new integration code from reintroducing the old scattered runtime path.
 - Added the reviewed Spain-versus-EU public-debt comparison family `España tiene más deuda pública que la Unión Europea`, backed by Eurostat's 2025 gross general-government debt ratio (100.7% of GDP in Spain versus 81.7% in the EU27). It now has a typed metric/source/evidence/proposition chain, an explicit stock-versus-deficit limitation, comparison routing and visual output, catalogue/homepage discovery, a static claim route, and local resolver/evaluation/smoke coverage.
@@ -573,7 +574,7 @@ The broad-definition UI now chooses one-click follow-up questions from the detec
 
 The visual type is selected by the handler, not improvised by the model. Units, dates, geography, population, caveats, and source links stay attached to every chart.
 
-Basic chart motion is now available without changing the deterministic data contract. Reusable video/animated scenes remain deferred until broader reviewed chart coverage and the media-generation pipeline are ready.
+Basic chart motion and replayable evidence scenes are now available without changing the deterministic data contract. Generated video remains deferred until broader reviewed chart coverage and a media-generation pipeline are ready.
 
 ## Phase 8 — Links, screenshots, and audio
 
