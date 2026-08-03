@@ -165,6 +165,21 @@ export const isBroadComplaint = (deterministic) => Boolean(
   deterministic?.impliedPropositions?.some((item) => item?.type === 'definition' && /valoraci[oó]n amplia|concretar/i.test(item.text || '')),
 );
 
+export const reconcileCompilerSafety = (deterministic, candidate) => {
+  if (!candidate || isBroadComplaint(deterministic)) return deterministic || candidate;
+  const safetySensitive = ['causal', 'legal', 'normative', 'predictive'].includes(deterministic.claimType);
+  if (!safetySensitive) return candidate;
+  return {
+    ...candidate,
+    claimType: deterministic.claimType,
+    propositions: deterministic.propositions,
+    explicitPropositions: deterministic.explicitPropositions,
+    impliedPropositions: deterministic.impliedPropositions,
+    semanticSignature: deterministic.semanticSignature,
+    clarificationRequired: deterministic.clarificationRequired || candidate.clarificationRequired === true,
+  };
+};
+
 // Model extraction is useful for a genuinely new, ordinary sentence, but it
 // should not add latency to empty/random input, explicit warehouse questions,
 // or broad complaints that already have a safe deterministic path. Keep this

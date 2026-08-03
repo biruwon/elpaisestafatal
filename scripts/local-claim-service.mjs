@@ -13,7 +13,7 @@ import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowled
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
-import { compilerSchema, isBroadComplaint, normalizeCompilerOutput, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
+import { compilerSchema, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -230,32 +230,6 @@ const compileClaim = async (text, candidates = []) => {
     if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
     return fallbackCompiler(text);
   }
-};
-
-// The local model can improve phrasing, but it must not weaken a deterministic
-// safety classification. In particular, broad evaluative complaints sometimes
-// get an over-specific model route when a nearby official document is present.
-// Keep the deterministic proposition set, retrieval hints, and uncovered route
-// for those inputs so unrelated evidence cannot leak into the answer.
-const reconcileCompilerSafety = (text, deterministic, candidate) => {
-  if (!candidate || !isBroadComplaint(deterministic)) return candidate || deterministic;
-  return {
-    ...candidate,
-    claimType: deterministic.claimType,
-    propositions: deterministic.propositions,
-    explicitPropositions: deterministic.explicitPropositions,
-    impliedPropositions: deterministic.impliedPropositions,
-    entities: deterministic.entities,
-    numbers: deterministic.numbers,
-    geography: deterministic.geography,
-    period: deterministic.period,
-    population: deterministic.population,
-    retrievalHints: deterministic.retrievalHints,
-    semanticSignature: deterministic.semanticSignature,
-    clarificationRequired: true,
-    routing: deterministic.routing,
-    normalized: deterministic.normalized || text.slice(0, 300),
-  };
 };
 
 const extractImageText = async (media) => {
@@ -808,7 +782,7 @@ const classify = async (text) => {
   const compiledCandidate = !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
-  const compiled = reconcileCompilerSafety(text, deterministicCompiler, compiledCandidate);
+  const compiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry));

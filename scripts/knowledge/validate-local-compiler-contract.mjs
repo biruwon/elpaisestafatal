@@ -1,4 +1,4 @@
-import { compilerContractFacts, compilerSchema, isBroadComplaint, normalizeCompilerOutput, shouldUseLocalCompiler } from './local-compiler-contract.mjs';
+import { compilerContractFacts, compilerSchema, isBroadComplaint, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -52,6 +52,9 @@ assert(shouldUseLocalCompiler({ text: 'España está destruida', deterministic: 
 const causal = deterministicFallbackCompiler('Desde que llegaron más extranjeros hay más inseguridad');
 assert(isBroadComplaint(causal) === false, 'Structured causal wording was classified as a broad complaint');
 assert(shouldUseLocalCompiler({ text: 'Desde que llegaron más extranjeros hay más inseguridad', deterministic: causal, hasPlausibleCandidate: true }) === true, 'Known causal paraphrases should reach the local compiler');
+const reconciledCausal = reconcileCompilerSafety(causal, normalizeCompilerOutput({ claimType: 'descriptive', propositions: [{ text: 'La inmigración es positiva', type: 'descriptive', explicit: true }], entities: [], retrievalHints: [], clarificationRequired: false, routing: { status: 'published', primarySlug: 'unrelated', reason: 'unsafe', questions: [] } }, 'Desde que llegaron más extranjeros hay más inseguridad'));
+assert(reconciledCausal.claimType === 'causal' && reconciledCausal.semanticSignature === causal.semanticSignature, 'Local model was allowed to weaken deterministic causal safety');
+assert(reconciledCausal.propositions[0]?.text === causal.propositions[0]?.text, 'Local model replaced deterministic causal propositions');
 
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');
