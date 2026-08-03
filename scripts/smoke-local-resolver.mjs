@@ -144,6 +144,17 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (new Set(series?.labels || []).size !== (series?.labels || []).length) failures.push('warehouse: mixed incompatible observations into one time series');
     if (String(series?.unit || '').toLocaleLowerCase().includes('rate of change')) failures.push('warehouse: selected a rate-of-change series for a level-price query');
   } catch (error) { failures.push(`warehouse: ${error.message}`); }
+  for (const [text, metricId] of [
+    ['precios vivienda España', 'house_price_index'],
+    ['crecimiento interanual PIB real España', 'gdp_real_growth_quarterly'],
+    ['porcentaje hogares soporta sobrecarga coste vivienda', 'housing_cost_overburden_rate'],
+  ]) {
+    try {
+      const result = await resolve(text);
+      if (!['draft', 'partial'].includes(result.status)) failures.push(`${metricId} shorthand: expected provisional result, received ${result.status}`);
+      if (result.result?.warehouseSeries?.metricId !== metricId) failures.push(`${metricId} shorthand: selected the wrong metric family`);
+    } catch (error) { failures.push(`${metricId} shorthand: ${error.message}`); }
+  }
   try {
     const result = await resolve('Cuál fue el crecimiento interanual del PIB real de España en el último trimestre');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`real GDP warehouse: expected provisional result, received ${result.status}`);
@@ -188,9 +199,10 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   } catch (error) { failures.push(`housing affordability warehouse: ${error.message}`); }
   try {
     const result = await resolve('Cuánto se gasta en sanidad por habitante en España');
-    if (!['draft', 'partial'].includes(result.status)) failures.push(`health expenditure warehouse: expected provisional result, received ${result.status}`);
-    if (result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('health expenditure warehouse: selected the wrong metric family');
-    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('health expenditure warehouse: missing a multi-period series');
+    const publishedHealthClaim = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'gasto-sanitario-habitante-sube';
+    if (!publishedHealthClaim && !['draft', 'partial'].includes(result.status)) failures.push(`health expenditure warehouse: expected provisional result, received ${result.status}`);
+    if (!publishedHealthClaim && result.result?.warehouseSeries?.metricId !== 'health_expenditure_per_capita') failures.push('health expenditure warehouse: selected the wrong metric family');
+    if (!publishedHealthClaim && (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2)) failures.push('health expenditure warehouse: missing a multi-period series');
     if (/health care expenditure by financing scheme/i.test(result.result?.headline || '')) failures.push('health expenditure warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`health expenditure warehouse: ${error.message}`); }
   try {
