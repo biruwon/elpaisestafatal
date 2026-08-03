@@ -9,6 +9,7 @@ export const metricSearchAliases = Object.freeze({
   foreign_born_population: ['inmigracion', 'inmigrantes', 'extranjeros', 'nacidos', 'nacieron', 'fuera', 'residentes'],
   immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],
   gdp_current_prices: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'produccion economica nacional'],
+  gdp_real_growth_europe: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'espana crece mas que europa', 'espana crece menos que europa', 'crecimiento economico europeo', 'pib espana union europea'],
   life_expectancy_at_birth: ['esperanza de vida', 'años de vida', 'vida media', 'longevidad'],
   fertility_rate: ['fecundidad', 'natalidad', 'hijos por mujer', 'nacimientos por mujer'],
   old_age_dependency_ratio: ['envejecimiento', 'personas mayores', 'dependencia de mayores', 'mayores de 65'],

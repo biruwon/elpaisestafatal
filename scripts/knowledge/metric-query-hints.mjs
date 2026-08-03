@@ -14,6 +14,7 @@ const metricHints = [
   { ids: ['gdp_current_prices'], terms: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'producto interior bruto en euros', 'produccion economica nacional'] },
   { ids: ['gdp_per_capita_current_prices'], terms: ['pib por habitante', 'pib per capita', 'producto interior bruto por persona', 'economia por habitante', 'pib por persona'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
+  { ids: ['gdp_real_growth_europe'], terms: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'crece espana mas que europa', 'crece espana mas que la union europea', 'espana crece mas que europa', 'espana crece mas que la union europea', 'crece espana menos que europa', 'crece espana menos que la union europea', 'espana crece menos que europa', 'espana crece menos que la union europea', 'crecimiento de espana frente a la union europea', 'crecimiento economico europeo', 'pib espana union europea', 'pib frente a europa', 'crecimiento frente a europa'] },
   { ids: ['employment_rate'], terms: ['tasa de empleo', 'tasa de ocupacion', 'personas ocupadas', 'personas que tienen empleo', 'encuentra trabajo', 'tiene empleo', 'ocupacion en espana', 'empleo en espana', 'mas empleo', 'empleo nunca', 'empleo record'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
@@ -69,6 +70,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('unmet_healthcare_waiting_list_rate')) preferred.delete('health_expenditure_per_capita');
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
   if (preferred.has('government_debt_current_prices')) preferred.delete('government_debt_ratio');
+  if (preferred.has('gdp_real_growth_europe')) preferred.delete('gdp_real_growth_quarterly');
   return preferred;
 };
 

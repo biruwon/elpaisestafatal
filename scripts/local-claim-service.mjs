@@ -10,7 +10,7 @@ import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-contract.mjs';
 import { displayMetric, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
-import { summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
+import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
@@ -69,7 +69,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gdp_per_capita_current_prices') return '€ por habitante';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
   if (metricId === 'inflation_rate') return '% interanual';
-  if (metricId === 'gdp_real_growth_quarterly') return '% interanual';
+  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'early_school_leaving_rate') return '% de jóvenes de 18 a 24 años';
   if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
@@ -1010,7 +1010,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         ? 'partial'
         : usableSource ? 'draft' : 'uncovered';
   const regionalComparison = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRegionalComparison(text, observations) : null;
-  const ranking = !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison;
+  const europeanComparison = !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseEuropeanComparison(text, observations) : null;
+  const ranking = !primary && !regionalComparison && !europeanComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison || europeanComparison;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalContext = causalObservations.length >= 2 ? {

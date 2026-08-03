@@ -14,6 +14,7 @@ const metricLabels = {
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
   rental_price_index: 'Precios del alquiler en España',
   gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
+  gdp_real_growth_europe: 'Crecimiento interanual del PIB real: España y la Unión Europea',
   employment_rate: 'Tasa de empleo en España',
   unemployment_rate: 'Tasa de desempleo en España',
   unemployment_rate_europe: 'Tasa de desempleo de España frente a Europa',
@@ -67,7 +68,7 @@ const displayUnit = (item) => {
   const metricId = String(item.metricId || '');
   const unit = normalise(item.unit);
   if (metricId === 'gdp_current_prices') return 'millones de euros';
-  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'inflation_rate') return '% interanual';
+  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';

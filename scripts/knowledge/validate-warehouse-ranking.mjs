@@ -1,4 +1,4 @@
-import { summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
+import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
 
 const source = { id: 'eurostat', title: 'Desempleo en Europa', url: 'https://ec.europa.eu/eurostat/' };
 const records = [
@@ -25,4 +25,12 @@ const spanishRanking = summarizeWarehouseRanking('¿Qué comunidad tiene mayor d
 if (!spanishRanking || !spanishRanking.summary.includes('Comunidad de Madrid') || !spanishRanking.reply.includes('personas por km²') || spanishRanking.observations.some((item) => item.dimensions?.geo === 'BE10')) throw new Error('Regional ranking did not restrict a Spanish community query to Spanish regions');
 const europeanRanking = summarizeWarehouseRanking('¿Qué región europea tiene mayor densidad de población?', regionalRecords);
 if (!europeanRanking || !europeanRanking.summary.includes('Région de Bruxelles-Capitale') || !europeanRanking.observations.some((item) => item.dimensions?.geo === 'BE10')) throw new Error('Regional ranking incorrectly applied Spain-only scope to an explicit European query');
+const gdpComparisonRecords = [
+  { id: 'gdp-es-2026q2', metricId: 'gdp_real_growth_europe', datasetId: 'Real GDP comparison', value: 2.7, unit: 'Chain linked volumes, percentage change compared to same period in previous year', period: '2026-Q2', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'gdp-eu-2026q2', metricId: 'gdp_real_growth_europe', datasetId: 'Real GDP comparison', value: 1.2, unit: 'Chain linked volumes, percentage change compared to same period in previous year', period: '2026-Q2', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+  { id: 'gdp-es-2026q1', metricId: 'gdp_real_growth_europe', datasetId: 'Real GDP comparison', value: 2.7, unit: 'Chain linked volumes, percentage change compared to same period in previous year', period: '2026-Q1', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'gdp-eu-2026q1', metricId: 'gdp_real_growth_europe', datasetId: 'Real GDP comparison', value: 1.6, unit: 'Chain linked volumes, percentage change compared to same period in previous year', period: '2026-Q1', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const gdpComparison = summarizeWarehouseEuropeanComparison('¿Crece España más que la Unión Europea?', gdpComparisonRecords);
+if (!gdpComparison || !gdpComparison.european || !gdpComparison.summary.includes('2,7') || !gdpComparison.summary.includes('1,2') || !gdpComparison.reply.includes('España creció más')) throw new Error('European GDP comparison did not preserve the same-period Spain/EU comparison');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

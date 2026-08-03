@@ -355,6 +355,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
             ? [
               '¿Cuál es el tamaño de la economía española?',
               '¿Sigue creciendo el PIB real de España?',
+              '¿Crece España más que la Unión Europea?',
               '¿Cuál es la inflación anual en España?',
               '¿España recauda más o menos que la media europea?',
             ]

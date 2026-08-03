@@ -252,6 +252,15 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/gross domestic|quarterly data/i.test(result.result?.headline || '')) failures.push('real GDP warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`real GDP warehouse: ${error.message}`); }
   try {
+    const result = await resolve('¿Crece España más que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU GDP comparison: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'gdp_real_growth_europe') failures.push('Spain/EU GDP comparison: selected the Spain-only GDP family');
+    if (result.result?.warehouseSeries?.unit !== '% interanual') failures.push('Spain/EU GDP comparison: did not localize the comparison unit');
+    if (!/España.*Unión Europea|Unión Europea.*España/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push('Spain/EU GDP comparison: lost the named comparison in the public answer');
+    if (!/España creció más|por encima de/i.test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push('Spain/EU GDP comparison: did not calculate the direction of the comparison');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU GDP comparison: did not render a comparison visual');
+  } catch (error) { failures.push(`Spain/EU GDP comparison: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de residentes está en AROPE en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`AROPE warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'arope_rate') failures.push('AROPE warehouse: selected the wrong metric family');

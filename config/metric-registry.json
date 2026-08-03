@@ -63,6 +63,14 @@
     "notEquivalentTo": ["gdp_current_prices", "unemployment_rate", "youth_unemployment_rate"],
     "dimensions": ["period", "geography", "seasonal_adjustment", "national_account_item"]
   },
+  "gdp_real_growth_europe": {
+    "name": "Real GDP year-on-year growth: Spain and the European Union",
+    "aliases": ["PIB real frente a Europa", "crecimiento del PIB frente a Europa", "España crece más que Europa", "España crece menos que Europa", "crecimiento económico europeo", "PIB España Unión Europea"],
+    "unit": "percent year-on-year",
+    "population": "national economy in Spain and the European Union",
+    "notEquivalentTo": ["gdp_real_growth_quarterly", "gdp_current_prices", "unemployment_rate_europe"],
+    "dimensions": ["period", "geography", "seasonal_adjustment", "national_account_item"]
+  },
   "government_debt_ratio": {
     "name": "General government gross debt as a share of GDP",
     "aliases": ["deuda pública", "deuda del Estado", "deuda sobre PIB", "deuda española", "endeudamiento público", "cuánto debe España", "deuda del país", "nivel de deuda española"],

@@ -72,6 +72,56 @@ export const summarizeWarehouseRegionalComparison = (text, observations) => {
   };
 };
 
+const isSpainObservation = (item) => {
+  const code = normalise(item.dimensions?.geo || item.geo || '');
+  const label = normalise(item.dimensionLabels?.geo || '');
+  return code === 'es' || label === 'espana' || label === 'spain';
+};
+
+const isEuropeanUnionObservation = (item) => {
+  const code = normalise(item.dimensions?.geo || item.geo || '');
+  const label = normalise(item.dimensionLabels?.geo || '');
+  return code === 'eu27 2020' || code === 'eu27_2020' || label.includes('european union') || label.includes('union europea');
+};
+
+export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
+  const candidate = observations.filter((item) => item.metricId === 'gdp_real_growth_europe' && typeof item.value === 'number' && Number.isFinite(item.value) && item.period);
+  if (!candidate.length) return null;
+  const byPeriod = new Map();
+  candidate.forEach((item) => {
+    const rows = byPeriod.get(String(item.period)) || [];
+    rows.push(item);
+    byPeriod.set(String(item.period), rows);
+  });
+  const period = [...byPeriod.keys()].sort((left, right) => right.localeCompare(left)).find((value) => {
+    const rows = byPeriod.get(value) || [];
+    return rows.some(isSpainObservation) && rows.some(isEuropeanUnionObservation);
+  });
+  if (!period) return null;
+  const rows = byPeriod.get(period) || [];
+  const spain = rows.find(isSpainObservation);
+  const europeanUnion = rows.find(isEuropeanUnionObservation);
+  if (!spain || !europeanUnion) return null;
+  const unit = '% interanual';
+  const difference = Number(spain.value) - Number(europeanUnion.value);
+  const direction = Math.abs(difference) < 0.000001 ? 'al mismo ritmo que' : difference > 0 ? 'por encima de' : 'por debajo de';
+  const comparison = `${formatNumber(spain.value)} ${unit} en España frente a ${formatNumber(europeanUnion.value)} ${unit} en la Unión Europea`;
+  return {
+    european: true,
+    observations: [spain, europeanUnion],
+    headline: `PIB real: España frente a la Unión Europea (${period})`,
+    summary: `En ${period}, España creció ${direction} la Unión Europea: ${comparison}.`,
+    points: [
+      `España: ${formatNumber(spain.value)} ${unit}.`,
+      `Unión Europea: ${formatNumber(europeanUnion.value)} ${unit}.`,
+      `Diferencia: ${formatNumber(Math.abs(difference))} puntos porcentuales ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
+      'La comparación usa el PIB real interanual desestacionalizado; no demuestra por sí sola que los hogares tengan el mismo bienestar.',
+    ],
+    reply: `En ${period}, el PIB real creció un ${formatNumber(spain.value)}% interanual en España y un ${formatNumber(europeanUnion.value)}% en la Unión Europea: ${difference >= 0 ? 'España creció más' : 'España creció menos'} en esa comparación. Es una medida de actividad agregada, no de bienestar de cada hogar.`,
+    replyEvidenceIds: [spain.id, europeanUnion.id],
+  };
+};
+
 export const summarizeWarehouseRanking = (text, observations) => {
   const query = normalise(text);
   const queryTerms = new Set(query.split(' ').filter(Boolean));

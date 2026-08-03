@@ -53,6 +53,12 @@
       "metricId": "gdp_real_growth_quarterly"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=ES&geo=EU27_2020&na_item=B1GQ&unit=CLV_PCH_SM&s_adj=SCA&sinceTimePeriod=2015",
+      "title": "Crecimiento interanual del PIB real: España y Unión Europea · Eurostat",
+      "aliases": ["PIB real frente a Europa", "crecimiento del PIB frente a Europa", "España crece más que Europa", "España crece menos que Europa", "crecimiento económico europeo", "PIB España Unión Europea"],
+      "metricId": "gdp_real_growth_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?geo=ES&na_item=GD&unit=PC_GDP&sinceTimePeriod=2015",
       "title": "Deuda pública de España · Eurostat",
       "aliases": ["deuda pública", "deuda sobre PIB", "endeudamiento público", "cuánto debe España", "deuda del país", "nivel de deuda española"],
