@@ -38,6 +38,10 @@ const warehousePrompts = [
   '¿Cómo han evolucionado los homicidios registrados en España?',
   '¿Qué comunidad tiene mayor densidad de población?',
   '¿Madrid tiene más densidad que Andalucía?',
+  '¿Cómo ha evolucionado la deuda pública española sobre el PIB?',
+  '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+  '¿Cómo ha evolucionado la fecundidad en España?',
+  '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
@@ -48,6 +52,10 @@ const warehouseHighlights = [
   { label: 'Sanidad', prompt: '¿Cuánto gasta España en sanidad por habitante?', detail: 'Gasto comparable, unidad y fuente.' },
   { label: 'Seguridad', prompt: '¿Cómo han evolucionado los homicidios registrados en España?', detail: 'La categoría exacta, no una etiqueta genérica de “crimen”.' },
   { label: 'Territorio', prompt: '¿Madrid tiene más densidad que Andalucía?', detail: 'Compara dos comunidades con el mismo indicador y periodo.' },
+  { label: 'Deuda pública', prompt: '¿Cómo ha evolucionado la deuda pública española sobre el PIB?', detail: 'Deuda consolidada de las administraciones, no deuda de un hogar.' },
+  { label: 'Juventud', prompt: '¿Qué porcentaje de jóvenes activos no encuentra trabajo?', detail: 'Desempleo de 15 a 24 años, separado del paro general.' },
+  { label: 'Demografía', prompt: '¿Cómo ha evolucionado la fecundidad en España?', detail: 'Hijos por mujer y evolución temporal.' },
+  { label: 'Desigualdad', prompt: '¿Cómo ha evolucionado la desigualdad de ingresos en España?', detail: 'Coeficiente de Gini y límites de lo que resume.' },
 ];
 const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');

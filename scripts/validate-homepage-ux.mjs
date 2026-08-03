@@ -23,7 +23,7 @@ requireText('class="latest-home"', 'automatic recent-clarifications section');
 requireText('data-latest-claim=', 'recent claim cards sourced from published content');
 requireText('class="warehouse-home"', 'visible warehouse discovery section');
 requireText('data-example-source="warehouse"', 'warehouse discovery metadata');
-if ((homepage.match(/class="warehouse-highlight"/g) || []).length < 6) failures.push('homepage exposes fewer than six warehouse-backed discovery cards');
+if ((homepage.match(/class="warehouse-highlight"/g) || []).length < 12) failures.push('homepage exposes fewer than twelve warehouse-backed discovery cards');
 if (!/<details class="warehouse-prompts"(?:\s[^>]*)?>/.test(homepage)) failures.push('homepage is missing collapsed secondary prompt section');
 if (/<details class="warehouse-prompts"[^>]*\sopen(?:\s|=|>)/.test(homepage)) failures.push('secondary warehouse prompts must remain collapsed by default');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');

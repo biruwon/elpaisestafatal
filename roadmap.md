@@ -320,6 +320,8 @@ The deterministic fallback now preserves common written Spanish quantities and p
 
 The client fallback now keeps broad complaints from receiving arbitrary topic suggestions: detected topics get relevant context, while topic-free inputs get a clearly labelled set of published starting checks. Common political formulations such as `España está destruida` also route to the political context family.
 
+The homepage now exposes twelve warehouse-backed discovery cards across cost of living, macroeconomics, housing, employment, health, security, territory, public debt, youth unemployment, demography, and inequality. These are reusable data entry points rather than manually authored verdicts.
+
 - original and normalized input;
 - explicit propositions;
 - implied propositions;
