@@ -46,6 +46,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Uncovered text requests now receive evidence-gated nearby published context from the same server index when a safe related match exists. The response remains `uncovered`, keeps the deterministic limitation, and never upgrades a weak or merely topical match into a verdict; production smoke covers this distinction.
 
+- Removed an unsafe tax alias that conflated the vague burden/value statement `España cobra demasiados impuestos` with the specific Europe-wide ranking claim. The deterministic path now keeps that wording out of the exact published result and the claim-index regression protects the distinction.
+
 - Removed the last live navigation compatibility branch for the retired `/aclarar` route. The global layout now marks only the canonical homepage checker as active, and the legacy validator prevents the removed route from being reintroduced into runtime navigation.
 
 - Closed the local-only semantic-clustering release gate: non-loopback embedding endpoints are rejected before any gap text is sent, the rejection is covered by the clustering regression suite, and `npm run build` now runs that suite on every release.

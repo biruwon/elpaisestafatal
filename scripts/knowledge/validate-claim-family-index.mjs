@@ -22,6 +22,12 @@ if (!match) {
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
+  const taxClaim = entries.find((entry) => entry.slug === 'espana-impuestos-europa');
+  const taxBurdenPhrase = normalise('España cobra demasiados impuestos');
+  if (taxClaim?.aliases?.some((alias) => normalise(alias) === taxBurdenPhrase)) {
+    failures.push('tax ranking claim must not treat the vague tax-burden wording as an exact alias');
+  }
+
   const families = [
     {
       slug: 'espana-pierde-poblacion',

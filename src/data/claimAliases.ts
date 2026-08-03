@@ -325,7 +325,6 @@ export const claimAliases: Record<string, string[]> = {
     'España es un infierno fiscal',
     'somos el país que más impuestos paga',
     'en España se pagan más impuestos que en toda Europa',
-    'España cobra demasiados impuestos',
   ],
   'sanidad-colapsada': [
     'La sanidad española está colapsada',
