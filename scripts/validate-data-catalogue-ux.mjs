@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../dist/datos/index.html', import.meta.url), 'utf8');
-const metricCount = (html.match(/data-metric-card/g) || []).length;
+const metricCount = (html.match(/<article\b[^>]*\bdata-metric-card(?:\s|>)/g) || []).length;
 const required = [
   'data-catalogue-search',
   'data-catalogue-count',

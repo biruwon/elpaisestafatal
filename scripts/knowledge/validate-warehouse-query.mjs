@@ -37,6 +37,8 @@ if (!preferredMetricIdsForQuery('Porcentaje de la población activa que encuentr
 if (!preferredMetricIdsForQuery('Evolución del desempleo en España').has('unemployment_rate')) throw new Error('Metric hints did not prefer unemployment for trend wording');
 if (!preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for comparison wording');
 if (preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate')) throw new Error('Metric hints kept generic unemployment alongside European comparison wording');
+if (!preferredMetricIdsForQuery('España tiene una tasa de empleo mayor que la Unión Europea').has('employment_rate_europe')) throw new Error('Metric hints did not prefer European employment for comparison wording');
+if (preferredMetricIdsForQuery('España tiene una tasa de empleo mayor que la Unión Europea').has('employment_rate')) throw new Error('Metric hints kept Spain-only employment alongside European comparison wording');
 if (!preferredMetricIdsForQuery('Qué porcentaje de jóvenes activos no encuentra trabajo').has('youth_unemployment_rate') || preferredMetricIdsForQuery('Qué porcentaje de jóvenes activos no encuentra trabajo').has('employment_rate')) throw new Error('Metric hints did not keep youth unemployment distinct from employment');
 if (!preferredMetricIdsForQuery('Cuántos habitantes viven normalmente en España').has('resident_population')) throw new Error('Metric hints did not prefer resident population');
 if (!preferredMetricIdsForQuery('Cuántos residentes nacieron fuera de España').has('foreign_born_population')) throw new Error('Metric hints did not prefer foreign-born population');

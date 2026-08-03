@@ -3,6 +3,7 @@
 export const metricSearchAliases = Object.freeze({
   youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
   employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
+  employment_rate_europe: ['empleo', 'ocupacion', 'europa', 'union europea', 'comparacion europea'],
   unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],
   unemployment_rate_europe: ['paro', 'desempleo', 'europa', 'comparacion europea'],
   inflation_rate_europe: ['inflacion', 'precios', 'europa', 'union europea', 'comparacion europea'],

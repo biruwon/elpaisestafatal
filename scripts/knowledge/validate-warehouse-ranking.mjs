@@ -39,4 +39,10 @@ const inflationRecords = [
 ];
 const inflationComparison = summarizeWarehouseEuropeanComparison('¿Está la inflación de España por encima de la Unión Europea?', inflationRecords);
 if (!inflationComparison || inflationComparison.metricId !== 'inflation_rate_europe' || !inflationComparison.summary.includes('2,3') || !inflationComparison.summary.includes('2') || !inflationComparison.reply.includes('inflación española fue más alta')) throw new Error('European inflation comparison did not preserve the same-period Spain/EU comparison');
+const employmentRecords = [
+  { id: 'employment-es-2025', metricId: 'employment_rate_europe', datasetId: 'Employment comparison', value: 75.8, unit: 'Percentage of total population', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'employment-eu-2025', metricId: 'employment_rate_europe', datasetId: 'Employment comparison', value: 75.0, unit: 'Percentage of total population', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const employmentComparison = summarizeWarehouseEuropeanComparison('¿Tiene España una tasa de empleo mayor que la Unión Europea?', employmentRecords);
+if (!employmentComparison || employmentComparison.metricId !== 'employment_rate_europe' || !employmentComparison.summary.includes('75,8') || !employmentComparison.summary.includes('75') || !employmentComparison.reply.includes('tasa de empleo española fue más alta') || employmentComparison.reply.includes('interanual')) throw new Error('European employment comparison did not preserve the same-period Spain/EU comparison or localized its unit');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

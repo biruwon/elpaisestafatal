@@ -53,6 +53,7 @@ jobs:
           npm run knowledge:freshness
           npm run knowledge:warehouse
           npm run knowledge:warehouse:query
+          npm run knowledge:ranking
           npm run knowledge:warehouse:cache
           npm run knowledge:answer-plan
           npm run knowledge:evidence-packet
@@ -61,6 +62,7 @@ jobs:
           npm run knowledge:evaluate:metrics
           npm run knowledge:hybrid
           npm run knowledge:hybrid:corpus
+          npm run knowledge:semantic-clustering
 
       - name: Build public site and audit public surface
         run: npm run build
@@ -70,6 +72,7 @@ jobs:
           npm run input:validate
           npm run claim-input:lifecycle
           npm run ux:homepage
+          npm run ux:data
           npm run ux:claims
           npm run ux:catalogue
           npm run ux:topics

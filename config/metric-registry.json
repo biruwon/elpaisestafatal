@@ -143,6 +143,14 @@
     "notEquivalentTo": ["unemployment_rate"],
     "dimensions": ["period", "geography", "age", "sex"]
   },
+  "employment_rate_europe": {
+    "name": "Comparable employment rate: Spain and the European Union",
+    "aliases": ["tasa de empleo frente a Europa", "empleo de España frente a Europa", "España tiene más empleo que Europa", "España tiene menos empleo que Europa", "comparación europea del empleo"],
+    "unit": "percent of population",
+    "population": "population aged 20-64 employed in Spain and the European Union",
+    "notEquivalentTo": ["employment_rate", "unemployment_rate", "unemployment_rate_europe"],
+    "dimensions": ["period", "geography", "age", "sex"]
+  },
   "resident_population": {
     "name": "Resident population",
     "aliases": ["población", "habitantes", "demografía", "residentes"],

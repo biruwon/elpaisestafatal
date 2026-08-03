@@ -33,6 +33,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['paro-europa', 'España tiene el paro más alto de Europa', 'unemployment_rate_europe'],
   ['paro-ranking', 'En qué puesto está España por desempleo frente a otros países europeos', 'unemployment_rate_europe'],
   ['paro-comparado', 'Comparación europea de la tasa de paro española', 'unemployment_rate_europe'],
+  ['empleo-europa', '¿Tiene España una tasa de empleo mayor que la Unión Europea?', 'employment_rate_europe'],
+  ['empleo-europa-bajo', '¿España tiene menos empleo que Europa?', 'employment_rate_europe'],
   ['empleo-tasa', 'Qué parte de las personas de 20 a 64 años tiene empleo', 'employment_rate'],
   ['empleo-ocupacion', 'La ocupación ha mejorado en España', 'employment_rate'],
   ['empleo-trabajo', 'Evolución de la tasa de empleo', 'employment_rate'],

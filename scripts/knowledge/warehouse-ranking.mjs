@@ -91,6 +91,7 @@ const europeanComparisonDefinitions = {
     replyLead: 'el PIB real creció un',
     differenceVerb: ['España creció más', 'España creció menos', 'España y la Unión Europea crecieron al mismo ritmo'],
     unit: '% interanual',
+    replyUnit: '% interanual',
     method: 'La comparación usa el PIB real interanual desestacionalizado; no demuestra por sí sola que los hogares tengan el mismo bienestar.',
     caveat: 'Es una medida de actividad agregada, no de bienestar de cada hogar.',
   },
@@ -100,8 +101,19 @@ const europeanComparisonDefinitions = {
     replyLead: 'la inflación armonizada fue del',
     differenceVerb: ['la inflación española fue más alta', 'la inflación española fue más baja', 'España y la Unión Europea registraron la misma inflación'],
     unit: '% interanual',
+    replyUnit: '% interanual',
     method: 'La comparación usa la tasa armonizada de precios de consumo para todos los bienes; no representa exactamente la cesta de cada hogar.',
     caveat: 'Es una medida comparable de precios, no el coste de vida completo de cada hogar.',
+  },
+  employment_rate_europe: {
+    label: 'Tasa de empleo',
+    verb: 'registró una tasa de empleo',
+    replyLead: 'la tasa de empleo fue del',
+    differenceVerb: ['la tasa de empleo española fue más alta', 'la tasa de empleo española fue más baja', 'España y la Unión Europea registraron la misma tasa de empleo'],
+    unit: '% de la población de 20 a 64 años',
+    replyUnit: '% de la población de 20 a 64 años',
+    method: 'La comparación usa la tasa de empleo de la población de 20 a 64 años según la definición comparable de Eurostat; no equivale a la tasa de paro ni describe todos los grupos de edad.',
+    caveat: 'Es una medida de empleo entre 20 y 64 años, no una descripción completa de la calidad o estabilidad del trabajo.',
   },
 };
 
@@ -142,7 +154,7 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
       `Diferencia: ${formatNumber(Math.abs(difference))} puntos porcentuales ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
       definition.method,
     ],
-    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value)}% interanual en España y ${formatNumber(europeanUnion.value)}% en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
+    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
 };

@@ -17,6 +17,7 @@ const metricHints = [
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
   { ids: ['gdp_real_growth_europe'], terms: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'crece espana mas que europa', 'crece espana mas que la union europea', 'espana crece mas que europa', 'espana crece mas que la union europea', 'crece espana menos que europa', 'crece espana menos que la union europea', 'espana crece menos que europa', 'espana crece menos que la union europea', 'crecimiento de espana frente a la union europea', 'crecimiento economico europeo', 'pib espana union europea', 'pib frente a europa', 'crecimiento frente a europa'] },
   { ids: ['employment_rate'], terms: ['tasa de empleo', 'tasa de ocupacion', 'personas ocupadas', 'personas que tienen empleo', 'encuentra trabajo', 'tiene empleo', 'ocupacion en espana', 'empleo en espana', 'mas empleo', 'empleo nunca', 'empleo record'] },
+  { ids: ['employment_rate_europe'], terms: ['tasa de empleo frente a europa', 'tasa de empleo frente a la union europea', 'tasa de empleo mayor que europa', 'tasa de empleo mayor que la union europea', 'tasa de empleo menor que europa', 'tasa de empleo menor que la union europea', 'empleo de espana frente a europa', 'empleo de espana frente a la union europea', 'espana tiene mas empleo que europa', 'espana tiene menos empleo que europa', 'espana tiene una tasa de empleo mayor que la union europea', 'espana tiene una tasa de empleo menor que la union europea', 'comparacion europea del empleo', 'empleo mas alto que europa', 'empleo mas bajo que europa', 'empleo europa'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
   { ids: ['early_school_leaving_rate'], terms: ['abandono escolar temprano', 'abandono escolar', 'abandono educativo', 'dejan los estudios', 'dejan los estudios antes de tiempo', 'jovenes que abandonan los estudios', 'fracaso escolar temprano'] },
@@ -65,6 +66,10 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('cpi_index');
   }
   if (preferred.has('unemployment_rate_europe')) preferred.delete('unemployment_rate');
+  if (preferred.has('employment_rate_europe')) {
+    preferred.delete('employment_rate');
+    preferred.delete('unemployment_rate_europe');
+  }
   if (preferred.has('youth_unemployment_rate')) preferred.delete('unemployment_rate');
   if (preferred.has('youth_unemployment_rate')) preferred.delete('employment_rate');
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');
@@ -88,6 +93,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
+  const employmentEuropeRequested = metricHints.find((hint) => hint.ids.includes('employment_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const unmetWaitingListRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
@@ -102,6 +108,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
   if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
+  if (employmentEuropeRequested) excluded.add('employment_rate');
   if (educationContext && !youthRequested) excluded.add('youth_unemployment_rate');
   if (educationContext && !tertiaryEducationRequested) excluded.add('tertiary_education_attainment_rate');
   if (educationContext && !earlyEducationRequested) excluded.add('early_school_leaving_rate');

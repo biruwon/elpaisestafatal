@@ -339,7 +339,8 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
       ]
       : query.includes('empleo') || query.includes('trabajo') || query.includes('paro') || query.includes('sueldo') || query.includes('salario')
         ? [
-          '¿Cómo ha evolucionado el desempleo en España?',
+              '¿Cómo ha evolucionado el desempleo en España?',
+              '¿Tiene España una tasa de empleo mayor que la Unión Europea?',
           '¿Qué porcentaje de la población activa encuentra trabajo?',
           '¿Está creciendo el empleo en España?',
           '¿Han subido los salarios en España?',
