@@ -42,6 +42,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Hardened the public health boundary: upstream operational telemetry is now reduced to bounded provider-neutral counters, latency, hit rate, queue depth, and known status counts before it reaches `/api/health`. Unexpected metrics, negative values, implementation fields, and oversized values are discarded, with a build-time regression validator protecting the contract.
 
+- Tightened the same health boundary to fail closed on malformed `200` responses: dynamic availability is now reported only when the origin returns the expected `status`, deterministic, and dynamic fields, while valid optional telemetry remains filtered and bounded.
+
 - Extended the bounded local compiler benchmark to three additional installed local candidates. `gemma4:e4b` scored 0.54 quality and 0.80 safety with roughly 8.6-second p50 latency; `aya-expanse:8b` scored 0.18 quality and 0.30 safety with roughly 12-second p50 latency; and `gpt-oss:latest` scored 0.48 quality and 0.80 safety with roughly 8.9-second p50 latency. None meets the release gate, so no model is promoted and deterministic compilation remains authoritative.
 
 - Removed the unused root `investigaciones/` Markdown tree and its audit script. The live Astro topic routes already use the structured investigation records, so the obsolete duplicate source path is gone rather than retained as compatibility code; the legacy validator now prevents it from returning.

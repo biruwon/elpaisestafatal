@@ -41,3 +41,12 @@ export const safeHealthMetrics = (value) => {
 };
 
 export const safeHealthQueue = (value) => boundedCounter(value);
+
+export const safeHealthEnvelope = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const source = value;
+  if (source.status !== 'ok' || source.deterministic !== true || typeof source.dynamic !== 'boolean') return undefined;
+  const metrics = safeHealthMetrics(source.metrics);
+  const queue = safeHealthQueue(source.queue);
+  return { dynamic: source.dynamic, ...(metrics ? { metrics } : {}), ...(queue !== undefined ? { queue } : {}) };
+};

@@ -1,4 +1,4 @@
-import { safeHealthMetrics, safeHealthQueue } from '../../src/lib/knowledge/safe-health.mjs';
+import { safeHealthEnvelope } from '../../src/lib/knowledge/safe-health.mjs';
 
 interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
 interface Context { request: Request; env: Env }
@@ -18,10 +18,9 @@ export const onRequestGet = async ({ env }: Context): Promise<Response> => {
       headers,
       signal: AbortSignal.timeout(1500),
     });
-    const body = await upstream.json().catch(() => ({})) as { metrics?: unknown; queue?: unknown };
-    const metrics = safeHealthMetrics(body.metrics);
-    const queue = safeHealthQueue(body.queue);
-    return response({ status: upstream.ok ? 'ok' : 'degraded', deterministic: true, dynamic: upstream.ok, ...(metrics ? { metrics } : {}), ...(queue !== undefined ? { queue } : {}) });
+    const body = await upstream.json().catch(() => undefined);
+    const envelope = upstream.ok ? safeHealthEnvelope(body) : undefined;
+    return response({ status: envelope ? 'ok' : 'degraded', deterministic: true, dynamic: envelope?.dynamic === true, ...(envelope?.metrics ? { metrics: envelope.metrics } : {}), ...(envelope?.queue !== undefined ? { queue: envelope.queue } : {}) });
   } catch {
     // The static application remains healthy when the optional dynamic origin
     // is unavailable. Do not expose the origin or failure details publicly.
