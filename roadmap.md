@@ -537,6 +537,8 @@ Status: started; durable review-queue merge, recency ranking, deterministic sema
 
 Long-tail capture now starts as soon as a user submits an unresolved text claim, before optional background analysis finishes. This preserves the learning signal when the local runtime is slow or unavailable. Screenshot and audio results can add their extracted canonical wording later. The D1 ingestion path is idempotent by request ID, so retries and repeated UI callbacks update recency without inflating cluster popularity. `npm run learning:validate` protects these guarantees.
 
+The solo-maintainer handoff is now reproducible with `npm run knowledge:triage`: it combines local gap records with an optional explicit `--export-d1` production snapshot, clusters and reconciles them against the published catalogue, then writes one ranked JSON/Markdown review queue. Production export is opt-in and the command never publishes or promotes a claim.
+
 Cluster inputs by canonical proposition signature. Track:
 
 - most asked;

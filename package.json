@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && npm run knowledge:triage:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -76,6 +76,8 @@
     "knowledge:materialization-candidates:validate": "node scripts/knowledge/validate-materialization-candidates.mjs",
     "knowledge:review-queue": "node scripts/knowledge/review-queue.mjs",
     "knowledge:review-queue:validate": "node scripts/knowledge/validate-review-queue.mjs",
+    "knowledge:triage": "node scripts/knowledge/triage.mjs",
+    "knowledge:triage:validate": "node scripts/validate-knowledge-triage.mjs",
     "knowledge:export-query-clusters": "node scripts/knowledge/export-query-clusters.mjs",
     "knowledge:promote-cluster": "node scripts/knowledge/promote-cluster.mjs",
     "knowledge:promote-cluster:validate": "node scripts/knowledge/validate-cluster-promotion.mjs",
