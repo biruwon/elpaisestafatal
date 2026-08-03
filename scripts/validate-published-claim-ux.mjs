@@ -27,6 +27,7 @@ for (const file of pages) {
     ['claim-sources', 'missing source section'],
   ];
   for (const [marker, message] of required) if (!source.includes(`id="${marker}"`)) failures.push(`${route}: ${message}`);
+  if (!source.includes('class="claim-next-check"')) failures.push(`${route}: missing contextual checker handoff`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
   if (!/evidence-trail-card/.test(source)) failures.push(`${route}: evidence trail has no records`);
   if (!/class="evidence-label"/.test(source)) failures.push(`${route}: evidence trail has no explicit finding label`);

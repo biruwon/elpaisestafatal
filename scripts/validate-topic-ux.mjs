@@ -21,6 +21,7 @@ for (const file of pages) {
     ['id="respuesta"', 'missing 60-second answer'],
     ['class="evidence"', 'missing evidence section'],
     ['class="source-section"', 'missing source section'],
+    ['class="check-next"', 'missing contextual checker handoff'],
   ];
   for (const [marker, message] of required) if (!source.includes(marker)) failures.push(`${route}: ${message}`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
