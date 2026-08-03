@@ -10,6 +10,9 @@ for (const paraphrase of [
   'Los migrantes hacen que aumenten los delitos en España',
   'La llegada de extranjeros vuelve inseguro a España',
   'Con más inmigración hay más delitos en España',
+  'Desde que hay más inmigración, hay más delitos en España',
+  'Cuanto más inmigración, más delitos en España',
+  'La inmigración está detrás del aumento de la delincuencia en España',
 ]) {
   assert(causal.semanticSignature === deterministicFallbackCompiler(paraphrase).semanticSignature, `Natural causal paraphrase did not receive the same semantic signature: ${paraphrase}`);
 }
@@ -21,9 +24,11 @@ assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.le
 
 const association = deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas en España');
 const reversedAssociation = deterministicFallbackCompiler('Existe una relación entre la delincuencia y la inmigración en España');
+const informalAssociation = deterministicFallbackCompiler('La inmigración se relaciona con la delincuencia en España');
 assert(association.claimType === 'causal', 'Association wording lost the evidence-focused causal guidance path');
 assert(association.explicitPropositions[0].predicate === 'associated_with', 'Association relation was not extracted');
 assert(association.semanticSignature === reversedAssociation.semanticSignature, 'Symmetric association wording did not share a semantic family');
+assert(association.semanticSignature === informalAssociation.semanticSignature, 'Informal association wording did not share a semantic family');
 assert(association.semanticSignature !== causal.semanticSignature, 'Association and causal relations collapsed into the same semantic family');
 
 const comparison = deterministicFallbackCompiler('España cobra más impuestos que Europa en 2025');
@@ -72,8 +77,10 @@ assert(trend.claimType === 'trend', 'Trend claim type was not detected');
 
 const risingTrend = deterministicFallbackCompiler('Cada vez hay más empleo en España');
 const equivalentRisingTrend = deterministicFallbackCompiler('El empleo sube en España');
+const pastRisingTrend = deterministicFallbackCompiler('El empleo ha subido en España');
 const fallingTrend = deterministicFallbackCompiler('Cada vez hay menos empleo en España');
 assert(risingTrend.semanticSignature === equivalentRisingTrend.semanticSignature, 'Natural rising-trend paraphrases did not receive the same semantic signature');
+assert(risingTrend.semanticSignature === pastRisingTrend.semanticSignature, 'Past-tense rising-trend paraphrase did not receive the same semantic signature');
 assert(risingTrend.semanticSignature !== fallingTrend.semanticSignature, 'Opposing trend directions collapsed into the same semantic family');
 assert(deterministicFallbackCompiler('El empleo va a peor en España').claimType === 'trend', 'A worsening trend was incorrectly classified as a prediction');
 
@@ -85,9 +92,11 @@ assert(positionalComparison.semanticSignature !== reversedPositionalComparison.s
 
 const highestRanking = deterministicFallbackCompiler('España tiene el paro más alto de Europa');
 const equivalentHighestRanking = deterministicFallbackCompiler('España es el país con más paro de Europa');
+const compressedHighestRanking = deterministicFallbackCompiler('España es el país con más paro');
 const lowestRanking = deterministicFallbackCompiler('España tiene el paro más bajo de Europa');
 assert(highestRanking.claimType === 'comparative', 'Highest-ranking claim was not detected');
 assert(highestRanking.semanticSignature === equivalentHighestRanking.semanticSignature, 'Equivalent highest-ranking wording did not receive the same semantic signature');
+assert(highestRanking.semanticSignature === compressedHighestRanking.semanticSignature, 'Compressed highest-ranking wording did not receive the same semantic signature');
 assert(highestRanking.semanticSignature !== lowestRanking.semanticSignature, 'Highest and lowest ranking claims collapsed into the same semantic family');
 
 const worseComparison = deterministicFallbackCompiler('España está peor que hace diez años');

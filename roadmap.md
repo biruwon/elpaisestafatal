@@ -283,7 +283,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. Results now offer context-specific jumps to the reply, next question, and sources. Semantic-family signatures now also recognize common Spanish causal paraphrases such as `hacen que aumenten`, `vuelve inseguro`, and `con más ... hay más ...`, plus directional trend, positional-comparison, highest/lowest-ranking, and symmetric association paraphrases, while keeping association versus causation, opposing polarity, and reversed comparisons separate; broader semantic clustering remains pending.
+Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. Results now offer context-specific jumps to the reply, next question, and sources. Semantic-family signatures now also recognize common Spanish causal paraphrases such as `hacen que aumenten`, `vuelve inseguro`, `con más ... hay más ...`, `desde que hay más ... hay más ...`, and `está detrás de ...`, plus past-tense trends, positional comparisons, highest/lowest rankings, and symmetric association paraphrases such as `se relaciona con`; association versus causation, opposing polarity, and reversed comparisons remain separate. Broader semantic clustering remains pending.
 
 Before using a model:
 
@@ -306,7 +306,7 @@ No weak match may be presented as an answer. For example, `España está destrui
 
 ## Phase 3 — Local claim compiler
 
-Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses and directional subject/relation/object shapes before model escalation. The compiler now shares conservative semantic signatures across additional everyday Spanish causal, trend, comparison, ranking, and symmetric association constructions while retaining explicit versus implied propositions; broader semantic extraction expansion remains pending.
+Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses and directional subject/relation/object shapes before model escalation. The compiler now shares conservative semantic signatures across additional everyday Spanish causal, trend, comparison, ranking, and symmetric association constructions, including colloquial temporal/causal phrasing and past-tense trends, while retaining explicit versus implied propositions; broader semantic extraction expansion remains pending.
 
 Run the local service on a dedicated always-on machine. Package it with Docker Compose so the current Mac remains suitable for development.
 

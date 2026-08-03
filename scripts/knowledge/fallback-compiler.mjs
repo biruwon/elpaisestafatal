@@ -83,6 +83,7 @@ export const propositionShapeFor = (value) => {
   }
   const relationship = text.match(/^(?:hay|existe)\s+(?:una\s+)?(?:relacion|vinculo|asociacion|correlacion)\s+entre\s+(.+?)\s+(?:y|e)\s+(.+?)(?:\s+en\s+.+)?$/)
     || text.match(/^(.*?)\s+(?:esta|estan|tiene|tienen)\s+(?:relacionad[oa]s?|vinculad[oa]s?|asociad[oa]s?|correlacionad[oa]s?|relacion)\s+(?:con|a)\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:se relaciona|se relacionan|se asocia|se asocian|guarda relacion|guardan relacion|tiene que ver|tienen que ver)\s+(?:con|entre)\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:y|e)\s+(.*?)\s+(?:van|parecen ir)\s+de la mano(?:\s+en\s+.+)?$/);
   if (relationship) {
     return {
@@ -124,7 +125,9 @@ export const propositionShapeFor = (value) => {
       object: relationShapeText(comparison[4]),
     };
   }
-  const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/);
+  const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/)
+    || text.match(/^cuanto\s+mas\s+(.+?),?\s+mas\s+(.+)$/)
+    || text.match(/^desde\s+que\s+(?:hay|existe)\s+mas\s+(.+?),?\s+(?:hay|existe|aumenta|sube)\s+mas\s+(.+)$/);
   if (comparativeCausal) {
     return {
       subject: relationShapeText(comparativeCausal[1]),
@@ -132,7 +135,9 @@ export const propositionShapeFor = (value) => {
       object: relationShapeText(comparativeCausal[2]),
     };
   }
-  const causedByClause = text.match(/^(.*?)\s+(?:hace|hacen)\s+que\s+(.+)$/);
+  const causedByClause = text.match(/^(.*?)\s+(?:hace|hacen|ha hecho|han hecho)\s+que\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:esta|estan)\s+detras\s+(?:de|del|la|los|las)\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:es|son)\s+responsable(?:s)?\s+de\s+(.+)$/);
   if (causedByClause) {
     return {
       subject: relationShapeText(causedByClause[1]),
@@ -156,16 +161,18 @@ const trendDirectionFor = (value) => {
   const text = normalise(value);
   if (/\b(?:mejora|mejoran|va a mejor|va mejor|esta mejorando|estan mejorando)\b/.test(text)) return 'improving';
   if (/\b(?:empeora|empeoran|va a peor|va peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+menos|\b(?:baja|bajan|bajo|bajaron|cae|caen|cayo|cayeron|disminuye|disminuyen|reduce|reducen|abarata|abaratan)\b/.test(text)) return 'falling';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+mas|\b(?:sube|suben|subio|subieron|crece|crecen|aumenta|aumentan|incrementa|incrementan|dispara|disparado|disparada|encarece|encarecen)\b|no deja de subir|no paran de subir/.test(text)) return 'rising';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar)\b/.test(text)) return 'falling';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecen|sigue subiendo|no para de subir)\b|no deja de subir|no paran de subir/.test(text)) return 'rising';
   return null;
 };
 
 const rankingDirectionFor = (value) => {
   const text = normalise(value);
-  const ranking = text.match(/\b(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/);
+  const ranking = text.match(/\b(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/)
+    || text.match(/\b(?:pais|país|paises|países)\s+con\s+(?:mas|menos|mayor|menor)\b/)
+    || text.match(/\b(?:primer|ultimo|último)\s+puesto\b/);
   if (!ranking) return null;
-  return /\b(?:menos|menor)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
+  return /\b(?:menos|menor|ultimo|último)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
 };
 
 export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [], negated = false } = {}) => {
@@ -225,11 +232,11 @@ const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text)) return 'causal';
+  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'esta detras de', 'es responsable de', 'desde que hay mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
-  if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'dispara', 'disparado', 'encarece', 'empeora', 'mejora', 'no deja de', 'va a peor', 'va peor', 'va mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
-  if (includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'ranking', 'puesto', 'europa'])) return 'comparative';
+  if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'empeora', 'mejora', 'no deja de', 'sigue subiendo', 'sigue bajando', 'va a peor', 'va peor', 'va mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
+  if (includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'europa'])) return 'comparative';
   return 'descriptive';
 };
 
