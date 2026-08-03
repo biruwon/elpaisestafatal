@@ -6,6 +6,7 @@ const popularSlugs = [
   'poblacion-nacida-fuera-sube',
   'poblacion-ciudadania-extranjera-sube',
   'gobierno-transfiere-310-millones-educacion-presidencia',
+  'espana-gasta-menos-sanidad-europa',
   'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',
   'viviendas-vacias',

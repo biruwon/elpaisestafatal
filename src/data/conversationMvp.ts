@@ -248,6 +248,19 @@ definitions['poblacion-ciudadania-extranjera-sube'] = {
   visuals: { key: { value: '6,91 M', label: 'Residentes con ciudadanía extranjera o apátrida', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [4.454, 4.418, 4.851, 5.403, 6.090, 6.912], label: 'Residentes por ciudadanía', unit: 'millones de personas' }, caveat: 'Ciudadanía y país de nacimiento no son equivalentes; la serie tampoco mide llegadas anuales ni situación administrativa.' },
 };
 
+definitions['espana-gasta-menos-sanidad-europa'] = {
+  prompt: 'España gasta menos por habitante en sanidad que la Unión Europea',
+  aliases: ['España gasta menos en sanidad que Europa', 'España gasta menos por persona en salud que la UE', 'el gasto sanitario español está por debajo de la media europea', 'España invierte menos en sanidad por habitante que Europa'],
+  propositions: ['En 2023 España registró 2.857,25 € de gasto sanitario corriente por habitante.', 'En 2023 la Unión Europea registró 3.836,68 € por habitante en la misma medida.', 'Gastar menos por habitante demuestra por sí solo peores resultados sanitarios.'],
+  concern: 'España registra menos gasto sanitario corriente por habitante que la media de la Unión Europea, pero la diferencia de gasto no resuelve por sí sola las preguntas sobre acceso, calidad o resultados.',
+  supports: 'Eurostat registra 2.857,25 € por habitante en España y 3.836,68 € en la Unión Europea en 2023.',
+  limit: 'Es gasto sanitario corriente total financiado por todos los esquemas y expresado en euros corrientes. No equivale únicamente al presupuesto público ni mide por sí solo resultados.',
+  question: '¿Quieres comparar gasto, acceso, listas de espera o resultados clínicos?',
+  reply: 'Sí: en 2023 España registró 2.857,25 € de gasto sanitario corriente por habitante frente a 3.836,68 € en la Unión Europea. Es una diferencia de gasto, no una prueba automática de peores resultados.',
+  visualLabel: 'Menos gasto por habitante no determina por sí solo el resultado del sistema',
+  visuals: { key: { value: '2.857 €', label: 'España · gasto sanitario por habitante', period: '2023' }, trend: { available: false, labels: [], values: [], label: 'Gasto sanitario por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [2857.25, 3836.68], label: 'Gasto sanitario corriente por habitante', unit: '€ por habitante · 2023' }, caveat: 'La comparación no mide por sí sola acceso, calidad, resultados clínicos ni eficiencia; las definiciones y los euros corrientes deben mantenerse visibles.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

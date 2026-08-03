@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-gasta-menos-sanidad-europa-core",
+  "claimSlug": "espana-gasta-menos-sanidad-europa",
+  "text": "España gasta menos por habitante en sanidad que la Unión Europea en 2023.",
+  "type": "comparative",
+  "subject": "health_expenditure_per_capita",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2023",
+  "status": "supported",
+  "evidenceIds": ["gasto-sanitario-europa-eurostat"]
+}

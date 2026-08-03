@@ -151,6 +151,13 @@ const topicFollowUpPrompts: Record<string, string[]> = {
   ],
 };
 
+const generalFallbackPrompts = [
+  '¿Cómo ha cambiado el coste de la vivienda en España?',
+  '¿Está creciendo el empleo en España?',
+  '¿La inmigración aumenta la inseguridad?',
+  '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
+];
+
 const propositionTypeLabels: Record<string, string> = {
   descriptive: 'Hecho',
   comparative: 'Comparación',
@@ -222,6 +229,11 @@ const contextualFollowUps = (original: string, primary?: ClaimIndexEntry): { ite
   const prompts = matchedTopic ? topicFollowUpPrompts[matchedTopic] || [] : [];
   return { items: prompts.slice(0, 4).map((prompt) => ({ title: prompt, prompt })), label: 'Para concretar esta discusión' };
 };
+
+const generalFollowUps = (): { items: Array<{ title: string; prompt: string }>; label: string } => ({
+  items: generalFallbackPrompts.map((prompt) => ({ title: prompt, prompt })),
+  label: 'Si no sabes por dónde empezar',
+});
 
 const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
   .filter((entry) => entry.kind === 'claim')
@@ -606,7 +618,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
     : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
@@ -651,14 +663,15 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   }
   const suggestions = broadTopicSuggestions(original);
   const followUps = contextualFollowUps(original);
+  const fallbackPrompts = followUps.items.length ? followUps : suggestions.items.length ? suggestions : generalFollowUps();
   renderCard('uncovered', original, undefined, [], {
     questions: [
       '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
       '¿Qué fuente o publicación quieres que revisemos?',
     ],
     limitation: 'No tenemos una comprobación publicada de esta afirmación. Puedes concretarla para encontrar una orientación más útil.',
-    suggestions: (followUps.items.length ? followUps.items : suggestions.items).slice(0, 4),
-    suggestionsLabel: followUps.items.length ? followUps.label : suggestions.label,
+    suggestions: fallbackPrompts.items.slice(0, 4),
+    suggestionsLabel: fallbackPrompts.label,
   });
 };
 
@@ -740,13 +753,14 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     }
     const localSuggestions = broadTopicSuggestions(original);
     const followUps = contextualFollowUps(original, primary);
+    const fallbackPrompts = followUps.items.length ? followUps : localSuggestions.items.length ? localSuggestions : generalFollowUps();
     const guidance = {
       ...(response.guidance || {
       questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
       limitation: response.result?.limitation,
       }),
-      suggestions: response.guidance?.suggestions?.length ? response.guidance.suggestions : (followUps.items.length ? followUps.items : localSuggestions.items).slice(0, 4),
-      suggestionsLabel: response.guidance?.suggestionsLabel || (followUps.items.length ? followUps.label : localSuggestions.label),
+      suggestions: response.guidance?.suggestions?.length ? response.guidance.suggestions : fallbackPrompts.items.slice(0, 4),
+      suggestionsLabel: response.guidance?.suggestionsLabel || fallbackPrompts.label,
     };
     renderCard('uncovered', original, undefined, [], guidance);
     return;

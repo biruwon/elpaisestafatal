@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "links": [
     {
+      "evidenceId": "gasto-sanitario-europa-eurostat",
+      "propositionId": "prop-espana-gasta-menos-sanidad-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "transferencia-credito-educacion-presidencia",
       "propositionId": "prop-transferencia-credito-educacion-presidencia-core",
       "relationship": "supports",
