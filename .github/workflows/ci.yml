@@ -80,6 +80,8 @@ jobs:
           npm run ux:catalogue
           npm run ux:topics
           npm run ux:journeys
+          npm run ux:navigation
+          npm run ux:result
           npm run audit:roadmap
 
       - name: Smoke-test local text and media boundary without inference

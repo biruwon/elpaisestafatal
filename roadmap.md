@@ -40,6 +40,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-03
 
+- Closed the CI UX-verification gap: global navigation and result-hierarchy audits now run explicitly on every push and pull request, alongside the existing homepage, data, claim, catalogue, topic, journey, and roadmap contracts.
 - Hardened the deferred tunnel profile to fail closed when its token is absent: enabling the profile can no longer start a public-origin sidecar with an empty credential. The authenticated account currently has no named tunnel, so persistent production tunnelling remains explicitly deferred and the deterministic fallback remains authoritative.
 - Hardened operations backup scheduling: the existing verified artifact workflow now runs weekly when Cloudflare credentials are configured, skips safely when scheduled without credentials, and fails clearly for manual runs missing required configuration. No secret or deployment value is committed.
 - Unified the deterministic result UX with the structured answer hierarchy: published, related, uncovered, and unavailable states now show “what we found”, “what it does not establish”, and “next step” as a compact three-part overview, keeping weak matches useful without making them look like verdicts.
