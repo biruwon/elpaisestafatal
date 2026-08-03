@@ -78,7 +78,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     if (!response.ok) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
     const upstreamPayload = await response.json().catch(() => undefined);
     const safe = publicResolveResponse(upstreamPayload);
-    return safe ? json(safe) : json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
+    if (!safe || safe.status === 'published') {
+      return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
+    }
+    return json(safe);
   } catch {
     return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   }

@@ -14,6 +14,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
   if (!classify.includes(fragment)) failures.push(`/api/classify is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');
+if (!classify.includes("safe.status === 'published'")) failures.push('/api/classify must not let model output upgrade an uncovered input to a published claim');
 if (!classify.includes('publishedClaimFallback') || !classify.includes('publishedRelatedContext') || !classify.includes("body.inputType === 'text'") || !classify.includes('request')) failures.push('/api/classify must resolve published text claims before optional enrichment');
 for (const fragment of ['claim-catalog.json', 'claimIndexPromise', 'publishedRelatedContext', 'rankClaimIndex', 'isStrongClaimMatch']) {
   if (!publishedFallback.includes(fragment)) failures.push(`published claim fallback is missing ${fragment}`);

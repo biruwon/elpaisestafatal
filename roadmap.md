@@ -738,6 +738,7 @@ Required regression cases:
 
 - `España está destruida` does not return the tax claim.
 - `España cobra demasiados impuestos` must not resolve as the precise Europe-wide tax-ranking claim; it remains uncovered or related until separately supported.
+- A local classifier response cannot promote an uncovered input to `published`; published status is reserved for deterministic reviewed-catalogue matches.
 - `El Gobierno quita 310 millones...` separates the verified transfer from unverified implications.
 - No provider or model name appears in public UI or errors.
 - No request stays indefinitely in a processing state.
