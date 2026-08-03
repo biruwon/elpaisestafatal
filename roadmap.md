@@ -40,6 +40,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Fixed and regression-tested broad political fallback wording such as `España está destruida`: it now returns topic-only political context instead of an empty result, while still exposing no fabricated evidence or unrelated claim. The production smoke contract covers both broad and explicit Sánchez formulations.
 - Added explicit workflow concurrency policies: stale push validation runs are cancelled, while refresh, backup, monitoring, and release-evaluation jobs are serialized without cancelling an in-progress operational job.
 - Closed the CI UX-verification gap: global navigation and result-hierarchy audits now run explicitly on every push and pull request, alongside the existing homepage, data, claim, catalogue, topic, journey, and roadmap contracts.
 - Hardened the deferred tunnel profile to fail closed when its token is absent: enabling the profile can no longer start a public-origin sidecar with an empty credential. The authenticated account currently has no named tunnel, so persistent production tunnelling remains explicitly deferred and the deterministic fallback remains authoritative.

@@ -1,6 +1,6 @@
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
-  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destruy|ruina|fatal|desastre/.test(value)) return '¿Hablas de una decisión del Gobierno, economía, vivienda, empleo, inmigración o instituciones?';
+  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destru|ruina|fatal|desastr|cuesta abajo/.test(value)) return '¿Hablas de una decisión del Gobierno, economía, vivienda, empleo, inmigración o instituciones?';
   if (/viviend|alquiler|piso|casa/.test(value)) return '¿Hablas de precios, alquileres, vivienda pública o disponibilidad?';
   if (/inmigr|extranj|patera|ayuda|prestaci/.test(value)) return '¿Hablas de población, ayudas, empleo, llegadas o seguridad?';
   if (/empleo|trabaj|paro|salario|sueldo/.test(value)) return '¿Qué medida quieres comprobar: empleo, paro, salario, jornada o estabilidad?';
@@ -11,7 +11,7 @@ const topicQuestion = (text) => {
 
 const topicReference = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
-  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destruy|ruina|fatal|desastre/.test(value)) {
+  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destru|ruina|fatal|desastr|cuesta abajo/.test(value)) {
     return { kind: 'topic', slug: 'politica', title: 'Contexto político en España', href: '/preocupaciones/politica', confidence: 0.36 };
   }
   return undefined;

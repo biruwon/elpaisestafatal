@@ -62,6 +62,16 @@ const apiChecks = [
       if (/impuestos/i.test(JSON.stringify(body))) failures.push('/api/classify political fallback: attached unrelated tax context');
     },
   },
+  {
+    path: '/api/classify',
+    init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'España está destruida', inputType: 'text' }) },
+    validate(response, body) {
+      if (response.status !== 200) failures.push(`/api/classify broad political fallback: expected 200, received ${response.status}`);
+      if (body?.relatedClaims?.[0]?.kind !== 'topic' || body.relatedClaims[0].slug !== 'politica') failures.push('/api/classify broad political fallback: missing topic-only political context');
+      if (body?.result?.evidenceIds?.length || body?.result?.sourceIds?.length) failures.push('/api/classify broad political fallback: invented evidence');
+      if (/impuestos/i.test(JSON.stringify(body))) failures.push('/api/classify broad political fallback: attached unrelated tax context');
+    },
+  },
   ...['image', 'audio'].map((inputType) => ({
     path: '/api/classify',
     init: (() => {
