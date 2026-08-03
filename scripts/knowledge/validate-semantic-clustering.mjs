@@ -16,6 +16,10 @@ const naturalEquivalents = [
   'Los migrantes hacen que aumenten los delitos en España',
   'La llegada de extranjeros vuelve inseguro a España',
   'Con más inmigración hay más delitos en España',
+  'La inmigración está provocando más inseguridad en España',
+  'La inmigración tiene la culpa de la delincuencia en España',
+  'La inmigración hace crecer la delincuencia en España',
+  'Desde que llegaron más inmigrantes hay más delitos en España',
 ].map((input) => ({ input, compiled: deterministicFallbackCompiler(input) }));
 const unrelated = deterministicFallbackCompiler('España cobra demasiados impuestos');
 const records = [
@@ -32,8 +36,8 @@ try {
   const result = JSON.parse(await readFile(output, 'utf8'));
   assert(result.clusters.length === 2, `Expected two semantic families, received ${result.clusters.length}`);
   const merged = result.clusters.find((cluster) => cluster.signature === first.semanticSignature);
-  assert(merged?.exampleCount === 5, 'Equivalent causal inputs were not merged into one review cluster');
-  assert(merged.surfaceSignatures.length === 5, 'Merged cluster did not retain all causal surface signatures');
+  assert(merged?.exampleCount === 9, 'Equivalent causal inputs were not merged into one review cluster');
+  assert(merged.surfaceSignatures.length === 9, 'Merged cluster did not retain all causal surface signatures');
   assert(!result.clusters.some((cluster) => /audio|transcription|example m4a/i.test(cluster.text)), 'Failed media input entered the review queue');
   assert(!result.clusters.some((cluster) => /brecha salarial/i.test(cluster.text)), 'Evaluation-origin input entered the review queue');
 
@@ -46,7 +50,7 @@ try {
   await execFileAsync(process.execPath, ['scripts/knowledge/cluster-gaps.mjs', '--input', input, '--d1-input', d1Input, '--output', d1Output]);
   const d1Result = JSON.parse(await readFile(d1Output, 'utf8'));
   const mergedD1 = d1Result.clusters.find((cluster) => cluster.signature === first.semanticSignature);
-  assert(mergedD1?.exampleCount === 5, 'A D1 semantic family did not merge with an equivalent local family');
+  assert(mergedD1?.exampleCount === 9, 'A D1 semantic family did not merge with an equivalent local family');
   assert(d1Result.clusters.length === 3, 'Cross-source clustering merged or split incompatible families');
 } finally {
   await rm(directory, { recursive: true, force: true });

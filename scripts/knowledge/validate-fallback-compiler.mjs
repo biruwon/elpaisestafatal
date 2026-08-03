@@ -13,6 +13,10 @@ for (const paraphrase of [
   'Desde que hay más inmigración, hay más delitos en España',
   'Cuanto más inmigración, más delitos en España',
   'La inmigración está detrás del aumento de la delincuencia en España',
+  'La inmigración está provocando más inseguridad en España',
+  'La inmigración tiene la culpa de la delincuencia en España',
+  'La inmigración hace crecer la delincuencia en España',
+  'Desde que llegaron más inmigrantes hay más delitos en España',
 ]) {
   assert(causal.semanticSignature === deterministicFallbackCompiler(paraphrase).semanticSignature, `Natural causal paraphrase did not receive the same semantic signature: ${paraphrase}`);
 }
@@ -56,6 +60,12 @@ assert(nounList.explicitPropositions.length === 1, 'A noun list was incorrectly 
 
 const normative = deterministicFallbackCompiler('Los españoles deberían tener prioridad en las ayudas');
 assert(normative.claimType === 'normative' && normative.propositions.some((item) => !item.explicit), 'Normative implication was not created');
+assert(deterministicFallbackCompiler('Primero los españoles').claimType === 'normative', 'Terse priority wording was not classified as normative');
+assert(deterministicFallbackCompiler('Los españoles antes que los extranjeros').claimType === 'normative', 'Informal priority wording was not classified as normative');
+
+const groupComparison = deterministicFallbackCompiler('Los extranjeros reciben más ayudas que los españoles');
+assert(groupComparison.claimType === 'comparative' && groupComparison.explicitPropositions[0].predicate === 'more_than', 'Directional group comparison was not extracted');
+assert(groupComparison.semanticSignature !== deterministicFallbackCompiler('Los inmigrantes reciben todas las ayudas').semanticSignature, 'Directional group comparison collapsed with a broad benefits claim');
 
 const budget = deterministicFallbackCompiler('El Gobierno transfiere 310 millones de Educación a Presidencia');
 assert(budget.numbers[0] === '310' && budget.entities.includes('educación') && budget.entities.includes('gobierno de España'), 'Budget entities or amount were not extracted');
@@ -83,6 +93,11 @@ assert(risingTrend.semanticSignature === equivalentRisingTrend.semanticSignature
 assert(risingTrend.semanticSignature === pastRisingTrend.semanticSignature, 'Past-tense rising-trend paraphrase did not receive the same semantic signature');
 assert(risingTrend.semanticSignature !== fallingTrend.semanticSignature, 'Opposing trend directions collapsed into the same semantic family');
 assert(deterministicFallbackCompiler('El empleo va a peor en España').claimType === 'trend', 'A worsening trend was incorrectly classified as a prediction');
+const encarecimiento = deterministicFallbackCompiler('La vivienda sigue encareciéndose');
+const persistentRise = deterministicFallbackCompiler('Los precios no dejan de subir');
+assert(encarecimiento.semanticSignature === deterministicFallbackCompiler('La vivienda sube').semanticSignature, 'Inflected rising-price wording did not receive the same semantic signature');
+assert(persistentRise.claimType === 'trend' && persistentRise.semanticSignature === deterministicFallbackCompiler('Los precios suben').semanticSignature, 'Idiomatic persistent-rise wording was not treated as a positive trend');
+assert(persistentRise.semanticSignature !== deterministicFallbackCompiler('Los precios bajan').semanticSignature, 'Persistent-rise wording collapsed with the opposing trend');
 
 const positionalComparison = deterministicFallbackCompiler('España está por encima de Europa en impuestos');
 const reversedPositionalComparison = deterministicFallbackCompiler('Europa está por encima de España en impuestos');
@@ -98,6 +113,9 @@ assert(highestRanking.claimType === 'comparative', 'Highest-ranking claim was no
 assert(highestRanking.semanticSignature === equivalentHighestRanking.semanticSignature, 'Equivalent highest-ranking wording did not receive the same semantic signature');
 assert(highestRanking.semanticSignature === compressedHighestRanking.semanticSignature, 'Compressed highest-ranking wording did not receive the same semantic signature');
 assert(highestRanking.semanticSignature !== lowestRanking.semanticSignature, 'Highest and lowest ranking claims collapsed into the same semantic family');
+for (const wording of ['España lidera el paro en Europa', 'España encabeza el desempleo europeo', 'España está a la cabeza del paro en Europa']) {
+  assert(highestRanking.semanticSignature === deterministicFallbackCompiler(wording).semanticSignature, `Natural highest-ranking wording did not receive the same semantic signature: ${wording}`);
+}
 
 const worseComparison = deterministicFallbackCompiler('España está peor que hace diez años');
 const betterComparison = deterministicFallbackCompiler('España está mejor que hace diez años');

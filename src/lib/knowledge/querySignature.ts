@@ -40,13 +40,13 @@ const containsAlias = (text: string, alias: string): boolean => {
 };
 
 const claimType = (text: string): string => {
-  if (/(deberia|deberian|justo|prioridad|merecen)/.test(text)) return 'normative';
+  if (/(deberia|deberian|justo|prioridad|merecen|primero los espanoles|espanoles primero|los espanoles antes|prioridad para los espanoles)/.test(text)) return 'normative';
   if (/(que significa|que se entiende por|significado de|(?:^|\s)que es(?:\s|$)|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
-  if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
+  if (/(causa|causan|causal|provoca|provocando|por culpa|tiene la culpa|genera|crece la|hace crecer|hace aumentar|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|desde que llegaron mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
-  if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|sigue subiendo|sigue bajando|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
-  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|europa)/.test(text)) return 'comparative';
+  if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
+  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
 
@@ -54,7 +54,7 @@ const semanticTokens = (text: string): string[] => [...new Set(
   text.split(' ').filter((token) => token.length > 3 && !stopWords.has(token) && !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)),
 )].slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'cuesta', 'alcanza', 'llega', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'crecer', 'aumenta', 'aumentar', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocando', 'provocan', 'culpa', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'encareciendo', 'encareciendose', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'cuesta', 'alcanza', 'llega', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
 
 const relationShape = (value: string): string => {
   let concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
@@ -68,8 +68,15 @@ const rankingDirection = (text: string): string | null => {
   const ranking = text.match(/\b(?:paro|desempleo|impuestos|densidad|poblacion|población|salario|renta|ingresos|delincuencia|criminalidad|empleo|vivienda|alquileres?)\s+(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/)
     || text.match(/\b(?:pais|país|paises|países)\s+con\s+(?:mas|menos|mayor|menor)\b/)
     || text.match(/\b(?:primer|ultimo|último)\s+puesto\b/);
+  if (/\b(?:lidera|encabeza|esta a la cabeza d(?:e|el)|se situa a la cabeza d(?:e|el))\b/.test(text)) return 'highest';
   if (!ranking) return null;
   return /\b(?:menos|menor|ultimo|último)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
+};
+
+const priorityDirection = (text: string): string | null => {
+  if (/\b(?:primero los espanoles|espanoles primero|los espanoles antes|prioridad para los espanoles)\b/.test(text)) return 'spanish_first';
+  if (/\b(?:primero los extranjeros|extranjeros primero|los extranjeros antes|prioridad para los extranjeros)\b/.test(text)) return 'foreign_first';
+  return null;
 };
 
 const associationRelation = (text: string): string | null => {
@@ -84,6 +91,8 @@ const associationRelation = (text: string): string | null => {
 };
 
 const directionalRelation = (text: string): string | null => {
+  const priority = priorityDirection(text);
+  if (priority) return `priority:${priority}`;
   const ranking = rankingDirection(text);
   if (ranking) return `ranking:${ranking}:${relationShape(text)}`;
   const association = associationRelation(text);
@@ -99,9 +108,12 @@ const directionalRelation = (text: string): string | null => {
   if (comparison) return `comparison:${comparison[2] === 'mas' ? 'more' : 'less'}:${relationShape(comparison[1])}:${relationShape(comparison[4])}`;
   const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/)
     || text.match(/^cuanto\s+mas\s+(.+?),?\s+mas\s+(.+)$/)
-    || text.match(/^desde\s+que\s+(?:hay|existe)\s+mas\s+(.+?),?\s+(?:hay|existe|aumenta|sube)\s+mas\s+(.+)$/);
+    || text.match(/^desde\s+que\s+(?:hay|existe|llegaron|llego)\s+mas\s+(.+?),?\s+(?:hay|existe|aumenta|sube)\s+mas\s+(.+)$/);
   if (comparativeCausal) return `causal:causes:${relationShape(comparativeCausal[1])}:${relationShape(comparativeCausal[2])}`;
-  const causedByClause = text.match(/^(.*?)\s+(?:hace|hacen|ha hecho|han hecho)\s+que\s+(.+)$/)
+  const causedByClause = text.match(/^(.*?)\s+(?:esta|estan)\s+provocando\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:hace|hacen)\s+(?:crecer|aumentar|subir|bajar|disminuir)\s+(.+)$/)
+    || text.match(/^(.*?)\s+tiene\s+la\s+culpa\s+de\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:hace|hacen|ha hecho|han hecho)\s+que\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:esta|estan)\s+detras\s+(?:de|del|la|los|las)\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:es|son)\s+responsable(?:s)?\s+de\s+(.+)$/);
   if (causedByClause) return `causal:causes:${relationShape(causedByClause[1])}:${relationShape(causedByClause[2])}`;
@@ -110,8 +122,8 @@ const directionalRelation = (text: string): string | null => {
     const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
   }
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecido|encarecida|cuesta mas|no alcanza|no llega para|sigue subiendo|no para de subir)\b|no deja de subir|no paran de subir/.test(text)) return `trend:rising:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no deja de bajar|no dejan de bajar|no para de bajar|no paran de bajar|va en descenso|va a la baja)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
   if (/\b(?:mejora|mejoran|va a mejor|va mejor|esta mejorando|estan mejorando)\b/.test(text)) return `trend:improving:${relationShape(text)}`;
   if (/\b(?:empeora|empeoran|va a peor|va peor|esta empeorando|estan empeorando)\b/.test(text)) return `trend:worsening:${relationShape(text)}`;
   return null;
@@ -132,15 +144,18 @@ export const canonicalQuerySignature = (value: string): string => [...new Set(
 export const semanticQuerySignature = (value: string): string => {
   const text = normalize(value);
   if (!text) return '';
+  const priority = priorityDirection(text);
   let concepts = conceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsAlias(text, alias)))
     .map(([concept]) => concept);
+  if (priority) concepts = [];
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (containsAlias(text, 'deuda publica') && containsAlias(text, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
-  const fallback = concepts.length ? [] : semanticTokens(text);
-  const polarity = /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
+  const fallback = priority || concepts.length ? [] : semanticTokens(text);
+  const idiomaticRise = /\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer)\b/.test(text);
+  const polarity = !idiomaticRise && /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
   const relation = directionalRelation(text);
   const signature = [
     'type:' + claimType(text),
