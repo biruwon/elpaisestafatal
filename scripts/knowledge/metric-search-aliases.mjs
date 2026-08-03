@@ -15,7 +15,7 @@ export const metricSearchAliases = Object.freeze({
   older_population_share: ['mayores de 65', 'personas mayores', 'poblacion mayor'],
   young_population_share: ['menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'poblacion menos anos'],
   population_change_rate: ['crecimiento demografico', 'variacion de poblacion', 'despoblacion', 'cambio demografico'],
-  recorded_offences: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados'],
+  recorded_offences: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'homicidios registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada'],
 });
 
 export const searchAliasesForMetric = (metricId) => metricSearchAliases[metricId] || [];

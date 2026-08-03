@@ -14,6 +14,7 @@ requireText('id="conversation-form"', 'the claim form');
 requireText('id="conversation-counter"', 'the input character counter');
 requireText('class="examples-heading"', 'the popular prompt heading');
 requireText('data-example-filter="all"', 'the popular prompt filters');
+requireText('data-example-filter="seguridad"', 'the security popular prompt filter');
 requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
 requireText('data-example-source="warehouse"', 'fresh warehouse prompt entry points');

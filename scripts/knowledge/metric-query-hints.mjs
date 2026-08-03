@@ -35,7 +35,7 @@ const metricHints = [
   // This source is category-level. Keep the route explicit: generic
   // “inseguridad” and immigration-causality wording must not silently attach
   // one arbitrary offence category to the user's claim.
-  { ids: ['recorded_offences'], terms: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'fraudes registrados', 'corrupcion registrada'] },
+  { ids: ['recorded_offences'], terms: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada', 'corrupcion registrada'] },
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares'] },

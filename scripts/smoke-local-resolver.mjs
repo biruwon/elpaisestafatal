@@ -187,6 +187,19 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'delitos registrados') failures.push('recorded crime warehouse: did not localize the unit');
     if (!/homicidios.*registrados/i.test(`${result.result?.headline || ''} ${result.result?.warehouseSeries?.label || ''}`)) failures.push('recorded crime warehouse: lost the requested offence category in the public label');
   } catch (error) { failures.push(`recorded crime warehouse: ${error.message}`); }
+  for (const [text, label] of [
+    ['Cómo han evolucionado los robos registrados en España', /robos con violencia registrados/i],
+    ['Cómo han evolucionado las estafas registradas en España', /fraudes registrados/i],
+    ['Cómo han evolucionado las agresiones sexuales registradas en España', /agresiones sexuales registrados/i],
+  ]) {
+    try {
+      const result = await resolve(text);
+      if (!['draft', 'partial'].includes(result.status)) failures.push(`recorded category warehouse (${text}): expected provisional result, received ${result.status}`);
+      if (result.result?.warehouseSeries?.metricId !== 'recorded_offences') failures.push(`recorded category warehouse (${text}): selected the wrong metric family`);
+      if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push(`recorded category warehouse (${text}): missing a multi-period series`);
+      if (!label.test(`${result.result?.headline || ''} ${result.result?.warehouseSeries?.label || ''}`)) failures.push(`recorded category warehouse (${text}): lost the requested category in the public label`);
+    } catch (error) { failures.push(`recorded category warehouse (${text}): ${error.message}`); }
+  }
   try {
     const result = await resolve('Cómo ha evolucionado la criminalidad registrada en España');
     if (result.result?.warehouseSeries?.metricId === 'recorded_offences') failures.push('broad recorded crime: exposed an arbitrary offence category');

@@ -47,10 +47,14 @@ if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life
 if (!preferredMetricIdsForQuery('Cuál es el tamaño de la economía española').has('gdp_current_prices')) throw new Error('Metric hints did not prefer nominal GDP for economy-size wording');
 if (!preferredMetricIdsForQuery('Porcentaje población menos años').has('young_population_share')) throw new Error('Metric hints did not prefer young population for compressed wording');
 if (!preferredMetricIdsForQuery('Cómo ha evolucionado la criminalidad registrada en España').has('recorded_offences')) throw new Error('Metric hints did not prefer recorded offences for explicit crime wording');
+for (const query of ['Cómo han evolucionado los robos registrados en España', 'Cómo han evolucionado las estafas registradas en España', 'Cómo han evolucionado las agresiones sexuales registradas en España']) {
+  if (!preferredMetricIdsForQuery(query).has('recorded_offences')) throw new Error(`Metric hints did not prefer recorded offences for ${query}`);
+}
 if (!excludedMetricIdsForQuery('Los inmigrantes crean inseguridad').has('recorded_offences')) throw new Error('Metric hints allowed recorded offences to answer an immigration-causality claim');
 if (excludedMetricIdsForQuery('En mi barrio ha subido la inseguridad').has('recorded_offences') !== true) throw new Error('Metric hints allowed recorded offences to answer a local insecurity claim');
 if (!excludedMetricIdsForQuery('Pedro Sánchez está destruyendo España').has('population_change_rate')) throw new Error('Metric hints allowed a broad subjective political claim to route to population change');
 if (recordedOffenceCategoryForQuery('Cómo han evolucionado los homicidios registrados').labels[0] !== 'intentional homicide') throw new Error('Recorded-offence category resolver did not identify homicide wording');
+if (recordedOffenceCategoryForQuery('Cómo han evolucionado las agresiones sexuales registradas').labels[0] !== 'sexual assault') throw new Error('Recorded-offence category resolver did not identify sexual-assault wording');
 
 const crimeRecords = [
   { id: 'crime-homicide-2015', datasetId: 'Police-recorded offences by offence category', metricId: 'recorded_offences', value: 302, unit: 'Number', period: '2015', dimensions: { geo: 'ES', iccs: 'ICCS0101' }, dimensionLabels: { geo: 'Spain', iccs: 'Intentional homicide' }, source: { id: 'source-eurostat-crime', title: 'Delitos registrados en España · Eurostat', aliases: ['delincuencia', 'delitos'], url: 'https://ec.europa.eu/eurostat/' } },

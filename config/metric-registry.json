@@ -145,7 +145,7 @@
   },
   "recorded_offences": {
     "name": "Recorded offences",
-    "aliases": ["delincuencia", "crimen", "delitos", "seguridad"],
+    "aliases": ["delincuencia", "crimen", "delitos", "seguridad", "homicidios registrados", "robos registrados", "hurtos registrados", "fraudes registrados", "estafas registradas", "agresiones sexuales registradas", "violencia sexual registrada"],
     "unit": "recorded offences",
     "population": "reported or recorded offences",
     "notEquivalentTo": [],

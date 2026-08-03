@@ -18,6 +18,7 @@ const recordedOffenceCategories = [
   { terms: ['agresion grave', 'lesion grave'], labels: ['serious assault'] },
   { terms: ['secuestro'], labels: ['kidnapping'] },
   { terms: ['violencia sexual'], labels: ['sexual violence'] },
+  { terms: ['agresion sexual', 'agresiones sexuales'], labels: ['sexual assault'] },
   { terms: ['violacion'], labels: ['rape'] },
   { terms: ['agresion sexual'], labels: ['sexual assault'] },
   { terms: ['explotacion sexual'], labels: ['sexual exploitation'] },
