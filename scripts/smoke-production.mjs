@@ -78,6 +78,16 @@ const apiChecks = [
       if (/impuestos/i.test(JSON.stringify(body))) failures.push('/api/classify broad political fallback: attached unrelated tax context');
     },
   },
+  {
+    path: '/api/classify',
+    init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'La economía y el empleo van a peor', inputType: 'text' }) },
+    validate(response, body) {
+      if (response.status !== 200) failures.push(`/api/classify related context: expected 200, received ${response.status}`);
+      if (body?.status !== 'uncovered') failures.push('/api/classify related context: weak input was incorrectly upgraded to a verdict');
+      if (!Array.isArray(body?.relatedClaims) || body.relatedClaims.length === 0) failures.push('/api/classify related context: missing closest safe published context');
+      if (body?.result?.evidenceIds?.length || body?.result?.sourceIds?.length) failures.push('/api/classify related context: fallback invented evidence');
+    },
+  },
   ...['image', 'audio'].map((inputType) => ({
     path: '/api/classify',
     init: (() => {

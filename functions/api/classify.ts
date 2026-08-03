@@ -5,7 +5,7 @@ import { allowRateLimitedRequest } from '../lib/rate-limit';
 import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
-import { publishedClaimFallback } from '../lib/published-claim-fallback';
+import { publishedClaimFallback, publishedRelatedContext } from '../lib/published-claim-fallback';
 
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
@@ -52,7 +52,12 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     const published = await publishedClaimFallback(body.text, request).catch(() => undefined);
     if (published) return json(published);
   }
-  if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
+  if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
+    const fallback = deterministicApiFallback({ text: body.text, inputType: body.inputType });
+    if (body.inputType !== 'text') return json(fallback);
+    const relatedClaims = await publishedRelatedContext(body.text, request).catch(() => []);
+    return json(relatedClaims.length ? { ...fallback, relatedClaims } : fallback);
+  }
   try {
     const isMultipart = Boolean(body.file);
     const payload = isMultipart ? (() => {
