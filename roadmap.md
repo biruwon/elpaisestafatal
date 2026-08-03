@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Removed three orphaned modules from the retired catalogue/search implementation (`src/data/search.ts`, `src/data/concernComparison.ts`, and `src/data/evidence.ts`). The current site has no imports for them, and the release build now fails if they are reintroduced.
+
 - Added credential-gated daily maintenance for the durable rate-limit table. It prunes only windows older than two days, skips safely when scheduled without credentials, and fails clearly for manual runs without configuration; the rate-limit validator prevents it from touching claims, submissions, or reviewed knowledge.
 
 - Added a scheduled maintainer-only knowledge-triage workflow. When Cloudflare credentials are configured, it exports production D1 clusters, builds the ranked JSON/Markdown review queue, and uploads private artifacts; scheduled runs skip safely without credentials, and the workflow has an explicit gate preventing materialization, promotion, deployment, or repository writes.

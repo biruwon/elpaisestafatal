@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run claim-catalog:validate && npm run legacy:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -27,6 +27,7 @@
     "media:validate": "node scripts/validate-local-media.mjs",
     "runtime:validate": "node scripts/validate-runtime-versions.mjs",
     "rate-limit:validate": "node scripts/validate-rate-limit.mjs",
+    "legacy:validate": "node scripts/validate-no-dead-data-modules.mjs",
     "knowledge:triage:workflow:validate": "node scripts/validate-knowledge-triage-workflow.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
     "classifier:validate": "node scripts/validate-classifier-boundary.mjs && node scripts/validate-deterministic-api-fallback.mjs && node scripts/validate-public-response.mjs && node scripts/validate-local-inference-provider.mjs && node scripts/knowledge/validate-local-compiler-contract.mjs && node scripts/knowledge/validate-local-compiler-benchmark.mjs",

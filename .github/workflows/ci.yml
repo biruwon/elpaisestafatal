@@ -47,6 +47,7 @@ jobs:
       - name: Validate claim and knowledge contracts
         run: |
           npm run validate:content
+          npm run legacy:validate
           npm run knowledge:validate
           npm run knowledge:metrics
           npm run knowledge:refresh:validate
