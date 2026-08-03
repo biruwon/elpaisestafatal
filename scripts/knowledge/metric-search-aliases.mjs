@@ -22,6 +22,8 @@ export const metricSearchAliases = Object.freeze({
   government_revenue_ratio_europe: ['ingresos', 'recaudacion', 'publicos', 'europa', 'union europea', 'comparacion europea'],
   government_current_taxes_income_wealth_europe: ['impuestos', 'impuestos sobre la renta', 'impuestos sobre la riqueza', 'presion fiscal', 'cobra impuestos', 'europa', 'union europea', 'comparacion europea', 'porcentaje del pib'],
   government_expenditure_ratio_europe: ['gasto', 'presupuesto', 'publico', 'europa', 'union europea', 'comparacion europea'],
+  government_education_expenditure_ratio: ['gasto en educacion', 'gasto educativo', 'presupuesto de educacion', 'inversion publica en educacion', 'porcentaje del pib', 'educacion'],
+  government_education_expenditure_ratio_europe: ['gasto en educacion', 'gasto educativo', 'presupuesto de educacion', 'europa', 'union europea', 'comparacion europea', 'porcentaje del pib'],
   unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],
   unemployment_rate_europe: ['paro', 'desempleo', 'europa', 'comparacion europea'],
   inflation_rate_europe: ['inflacion', 'precios', 'europa', 'union europea', 'comparacion europea'],

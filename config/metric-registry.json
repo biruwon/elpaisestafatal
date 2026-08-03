@@ -151,6 +151,22 @@
     "notEquivalentTo": ["government_expenditure_ratio", "government_revenue_ratio", "government_debt_ratio"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
+  "government_education_expenditure_ratio": {
+    "name": "General government expenditure on education as a share of GDP",
+    "aliases": ["gasto público en educación", "gasto educativo sobre PIB", "presupuesto público de educación", "inversión pública en educación", "qué porcentaje del PIB se dedica a educación"],
+    "unit": "percent of GDP",
+    "population": "general government expenditure on education (COFOG GF09) as a share of GDP",
+    "notEquivalentTo": ["government_expenditure_ratio", "tertiary_education_attainment_rate", "early_school_leaving_rate"],
+    "dimensions": ["period", "geography", "government_sector", "function", "national_account_item"]
+  },
+  "government_education_expenditure_ratio_europe": {
+    "name": "General government expenditure on education as a share of GDP: Spain and the European Union",
+    "aliases": ["gasto público en educación frente a Europa", "gasto educativo frente a la Unión Europea", "España gasta más en educación que Europa", "España gasta menos en educación que Europa", "comparación europea del gasto educativo"],
+    "unit": "percent of GDP",
+    "population": "general government expenditure on education (COFOG GF09) as a share of GDP in Spain and the European Union",
+    "notEquivalentTo": ["government_education_expenditure_ratio", "government_expenditure_ratio_europe", "tertiary_education_attainment_rate_europe", "early_school_leaving_rate_europe"],
+    "dimensions": ["period", "geography", "government_sector", "function", "national_account_item"]
+  },
   "youth_unemployment_rate": {
     "name": "Youth unemployment rate",
     "aliases": ["paro juvenil", "desempleo juvenil", "jóvenes sin trabajo", "paro de los jóvenes"],

@@ -213,6 +213,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto total de las administraciones públicas como porcentaje del PIB según las cuentas nacionales de Eurostat; no identifica cuánto gasta un servicio concreto ni permite juzgar por sí sola su eficiencia.',
     caveat: 'Es un agregado de todas las administraciones públicas, no una medida directa de la calidad o del coste de un servicio.',
   },
+  government_education_expenditure_ratio_europe: {
+    label: 'Gasto público en educación sobre el PIB',
+    verb: 'registró un gasto público en educación',
+    replyLead: 'el gasto público en educación equivalió al',
+    differenceVerb: ['el gasto español en educación fue más alto', 'el gasto español en educación fue más bajo', 'España y la Unión Europea registraron el mismo gasto en educación'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa el gasto de las administraciones públicas en la función educación (COFOG GF09) como porcentaje del PIB según Eurostat; no equivale al gasto por alumno, a la calidad de la enseñanza ni a los resultados educativos.',
+    caveat: 'Es un agregado público de la función educación. No identifica qué niveles educativos reciben el gasto ni demuestra por sí solo que el sistema funcione mejor o peor.',
+  },
   health_expenditure_per_capita_europe: {
     label: 'Gasto sanitario por habitante',
     verb: 'registró un gasto sanitario por habitante',

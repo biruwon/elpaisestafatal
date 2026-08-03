@@ -42,9 +42,11 @@ const metricHints = [
   { ids: ['government_debt_current_prices'], terms: ['deuda publica en euros', 'deuda publica total', 'importe total de la deuda publica', 'importe de la deuda publica', 'importe en millones de euros de la deuda publica', 'deuda publica española expresada en euros', 'deuda publica expresada en euros', 'cuanto dinero debe el sector publico', 'cuanto dinero debe españa', 'cuanto debe españa en euros', 'cuanto debe españa en dinero', 'deuda de españa en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
+  { ids: ['government_education_expenditure_ratio'], terms: ['gasto en educacion', 'gasto en educación', 'gasto educativo', 'presupuesto de educacion', 'presupuesto de educación', 'inversion publica en educacion', 'inversión pública en educación', 'educacion sobre pib', 'educación sobre PIB'] },
   { ids: ['government_revenue_ratio_europe'], terms: ['ingresos publicos frente a europa', 'ingresos publicos frente a la union europea', 'como quedan los ingresos publicos espanoles frente a europa', 'ingresos publicos de espana comparados con europa', 'comparacion europea de los ingresos publicos', 'recaudacion publica frente a europa', 'recaudacion publica frente a la union europea', 'espana recauda mas que europa', 'espana recauda menos que europa', 'espana recauda mas que la union europea', 'espana recauda menos que la union europea', 'recauda mas o menos que la media europea', 'recauda mas o menos que la media de la union europea', 'ingresos publicos europa', 'recaudacion europa'] },
   { ids: ['government_current_taxes_income_wealth_europe'], terms: ['impuestos sobre la renta y la riqueza frente a europa', 'impuestos sobre la renta frente a europa', 'impuestos de espana frente a europa', 'impuestos frente a europa', 'impuestos sobre renta y riqueza que la union europea', 'espana cobra mas impuestos sobre renta y riqueza que la union europea', 'espana cobra menos impuestos sobre renta y riqueza que la union europea', 'presion fiscal frente a europa', 'presion fiscal frente a la union europea', 'espana cobra mas impuestos que europa', 'espana cobra menos impuestos que europa', 'espana cobra mas impuestos que la union europea', 'espana cobra menos impuestos que la union europea', 'espana es el pais que mas impuestos cobra de europa', 'impuestos mas altos de europa', 'impuestos mas bajos de europa', 'cuantos impuestos cobra espana frente a europa', 'espana tiene demasiados impuestos', 'espana cobra demasiados impuestos', 'presion fiscal alta en espana', 'impuestos altos en espana', 'infierno fiscal'] },
   { ids: ['government_expenditure_ratio_europe'], terms: ['gasto publico frente a europa', 'gasto publico frente a la union europea', 'como queda el gasto publico espanol frente a europa', 'comparacion europea del gasto publico', 'gasto publico espanol frente al de la union europea', 'gasto del estado frente a europa', 'gasto del estado frente a la union europea', 'espana gasta mas que europa', 'espana gasta menos que europa', 'espana gasta mas que la union europea', 'espana gasta menos que la union europea', 'gasta mas o menos que la media europea', 'gasta mas o menos que la media de la union europea', 'gasto publico europa', 'gasto europa'] },
+  { ids: ['government_education_expenditure_ratio_europe'], terms: ['gasto en educacion frente a europa', 'gasto en educacion frente a la union europea', 'gasto educativo frente a europa', 'gasto educativo frente a la union europea', 'espana gasta mas en educacion que europa', 'espana gasta menos en educacion que europa', 'espana gasta mas en educacion que la union europea', 'espana gasta menos en educacion que la union europea', 'comparacion europea del gasto educativo', 'gasto educacion europa'] },
   { ids: ['housing_cost_overburden_rate'], terms: ['sobrecarga', 'coste de la vivienda', 'gastos de vivienda', 'esfuerzo de vivienda', 'sobrecarga coste vivienda', 'hogares soportan el coste de la vivienda', 'porcentaje de hogares soporta'] },
   { ids: ['housing_cost_overburden_rate_europe'], terms: ['sobrecarga de vivienda frente a europa', 'sobrecarga de vivienda frente a la union europea', 'esfuerzo de vivienda frente a europa', 'esfuerzo de vivienda frente a la union europea', 'espana tiene mas sobrecarga de vivienda que europa', 'espana tiene menos sobrecarga de vivienda que europa', 'comparacion europea del esfuerzo de vivienda', 'sobrecarga vivienda europa'] },
   { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por habitante', 'gasto sanitario por persona', 'gasto por habitante en sanidad', 'gasta en sanidad por habitante', 'gasta sanidad por habitante', 'gasta sanidad habitante', 'cuanto gasta sanidad habitante', 'sanidad por habitante', 'gasto por persona en sanidad', 'dinero por persona en sanidad', 'cuanto dinero se dedica a sanidad', 'cuanto dinero se dedica por persona a la sanidad', 'cuanto se gasta en sanidad', 'cuanto se gasta en salud'] },
@@ -95,6 +97,9 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
   if (hasEuropeReference && hasAny('universitari', 'graduad', 'titulad', 'titulacion', 'estudios superiores', 'educacion superior')) preferred.add('tertiary_education_attainment_rate_europe');
+  if (hasAny('educacion', 'educativo', 'educativa') && hasAny('gasto', 'gasta', 'presupuesto', 'inversion', 'invierte', 'porcentaje del pib')) {
+    preferred.add(hasEuropeReference ? 'government_education_expenditure_ratio_europe' : 'government_education_expenditure_ratio');
+  }
   if (hasEuropeReference && hasAny('arope', 'pobreza', 'exclusion')) preferred.add('arope_rate_europe');
   if (hasEuropeReference && hasAny('lista de espera', 'espera sanitaria', 'necesidades medicas')) preferred.add('unmet_healthcare_waiting_list_rate_europe');
   if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
@@ -186,6 +191,19 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('arope_rate_europe')) preferred.delete('arope_rate');
   if (preferred.has('life_expectancy_at_birth_europe')) preferred.delete('life_expectancy_at_birth');
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
+  if (preferred.has('government_education_expenditure_ratio_europe')) {
+    preferred.delete('government_education_expenditure_ratio');
+    preferred.delete('government_expenditure_ratio');
+    preferred.delete('government_expenditure_ratio_europe');
+    preferred.delete('government_revenue_ratio');
+    preferred.delete('government_revenue_ratio_europe');
+  }
+  if (preferred.has('government_education_expenditure_ratio')) {
+    preferred.delete('government_expenditure_ratio');
+    preferred.delete('government_expenditure_ratio_europe');
+    preferred.delete('government_revenue_ratio');
+    preferred.delete('government_revenue_ratio_europe');
+  }
   if (preferred.has('government_current_taxes_income_wealth_europe')) {
     preferred.delete('government_revenue_ratio');
     preferred.delete('government_revenue_ratio_europe');
@@ -266,6 +284,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const lifeExpectancyRequested = metricHints.find((hint) => hint.ids.includes('life_expectancy_at_birth'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const lifeExpectancyEuropeRequested = preferred.has('life_expectancy_at_birth_europe');
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
+  const educationSpendRequested = preferred.has('government_education_expenditure_ratio') || preferred.has('government_education_expenditure_ratio_europe');
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
   const employmentEuropeRequested = preferred.has('employment_rate_europe');
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -294,6 +313,10 @@ export const excludedMetricIdsForQuery = (query) => {
   if (educationContext && !earlyEducationEuropeRequested) excluded.add('early_school_leaving_rate_europe');
   if (educationContext && !neetRequested) excluded.add('neet_rate');
   if (educationContext && !neetEuropeRequested) excluded.add('neet_rate_europe');
+  if (educationContext && !educationSpendRequested) {
+    excluded.add('government_education_expenditure_ratio');
+    excluded.add('government_education_expenditure_ratio_europe');
+  }
   if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
   if (tertiaryEducationEuropeRequested) excluded.add('tertiary_education_attainment_rate');
   if (aropeEuropeRequested) excluded.add('arope_rate');

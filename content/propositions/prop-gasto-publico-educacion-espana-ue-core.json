@@ -1,0 +1,13 @@
+{
+  "id": "prop-gasto-publico-educacion-espana-ue-core",
+  "claimSlug": "gasto-publico-educacion-espana-ue",
+  "text": "En 2024, España dedicó una proporción menor del PIB al gasto público en educación que la Unión Europea.",
+  "type": "comparative",
+  "subject": "government_education_expenditure_ratio_europe",
+  "predicate": "was_lower_in_spain_than_european_union",
+  "object": "4.1 percent versus 4.8 percent of GDP",
+  "geography": "España y Unión Europea",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["gasto-publico-educacion-espana-ue-eurostat"]
+}

@@ -40,6 +40,8 @@ const metricLabels = {
   government_current_taxes_income_wealth_europe: 'Impuestos corrientes sobre renta y riqueza: España y la Unión Europea',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
+  government_education_expenditure_ratio: 'Gasto público en educación en España',
+  government_education_expenditure_ratio_europe: 'Gasto público en educación: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
   unmet_healthcare_waiting_list_rate_europe: 'Necesidades médicas no atendidas por lista de espera: España y la Unión Europea',
   median_equivalised_income_europe: 'Renta disponible mediana: España y la Unión Europea',

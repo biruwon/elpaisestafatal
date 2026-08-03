@@ -31,6 +31,7 @@ const featuredConversationSlugs = [
   'necesidades-medicas-lista-espera-espana-ue',
   'electricidad-espana-europa',
   'titulacion-superior-espana-ue',
+  'gasto-publico-educacion-espana-ue',
 ];
 const featuredConversation = featuredConversationSlugs
   .map((slug) => conversationMvpClaims.find((item) => item.slug === slug))
@@ -95,6 +96,7 @@ const warehousePrompts = [
   '¿Tiene España más paro juvenil que la Unión Europea?',
   '¿Tiene España más abandono escolar temprano que la Unión Europea?',
   '¿España tiene más titulados superiores que la Unión Europea?',
+  '¿España gasta menos en educación que la Unión Europea?',
   '¿España tiene más ninis que la Unión Europea?',
   '¿Cuánto debe España?',
   '¿Cuánto dinero se dedica por persona a la sanidad?',
@@ -141,6 +143,7 @@ const warehouseHighlights = [
   { label: 'Empleo juvenil · Europa', prompt: '¿Tiene España más paro juvenil que la Unión Europea?', detail: 'Misma población activa de 15 a 24 años y tasa comparable.' },
   { label: 'Educación · Europa', prompt: '¿Tiene España más abandono escolar temprano que la Unión Europea?', detail: 'Misma definición, población de 18 a 24 años y periodo para comparar España y la UE.' },
   { label: 'Educación superior · Europa', prompt: '¿España tiene más titulados superiores que la Unión Europea?', detail: 'Misma definición de educación terciaria y cohorte de 25 a 34 años para comparar España y la UE.' },
+  { label: 'Gasto educativo · Europa', prompt: '¿España gasta menos en educación que la Unión Europea?', detail: 'Gasto público en la función educación como porcentaje del PIB; no es gasto por alumno ni una medida de resultados.' },
   { label: 'Juventud · Europa', prompt: '¿España tiene más ninis que la Unión Europea?', detail: 'Misma población de 15 a 29 años y definición de personas fuera del empleo y la educación o formación.' },
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },
   { label: 'Inmigración · nacionalidad', prompt: '¿Cuántos residentes tienen ciudadanía extranjera en España?', detail: 'Nacionalidad y país de nacimiento son medidas distintas; tampoco equivale a llegadas anuales.' },

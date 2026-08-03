@@ -149,6 +149,18 @@
       "metricId": "government_expenditure_ratio_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_exp?geo=ES&cofog99=GF09&na_item=TE&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Gasto público en educación de España · Eurostat",
+      "aliases": ["gasto público en educación", "gasto educativo sobre PIB", "presupuesto público de educación", "inversión pública en educación"],
+      "metricId": "government_education_expenditure_ratio"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_exp?geo=ES&geo=EU27_2020&cofog99=GF09&na_item=TE&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Gasto público en educación: España y Unión Europea · Eurostat",
+      "aliases": ["gasto público en educación frente a Europa", "gasto educativo frente a la Unión Europea", "España gasta más en educación que Europa", "España gasta menos en educación que Europa", "comparación europea del gasto educativo"],
+      "metricId": "government_education_expenditure_ratio_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-24&unit=PC_ACT&sinceTimePeriod=2015",
       "title": "Tasa de paro juvenil de España · Eurostat",
       "aliases": ["paro juvenil", "desempleo juvenil", "jóvenes sin trabajo"],

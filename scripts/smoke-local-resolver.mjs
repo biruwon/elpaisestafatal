@@ -336,6 +336,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   for (const [text, metricId, unit, direction] of [
     ['¿España recauda más o menos que la media de la Unión Europea?', 'government_revenue_ratio_europe', '% del PIB', 'ingresos públicos españoles fueron más bajos'],
     ['¿España gasta más o menos que la media de la Unión Europea?', 'government_expenditure_ratio_europe', '% del PIB', 'gasto público español fue más bajo'],
+    ['¿España gasta menos en educación que la Unión Europea?', 'government_education_expenditure_ratio_europe', '% del PIB', 'gasto español en educación fue más bajo'],
     ['¿España gasta más por habitante en sanidad que la Unión Europea?', 'health_expenditure_per_capita_europe', '€ por habitante', 'gasto sanitario por habitante español fue más bajo'],
     ['¿España tiene más renta mediana que la Unión Europea?', 'median_equivalised_income_europe', 'PPS por persona', 'renta mediana española fue más baja'],
   ]) {
@@ -347,6 +348,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
       if (!/España.*Unión Europea|Unión Europea.*España/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push(`Spain/EU ${metricId} comparison: lost the named comparison in the public answer`);
       if (!new RegExp(direction).test(`${result.result?.summary || ''} ${result.result?.blocks?.map((block) => JSON.stringify(block)).join(' ') || ''}`)) failures.push(`Spain/EU ${metricId} comparison: did not calculate the direction of the comparison`);
       if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push(`Spain/EU ${metricId} comparison: did not render a comparison visual`);
+      if (metricId === 'government_education_expenditure_ratio_europe' && !/no es gasto por alumno|no mide resultados/i.test(JSON.stringify(result.result || {}))) failures.push('Spain/EU education spending comparison: lost the education-specific limitation');
     } catch (error) { failures.push(`Spain/EU ${metricId} comparison: ${error.message}`); }
   }
   try {

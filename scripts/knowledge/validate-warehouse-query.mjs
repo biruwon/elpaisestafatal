@@ -118,6 +118,11 @@ if (!preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Un
 if (preferredMetricIdsForQuery('¿España tiene más abandono escolar que la Unión Europea?').has('early_school_leaving_rate')) throw new Error('Metric hints kept Spain-only early school leaving alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿España tiene más titulados superiores que la Unión Europea?').has('tertiary_education_attainment_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU tertiary-attainment comparison');
 if (preferredMetricIdsForQuery('¿España tiene más titulados superiores que la Unión Europea?').has('tertiary_education_attainment_rate')) throw new Error('Metric hints kept Spain-only tertiary attainment alongside the Spain/EU comparison');
+if (!preferredMetricIdsForQuery('¿España gasta menos en educación que la Unión Europea?').has('government_education_expenditure_ratio_europe')) throw new Error('Metric hints did not prefer the Spain/EU education-spending comparison');
+if (preferredMetricIdsForQuery('¿España gasta menos en educación que la Unión Europea?').has('government_education_expenditure_ratio')) throw new Error('Metric hints kept Spain-only education spending alongside the Spain/EU comparison');
+if (!preferredMetricIdsForQuery('¿Cómo ha evolucionado el gasto público en educación?').has('government_education_expenditure_ratio')) throw new Error('Metric hints did not prefer Spain-only education spending for the education budget trend');
+if (preferredMetricIdsForQuery('¿Cómo ha evolucionado el gasto público en educación?').has('government_expenditure_ratio')) throw new Error('Metric hints confused education spending with total government spending');
+if (!excludedMetricIdsForQuery('¿Cómo ha evolucionado la titulación superior en España?').has('government_education_expenditure_ratio')) throw new Error('Metric hints allowed education spending to answer an education-outcome query');
 if (!preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU NEET comparison');
 if (preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate')) throw new Error('Metric hints kept Spain-only NEET alongside the Spain/EU comparison');
 for (const [query, expected, base] of [
