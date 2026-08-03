@@ -18,6 +18,8 @@ if (populationEvidenceFit('personas inmigrantes o extranjeras', immigrantObserva
 if (populationEvidenceFit('personas inmigrantes o extranjeras', residentObservation) !== 'context') throw new Error('Warehouse population fit did not protect total-population context');
 if (populationEvidenceFit('personas beneficiarias', { population: 'households receiving rent assistance' }) !== 'mismatch') throw new Error('Warehouse population fit did not reject a mismatched population');
 if (!preferredMetricIdsForQuery('paro juvenil en España').has('youth_unemployment_rate')) throw new Error('Metric hints did not prefer youth unemployment for youth wording');
+if (!preferredMetricIdsForQuery('España tiene más paro juvenil que la Unión Europea').has('youth_unemployment_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU youth unemployment comparison');
+if (preferredMetricIdsForQuery('España tiene más paro juvenil que la Unión Europea').has('youth_unemployment_rate')) throw new Error('Metric hints did not keep Spain/EU youth unemployment distinct from the Spain-only series');
 if (!excludedMetricIdsForQuery('evolución del desempleo en España').has('youth_unemployment_rate')) throw new Error('Metric hints did not suppress youth unemployment for generic wording');
 if (excludedMetricIdsForQuery('desempleo juvenil en España').size) throw new Error('Metric hints incorrectly suppressed youth unemployment when youth wording was explicit');
 if (!preferredMetricIdsForQuery('evolución de la recaudación pública').has('government_revenue_ratio')) throw new Error('Metric hints did not prefer public revenue for revenue wording');

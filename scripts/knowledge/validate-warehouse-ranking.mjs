@@ -51,6 +51,12 @@ const employmentRecords = [
 ];
 const employmentComparison = summarizeWarehouseEuropeanComparison('¿Tiene España una tasa de empleo mayor que la Unión Europea?', employmentRecords);
 if (!employmentComparison || employmentComparison.metricId !== 'employment_rate_europe' || !employmentComparison.summary.includes('75,8') || !employmentComparison.summary.includes('75') || !employmentComparison.reply.includes('tasa de empleo española fue más alta') || employmentComparison.reply.includes('interanual')) throw new Error('European employment comparison did not preserve the same-period Spain/EU comparison or localized its unit');
+const youthComparisonRecords = [
+  { id: 'youth-es-2025', metricId: 'youth_unemployment_rate_europe', datasetId: 'Youth unemployment comparison', value: 24.9, unit: 'Percentage of population in the labour force', period: '2025', dimensions: { geo: 'ES', age: 'Y15-24', sex: 'T' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'youth-eu-2025', metricId: 'youth_unemployment_rate_europe', datasetId: 'Youth unemployment comparison', value: 15.2, unit: 'Percentage of population in the labour force', period: '2025', dimensions: { geo: 'EU27_2020', age: 'Y15-24', sex: 'T' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const youthComparison = summarizeWarehouseEuropeanComparison('¿Tiene España más paro juvenil que la Unión Europea?', youthComparisonRecords);
+if (!youthComparison || youthComparison.metricId !== 'youth_unemployment_rate_europe' || !youthComparison.summary.includes('24,9') || !youthComparison.summary.includes('15,2') || !youthComparison.points.some((point) => point.includes('9,7 puntos porcentuales más')) || !youthComparison.reply.includes('tasa de paro juvenil española fue más alta')) throw new Error('European youth-unemployment comparison did not preserve the same-period Spain/EU comparison or youth denominator caveat');
 const revenueRecords = [
   { id: 'revenue-es-2025', metricId: 'government_revenue_ratio_europe', datasetId: 'Government revenue comparison', value: 42.9, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
   { id: 'revenue-eu-2025', metricId: 'government_revenue_ratio_europe', datasetId: 'Government revenue comparison', value: 46.4, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },

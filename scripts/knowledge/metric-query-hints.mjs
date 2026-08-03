@@ -25,6 +25,7 @@ const metricHints = [
   { ids: ['old_age_survivors_benefits_per_capita_europe'], terms: ['gasto en pensiones frente a europa', 'gasto en pensiones por habitante frente a europa', 'como queda el gasto en pensiones espanol frente a europa', 'gasto espanol en pensiones por persona comparado con europa', 'pensiones de espana frente a europa', 'pensiones por habitante frente a europa', 'espana gasta mas en pensiones que europa', 'espana gasta menos en pensiones que europa', 'espana gasta mas por habitante en pensiones que la union europea', 'espana gasta menos por habitante en pensiones que la union europea', 'pensiones por habitante que europa', 'pensiones frente a la union europea', 'pensiones y supervivencia frente a la union europea', 'comparacion europea del gasto en pensiones'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'desempleo espanol frente al europeo', 'tasa de paro de espana frente a los paises europeos', 'tasa de paro espana frente a los paises europeos', 'ranking europeo de la tasa de desempleo', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
+  { ids: ['youth_unemployment_rate_europe'], terms: ['paro juvenil frente a europa', 'desempleo juvenil frente a europa', 'paro juvenil de espana frente a europa', 'paro juvenil de espana frente a la union europea', 'tasa de paro juvenil frente a europa', 'tasa de paro juvenil frente a la union europea', 'espana tiene mas paro juvenil que europa', 'espana tiene mas paro juvenil que la union europea', 'espana tiene menos paro juvenil que europa', 'espana tiene menos paro juvenil que la union europea', 'desempleo juvenil europeo', 'comparacion europea del paro juvenil', 'paro juvenil europa'] },
   { ids: ['early_school_leaving_rate'], terms: ['abandono escolar temprano', 'abandono escolar', 'abandono educativo', 'proporcion de jovenes que dejan la educacion temprano', 'proporcion de jovenes dejan la educacion temprano', 'jovenes dejan educacion temprano', 'dejan los estudios', 'dejan los estudios antes de tiempo', 'jovenes que abandonan los estudios', 'fracaso escolar temprano'] },
   { ids: ['tertiary_education_attainment_rate'], terms: ['estudios superiores', 'educacion superior', 'titulacion superior', 'universitarios', 'graduados', 'titulados', 'universitarios de 25 a 34', 'jovenes con estudios universitarios', 'personas con estudios superiores'] },
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera del empleo y de la educacion', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
@@ -85,6 +86,13 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('employment_rate_europe')) {
     preferred.delete('employment_rate');
     preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('youth_unemployment_rate_europe')) {
+    preferred.delete('youth_unemployment_rate');
+    preferred.delete('unemployment_rate_europe');
+    preferred.delete('unemployment_rate');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('employment_rate');
   }
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_current_taxes_income_wealth_europe')) {

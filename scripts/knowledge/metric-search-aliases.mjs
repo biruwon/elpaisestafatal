@@ -2,6 +2,7 @@
 // derived warehouse index so local and PostgreSQL retrieval share behaviour.
 export const metricSearchAliases = Object.freeze({
   youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
+  youth_unemployment_rate_europe: ['paro juvenil', 'desempleo juvenil', 'jovenes', 'europa', 'union europea', 'comparacion europea'],
   employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
   employment_rate_europe: ['empleo', 'ocupacion', 'europa', 'union europea', 'comparacion europea'],
   minimum_wage_monthly: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'euros al mes'],

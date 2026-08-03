@@ -18,6 +18,7 @@ const knownSeeds = [
   ['electricidad-hogares-sube', 'trend', 'El precio medio de la electricidad para hogares supera 0,28 €/kWh'],
   ['paro-juvenil-alto', 'trend', 'Casi uno de cada cuatro jóvenes activos está en paro'],
   ['paro-juvenil-baja', 'trend', 'El paro juvenil ha bajado casi a la mitad desde 2015'],
+  ['paro-juvenil-espana-ue', 'comparison', 'España tiene más paro juvenil que la Unión Europea'],
   ['paro-epa-supera-10', 'trend', 'La tasa de paro de la EPA sigue por encima del 10%'],
   ['paro-epa-t2-2026-baja-10', 'trend', 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026'],
   ['ocupacion-aumenta-t2-2026', 'descriptive', 'España ganó 486.000 ocupados en el segundo trimestre de 2026'],

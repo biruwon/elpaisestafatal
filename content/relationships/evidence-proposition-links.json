@@ -204,6 +204,7 @@
     {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"inflacion-armonizada-espana-ue-eurostat","propositionId":"prop-espana-inflacion-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"empleo-20-64-espana-ue-eurostat","propositionId":"prop-espana-empleo-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"paro-juvenil-espana-ue-eurostat","propositionId":"prop-paro-juvenil-espana-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"ingresos-publicos-espana-ue-eurostat","propositionId":"prop-espana-ingresos-publicos-menores-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"gasto-publico-espana-ue-eurostat","propositionId":"prop-espana-gasto-publico-menor-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
 ]

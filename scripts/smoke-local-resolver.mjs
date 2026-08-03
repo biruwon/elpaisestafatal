@@ -482,6 +482,12 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (/unemployment by sex and age/i.test(result.result?.headline || '')) failures.push('youth unemployment warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`youth unemployment warehouse: ${error.message}`); }
   try {
+    const result = await resolve('¿Tiene España más paro juvenil que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU youth unemployment: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseComparison?.metricId !== 'youth_unemployment_rate_europe') failures.push('Spain/EU youth unemployment: selected the wrong metric family');
+    if (!result.result?.warehouseComparison?.reply?.includes('tasa de paro juvenil española fue más alta')) failures.push('Spain/EU youth unemployment: comparison reply did not use the youth-specific wording');
+  } catch (error) { failures.push(`Spain/EU youth unemployment: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de la población activa no encuentra trabajo');
     if (result.result?.warehouseSeries?.metricId === 'youth_unemployment_rate') failures.push('general unemployment warehouse: incorrectly selected the youth metric without youth wording');
   } catch (error) { failures.push(`general unemployment warehouse: ${error.message}`); }

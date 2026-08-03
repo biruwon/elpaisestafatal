@@ -143,6 +143,12 @@
       "metricId": "youth_unemployment_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&geo=EU27_2020&sex=T&age=Y15-24&unit=PC_ACT&sinceTimePeriod=2015",
+      "title": "Tasa de paro juvenil: España y Unión Europea · Eurostat",
+      "aliases": ["paro juvenil frente a Europa", "desempleo juvenil de España frente a Europa", "comparación europea del paro juvenil"],
+      "metricId": "youth_unemployment_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=ES&sex=T&age=Y15-74&unit=PC_ACT&sinceTimePeriod=2015",
       "title": "Tasa de desempleo de España · Eurostat",
       "aliases": ["paro", "desempleo", "empleo", "tasa de paro", "personas sin trabajo", "no encuentra trabajo"],

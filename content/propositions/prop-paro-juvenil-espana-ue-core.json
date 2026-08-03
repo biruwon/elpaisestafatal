@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-juvenil-espana-ue-core",
+  "claimSlug": "paro-juvenil-espana-ue",
+  "text": "En 2025, España tuvo una tasa de paro juvenil mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "youth_unemployment_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "24.9 percent versus 15.2 percent",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["paro-juvenil-espana-ue-eurostat"]
+}

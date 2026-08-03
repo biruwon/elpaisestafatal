@@ -126,6 +126,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la tasa de empleo de la población de 20 a 64 años según la definición comparable de Eurostat; no equivale a la tasa de paro ni describe todos los grupos de edad.',
     caveat: 'Es una medida de empleo entre 20 y 64 años, no una descripción completa de la calidad o estabilidad del trabajo.',
   },
+  youth_unemployment_rate_europe: {
+    label: 'Tasa de paro juvenil',
+    verb: 'registró una tasa de paro juvenil',
+    replyLead: 'la tasa de paro juvenil fue del',
+    differenceVerb: ['la tasa de paro juvenil española fue más alta', 'la tasa de paro juvenil española fue más baja', 'España y la Unión Europea registraron la misma tasa de paro juvenil'],
+    unit: '% de la población activa de 15 a 24 años',
+    replyUnit: '% de la población activa de 15 a 24 años',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la tasa de paro de 15 a 24 años sobre la población activa del mismo grupo, según la definición comparable de Eurostat; no es la proporción de toda la juventud ni demuestra causas.',
+    caveat: 'El denominador excluye a jóvenes que estudian y no buscan trabajo; no mide por sí solo calidad, duración ni salarios.',
+  },
   government_revenue_ratio_europe: {
     label: 'Ingresos públicos sobre el PIB',
     verb: 'registró unos ingresos públicos',

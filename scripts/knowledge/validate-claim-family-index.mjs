@@ -79,6 +79,11 @@ if (!match) {
       variants: ['ha bajado el paro juvenil', 'el desempleo juvenil se ha reducido', 'hay menos paro entre los jóvenes'],
     },
     {
+      slug: 'paro-juvenil-espana-ue',
+      prompt: 'España tiene más paro juvenil que la Unión Europea',
+      variants: ['España tiene más desempleo juvenil que Europa', 'el paro juvenil español supera al europeo', 'comparación europea del paro juvenil'],
+    },
+    {
       slug: 'ingresos-publicos-superan-40',
       prompt: 'Los ingresos públicos de España superan el 40% del PIB',
       variants: ['España recauda más del 40% del PIB', 'los ingresos públicos superan el 40 por ciento', 'la recaudación pública supera el 40%'],

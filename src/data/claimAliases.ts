@@ -139,6 +139,13 @@ export const claimAliases: Record<string, string[]> = {
     'el paro juvenil cayó desde 2015',
     'España ha reducido el paro juvenil',
   ],
+  'paro-juvenil-espana-ue': [
+    'España tiene más desempleo juvenil que Europa',
+    'el paro juvenil español supera al europeo',
+    'España tiene una tasa de paro juvenil mayor que la Unión Europea',
+    'paro juvenil frente a Europa',
+    'comparación europea del paro juvenil',
+  ],
   'paro-epa-supera-10': [
     'el paro de la EPA supera el 10%',
     'la EPA todavía marca más de un 10% de paro',

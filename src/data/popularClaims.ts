@@ -48,6 +48,7 @@ const popularSlugs = [
   'electricidad-hogares-sube',
   'paro-juvenil-alto',
   'paro-juvenil-baja',
+  'paro-juvenil-espana-ue',
   'paro-epa-supera-10',
   'tasa-empleo-sube',
   'paro-espana-supera-ue',
