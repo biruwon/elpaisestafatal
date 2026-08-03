@@ -354,7 +354,7 @@ if (process.env.SMOKE_OFFICIAL === '1') {
     const reply = result.result?.blocks?.find((block) => block.type === 'conversation_reply');
     const excerpts = result.result?.blocks?.filter((block) => block.type === 'source_excerpt') || [];
     if (result.status !== 'draft') failures.push(`public information reuse: expected draft, received ${result.status}`);
-    if (!legalTree?.items?.some((item) => item.label === 'Condiciones' && item.status === 'known')) failures.push('public information reuse: operative conditions were not shown');
+    if (!legalTree?.items?.some((item) => /condiciones/i.test(item.label) && item.status === 'known')) failures.push('public information reuse: operative conditions were not shown');
     if (!reply?.evidenceIds?.length) failures.push('public information reuse: conversation reply lost its evidence IDs');
     if (!excerpts.length || !excerpts.some((block) => /art[ií]culo 4/i.test(block.title))) failures.push('public information reuse: relevant BOE article excerpt is missing');
     if (!result.result?.headline?.toLocaleLowerCase('es').includes('no:')) failures.push('public information reuse: result did not clearly reject the overbroad claim');
@@ -381,14 +381,13 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
       const result = await resolve(text);
       if (result.status !== 'uncovered') failures.push(`specific unknown claim: expected uncovered for “${text}”, received ${result.status}`);
       if (result.relatedClaims?.length || result.result?.sourceLinks?.length || result.result?.evidenceIds?.length) failures.push(`specific unknown claim: leaked unrelated context for “${text}”`);
+      if (text.includes('barrio ha subido') && (!/local/i.test(result.result?.headline || '') && !/locales/i.test(result.result?.headline || ''))) failures.push('specific local claim: did not explain that local evidence is needed');
+      if (text.includes('barrio ha subido') && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push('specific local claim: missing local evidence ladder');
     } catch (error) { failures.push(`specific unknown claim: ${error.message}`); }
   }
   try {
     const result = await resolve('Los precios de la vivienda causan la crisis en España');
-    if (result.status !== 'draft') failures.push(`causal long-tail: expected draft, received ${result.status}`);
-    if (!result.result?.headline?.toLocaleLowerCase('es').includes('causalidad')) failures.push('causal long-tail: did not explain the causal limitation');
-    if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('causal long-tail: missing contextual data block');
-    if (!result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push('causal long-tail: missing evidence ladder');
+    if (result.status !== 'complete' || result.relatedClaims?.[0]?.slug !== 'precios-vivienda-causan-crisis') failures.push(`causal long-tail: expected published clarification, received ${result.status}`);
   } catch (error) { failures.push(`causal long-tail: ${error.message}`); }
   try {
     const result = await resolve('Los españoles deberían tener prioridad en las ayudas');
@@ -428,15 +427,13 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
   } catch (error) { failures.push(`prediction long-tail: ${error.message}`); }
   try {
     const result = await resolve('España tiene 48 millones de habitantes');
-    if (result.status !== 'draft') failures.push(`quantity long-tail: expected draft, received ${result.status}`);
+    if (result.status !== 'draft') failures.push(`quantity long-tail: expected provisional mismatch, received ${result.status}`);
     if (!result.result?.blocks?.some((block) => block.type === 'key_number')) failures.push('quantity long-tail: missing comparable key number');
     if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('quantity long-tail: missing numeric comparison details');
   } catch (error) { failures.push(`quantity long-tail: ${error.message}`); }
   try {
     const result = await resolve('España tiene 100 millones de habitantes');
-    if (result.status !== 'draft') failures.push(`mismatched quantity: expected provisional draft, received ${result.status}`);
-    if (!result.result?.headline?.toLocaleLowerCase('es').includes('no coincide')) failures.push('mismatched quantity: did not show the numerical mismatch');
-    if (!result.result?.blocks?.some((block) => block.type === 'cannot_conclude')) failures.push('mismatched quantity: missing explicit limitation');
+    if (result.status !== 'complete' || result.relatedClaims?.[0]?.slug !== 'espana-no-tiene-100-millones') failures.push(`mismatched quantity: expected published mismatch clarification, received ${result.status}`);
   } catch (error) { failures.push(`mismatched quantity: ${error.message}`); }
   try {
     const result = await resolve('España está destruida');

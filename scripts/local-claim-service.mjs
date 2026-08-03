@@ -672,9 +672,17 @@ const classify = async (text) => {
       || /\b(?:que|frente a|comparad[oa]s?)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(normalized);
   };
   const requestedGroupContrast = explicitGroupContrast(text);
+  const numericTokens = (value) => [...normalise(value).matchAll(/\b\d+(?:[.,]\d+)?\b/g)].map((match) => match[0].replace(',', '.'));
+  const numericCompatible = (entry) => {
+    if (entry.kind !== 'claim') return true;
+    const queryNumbers = numericTokens(text);
+    const entryNumbers = numericTokens(searchText(entry));
+    return !(queryNumbers.length && entryNumbers.length) || queryNumbers.some((number) => entryNumbers.includes(number));
+  };
   const compatibleEntry = (entry) => {
     const exactCanonicalTitle = entry.kind === 'claim' && normalise(entry.title) === normalise(text);
     if (exactCanonicalTitle) return true;
+    if (!numericCompatible(entry)) return false;
     if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
     // A published group claim about eligibility or participation must not
     // answer a stronger comparative statement unless the published wording
@@ -686,7 +694,7 @@ const classify = async (text) => {
   const normalizedQuery = normalise(text);
   const suppressPublishedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
   const nearCanonicalEntry = ({ entry, lexical }) => entry.kind === 'claim' && lexical >= 0.9;
-  const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));
+  const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && numericCompatible(item.entry) && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));
   const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
     const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
@@ -735,14 +743,14 @@ const classify = async (text) => {
   // phrase merely because its conversational wording is classified slightly
   // differently from the claim's broad metadata type.
   const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
-  const canonicalPhrase = Boolean(top && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || directPhraseCandidate?.entry.slug === top.entry.slug || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
+  const canonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || directPhraseCandidate?.entry.slug === top.entry.slug || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
   const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
   // A new measurable question must not be swallowed by a broad published
   // claim just because both use a topic word such as "desigualdad". Let the
   // warehouse answer the requested metric unless the user entered the
   // published claim's exact wording or alias.
-  const nearCanonicalPhrase = Boolean(top && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
-  const strongMatch = Boolean(top && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
+  const nearCanonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
+  const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
   if (canonicalPhrase || strongMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
@@ -756,7 +764,7 @@ const classify = async (text) => {
   const compiled = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
-  const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && compatibleEntry(entry));
+  const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry));
   const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
@@ -882,6 +890,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isLegal = handlerId === 'legal_rule';
   const isDefinition = handlerId === 'definition';
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
+  const localClaim = localSpecificClaim(text);
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
   const budgetObservations = observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'budget_transfer');
   const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document' || item.kind === 'legal_rule') : [];
@@ -990,6 +999,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: 'Primero hay que fijar qué significa la expresión',
     summary: 'La afirmación usa una categoría que puede tener varias definiciones estadísticas o jurídicas. Comparar cifras sin fijar esa definición puede producir una respuesta aparentemente precisa pero equivocada.',
   } : null;
+  const localContext = localClaim && !primary ? {
+    headline: 'Esta afirmación necesita datos locales, no una media nacional',
+    summary: 'El cambio en un barrio puede ser real, pero para comprobarlo hacen falta el municipio, el periodo y una medida concreta.',
+  } : null;
   const recordedOffenceContext = preferredMetricIdsForQuery(text).has('recorded_offences') && !recordedOffenceCategoryForQuery(text) && !observations.length ? {
     headline: 'La criminalidad registrada debe concretarse por categoría',
     summary: 'La fuente disponible separa homicidios, robos, fraudes y otras categorías. No hemos localizado un total nacional único que permita responder a “la criminalidad” en general sin mezclar medidas distintas.',
@@ -1065,6 +1078,15 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Resultado concreto', status: 'missing', detail: 'Elegir qué se quiere medir: empleo, vivienda, precios, sanidad, seguridad u otro resultado.' },
         { label: 'Periodo y comparación', status: 'missing', detail: 'Indicar desde cuándo y frente a qué año, territorio o país se quiere comparar.' },
         { label: 'Territorio', status: 'missing', detail: 'Aclarar si se habla de España entera o de una comunidad, provincia o barrio.' },
+      ] },
+    ] : []),
+    ...(localContext ? [
+      { type: 'strongest_valid_concern', text: 'La experiencia local merece comprobarse; lo que no podemos hacer es convertirla en una conclusión sobre toda España.' },
+      { type: 'evidence_ladder', evidenceIds: [], steps: [
+        { label: 'Lugar exacto', status: 'missing', detail: 'Indica el municipio o la provincia y, si es posible, el barrio.' },
+        { label: 'Periodo', status: 'missing', detail: 'Hay que comparar el mismo indicador antes y después.' },
+        { label: 'Medida', status: 'missing', detail: 'Separa delitos registrados, victimización y percepción de inseguridad.' },
+        { label: 'Fuente local', status: 'missing', detail: 'Según el indicador, habrá que consultar Interior, el ayuntamiento o la policía local.' },
       ] },
     ] : []),
   ] : [];
@@ -1180,13 +1202,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : primary?.title;
   const result = {
     schemaVersion: '1',
-    headline: primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || budgetContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
-    coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
+    headline: primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || budgetContext?.summary || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || ranking || trend || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: classified.compiler?.claimType || 'mixed',
     blocks: primary ? [{ type: 'confirmed', propositionIds: primary.propositionIds || [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(legalPrimaryBlock ? [legalPrimaryBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : [ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...relatedGuidanceBlocks, ...(provisionalBlocks.length ? provisionalBlocks : relatedGuidanceBlocks.length ? [] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ],
-    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
-    limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : budgetContext ? 'La fuente confirma el movimiento de crédito, pero no permite atribuir el dinero a un programa educativo concreto, a asesores o únicamente a Presidencia.' : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, derechos de terceros o restricciones de acceso adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
+    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : localContext ? '¿De qué municipio, periodo y tipo de inseguridad hablas?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : budgetContext ? 'La fuente confirma el movimiento de crédito, pero no permite atribuir el dinero a un programa educativo concreto, a asesores o únicamente a Presidencia.' : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, restricciones de acceso o derechos de terceros adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : localContext ? 'No hay una serie nacional que pueda confirmar una experiencia concreta de un barrio; hacen falta datos locales y una medida definida.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
     ...(primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),

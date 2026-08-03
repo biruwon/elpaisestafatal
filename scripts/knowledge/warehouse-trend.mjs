@@ -1,6 +1,13 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
-const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const metricPrecision = {
+  household_electricity_price: 4,
+  fertility_rate: 2,
+  life_expectancy_at_birth: 1,
+};
+const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-ES', {
+  maximumFractionDigits: metricPrecision[metricId] || 2,
+});
 const metricLabels = {
   inflation_rate: 'Inflación anual en España',
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
@@ -117,12 +124,12 @@ export const summarizeWarehouseTrend = (text, observations) => {
   const metric = displayMetric(latest);
   const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
   const changeUnit = deltaUnit(unit);
-  const change = `${formatNumber(Math.abs(delta))}${changeUnit ? ` ${changeUnit}` : ''}`;
+  const change = `${formatNumber(Math.abs(delta), latest.metricId)}${changeUnit ? ` ${changeUnit}` : ''}`;
   const directionWords = normalise(text);
   const expectedLower = directionWords.includes('menos') || directionWords.includes('baja') || directionWords.includes('disminuye') || directionWords.includes('cae');
   const expectedHigher = directionWords.includes('mas') || directionWords.includes('sube') || directionWords.includes('aumenta') || directionWords.includes('crece');
   const points = [
-    `${metric} ${direction}, de ${formatNumber(first.value)}${suffix} (${first.period}) a ${formatNumber(latest.value)}${suffix} (${latest.period}).`,
+    `${metric} ${direction}, de ${formatNumber(first.value, first.metricId)}${suffix} (${first.period}) a ${formatNumber(latest.value, latest.metricId)}${suffix} (${latest.period}).`,
     `El cambio entre esos dos puntos es de ${change}${delta < 0 ? ' menos' : delta > 0 ? ' más' : ''}.`,
   ];
   if ((expectedLower || expectedHigher) && Math.abs(delta) >= 0.000001) {
@@ -134,7 +141,7 @@ export const summarizeWarehouseTrend = (text, observations) => {
     headline: `${metric}: comparación entre ${first.period} y ${latest.period}`,
     summary: `${metric} ${direction} entre el primer y el último periodo localizado (${first.period}–${latest.period}).`,
     points,
-    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value)}${suffix} a ${formatNumber(latest.value)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
+    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} a ${formatNumber(latest.value, latest.metricId)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
     replyEvidenceIds: numeric.map((item) => item.id),
   };
 };
