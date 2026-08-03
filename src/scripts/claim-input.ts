@@ -361,16 +361,24 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
           '¿Han subido los salarios en España?',
           '¿Cómo ha cambiado el salario mínimo en España?',
         ]
-        : query.includes('inmigr') || query.includes('extranj') || query.includes('patera') || query.includes('refug')
+          : query.includes('inmigr') || query.includes('extranj') || query.includes('patera') || query.includes('refug')
           ? [
             '¿Cuántos residentes nacieron fuera de España?',
             '¿Cuántas personas inmigraron a España durante el último año?',
             '¿La inmigración aumenta la inseguridad?',
             '¿Las personas inmigrantes reciben prioridad en las ayudas?',
           ]
+          : query.includes('pension') || query.includes('jubil')
+            ? [
+              '¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?',
+              '¿Cuánto gasta España en prestaciones de protección social por habitante?',
+              '¿Cómo ha evolucionado el envejecimiento de la población española?',
+              '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?',
+            ]
           : query.includes('ayuda') || query.includes('prestacion') || query.includes('proteccion social') || query.includes('gasto social')
             ? [
               '¿Cuánto gasta España en prestaciones de protección social por habitante?',
+              '¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?',
               '¿Las personas inmigrantes reciben prioridad en las ayudas?',
               '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
               '¿Cómo han evolucionado los ingresos públicos sobre el PIB?',

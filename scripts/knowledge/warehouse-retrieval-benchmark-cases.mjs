@@ -24,6 +24,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['proteccion-social', '¿Cuánto gasta España en prestaciones de protección social por habitante?', 'social_protection_benefits_per_capita'],
   ['ayudas-sociales', '¿Cuánto se gasta en ayudas sociales?', 'social_protection_benefits_per_capita'],
   ['gasto-social', 'El gasto social por habitante ha subido', 'social_protection_benefits_per_capita'],
+  ['pensiones', '¿Cuánto gasta España en pensiones por habitante?', 'old_age_survivors_benefits_per_capita'],
+  ['pensiones-supervivencia', 'El gasto en pensiones y supervivencia ha aumentado', 'old_age_survivors_benefits_per_capita'],
   ['pib-europa-menos', '¿El crecimiento de España está por debajo del europeo?', 'gdp_real_growth_europe'],
   ['pib-habitante', 'Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices'],
   ['deuda-publica', 'Cómo ha evolucionado la deuda pública española sobre el PIB', 'government_debt_ratio'],

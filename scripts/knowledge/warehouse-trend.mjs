@@ -22,6 +22,7 @@ const metricLabels = {
   employment_rate_europe: 'Tasa de empleo: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
+  old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
@@ -81,6 +82,7 @@ const displayUnit = (item) => {
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
   if (metricId === 'minimum_wage_monthly') return '€ al mes';
   if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
+  if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
@@ -108,6 +110,10 @@ const deltaUnit = (unit) => {
   if (unit === 'índice (2015=100)') return 'puntos del índice';
   if (unit.startsWith('%')) return 'puntos porcentuales';
   return unit;
+};
+const metricReplyCaveats = {
+  social_protection_benefits_per_capita: ' No indica quién recibe cada prestación ni cuáles son sus requisitos.',
+  old_age_survivors_benefits_per_capita: ' No equivale a la pensión media de una persona ni demuestra por sí solo la sostenibilidad del sistema.',
 };
 
 export const displayPeriod = (period, metricId = '') => {
@@ -173,7 +179,7 @@ export const summarizeWarehouseTrend = (text, observations) => {
     headline: `${metric}: comparación entre ${firstPeriod} y ${latestPeriod}`,
     summary: `${metric} ${direction} entre el primer y el último periodo localizado (${firstPeriod}–${latestPeriod}).`,
     points,
-    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} a ${formatNumber(latest.value, latest.metricId)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
+    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} a ${formatNumber(latest.value, latest.metricId)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.${metricReplyCaveats[latest.metricId] || ''}`,
     replyEvidenceIds: numeric.map((item) => item.id),
   };
 };

@@ -26,4 +26,10 @@ const socialProtectionRecords = [
 ];
 const socialProtection = summarizeWarehouseTrend('¿Cuánto gasta España en prestaciones de protección social por habitante?', socialProtectionRecords);
 if (!socialProtection || !socialProtection.headline.includes('2015') || !socialProtection.headline.includes('2024') || !socialProtection.points.some((point) => point.includes('€ por habitante')) || !socialProtection.reply.includes('no demuestra la causa')) throw new Error('Trend handler did not keep social protection benefits distinct, readable, and caveated');
+const oldAgeSurvivorsRecords = [
+  { id: 'pensions-2015', datasetId: 'spr_exp_func', metricId: 'old_age_survivors_benefits_per_capita', value: 2803.07, unit: 'Euro per inhabitant', period: '2015', dimensions: { geo: 'ES', spdeps: 'SPR', spfunc: 'OLD_SRV', unit: 'EUR_HAB' }, source },
+  { id: 'pensions-2024', datasetId: 'spr_exp_func', metricId: 'old_age_survivors_benefits_per_capita', value: 4194.66, unit: 'Euro per inhabitant', period: '2024', dimensions: { geo: 'ES', spdeps: 'SPR', spfunc: 'OLD_SRV', unit: 'EUR_HAB' }, source },
+];
+const oldAgeSurvivors = summarizeWarehouseTrend('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?', oldAgeSurvivorsRecords);
+if (!oldAgeSurvivors || !oldAgeSurvivors.headline.includes('2015') || !oldAgeSurvivors.headline.includes('2024') || !oldAgeSurvivors.points.some((point) => point.includes('€ por habitante')) || !/no equivale a la pensión media/i.test(oldAgeSurvivors.reply)) throw new Error('Trend handler did not keep old-age benefits distinct, readable, and caveated');
 console.log('Warehouse trend validation passed: compatible dimensions are isolated.');

@@ -166,6 +166,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices', '€ por habitante'],
     ['¿Cómo ha cambiado el salario mínimo en España?', 'minimum_wage_monthly', '€ al mes'],
     ['¿Cuánto gasta España en prestaciones de protección social por habitante?', 'social_protection_benefits_per_capita', '€ por habitante'],
+    ['¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?', 'old_age_survivors_benefits_per_capita', '€ por habitante'],
   ]) {
     try {
       const result = await resolve(text);

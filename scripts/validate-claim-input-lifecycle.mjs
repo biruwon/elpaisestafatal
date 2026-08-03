@@ -71,6 +71,7 @@ const required = [
   'definitionChoiceMarkup',
   'topicChoices',
   'query.includes(\'sanidad\')',
+  'query.includes(\'pension\')',
   'data-clarification-choice',
   'Elige por dónde concretarla',
   'fallbackPublishedClaims',
