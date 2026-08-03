@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Added a scheduled maintainer-only knowledge-triage workflow. When Cloudflare credentials are configured, it exports production D1 clusters, builds the ranked JSON/Markdown review queue, and uploads private artifacts; scheduled runs skip safely without credentials, and the workflow has an explicit gate preventing materialization, promotion, deployment, or repository writes.
+
 - Replaced isolate-local API throttles with a shared rate-limit module backed by an additive D1 counter table. Classification, polling, learning capture, and feedback now share route-specific durable windows in production and retain bounded in-memory protection when D1 is unavailable; the release build validates that no endpoint keeps a private-only limiter.
 
 - Centralized internal answer, fallback, warehouse, and index versions so cache/result invalidation does not depend on scattered hardcoded strings. The release build now rejects stale runtime version literals and requires the deterministic API fallback and local resolver to use the same manifest; no provider or model identity is included.

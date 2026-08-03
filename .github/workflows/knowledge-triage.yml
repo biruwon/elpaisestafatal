@@ -1,0 +1,70 @@
+name: Build knowledge-gap review queue
+
+on:
+  schedule:
+    - cron: '37 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: knowledge-triage-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check triage configuration
+        id: configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CLOUDFLARE_API_TOKEN:-}" && -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual triage requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+            exit 1
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Scheduled triage skipped: Cloudflare credentials are not configured."
+          fi
+
+      - name: Check out repository
+        if: steps.configuration.outputs.configured == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: steps.configuration.outputs.configured == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.configuration.outputs.configured == 'true'
+        run: npm ci
+
+      - name: Validate triage and export production clusters
+        if: steps.configuration.outputs.configured == 'true'
+        run: |
+          npm run knowledge:triage:validate
+          npm run knowledge:triage -- --export-d1 --database elpaisestafatal-ops --min-count 3 --limit 50
+
+      - name: Upload maintainer-only review artifacts
+        if: steps.configuration.outputs.configured == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: knowledge-review-queue-${{ github.run_id }}
+          path: |
+            .local/d1-query-clusters.json
+            .local/query-clusters.json
+            .local/review-queue.json
+            .local/review-queue.md
+          if-no-files-found: error
+          retention-days: 30
