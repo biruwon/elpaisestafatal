@@ -371,6 +371,12 @@
       "metricId": "government_deficit_ratio"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?geo=ES&geo=EU27_2020&na_item=B9&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Déficit público: España y Unión Europea · Eurostat",
+      "aliases": ["déficit público frente a Europa", "déficit de España frente a la Unión Europea", "España tiene menos déficit que Europa", "España tiene más déficit que Europa", "saldo presupuestario frente a Europa"],
+      "metricId": "government_deficit_ratio_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di03?geo=ES&age=TOTAL&statinfo=MED_EI&unit=EUR&sinceTimePeriod=2015",
       "title": "Renta disponible mediana en España · Eurostat",
       "aliases": ["renta mediana", "ingresos medianos", "renta disponible", "ingresos de los hogares", "renta de las familias", "ingresos medianos de las familias", "cuánto ingresan los hogares"],

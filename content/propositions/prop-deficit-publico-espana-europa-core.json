@@ -1,0 +1,13 @@
+{
+  "id": "prop-deficit-publico-espana-europa-core",
+  "claimSlug": "espana-tiene-menos-deficit-ue",
+  "text": "España registró un déficit público menor que la Unión Europea en 2025.",
+  "type": "comparative",
+  "subject": "government_deficit_ratio_europe",
+  "predicate": "was_lower",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["deficit-publico-espana-europa-eurostat"]
+}

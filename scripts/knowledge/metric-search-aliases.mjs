@@ -21,6 +21,7 @@ export const metricSearchAliases = Object.freeze({
   old_age_survivors_benefits_per_capita: ['pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'euros por habitante'],
   old_age_survivors_benefits_per_capita_europe: ['pensiones', 'gasto en pensiones', 'pensiones frente a europa', 'europa', 'union europea', 'comparacion europea', 'euros por habitante'],
   government_revenue_ratio_europe: ['ingresos', 'recaudacion', 'publicos', 'europa', 'union europea', 'comparacion europea'],
+  government_deficit_ratio_europe: ['deficit publico', 'saldo presupuestario', 'superavit publico', 'europa', 'union europea', 'comparacion europea', 'porcentaje del pib'],
   government_current_taxes_income_wealth_europe: ['impuestos', 'impuestos sobre la renta', 'impuestos sobre la riqueza', 'presion fiscal', 'cobra impuestos', 'europa', 'union europea', 'comparacion europea', 'porcentaje del pib'],
   government_expenditure_ratio_europe: ['gasto', 'presupuesto', 'publico', 'europa', 'union europea', 'comparacion europea'],
   government_education_expenditure_ratio: ['gasto en educacion', 'gasto educativo', 'presupuesto de educacion', 'inversion publica en educacion', 'porcentaje del pib', 'educacion'],

@@ -614,6 +614,19 @@ definitions['espana-gasta-menos-proteccion-social-europa'] = {
   visuals: { key: { value: '−2.035,47 €', label: 'Diferencia frente a la Unión Europea', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Protección social por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [8221.52, 10256.99], label: 'Prestaciones de protección social por habitante', unit: '€ por habitante · euros corrientes' }, caveat: 'La comparación usa el gasto nominal agregado en todas las funciones de protección social; no mide cobertura, suficiencia, resultados ni la prestación media.' },
 };
 
+definitions['espana-tiene-menos-deficit-ue'] = {
+  prompt: 'España tiene menos déficit público que la Unión Europea',
+  aliases: ['España tiene un déficit menor que Europa', 'el déficit español es más bajo que el europeo', 'España tiene menos déficit que la Unión Europea'],
+  propositions: ['En 2025 el saldo público fue del -2,4% del PIB en España y del -3,1% en la Unión Europea.', 'Como ambos valores son negativos, España tuvo un déficit menor.', 'Menos déficit equivale a superávit o significa que la deuda acumulada es menor.'],
+  concern: 'España registró un saldo público menos negativo que la Unión Europea, pero ambos territorios tuvieron déficit y el saldo no es la deuda acumulada.',
+  supports: 'Eurostat registra un saldo del -2,4% del PIB en España y del -3,1% en la Unión Europea en 2025.',
+  limit: 'El indicador es el saldo neto de las administraciones públicas. No mide la deuda acumulada, el gasto total, la calidad del gasto ni la situación de los hogares.',
+  question: '¿Quieres comparar el saldo anual, la deuda acumulada o la composición de ingresos y gastos?',
+  reply: 'Sí: en 2025 España tuvo un saldo público del -2,4% del PIB frente al -3,1% de la Unión Europea. Como ambos valores son negativos, el déficit español fue 0,7 puntos menor; no hubo superávit.',
+  visualLabel: 'Menos déficit no significa superávit',
+  visuals: { key: { value: '−2,4% vs −3,1%', label: 'Saldo público sobre el PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Saldo público sobre el PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [-2.4, -3.1], label: 'Saldo público sobre el PIB', unit: '% del PIB · valores negativos = déficit' }, caveat: 'Ambos saldos son negativos: la comparación indica un déficit español menor, no un superávit. El saldo no es la deuda acumulada.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

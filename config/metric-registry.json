@@ -487,6 +487,14 @@
     "notEquivalentTo": ["government_debt_ratio", "government_expenditure_ratio"],
     "dimensions": ["period", "geography", "government_sector"]
   },
+  "government_deficit_ratio_europe": {
+    "name": "General government deficit or surplus as a share of GDP: Spain and the European Union",
+    "aliases": ["déficit público frente a Europa", "déficit de España frente a la Unión Europea", "España tiene menos déficit que Europa", "España tiene más déficit que Europa", "saldo presupuestario frente a Europa"],
+    "unit": "percentage of GDP",
+    "population": "general government balance for all government subsectors in Spain and the European Union",
+    "notEquivalentTo": ["government_deficit_ratio", "government_debt_ratio", "government_expenditure_ratio_europe"],
+    "dimensions": ["period", "geography", "government_sector", "national_accounts_indicator"]
+  },
   "median_equivalised_income": {
     "name": "Median equivalised disposable income",
     "aliases": ["renta mediana", "ingresos medianos", "renta disponible", "ingresos de los hogares", "renta de las familias", "ingresos medianos de las familias", "cuánto ingresan los hogares"],

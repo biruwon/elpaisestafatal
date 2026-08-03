@@ -278,6 +278,7 @@
     {"evidenceId":"dependencia-mayores-eurostat","propositionId":"prop-dependencia-mayores-2025-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"poblacion-cambio-eurostat","propositionId":"prop-espana-poblacion-crece-2025-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"prestaciones-proteccion-social-eurostat","propositionId":"prop-prestaciones-proteccion-social-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"prestaciones-proteccion-social-europa-eurostat","propositionId":"prop-prestaciones-proteccion-social-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"prestaciones-proteccion-social-europa-eurostat","propositionId":"prop-prestaciones-proteccion-social-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"deficit-publico-espana-europa-eurostat","propositionId":"prop-deficit-publico-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
 ]
 }

@@ -323,6 +323,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa los impuestos corrientes sobre la renta, la riqueza y conceptos relacionados recaudados por las administraciones públicas como porcentaje del PIB según Eurostat, con el último año común disponible; no equivale a todos los ingresos públicos ni a la factura fiscal de un hogar.',
     caveat: 'Es un agregado nacional comparable de una categoría tributaria amplia, no una medida de lo que paga cada persona ni un veredicto completo sobre la presión fiscal.',
   },
+  government_deficit_ratio_europe: {
+    label: 'Saldo presupuestario público sobre el PIB',
+    verb: 'registró un saldo presupuestario público sobre el PIB de',
+    replyLead: 'el saldo presupuestario público sobre el PIB fue de',
+    differenceVerb: ['el saldo español fue menos negativo', 'el saldo español fue más negativo', 'España y la Unión Europea registraron el mismo saldo'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa el indicador de Eurostat “net lending (+)/net borrowing (-)” para las administraciones públicas, expresado como porcentaje del PIB y con el último año común disponible. Un valor negativo representa déficit; menos negativo significa un déficit menor.',
+    caveat: 'Es el saldo agregado de las administraciones públicas, no la deuda acumulada, el gasto total ni la situación financiera de cada hogar.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
