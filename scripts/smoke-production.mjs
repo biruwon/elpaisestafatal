@@ -4,12 +4,9 @@ const maxRouteMs = Math.max(250, Number(process.env.SMOKE_MAX_ROUTE_MS || 8000))
 const maxApiMs = Math.max(500, Number(process.env.SMOKE_MAX_API_MS || 12000));
 const checks = [
   { path: '/', status: 200, title: 'El país está fatal' },
-  { path: '/aclarar/inmigracion-delincuencia/', status: 200, title: 'Aclaración' },
-  { path: '/aclarar/viviendas-vacias/', status: 200, title: 'Aclaración' },
-  { path: '/aclarar/empleo-record/', status: 200, title: 'Aclaración' },
-  { path: '/aclarar/espana-menos-fecundidad-ue/', status: 200, title: 'Aclaración' },
   { path: '/datos/', status: 200, title: 'Datos' },
   { path: '/afirmaciones/inmigrantes-ayudas/', status: 200, title: 'El país está fatal' },
+  { path: '/afirmaciones/inmigracion-delincuencia/', status: 200, title: 'El país está fatal' },
   { path: '/preocupaciones/vivienda/', status: 200, title: 'Vivienda' },
 ];
 

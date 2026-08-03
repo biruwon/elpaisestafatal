@@ -5,12 +5,11 @@ import ActionLink from '../components/ActionLink.astro';
 import { concerns } from '../data/concerns';
 import { popularClaims } from '../data/popularClaims';
 import { claims, assessmentLabels } from '../data/claimCatalog';
-import { conversationMvpClaims } from '../data/conversationMvp';
 import { claimIndexEntries } from '../data/claimIndexData';
 const featuredConcerns = concerns.filter((item) => ['vivienda','inmigracion','empleo','politica','sanidad'].includes(item.slug));
 const publishedClaimCount = claims.filter((item) => item.published).length;
 const latestPublishedClaims = claims.filter((item) => item.published).sort((a, b) => b.reviewed.localeCompare(a.reviewed)).slice(0, 4);
-const featuredConversationSlugs = [
+const featuredClaimSlugs = [
   'inmigracion-delincuencia',
   'inmigrantes-ayudas',
   'viviendas-vacias',
@@ -39,11 +38,17 @@ const featuredConversationSlugs = [
   'espana-menos-empleo-tiempo-parcial-europa',
   'espana-mas-empleo-temporal-europa',
 ];
-const featuredConversation = featuredConversationSlugs
-  .map((slug) => conversationMvpClaims.find((item) => item.slug === slug))
-  .filter((item): item is (typeof conversationMvpClaims)[number] => Boolean(item));
-const remainingConversation = conversationMvpClaims.filter((item) => !featuredConversationSlugs.includes(item.slug));
-const checkerPrompts = [...featuredConversation, ...remainingConversation];
+const publishedClaims = claims.filter((item) => item.published);
+const featuredClaims = featuredClaimSlugs
+  .map((slug) => publishedClaims.find((item) => item.slug === slug))
+  .filter((item): item is (typeof publishedClaims)[number] => Boolean(item));
+const remainingClaims = publishedClaims.filter((item) => !featuredClaimSlugs.includes(item.slug));
+const promptOverrides: Record<string, string> = {
+  'inmigracion-delincuencia': 'Los inmigrantes crean inseguridad',
+  'inmigrantes-ayudas': 'Los inmigrantes reciben todas las ayudas',
+  'espana-impuestos-europa': 'España es el país que más impuestos cobra de Europa',
+};
+const checkerPrompts = [...featuredClaims, ...remainingClaims].map((item) => ({ ...item, prompt: promptOverrides[item.slug] || item.claim }));
 const warehousePrompts = [
   '¿Cómo ha cambiado el precio de la luz para los hogares?',
   '¿Cuál es el tamaño de la economía española?',
@@ -186,7 +191,6 @@ const warehouseHighlights = [
   { label: 'Juventud', prompt: '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?', detail: 'Personas de 15 a 29 años fuera del empleo y de la educación o formación.' },
   { label: 'Acceso sanitario', prompt: '¿Ha aumentado la falta de atención médica por listas de espera?', detail: 'Necesidad médica no atendida declarada, separada de las listas quirúrgicas.' },
 ];
-const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');
 ---
 <BaseLayout description="Comprueba afirmaciones sobre España con datos públicos, contexto y fuentes originales.">
@@ -285,7 +289,6 @@ const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u00
   .claim-result-use{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:11px 0;margin:14px 0 2px}.claim-result-use>span{font:600 .6rem var(--mono);text-transform:uppercase;color:var(--muted)}.claim-result-use>div{display:flex;gap:6px;flex-wrap:wrap}.claim-result-use button{border:1px solid var(--line);background:var(--paper);padding:8px 10px;font:600 .62rem var(--mono);cursor:pointer}.claim-result-use button:hover,.claim-result-use button:focus-visible,.claim-result-use button[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:var(--paper)}.claim-result-use button[aria-pressed=true]{box-shadow:inset 0 -2px var(--yellow)}.claim-result-focus{animation:claim-result-focus 1.5s ease-out}@keyframes claim-result-focus{0%{outline:3px solid var(--yellow);outline-offset:4px}100%{outline:3px solid transparent;outline-offset:10px}}
   .claim-result-card[data-result-mode=understand] .claim-plan-reply{display:none}.claim-result-card[data-result-mode=reply] .claim-plan-blocks>div:not(.claim-plan-reply):not(.claim-plan-concern),.claim-result-card[data-result-mode=reply] .claim-result-details,.claim-result-card[data-result-mode=reply] .claim-plan-question,.claim-result-card[data-result-mode=reply] .claim-plan-limitation,.claim-result-card[data-result-mode=reply] .claim-plan-source-links{display:none}.claim-result-card[data-result-mode=sources] .claim-plan-blocks>div,.claim-result-card[data-result-mode=sources] .claim-plan-question,.claim-result-card[data-result-mode=sources] .claim-plan-reply,.claim-result-card[data-result-mode=sources] .claim-plan-concern{display:none}.claim-result-card[data-result-mode=sources] .claim-plan-limitation{display:block}.claim-result-card[data-result-mode=sources] .claim-result-details{display:block}
 </style>
-<script is:inline type="application/json" id="conversation-mvp-data" set:html={conversationPayload}></script>
 <script is:inline type="application/json" id="claim-index-data" data-advanced="true" set:html={claimIndexPayload}></script>
 <script src="../scripts/claim-input.ts"></script>
 <script src="../scripts/popular-claims.ts"></script>

@@ -16,15 +16,6 @@ type SearchResponse = {
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
 
-type ConversationVisual = {
-  slug: string;
-  visuals?: {
-    key?: { value: string; label: string; period: string };
-    trend?: { available: boolean; labels: string[]; values: number[]; label: string; unit: string };
-    comparison?: { labels: string[]; values: number[]; label: string; unit: string };
-  };
-};
-
 let chartSequence = 0;
 
 const readJson = <T>(id: string, fallback: T): T => {
@@ -39,7 +30,6 @@ const escapeHtml = (value: string): string => value
   .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
 const claimIndex = readJson<ClaimIndexEntry[]>('claim-index-data', []);
-const conversationVisuals = readJson<ConversationVisual[]>('conversation-mvp-data', []);
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
 const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
@@ -420,7 +410,7 @@ const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
 
 const visualMarkup = (entry?: ClaimIndexEntry): string => {
   if (!entry) return '';
-  const visual = conversationVisuals.find((item) => item.slug === entry.slug)?.visuals;
+  const visual = entry.visual;
   if (!visual?.key) return '';
   const comparison = visual.comparison;
   const signedComparison = Boolean(comparison?.values.some((value) => value < 0));
@@ -439,10 +429,10 @@ const formatChartValue = (value: number): string => Number(value).toLocaleString
 const chartDataMarkup = (entries: Array<{ label: string; value: number }>, unit: string): string => `<details class="claim-chart-data"><summary>Ver valores</summary><table><thead><tr><th>Periodo o grupo</th><th>Valor</th></tr></thead><tbody>${entries.map((entry) => `<tr><th scope="row">${escapeHtml(entry.label)}</th><td>${escapeHtml(formatChartValue(entry.value))} ${escapeHtml(unit)}</td></tr>`).join('')}</tbody></table></details>`;
 
 const chartSeriesForBlock = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): { labels: string[]; values: number[]; label: string; unit: string } | undefined => {
-  const visual = conversationVisuals.find((item) => item.slug === block.visualId)?.visuals;
+  const visual = claimIndex.find((item) => item.slug === block.visualId)?.visual;
   return block.visualId === 'warehouse-observation'
     ? plan.warehouseSeries
-    : block.type === 'line_chart' ? visual?.trend : visual?.comparison;
+    : block.type === 'line_chart' ? undefined : visual?.comparison;
 };
 
 const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {

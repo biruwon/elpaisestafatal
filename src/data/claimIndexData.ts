@@ -1,5 +1,4 @@
 import { claims } from './claimCatalog';
-import { conversationMvpClaims } from './conversationMvp';
 import { concerns } from './concerns';
 import type { ClaimIndexEntry } from './claimIndex';
 import { claimAliases } from './claimAliases';
@@ -28,7 +27,6 @@ const topicVocabulary: Record<string, string[]> = {
 
 const clean = (value: string): string => value.replace(/[“”]/g, '').trim();
 
-const conversationAliases = new Map(conversationMvpClaims.map((claim) => [claim.slug, [claim.prompt, ...claim.aliases]]));
 const scalableAliases: Record<string, string[]> = {
   'airbnb-vivienda': ['pisos turísticos han causado la crisis de vivienda', 'los pisos turísticos causan la crisis de vivienda', 'alquiler turístico crisis vivienda'],
   'paro-historico': ['paro más bajo de la historia', 'paro mínimo histórico', 'España tiene el paro más bajo de la historia'],
@@ -42,7 +40,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     slug: claim.slug,
     title: clean(claim.claim),
     href: `/afirmaciones/${claim.slug}`,
-    aliases: [...(conversationAliases.get(claim.slug) ?? []), ...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? []), claim.topic],
+    aliases: [...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? []), claim.topic],
     keywords: [...claim.keywords, ...claim.topicSlugs],
     assessment: claim.assessment,
     answer: claim.shareable,
@@ -58,6 +56,18 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     whatIsMissing: claim.whatIsMissing,
     cannotProve: claim.cannotProve,
     scale: claim.scale,
+    visual: claim.visualType === 'comparison' && claim.visualComparisonLabels?.length
+      ? {
+          comparison: {
+            labels: claim.visualComparisonLabels,
+            values: (claim.visualComparisonValues ?? []).map(Number).filter(Number.isFinite),
+            label: claim.visualComparisonUnit || 'Comparación documentada',
+            unit: claim.visualComparisonUnit || '',
+          },
+        }
+      : claim.visualType === 'money_flow' && claim.visualAmount
+        ? { key: { value: claim.visualAmount, label: claim.visualDestination || 'Transferencia documentada', period: claim.period || '' } }
+        : undefined,
   })),
   ...concerns.map((concern) => ({
     kind: 'topic' as const,

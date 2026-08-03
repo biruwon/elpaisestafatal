@@ -309,6 +309,7 @@ export const claimAliases: Record<string, string[]> = {
     'la reforma laboral acabó con los contratos temporales',
     'ya no existe precariedad laboral',
     'la reforma laboral solucionó el trabajo precario',
+    'ya no hay contratos precarios',
   ],
   'paro-historico': [
     'España tiene el paro más bajo de la historia',
@@ -341,6 +342,7 @@ export const claimAliases: Record<string, string[]> = {
     'todos los políticos roban',
     'no hay ningún político honrado',
     'la política española es toda corrupción',
+    'la política está llena de corruptos',
   ],
   'espana-mas-peligrosa': [
     'cada vez hay más delincuencia',
@@ -353,10 +355,12 @@ export const claimAliases: Record<string, string[]> = {
     'la economía va bien pero no llego a fin de mes',
     'si la economía crece por qué todo está más caro',
     'España crece pero la gente vive peor',
+    'la economía crece, pero la vida sigue demasiado cara',
   ],
   'espana-recesion': [
     'España está arruinada',
     'la economía española se hunde',
+    'España ya está en recesión',
   ],
   'precio-vivienda-sube': [
     'los pisos bajan de precio',
@@ -373,21 +377,32 @@ export const claimAliases: Record<string, string[]> = {
     'hay más estafas por internet',
     'la ciberdelincuencia se ha disparado',
     'los delitos digitales son cada vez más frecuentes',
+    'fraude online aumenta',
   ],
   'empleo-record-calidad': [
     'hay más trabajo pero es peor',
     'el récord de empleo no significa empleo de calidad',
     'tener más ocupados no quiere decir que se cobre bien',
+    'más ocupados mejor trabajo',
+  ],
+  'record-empleo-no-resuelve-paro': [
+    'récord de empleo significa pleno empleo',
+    'el paro está resuelto',
+  ],
+  'subida-vivienda-no-todas-igual': [
+    'todas las casas suben un 12,9%',
   ],
   'inmigracion-flujos-no-total': [
     'las llegadas de inmigrantes son toda la inmigración',
     'todos los inmigrantes llegan ilegalmente',
     'la inmigración irregular es la mayoría',
+    'todos los inmigrantes llegan irregularmente',
   ],
   'juventud-emancipacion': [
     'los jóvenes no pueden independizarse',
     'la mitad de los jóvenes vive con sus padres',
     'en España los jóvenes no se emancipan',
+    'la mitad de los jóvenes no se emancipa',
   ],
   'paro-epa-registro': [
     'el paro de la EPA y el paro registrado son iguales',

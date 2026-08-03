@@ -9,15 +9,14 @@ const requireText = (label, content, snippets) => {
   }
 };
 
-const [searchPage, searchSource, searchScript, inputSource, investigationsPage, sourcesPage, clarifierPage, clarifierSource] = await Promise.all([
+const [searchPage, searchSource, searchScript, inputSource, investigationsPage, sourcesPage, affirmationPage] = await Promise.all([
   read('dist/buscar/index.html'),
   read('src/pages/buscar.astro'),
   read('src/scripts/site-search.ts'),
   read('src/scripts/claim-input.ts'),
   read('dist/investigaciones/index.html'),
   read('dist/fuentes/index.html'),
-  read('dist/aclarar/inmigracion-delincuencia/index.html'),
-  read('src/components/ClarifierVisuals.astro'),
+  read('dist/afirmaciones/inmigrantes-ayudas/index.html'),
 ]);
 
 requireText('Search page', searchPage, ['site-search', 'search-output', 'search-noscript', 'frase es nueva', 'orientación rápida']);
@@ -26,8 +25,7 @@ requireText('Search script', searchScript, ['rankClaimIndex', 'search-check-link
 requireText('Claim checker handoff', inputSource, ['URLSearchParams(window.location.search)', 'requestSubmit()']);
 requireText('Investigation index', investigationsPage, ['investigation-index-actions', 'primary-index-action', 'planned-disclosure', '<details']);
 requireText('Sources page', sourcesPage, ['source-search', 'source-status', 'source-list', 'data-source-card']);
-requireText('Static clarifier visual scene', clarifierPage, ['clarifier-visual-scene', 'data-replay-visual', 'aria-pressed="false"']);
-requireText('Static clarifier visual scene source', clarifierSource, ['data-replay-visual', 'visual-scene-in', 'prefers-reduced-motion:reduce']);
+requireText('Canonical affirmation page', affirmationPage, ['claim-answer', 'claim-data', 'claim-evidence', 'claim-sources']);
 
 const publishedLinks = (investigationsPage.match(/href="\/preocupaciones\//g) || []).length;
 if (publishedLinks < 10) failures.push(`Investigation index exposes only ${publishedLinks} published topics`);

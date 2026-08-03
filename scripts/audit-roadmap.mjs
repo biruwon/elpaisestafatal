@@ -24,16 +24,10 @@ for (const file of html) {
 
 const concernPages = html.filter((file) => file.includes('/preocupaciones/') && file.endsWith('/index.html'));
 const claimPages = html.filter((file) => file.includes('/afirmaciones/') && !file.endsWith('/afirmaciones/index.html') && file.endsWith('/index.html'));
-const clarifierPages = html.filter((file) => file.includes('/aclarar/') && file.endsWith('/index.html'));
+const legacyClarifierPages = html.filter((file) => file.includes('/aclarar/') && file.endsWith('/index.html'));
 if (concernPages.length < 14) failures.push(`expected at least 14 concern pages, found ${concernPages.length}`);
 if (claimPages.length < 20) failures.push(`expected at least 20 affirmation pages, found ${claimPages.length}`);
-if (clarifierPages.length < 3) failures.push(`expected at least 3 clarifier pages, found ${clarifierPages.length}`);
-for (const file of clarifierPages) {
-  const source = await readFile(file, 'utf8');
-  const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');
-  if (!source.includes('noscript-notice')) failures.push(`${route}: missing no-JavaScript fallback`);
-  if (!source.includes('Fuentes') && !source.includes('fuentes')) failures.push(`${route}: missing source link/content`);
-}
+if (legacyClarifierPages.length > 0) failures.push(`legacy clarifier route is still built (${legacyClarifierPages.length} pages)`);
 const redirects = await readFile(new URL('../public/_redirects', import.meta.url), 'utf8');
 if (!redirects.includes('/contacto /acerca-de#contacto 301')) failures.push('missing contact redirect');
 

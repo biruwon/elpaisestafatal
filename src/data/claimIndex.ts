@@ -21,6 +21,10 @@ export type ClaimIndexEntry = {
   whatIsMissing?: string;
   cannotProve?: string;
   scale?: string;
+  visual?: {
+    key?: { value: string; label: string; period: string };
+    comparison?: { labels: string[]; values: number[]; label: string; unit: string };
+  };
 };
 
 export type RankedClaimIndexEntry = ClaimIndexEntry & {
