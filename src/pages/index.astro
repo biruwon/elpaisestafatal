@@ -25,6 +25,7 @@ const featuredConversationSlugs = [
   'espana-mas-peligrosa',
   'paro-juvenil-espana-ue',
   'abandono-escolar-espana-ue',
+  'ninis-espana-ue',
 ];
 const featuredConversation = featuredConversationSlugs
   .map((slug) => conversationMvpClaims.find((item) => item.slug === slug))
@@ -84,6 +85,7 @@ const warehousePrompts = [
   '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
   '¿Tiene España más paro juvenil que la Unión Europea?',
   '¿Tiene España más abandono escolar temprano que la Unión Europea?',
+  '¿España tiene más ninis que la Unión Europea?',
   '¿Cuánto debe España?',
   '¿Cuánto dinero se dedica por persona a la sanidad?',
   '¿Cuánto ingresan de media los hogares?',
@@ -128,6 +130,7 @@ const warehouseHighlights = [
   { label: 'Vivienda · esfuerzo · Europa', prompt: '¿España tiene más sobrecarga de vivienda que Europa?', detail: 'Costes totales de vivienda por encima del 40% de la renta disponible equivalente; la última comparación es de 2025.' },
   { label: 'Empleo juvenil · Europa', prompt: '¿Tiene España más paro juvenil que la Unión Europea?', detail: 'Misma población activa de 15 a 24 años y tasa comparable.' },
   { label: 'Educación · Europa', prompt: '¿Tiene España más abandono escolar temprano que la Unión Europea?', detail: 'Misma definición, población de 18 a 24 años y periodo para comparar España y la UE.' },
+  { label: 'Juventud · Europa', prompt: '¿España tiene más ninis que la Unión Europea?', detail: 'Misma población de 15 a 29 años y definición de personas fuera del empleo y la educación o formación.' },
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },
   { label: 'Inmigración · nacionalidad', prompt: '¿Cuántos residentes tienen ciudadanía extranjera en España?', detail: 'Nacionalidad y país de nacimiento son medidas distintas; tampoco equivale a llegadas anuales.' },
   { label: 'Sanidad', prompt: '¿Cuánto dinero se dedica por persona a la sanidad?', detail: 'Gasto comparable, unidad y fuente.' },

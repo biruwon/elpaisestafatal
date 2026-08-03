@@ -148,6 +148,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la proporción de personas de 18 a 24 años que abandonaron pronto la educación y la formación, según Eurostat; no es la tasa de paro juvenil ni una medida completa de calidad educativa.',
     caveat: 'Es un indicador de abandono temprano en la población de 18 a 24 años, no el rendimiento de todo el sistema ni la experiencia de cada joven.',
   },
+  neet_rate_europe: {
+    label: 'Jóvenes que ni estudian ni trabajan',
+    verb: 'registró una tasa de jóvenes que ni estudian ni trabajan del',
+    replyLead: 'la tasa de jóvenes que ni estudian ni trabajan fue del',
+    differenceVerb: ['la tasa española fue más alta', 'la tasa española fue más baja', 'España y la Unión Europea registraron la misma tasa'],
+    unit: '% de jóvenes de 15 a 29 años',
+    replyUnit: '% de jóvenes de 15 a 29 años',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la proporción de personas de 15 a 29 años que no están empleadas ni participan en educación o formación, según Eurostat; no es la tasa de paro juvenil ni una descripción de toda la juventud.',
+    caveat: 'El indicador combina situaciones laborales y formativas distintas; no identifica por sí solo sus causas, duración, ingresos o calidad del empleo.',
+  },
   government_revenue_ratio_europe: {
     label: 'Ingresos públicos sobre el PIB',
     verb: 'registró unos ingresos públicos',

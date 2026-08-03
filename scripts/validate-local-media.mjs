@@ -22,7 +22,7 @@ requireText(service, "if (text) {", 'typed-caption fallback');
 requireText(compose, 'LOCAL_SPEECH_COMMAND', 'local compose contract');
 requireText(compose, 'LOCAL_SPEECH_TIMEOUT_MS', 'local compose contract');
 requireText(homepage, 'conversation-media-help', 'media submission guidance');
-requireText(input, 'se enviará automáticamente', 'automatic media submission guidance');
+requireText(homepage, 'se leen automáticamente', 'automatic media submission guidance');
 requireText(input, "fileInput?.addEventListener('change'", 'automatic file submission');
 requireText(smoke, 'SMOKE_MEDIA', 'multipart media smoke path');
 

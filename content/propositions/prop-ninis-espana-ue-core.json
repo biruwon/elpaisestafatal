@@ -1,0 +1,13 @@
+{
+  "id": "prop-ninis-espana-ue-core",
+  "claimSlug": "ninis-espana-ue",
+  "text": "En 2025, España tuvo una tasa de jóvenes que ni estudian ni trabajan ligeramente mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "neet_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "11.5 percent versus 11.0 percent",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["ninis-espana-ue-eurostat"]
+}

@@ -401,4 +401,10 @@ export const claimAliases: Record<string, string[]> = {
     'cada vez hay más residentes extranjeros',
     'la población por nacionalidad extranjera ha crecido',
   ],
+  'ninis-espana-ue': [
+    'España tiene más ninis que Europa',
+    'la tasa de ninis española supera a la europea',
+    'España tiene más jóvenes fuera del empleo y la educación que la UE',
+    'comparación europea de ninis',
+  ],
 };

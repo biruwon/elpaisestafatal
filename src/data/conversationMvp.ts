@@ -420,6 +420,19 @@ definitions['espana-sobrecarga-vivienda-europa'] = {
   visuals: { key: { value: '7,2 %', label: 'España · población en hogares con sobrecarga', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Sobrecarga del coste de la vivienda', unit: 'Comparación puntual; el resultado relativo cambia según el año' }, comparison: { labels: ['España', 'Unión Europea'], values: [7.2, 7.7], label: 'Población en hogares con sobrecarga de vivienda', unit: '% de la población · 2025' }, caveat: 'El umbral es el 40% de la renta disponible equivalente. No mide directamente precios, oferta, calidad, hacinamiento o diferencias entre ciudades.' },
 };
 
+definitions['ninis-espana-ue'] = {
+  prompt: 'España tiene más jóvenes que ni estudian ni trabajan que la Unión Europea',
+  aliases: ['España tiene más ninis que Europa', 'la tasa de ninis española supera a la europea', 'España tiene más jóvenes fuera del empleo y la educación que la UE', 'comparación europea de ninis'],
+  propositions: ['En 2025, el 11,5% de las personas de 15 a 29 años no estaba empleada ni participaba en educación o formación en España, frente al 11,0% en la Unión Europea.', 'La diferencia es pequeña, pero confirma una brecha en ese indicador.', 'La comparación demuestra por sí sola las causas o la calidad de la transición laboral de todos los jóvenes.'],
+  concern: 'España registra ligeramente más jóvenes fuera del empleo y la educación o formación que la Unión Europea en la misma medida comparable, pero la diferencia es pequeña y no explica por sí sola sus causas.',
+  supports: 'Eurostat registra un 11,5% en España y un 11,0% en la Unión Europea en 2025: 0,5 puntos porcentuales de diferencia.',
+  limit: 'El indicador se calcula sobre personas de 15 a 29 años que no están empleadas ni participan en educación o formación. No es la tasa de paro juvenil y no mide por sí solo duración, ingresos o calidad del empleo.',
+  question: '¿Quieres comparar la tasa de ninis, el paro juvenil o la duración y causas de esa situación?',
+  reply: 'Sí, pero por poco: en 2025 España registró un 11,5% de jóvenes de 15 a 29 años fuera del empleo y la educación o formación, frente al 11,0% de la UE. Son 0,5 puntos más; el indicador no explica por sí solo las causas.',
+  visualLabel: 'Una diferencia pequeña no es una explicación causal',
+  visuals: { key: { value: '+0,5 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Evolución de jóvenes fuera del empleo y la educación', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [11.5, 11], label: 'Jóvenes fuera del empleo y la educación o formación', unit: '% de personas de 15 a 29 años · 2025' }, caveat: 'El indicador no es el paro juvenil: incluye a personas fuera de la población activa y combina situaciones formativas y laborales distintas.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the
@@ -455,5 +468,8 @@ export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(defi
   };
 }).filter((item) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === item.slug);
-  return markdownClaim?.status === 'published' && claims.some((claim) => claim.slug === item.slug && claim.published);
+  // Markdown content is the canonical published source. The legacy claim
+  // array is still used above for older records, but it must not hide newer
+  // published families from the conversation library.
+  return markdownClaim?.status === 'published';
 });

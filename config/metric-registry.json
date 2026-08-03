@@ -487,6 +487,14 @@
     "notEquivalentTo": ["youth_unemployment_rate", "early_school_leaving_rate", "tertiary_education_attainment_rate"],
     "dimensions": ["period", "geography", "age", "sex", "labour_status", "education_or_training"]
   },
+  "neet_rate_europe": {
+    "name": "Young people neither in employment nor in education or training: Spain and the European Union",
+    "aliases": ["ninis frente a Europa", "jóvenes que ni estudian ni trabajan frente a Europa", "España tiene más ninis que Europa", "España tiene menos ninis que Europa", "comparación europea de ninis"],
+    "unit": "percent of population aged 15 to 29",
+    "population": "usual residents aged 15 to 29 who are neither employed nor in education or training in Spain and the European Union",
+    "notEquivalentTo": ["neet_rate", "youth_unemployment_rate_europe", "early_school_leaving_rate_europe", "tertiary_education_attainment_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "labour_status", "education_or_training"]
+  },
   "unmet_healthcare_waiting_list_rate": {
     "name": "People reporting unmet medical needs because of a waiting list",
     "aliases": ["lista de espera médica", "lista de espera sanitaria", "no recibe atención por lista de espera", "personas sin atención por lista de espera", "espera médica impide atención", "necesidad médica no atendida por espera"],

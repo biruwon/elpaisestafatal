@@ -35,6 +35,7 @@ const metricHints = [
   { ids: ['early_school_leaving_rate_europe'], terms: ['abandono escolar frente a europa', 'abandono escolar frente a la union europea', 'abandono escolar temprano frente a europa', 'abandono escolar temprano frente a la union europea', 'abandono educativo frente a europa', 'abandono educativo frente a la union europea', 'espana tiene mas abandono escolar que europa', 'espana tiene mas abandono escolar que la union europea', 'espana tiene menos abandono escolar que europa', 'espana tiene menos abandono escolar que la union europea', 'comparacion europea del abandono escolar', 'abandono escolar europa'] },
   { ids: ['early_school_leaving_rate'], terms: ['abandono escolar temprano', 'abandono escolar', 'abandono educativo', 'proporcion de jovenes que dejan la educacion temprano', 'proporcion de jovenes dejan la educacion temprano', 'jovenes dejan educacion temprano', 'dejan los estudios', 'dejan los estudios antes de tiempo', 'jovenes que abandonan los estudios', 'fracaso escolar temprano'] },
   { ids: ['tertiary_education_attainment_rate'], terms: ['estudios superiores', 'educacion superior', 'titulacion superior', 'universitarios', 'graduados', 'titulados', 'universitarios de 25 a 34', 'jovenes con estudios universitarios', 'personas con estudios superiores'] },
+  { ids: ['neet_rate_europe'], terms: ['ninis frente a europa', 'ninis frente a la union europea', 'ni estudian ni trabajan frente a europa', 'ni estudian ni trabajan frente a la union europea', 'espana tiene mas ninis que europa', 'espana tiene mas ninis que la union europea', 'espana tiene menos ninis que europa', 'espana tiene menos ninis que la union europea', 'tiene espana mas ninis que europa', 'tiene espana mas ninis que la union europea', 'comparacion europea de ninis', 'ninis europa'] },
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera del empleo y de la educacion', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
   { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt', 'cuanto debe españa', 'deuda del pais', 'nivel de deuda española'] },
@@ -145,6 +146,14 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('youth_unemployment_rate');
     preferred.delete('tertiary_education_attainment_rate');
     preferred.delete('neet_rate');
+    preferred.delete('neet_rate_europe');
+  }
+  if (preferred.has('neet_rate_europe')) {
+    preferred.delete('neet_rate');
+    preferred.delete('early_school_leaving_rate');
+    preferred.delete('early_school_leaving_rate_europe');
+    preferred.delete('youth_unemployment_rate');
+    preferred.delete('youth_unemployment_rate_europe');
   }
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_current_taxes_income_wealth_europe')) {
@@ -217,6 +226,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const earlyEducationEuropeRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const tertiaryEducationRequested = metricHints.find((hint) => hint.ids.includes('tertiary_education_attainment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const neetEuropeRequested = metricHints.find((hint) => hint.ids.includes('neet_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
   const employmentEuropeRequested = metricHints.find((hint) => hint.ids.includes('employment_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -241,6 +251,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (educationContext && !earlyEducationRequested) excluded.add('early_school_leaving_rate');
   if (educationContext && !earlyEducationEuropeRequested) excluded.add('early_school_leaving_rate_europe');
   if (educationContext && !neetRequested) excluded.add('neet_rate');
+  if (educationContext && !neetEuropeRequested) excluded.add('neet_rate_europe');
+  if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');

@@ -82,7 +82,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'median_equivalised_income_europe') return 'PPS por persona';
   if (metricId === 'early_school_leaving_rate' || metricId === 'early_school_leaving_rate_europe') return '% de personas de 18 a 24 años';
   if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
-  if (metricId === 'neet_rate') return '% de jóvenes de 15 a 29 años';
+  if (metricId === 'neet_rate' || metricId === 'neet_rate_europe') return '% de jóvenes de 15 a 29 años';
   if (metricId === 'unmet_healthcare_waiting_list_rate') return '% de población de 16 años o más';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe') return '% de la población';
@@ -503,7 +503,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // example monthly inflation). Keep the broad path small, but let an
   // explicit metric retrieve enough of its own series to retain the latest
   // periods for the chart.
-  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe');
+  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe');
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
