@@ -2,6 +2,8 @@ name: Create operations backup
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 0'
 
 permissions:
   contents: read
@@ -15,19 +17,38 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WAREHOUSE_DATABASE_URL: ${{ secrets.WAREHOUSE_DATABASE_URL }}
     steps:
+      - name: Check backup configuration
+        id: configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CLOUDFLARE_API_TOKEN:-}" && -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual backup requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+            exit 1
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Scheduled backup skipped: Cloudflare backup credentials are not configured."
+          fi
+
       - name: Check out repository
+        if: steps.configuration.outputs.configured == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Node.js
+        if: steps.configuration.outputs.configured == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        if: steps.configuration.outputs.configured == 'true'
         run: npm ci
 
       - name: Export and verify operations state
+        if: steps.configuration.outputs.configured == 'true'
         run: |
           set -euo pipefail
           backup_dir="$RUNNER_TEMP/elpaisestafatal-operations-backup"
@@ -38,6 +59,7 @@ jobs:
           npm run backup:artifact:validate
 
       - name: Upload verified operations backup
+        if: steps.configuration.outputs.configured == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: elpaisestafatal-operations-backup-${{ github.run_id }}
