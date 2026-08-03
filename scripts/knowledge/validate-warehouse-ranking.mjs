@@ -23,4 +23,6 @@ const regional = summarizeWarehouseRegionalComparison('Madrid tiene más densida
 if (!regional || !regional.regional || !regional.headline.includes('Comunidad de Madrid') || !regional.reply.includes('850')) throw new Error('Regional comparison did not use the requested Spanish regions and common period');
 const spanishRanking = summarizeWarehouseRanking('¿Qué comunidad tiene mayor densidad de población?', regionalRecords);
 if (!spanishRanking || !spanishRanking.summary.includes('Comunidad de Madrid') || !spanishRanking.reply.includes('personas por km²') || spanishRanking.observations.some((item) => item.dimensions?.geo === 'BE10')) throw new Error('Regional ranking did not restrict a Spanish community query to Spanish regions');
+const europeanRanking = summarizeWarehouseRanking('¿Qué región europea tiene mayor densidad de población?', regionalRecords);
+if (!europeanRanking || !europeanRanking.summary.includes('Région de Bruxelles-Capitale') || !europeanRanking.observations.some((item) => item.dimensions?.geo === 'BE10')) throw new Error('Regional ranking incorrectly applied Spain-only scope to an explicit European query');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

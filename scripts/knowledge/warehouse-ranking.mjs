@@ -74,10 +74,12 @@ export const summarizeWarehouseRegionalComparison = (text, observations) => {
 
 export const summarizeWarehouseRanking = (text, observations) => {
   const query = normalise(text);
-  const regionalSpanishQuery = query.includes('comunidad') || query.includes('autonomia') || query.includes('autonomica');
+  const queryTerms = new Set(query.split(' ').filter(Boolean));
+  const internationalRegionalQuery = ['europa', 'europea', 'europeas', 'union europea', 'paises europeos', 'comparar paises'].some((term) => query.includes(term)) || queryTerms.has('ue');
+  const spanishRegionalQuery = !internationalRegionalQuery;
   const numeric = observations
     .filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period)
-    .filter((item) => !regionalSpanishQuery || item.metricId !== 'regional_population_density' || /^ES\d/.test(String(item.dimensions?.geo || '')));
+    .filter((item) => !spanishRegionalQuery || item.metricId !== 'regional_population_density' || /^ES\d/.test(String(item.dimensions?.geo || '')));
   if (numeric.length < 2) return null;
   const groups = new Map();
   for (const item of numeric) {
