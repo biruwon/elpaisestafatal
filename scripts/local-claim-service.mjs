@@ -222,7 +222,7 @@ const compileClaim = async (text, candidates = []) => {
 
 const extractImageText = async (media) => {
   if (!media?.base64) return '';
-  const response = await inference.chat({ model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
+  const response = await inference.chat({ model: visionModel, stream: false, think: false, keep_alive: -1, options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
   return String(response.message?.content || '').trim().slice(0, 8000);
 };
 
