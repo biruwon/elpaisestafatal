@@ -1,4 +1,4 @@
-import { claims } from './claims';
+import { claims } from './claimCatalog';
 import { markdownClaims } from './content';
 import type { RegionSeries } from './regions';
 

@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ClarifierVisuals from '../../components/ClarifierVisuals.astro';
 import { conversationMvpClaims } from '../../data/conversationMvp';
-import { getClaim } from '../../data/claims';
+import { getClaim } from '../../data/claimCatalog';
 
 export function getStaticPaths() {
   return conversationMvpClaims.map((claim) => ({ params: { slug: claim.slug }, props: { claim } }));

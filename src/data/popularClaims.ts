@@ -1,4 +1,4 @@
-import { claims, type ClaimVerification } from './claims';
+import { claims, type ClaimVerification } from './claimCatalog';
 
 const popularSlugs = [
   'poblacion-residente-supera-49m',

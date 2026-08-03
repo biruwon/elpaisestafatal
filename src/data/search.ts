@@ -1,4 +1,4 @@
-import { claims } from './claims';
+import { claims } from './claimCatalog';
 
 export type CuratedSearchItem = {
   question: string;

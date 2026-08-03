@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { claims } from '../data/claims';
+import { claims } from '../data/claimCatalog';
 import { concerns } from '../data/concerns';
 
 const origin = 'https://elpaisestafatal.es';

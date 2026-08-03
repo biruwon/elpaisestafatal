@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TopicBadge from '../../components/TopicBadge.astro';
-import { claims, assessmentLabels } from '../../data/claims';
+import { claims, assessmentLabels } from '../../data/claimCatalog';
 import { getTopicPresentation } from '../../data/topicPresentation';
 
 const publishedClaims = claims.filter((claim) => claim.published);
