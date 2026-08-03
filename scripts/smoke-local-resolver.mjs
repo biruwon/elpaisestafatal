@@ -488,6 +488,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseComparison?.reply?.includes('tasa de paro juvenil española fue más alta')) failures.push('Spain/EU youth unemployment: comparison reply did not use the youth-specific wording');
   } catch (error) { failures.push(`Spain/EU youth unemployment: ${error.message}`); }
   try {
+    const result = await resolve('El salario mínimo ha subido en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'minimum_wage_monthly') failures.push('minimum wage warehouse: selected the wrong metric family');
+    if (result.result?.warehouseSeries?.labels?.[0] !== 'primer semestre de 2021') failures.push('minimum wage warehouse: chart omitted the series baseline');
+    if (result.result?.warehouseSeries?.labels?.at(-1) !== 'segundo semestre de 2026') failures.push('minimum wage warehouse: chart omitted the latest period');
+  } catch (error) { failures.push(`minimum wage warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de la población activa no encuentra trabajo');
     if (result.result?.warehouseSeries?.metricId === 'youth_unemployment_rate') failures.push('general unemployment warehouse: incorrectly selected the youth metric without youth wording');
   } catch (error) { failures.push(`general unemployment warehouse: ${error.message}`); }

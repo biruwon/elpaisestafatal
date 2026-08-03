@@ -1251,7 +1251,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   })() : [];
   const numericObservations = ranking?.observations || trend?.observations || causalContext?.observations || quantity?.observations || (isGroupComparison ? groupObservations : (isPrediction ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)) : observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value))));
   const evidenceObservations = isGroupComparison ? groupObservations : isQuantityLike ? (quantity?.observations || (!quantityClaim ? observations : [])) : isLegal ? legalObservations : (isDefinition ? [] : observations);
-  const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
+  // Keep the first observation visible when a long trend is compressed. The
+  // narrative summary compares the first and latest values, so the chart must
+  // show that same baseline instead of starting in the middle of the series.
+  const seriesForVisual = ranking
+    ? numericObservations.slice(0, 6)
+    : numericObservations.length > 6
+      ? [numericObservations[0], ...numericObservations.slice(-5)]
+      : numericObservations;
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? displayWarehouseGroup(item) : displayPeriod(item.period || item.id, item.metricId)),
     values: seriesForVisual.map((item) => Number(item.value)),
