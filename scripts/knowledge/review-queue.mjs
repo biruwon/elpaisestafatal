@@ -1,7 +1,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { rankMaterializationCandidates } from './materialization-candidates.mjs';
+import {
+  rankMaterializationCandidates,
+} from './materialization-candidates.mjs';
+import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { isPublicReuseQuery } from './boe-legal-discovery.mjs';
+import { handlerForInput } from './handlers.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -26,6 +31,23 @@ const date = (value) => {
   return Number.isNaN(parsed.getTime()) ? 'unknown' : parsed.toISOString().slice(0, 10);
 };
 const formatNumber = (value) => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(number(value));
+const normalise = (value) => String(value || '')
+  .toLocaleLowerCase('es')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/ñ/g, 'n')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+const discoverySourceId = (value) => /(?:^|-)discovery-/i.test(String(value || ''));
+const directSourceIds = (cluster) => asArray(cluster?.sourceIds).filter((id) => !discoverySourceId(id));
+const clusterText = (cluster) => [cluster?.text, cluster?.canonicalText, cluster?.canonical, cluster?.signature].filter(Boolean).join(' ');
+const localSpecificClaim = (cluster) => /(?:mi|en mi|de mi)\s+(?:calle|barrio|portal|municipio|pueblo|edificio|zona|ciudad)|\b(?:barrio|municipio|pueblo|portal|edificio)\b|\b(?:en la zona|delitos zona|inseguridad zona)\b/i.test(clusterText(cluster));
+const routedByStructuredHandler = (cluster) => {
+  const text = clusterText(cluster);
+  return preferredMetricIdsForQuery(text).size > 0
+    || isPublicReuseQuery(text)
+    || handlerForInput({ retrievalHints: [text] }, '') === 'budget_transfer';
+};
 
 const readJson = async (path) => {
   try { return JSON.parse(await readFile(path, 'utf8')); } catch { return null; }
@@ -38,9 +60,52 @@ const queueAction = (candidate) => {
   return 'Confirm the wording, evidence directness, and claim boundaries before creating a reviewed static claim.';
 };
 
+const researchAction = (candidate) => {
+  if (candidate.localSpecific) return 'Find territorial or administrative data; do not generalise from national evidence.';
+  if (candidate.sourceAvailability === 'discovery_only') return 'Use discovery records as leads only; verify the claim with a direct primary source.';
+  if (candidate.sourceAvailability === 'none') return 'Find a direct primary source or mark the claim as not verifiable.';
+  if (candidate.coverageStatus === 'partial') return 'Identify the missing proposition and record the limitation before writing an answer.';
+  return 'Investigate the claim, then promote it only after direct evidence is linked and reviewed.';
+};
+
+export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {}) => (Array.isArray(clusters) ? clusters : [])
+  .filter((cluster) => cluster && cluster.reviewable !== false)
+  .filter((cluster) => Number(cluster.count ?? cluster.exampleCount) >= minCount)
+  .filter((cluster) => cluster.reviewStatus !== 'published' && cluster.coverageStatus !== 'covered' && !cluster.linkedClaimSlug)
+  .filter((cluster) => !routedByStructuredHandler(cluster))
+  .map((cluster) => {
+    const sourceIds = asArray(cluster.sourceIds).slice(0, 20);
+    const directIds = directSourceIds(cluster);
+    const sourceAvailability = directIds.length ? 'direct_candidate' : sourceIds.length ? 'discovery_only' : 'none';
+    return {
+      clusterId: String(cluster.id || `cluster-${normalise(cluster.signature)}`),
+      canonicalText: safeText(cluster.text || cluster.signature),
+      queryCount: number(cluster.count ?? cluster.exampleCount),
+      count7d: number(cluster.count7d),
+      growthRate: number(cluster.growthRate),
+      priorityScore: number(cluster.priorityScore),
+      coverageStatus: String(cluster.coverageStatus || 'uncovered'),
+      reviewStatus: 'research_needed',
+      researchOnly: true,
+      localSpecific: localSpecificClaim(cluster),
+      sourceAvailability,
+      sourceIds,
+      reason: safeText(cluster.reason || 'Requires source investigation before it can be answered.'),
+      nextAction: researchAction({
+        localSpecific: localSpecificClaim(cluster),
+        sourceAvailability,
+        coverageStatus: cluster.coverageStatus,
+      }),
+    };
+  })
+  .sort((left, right) => right.priorityScore - left.priorityScore || right.queryCount - left.queryCount || right.count7d - left.count7d)
+  .slice(0, max)
+  .map((candidate, index) => ({ rank: index + 1, ...candidate }));
+
 export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {}) => {
   const clusters = asArray(clusterDocument?.clusters);
   const candidates = rankMaterializationCandidates(clusters, { minCount, max });
+  const researchCandidates = buildResearchCandidates(clusters, { minCount, max });
   const newlyCovered = candidates.filter((candidate) => candidate.newlyCovered);
   const unresolved = candidates.filter((candidate) => !candidate.newlyCovered);
   const excludedReasons = clusterDocument?.inputs?.excludedReasons || {};
@@ -57,6 +122,7 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {
       candidates: candidates.length,
       newlyCovered: newlyCovered.length,
       unresolved: unresolved.length,
+      researchCandidates: researchCandidates.length,
       topPriorityScore: candidates[0]?.priorityScore || 0,
     },
     candidates: candidates.map((candidate, index) => ({
@@ -75,13 +141,16 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {
       reason: safeText(candidate.reason),
       nextAction: queueAction(candidate),
     })),
+    researchCandidates,
   };
 };
 
 const markdownTableRow = (candidate) => `| ${candidate.rank} | ${candidate.canonicalText.replaceAll('|', '\\|')} | ${formatNumber(candidate.queryCount)} | ${formatNumber(candidate.priorityScore)} | ${candidate.coverageStatus} | ${candidate.sourceIds.join(', ') || 'none'} | ${candidate.nextAction.replaceAll('|', '\\|')} |`;
+const researchMarkdownTableRow = (candidate) => `| ${candidate.rank} | ${candidate.canonicalText.replaceAll('|', '\\|')} | ${formatNumber(candidate.queryCount)} | ${formatNumber(candidate.priorityScore)} | ${candidate.sourceAvailability} | ${candidate.localSpecific ? 'local' : 'general'} | ${candidate.nextAction.replaceAll('|', '\\|')} |`;
 
 export const renderReviewQueueMarkdown = (queue) => {
   const candidates = asArray(queue?.candidates);
+  const researchCandidates = asArray(queue?.researchCandidates);
   const newlyCovered = candidates.filter((candidate) => candidate.newlyCovered);
   const unresolved = candidates.filter((candidate) => !candidate.newlyCovered);
   const excluded = Object.entries(queue?.inputs?.excludedReasons || {}).map(([reason, count]) => `- ${reason}: ${formatNumber(count)}`).join('\n') || '- None recorded';
@@ -104,6 +173,7 @@ This report is for the maintainer only. It is derived from clustered submissions
 - Candidates: ${formatNumber(queue?.summary?.candidates)}
 - Newly covered clusters: ${formatNumber(queue?.summary?.newlyCovered)}
 - Unresolved clusters: ${formatNumber(queue?.summary?.unresolved)}
+- Research gaps: ${formatNumber(queue?.summary?.researchCandidates)}
 - Reviewable local records: ${formatNumber(queue?.inputs?.reviewableLocalRecords)}
 - Excluded local records: ${formatNumber(queue?.inputs?.excludedLocalRecords)}
 
@@ -126,6 +196,16 @@ ${newlyCovered.length ? newlyCovered.map((candidate) => `- ${candidate.canonical
 ## Unresolved
 
 ${unresolved.length ? unresolved.slice(0, 10).map((candidate) => `- ${candidate.canonicalText} — ${candidate.reason}`).join('\n') : '- None in this batch.'}
+
+## Research gaps requiring source work
+
+These are high-demand unresolved clusters that are not ready for publication. They need new source retrieval or a clear “not verifiable” outcome. They are intentionally separate from materialisation candidates.
+
+${researchCandidates.length ? [
+  '| Rank | Cluster | Queries | Priority | Sources | Scope | Next action |',
+  '| ---: | --- | ---: | ---: | --- | --- | --- |',
+  ...researchCandidates.map(researchMarkdownTableRow),
+].join('\n') : '_No research gaps in this batch._'}
 
 ## Excluded operational records
 
