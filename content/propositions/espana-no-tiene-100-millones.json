@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-no-tiene-100m-residentes-core",
+  "claimSlug": "espana-no-tiene-100-millones",
+  "text": "España tiene 100 millones de residentes.",
+  "type": "comparative",
+  "subject": "poblacion_residente",
+  "predicate": "equals",
+  "object": "100 millones",
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["poblacion-residente-supera-49m"]
+}

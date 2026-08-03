@@ -2,6 +2,7 @@ import { claims, type ClaimVerification } from './claims';
 
 const popularSlugs = [
   'poblacion-residente-supera-49m',
+  'espana-no-tiene-100-millones',
   'poblacion-nacida-fuera-sube',
   'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',

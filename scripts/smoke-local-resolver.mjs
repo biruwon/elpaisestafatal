@@ -49,6 +49,7 @@ const cases = [
   { text: 'La amnistía rompe la igualdad ante la ley.', status: 'complete', slug: 'la-amnistia-rompe-la-igualdad-ante-la-ley' },
   { text: 'Desalojar a un ocupante ilegal tarda años.', status: 'complete', slug: 'desalojar-a-un-ocupante-ilegal-tarda-anos' },
   { text: 'España está sufriendo un reemplazo poblacional.', status: 'complete', slug: 'espana-esta-sufriendo-un-reemplazo-poblacional' },
+  { text: 'España tiene 100 millones de habitantes.', status: 'complete', slug: 'espana-no-tiene-100-millones' },
   { text: 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026.', status: 'complete', slug: 'precios-hoteles-sube-junio-2026' },
   { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
   { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },
