@@ -302,12 +302,10 @@ const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
   : '';
 
 const resultUseActionsMarkup = (plan: AnswerPlan): string => {
-  const actions: Array<{ target: 'reply' | 'question' | 'sources'; label: string }> = [];
-  if (plan.blocks.some((block) => block.type === 'conversation_reply')) actions.push({ target: 'reply', label: 'Responder' });
-  if (plan.clarificationQuestion) actions.push({ target: 'question', label: 'Seguir comprobando' });
-  if (plan.sourceLinks?.length) actions.push({ target: 'sources', label: 'Ver fuentes' });
-  if (!actions.length) return '';
-  return `<div class="claim-result-use" aria-label="Elige qué hacer con esta aclaración"><span>¿Qué necesitas ahora?</span><div>${actions.map((action) => `<button type="button" data-focus-result="${action.target}">${action.label} <span aria-hidden="true">→</span></button>`).join('')}</div></div>`;
+  const hasReply = plan.blocks.some((block) => block.type === 'conversation_reply');
+  const hasSources = Boolean(plan.sourceLinks?.length);
+  if (!hasReply && !hasSources) return '';
+  return `<div class="claim-result-use" aria-label="Elige cómo quieres usar esta aclaración"><span>Verlo como</span><div role="group" aria-label="Modo de la aclaración"><button type="button" data-result-mode-button="understand" aria-pressed="true">Entender</button>${hasReply ? '<button type="button" data-result-mode-button="reply" aria-pressed="false">Responder</button>' : ''}${hasSources ? '<button type="button" data-result-mode-button="sources" aria-pressed="false">Fuentes</button>' : ''}</div></div>`;
 };
 
 const definitionChoiceMarkup = (plan: AnswerPlan): string => {
@@ -357,6 +355,16 @@ const bindResultActions = (): void => {
     } catch { /* Sharing is optional and must not interrupt the result. */ }
   });
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
+  result?.querySelectorAll<HTMLButtonElement>('[data-result-mode-button]').forEach((button) => button.addEventListener('click', () => {
+    const mode = button.dataset.resultModeButton;
+    const card = result?.querySelector<HTMLElement>('.claim-result-card');
+    if (!mode || !card) return;
+    card.dataset.resultMode = mode;
+    result?.querySelectorAll<HTMLButtonElement>('[data-result-mode-button]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+    if (mode === 'sources') result?.querySelectorAll<HTMLDetailsElement>('.claim-result-details').forEach((details) => { details.open = true; });
+    const target = mode === 'reply' ? result?.querySelector<HTMLElement>('[data-result-target="reply"]') : mode === 'sources' ? result?.querySelector<HTMLElement>('[data-result-target="sources"]') : result?.querySelector<HTMLElement>('[data-result-target="answer"]');
+    target?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }));
   result?.querySelectorAll<HTMLButtonElement>('[data-focus-result]').forEach((button) => button.addEventListener('click', () => {
     const targetName = button.dataset.focusResult;
     const target = [...(result?.querySelectorAll<HTMLElement>('[data-result-target]') || [])].find((element) => element.dataset.resultTarget === targetName);
@@ -386,7 +394,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   const nextStep = plan.clarificationQuestion
     || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(coverageLabel(plan.coverage))}</span></div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(plan.headline)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen del estado y siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${definitionChoiceMarkup(plan)}${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${requestId ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}</div>${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
