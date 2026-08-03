@@ -511,7 +511,7 @@ const visualStoryMarkup = (plan: AnswerPlan): string => {
     }
   }
   if (steps.length < 2) return '';
-  return `<section class="claim-visual-story" aria-labelledby="claim-visual-story-title"><div class="claim-visual-story-heading"><div><span class="clarification-label">Lectura visual</span><h4 id="claim-visual-story-title">La idea en ${steps.length} pasos</h4></div><small>Datos y límites de la misma respuesta</small></div><ol>${steps.map((step, index) => `<li><span class="claim-visual-story-number">0${index + 1}</span><div><span class="claim-visual-story-label">${escapeHtml(step.label)}</span><strong>${step.title.startsWith('<') ? step.title : escapeHtml(step.title)}</strong><p>${escapeHtml(step.content)}</p>${step.evidenceIds?.length ? blockEvidenceMarkup(plan, step.evidenceIds) : ''}</div></li>`).join('')}</ol></section>`;
+  return `<section class="claim-visual-story" aria-labelledby="claim-visual-story-title"><div class="claim-visual-story-heading"><div><span class="clarification-label">Lectura visual</span><h4 id="claim-visual-story-title">La idea en ${steps.length} pasos</h4></div><div class="claim-visual-story-tools"><small>Datos y límites de la misma respuesta</small><button type="button" data-play-story aria-label="Reproducir la historia visual">Reproducir</button></div></div><ol>${steps.map((step, index) => `<li><span class="claim-visual-story-number">0${index + 1}</span><div><span class="claim-visual-story-label">${escapeHtml(step.label)}</span><strong>${step.title.startsWith('<') ? step.title : escapeHtml(step.title)}</strong><p>${escapeHtml(step.content)}</p>${step.evidenceIds?.length ? blockEvidenceMarkup(plan, step.evidenceIds) : ''}</div></li>`).join('')}</ol></section>`;
 };
 
 const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
@@ -882,6 +882,20 @@ const bindResultActions = (): void => {
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     if (status) status.textContent = 'Resumen visual descargado';
+  });
+  result?.querySelector<HTMLButtonElement>('[data-play-story]')?.addEventListener('click', () => {
+    const story = result.querySelector<HTMLElement>('.claim-visual-story');
+    const button = result.querySelector<HTMLButtonElement>('[data-play-story]');
+    if (!story || !button) return;
+    story.classList.remove('is-playing');
+    window.requestAnimationFrame(() => {
+      story.classList.add('is-playing');
+      button.textContent = 'Reproduciendo';
+      window.setTimeout(() => {
+        story.classList.remove('is-playing');
+        button.textContent = 'Reproducir';
+      }, 1600);
+    });
   });
   result?.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
   result?.querySelectorAll<HTMLButtonElement>('[data-result-mode-button]').forEach((button) => button.addEventListener('click', () => {

@@ -19,6 +19,8 @@ const required = [
   'canvas.toBlob',
   'aclaracion-visual.png',
   'getPropertyValue(\'--story-bar\')',
+  'data-play-story',
+  'Reproducir',
 ];
 
 for (const snippet of required) {
@@ -60,6 +62,7 @@ for (const snippet of ['@keyframes claim-chart-draw', 'prefers-reduced-motion', 
 if (!page.includes('.claim-visual-story ol{') || !page.includes('@media(prefers-reduced-motion:reduce){.claim-story-mini-chart')) {
   failures.push('visual story is missing responsive or reduced-motion styling');
 }
+if (!page.includes('claim-story-step-in')) failures.push('visual story replay is missing its staged animation');
 
 if (!page.includes('id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="off"')) {
   failures.push('the dynamic result region should be focusable without announcing the entire long card twice');

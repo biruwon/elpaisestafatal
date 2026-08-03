@@ -545,6 +545,8 @@ Status: in progress. The shared renderer now supports claim breakdowns, key numb
 
 The shareable visual-story card now reproduces the existing mini-chart bars as well as the story text, preserving the same deterministic visual evidence outside the page without adding a second chart-generation path.
 
+Dynamic stories also have a short, replayable three-step presentation mode. It animates only the already-rendered evidence cards, disables itself under reduced-motion preferences, and does not create a separate answer or media pipeline.
+
 Render structured, reusable components:
 
 The broad-definition UI now chooses one-click follow-up questions from the detected topic, so vague health, housing, employment, immigration, and economic complaints lead to relevant measurable checks instead of the same generic list.
