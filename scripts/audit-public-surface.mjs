@@ -8,7 +8,6 @@ const forbidden = [
   /localhost/i,
   /host\.docker\.internal/i,
   /LOCAL_CLASSIFIER/i,
-  /WHISPER_COMMAND/i,
   /CLOUDFLARE_API_TOKEN/i,
   /\bcors\b/i,
 ];

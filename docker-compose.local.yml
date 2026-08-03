@@ -18,8 +18,6 @@ services:
       LOCAL_SPEECH_COMMAND: ${LOCAL_SPEECH_COMMAND:-}
       LOCAL_SPEECH_ARGS: ${LOCAL_SPEECH_ARGS:-["{audio}"]}
       LOCAL_SPEECH_TIMEOUT_MS: ${LOCAL_SPEECH_TIMEOUT_MS:-45000}
-      WHISPER_COMMAND: ${WHISPER_COMMAND:-}
-      WHISPER_ARGS: ${WHISPER_ARGS:-["{audio}"]}
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:

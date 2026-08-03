@@ -32,9 +32,9 @@ const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
 const semanticWarehouseEnabled = process.env.WAREHOUSE_SEMANTIC_SEARCH === '1';
-const speechCommand = process.env.LOCAL_SPEECH_COMMAND || process.env.WHISPER_COMMAND || '';
+const speechCommand = process.env.LOCAL_SPEECH_COMMAND || '';
 const speechArgs = (() => {
-  try { return process.env.LOCAL_SPEECH_ARGS ? JSON.parse(process.env.LOCAL_SPEECH_ARGS) : process.env.WHISPER_ARGS ? JSON.parse(process.env.WHISPER_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
+  try { return process.env.LOCAL_SPEECH_ARGS ? JSON.parse(process.env.LOCAL_SPEECH_ARGS) : ['{audio}']; } catch { return ['{audio}']; }
 })();
 const speechTimeoutMs = Math.min(60000, Math.max(10000, Number(process.env.LOCAL_SPEECH_TIMEOUT_MS || 45000)));
 const allowedInferenceHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);

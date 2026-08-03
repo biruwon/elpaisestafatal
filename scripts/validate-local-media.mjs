@@ -25,6 +25,7 @@ requireText(homepage, 'conversation-media-help', 'media submission guidance');
 requireText(homepage, 'se leen automáticamente', 'automatic media submission guidance');
 requireText(input, "fileInput?.addEventListener('change'", 'automatic file submission');
 requireText(smoke, 'SMOKE_MEDIA', 'multipart media smoke path');
+if (/WHISPER_COMMAND|WHISPER_ARGS/.test(service) || /WHISPER_COMMAND|WHISPER_ARGS/.test(compose)) failures.push('retired speech compatibility variables must not remain');
 
 if (failures.length) {
   console.error(failures.join('\n'));
