@@ -1,0 +1,46 @@
+name: Create operations backup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WAREHOUSE_DATABASE_URL: ${{ secrets.WAREHOUSE_DATABASE_URL }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export and verify operations state
+        run: |
+          set -euo pipefail
+          backup_dir="$RUNNER_TEMP/elpaisestafatal-operations-backup"
+          export BACKUP_DIR="$backup_dir"
+          export BACKUP_REQUIRE_D1=1
+          if [ -n "${WAREHOUSE_DATABASE_URL:-}" ]; then export BACKUP_REQUIRE_POSTGRES=1; fi
+          npm run backup:operations
+          npm run backup:artifact:validate
+
+      - name: Upload verified operations backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: elpaisestafatal-operations-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/elpaisestafatal-operations-backup
+          if-no-files-found: error
+          retention-days: 30

@@ -73,6 +73,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Added response-time budgets to the production smoke contract: static routes and dynamic API checks now fail the monitor when they exceed configurable limits, and successful runs report the slowest checks for lightweight operational visibility.
 - Extended the visual answer contract to all 14 topic pages: their evidence bars now have reduced-motion-safe entrance motion and an expandable exact-value table, so the long-form topic layer remains scannable and accessible rather than relying on visual height alone.
 - Hardened operational backups with a versioned manifest containing file sizes and SHA-256 checksums, plus `npm run backup:artifact:validate` to verify an existing backup before restoration or transfer.
+- Added a manual GitHub Actions operations-backup workflow that uses only runtime Cloudflare/PostgreSQL secrets, requires the D1 export, verifies the resulting artifact, and uploads it with a bounded retention period. No credential, tunnel hostname, or database URL is committed.
 - Validation completed: `npm run check`, `npm run build` (350 static pages), the 50-case local resolver smoke suite, roadmap audit, all public UX audits, media/input validation, and the 324-case warehouse benchmark. The local-only inference path remains unchanged; persistent production tunnelling is still explicitly todo.
 
 ## Architectural principles
@@ -626,6 +627,7 @@ dynamic answer
 - Add rate limiting, request size limits, timeouts, retries, cancellation, and health checks.
 - Back up PostgreSQL, D1, R2, and configuration manifests.
 - Backup artifacts now carry integrity metadata and have a standalone verification command; remote credential setup and scheduled export remain deployment configuration rather than committed secrets.
+- A manual secret-backed export workflow now performs and verifies the remote D1/configuration/PostgreSQL backup when deployment credentials are configured; it is intentionally not scheduled until the operator supplies and tests those credentials.
 - Version knowledge, schemas, handlers, parsers, and models.
 - Preserve all existing public URLs and route behavior.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
