@@ -2,6 +2,20 @@
   "schemaVersion": 1,
   "links": [
     {
+      "evidenceId": "pensiones-vejez-supervivencia-europa-eurostat",
+      "propositionId": "prop-espana-gasta-menos-pensiones-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
+      "evidenceId": "impuestos-corrientes-renta-riqueza-europa-eurostat",
+      "propositionId": "prop-espana-cobra-menos-impuestos-renta-riqueza-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "gasto-sanitario-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-sanidad-europa-core",
       "relationship": "supports",

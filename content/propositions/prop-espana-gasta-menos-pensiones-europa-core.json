@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-gasta-menos-pensiones-europa-core",
+  "claimSlug": "espana-gasta-menos-pensiones-europa",
+  "text": "España gastó menos por habitante en prestaciones de vejez y supervivencia que la Unión Europea en 2023.",
+  "type": "comparative",
+  "subject": "old_age_survivors_benefits_per_capita",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2023",
+  "status": "supported",
+  "evidenceIds": ["pensiones-vejez-supervivencia-europa-eurostat"]
+}

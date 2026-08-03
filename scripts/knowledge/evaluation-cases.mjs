@@ -36,6 +36,8 @@ const knownSeeds = [
   ['sobrecarga-vivienda-baja', 'trend', 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015'],
   ['gasto-sanitario-habitante-sube', 'trend', 'España gasta más por habitante en sanidad que en 2015'],
   ['espana-gasta-menos-sanidad-europa', 'comparative', 'España gasta menos por habitante en sanidad que la Unión Europea'],
+  ['espana-gasta-menos-pensiones-europa', 'comparative', 'España gasta menos por habitante en pensiones que la Unión Europea'],
+  ['espana-cobra-menos-impuestos-renta-riqueza-europa', 'comparative', 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea'],
   ['desigualdad-renta-baja', 'trend', 'La desigualdad de renta ha bajado en España desde 2015'],
   ['pib-real-sigue-creciendo', 'trend', 'El PIB real de España sigue creciendo'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],

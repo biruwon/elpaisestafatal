@@ -261,6 +261,32 @@ definitions['espana-gasta-menos-sanidad-europa'] = {
   visuals: { key: { value: '2.857 €', label: 'España · gasto sanitario por habitante', period: '2023' }, trend: { available: false, labels: [], values: [], label: 'Gasto sanitario por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [2857.25, 3836.68], label: 'Gasto sanitario corriente por habitante', unit: '€ por habitante · 2023' }, caveat: 'La comparación no mide por sí sola acceso, calidad, resultados clínicos ni eficiencia; las definiciones y los euros corrientes deben mantenerse visibles.' },
 };
 
+definitions['espana-gasta-menos-pensiones-europa'] = {
+  prompt: 'España gasta menos por habitante en pensiones que la Unión Europea',
+  aliases: ['España gasta menos en pensiones que Europa', 'España gasta menos por persona en pensiones que la UE', 'el gasto español en pensiones está por debajo de Europa', '¿España gasta menos en pensiones que la Unión Europea?'],
+  propositions: ['En 2023 España registró 3.935,86 € por habitante en prestaciones de vejez y supervivencia.', 'En 2023 la Unión Europea registró 4.816,84 € por habitante en la misma medida.', 'El dato demuestra por sí solo que las pensiones españolas son demasiado bajas o insostenibles.'],
+  concern: 'España registra menos gasto por habitante en prestaciones de vejez y supervivencia que la media de la Unión Europea, pero ese indicador no es la pensión media ni resuelve por sí solo la sostenibilidad.',
+  supports: 'Eurostat registra 3.935,86 € por habitante en España y 4.816,84 € en la Unión Europea en 2023.',
+  limit: 'Es gasto agregado de protección social en funciones de vejez y supervivencia. No equivale a la pensión media, al importe de cada jubilado ni a una conclusión completa sobre la sostenibilidad del sistema.',
+  question: '¿Quieres comparar gasto por habitante, pensión media, ingresos del sistema o sostenibilidad?',
+  reply: 'Sí: en 2023 España registró 3.935,86 € por habitante en prestaciones de vejez y supervivencia frente a 4.816,84 € en la Unión Europea. Es gasto agregado por habitante, no la pensión media de cada jubilado.',
+  visualLabel: 'Gasto por habitante y pensión media no son la misma medida',
+  visuals: { key: { value: '3.935,86 €', label: 'España · prestaciones de vejez y supervivencia por habitante', period: '2023' }, trend: { available: false, labels: [], values: [], label: 'Gasto en pensiones', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [3935.86, 4816.84], label: 'Prestaciones de vejez y supervivencia por habitante', unit: '€ por habitante · 2023' }, caveat: 'La comparación no es la pensión media ni el gasto de cada jubilado. No demuestra por sí sola si las pensiones son adecuadas o sostenibles.' },
+};
+
+definitions['espana-cobra-menos-impuestos-renta-riqueza-europa'] = {
+  prompt: 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea',
+  aliases: ['España cobra menos impuestos que Europa', 'España recauda menos impuestos sobre renta y riqueza que la UE', 'la presión sobre renta y riqueza es menor en España', '¿España cobra menos impuestos sobre la renta que la Unión Europea?'],
+  propositions: ['En 2025 los impuestos corrientes sobre renta y riqueza equivalieron al 12,5% del PIB en España.', 'En 2025 la Unión Europea registró el 13,2% del PIB en la misma medida.', 'La comparación demuestra por sí sola cuánto paga cada hogar español.'],
+  concern: 'En esta categoría agregada, España recaudó menos que la media de la Unión Europea, pero la cifra no es la factura fiscal de cada hogar ni la presión fiscal total.',
+  supports: 'Eurostat registra un 12,5% del PIB en España y un 13,2% en la Unión Europea en 2025 para los impuestos corrientes sobre renta y riqueza.',
+  limit: 'Es recaudación pública agregada sobre el PIB. No incluye por sí sola todos los impuestos y no permite saber cuánto paga cada hogar sin conocer renta, patrimonio, consumo, cotizaciones y deducciones.',
+  question: '¿Quieres comparar esta categoría, la presión fiscal total o lo que paga un hogar concreto?',
+  reply: 'En esta categoría concreta, España recaudó menos que la media de la UE: 12,5% del PIB frente a 13,2% en 2025. Es una medida agregada de impuestos sobre renta y riqueza, no la factura de cada hogar ni la presión fiscal total.',
+  visualLabel: 'Una proporción sobre el PIB no es la factura fiscal de cada hogar',
+  visuals: { key: { value: '12,5 %', label: 'España · impuestos corrientes sobre renta y riqueza', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Impuestos sobre renta y riqueza', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [12.5, 13.2], label: 'Impuestos corrientes sobre renta y riqueza', unit: '% del PIB · 2025' }, caveat: 'La cifra es recaudación agregada sobre el PIB. No es la presión fiscal total ni el porcentaje que paga cada hogar.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

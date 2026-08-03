@@ -30,6 +30,14 @@ const stripConversationWrapper = (value) => normalise(value)
   .replace(/\s+y por eso todo va peor$/, '')
   .replace(/[?¿.!]+$/g, '')
   .trim();
+const meaningfulTokens = (value) => stripConversationWrapper(value).split(' ').filter((token) => token.length >= 3 && !new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'datos', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'esto', 'eso', 'sobre', 'ser', 'son']).has(token));
+const similarity = (left, right) => {
+  const a = new Set(meaningfulTokens(left));
+  const b = new Set(meaningfulTokens(right));
+  if (!a.size || !b.size) return 0;
+  const overlap = [...a].filter((token) => b.has(token)).length;
+  return overlap / (a.size + b.size - overlap);
+};
 const parseFrontmatter = (raw) => {
   const match = String(raw || '').match(/^---\s*\n([\s\S]*?)\n---/);
   if (!match) return {};
@@ -69,10 +77,27 @@ const clusterPhrases = (cluster) => [
 const publishedClaimForCluster = (cluster) => {
   const values = clusterPhrases(cluster);
   if (!values.length) return null;
-  return publishedClaims.find((claim) => {
+  const exact = publishedClaims.find((claim) => {
     const phrases = claim.phrases.map(stripConversationWrapper).filter(Boolean);
     return values.some((value) => phrases.includes(value));
   }) || null;
+  if (exact) return exact;
+
+  // Warehouse compression often removes connective words and leaves a short
+  // semantic phrase such as “España paro alto Europa”. Link only when at
+  // least two meaningful tokens overlap and the best phrase similarity is
+  // strong enough; this avoids turning broad topic words into false matches.
+  const scored = publishedClaims.map((claim) => {
+    const phrases = claim.phrases.map(stripConversationWrapper).filter(Boolean);
+    const score = Math.max(...values.flatMap((value) => phrases.map((phrase) => similarity(value, phrase))), 0);
+    const overlap = Math.max(...values.flatMap((value) => {
+      const left = new Set(meaningfulTokens(value));
+      return phrases.map((phrase) => meaningfulTokens(phrase).filter((token) => left.has(token)).length);
+    }), 0);
+    return { claim, score, overlap };
+  }).filter((candidate) => candidate.overlap >= 2 && candidate.score >= 0.48)
+    .sort((left, right) => right.score - left.score || right.overlap - left.overlap);
+  return scored[0]?.claim || null;
 };
 const warehouseRouteForCluster = (cluster) => preferredMetricIdsForQuery(clusterPhrases(cluster).join(' ')).size > 0;
 const legalRouteForCluster = (cluster) => isPublicReuseQuery(clusterPhrases(cluster).join(' '));

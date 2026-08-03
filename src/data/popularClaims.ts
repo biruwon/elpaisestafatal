@@ -7,6 +7,8 @@ const popularSlugs = [
   'poblacion-ciudadania-extranjera-sube',
   'gobierno-transfiere-310-millones-educacion-presidencia',
   'espana-gasta-menos-sanidad-europa',
+  'espana-gasta-menos-pensiones-europa',
+  'espana-cobra-menos-impuestos-renta-riqueza-europa',
   'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',
   'viviendas-vacias',

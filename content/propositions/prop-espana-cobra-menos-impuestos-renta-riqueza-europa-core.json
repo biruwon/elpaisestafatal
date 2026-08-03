@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-cobra-menos-impuestos-renta-riqueza-europa-core",
+  "claimSlug": "espana-cobra-menos-impuestos-renta-riqueza-europa",
+  "text": "España recaudó menos impuestos corrientes sobre la renta y la riqueza, como proporción del PIB, que la Unión Europea en 2025.",
+  "type": "comparative",
+  "subject": "government_current_taxes_income_wealth",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["impuestos-corrientes-renta-riqueza-europa-eurostat"]
+}
