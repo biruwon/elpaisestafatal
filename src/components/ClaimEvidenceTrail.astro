@@ -1,6 +1,6 @@
 ---
 import type { ClaimVerification } from '../data/claimCatalog';
-import { getEvidence, getSource, relationshipGuidance } from '../data/registry';
+import { getEvidence, getSource, relationshipGuidance, relationshipReviewPolicy } from '../data/registry';
 import { propositions } from '../data/propositions';
 import { sourceTypeLabel } from '../data/sourceTitle';
 
@@ -30,7 +30,7 @@ const relationshipLabels: Record<string, string> = {
 {evidence.length > 0 && <section id="claim-evidence" class="claim-evidence" aria-labelledby="claim-evidence-title">
   <header class="evidence-heading">
     <div><p class="eyebrow">La base de esta ficha</p><h2 id="claim-evidence-title">Qué hemos<br /><em>utilizado.</em></h2></div>
-    <p>Estos registros son la evidencia enlazada a esta afirmación. Cada uno mantiene su periodo, territorio y definición para que no se confunda una cifra de contexto con una prueba de causalidad.</p>
+    <div><p>Estos registros son la evidencia enlazada a esta afirmación. Cada uno mantiene su periodo, territorio y definición para que no se confunda una cifra de contexto con una prueba de causalidad.</p><p class="evidence-review-policy"><strong>Revisión:</strong> {relationshipReviewPolicy.scope === 'source-and-proposition-traceability' ? 'trazabilidad de fuente y proposición' : 'protocolo de revisión'} comprobada por {relationshipReviewPolicy.reviewer === 'maintainer' ? 'el mantenedor' : 'un revisor autorizado'}. {relationshipReviewPolicy.independentReview ? 'Incluye revisión independiente.' : 'No es una revisión independiente.'}</p></div>
   </header>
   <div class="evidence-trail-grid">
     {evidence.map((item, index) => {
@@ -60,6 +60,7 @@ const relationshipLabels: Record<string, string> = {
   .evidence-heading{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:end}
   .evidence-heading h2{font:400 clamp(2.4rem,5vw,5rem)/.88 var(--serif);letter-spacing:-.06em;margin:16px 0 0}
   .evidence-heading>p{max-width:470px;color:var(--muted);font-size:.95rem;line-height:1.45;margin:0}
+  .evidence-heading>div>p{max-width:470px;color:var(--muted);font-size:.95rem;line-height:1.45;margin:0}.evidence-heading>div>p.evidence-review-policy{font:.65rem/1.45 var(--mono);margin-top:14px;color:var(--ink)}.evidence-review-policy strong{color:var(--red)}
   .evidence-trail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);margin-top:35px}
   .evidence-trail-card{background:var(--paper-deep);padding:23px;min-height:220px}
   .evidence-trail-top{display:flex;justify-content:space-between;gap:12px;color:var(--red);font:600 .62rem var(--mono);text-transform:uppercase}

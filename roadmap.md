@@ -40,6 +40,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-03
 
+- Made the evidence relationship review policy explicit in the knowledge manifest and public evidence trail: published links are maintainer traceability checks, not independent reviews, and validation now rejects missing or ambiguous policy metadata.
 - Added visible proposition–evidence review provenance to every published evidence trail: users can see the latest reviewed-link date in the metadata and the exact review date inside the relationship explanation. The published-claim UX contract now enforces this traceability without implying independent review.
 - Deployed the validated Pages build to production and reran the live smoke contract. The public `/api/classify` boundary now returns topic-only political context for uncovered political complaints, with no fabricated evidence or unrelated claim, and the live site matches the pushed source state.
 - Fixed the deterministic API fallback for explicit political complaints such as `pedro sanchez está destruyendo españa`: it now returns topic-only political context, never invents evidence or a verdict, and has a production smoke regression check for unrelated-topic leakage.

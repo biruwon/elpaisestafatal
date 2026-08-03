@@ -87,6 +87,9 @@ const expectedRelationshipForStatus = {
 };
 const relationshipMap = new Map();
 if (relationshipManifest.schemaVersion !== 1) failures.push(`${relationshipPath}: schemaVersion must be 1`);
+if (!relationshipManifest.reviewPolicy || relationshipManifest.reviewPolicy.reviewer !== 'maintainer' || relationshipManifest.reviewPolicy.scope !== 'source-and-proposition-traceability' || relationshipManifest.reviewPolicy.independentReview !== false) {
+  failures.push(`${relationshipPath}: reviewPolicy must explicitly identify maintainer traceability review and the absence of independent review`);
+}
 if (!Array.isArray(relationshipManifest.links)) failures.push(`${relationshipPath}: links must be an array`);
 for (const link of Array.isArray(relationshipManifest.links) ? relationshipManifest.links : []) {
   const key = `${link.evidenceId}::${link.propositionId}`;

@@ -30,6 +30,12 @@ export type EvidencePropositionLink = {
   reviewedAt?: string;
 };
 
+export type RelationshipReviewPolicy = {
+  reviewer: 'maintainer';
+  scope: 'source-and-proposition-traceability';
+  independentReview: false;
+};
+
 export const relationshipGuidance: Record<EvidencePropositionLink['relationship'], string> = {
   supports: 'Este registro mide directamente la proposición enlazada, dentro de su periodo, ámbito y definición.',
   contradicts: 'Este registro muestra un resultado incompatible con la formulación enlazada en la medida indicada.',
@@ -41,6 +47,8 @@ export const relationshipGuidance: Record<EvidencePropositionLink['relationship'
 const sourceFiles = import.meta.glob('../../content/sources/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const evidenceFiles = import.meta.glob('../../content/evidence/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 import relationshipManifest from '../../content/relationships/evidence-proposition-links.json';
+
+export const relationshipReviewPolicy = relationshipManifest.reviewPolicy as RelationshipReviewPolicy;
 
 const relationshipsByEvidence = new Map<string, EvidencePropositionLink[]>();
 for (const link of relationshipManifest.links as EvidencePropositionLink[]) {

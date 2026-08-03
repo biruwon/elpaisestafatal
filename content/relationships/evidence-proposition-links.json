@@ -1,5 +1,10 @@
 {
   "schemaVersion": 1,
+  "reviewPolicy": {
+    "reviewer": "maintainer",
+    "scope": "source-and-proposition-traceability",
+    "independentReview": false
+  },
   "links": [
     {
       "evidenceId": "electricidad-hogares-espana-ue-eurostat",
