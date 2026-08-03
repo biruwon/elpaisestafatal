@@ -12,6 +12,51 @@ const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus',
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
 export const warehouseEvidenceFit = (score) => score >= 0.67 ? 'direct' : score >= 0.5 ? 'qualified' : 'weak';
 
+const recordedOffenceCategories = [
+  { terms: ['homicidio', 'asesinato'], labels: ['intentional homicide', 'attempted intentional homicide'] },
+  { terms: ['agresion grave', 'lesion grave'], labels: ['serious assault'] },
+  { terms: ['secuestro'], labels: ['kidnapping'] },
+  { terms: ['violencia sexual'], labels: ['sexual violence'] },
+  { terms: ['violacion'], labels: ['rape'] },
+  { terms: ['agresion sexual'], labels: ['sexual assault'] },
+  { terms: ['explotacion sexual'], labels: ['sexual exploitation'] },
+  { terms: ['pornografia infantil'], labels: ['child pornography'] },
+  { terms: ['robo', 'robos'], labels: ['robbery'] },
+  { terms: ['hurto', 'hurtos'], labels: ['theft'] },
+  { terms: ['robo vehiculo', 'robo coche', 'robo moto'], labels: ['theft of a motorized vehicle or parts thereof'] },
+  { terms: ['allanamiento'], labels: ['burglary', 'burglary of private residential premises'] },
+  { terms: ['drogas', 'trafico drogas'], labels: ['unlawful acts involving controlled drugs or precursors'] },
+  { terms: ['fraude', 'fraudes', 'estafa', 'estafas'], labels: ['fraud'] },
+  { terms: ['corrupcion'], labels: ['corruption'] },
+  { terms: ['cohecho', 'soborno'], labels: ['bribery'] },
+  { terms: ['blanqueo'], labels: ['money laundering'] },
+  { terms: ['ciberdelincuencia', 'delitos informaticos'], labels: ['acts against computer systems'] },
+];
+
+export const recordedOffenceCategoryForQuery = (query) => {
+  const normalized = normalise(query);
+  return recordedOffenceCategories.find((category) => category.terms.some((term) => normalized.includes(normalise(term))));
+};
+
+const recordedOffenceSearchAliases = (record) => {
+  if (record.metricId !== 'recorded_offences') return [];
+  const label = normalise(record.dimensionLabels?.iccs || record.dimensions?.iccs || '');
+  return recordedOffenceCategories.filter((category) => category.labels.some((candidate) => label.includes(normalise(candidate)))).flatMap((category) => [...category.terms, ...category.terms.map((term) => `${term}s`)]);
+};
+
+const filterRecordedOffenceObservations = (query, observations) => {
+  const category = recordedOffenceCategoryForQuery(query);
+  return observations.filter((item) => {
+    if (item.metricId !== 'recorded_offences') return true;
+    // Eurostat's current feed is category-level, not a national all-offence
+    // total. Without a named category, returning its first series would be a
+    // false answer to a broad “crime” question.
+    if (!category) return false;
+    const label = normalise(item.dimensionLabels?.iccs || item.dimensions?.iccs || '');
+    return category.labels.some((candidate) => label.includes(normalise(candidate)));
+  });
+};
+
 const populationVocabulary = [
   { aliases: ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'foreign', 'migrant', 'migrants', 'nacido en el extranjero'], terms: ['inmigr', 'extranj', 'foreign', 'migr', 'born abroad'] },
   { aliases: ['residente', 'residentes', 'poblacion', 'habitantes', 'personas que viven', 'resident', 'population'], terms: ['resident', 'poblacion', 'habit', 'population'] },
@@ -78,6 +123,7 @@ const recordText = (record) => [
   record.source?.url,
   record.url,
   record.excerpt,
+  ...recordedOffenceSearchAliases(record),
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
 ].join(' ');
@@ -85,7 +131,13 @@ const recordText = (record) => [
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2) return [];
-  const scopedRecords = metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records;
+  const scopedRecords = (metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records).filter((record) => {
+    if (record.metricId !== 'recorded_offences') return true;
+    const category = recordedOffenceCategoryForQuery(query);
+    if (!category) return false;
+    const label = normalise(record.dimensionLabels?.iccs || record.dimensions?.iccs || '');
+    return category.labels.some((candidate) => label.includes(normalise(candidate)));
+  });
   return scopedRecords.map((record) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
@@ -119,7 +171,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
 export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding, metricIds } = {}) => {
   if (postgresEnabled()) {
     const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
-    if (results) return results;
+    if (results) return filterRecordedOffenceObservations(query, results);
   }
-  return rankWarehouseObservations(query, await readRecords(), limit, { metricIds });
+  return filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds }));
 };

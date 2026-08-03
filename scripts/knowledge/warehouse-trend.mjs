@@ -20,7 +20,34 @@ const metricLabels = {
   population_change_rate: 'Cambio anual de la población en España',
   arope_rate: 'Riesgo de pobreza o exclusión social en España',
 };
-export const displayMetric = (item) => metricLabels[item.metricId] || String(item.metric || item.source?.title || item.datasetId || 'La serie localizada');
+const offenceLabels = {
+  'intentional homicide': 'Homicidios intencionados',
+  'attempted intentional homicide': 'Homicidios intencionados en grado de tentativa',
+  'serious assault': 'Agresiones graves',
+  kidnapping: 'Secuestros',
+  'sexual violence': 'Violencia sexual',
+  rape: 'Violaciones',
+  'sexual assault': 'Agresiones sexuales',
+  'sexual exploitation': 'Explotación sexual',
+  'child pornography': 'Pornografía infantil',
+  robbery: 'Robos con violencia',
+  burglary: 'Allanamientos y robos en inmuebles',
+  'burglary of private residential premises': 'Robos en viviendas',
+  theft: 'Hurtos',
+  'theft of a motorized vehicle or parts thereof': 'Robos de vehículos',
+  fraud: 'Fraudes',
+  corruption: 'Corrupción',
+  bribery: 'Cohecho',
+  'money laundering': 'Blanqueo de capitales',
+  'acts against computer systems': 'Delitos contra sistemas informáticos',
+};
+export const displayMetric = (item) => {
+  if (item.metricId === 'recorded_offences') {
+    const category = normalise(item.dimensionLabels?.iccs || item.dimensions?.iccs || '');
+    return offenceLabels[category] ? `${offenceLabels[category]} registrados en España` : 'Delitos registrados en España';
+  }
+  return metricLabels[item.metricId] || String(item.metric || item.source?.title || item.datasetId || 'La serie localizada');
+};
 const displayUnit = (item) => {
   const metricId = String(item.metricId || '');
   const unit = normalise(item.unit);
@@ -33,6 +60,7 @@ const displayUnit = (item) => {
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'household_electricity_price') return '€ por kWh';
+  if (metricId === 'recorded_offences') return 'delitos registrados';
   if (unit === 'percentage' || unit === 'percentage of population' || unit === 'percentage of population in the labour force') return '%';
   if (unit.includes('percentage of gross domestic product')) return '% del PIB';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';

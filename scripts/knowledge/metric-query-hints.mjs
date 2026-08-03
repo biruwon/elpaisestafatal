@@ -24,6 +24,10 @@ const metricHints = [
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
   { ids: ['young_population_share'], terms: ['poblacion de 0 a 14 anos', 'menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'proporcion de menores'] },
   { ids: ['population_change_rate'], terms: ['crecimiento demografico', 'crecimiento poblacional', 'variacion de poblacion', 'variacion demografica', 'crecimiento de la poblacion', 'crece la poblacion', 'esta creciendo', 'la poblacion esta creciendo', 'poblacion creciendo', 'pierde poblacion', 'perdiendo poblacion', 'espana esta perdiendo poblacion', 'despoblacion', 'cambio demografico', 'cambio poblacional'] },
+  // This source is category-level. Keep the route explicit: generic
+  // “inseguridad” and immigration-causality wording must not silently attach
+  // one arbitrary offence category to the user's claim.
+  { ids: ['recorded_offences'], terms: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'fraudes registrados', 'corrupcion registrada'] },
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares'] },
@@ -55,6 +59,9 @@ export const excludedMetricIdsForQuery = (query) => {
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const recordedOffencesRequested = metricHints.find((hint) => hint.ids.includes('recorded_offences'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const crimeContext = ['insegur', 'delinc', 'criminal', 'crimen', 'delito', 'seguridad', 'homicid', 'asesinat', 'robo', 'fraude', 'corrup'].some((term) => normalized.includes(term));
+  const localOrCausalCrime = ['inseguridad', 'inseguro', 'insegura', 'barrio', 'municipio', 'zona', 'inmigr', 'nacionalidad', 'caus', 'crea', 'provoc', 'culpa'].some((term) => normalized.includes(term));
   const demographicContext = ['poblacion', 'demograf', 'inmigr', 'migracion', 'despobl', 'habitantes', 'natalidad', 'fecundidad', 'envejec'].some((term) => normalized.includes(term));
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
@@ -67,5 +74,9 @@ export const excludedMetricIdsForQuery = (query) => {
   // out-of-domain matches unless the wording explicitly asks about change.
   if (demographicContext && !populationChangeRequested) excluded.add('population_change_rate');
   if (priceContext && !inflationRequested) excluded.add('inflation_rate');
+  // Recorded offences are useful for an explicit category/trend question,
+  // never as a proxy for perceived insecurity, a local anecdote, or a causal
+  // claim about immigration.
+  if (crimeContext && (!recordedOffencesRequested || localOrCausalCrime)) excluded.add('recorded_offences');
   return excluded;
 };

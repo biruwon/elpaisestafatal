@@ -141,6 +141,19 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (String(result.result?.warehouseSeries?.labels?.at(-1) || '') < '2025') failures.push('inflation warehouse: candidate cap truncated the recent periods');
   } catch (error) { failures.push(`inflation warehouse: ${error.message}`); }
   try {
+    const result = await resolve('Cómo han evolucionado los homicidios registrados en España');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`recorded crime warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'recorded_offences') failures.push('recorded crime warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('recorded crime warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'delitos registrados') failures.push('recorded crime warehouse: did not localize the unit');
+    if (!/homicidios.*registrados/i.test(`${result.result?.headline || ''} ${result.result?.warehouseSeries?.label || ''}`)) failures.push('recorded crime warehouse: lost the requested offence category in the public label');
+  } catch (error) { failures.push(`recorded crime warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('Cómo ha evolucionado la criminalidad registrada en España');
+    if (result.result?.warehouseSeries?.metricId === 'recorded_offences') failures.push('broad recorded crime: exposed an arbitrary offence category');
+    if (!/debe concretarse por categoría/i.test(result.result?.headline || '')) failures.push('broad recorded crime: did not explain why the category is required');
+  } catch (error) { failures.push(`broad recorded crime: ${error.message}`); }
+  try {
     const result = await resolve('precios de la vivienda en España');
     const series = result.result?.warehouseSeries;
     const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'precio-vivienda-ha-subido';
