@@ -69,6 +69,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Added a reusable Spain-versus-EU tertiary-attainment family: Eurostat 2025 reports 52.5% of people aged 25–34 in Spain and 44.8% in the EU27 at ISCED 5–8. The family is represented in the metric registry, source-refresh configuration, reviewed claim/evidence/proposition records, warehouse routing and ranking, homepage and `/datos` discovery, static claim routes, benchmark cases, and local resolver smoke tests.
 - Improved the broad-complaint result UX: the first orientation is followed immediately by up to six concrete “what do you mean?” choices, before the detailed evidence method. This keeps “España está destruida” useful without assigning it an unrelated verdict or forcing the user through a wall of text.
 - Added reusable reduced-motion-safe motion to static and dynamic SVG charts: trend lines draw, points appear, and comparison bars rise while exact-value tables and the accessible evidence contract remain unchanged.
+- Added a scheduled GitHub Actions production monitor that runs the live static/API smoke suite every 30 minutes and allows only the documented operational-database-unavailable fallback. It checks the generic health boundary, text classification, screenshot/audio multipart handling, popular-claims fallback, and representative public routes without exposing or requiring the deferred local-origin tunnel.
 - Validation completed: `npm run check`, `npm run build` (350 static pages), the 50-case local resolver smoke suite, roadmap audit, all public UX audits, media/input validation, and the 324-case warehouse benchmark. The local-only inference path remains unchanged; persistent production tunnelling is still explicitly todo.
 
 ## Architectural principles
@@ -632,6 +633,7 @@ dynamic answer
 - BOE daily-summary refreshes now retry a bounded window of previous publication dates when the requested date is a non-publication day, while preserving immediate failures for other source errors.
 - CI now runs the homepage, data-catalogue, published-claim, catalogue, topic, and public-journey UX contracts on every push and pull request, alongside ranking, semantic-clustering, resolver-lifecycle, and roadmap audits.
 - Client-side enrichment polling now has bounded per-request and total deadlines, and the lifecycle contract verifies that a slow optional analysis cannot leave the first deterministic result pending indefinitely.
+- A scheduled production monitor now re-runs the public smoke contract outside deploys, so static availability, generic health, handled text/media requests, and deterministic operational fallback are checked continuously rather than only during pushes.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements
