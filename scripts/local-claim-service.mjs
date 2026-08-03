@@ -12,7 +12,8 @@ import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-
 import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
-import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
+import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
+import { compilerSchema, normalizeCompilerOutput } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -200,81 +201,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   }
 };
 
-const compilerSchema = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired', 'routing'],
-  properties: {
-    normalized: { type: 'string' },
-    claimType: { type: 'string', enum: ['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed'] },
-    propositions: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['text', 'type', 'explicit'], properties: { text: { type: 'string' }, type: { type: 'string', enum: ['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed'] }, explicit: { type: 'boolean' }, subject: { type: 'string' }, predicate: { type: 'string' }, object: { type: 'string' } } } },
-    entities: { type: 'array', items: { type: 'string' } },
-    numbers: { type: 'array', items: { type: 'string' } },
-    geography: { type: ['string', 'null'] },
-    period: { type: ['string', 'null'] },
-    population: { type: ['string', 'null'] },
-    retrievalHints: { type: 'array', items: { type: 'string' } },
-    semanticSignature: { type: 'string' },
-    clarificationRequired: { type: 'boolean' },
-    routing: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['status', 'primarySlug', 'reason', 'questions'],
-      properties: {
-        status: { type: 'string', enum: ['published', 'related', 'uncovered'] },
-        primarySlug: { type: 'string' },
-        reason: { type: 'string' },
-        questions: { type: 'array', items: { type: 'string' } },
-      },
-    },
-  },
-};
-
 const fallbackCompiler = deterministicFallbackCompiler;
-
-const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
-const normalizeCompiler = (value, text) => {
-  if (!value || typeof value !== 'object') return fallbackCompiler(text);
-  const propositions = Array.isArray(value.propositions)
-    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => {
-      const shape = propositionShapeFor(item.text);
-      return {
-        text: item.text.slice(0, 300),
-        type: compilerTypes.has(item.type) ? item.type : 'mixed',
-        explicit: item.explicit !== false,
-        subject: typeof item.subject === 'string' && item.subject.trim() ? item.subject.slice(0, 120) : shape.subject,
-        predicate: typeof item.predicate === 'string' && item.predicate.trim() ? item.predicate.slice(0, 80) : shape.predicate,
-        object: typeof item.object === 'string' && item.object.trim() ? item.object.slice(0, 120) : shape.object,
-      };
-    })
-    : [];
-  if (!propositions.length) return fallbackCompiler(text);
-  const explicitPropositions = propositions.filter((item) => item.explicit);
-  const impliedPropositions = propositions.filter((item) => !item.explicit);
-  return {
-    normalized: typeof value.normalized === 'string' && value.normalized.trim() ? value.normalized.slice(0, 300) : text.slice(0, 300),
-    claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed',
-    propositions,
-    entities: Array.isArray(value.entities) ? value.entities.filter((item) => typeof item === 'string').slice(0, 12).map((item) => item.slice(0, 120)) : [],
-    numbers: Array.isArray(value.numbers) ? value.numbers.filter((item) => typeof item === 'string').slice(0, 12).map((item) => item.slice(0, 80)) : [],
-    geography: typeof value.geography === 'string' ? value.geography.slice(0, 120) : null,
-    period: typeof value.period === 'string' ? value.period.slice(0, 120) : null,
-    population: typeof value.population === 'string' ? value.population.slice(0, 120) : null,
-    explicitPropositions,
-    impliedPropositions,
-    retrievalHints: Array.isArray(value.retrievalHints) ? value.retrievalHints.filter((item) => typeof item === 'string').slice(0, 8).map((item) => item.slice(0, 120)) : [],
-    semanticSignature: typeof value.semanticSignature === 'string' && value.semanticSignature.trim()
-      ? value.semanticSignature.slice(0, 600)
-      : semanticSignatureFor({ claimType: compilerTypes.has(value.claimType) ? value.claimType : 'mixed', propositions, entities: Array.isArray(value.entities) ? value.entities : [], geography: typeof value.geography === 'string' ? value.geography : null, period: typeof value.period === 'string' ? value.period : null, population: typeof value.population === 'string' ? value.population : null, numbers: Array.isArray(value.numbers) ? value.numbers : [], negated: /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(String(value.normalized || text)) }),
-    clarificationRequired: value.clarificationRequired === true,
-    routing: value.routing && typeof value.routing === 'object' ? {
-      status: ['published', 'related', 'uncovered'].includes(value.routing.status) ? value.routing.status : 'uncovered',
-      primarySlug: typeof value.routing.primarySlug === 'string' ? value.routing.primarySlug.slice(0, 160) : '',
-      reason: typeof value.routing.reason === 'string' ? value.routing.reason.slice(0, 220) : '',
-      questions: Array.isArray(value.routing.questions) ? value.routing.questions.filter((item) => typeof item === 'string').slice(0, 2).map((item) => item.slice(0, 220)) : [],
-    } : { status: 'uncovered', primarySlug: '', reason: '', questions: [] },
-  };
-};
 
 const compileClaim = async (text, candidates = []) => {
   const candidateText = candidates.length
@@ -285,7 +212,7 @@ const compileClaim = async (text, candidates = []) => {
     const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 1800);
     const value = parseModelJson(response.message?.content);
     if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
-    return normalizeCompiler(value, text);
+    return normalizeCompilerOutput(value, text);
   } catch { return fallbackCompiler(text); }
 };
 
@@ -687,14 +614,30 @@ const getIndex = async () => {
   indexPromise = (async () => {
     const entries = [...(await fetchCatalog()).map((entry) => ({ ...entry, published: true })), ...(await plannedClaims())];
     const signature = digest(JSON.stringify(entries) + embedModel);
+    const hydrateEmbeddings = (value) => {
+      if (value.embeddings?.length === entries.length || !entries.length) return;
+      // Semantic hydration is an optimisation. Never make the first claim
+      // wait for a batch embedding request; lexical matching is immediately
+      // usable and the in-memory index is upgraded for later requests.
+      void ollama('/api/embed', { model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)
+        .then((response) => {
+          const embeddings = Array.isArray(response.embeddings) ? response.embeddings : [];
+          if (embeddings.length !== entries.length) return;
+          value.embeddings = embeddings;
+          return writeFile(indexPath, JSON.stringify(value));
+        })
+        .catch(() => { /* Lexical retrieval remains the supported fast path. */ });
+    };
     try {
       const saved = JSON.parse(await readFile(indexPath, 'utf8'));
-      if (saved.signature === signature) return saved;
+      if (saved.signature === signature) {
+        hydrateEmbeddings(saved);
+        return saved;
+      }
     } catch { /* Rebuild the local index. */ }
-    let embeddings = [];
-    try { embeddings = (await ollama('/api/embed', { model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)).embeddings || []; } catch { /* Lexical fallback. */ }
-    const value = { signature, entries, embeddings };
+    const value = { signature, entries, embeddings: [] };
     await writeFile(indexPath, JSON.stringify(value));
+    hydrateEmbeddings(value);
     return value;
   })();
   return indexPromise;
@@ -831,14 +774,20 @@ const classify = async (text) => {
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = queryMeaningfulTokens;
-  const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
+  // A model call is valuable for a plausible paraphrase or a compound/high-
+  // ambiguity claim. It is wasteful for every three-word descriptive query:
+  // deterministic extraction plus the warehouse can already handle those
+  // metric requests. This keeps long-tail batches bounded on local hardware.
+  const compilerNeedsStructure = deterministicCompiler.propositions.length > 1
+    || ['mixed', 'causal', 'legal', 'normative', 'predictive'].includes(deterministicCompiler.claimType)
+    || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text) && deterministicCompiler.claimType === 'comparative');
   // Deterministic broad-complaint handling is already the safety authority.
   // Calling the local model here only to have reconcileCompilerSafety discard
   // its structure adds several seconds to vague inputs such as “España está
   // destruida” and can leave the UI looking stuck. Keep the fast clarification
   // path synchronous; reserve model extraction for claims that can benefit
   // from proposition parsing or candidate disambiguation.
-  const needsModelCompilation = !deterministicCompiler.clarificationRequired && (hasPlausibleCandidate || compileEligible);
+  const needsModelCompilation = !deterministicCompiler.clarificationRequired && (hasPlausibleCandidate || compilerNeedsStructure);
   const compiledCandidate = !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
