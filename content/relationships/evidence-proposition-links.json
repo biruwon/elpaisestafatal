@@ -29,6 +29,13 @@
       "reviewStatus": "reviewed",
       "reviewedAt": "2026-08-03"
     },
+    {
+      "evidenceId": "sobrecarga-vivienda-eurostat",
+      "propositionId": "prop-sobrecarga-vivienda-2025-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
   {"evidenceId":"alquileres-serie-eurostat","propositionId":"prop-alquileres-suben-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
   {"evidenceId":"poblacion-cambio-eurostat","propositionId":"prop-espana-pierde-poblacion-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"vivienda-indice-de-precios-de-vivienda-t1-2026","propositionId":"prop-airbnb-vivienda-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},

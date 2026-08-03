@@ -1,0 +1,13 @@
+{
+  "id": "prop-sobrecarga-vivienda-2025-core",
+  "claimSlug": "sobrecarga-vivienda-2025",
+  "text": "El 7,2% de la población vive en hogares con sobrecarga del coste de la vivienda en España en 2025.",
+  "type": "descriptive",
+  "subject": "housing_cost_overburden_rate",
+  "predicate": "is",
+  "object": "7,2%",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["sobrecarga-vivienda-eurostat"]
+}

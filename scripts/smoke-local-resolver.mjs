@@ -50,6 +50,7 @@ const cases = [
   { text: 'Desalojar a un ocupante ilegal tarda años.', status: 'complete', slug: 'desalojar-a-un-ocupante-ilegal-tarda-anos' },
   { text: 'España está sufriendo un reemplazo poblacional.', status: 'complete', slug: 'espana-esta-sufriendo-un-reemplazo-poblacional' },
   { text: 'España tiene 100 millones de habitantes.', status: 'complete', slug: 'espana-no-tiene-100-millones' },
+  { text: 'El 7,2% de la población soporta una sobrecarga del coste de la vivienda en España.', status: 'complete', slug: 'sobrecarga-vivienda-2025' },
   { text: 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026.', status: 'complete', slug: 'precios-hoteles-sube-junio-2026' },
   { text: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad.', status: 'complete', slug: 'empleo-record-calidad' },
   { text: 'Las llegadas irregulares representan toda la inmigración que vive en España.', status: 'complete', slug: 'inmigracion-flujos-no-total' },
@@ -199,10 +200,12 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   } catch (error) { failures.push(`public expenditure warehouse: ${error.message}`); }
   try {
     const result = await resolve('Qué porcentaje de personas soporta una sobrecarga del coste de la vivienda');
-    if (!['draft', 'partial'].includes(result.status)) failures.push(`housing affordability warehouse: expected provisional result, received ${result.status}`);
-    if (result.result?.warehouseSeries?.metricId !== 'housing_cost_overburden_rate') failures.push('housing affordability warehouse: selected the wrong metric family');
-    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('housing affordability warehouse: missing a multi-period series');
-    if (/housing cost overburden rate by age/i.test(result.result?.headline || '')) failures.push('housing affordability warehouse: leaked raw dataset title into the public headline');
+    const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'sobrecarga-vivienda-2025';
+    if (!published && !['draft', 'partial'].includes(result.status)) failures.push(`housing affordability warehouse: expected provisional result, received ${result.status}`);
+    if (published && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push('published housing affordability result: lost proposition traceability');
+    if (!published && result.result?.warehouseSeries?.metricId !== 'housing_cost_overburden_rate') failures.push('housing affordability warehouse: selected the wrong metric family');
+    if (!published && (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2)) failures.push('housing affordability warehouse: missing a multi-period series');
+    if (!published && /housing cost overburden rate by age/i.test(result.result?.headline || '')) failures.push('housing affordability warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`housing affordability warehouse: ${error.message}`); }
   try {
     const result = await resolve('Cuánto se gasta en sanidad por habitante en España');

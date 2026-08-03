@@ -7,6 +7,7 @@ const popularSlugs = [
   'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',
   'viviendas-vacias',
+  'sobrecarga-vivienda-2025',
   'inmigrantes-ayudas',
   'empleo-record',
   'ocupacion-aumenta-t2-2026',
