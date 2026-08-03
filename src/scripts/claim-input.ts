@@ -11,7 +11,7 @@ type SearchResponse = {
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
-  guidance?: { questions?: string[]; limitation?: string; suggestions?: Array<{ title: string; href?: string; prompt?: string }>; suggestionsLabel?: string };
+  guidance?: { heading?: string; questions?: string[]; questionsLabel?: string; limitation?: string; suggestions?: Array<{ title: string; href?: string; prompt?: string }>; suggestionsLabel?: string };
   result?: AnswerPlan;
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
@@ -158,6 +158,93 @@ const generalFallbackPrompts = [
   '¿La inmigración aumenta la inseguridad?',
   '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
 ];
+
+const broadComplaintSignals = [
+  'esta destruida',
+  'destruyendo espana',
+  'destruye espana',
+  'va cuesta abajo',
+  'va a la ruina',
+  'se va a la ruina',
+  'es un desastre',
+  'todo va mal',
+  'todo va fatal',
+  'esta fatal',
+  'no se puede vivir',
+  'pais hundido',
+  'pais arruinado',
+];
+
+const broadComplaintTopics: Record<string, { label: string; prompts: string[] }> = {
+  economia: {
+    label: 'Precios y economía',
+    prompts: ['¿Cómo ha cambiado la inflación anual en España?', '¿Cómo ha evolucionado la renta mediana de los hogares?'],
+  },
+  vivienda: {
+    label: 'Vivienda',
+    prompts: ['¿Cómo han cambiado los alquileres en España?', '¿Ha empeorado el acceso a la vivienda?'],
+  },
+  empleo: {
+    label: 'Empleo',
+    prompts: ['¿Cómo ha evolucionado el desempleo en España?', '¿El récord de empleo ha resuelto el paro?'],
+  },
+  seguridad: {
+    label: 'Seguridad',
+    prompts: ['¿Cómo ha evolucionado la delincuencia registrada en España?', '¿España se está volviendo más peligrosa?'],
+  },
+  sanidad: {
+    label: 'Sanidad',
+    prompts: ['¿Ha aumentado la falta de atención médica por listas de espera?', '¿La sanidad pública está colapsada?'],
+  },
+  inmigracion: {
+    label: 'Inmigración',
+    prompts: ['¿La inmigración aumenta la inseguridad?', '¿Los inmigrantes reciben prioridad en las ayudas?'],
+  },
+  politica: {
+    label: 'Política e instituciones',
+    prompts: ['¿Está creciendo la economía española?', '¿Cómo ha cambiado el gasto público sobre el PIB?'],
+  },
+};
+
+const broadComplaintTopicOrder = ['vivienda', 'empleo', 'economia', 'inmigracion', 'seguridad', 'sanidad'];
+
+const topicForBroadComplaint = (query: string): string | undefined => {
+  const topicSignals: Array<[string, string[]]> = [
+    ['politica', ['sanchez', 'gobierno', 'psoe', 'pp', 'vox', 'politica', 'presidente']],
+    ['inmigracion', ['inmigrante', 'inmigracion', 'extranjero', 'migrante']],
+    ['vivienda', ['vivienda', 'alquiler', 'piso', 'casa', 'hipoteca']],
+    ['empleo', ['empleo', 'paro', 'trabajo', 'salario', 'sueldo']],
+    ['seguridad', ['seguridad', 'delito', 'crimen', 'insegura', 'peligrosa']],
+    ['sanidad', ['sanidad', 'hospital', 'medico', 'salud']],
+    ['economia', ['economia', 'precios', 'inflacion', 'renta', 'impuestos']],
+  ];
+  return topicSignals.find(([, signals]) => signals.some((signal) => query.includes(signal)))?.[0];
+};
+
+const broadComplaintGuidance = (original: string, primary?: ClaimIndexEntry): SearchResponse['guidance'] | undefined => {
+  const query = normaliseClaimText(original);
+  if (!broadComplaintSignals.some((signal) => query.includes(signal))) return undefined;
+  const explicitTopic = topicForBroadComplaint(query);
+  const topicOrder = explicitTopic && broadComplaintTopics[explicitTopic]
+    ? [explicitTopic, ...broadComplaintTopicOrder.filter((topic) => topic !== explicitTopic)]
+    : broadComplaintTopicOrder;
+  const suggestions = topicOrder.flatMap((topic) => {
+    const definition = broadComplaintTopics[topic];
+    if (!definition) return [];
+    return definition.prompts.slice(0, explicitTopic === topic ? 2 : 1).map((prompt) => ({ title: prompt, prompt }));
+  }).slice(0, 6);
+  const contextSuggestion = primary?.kind === 'topic' && primary.href
+    ? [{ title: `Ver contexto: ${primary.title}`, href: primary.href }]
+    : [];
+  return {
+    heading: 'Esta frase resume varias discusiones',
+    limitation: 'Esta valoración es amplia; no es una afirmación única que pueda comprobarse tal cual.',
+    questions: ['Elige qué parte quieres medir: precios, vivienda, empleo, seguridad, sanidad o política.'],
+    questionsLabel: 'Para convertirla en una comprobación',
+    suggestions: [...contextSuggestion, ...suggestions],
+    suggestionsLabel: explicitTopic ? `Empieza por ${broadComplaintTopics[explicitTopic]?.label.toLocaleLowerCase('es') || 'un tema'}` : 'Elige una discusión concreta',
+  };
+};
 
 const propositionTypeLabels: Record<string, string> = {
   descriptive: 'Hecho',
@@ -630,7 +717,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
     unavailable: 'Orientación rápida disponible',
     invalid: 'Archivo no compatible',
   };
-  const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
+  const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? guidance?.heading || 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
   const stateDescription: Record<typeof state, string> = {
     loading: 'El archivo se está leyendo',
     published: 'Coincidencia con una ficha revisada',
@@ -642,7 +729,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p><p class="claim-guidance-learning" data-learning-note>Las preguntas sin coincidencia nos ayudan a decidir qué comprobar después.</p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p><p class="claim-guidance-learning" data-learning-note>Las preguntas sin coincidencia nos ayudan a decidir qué comprobar después.</p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">${escapeHtml(guidance.questionsLabel || 'Para comprobarla haría falta concretar')}</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 6).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
     : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
@@ -660,6 +747,11 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
 const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]): void => {
   const primary = ranked[0];
   const alternatives = ranked.slice(1).map((entry) => entry);
+  const broadGuidance = broadComplaintGuidance(original, primary);
+  if (broadGuidance) {
+    renderCard('uncovered', original, undefined, [], broadGuidance);
+    return;
+  }
   const coverage = classifyDeterministicCoverage(primary);
   if (coverage.status === 'strong' && primary && isStrongClaimMatch(primary)) {
     renderCard('published', original, primary, alternatives);
@@ -719,18 +811,22 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   status.dataset.statusMode = mode;
   status.setAttribute('aria-live', 'polite');
   status.setAttribute('role', 'status');
-  const progress = state === 'running'
-    ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
-    : '';
   const title = mode === 'media'
-    ? state === 'running' ? 'Orientación inicial lista · leyendo el archivo' : state === 'slow' ? 'La orientación inicial sigue disponible' : 'Contexto adicional no disponible'
-    : state === 'running' ? 'Orientación inicial lista · buscando más contexto' : state === 'slow' ? 'La orientación inicial sigue disponible' : 'Contexto adicional no disponible';
-  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>`;
+    ? state === 'running' ? 'Resultado inicial disponible · leyendo el archivo' : state === 'slow' ? 'Resultado inicial listo' : 'Resultado inicial disponible'
+    : state === 'running' ? 'Resultado inicial disponible' : state === 'slow' ? 'Resultado inicial listo' : 'Resultado inicial disponible';
+  const action = state === 'unavailable' ? '' : '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Usar solo este resultado</button>';
+  status.innerHTML = `<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>${action}`;
   result.querySelector('article')?.append(status);
+  status.querySelector<HTMLButtonElement>('[data-stop-enrichment]')?.addEventListener('click', () => {
+    activeRequest?.abort();
+    activeRequest = null;
+    requestVersion += 1;
+    clearDynamicStatus();
+  });
   if (state === 'running') {
     const fallbackMessage = mode === 'media'
       ? 'La lectura del archivo está tardando más de lo previsto. Puedes usar la orientación visible o escribir la frase directamente; no hace falta esperar.'
-      : 'No hemos podido añadir más contexto todavía. Puedes usar la orientación visible; no hace falta esperar.';
+      : 'El resultado inicial sigue disponible. Puedes usarlo sin esperar a que termine el contexto adicional.';
     dynamicStatusTimer = window.setTimeout(() => {
       if (status.isConnected && status.dataset.statusState === 'running') setDynamicStatus(fallbackMessage, 'slow', mode);
     }, mode === 'media' ? 12000 : 8000);
@@ -775,6 +871,11 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
       renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'uncovered');
       return;
     }
+    const broadGuidance = broadComplaintGuidance(original, primary);
+    if (broadGuidance) {
+      renderCard('uncovered', original, undefined, [], broadGuidance);
+      return;
+    }
     const localSuggestions = broadTopicSuggestions(original);
     const followUps = contextualFollowUps(original, primary);
     const fallbackPrompts = followUps.items.length ? followUps : localSuggestions.items.length ? localSuggestions : generalFollowUps();
@@ -809,12 +910,12 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const processingMessage = inputType === 'image'
-        ? query ? 'La orientación visible ya está lista; leemos la captura en segundo plano para comprobar si añade contexto.' : 'Hemos recibido la captura; leemos su texto en segundo plano para encontrar una comprobación.'
+        ? query ? 'La orientación visible ya está lista; leemos la captura en segundo plano para comprobar si añade contexto. Puedes continuar sin esperar.' : 'Hemos recibido la captura; leemos su texto en segundo plano para encontrar una comprobación.'
         : inputType === 'audio'
-          ? query ? 'La orientación visible ya está lista; transcribimos el audio en segundo plano para comprobar si añade contexto.' : 'Hemos recibido el audio; extraemos su contenido en segundo plano para encontrar una comprobación.'
+          ? query ? 'La orientación visible ya está lista; transcribimos el audio en segundo plano para comprobar si añade contexto. Puedes continuar sin esperar.' : 'Hemos recibido el audio; extraemos su contenido en segundo plano para encontrar una comprobación.'
           : inputType === 'url'
-            ? 'La orientación visible ya está lista; leemos la página enlazada en segundo plano para comprobar si añade contexto.'
-            : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla.';
+            ? 'La orientación visible ya está lista; leemos la página enlazada en segundo plano para comprobar si añade contexto. Puedes continuar sin esperar.'
+            : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla. Puedes continuar sin esperar.';
       setDynamicStatus(processingMessage, 'running', file && !query ? 'media' : 'enrichment');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
@@ -833,7 +934,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (data.status === 'processing') {
       setDynamicStatus(file && !query
         ? 'No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.'
-        : 'No hemos podido añadir más contexto todavía. Esto no significa que la afirmación sea verdadera o falsa; la orientación rápida visible sigue disponible y no hace falta esperar.', 'slow', file && !query ? 'media' : 'enrichment');
+        : 'El resultado inicial sigue disponible. No hemos podido añadir más contexto a tiempo y no hace falta esperar.', 'slow', file && !query ? 'media' : 'enrichment');
       return;
     }
     if (data.status === 'unavailable') {
@@ -841,7 +942,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       }, '', 'media');
-      else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
+      else setDynamicStatus('No hemos podido añadir contexto adicional. La respuesta inicial sigue siendo utilizable.', 'unavailable');
       return;
     }
     if (!file && cacheKey) {
@@ -862,7 +963,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (version === requestVersion) {
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' }, '', 'media');
-      else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
+      else setDynamicStatus('No hemos podido añadir contexto adicional. La respuesta inicial sigue siendo utilizable.', 'unavailable');
     }
   }
 };

@@ -11,12 +11,13 @@ const required = [
   'conversation-counter',
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
-  'Orientación inicial lista · buscando más contexto',
-  'La orientación inicial sigue disponible',
+  'Resultado inicial disponible',
+  'Resultado inicial listo',
   'status.dataset.statusMode',
   'dynamicStatusTimer',
   'window.setTimeout',
-  'claim-result-progress',
+  'data-stop-enrichment',
+  'Usar solo este resultado',
   'Orientación rápida disponible',
   'claim-result-enrichment',
   'stateDescription',
@@ -34,6 +35,10 @@ const required = [
   'url: shareUrl',
   'input?.focus()',
   'broadTopicSuggestions',
+  'broadComplaintGuidance',
+  'broadComplaintSignals',
+  'guidance?.heading',
+  'questionsLabel',
   'suggestionsLabel',
   'Keep an uncovered result honest',
   'claim-guidance-suggestions',
@@ -108,7 +113,7 @@ if (source.includes('Pendiente de revisión · no es un veredicto publicado')) t
 if (source.includes("state === 'running' ? 'Respuesta disponible'")) throw new Error('Enrichment state still presents the initial result as if it were the completed answer');
 if (source.includes('La orientación rápida está lista; comprobamos si podemos añadir contexto.')) throw new Error('File loading state still claims that a quick result is already ready');
 if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
-if (source.includes('data-stop-enrichment') || source.includes('Seguir solo con esta orientación')) throw new Error('Background enrichment still asks the user to stop or advance it manually');
+if (source.includes('Orientación inicial lista · buscando más contexto') || source.includes('La orientación inicial sigue disponible')) throw new Error('Background enrichment still uses pending-style status language');
 if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
 if (source.includes("renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });")) throw new Error('Media failure state still presents the filename as a typed claim');
 if (!/if \(selected\) form\?\.requestSubmit\(\);/.test(source)) throw new Error('Selected media still requires a second manual submission');

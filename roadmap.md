@@ -328,6 +328,8 @@ The browser result states are:
 
 No weak match may be presented as an answer. For example, `España está destruida` must not return the tax claim.
 
+Broad evaluative phrases now receive a dedicated clarification path: the checker explains that the wording combines several possible discussions and offers measurable, one-click choices for the most relevant topics. Optional background enrichment now says explicitly that the first result is already usable and offers `Usar solo este resultado`, which cancels only the background request rather than creating a second classification step.
+
 ## Phase 3 — Local claim compiler
 
 Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses and directional subject/relation/object shapes before model escalation. The compiler now shares conservative semantic signatures across additional everyday Spanish causal, trend, comparison, ranking, symmetric association, priority, group-comparison, cost-of-living, public-finance, health-access, health-spending, income, demographic, and education constructions, including colloquial temporal/causal phrasing and past-tense trends. The NEET compiler family is now distinct from youth unemployment and recognizes both acronym-like and plain-language variants. Absolute public-debt stock and debt-to-GDP ratio are also separated before clustering, matching their distinct metric handlers. Explicit versus implied propositions remain separate, and browser/local compiler tests protect against collapsing unrelated evidence families or treating ordinary affordability pressure as a ranking; broader model-backed extraction and unsupervised semantic clustering remain pending.
