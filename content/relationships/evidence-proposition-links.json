@@ -217,6 +217,7 @@
   {"evidenceId":"pib-nominal-eurostat","propositionId":"prop-pib-nominal-supera-16-billones-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
   {"evidenceId":"salario-minimo-eurostat","propositionId":"prop-salario-minimo-supera-1400-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
   {"evidenceId":"poblacion-ciudadania-extranjera-sube","propositionId":"prop-poblacion-ciudadania-casi-7m-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+  {"evidenceId":"poblacion-nacida-fuera-sube","propositionId":"prop-poblacion-nacida-fuera-casi-10m-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-supera-16-billones-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-crece-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"inflacion-armonizada-espana-ue-eurostat","propositionId":"prop-espana-inflacion-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},

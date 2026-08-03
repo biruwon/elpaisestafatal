@@ -1,0 +1,13 @@
+{
+  "id": "prop-poblacion-nacida-fuera-casi-10m-core",
+  "claimSlug": "poblacion-nacida-fuera-casi-10m",
+  "text": "España tenía casi 9,5 millones de residentes nacidos en un país extranjero en 2025.",
+  "type": "descriptive",
+  "subject": "foreign_born_population",
+  "predicate": "was_approximately",
+  "object": "9.5 million residents",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-nacida-fuera-sube"]
+}

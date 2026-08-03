@@ -47,6 +47,13 @@ for (const snippet of [
   if (!page.includes(snippet) && !source.includes(snippet)) failures.push(`result modes are missing ${snippet}`);
 }
 
+if (!page.includes('id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="off"')) {
+  failures.push('the dynamic result region should be focusable without announcing the entire long card twice');
+}
+if (source.includes('La frase que comprobamos: ${plan.headline}')) {
+  failures.push('structured result headings should not repeat the user-facing phrase prefix');
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);

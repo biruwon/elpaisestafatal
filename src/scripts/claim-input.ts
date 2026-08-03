@@ -685,7 +685,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   if (!result) return;
   const resultLabel = state === 'published' ? 'Ficha publicada' : state === 'related' ? 'Orientación relacionada' : state === 'uncovered' ? 'Sin coincidencia directa' : 'Resultado automático';
   const resultState = state === 'published' ? 'Basada en una ficha revisada' : state === 'related' ? 'No es una comprobación exacta; ayuda a concretar la discusión' : state === 'uncovered' ? 'No hay una comprobación publicada de esta afirmación' : 'Orientación automática · provisional, no publicada';
-  const resultTitle = state === 'published' ? `La frase que comprobamos: ${plan.headline}` : plan.headline;
+  const resultTitle = plan.headline;
   const displayedAssessment = state === 'published' && primary?.assessment
     ? assessmentLabels[primary.assessment] || primary.assessment
     : coverageLabel(plan.coverage);
