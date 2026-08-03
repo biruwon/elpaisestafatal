@@ -1,0 +1,16 @@
+{
+  "id": "prop-precios-vivienda-causan-crisis-core",
+  "claimSlug": "precios-vivienda-causan-crisis",
+  "text": "La subida del precio de la vivienda por sí sola demuestra qué causa la crisis de vivienda en España.",
+  "type": "causal",
+  "subject": "precio_vivienda",
+  "predicate": "explains",
+  "object": "crisis_vivienda",
+  "geography": "España",
+  "period": "2024-2026",
+  "status": "insufficient",
+  "evidenceIds": [
+    "vivienda-indice-de-precios-de-vivienda-t1-2026",
+    "vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"
+  ]
+}

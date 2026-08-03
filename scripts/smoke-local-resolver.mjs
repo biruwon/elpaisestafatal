@@ -56,6 +56,7 @@ const cases = [
   { text: 'La pobreza ha desaparecido porque baja el riesgo AROPE.', status: 'complete', slug: 'riesgo-pobreza-no-desaparece' },
   { text: 'La vivienda está bajando de precio en España.', status: 'complete', slug: 'precio-vivienda-sube' },
   { text: 'Los precios de la vivienda han subido en España.', status: 'complete', slug: 'precio-vivienda-ha-subido' },
+  { text: 'Los precios de la vivienda causan la crisis en España.', status: 'complete', slug: 'precios-vivienda-causan-crisis' },
   { text: 'Los alquileres son más caros que en 2015.', status: 'complete', slug: 'alquileres-suben' },
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
@@ -140,10 +141,12 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   try {
     const result = await resolve('precios de la vivienda en España');
     const series = result.result?.warehouseSeries;
-    if (!['draft', 'partial'].includes(result.status)) failures.push(`warehouse: expected a provisional result, received ${result.status}`);
-    if (!series || series.values.length < 2 || series.values.length !== series.labels.length) failures.push('warehouse: expected a traceable multi-period series');
-    if (new Set(series?.labels || []).size !== (series?.labels || []).length) failures.push('warehouse: mixed incompatible observations into one time series');
-    if (String(series?.unit || '').toLocaleLowerCase().includes('rate of change')) failures.push('warehouse: selected a rate-of-change series for a level-price query');
+    const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'precio-vivienda-ha-subido';
+    if (!published && !['draft', 'partial'].includes(result.status)) failures.push(`warehouse: expected a provisional result, received ${result.status}`);
+    if (published && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push('published housing result: lost proposition traceability');
+    if (!published && (!series || series.values.length < 2 || series.values.length !== series.labels.length)) failures.push('warehouse: expected a traceable multi-period series');
+    if (!published && new Set(series?.labels || []).size !== (series?.labels || []).length) failures.push('warehouse: mixed incompatible observations into one time series');
+    if (!published && String(series?.unit || '').toLocaleLowerCase().includes('rate of change')) failures.push('warehouse: selected a rate-of-change series for a level-price query');
   } catch (error) { failures.push(`warehouse: ${error.message}`); }
   for (const [text, metricId, publishedSlug] of [
     ['precios vivienda España', 'house_price_index', 'precio-vivienda-ha-subido'],

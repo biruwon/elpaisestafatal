@@ -28,6 +28,7 @@ const popularSlugs = [
   'juventud-emancipacion',
   'economia-crece-coste-vida',
   'precio-vivienda-ha-subido',
+  'precios-vivienda-causan-crisis',
   'precio-vivienda-sube',
   'cibercriminalidad-crece',
   'esperanza-vida-alta',
