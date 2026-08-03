@@ -9,7 +9,7 @@ const client = await readFile('src/scripts/claim-input.ts', 'utf8');
 
 if (!classifyPolling.includes('export const onRequestGet')) failures.push('/api/classify/:requestId must expose the polling handler');
 
-for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CLASSIFIER_TOKEN', '}/v1/classify']) {
+for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CLASSIFIER_TOKEN', '}/v1/classify', '|| !env.LOCAL_CLASSIFIER_TOKEN']) {
   if (!classify.includes(fragment)) failures.push(`/api/classify is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');

@@ -47,7 +47,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     if (validation.code === 'empty') return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }), 400);
     return json({ status: validation.code === 'text_too_large' || validation.code === 'invalid_url' ? 'uncovered' : 'unavailable', relatedClaims: [] }, validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'invalid_url' ? 400 : 415);
   }
-  if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
+  if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   try {
     const isMultipart = Boolean(body.file);
     const payload = isMultipart ? (() => {

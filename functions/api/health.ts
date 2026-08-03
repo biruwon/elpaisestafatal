@@ -7,7 +7,7 @@ const response = (body: unknown): Response => Response.json(body, {
 });
 
 export const onRequestGet = async ({ env }: Context): Promise<Response> => {
-  if (!env.LOCAL_CLASSIFIER_ENDPOINT) {
+  if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
     return response({ status: 'ok', deterministic: true, dynamic: false });
   }
   try {

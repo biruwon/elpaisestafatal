@@ -7,11 +7,13 @@ if (!example.includes('service: http_status:404')) failures.push('tunnel must ha
 if (!example.includes('<TUNNEL_UUID>') || !example.includes('<CLASSIFIER_ORIGIN_HOSTNAME>')) failures.push('tunnel template must keep deployment-specific values out of Git');
 
 const endpoint = process.env.LOCAL_CLASSIFIER_ENDPOINT || '';
+const token = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 if (endpoint) {
   let url;
   try { url = new URL(endpoint); } catch { failures.push('LOCAL_CLASSIFIER_ENDPOINT must be a valid URL'); }
   if (url && url.protocol !== 'https:') failures.push('the production classifier endpoint must use HTTPS');
   if (url && ['localhost', '127.0.0.1', '::1', 'host.docker.internal'].includes(url.hostname)) failures.push('the production classifier endpoint cannot be loopback-only');
+  if (!token) failures.push('LOCAL_CLASSIFIER_TOKEN is required when LOCAL_CLASSIFIER_ENDPOINT is configured');
 }
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }

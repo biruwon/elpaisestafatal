@@ -14,7 +14,7 @@ const linkedTimeout = (request: Request, milliseconds: number): { signal: AbortS
 
 export const onRequestGet = async ({ request, env, params }: Context): Promise<Response> => {
   if (!(await allowRateLimitedRequest(request, env, { scope: 'classify-poll', limit: 120 }))) return Response.json({ status: 'unavailable' }, { status: 429, headers: { 'Cache-Control': 'no-store' } });
-  if (!env.LOCAL_CLASSIFIER_ENDPOINT) return Response.json({ status: 'unavailable' }, { headers: { 'Cache-Control': 'no-store' } });
+  if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return Response.json({ status: 'unavailable' }, { headers: { 'Cache-Control': 'no-store' } });
   try {
     const headers = new Headers();
     if (env.LOCAL_CLASSIFIER_TOKEN) headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);
