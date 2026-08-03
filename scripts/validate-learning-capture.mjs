@@ -20,6 +20,10 @@ requireText(input, 'canonical: data.input?.canonical || capturedText', 'media-de
 requireText(questions, 'const isNewRequest =', 'idempotent request detection');
 requireText(questions, 'if (isNewRequest)', 'count-once cluster update gate');
 requireText(questions, 'ON CONFLICT(semantic_signature)', 'semantic cluster persistence');
+requireText(questions, "const inputTypes = new Set(['text', 'image', 'audio', 'url'])", 'input type allowlist');
+requireText(questions, "const statuses = new Set(['received', 'processing', 'published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial'])", 'status allowlist');
+requireText(questions, 'effectiveSemanticSignature = membership.results[0]?.semanticSignature || semanticSignature', 'retry cluster identity preservation');
+requireText(questions, 'INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status)', 'missing-cluster recovery');
 
 if (input.includes('recordUncoveredQuestion')) failures.push('obsolete late-only learning helper remains');
 if (failures.length) {

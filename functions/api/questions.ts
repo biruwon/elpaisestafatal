@@ -36,6 +36,9 @@ const digest = async (value: string): Promise<string> => {
   return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
+const inputTypes = new Set(['text', 'image', 'audio', 'url']);
+const statuses = new Set(['received', 'processing', 'published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial']);
+
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
   if (!allowRequest(request)) return json({ status: 'unavailable' }, 429);
   if (Number(request.headers.get('content-length') || 0) > 64 * 1024) return json({ status: 'invalid' }, 413);
@@ -52,23 +55,33 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     : semanticQuerySignature(canonical) || signature;
   const id = typeof body.requestId === 'string' && body.requestId ? body.requestId.slice(0, 80) : (await digest(normalized)).slice(0, 32);
   const now = new Date().toISOString();
-  const inputType = typeof body.inputType === 'string' ? body.inputType.slice(0, 20) : 'text';
-  const status = typeof body.status === 'string' ? body.status.slice(0, 30) : 'received';
+  const requestedInputType = typeof body.inputType === 'string' ? body.inputType.slice(0, 20) : 'text';
+  const requestedStatus = typeof body.status === 'string' ? body.status.slice(0, 30) : 'received';
+  const inputType = inputTypes.has(requestedInputType) ? requestedInputType : 'text';
+  const status = statuses.has(requestedStatus) ? requestedStatus : 'received';
   try {
-    const clusterId = 'cluster-' + (await digest(semanticSignature)).slice(0, 32);
     const inserted = await env.DB.prepare('INSERT OR IGNORE INTO resolve_requests (id, normalized_text, canonical_signature, semantic_signature, input_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
       .bind(id, normalized, signature, semanticSignature, inputType, status, now).run();
-    await env.DB.prepare('UPDATE resolve_requests SET status = ?, canonical_signature = ?, semantic_signature = ? WHERE id = ?')
-      .bind(status, signature, semanticSignature, id).run();
     const isNewRequest = Number((inserted as { meta?: { changes?: number } })?.meta?.changes || 0) > 0;
+    let effectiveSemanticSignature = semanticSignature;
+    if (!isNewRequest) {
+      // A retry may carry a rewritten canonical signature. Preserve the
+      // request's existing cluster identity so it cannot orphan its member
+      // row or inflate demand in a second semantic family.
+      const membership = await env.DB.prepare('SELECT c.semantic_signature AS semanticSignature FROM query_cluster_members m JOIN query_clusters c ON c.id = m.cluster_id WHERE m.request_id = ? LIMIT 1').bind(id).all<{ semanticSignature?: string }>();
+      effectiveSemanticSignature = membership.results[0]?.semanticSignature || semanticSignature;
+    }
+    const clusterId = 'cluster-' + (await digest(effectiveSemanticSignature)).slice(0, 32);
+    await env.DB.prepare('UPDATE resolve_requests SET status = ?, canonical_signature = ?, semantic_signature = ?, input_type = ? WHERE id = ?')
+      .bind(status, signature, effectiveSemanticSignature, inputType, id).run();
     if (isNewRequest) {
       await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, ?, 1, ?, ?) ON CONFLICT(semantic_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' ELSE excluded.coverage_status END")
-        .bind(clusterId, canonical, signature, semanticSignature, now, status === 'complete' ? 'covered' : status).run();
+        .bind(clusterId, canonical, signature, effectiveSemanticSignature, now, status === 'complete' ? 'covered' : status).run();
     } else {
-      await env.DB.prepare("UPDATE query_clusters SET last_seen_at = ?, coverage_status = CASE WHEN coverage_status = 'covered' THEN 'covered' WHEN ? = 'complete' THEN 'covered' ELSE coverage_status END WHERE semantic_signature = ?")
-        .bind(now, status, semanticSignature).run();
+      await env.DB.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, ?, 1, ?, ?) ON CONFLICT(semantic_signature) DO UPDATE SET canonical_text = excluded.canonical_text, canonical_signature = excluded.canonical_signature, last_seen_at = excluded.last_seen_at, coverage_status = CASE WHEN query_clusters.coverage_status = 'covered' THEN 'covered' WHEN excluded.coverage_status = 'covered' THEN 'covered' ELSE query_clusters.coverage_status END")
+        .bind(clusterId, canonical, signature, effectiveSemanticSignature, now, status === 'complete' ? 'covered' : status).run();
     }
-    const cluster = await env.DB.prepare('SELECT id FROM query_clusters WHERE semantic_signature = ? LIMIT 1').bind(semanticSignature).all<{ id: string }>();
+    const cluster = await env.DB.prepare('SELECT id FROM query_clusters WHERE semantic_signature = ? LIMIT 1').bind(effectiveSemanticSignature).all<{ id: string }>();
     const resolvedClusterId = cluster.results[0]?.id || clusterId;
     await env.DB.prepare('INSERT OR IGNORE INTO query_cluster_members (request_id, cluster_id) VALUES (?, ?)')
       .bind(id, resolvedClusterId).run();

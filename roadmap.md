@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- The operational learning endpoint now validates input types and statuses, preserves an existing request’s semantic cluster across rewritten retries, and recreates a missing cluster row without incrementing demand. This keeps the review queue durable even when a browser retries after optional classification changes the wording.
+
 - Terminal classifier outcomes now update the original learning record for typed claims instead of creating a second cluster entry. File-only media keeps its resolver request identity, while typed text reuses the initial wording digest and deterministic semantic signature; model-generated canonical wording cannot split or orphan the request’s cluster. The review queue therefore sees the final status without inflating demand.
 
 - Removed the remaining audio-runtime compatibility branch: local speech now accepts only the canonical `LOCAL_SPEECH_*` contract, and the retired `WHISPER_*` variables are absent from the service and Compose profile. The media validator protects this invariant.
