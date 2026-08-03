@@ -22,6 +22,7 @@ requireText('Madrid tiene más densidad que Andalucía', 'regional comparison di
 requireText('class="warehouse-prompts"', 'fresh warehouse prompt section');
 requireText('class="latest-home"', 'automatic recent-clarifications section');
 requireText('data-latest-claim=', 'recent claim cards sourced from published content');
+requireText('class="popular-assessment', 'assessment labels on discovery cards');
 requireText('class="warehouse-home"', 'visible warehouse discovery section');
 requireText('data-example-source="warehouse"', 'warehouse discovery metadata');
 if ((homepage.match(/class="warehouse-highlight"/g) || []).length < 12) failures.push('homepage exposes fewer than twelve warehouse-backed discovery cards');

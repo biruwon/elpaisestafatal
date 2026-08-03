@@ -470,6 +470,14 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
     invalid: 'Archivo no compatible',
   };
   const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
+  const stateDescription: Record<typeof state, string> = {
+    loading: 'El archivo se está leyendo',
+    published: 'Coincidencia con una ficha revisada',
+    related: 'Contexto cercano, no una coincidencia exacta',
+    uncovered: 'Todavía no hay una ficha publicada para esta frase',
+    unavailable: 'La orientación rápida se conserva',
+    invalid: 'El archivo necesita otro formato',
+  };
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
@@ -482,7 +490,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const shareAction = primary?.answer ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrlFor(original, primary, state === 'published' ? 'published' : 'related'))}">Compartir aclaración</button>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
   bindResultActions();
 };
 
@@ -696,6 +704,8 @@ form?.addEventListener('submit', (event) => {
   if (query) renderDeterministic(query, ranked);
   else renderCard('loading', file?.name || 'Archivo enviado');
   result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  result.setAttribute('tabindex', '-1');
+  result.focus({ preventScroll: true });
   if (ranked[0] && isStrongClaimMatch(ranked[0]) && !file) return;
   void classify(query, ranked, file);
 });

@@ -328,7 +328,6 @@ export const claimAliases: Record<string, string[]> = {
   'espana-recesion': [
     'España está arruinada',
     'la economía española se hunde',
-    'España se va a la ruina',
   ],
   'precio-vivienda-sube': [
     'los pisos bajan de precio',

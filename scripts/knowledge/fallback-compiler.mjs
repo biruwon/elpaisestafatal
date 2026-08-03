@@ -293,7 +293,7 @@ const impliedFor = (claimType, value) => {
   if (claimType === 'normative') return [{ text: 'La frase contiene una preferencia sobre prioridades públicas, además de cualquier afirmación factual.', type: 'normative', explicit: false }];
   if (claimType === 'predictive') return [{ text: 'La predicción necesita un plazo, indicador y condición que permitan comprobarla.', type: 'predictive', explicit: false }];
   if (claimType === 'legal') return [{ text: 'La respuesta jurídica depende del supuesto concreto, la jurisdicción y la norma vigente.', type: 'legal', explicit: false }];
-  if (includesAny(text, ['destruida', 'destruido', 'fatal', 'colapsado', 'colapsada', 'caos', 'ruina', 'todo va peor', 'no se puede vivir'])) {
+  if (includesAny(text, ['destruida', 'destruido', 'fatal', 'colapsado', 'colapsada', 'caos', 'ruina', 'desastre', 'cuesta abajo', 'todo va peor', 'no se puede vivir'])) {
     return [{ text: 'La expresión usa una valoración amplia: hay que concretar qué resultado, periodo y territorio permitirían comprobarla.', type: 'definition', explicit: false }];
   }
   return [];

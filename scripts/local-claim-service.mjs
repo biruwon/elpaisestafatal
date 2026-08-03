@@ -267,6 +267,32 @@ const compileClaim = async (text, candidates = []) => {
   } catch { return fallbackCompiler(text); }
 };
 
+// The local model can improve phrasing, but it must not weaken a deterministic
+// safety classification. In particular, broad evaluative complaints sometimes
+// get an over-specific model route when a nearby official document is present.
+// Keep the deterministic proposition set, retrieval hints, and uncovered route
+// for those inputs so unrelated evidence cannot leak into the answer.
+const reconcileCompilerSafety = (text, deterministic, candidate) => {
+  if (!candidate || !deterministic?.clarificationRequired) return candidate || deterministic;
+  return {
+    ...candidate,
+    claimType: deterministic.claimType,
+    propositions: deterministic.propositions,
+    explicitPropositions: deterministic.explicitPropositions,
+    impliedPropositions: deterministic.impliedPropositions,
+    entities: deterministic.entities,
+    numbers: deterministic.numbers,
+    geography: deterministic.geography,
+    period: deterministic.period,
+    population: deterministic.population,
+    retrievalHints: deterministic.retrievalHints,
+    semanticSignature: deterministic.semanticSignature,
+    clarificationRequired: true,
+    routing: deterministic.routing,
+    normalized: deterministic.normalized || text.slice(0, 300),
+  };
+};
+
 const extractImageText = async (media) => {
   if (!media?.base64) return '';
   const response = await ollama('/api/chat', { model: visionModel, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
@@ -772,7 +798,8 @@ const classify = async (text) => {
   // published claim's exact wording or alias.
   const nearCanonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
   const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
-  if (canonicalPhrase || strongMatch) {
+  const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
+  if (canonicalPhrase || (strongMatch && !broadEvaluative)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.
@@ -782,7 +809,8 @@ const classify = async (text) => {
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = queryMeaningfulTokens;
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
-  const compiled = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
+  const compiledCandidate = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
+  const compiled = reconcileCompilerSafety(text, deterministicCompiler, compiledCandidate);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry));
@@ -914,7 +942,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const localClaim = localSpecificClaim(text);
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
-  const budgetObservations = observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'budget_transfer');
+  const isBudgetTransfer = handlerId === 'budget_transfer';
+  const budgetObservations = isBudgetTransfer ? observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'budget_transfer') : [];
   const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document' || item.kind === 'legal_rule') : [];
   const publicReuseClaim = isLegal && isPublicReuseQuery(text);
   const publicReuseRules = publicReuseClaim
@@ -1004,7 +1033,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: quantity.headline,
     summary: quantity.summary,
   } : null;
-  const budgetContext = !primary && budgetObservations.length ? {
+  const budgetContext = isBudgetTransfer && !primary && budgetObservations.length ? {
     headline: 'La transferencia está documentada, pero el recorte educativo no está demostrado',
     summary: 'La fuente oficial documenta el movimiento de crédito y su finalidad presupuestaria. No identifica por sí sola qué programas de Educación pierden crédito ni demuestra que el dinero se destine a asesores o exclusivamente a Presidencia.',
   } : null;
@@ -1153,11 +1182,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     const grouped = observations.slice(0, 6);
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
+    const budgetPublication = isBudgetTransfer ? publications.find((item) => item.finding?.type === 'budget_transfer') : undefined;
     const catalogueLeads = grouped.filter((item) => item.kind === 'dataset_catalogue');
     const publicationLike = [...publications, ...catalogueLeads];
     if (!numeric.length && publicationLike.length) return [
-      ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
-        const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
+      ...(budgetPublication ? (() => {
+        const transfer = budgetPublication.finding;
         const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
         const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
         return [{ type: 'money_flow', evidenceIds, amount, origin: transfer.originEntity, destination: transfer.destinationEntity, purpose: transfer.purpose }];
@@ -1166,8 +1196,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         const item = publicationLike.find((candidate) => candidate.excerpt);
         return [{ type: 'source_excerpt', evidenceIds: [item.id], title: item.kind === 'dataset_catalogue' ? 'Conjunto de datos candidato en el catálogo público' : 'Fragmento localizado en la fuente oficial', excerpt: item.excerpt }];
       })() : []),
-      ...(publications.find((item) => item.finding?.type === 'budget_transfer') ? (() => {
-        const transfer = publications.find((item) => item.finding?.type === 'budget_transfer').finding;
+      ...(budgetPublication ? (() => {
+        const transfer = budgetPublication.finding;
         const evidenceIds = publications.filter((item) => item.finding?.type === 'budget_transfer').map((item) => item.id);
         const amount = `${Number(transfer.amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
         return [{ type: 'conversation_reply', evidenceIds, text: `La fuente oficial documenta una transferencia de ${amount} desde ${transfer.originEntity} a ${transfer.destinationEntity} para ${transfer.purpose}. Eso no demuestra por sí solo que se hayan recortado servicios educativos ni que el dinero sea para asesores.` }];
@@ -1292,14 +1322,15 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
-  const indexedSource = !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const allowDiscovery = !classified.compiler?.clarificationRequired;
+  const indexedSource = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
   // typed record or explain what is missing instead of attaching a topical
   // publication.
   const discoveryEligible = new Set(['budget_transfer', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
-  const discovered = discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discovered = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;

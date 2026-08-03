@@ -63,7 +63,9 @@ const cases = [
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
-  { text: 'España está destruida', status: 'partial', slug: 'politica' },
+  { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
+  { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },
+  { text: 'El país se va a la ruina', status: 'uncovered', slug: 'politica' },
 ];
 for (const item of cases) {
   try {
@@ -78,7 +80,8 @@ for (const item of cases) {
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.headline?.toLocaleLowerCase('es').includes('cambios demográficos')) failures.push(`${item.text}: population-replacement result did not lead with the evidence distinction`);
     if (item.text.toLocaleLowerCase().includes('destruyendo españa') && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push(`${item.text}: related political guidance did not retain its structured method plan`);
     if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
-    if (item.text === 'España está destruida' && result.relatedClaims?.some((claim) => claim.kind !== 'topic')) failures.push(`${item.text}: broad political guidance returned a non-topic claim`);
+    if (['España está destruida', 'España va cuesta abajo', 'El país se va a la ruina'].includes(item.text) && result.relatedClaims?.some((claim) => claim.kind !== 'topic')) failures.push(`${item.text}: broad political guidance returned a non-topic claim`);
+    if (['España está destruida', 'España va cuesta abajo', 'El país se va a la ruina'].includes(item.text) && /transferencia|recorte educativo|presidencia|recesion|pib real/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push(`${item.text}: broad political guidance inherited unrelated economic or budget evidence`);
     if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
   } catch (error) { failures.push(`${item.text}: ${error.message}`); }
 }

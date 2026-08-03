@@ -112,5 +112,10 @@ assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item
 assert(broad.clarificationRequired === true, 'Broad evaluative claim did not require clarification');
 assert(broad.semanticSignature !== causal.semanticSignature, 'Broad evaluative wording collapsed into an unrelated causal family');
 assert(broad.semanticSignature !== negatedBroad.semanticSignature, 'Opposing claim polarity collapsed into the same semantic family');
+for (const wording of ['España va cuesta abajo', 'El país se va a la ruina', 'España es un desastre']) {
+  const result = deterministicFallbackCompiler(wording);
+  assert(result.clarificationRequired === true, `Broad political complaint did not require clarification: ${wording}`);
+  assert(result.impliedPropositions.some((item) => item.type === 'definition'), `Broad political complaint was not marked as evaluative context: ${wording}`);
+}
 
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');
