@@ -69,6 +69,11 @@ jobs:
         run: |
           npm run input:validate
           npm run claim-input:lifecycle
+          npm run ux:homepage
+          npm run ux:claims
+          npm run ux:catalogue
+          npm run ux:topics
+          npm run ux:journeys
           npm run audit:roadmap
 
       - name: Smoke-test local text and media boundary without inference

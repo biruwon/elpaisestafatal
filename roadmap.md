@@ -91,6 +91,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The homepage now exposes six warehouse-backed indicator questions as a first-class discovery layer, while the full indicator prompt set remains progressive inside the checker; users can reach current data coverage without waiting for a manually authored claim page.
 - Regional density comparisons now preserve the territories named by the user: a question such as `Madrid tiene más densidad que Andalucía` uses the latest common period, renders a comparison rather than a national trend, and labels density separately from service pressure or quality of life.
 - The first regional comparison is now a reviewed published claim family: `Madrid tiene más densidad de población que Andalucía` has Eurostat-linked evidence, a typed proposition, reusable aliases, and a static comparison visual that can be reused for exact and paraphrased inputs.
+- Generic density rankings now keep Spanish “comunidad” questions inside Spanish autonomous regions, exclude unrelated European NUTS-2 regions, localize the `personas por km²` unit, and identify the highest regional value in the answer summary.
 - Published result cards now keep the claim assessment (`Falso`, `Generalización engañosa`, or similar) separate from evidence coverage (`Evidencia directa` or `Cobertura parcial`), and label the heading as the phrase being checked so an unsupported claim cannot look like an endorsed conclusion.
 - The homepage regional-data discovery rail now includes a one-click Madrid–Andalucía density comparison, making the new same-period comparison path discoverable without requiring users to know the exact query wording.
 - Shared knowledge contracts and relation validation are now part of the build.
@@ -520,6 +521,7 @@ dynamic answer
 - Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
 - Run production smoke checks against both static routes and the generic `/api/health` and `/api/resolve` boundaries without requiring dynamic inference to be available.
 - Exercise text, screenshot, and audio multipart requests against the local boundary in CI with inference unavailable; each request must finish with a useful result or generic unavailable state.
+- CI now runs the homepage, published-claim, catalogue, topic, and public-journey UX contracts on every push and pull request, alongside the resolver lifecycle and roadmap audits.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements

@@ -73,7 +73,11 @@ export const summarizeWarehouseRegionalComparison = (text, observations) => {
 };
 
 export const summarizeWarehouseRanking = (text, observations) => {
-  const numeric = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period);
+  const query = normalise(text);
+  const regionalSpanishQuery = query.includes('comunidad') || query.includes('autonomia') || query.includes('autonomica');
+  const numeric = observations
+    .filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period)
+    .filter((item) => !regionalSpanishQuery || item.metricId !== 'regional_population_density' || /^ES\d/.test(String(item.dimensions?.geo || '')));
   if (numeric.length < 2) return null;
   const groups = new Map();
   for (const item of numeric) {
@@ -95,11 +99,11 @@ export const summarizeWarehouseRanking = (text, observations) => {
   const spainIndex = rows.findIndex((item) => normalise(countryName(item)) === 'es' || normalise(countryName(item)).includes('espana') || item.dimensions?.geo === 'ES');
   const spain = spainIndex >= 0 ? rows[spainIndex] : null;
   const metric = displayMetric(spain || rows[0]);
+  const isRegionalDensity = String(rows[0]?.metricId || '') === 'regional_population_density';
   const rawUnit = String(spain?.unit || rows[0].unit || '').trim();
-  const unit = normalise(rawUnit) === 'percentage of population in the labour force' ? '%' : rawUnit;
+  const unit = isRegionalDensity ? 'personas por km²' : normalise(rawUnit) === 'percentage of population in the labour force' ? '%' : rawUnit;
   const suffix = unit ? ` ${unit}` : '';
   const highest = rows[0];
-  const query = normalise(text);
   const claimsLowest = query.includes('mas baja') || query.includes('mas bajo') || query.includes('menor');
   const claimsHighest = !claimsLowest && (query.includes('mas') || query.includes('mayor') || query.includes('alta') || query.includes('alto'));
   const matchesClaim = claimsLowest ? spainIndex === rows.length - 1 : spainIndex === 0;
@@ -108,7 +112,6 @@ export const summarizeWarehouseRanking = (text, observations) => {
     `El valor más alto del conjunto es ${formatNumber(highest.value)}${suffix} (${countryName(highest)}).`,
   ];
   if ((claimsHighest || claimsLowest) && spain) points.push(matchesClaim ? 'España ocupa la posición que expresa la afirmación en este conjunto y periodo.' : 'España no ocupa la posición que expresa la afirmación en este conjunto y periodo.');
-  const isRegionalDensity = String(highest.metricId || '') === 'regional_population_density';
   return {
     observations: rows,
     headline: isRegionalDensity ? `La mayor densidad regional en ${period}` : `${metric}: ranking comparable de ${period}`,
