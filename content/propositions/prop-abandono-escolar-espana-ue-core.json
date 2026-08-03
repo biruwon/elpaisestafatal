@@ -1,0 +1,13 @@
+{
+  "id": "prop-abandono-escolar-espana-ue-core",
+  "claimSlug": "abandono-escolar-espana-ue",
+  "text": "En 2025, España tuvo una tasa de abandono escolar temprano mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "early_school_leaving_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "12.8 percent versus 9.1 percent",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["abandono-escolar-espana-ue-eurostat"]
+}

@@ -84,6 +84,11 @@ if (!match) {
       variants: ['España tiene más desempleo juvenil que Europa', 'el paro juvenil español supera al europeo', 'comparación europea del paro juvenil'],
     },
     {
+      slug: 'abandono-escolar-espana-ue',
+      prompt: 'España tiene más abandono escolar temprano que la Unión Europea',
+      variants: ['España tiene más abandono escolar que Europa', 'el abandono educativo español supera al europeo', 'comparación europea del abandono escolar'],
+    },
+    {
       slug: 'ingresos-publicos-superan-40',
       prompt: 'Los ingresos públicos de España superan el 40% del PIB',
       variants: ['España recauda más del 40% del PIB', 'los ingresos públicos superan el 40 por ciento', 'la recaudación pública supera el 40%'],

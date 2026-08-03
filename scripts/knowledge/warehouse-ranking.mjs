@@ -137,6 +137,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la tasa de paro de 15 a 24 años sobre la población activa del mismo grupo, según la definición comparable de Eurostat; no es la proporción de toda la juventud ni demuestra causas.',
     caveat: 'El denominador excluye a jóvenes que estudian y no buscan trabajo; no mide por sí solo calidad, duración ni salarios.',
   },
+  early_school_leaving_rate_europe: {
+    label: 'Abandono escolar temprano',
+    verb: 'registró una tasa de abandono escolar temprano',
+    replyLead: 'la tasa de abandono escolar temprano fue del',
+    differenceVerb: ['la tasa española de abandono escolar temprano fue más alta', 'la tasa española de abandono escolar temprano fue más baja', 'España y la Unión Europea registraron la misma tasa de abandono escolar temprano'],
+    unit: '% de personas de 18 a 24 años',
+    replyUnit: '% de personas de 18 a 24 años',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la proporción de personas de 18 a 24 años que abandonaron pronto la educación y la formación, según Eurostat; no es la tasa de paro juvenil ni una medida completa de calidad educativa.',
+    caveat: 'Es un indicador de abandono temprano en la población de 18 a 24 años, no el rendimiento de todo el sistema ni la experiencia de cada joven.',
+  },
   government_revenue_ratio_europe: {
     label: 'Ingresos públicos sobre el PIB',
     verb: 'registró unos ingresos públicos',

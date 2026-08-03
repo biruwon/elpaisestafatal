@@ -353,6 +353,12 @@
       "metricId": "early_school_leaving_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/edat_lfse_14?geo=ES&geo=EU27_2020&sex=T&wstatus=POP&age=Y18-24&unit=PC&sinceTimePeriod=2015",
+      "title": "Abandono escolar temprano: España y Unión Europea · Eurostat",
+      "aliases": ["abandono escolar frente a Europa", "abandono escolar temprano frente a Europa", "España tiene más abandono escolar que Europa", "comparación europea del abandono escolar"],
+      "metricId": "early_school_leaving_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/edat_lfse_03?geo=ES&sex=T&age=Y25-34&isced11=ED5-8&unit=PC&sinceTimePeriod=2015",
       "title": "Titulación superior entre 25 y 34 años en España · Eurostat",
       "aliases": ["estudios superiores", "educación superior", "titulación superior", "universitarios de 25 a 34", "jóvenes con estudios universitarios"],

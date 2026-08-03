@@ -1,4 +1,5 @@
 import { claims } from './claims';
+import { markdownClaims } from './content';
 import { conversationMvpClaims } from './conversationMvp';
 import { concerns } from './concerns';
 import type { ClaimIndexEntry } from './claimIndex';
@@ -70,3 +71,32 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     topic: concern.slug,
   })),
 ];
+
+// Keep the browser index complete even when a reviewed Markdown claim has not
+// yet been mirrored into the legacy TypeScript catalogue. This also prevents
+// a published claim from becoming invisible to exact, alias, or fuzzy lookup.
+const indexedClaimSlugs = new Set(claimIndexEntries.filter((entry) => entry.kind === 'claim').map((entry) => entry.slug));
+claimIndexEntries.push(...markdownClaims
+  .filter((record) => record.status === 'published' && !indexedClaimSlugs.has(record.slug))
+  .map((record) => ({
+    kind: 'claim' as const,
+    slug: record.slug,
+    title: clean(record.claim),
+    href: `/afirmaciones/${record.slug}`,
+    aliases: [record.claim, ...record.aliases, ...(claimAliases[record.slug] ?? []), ...record.topicSlugs],
+    keywords: [...record.aliases, ...record.topicSlugs],
+    assessment: record.assessment,
+    answer: record.shareable || record.whatIsTrue || record.claim,
+    topic: record.topicSlugs[0],
+    claimType: record.claimType,
+    evidenceStrength: record.evidenceStrength,
+    evidenceIds: record.evidenceIds,
+    propositionIds: record.propositionIds,
+    sourceRefs: record.sourceRefs,
+    sourceLinks: record.sourceRefs.map((id) => getSource(id)).filter((source): source is NonNullable<typeof source> => Boolean(source)).map((source) => ({ id: source.id, title: source.title, url: source.url })),
+    relatedSlugs: record.relatedSlugs,
+    whatIsTrue: record.whatIsTrue,
+    whatIsMissing: record.whatIsMissing,
+    cannotProve: record.cannotProve,
+    scale: record.scale,
+  })));

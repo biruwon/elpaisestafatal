@@ -27,6 +27,7 @@ const metricLabels = {
   median_hourly_earnings: 'Salario bruto mediano por hora en España',
   median_hourly_earnings_europe: 'Salario bruto mediano por hora: España y la Unión Europea',
   youth_unemployment_rate_europe: 'Tasa de paro juvenil: España y la Unión Europea',
+  early_school_leaving_rate_europe: 'Abandono escolar temprano: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
   old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',

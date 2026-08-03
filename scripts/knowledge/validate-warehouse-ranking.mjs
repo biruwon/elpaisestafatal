@@ -33,6 +33,12 @@ const gdpComparisonRecords = [
 ];
 const gdpComparison = summarizeWarehouseEuropeanComparison('¿Crece España más que la Unión Europea?', gdpComparisonRecords);
 if (!gdpComparison || !gdpComparison.european || !gdpComparison.summary.includes('2,7') || !gdpComparison.summary.includes('1,2') || !gdpComparison.reply.includes('España creció más')) throw new Error('European GDP comparison did not preserve the same-period Spain/EU comparison');
+const educationComparisonRecords = [
+  { id: 'early-es-2025', metricId: 'early_school_leaving_rate_europe', datasetId: 'Early school leaving comparison', value: 12.8, unit: 'Percentage of population aged 18 to 24', period: '2025', dimensions: { geo: 'ES', age: 'Y18-24', sex: 'T' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'early-eu-2025', metricId: 'early_school_leaving_rate_europe', datasetId: 'Early school leaving comparison', value: 9.1, unit: 'Percentage of population aged 18 to 24', period: '2025', dimensions: { geo: 'EU27_2020', age: 'Y18-24', sex: 'T' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const educationComparison = summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la Unión Europea?', educationComparisonRecords);
+if (!educationComparison || educationComparison.metricId !== 'early_school_leaving_rate_europe' || !educationComparison.summary.includes('12,8') || !educationComparison.summary.includes('9,1') || !educationComparison.points.some((point) => point.includes('3,7 puntos porcentuales más')) || !educationComparison.reply.includes('tasa española de abandono escolar temprano fue más alta')) throw new Error('European education comparison did not preserve the same-period Spain/EU comparison or education denominator caveat');
 const gdpPerCapitaRecords = [
   { id: 'gdp-capita-es-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 38135.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
   { id: 'gdp-capita-eu-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 41565.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },

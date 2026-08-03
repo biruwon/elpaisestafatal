@@ -158,6 +158,7 @@ const topicFollowUpPrompts: Record<string, string[]> = {
   juventud: [
     '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
     '¿Tiene España más paro juvenil que la Unión Europea?',
+    '¿Tiene España más abandono escolar temprano que la Unión Europea?',
     '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?',
     '¿Cómo ha evolucionado el abandono escolar temprano en España?',
     '¿Cómo ha evolucionado el envejecimiento de la población española?',

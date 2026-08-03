@@ -32,6 +32,7 @@ const metricHints = [
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'desempleo espanol frente al europeo', 'tasa de paro de espana frente a los paises europeos', 'tasa de paro espana frente a los paises europeos', 'ranking europeo de la tasa de desempleo', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
   { ids: ['youth_unemployment_rate_europe'], terms: ['paro juvenil frente a europa', 'desempleo juvenil frente a europa', 'paro juvenil de espana frente a europa', 'paro juvenil de espana frente a la union europea', 'tasa de paro juvenil frente a europa', 'tasa de paro juvenil frente a la union europea', 'espana tiene mas paro juvenil que europa', 'espana tiene mas paro juvenil que la union europea', 'espana tiene menos paro juvenil que europa', 'espana tiene menos paro juvenil que la union europea', 'desempleo juvenil europeo', 'comparacion europea del paro juvenil', 'paro juvenil europa'] },
+  { ids: ['early_school_leaving_rate_europe'], terms: ['abandono escolar frente a europa', 'abandono escolar frente a la union europea', 'abandono escolar temprano frente a europa', 'abandono escolar temprano frente a la union europea', 'abandono educativo frente a europa', 'abandono educativo frente a la union europea', 'espana tiene mas abandono escolar que europa', 'espana tiene mas abandono escolar que la union europea', 'espana tiene menos abandono escolar que europa', 'espana tiene menos abandono escolar que la union europea', 'comparacion europea del abandono escolar', 'abandono escolar europa'] },
   { ids: ['early_school_leaving_rate'], terms: ['abandono escolar temprano', 'abandono escolar', 'abandono educativo', 'proporcion de jovenes que dejan la educacion temprano', 'proporcion de jovenes dejan la educacion temprano', 'jovenes dejan educacion temprano', 'dejan los estudios', 'dejan los estudios antes de tiempo', 'jovenes que abandonan los estudios', 'fracaso escolar temprano'] },
   { ids: ['tertiary_education_attainment_rate'], terms: ['estudios superiores', 'educacion superior', 'titulacion superior', 'universitarios', 'graduados', 'titulados', 'universitarios de 25 a 34', 'jovenes con estudios universitarios', 'personas con estudios superiores'] },
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera del empleo y de la educacion', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
@@ -139,6 +140,12 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('employment_rate_europe');
     preferred.delete('employment_rate');
   }
+  if (preferred.has('early_school_leaving_rate_europe')) {
+    preferred.delete('early_school_leaving_rate');
+    preferred.delete('youth_unemployment_rate');
+    preferred.delete('tertiary_education_attainment_rate');
+    preferred.delete('neet_rate');
+  }
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_current_taxes_income_wealth_europe')) {
     preferred.delete('government_revenue_ratio');
@@ -207,6 +214,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
   const youthRequested = ['paro juvenil', 'desempleo juvenil', 'jovenes sin trabajo', 'jovenes activos', '15-24'].some((term) => normalized.includes(normalise(term)));
   const earlyEducationRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const earlyEducationEuropeRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const tertiaryEducationRequested = metricHints.find((hint) => hint.ids.includes('tertiary_education_attainment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
@@ -231,6 +239,7 @@ export const excludedMetricIdsForQuery = (query) => {
   if (educationContext && !youthRequested) excluded.add('youth_unemployment_rate');
   if (educationContext && !tertiaryEducationRequested) excluded.add('tertiary_education_attainment_rate');
   if (educationContext && !earlyEducationRequested) excluded.add('early_school_leaving_rate');
+  if (educationContext && !earlyEducationEuropeRequested) excluded.add('early_school_leaving_rate_europe');
   if (educationContext && !neetRequested) excluded.add('neet_rate');
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.

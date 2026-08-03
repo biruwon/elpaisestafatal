@@ -146,6 +146,13 @@ export const claimAliases: Record<string, string[]> = {
     'paro juvenil frente a Europa',
     'comparación europea del paro juvenil',
   ],
+  'abandono-escolar-espana-ue': [
+    'España tiene más abandono escolar que Europa',
+    'el abandono educativo español supera al europeo',
+    'España abandona más los estudios que la UE',
+    'abandono escolar frente a Europa',
+    'comparación europea del abandono escolar',
+  ],
   'paro-epa-supera-10': [
     'el paro de la EPA supera el 10%',
     'la EPA todavía marca más de un 10% de paro',

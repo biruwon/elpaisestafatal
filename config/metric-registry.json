@@ -463,6 +463,14 @@
     "notEquivalentTo": ["youth_unemployment_rate", "tertiary_education_attainment_rate", "young_population_share"],
     "dimensions": ["period", "geography", "age", "sex", "labour_status"]
   },
+  "early_school_leaving_rate_europe": {
+    "name": "Early leavers from education and training: Spain and the European Union",
+    "aliases": ["abandono escolar frente a Europa", "abandono escolar temprano frente a Europa", "abandono educativo frente a la Unión Europea", "España tiene más abandono escolar que Europa", "España tiene menos abandono escolar que Europa", "comparación europea del abandono escolar"],
+    "unit": "percent of population aged 18 to 24",
+    "population": "usual residents aged 18 to 24 who left education and training early in Spain and the European Union",
+    "notEquivalentTo": ["early_school_leaving_rate", "youth_unemployment_rate", "tertiary_education_attainment_rate", "neet_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "labour_status"]
+  },
   "tertiary_education_attainment_rate": {
     "name": "Tertiary educational attainment among people aged 25 to 34",
     "aliases": ["estudios superiores", "educación superior", "titulación superior", "universitarios", "graduados", "titulados", "universitarios de 25 a 34", "jóvenes con estudios universitarios", "personas con estudios superiores"],

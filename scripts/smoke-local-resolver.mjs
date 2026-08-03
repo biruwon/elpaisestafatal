@@ -74,6 +74,7 @@ const cases = [
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
   { text: 'España ha reducido el abandono escolar temprano.', status: 'complete', slug: 'abandono-escolar-temprano-baja' },
+  { text: 'España tiene más abandono escolar temprano que la Unión Europea.', status: 'complete', slug: 'abandono-escolar-espana-ue' },
   { text: 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado.', status: 'complete', slug: 'titulacion-superior-aumenta' },
   { text: 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan.', status: 'complete', slug: 'neet-baja' },
   { text: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera.', status: 'complete', slug: 'necesidades-medicas-lista-espera-aumentan' },
@@ -502,6 +503,12 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseComparison?.metricId !== 'youth_unemployment_rate_europe') failures.push('Spain/EU youth unemployment: selected the wrong metric family');
     if (!result.result?.warehouseComparison?.reply?.includes('tasa de paro juvenil española fue más alta')) failures.push('Spain/EU youth unemployment: comparison reply did not use the youth-specific wording');
   } catch (error) { failures.push(`Spain/EU youth unemployment: ${error.message}`); }
+  try {
+    const result = await resolve('¿Tiene España más abandono escolar temprano que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU early school leaving: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseComparison?.metricId !== 'early_school_leaving_rate_europe') failures.push('Spain/EU early school leaving: selected the wrong metric family');
+    if (!result.result?.warehouseComparison?.reply?.includes('tasa española de abandono escolar temprano fue más alta')) failures.push('Spain/EU early school leaving: comparison reply did not use the education-specific wording');
+  } catch (error) { failures.push(`Spain/EU early school leaving: ${error.message}`); }
   try {
   const result = await resolve('El salario mínimo ha subido en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
