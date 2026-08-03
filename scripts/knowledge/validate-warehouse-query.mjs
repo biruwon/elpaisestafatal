@@ -42,6 +42,9 @@ if (!preferredMetricIdsForQuery('cuánto gasta sanidad por habitante en España'
 if (!preferredMetricIdsForQuery('cuánto dinero se dedica por persona a la sanidad').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for colloquial spending wording');
 if (!preferredMetricIdsForQuery('cuánto debe España').has('government_debt_ratio')) throw new Error('Metric hints did not prefer public debt for colloquial debt wording');
 if (!preferredMetricIdsForQuery('porcentaje de residentes AROPE en España').has('arope_rate')) throw new Error('Metric hints did not prefer AROPE for resident percentage wording');
+if (!preferredMetricIdsForQuery('¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?').has('arope_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU AROPE comparison');
+if (preferredMetricIdsForQuery('¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?').has('arope_rate')) throw new Error('Metric hints kept Spain-only AROPE alongside the Spain/EU comparison');
+if (!excludedMetricIdsForQuery('¿Qué porcentaje de personas está en riesgo de pobreza o exclusión en España?').has('arope_rate_europe')) throw new Error('Metric hints did not keep Spain/EU AROPE separate from the Spain-only question');
 if (!excludedMetricIdsForQuery('La sanidad pública está completamente colapsada').has('health_expenditure_per_capita')) throw new Error('Metric hints allowed per-capita spending to answer a broad health-system outcome claim');
 if (!preferredMetricIdsForQuery('desigualdad de ingresos en España').has('gini_coefficient')) throw new Error('Metric hints did not prefer Gini for inequality wording');
 if (!preferredMetricIdsForQuery('déficit público sobre PIB').has('government_deficit_ratio')) throw new Error('Metric hints did not prefer public deficit for deficit wording');

@@ -59,6 +59,7 @@ const metricLabels = {
   foreign_citizenship_population: 'Población con ciudadanía extranjera en España',
   immigration_flows: 'Inmigración anual en España',
   arope_rate: 'Riesgo de pobreza o exclusión social en España',
+  arope_rate_europe: 'Riesgo de pobreza o exclusión social: España y la Unión Europea',
 };
 const offenceLabels = {
   'intentional homicide': 'Homicidios intencionados',
@@ -106,7 +107,7 @@ const displayUnit = (item) => {
   if (metricId === 'median_hourly_earnings' || metricId === 'median_hourly_earnings_europe') return '€ por hora';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
-  if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
+  if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe' || metricId === 'older_population_share' || metricId === 'young_population_share' || metricId === 'arope_rate' || metricId === 'arope_rate_europe') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'life_expectancy_at_birth') return 'años';

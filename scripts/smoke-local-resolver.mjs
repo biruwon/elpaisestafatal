@@ -516,6 +516,12 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseComparison?.reply?.includes('tasa española fue más alta')) failures.push('Spain/EU NEET: comparison reply did not preserve the NEET wording');
   } catch (error) { failures.push(`Spain/EU NEET: ${error.message}`); }
   try {
+    const result = await resolve('¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`Spain/EU AROPE: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseComparison?.metricId !== 'arope_rate_europe') failures.push('Spain/EU AROPE: selected the wrong metric family');
+    if (!result.result?.warehouseComparison?.reply?.includes('tasa española fue más alta')) failures.push('Spain/EU AROPE: comparison reply did not preserve the composite-indicator wording');
+  } catch (error) { failures.push(`Spain/EU AROPE: ${error.message}`); }
+  try {
   const result = await resolve('El salario mínimo ha subido en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'minimum_wage_monthly') failures.push('minimum wage warehouse: selected the wrong metric family');

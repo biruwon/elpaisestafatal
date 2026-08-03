@@ -1,0 +1,13 @@
+{
+  "id": "prop-arope-espana-ue-core",
+  "claimSlug": "arope-espana-ue",
+  "text": "En 2025, España tuvo una tasa AROPE mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "arope_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "25.7 percent versus 20.9 percent",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["arope-espana-ue-eurostat"]
+}

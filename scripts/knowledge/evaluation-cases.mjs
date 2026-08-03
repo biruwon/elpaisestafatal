@@ -69,6 +69,8 @@ const knownSeeds = [
   ['abandono-escolar-temprano-baja', 'trend', 'España ha reducido el abandono escolar temprano'],
   ['titulacion-superior-aumenta', 'trend', 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado'],
   ['neet-baja', 'trend', 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan'],
+  ['ninis-espana-ue', 'comparison', 'España tiene más jóvenes que ni estudian ni trabajan que la Unión Europea'],
+  ['arope-espana-ue', 'comparison', 'España tiene más riesgo de pobreza o exclusión social que la Unión Europea'],
   ['necesidades-medicas-lista-espera-aumentan', 'trend', 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera'],
   ['pib-por-habitante-supera-34000', 'descriptive', 'El PIB por habitante en España supera los 34.000 euros'],
   ['inmigracion-flujos-no-total', 'quantity', 'Las llegadas irregulares representan toda la inmigración que vive en España'],

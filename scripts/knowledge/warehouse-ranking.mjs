@@ -159,6 +159,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la proporción de personas de 15 a 29 años que no están empleadas ni participan en educación o formación, según Eurostat; no es la tasa de paro juvenil ni una descripción de toda la juventud.',
     caveat: 'El indicador combina situaciones laborales y formativas distintas; no identifica por sí solo sus causas, duración, ingresos o calidad del empleo.',
   },
+  arope_rate_europe: {
+    label: 'Riesgo de pobreza o exclusión social',
+    verb: 'registró una tasa de riesgo de pobreza o exclusión social',
+    replyLead: 'la tasa de riesgo de pobreza o exclusión social fue del',
+    differenceVerb: ['la tasa española fue más alta', 'la tasa española fue más baja', 'España y la Unión Europea registraron la misma tasa'],
+    unit: '% de la población',
+    replyUnit: '% de la población',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la tasa AROPE de la población total según Eurostat, con la misma definición para España y la Unión Europea; no equivale a pobreza absoluta ni a una medida de la situación de cada hogar.',
+    caveat: 'AROPE combina riesgo de pobreza, carencia material y social severa o baja intensidad laboral; no describe una única intensidad de privación ni identifica por sí sola sus causas.',
+  },
   government_revenue_ratio_europe: {
     label: 'Ingresos públicos sobre el PIB',
     verb: 'registró unos ingresos públicos',

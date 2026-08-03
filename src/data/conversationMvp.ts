@@ -433,6 +433,19 @@ definitions['ninis-espana-ue'] = {
   visuals: { key: { value: '+0,5 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Evolución de jóvenes fuera del empleo y la educación', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [11.5, 11], label: 'Jóvenes fuera del empleo y la educación o formación', unit: '% de personas de 15 a 29 años · 2025' }, caveat: 'El indicador no es el paro juvenil: incluye a personas fuera de la población activa y combina situaciones formativas y laborales distintas.' },
 };
 
+definitions['arope-espana-ue'] = {
+  prompt: 'España tiene más riesgo de pobreza o exclusión social que la Unión Europea',
+  aliases: ['España tiene más pobreza que Europa', 'la tasa AROPE española supera a la europea', 'España tiene más riesgo de pobreza que la UE', 'comparación europea de AROPE'],
+  propositions: ['En 2025, la tasa AROPE fue del 25,7% en España frente al 20,9% en la Unión Europea.', 'La diferencia fue de 4,8 puntos porcentuales.', 'La comparación demuestra por sí sola las causas o la misma intensidad de privación en todos los hogares.'],
+  concern: 'España registra una tasa AROPE superior a la de la Unión Europea, pero AROPE es un indicador compuesto y la diferencia no explica por sí sola sus causas.',
+  supports: 'Eurostat registra un 25,7% en España y un 20,9% en la Unión Europea en 2025: 4,8 puntos porcentuales de diferencia.',
+  limit: 'AROPE combina riesgo de pobreza, carencia material y social severa o baja intensidad laboral. No es pobreza absoluta ni describe por sí sola la situación de cada hogar.',
+  question: '¿Quieres comparar AROPE, pobreza relativa, carencia material o la renta disponible de los hogares?',
+  reply: 'Sí: en 2025 España registró una tasa AROPE del 25,7%, frente al 20,9% de la Unión Europea. Son 4,8 puntos más, pero AROPE es un indicador compuesto y no explica por sí solo las causas.',
+  visualLabel: 'Una brecha comparable no equivale a una explicación causal',
+  visuals: { key: { value: '+4,8 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Tasa AROPE', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [25.7, 20.9], label: 'Población en riesgo de pobreza o exclusión social', unit: '% de la población · 2025' }, caveat: 'AROPE combina varias dimensiones y no es una medida de pobreza absoluta ni una explicación de las causas.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

@@ -605,6 +605,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?',
               '¿Las personas inmigrantes reciben prioridad en las ayudas?',
               '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
+              '¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?',
               '¿Cómo han evolucionado los ingresos públicos sobre el PIB?',
             ]
           : query.includes('impuesto') || query.includes('econom') || query.includes('pib') || query.includes('precio') || query.includes('inflac')
@@ -620,6 +621,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
               '¿España gasta más o menos que la media de la Unión Europea?',
               '¿España gasta más por habitante en sanidad que la Unión Europea?',
               '¿España tiene más renta mediana que la Unión Europea?',
+              '¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?',
             ]
             : [
               '¿Ha empeorado el acceso a la vivienda en España?',

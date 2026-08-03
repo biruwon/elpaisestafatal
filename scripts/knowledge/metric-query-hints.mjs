@@ -69,6 +69,7 @@ const metricHints = [
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuanto ingresan los hogares', 'cuanto ingresan de media los hogares'] },
   { ids: ['median_equivalised_income_europe'], terms: ['renta mediana frente a europa', 'renta mediana frente a la union europea', 'como queda la renta mediana de espana frente a europa', 'hogares españoles tienen menos renta mediana que la ue', 'comparacion europea de los ingresos medianos', 'ingresos de los hogares frente a europa', 'ingresos de los hogares frente a la union europea', 'espana tiene mas renta que europa', 'espana tiene menos renta que europa', 'espana tiene mas renta mediana que europa', 'espana tiene menos renta mediana que europa', 'espana tiene mas renta que la union europea', 'espana tiene menos renta que la union europea', 'espana tiene mas renta mediana que la union europea', 'espana tiene menos renta mediana que la union europea', 'ingresos medianos frente a europa', 'ingresos medianos frente a la union europea', 'ingresos medianos que europa', 'ingresos medianos que la union europea', 'renta de espana frente a europa', 'renta europa'] },
+  { ids: ['arope_rate_europe'], terms: ['arope frente a europa', 'arope frente a la union europea', 'riesgo de pobreza frente a europa', 'riesgo de pobreza frente a la union europea', 'riesgo de pobreza o exclusion que la union europea', 'pobreza o exclusion frente a europa', 'pobreza o exclusion frente a la union europea', 'espana tiene mas riesgo de pobreza que europa', 'espana tiene mas riesgo de pobreza que la union europea', 'espana tiene menos riesgo de pobreza que europa', 'espana tiene menos riesgo de pobreza que la union europea', 'comparacion europea de arope', 'arope europa'] },
   { ids: ['arope_rate'], terms: ['arope', 'riesgo de pobreza o exclusion', 'riesgo de pobreza y exclusion', 'pobreza o exclusion social', 'porcentaje en riesgo de pobreza', 'personas en riesgo de pobreza', 'porcentaje residentes arope', 'residentes arope'] },
   { ids: ['cpi_index'], terms: ['coste de vida', 'cesta de la compra', 'precios de consumo'] },
   { ids: ['house_price_index'], terms: ['casas mas caras', 'casas son mas caras', 'casas mucho mas caras', 'casas son mucho mas caras', 'precio de las casas', 'precios de las casas', 'precio vivienda', 'precios vivienda', 'vivienda precio', 'vivienda precios', 'precio vivienda espana', 'comprar una casa', 'precio de comprar una casa', 'comprar vivienda'] },
@@ -155,6 +156,7 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('youth_unemployment_rate');
     preferred.delete('youth_unemployment_rate_europe');
   }
+  if (preferred.has('arope_rate_europe')) preferred.delete('arope_rate');
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_current_taxes_income_wealth_europe')) {
     preferred.delete('government_revenue_ratio');
@@ -227,6 +229,8 @@ export const excludedMetricIdsForQuery = (query) => {
   const tertiaryEducationRequested = metricHints.find((hint) => hint.ids.includes('tertiary_education_attainment_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetRequested = metricHints.find((hint) => hint.ids.includes('neet_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const neetEuropeRequested = metricHints.find((hint) => hint.ids.includes('neet_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const aropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const aropeEuropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
   const employmentEuropeRequested = metricHints.find((hint) => hint.ids.includes('employment_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -253,6 +257,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (educationContext && !neetRequested) excluded.add('neet_rate');
   if (educationContext && !neetEuropeRequested) excluded.add('neet_rate_europe');
   if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
+  if (aropeEuropeRequested) excluded.add('arope_rate');
+  if (aropeRequested && !aropeEuropeRequested) excluded.add('arope_rate_europe');
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');

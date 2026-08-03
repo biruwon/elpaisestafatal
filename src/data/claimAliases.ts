@@ -407,4 +407,10 @@ export const claimAliases: Record<string, string[]> = {
     'España tiene más jóvenes fuera del empleo y la educación que la UE',
     'comparación europea de ninis',
   ],
+  'arope-espana-ue': [
+    'España tiene más pobreza que Europa',
+    'la tasa AROPE española supera a la europea',
+    'España tiene más riesgo de pobreza que la UE',
+    'comparación europea de AROPE',
+  ],
 };

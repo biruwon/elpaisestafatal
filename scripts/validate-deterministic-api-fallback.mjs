@@ -3,7 +3,8 @@ import { deterministicApiFallback } from '../src/lib/knowledge/deterministic-api
 const text = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });
 if (text.status !== 'uncovered' || !text.result?.blocks?.some((block) => block.type === 'claim_breakdown')) throw new Error('text fallback did not preserve a structured clarification');
 if (!/hecho concreto|periodo|lugar/i.test(text.result?.clarificationQuestion || '')) throw new Error('text fallback did not offer a concrete next question');
-if (text.result?.sourceLinks || text.result?.evidenceIds?.length) throw new Error('text fallback invented evidence or sources');
+const textPlan = text.result;
+if (textPlan?.['sourceLinks'] || textPlan?.evidenceIds?.length) throw new Error('text fallback invented evidence or sources');
 
 const housing = deterministicApiFallback({ text: 'La vivienda está imposible', inputType: 'text' });
 if (!/precios|alquileres|vivienda pública|disponibilidad/i.test(housing.guidance.questions[0])) throw new Error('topic-aware fallback lost housing guidance');

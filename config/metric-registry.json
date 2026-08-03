@@ -303,6 +303,14 @@
     "notEquivalentTo": [],
     "dimensions": ["period", "geography", "age", "sex"]
   },
+  "arope_rate_europe": {
+    "name": "At-risk-of-poverty-or-social-exclusion rate: Spain and the European Union",
+    "aliases": ["AROPE frente a Europa", "riesgo de pobreza frente a Europa", "pobreza o exclusión frente a la Unión Europea", "España tiene más riesgo de pobreza que Europa", "comparación europea de AROPE"],
+    "unit": "percent of total population",
+    "population": "usual residents aged all ages in Spain and the European Union",
+    "notEquivalentTo": ["arope_rate"],
+    "dimensions": ["period", "geography", "age", "sex"]
+  },
   "immigration_flows": {
     "name": "Annual immigration flows",
     "aliases": ["inmigración", "llegadas", "flujos migratorios"],
