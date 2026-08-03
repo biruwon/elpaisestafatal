@@ -41,6 +41,7 @@ Generated claims must not be published merely because a model can write them. Ne
 ## Latest completed milestone — 2026-08-04
 
 - Replaced the raw Pages upload command with a fail-closed deployment wrapper: every release builds from the current repository, deploys the static Pages artifact, waits for canonical-domain propagation, and runs the production smoke contract before reporting success. A successful upload without a verified custom-domain switch is now treated as a failed deployment.
+- Added a strict public response boundary for both initial classification and background polling. Upstream payloads must match the shared response shape, and malformed or implementation-leaking payloads now fall back to deterministic guidance instead of crossing into the public UI.
 
 - Fixed and regression-tested broad political fallback wording such as `España está destruida`: it now returns topic-only political context instead of an empty result, while still exposing no fabricated evidence or unrelated claim. The production smoke contract covers both broad and explicit Sánchez formulations.
 - Added explicit workflow concurrency policies: stale push validation runs are cancelled, while refresh, backup, monitoring, and release-evaluation jobs are serialized without cancelling an in-progress operational job.

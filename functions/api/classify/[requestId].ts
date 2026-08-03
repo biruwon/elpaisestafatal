@@ -1,4 +1,5 @@
 interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
+import { publicResolveResponse } from '../../../src/lib/knowledge/public-response.mjs';
 interface Context { request: Request; env: Env; params: { requestId: string } }
 
 const linkedTimeout = (request: Request, milliseconds: number): { signal: AbortSignal; dispose: () => void } => {
@@ -33,7 +34,11 @@ export const onRequestGet = async ({ request, env, params }: Context): Promise<R
       response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/classify/${encodeURIComponent(params.requestId)}`, { headers, signal: upstream.signal });
     } finally { upstream.dispose(); }
     if (!response.ok) return Response.json({ status: 'unavailable' }, { headers: { 'Cache-Control': 'no-store' } });
-    return new Response(response.body, { status: response.status, headers: { 'content-type': 'application/json', 'Cache-Control': 'no-store' } });
+    const payload = await response.json().catch(() => undefined);
+    const safe = publicResolveResponse(payload);
+    return safe
+      ? Response.json(safe, { headers: { 'Cache-Control': 'no-store' } })
+      : Response.json({ status: 'unavailable' }, { headers: { 'Cache-Control': 'no-store' } });
   } catch {
     return Response.json({ status: 'unavailable' }, { headers: { 'Cache-Control': 'no-store' } });
   }

@@ -3,6 +3,7 @@ interface Context { request: Request; env: Env }
 type InputType = 'text' | 'image' | 'audio' | 'url';
 import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const windowMs = 60_000;
@@ -79,7 +80,9 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/classify`, { method: 'POST', headers, body: payload, signal: upstream.signal });
     } finally { upstream.dispose(); }
     if (!response.ok) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
-    return new Response(response.body, { status: response.status, headers: { 'content-type': 'application/json', 'Cache-Control': 'no-store' } });
+    const upstreamPayload = await response.json().catch(() => undefined);
+    const safe = publicResolveResponse(upstreamPayload);
+    return safe ? json(safe) : json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   } catch {
     return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   }
