@@ -83,6 +83,13 @@ assert(highestRanking.claimType === 'comparative', 'Highest-ranking claim was no
 assert(highestRanking.semanticSignature === equivalentHighestRanking.semanticSignature, 'Equivalent highest-ranking wording did not receive the same semantic signature');
 assert(highestRanking.semanticSignature !== lowestRanking.semanticSignature, 'Highest and lowest ranking claims collapsed into the same semantic family');
 
+const worseComparison = deterministicFallbackCompiler('España está peor que hace diez años');
+const betterComparison = deterministicFallbackCompiler('España está mejor que hace diez años');
+assert(worseComparison.claimType === 'comparative', 'Relative “peor que” comparison was not detected');
+assert(worseComparison.explicitPropositions[0].predicate === 'worse_than', 'Relative comparison direction was not extracted');
+assert(worseComparison.period === 'hace diez anos', 'Written relative period was not extracted');
+assert(worseComparison.semanticSignature !== betterComparison.semanticSignature, 'Better and worse relative comparisons collapsed into the same semantic family');
+
 const broad = deterministicFallbackCompiler('España está destruida');
 const negatedBroad = deterministicFallbackCompiler('España no está destruida');
 assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');

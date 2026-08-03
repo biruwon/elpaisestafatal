@@ -30,5 +30,7 @@ if (module.semanticQuerySignature('Cada vez hay más empleo en España') === mod
 if (module.semanticQuerySignature('España está por encima de Europa en impuestos') === module.semanticQuerySignature('Europa está por encima de España en impuestos')) throw new Error('Reversed positional comparisons produced the same signature');
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') !== module.semanticQuerySignature('España es el país con más paro de Europa')) throw new Error('Equivalent highest-ranking wording produced different signatures');
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') === module.semanticQuerySignature('España tiene el paro más bajo de Europa')) throw new Error('Highest and lowest ranking claims produced the same signature');
+if (module.semanticQuerySignature('España está peor que hace diez años') !== module.semanticQuerySignature('España está peor que hace diez años')) throw new Error('Relative comparison signature was not stable');
+if (module.semanticQuerySignature('España está peor que hace diez años') === module.semanticQuerySignature('España está mejor que hace diez años')) throw new Error('Better and worse relative comparisons produced the same signature');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
 console.log('Query signature validation passed.');

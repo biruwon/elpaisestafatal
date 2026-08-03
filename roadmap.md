@@ -83,6 +83,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - The fallback compiler now preserves a directional proposition shape for common comparisons and causal statements (`subject`, `predicate`, `object`), so reversed comparisons cannot silently share a semantic family with the original formulation; the checker labels breakdown rows as facts, comparisons, causes, definitions, predictions, rules, priorities, or implications.
 - The deterministic language path now also preserves direction for everyday Spanish trend paraphrases (`cada vez hay más`, `se ha disparado`, `va a peor`, `está mejorando`) and positional comparisons (`por encima de`, `por debajo de`, `supera`), while separating opposing trend/comparison families.
 - Ranking language now preserves highest/lowest direction for forms such as `el paro más alto de Europa`, `el país con más paro`, and `el paro más bajo`, so the long tail cannot merge opposite ranking claims into one review family.
+- Relative comparisons such as `España está peor que hace diez años` and `España está mejor que hace diez años` now retain their directional relation instead of being treated as generic descriptive text.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 68 evidence records and 61 source records are currently linked; the new demographic claim reuses five existing Eurostat source records and adds one explicit synthesis record for the undefined “replacement” conclusion.
 - The browser has a deterministic claim index and automatic local classification support.
@@ -322,7 +323,7 @@ The compiler must produce strict JSON containing:
 
 The deterministic fallback now preserves common written Spanish quantities and percentages such as `tres millones` and `treinta por ciento`, so numeric claims remain clusterable and comparable even when local inference is unavailable.
 
-The client fallback now keeps broad complaints from receiving arbitrary topic suggestions: detected topics get relevant context, while topic-free inputs get a clearly labelled set of published starting checks. Common political formulations such as `España está destruida` also route to the political context family.
+The client fallback now keeps broad complaints from receiving arbitrary topic suggestions: detected topics get relevant context, while topic-free inputs get focused clarification without unrelated published checks. Common political formulations such as `España está destruida` also route to the political context family.
 
 The homepage now exposes twelve warehouse-backed discovery cards across cost of living, macroeconomics, housing, employment, health, security, territory, public debt, youth unemployment, demography, and inequality. These are reusable data entry points rather than manually authored verdicts. The `/datos` catalogue provides the longer-tail discovery layer for all configured metric families without turning the main checker into a catalogue.
 

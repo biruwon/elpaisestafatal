@@ -73,6 +73,14 @@ const relationShapeText = (value) => {
 // can reverse the conclusion while leaving all the same vocabulary behind.
 export const propositionShapeFor = (value) => {
   const text = normalise(value);
+  const relativeComparison = text.match(/^(.*?)\s+(mejor|peor|igual|distinto)\s+que\s+(.+)$/);
+  if (relativeComparison) {
+    return {
+      subject: relationShapeText(relativeComparison[1]),
+      predicate: ({ mejor: 'better_than', peor: 'worse_than', igual: 'equal_to', distinto: 'different_from' })[relativeComparison[2]],
+      object: relationShapeText(relativeComparison[3]),
+    };
+  }
   const positionalComparison = text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+?)\s+en\s+(.+)$/) || text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+)$/);
   if (positionalComparison) {
     return {
@@ -198,7 +206,7 @@ const claimTypeFor = (value) => {
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'dispara', 'disparado', 'encarece', 'empeora', 'mejora', 'no deja de', 'va a peor', 'va peor', 'va mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
-  if (includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'ranking', 'puesto', 'europa'])) return 'comparative';
+  if (includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'ranking', 'puesto', 'europa'])) return 'comparative';
   return 'descriptive';
 };
 
@@ -274,7 +282,7 @@ export const deterministicFallbackCompiler = (text) => {
     : regions.find((region) => normalized.includes(region)) || null;
   const population = populationAliases.find(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias)))?.[0] || null;
   const years = [...normalized.matchAll(/\b(19\d{2}|20\d{2})\b/g)].map((match) => match[1]);
-  const period = years.length ? [...new Set(years)].join('–') : /hace\s+(\d+)\s+anos?/.exec(normalized)?.[0] || null;
+  const period = years.length ? [...new Set(years)].join('–') : /hace\s+(?:\d+|[a-z]+(?:\s+[a-z]+){0,2})\s+anos?/.exec(normalized)?.[0] || null;
   const numbers = [...new Set([
     ...[...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)),
     ...textualNumberMatches(original),

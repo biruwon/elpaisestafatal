@@ -36,7 +36,7 @@ const claimType = (text: string): string => {
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|disminuye|dispara|disparado|encarece|empeora|mejora|no deja de|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
-  if (/(mas que|menos que|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|ranking|puesto|europa)/.test(text)) return 'comparative';
+  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|ranking|puesto|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
 
@@ -62,6 +62,8 @@ const rankingDirection = (text: string): string | null => {
 const directionalRelation = (text: string): string | null => {
   const ranking = rankingDirection(text);
   if (ranking) return `ranking:${ranking}:${relationShape(text)}`;
+  const relativeComparison = text.match(/^(.*?)\s+(mejor|peor|igual|distinto)\s+que\s+(.+)$/);
+  if (relativeComparison) return `comparison:${({ mejor: 'better', peor: 'worse', igual: 'equal', distinto: 'different' } as Record<string, string>)[relativeComparison[2]]}:${relationShape(relativeComparison[1])}:${relationShape(relativeComparison[3])}`;
   const positionalComparison = text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+?)\s+en\s+(.+)$/) || text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+)$/);
   if (positionalComparison) return `comparison:${positionalComparison[2] === 'encima' ? 'more' : 'less'}:${relationShape(positionalComparison[1])}:${relationShape(positionalComparison[3])}`;
   const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
