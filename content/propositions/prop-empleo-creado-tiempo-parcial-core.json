@@ -1,0 +1,13 @@
+{
+  "id": "prop-empleo-creado-tiempo-parcial-core",
+  "claimSlug": "empleo-creado-es-solo-tiempo-parcial",
+  "text": "Todo o casi todo el empleo creado en España es a tiempo parcial.",
+  "type": "causal",
+  "subject": "empleo_creado",
+  "predicate": "is_only",
+  "object": "tiempo_parcial",
+  "geography": "España",
+  "period": "2025",
+  "status": "insufficient",
+  "evidenceIds": ["empleo-tiempo-parcial-espana-ue-eurostat"]
+}

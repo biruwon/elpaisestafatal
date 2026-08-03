@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "links": [
     {
+      "evidenceId": "empleo-tiempo-parcial-espana-ue-eurostat",
+      "propositionId": "prop-empleo-creado-tiempo-parcial-core",
+      "relationship": "insufficient",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "pensiones-vejez-supervivencia-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-pensiones-europa-core",
       "relationship": "supports",

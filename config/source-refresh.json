@@ -173,6 +173,18 @@
       "metricId": "employment_rate_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eppga?geo=ES&sex=T&age=Y15-64&sinceTimePeriod=2015",
+      "title": "Empleo a tiempo parcial en España · Eurostat",
+      "aliases": ["empleo a tiempo parcial", "trabajo a tiempo parcial", "empleo parcial", "jornada parcial"],
+      "metricId": "part_time_employment_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eppga?geo=ES&geo=EU27_2020&sex=T&age=Y15-64&sinceTimePeriod=2015",
+      "title": "Empleo a tiempo parcial: España y Unión Europea · Eurostat",
+      "aliases": ["empleo a tiempo parcial frente a Europa", "trabajo a tiempo parcial frente a la UE", "España tiene más empleo parcial que Europa", "comparación europea del empleo parcial"],
+      "metricId": "part_time_employment_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"],

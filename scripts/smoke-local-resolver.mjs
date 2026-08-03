@@ -169,6 +169,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   for (const [text, metricId, unit] of [
     ['Porcentaje de la población activa que encuentra trabajo', 'employment_rate', '%'],
     ['Evolución del desempleo en España', 'unemployment_rate', '%'],
+    ['¿Qué parte del empleo es a tiempo parcial en España?', 'part_time_employment_rate', '%'],
     ['Cuántos habitantes viven normalmente en España', 'resident_population', 'personas'],
     ['Cuántos residentes nacieron fuera de España', 'foreign_born_population', 'personas'],
     ['Cuántos residentes tienen ciudadanía extranjera en España', 'foreign_citizenship_population', 'personas'],
@@ -488,7 +489,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseComparison?.reply?.includes('tasa de paro juvenil española fue más alta')) failures.push('Spain/EU youth unemployment: comparison reply did not use the youth-specific wording');
   } catch (error) { failures.push(`Spain/EU youth unemployment: ${error.message}`); }
   try {
-    const result = await resolve('El salario mínimo ha subido en España');
+  const result = await resolve('El salario mínimo ha subido en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'minimum_wage_monthly') failures.push('minimum wage warehouse: selected the wrong metric family');
     if (result.result?.warehouseSeries?.labels?.[0] !== 'primer semestre de 2021') failures.push('minimum wage warehouse: chart omitted the series baseline');

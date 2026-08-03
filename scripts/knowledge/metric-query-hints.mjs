@@ -19,6 +19,8 @@ const metricHints = [
   { ids: ['gdp_real_growth_europe'], terms: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'pib real espanol crece mas', 'comparacion del crecimiento economico', 'crece espana mas que europa', 'crece espana mas que la union europea', 'espana crece mas que europa', 'espana crece mas que la union europea', 'crece espana menos que europa', 'crece espana menos que la union europea', 'espana crece menos que europa', 'espana crece menos que la union europea', 'crecimiento de espana frente a la union europea', 'crecimiento economico europeo', 'pib espana union europea', 'pib frente a europa', 'crecimiento frente a europa'] },
   { ids: ['employment_rate'], terms: ['tasa de empleo', 'tasa de ocupacion', 'personas ocupadas', 'personas que tienen empleo', 'personas en edad laboral trabajan', 'encuentra trabajo', 'tiene empleo', 'ocupacion en espana', 'empleo en espana', 'mas empleo', 'empleo nunca', 'empleo record'] },
   { ids: ['employment_rate_europe'], terms: ['tasa de empleo frente a europa', 'tasa de empleo frente a la union europea', 'tasa de empleo mayor que europa', 'tasa de empleo mayor que la union europea', 'tasa de empleo menor que europa', 'tasa de empleo menor que la union europea', 'tasa de empleo de espana es inferior a la de europa', 'tasa de empleo de espana inferior a europa', 'como queda el empleo espanol frente al europeo', 'tasa de ocupacion de espana frente a la union europea', 'empleo de espana frente a europa', 'empleo de espana frente a la union europea', 'espana tiene mas empleo que europa', 'espana tiene menos empleo que europa', 'espana tiene una tasa de empleo mayor que la union europea', 'espana tiene una tasa de empleo menor que la union europea', 'comparacion europea del empleo', 'comparacion europea de la ocupacion', 'empleo mas alto que europa', 'empleo mas bajo que europa', 'empleo europa'] },
+  { ids: ['part_time_employment_rate'], terms: ['empleo a tiempo parcial', 'trabajo a tiempo parcial', 'tiempo parcial', 'empleo parcial', 'jornada parcial', 'contratos parciales', 'trabajos a tiempo parcial', 'empleos a tiempo parcial', 'cuanto empleo es parcial', 'cuanto trabajo es parcial'] },
+  { ids: ['part_time_employment_rate_europe'], terms: ['empleo a tiempo parcial frente a europa', 'empleo a tiempo parcial frente a la union europea', 'trabajo a tiempo parcial frente a europa', 'tiempo parcial frente a europa', 'empleo parcial que europa', 'empleo parcial que la union europea', 'espana tiene mas empleo parcial que europa', 'espana tiene menos empleo parcial que europa', 'comparacion europea del empleo parcial', 'empleo parcial europa'] },
   { ids: ['minimum_wage_monthly'], terms: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'cuanto es el salario minimo', 'ha subido el salario minimo', 'sube el salario minimo', 'salario minimo en espana'] },
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
   { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
@@ -85,6 +87,19 @@ export const preferredMetricIdsForQuery = (query) => {
   }
   if (preferred.has('employment_rate_europe')) {
     preferred.delete('employment_rate');
+    preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('part_time_employment_rate_europe')) {
+    preferred.delete('part_time_employment_rate');
+    preferred.delete('employment_rate');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('unemployment_rate');
+    preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('part_time_employment_rate')) {
+    preferred.delete('employment_rate');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('unemployment_rate');
     preferred.delete('unemployment_rate_europe');
   }
   if (preferred.has('youth_unemployment_rate_europe')) {

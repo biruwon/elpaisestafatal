@@ -367,6 +367,19 @@ definitions['espana-gasta-menos-que-ue'] = {
   visuals: { key: { value: '45,3%', label: 'España · gasto público sobre el PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Gasto público sobre el PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [45.3, 49.5], label: 'Gasto público sobre el PIB', unit: '% del PIB · 2025' }, caveat: 'El agregado no muestra qué políticas reciben el gasto ni demuestra por sí solo calidad, suficiencia o despilfarro.' },
 };
 
+definitions['empleo-creado-es-solo-tiempo-parcial'] = {
+  prompt: 'El empleo que se crea es solo a tiempo parcial',
+  aliases: ['Todo el empleo nuevo es parcial', 'Los trabajos que se crean son a tiempo parcial', 'El empleo nuevo es de jornada parcial', 'El trabajo que se crea es precario y parcial'],
+  propositions: ['En 2025, el 13,5% de las personas ocupadas de 15 a 64 años en España declararon trabajar a tiempo parcial.', 'Ese porcentaje demuestra que todo el empleo creado fue parcial.', 'La proporción del empleo existente no es lo mismo que la composición de los puestos creados durante un periodo.'],
+  concern: 'El trabajo a tiempo parcial es una dimensión relevante de la calidad del empleo, pero una proporción anual del empleo existente no demuestra que todos los puestos nuevos sean parciales.',
+  supports: 'Eurostat registra un 13,5% de empleo a tiempo parcial en España en 2025, frente al 17,7% en la Unión Europea en la misma medida comparable.',
+  limit: 'La serie mide la proporción de personas ocupadas de 15 a 64 años que trabajan a tiempo parcial. No mide por sí sola salarios, estabilidad, voluntariedad ni la composición exacta del empleo creado.',
+  question: '¿Quieres medir la composición del empleo existente o los puestos creados en un periodo concreto?',
+  reply: 'No se puede decir que todo el empleo nuevo sea parcial con ese dato: en 2025 el 13,5% del empleo de 15 a 64 años en España era a tiempo parcial. Para analizar los puestos creados hacen falta sus jornadas, contratos y evolución.',
+  visualLabel: 'La composición del empleo existente no demuestra cómo fueron todos los puestos nuevos',
+  visuals: { key: { value: '13,5%', label: 'España · empleo a tiempo parcial', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Empleo a tiempo parcial', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [13.5, 17.7], label: 'Empleo a tiempo parcial entre 15 y 64 años', unit: '% de las personas ocupadas · 2025' }, caveat: 'El indicador describe el empleo existente en el año. No prueba qué proporción de los puestos creados fue parcial ni si el trabajo parcial fue voluntario.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the
