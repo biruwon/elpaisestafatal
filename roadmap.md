@@ -42,6 +42,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - The server-side `/api/classify` boundary now shares the published claim index for strong text matches. Exact published claims resolve immediately without contacting optional inference, keeping browser and server resolution consistent while leaving uncovered and media inputs on the existing fallback path.
 
+- The server-side published-claim lookup now caches the generated catalogue per isolate and clears the cache on malformed or unavailable catalogue responses. Repeated text checks avoid re-fetching the same static index while deployments still receive a fresh index in new isolates.
+
 - Removed the last live navigation compatibility branch for the retired `/aclarar` route. The global layout now marks only the canonical homepage checker as active, and the legacy validator prevents the removed route from being reintroduced into runtime navigation.
 
 - Closed the local-only semantic-clustering release gate: non-loopback embedding endpoints are rejected before any gap text is sent, the rejection is covered by the clustering regression suite, and `npm run build` now runs that suite on every release.

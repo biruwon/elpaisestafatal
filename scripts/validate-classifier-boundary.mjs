@@ -15,7 +15,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');
 if (!classify.includes('publishedClaimFallback') || !classify.includes("body.inputType === 'text'") || !classify.includes('request')) failures.push('/api/classify must resolve published text claims before optional enrichment');
-for (const fragment of ['claim-catalog.json', 'rankClaimIndex', 'isStrongClaimMatch']) {
+for (const fragment of ['claim-catalog.json', 'claimIndexPromise', 'rankClaimIndex', 'isStrongClaimMatch']) {
   if (!publishedFallback.includes(fragment)) failures.push(`published claim fallback is missing ${fragment}`);
 }
 for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'RUNTIME_VERSIONS.fallbackKnowledge']) {
