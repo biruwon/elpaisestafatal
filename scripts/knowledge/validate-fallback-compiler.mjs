@@ -118,4 +118,19 @@ for (const wording of ['España va cuesta abajo', 'El país se va a la ruina', '
   assert(result.impliedPropositions.some((item) => item.type === 'definition'), `Broad political complaint was not marked as evaluative context: ${wording}`);
 }
 
+const costOfLiving = deterministicFallbackCompiler('Cada vez cuesta más llegar a fin de mes en España');
+const equivalentCostOfLiving = deterministicFallbackCompiler('La vida se ha encarecido en España');
+assert(costOfLiving.semanticSignature === equivalentCostOfLiving.semanticSignature, 'Cost-of-living paraphrases did not share a semantic family');
+
+const publicDebt = deterministicFallbackCompiler('La deuda pública de España crece');
+const equivalentPublicDebt = deterministicFallbackCompiler('España está cada vez más endeudada');
+assert(publicDebt.semanticSignature === equivalentPublicDebt.semanticSignature, 'Public-finance paraphrases did not share a semantic family');
+
+const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
+const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');
+assert(healthAccess.semanticSignature !== healthSpending.semanticSignature, 'Health-access and health-spending families were merged');
+assert(costOfLiving.semanticSignature !== publicDebt.semanticSignature, 'Cost-of-living and public-finance families were merged');
+assert(costOfLiving.claimType === 'trend', 'Cost-of-living pressure was not detected as a trend');
+assert(deterministicFallbackCompiler('Cada vez cuesta más llegar a fin de mes en España').claimType !== 'comparative', 'Cost-of-living pressure was misclassified as a ranking/comparison');
+
 console.log('Fallback compiler validation passed: structured fields and implications are deterministic.');

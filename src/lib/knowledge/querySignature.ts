@@ -20,6 +20,13 @@ const conceptAliases: Array<[string, string[]]> = [
   ['benefits', ['ayudas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'partido', 'politica']],
+  ['cost_of_living', ['coste de vida', 'llegar a fin de mes', 'no llega para vivir', 'no alcanza para vivir', 'cesta de la compra', 'poder adquisitivo', 'encarecido', 'encarecida', 'caro', 'cara']],
+  ['public_finance', ['deuda publica', 'deuda', 'endeudado', 'endeudada', 'deficit publico', 'presupuesto publico', 'recaudacion', 'gasto publico', 'presion fiscal', 'fiscalidad']],
+  ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
+  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'esperas largas', 'esperas enormes']],
+  ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
+  ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
+  ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
 ];
 
 const containsAlias = (text: string, alias: string): boolean => {
@@ -35,7 +42,7 @@ const claimType = (text: string): string => {
   if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
-  if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|empeora|mejora|no deja de|sigue subiendo|sigue bajando|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
+  if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|sigue subiendo|sigue bajando|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
   if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
@@ -44,7 +51,7 @@ const semanticTokens = (text: string): string[] => [...new Set(
   text.split(' ').filter((token) => token.length > 3 && !stopWords.has(token) && !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)),
 )].slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'cuesta', 'alcanza', 'llega', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
 
 const relationShape = (value: string): string => {
   const concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
@@ -54,7 +61,7 @@ const relationShape = (value: string): string => {
 };
 
 const rankingDirection = (text: string): string | null => {
-  const ranking = text.match(/\b(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/)
+  const ranking = text.match(/\b(?:paro|desempleo|impuestos|densidad|poblacion|población|salario|renta|ingresos|delincuencia|criminalidad|empleo|vivienda|alquileres?)\s+(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/)
     || text.match(/\b(?:pais|país|paises|países)\s+con\s+(?:mas|menos|mayor|menor)\b/)
     || text.match(/\b(?:primer|ultimo|último)\s+puesto\b/);
   if (!ranking) return null;
@@ -98,8 +105,8 @@ const directionalRelation = (text: string): string | null => {
     const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
   }
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecen|sigue subiendo|no para de subir)\b|no deja de subir|no paran de subir/.test(text)) return `trend:rising:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecido|encarecida|cuesta mas|no alcanza|no llega para|sigue subiendo|no para de subir)\b|no deja de subir|no paran de subir/.test(text)) return `trend:rising:${relationShape(text)}`;
   if (/\b(?:mejora|mejoran|va a mejor|va mejor|esta mejorando|estan mejorando)\b/.test(text)) return `trend:improving:${relationShape(text)}`;
   if (/\b(?:empeora|empeoran|va a peor|va peor|esta empeorando|estan empeorando)\b/.test(text)) return `trend:worsening:${relationShape(text)}`;
   return null;

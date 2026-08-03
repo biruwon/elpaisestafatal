@@ -40,5 +40,17 @@ if (module.semanticQuerySignature('España tiene el paro más alto de Europa') !
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') === module.semanticQuerySignature('España tiene el paro más bajo de Europa')) throw new Error('Highest and lowest ranking claims produced the same signature');
 if (module.semanticQuerySignature('España está peor que hace diez años') !== module.semanticQuerySignature('España está peor que hace diez años')) throw new Error('Relative comparison signature was not stable');
 if (module.semanticQuerySignature('España está peor que hace diez años') === module.semanticQuerySignature('España está mejor que hace diez años')) throw new Error('Better and worse relative comparisons produced the same signature');
+const longTailFamilies = [
+  ['Cada vez cuesta más llegar a fin de mes en España', 'La vida se ha encarecido en España'],
+  ['La deuda pública de España crece', 'España está cada vez más endeudada'],
+  ['Las listas de espera sanitarias están colapsadas', 'La sanidad está saturada por sus esperas largas'],
+  ['La renta de las familias sube', 'Los ingresos familiares han aumentado'],
+  ['Cada vez hay menos jóvenes en España', 'La población joven está disminuyendo en España'],
+];
+for (const [left, right] of longTailFamilies) {
+  if (module.semanticQuerySignature(left) !== module.semanticQuerySignature(right)) throw new Error(`Long-tail semantic family did not merge: ${left} / ${right}`);
+}
+if (module.semanticQuerySignature('Cada vez cuesta más llegar a fin de mes en España') === module.semanticQuerySignature('La deuda pública de España crece')) throw new Error('Cost-of-living and public-finance families were merged');
+if (module.semanticQuerySignature('La sanidad no da abasto con las listas de espera') === module.semanticQuerySignature('España gasta más por habitante en sanidad')) throw new Error('Health access and health spending families were merged');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
 console.log('Query signature validation passed.');
