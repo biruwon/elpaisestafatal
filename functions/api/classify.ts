@@ -1,13 +1,10 @@
 interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string }
 interface Context { request: Request; env: Env }
 type InputType = 'text' | 'image' | 'audio' | 'url';
+import { allowRateLimitedRequest } from '../lib/rate-limit';
 import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
-
-const requestWindows = new Map<string, { startedAt: number; count: number }>();
-const windowMs = 60_000;
-const maxRequestsPerWindow = 30;
 
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
@@ -21,17 +18,6 @@ const linkedTimeout = (request: Request, milliseconds: number): { signal: AbortS
   if (request.signal.aborted) cancel();
   else request.signal.addEventListener('abort', cancel, { once: true });
   return { signal: controller.signal, dispose: () => { clearTimeout(timer); request.signal.removeEventListener('abort', cancel); } };
-};
-
-const clientKey = (request: Request): string => request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
-const allowRequest = (request: Request): boolean => {
-  const key = clientKey(request);
-  const now = Date.now();
-  const current = requestWindows.get(key);
-  if (!current || now - current.startedAt >= windowMs) { requestWindows.set(key, { startedAt: now, count: 1 }); return true; }
-  if (current.count >= maxRequestsPerWindow) return false;
-  current.count += 1;
-  return true;
 };
 
 const requestBody = async (request: Request): Promise<{ text: string; inputType: InputType; file?: File }> => {
@@ -51,7 +37,7 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
 };
 
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
-  if (!allowRequest(request)) return json({ status: 'unavailable', relatedClaims: [] }, 429);
+  if (!(await allowRateLimitedRequest(request, env, { scope: 'classify', limit: 30 }))) return json({ status: 'unavailable', relatedClaims: [] }, 429);
   const contentLength = Number(request.headers.get('content-length') || 0);
   if (contentLength > INPUT_LIMITS.maxRequestBytes) return json({ status: 'unavailable', relatedClaims: [] }, 413);
   let body: { text: string; inputType: InputType; file?: File };

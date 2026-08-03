@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Replaced isolate-local API throttles with a shared rate-limit module backed by an additive D1 counter table. Classification, polling, learning capture, and feedback now share route-specific durable windows in production and retain bounded in-memory protection when D1 is unavailable; the release build validates that no endpoint keeps a private-only limiter.
+
 - Centralized internal answer, fallback, warehouse, and index versions so cache/result invalidation does not depend on scattered hardcoded strings. The release build now rejects stale runtime version literals and requires the deterministic API fallback and local resolver to use the same manifest; no provider or model identity is included.
 
 - The operational learning endpoint now validates input types and statuses, preserves an existing request’s semantic cluster across rewritten retries, and recreates a missing cluster row without incrementing demand. This keeps the review queue durable even when a browser retries after optional classification changes the wording.
@@ -661,6 +663,7 @@ dynamic answer
 - Keep static Pages requests outside dynamic function routes.
 - Protect the local origin through Cloudflare Tunnel and authenticated requests.
 - Add rate limiting, request size limits, timeouts, retries, cancellation, and health checks.
+- API rate limits now use the operational D1 database across isolates, with scoped quotas and a bounded local fallback for offline/degraded runs.
 - Back up PostgreSQL, D1, R2, and configuration manifests.
 - Backup artifacts now carry integrity metadata and have a standalone verification command; remote credential setup and scheduled export remain deployment configuration rather than committed secrets.
 - A manual secret-backed export workflow now performs and verifies the remote D1/configuration/PostgreSQL backup when deployment credentials are configured; it is intentionally not scheduled until the operator supplies and tests those credentials.

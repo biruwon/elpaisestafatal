@@ -6,22 +6,12 @@ interface DatabaseStatement {
 interface Database { prepare(query: string): DatabaseStatement }
 interface Env { DB?: Database }
 interface Context { request: Request; env: Env }
-
-const requestWindows = new Map<string, { startedAt: number; count: number }>();
-const allowRequest = (request: Request): boolean => {
-  const key = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
-  const now = Date.now();
-  const current = requestWindows.get(key);
-  if (!current || now - current.startedAt >= 60_000) { requestWindows.set(key, { startedAt: now, count: 1 }); return true; }
-  if (current.count >= 30) return false;
-  current.count += 1;
-  return true;
-};
+import { allowRateLimitedRequest } from '../lib/rate-limit';
 
 const json = (body: unknown, status = 200): Response => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
-  if (!allowRequest(request)) return json({ status: 'unavailable' }, 429);
+  if (!(await allowRateLimitedRequest(request, env, { scope: 'feedback', limit: 30 }))) return json({ status: 'unavailable' }, 429);
   if (!env.DB) return json({ status: 'unavailable' }, 503);
   let body: { requestId?: unknown; value?: unknown };
   try { body = await request.json() as { requestId?: unknown; value?: unknown }; } catch { return json({ status: 'invalid' }, 400); }

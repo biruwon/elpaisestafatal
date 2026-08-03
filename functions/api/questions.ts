@@ -11,17 +11,7 @@ interface Database {
 interface Env { DB?: Database }
 interface Context { request: Request; env: Env }
 import { canonicalQuerySignature, semanticQuerySignature } from '../../src/lib/knowledge/querySignature';
-
-const requestWindows = new Map<string, { startedAt: number; count: number }>();
-const allowRequest = (request: Request): boolean => {
-  const key = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
-  const now = Date.now();
-  const current = requestWindows.get(key);
-  if (!current || now - current.startedAt >= 60_000) { requestWindows.set(key, { startedAt: now, count: 1 }); return true; }
-  if (current.count >= 60) return false;
-  current.count += 1;
-  return true;
-};
+import { allowRateLimitedRequest } from '../lib/rate-limit';
 
 const json = (body: unknown, status = 200): Response => Response.json(body, {
   status,
@@ -40,7 +30,7 @@ const inputTypes = new Set(['text', 'image', 'audio', 'url']);
 const statuses = new Set(['received', 'processing', 'published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial']);
 
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
-  if (!allowRequest(request)) return json({ status: 'unavailable' }, 429);
+  if (!(await allowRateLimitedRequest(request, env, { scope: 'questions', limit: 60 }))) return json({ status: 'unavailable' }, 429);
   if (Number(request.headers.get('content-length') || 0) > 64 * 1024) return json({ status: 'invalid' }, 413);
   if (!env.DB) return json({ status: 'unavailable' }, 503);
   let body: { text?: unknown; canonical?: unknown; semanticSignature?: unknown; inputType?: unknown; status?: unknown; requestId?: unknown };
