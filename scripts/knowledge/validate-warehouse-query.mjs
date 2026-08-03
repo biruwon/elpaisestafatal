@@ -57,6 +57,10 @@ if (!preferredMetricIdsForQuery('¿Qué parte del empleo en España es temporal?
 if (preferredMetricIdsForQuery('¿Qué parte del empleo en España es temporal?').has('employment_rate')) throw new Error('Metric hints kept generic employment alongside Spain-only temporary-employment wording');
 if (!preferredMetricIdsForQuery('¿España tiene más temporalidad que Europa?').has('temporary_employment_rate_europe')) throw new Error('Metric hints did not prefer European temporary employment for comparison wording');
 if (preferredMetricIdsForQuery('¿España tiene más temporalidad que Europa?').has('temporary_employment_rate')) throw new Error('Metric hints kept Spain-only temporary employment alongside the European comparison');
+if (!preferredMetricIdsForQuery('¿Cuál es el salario mediano por hora en España?').has('median_hourly_earnings')) throw new Error('Metric hints did not prefer hourly earnings for Spain-only wording');
+if (!preferredMetricIdsForQuery('¿España cobra menos por hora que Europa?').has('median_hourly_earnings_europe')) throw new Error('Metric hints did not prefer European hourly earnings for comparison wording');
+if (preferredMetricIdsForQuery('¿España cobra menos por hora que Europa?').has('median_hourly_earnings')) throw new Error('Metric hints kept Spain-only hourly earnings alongside the European comparison');
+if (preferredMetricIdsForQuery('Comparación europea del salario bruto por hora').has('unemployment_rate_europe')) throw new Error('Metric hints confused hourly earnings with generic European unemployment wording');
 if (!preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for comparison wording');
 if (preferredMetricIdsForQuery('España tiene el paro más alto de Europa').has('unemployment_rate')) throw new Error('Metric hints kept generic unemployment alongside European comparison wording');
 if (!preferredMetricIdsForQuery('España tiene una tasa de empleo mayor que la Unión Europea').has('employment_rate_europe')) throw new Error('Metric hints did not prefer European employment for comparison wording');

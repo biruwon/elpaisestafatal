@@ -197,6 +197,18 @@
       "metricId": "temporary_employment_rate_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses_pub2s?geo=ES&sizeclas=GE10&sex=T&unit=EUR&sinceTimePeriod=2010",
+      "title": "Salario bruto mediano por hora en España · Eurostat",
+      "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],
+      "metricId": "median_hourly_earnings"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses_pub2s?geo=ES&geo=EU27_2020&sizeclas=GE10&sex=T&unit=EUR&sinceTimePeriod=2010",
+      "title": "Salario bruto mediano por hora: España y Unión Europea · Eurostat",
+      "aliases": ["salario por hora frente a Europa", "sueldo por hora frente a la UE", "España cobra más por hora que Europa", "España cobra menos por hora que Europa", "comparación europea del salario por hora"],
+      "metricId": "median_hourly_earnings_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"],

@@ -1,0 +1,13 @@
+{
+  "id": "prop-salario-hora-mediano-espana-menor-europa-core",
+  "claimSlug": "espana-cobra-igual-por-hora-que-europa",
+  "text": "La mediana de las ganancias brutas por hora fue inferior en España a la de la Unión Europea en 2022.",
+  "type": "comparative",
+  "subject": "median_hourly_earnings",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2022",
+  "status": "supported",
+  "evidenceIds": ["salario-hora-mediano-espana-europa-eurostat"]
+}

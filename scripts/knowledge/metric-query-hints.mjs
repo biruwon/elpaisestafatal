@@ -23,6 +23,8 @@ const metricHints = [
   { ids: ['part_time_employment_rate_europe'], terms: ['empleo a tiempo parcial frente a europa', 'empleo a tiempo parcial frente a la union europea', 'trabajo a tiempo parcial frente a europa', 'tiempo parcial frente a europa', 'empleo parcial que europa', 'empleo parcial que la union europea', 'espana tiene mas empleo parcial que europa', 'espana tiene menos empleo parcial que europa', 'comparacion europea del empleo parcial', 'empleo parcial europa'] },
   { ids: ['temporary_employment_rate'], terms: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'contrato temporal', 'temporalidad laboral', 'empleo de duracion determinada', 'trabajo de duracion determinada', 'cuanto empleo es temporal', 'parte del empleo temporal', 'es temporal', 'temporalidad'] },
   { ids: ['temporary_employment_rate_europe'], terms: ['empleo temporal frente a europa', 'empleo temporal frente a la union europea', 'trabajo temporal frente a europa', 'temporalidad frente a europa', 'temporalidad que europa', 'espana tiene mas temporalidad que europa', 'espana tiene menos temporalidad que europa', 'comparacion europea de la temporalidad', 'temporalidad europa'] },
+  { ids: ['median_hourly_earnings'], terms: ['salario mediano por hora', 'salario bruto por hora', 'ganancia mediana por hora', 'sueldo por hora', 'lo que se cobra por hora', 'cuanto se cobra por hora', 'salario por hora'] },
+  { ids: ['median_hourly_earnings_europe'], terms: ['salario por hora frente a europa', 'salario por hora frente a la union europea', 'sueldo por hora frente a europa', 'sueldo por hora frente a la ue', 'espana cobra mas por hora que europa', 'espana cobra menos por hora que europa', 'comparacion europea del salario por hora', 'comparacion europea del salario bruto por hora', 'salario por hora europa'] },
   { ids: ['minimum_wage_monthly'], terms: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'cuanto es el salario minimo', 'ha subido el salario minimo', 'sube el salario minimo', 'salario minimo en espana'] },
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
   { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
@@ -116,6 +118,15 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('employment_rate_europe');
     preferred.delete('unemployment_rate');
     preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('median_hourly_earnings_europe')) {
+    preferred.delete('median_hourly_earnings');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('median_hourly_earnings')) {
+    preferred.delete('employment_rate');
+    preferred.delete('unemployment_rate');
   }
   if (preferred.has('youth_unemployment_rate_europe')) {
     preferred.delete('youth_unemployment_rate');

@@ -223,6 +223,22 @@
     "notEquivalentTo": ["temporary_employment_rate", "employment_rate_europe", "unemployment_rate_europe", "part_time_employment_rate_europe"],
     "dimensions": ["period", "geography", "age", "sex", "citizenship"]
   },
+  "median_hourly_earnings": {
+    "name": "Median gross hourly earnings",
+    "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],
+    "unit": "EUR per hour",
+    "population": "employees in enterprises with 10 or more employees, all sexes",
+    "notEquivalentTo": ["median_equivalised_income", "minimum_wage_monthly", "employment_rate", "part_time_employment_rate"],
+    "dimensions": ["period", "geography", "enterprise_size", "sex", "currency"]
+  },
+  "median_hourly_earnings_europe": {
+    "name": "Median gross hourly earnings: Spain and the European Union",
+    "aliases": ["salario por hora frente a Europa", "sueldo por hora frente a la UE", "España cobra más por hora que Europa", "España cobra menos por hora que Europa", "comparación europea del salario por hora"],
+    "unit": "EUR per hour",
+    "population": "employees in enterprises with 10 or more employees, all sexes, in Spain and the European Union",
+    "notEquivalentTo": ["median_hourly_earnings", "median_equivalised_income_europe", "minimum_wage_monthly", "employment_rate_europe"],
+    "dimensions": ["period", "geography", "enterprise_size", "sex", "currency"]
+  },
   "minimum_wage_monthly": {
     "name": "Statutory minimum wage per month",
     "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "mínimo salarial"],
