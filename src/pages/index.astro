@@ -58,6 +58,7 @@ const warehousePrompts = [
   '¿Cómo ha evolucionado el abandono escolar temprano en España?',
   '¿Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores?',
   '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?',
+  '¿Ha aumentado la falta de atención médica por listas de espera?',
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
@@ -81,6 +82,7 @@ const warehouseHighlights = [
   { label: 'Educación', prompt: '¿Cómo ha evolucionado el abandono escolar temprano en España?', detail: 'Personas de 18 a 24 años y una definición explícita.' },
   { label: 'Educación superior', prompt: '¿Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores?', detail: 'Titulación superior separada del empleo y del abandono escolar.' },
   { label: 'Juventud', prompt: '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?', detail: 'Personas de 15 a 29 años fuera del empleo y de la educación o formación.' },
+  { label: 'Acceso sanitario', prompt: '¿Ha aumentado la falta de atención médica por listas de espera?', detail: 'Necesidad médica no atendida declarada, separada de las listas quirúrgicas.' },
 ];
 const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');

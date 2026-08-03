@@ -72,6 +72,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'early_school_leaving_rate') return '% de jóvenes de 18 a 24 años';
   if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
   if (metricId === 'neet_rate') return '% de jóvenes de 15 a 29 años';
+  if (metricId === 'unmet_healthcare_waiting_list_rate') return '% de población de 16 años o más';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate') return '% de la población';
   if (metricId === 'household_electricity_price') return '€ por kWh';

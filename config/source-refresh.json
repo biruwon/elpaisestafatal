@@ -219,6 +219,12 @@
       "title": "Jóvenes que ni estudian ni trabajan en España · Eurostat",
       "aliases": ["ni estudian ni trabajan", "jóvenes ninis", "jóvenes fuera de estudio y empleo"],
       "metricId": "neet_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_08?geo=ES&quant_inc=TOTAL&reason=WLIST&age=Y_GE16&sex=T&unit=PC&sinceTimePeriod=2015",
+      "title": "Necesidades médicas no atendidas por lista de espera en España · Eurostat",
+      "aliases": ["lista de espera médica", "lista de espera sanitaria", "no recibe atención por lista de espera", "personas sin atención por lista de espera", "espera médica impide atención"],
+      "metricId": "unmet_healthcare_waiting_list_rate"
     }
   ]
 }

@@ -183,6 +183,19 @@ definitions['neet-baja'] = {
   visuals: { key: { value: '11,5 %', label: 'Personas de 15–29 fuera de empleo y estudios', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [19.4, 16.4, 14.9, 14.2, 12.3, 11.5], label: 'Personas que ni trabajan ni estudian', unit: '% de jóvenes de 15 a 29 años' }, caveat: 'No es la tasa de paro juvenil: el denominador y la definición son distintos.' },
 };
 
+definitions['necesidades-medicas-lista-espera-aumentan'] = {
+  prompt: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera',
+  aliases: ['hay más personas sin atención por lista de espera', 'ha aumentado la falta de atención por lista de espera', 'más personas esperan para recibir atención médica', 'la lista de espera impide recibir atención', 'necesidades médicas no atendidas por espera'],
+  propositions: ['La proporción declarada de personas de 16 años o más con una necesidad médica no atendida por lista de espera pasó del 0,4% en 2015 al 1,5% en 2025.', 'El dato cuenta todos los pacientes de las listas administrativas y su espera exacta.', 'El aumento declarado demuestra por sí solo que toda la sanidad ha empeorado.'],
+  concern: 'La proporción declarada de personas que no reciben atención por una lista de espera ha aumentado, pero es una medida de acceso distinta de las listas administrativas y de la calidad general del sistema.',
+  supports: 'Eurostat registra un aumento del 0,4% en 2015 al 1,5% en 2025 entre la población de 16 años o más.',
+  limit: 'Es una necesidad médica no atendida declarada por la población. No equivale al número de pacientes en una lista quirúrgica, a la espera media ni a todas las barreras de acceso.',
+  question: '¿Quieres comparar necesidades no atendidas, pacientes en lista, espera media o un procedimiento concreto?',
+  reply: 'Sí: la proporción de personas de 16 años o más que declaró no recibir atención médica por una lista de espera subió del 0,4% en 2015 al 1,5% en 2025, según Eurostat. Es una medida declarada de acceso, no el número de pacientes en la lista quirúrgica ni la espera media.',
+  visualLabel: 'Necesidad no atendida y lista administrativa no son la misma medida',
+  visuals: { key: { value: '1,5 %', label: 'Población con necesidad médica no atendida por espera', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [0.4, 0.1, 0.2, 1.0, 1.6, 1.5], label: 'Necesidad médica no atendida por lista de espera', unit: '% de población de 16 años o más' }, caveat: 'Es una medida declarada. No cuenta por sí sola los pacientes en listas administrativas, la espera media ni la calidad completa de la atención.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

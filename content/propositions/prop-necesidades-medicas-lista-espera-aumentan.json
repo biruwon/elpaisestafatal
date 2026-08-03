@@ -1,0 +1,13 @@
+{
+  "id": "prop-necesidades-medicas-lista-espera-aumentan-core",
+  "claimSlug": "necesidades-medicas-lista-espera-aumentan",
+  "text": "La proporción de personas que declara una necesidad médica no atendida por una lista de espera aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "unmet_healthcare_waiting_list_rate",
+  "predicate": "increased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["necesidades-medicas-lista-espera-eurostat"]
+}

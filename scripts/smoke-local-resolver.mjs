@@ -65,6 +65,7 @@ const cases = [
   { text: 'España ha reducido el abandono escolar temprano.', status: 'complete', slug: 'abandono-escolar-temprano-baja' },
   { text: 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado.', status: 'complete', slug: 'titulacion-superior-aumenta' },
   { text: 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan.', status: 'complete', slug: 'neet-baja' },
+  { text: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera.', status: 'complete', slug: 'necesidades-medicas-lista-espera-aumentan' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
   { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },
