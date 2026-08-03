@@ -630,7 +630,7 @@ const resultUseActionsMarkup = (plan: AnswerPlan): string => {
   return `<div class="claim-result-use" aria-label="Elige cómo quieres usar esta aclaración"><span>Verlo como</span><div role="group" aria-label="Modo de la aclaración"><button type="button" data-result-mode-button="understand" aria-pressed="true">Entender</button>${hasReply ? '<button type="button" data-result-mode-button="reply" aria-pressed="false">Responder</button>' : ''}${hasSources ? '<button type="button" data-result-mode-button="sources" aria-pressed="false">Fuentes</button>' : ''}</div></div>`;
 };
 
-const resultActionsMarkup = (shareUrl?: string, hasStory = false): string => `<div class="claim-result-actions claim-result-actions-primary" data-result-target="actions"><button type="button" data-new-check>Comprobar otra frase</button>${shareUrl ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}${hasStory ? '<button type="button" data-download-story>Descargar resumen visual</button>' : ''}<span class="claim-result-action-status" aria-live="polite"></span></div>`;
+const resultActionsMarkup = (shareUrl?: string, hasStory = false): string => `<div class="claim-result-actions claim-result-actions-primary" data-result-target="actions"><button type="button" data-new-check>Comprobar otra frase</button>${shareUrl ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrl)}">Compartir aclaración</button>` : ''}${hasStory ? `<button type="button" data-download-story data-story-share-url="${escapeHtml(shareUrl || '')}">Descargar resumen visual</button>` : ''}<span class="claim-result-action-status" aria-live="polite"></span></div>`;
 
 const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
   const isBroadDefinition = plan.coverage === 'insufficient'
@@ -777,6 +777,7 @@ const bindResultActions = (): void => {
     if (!card || !story) return;
     const headline = card.querySelector('h3')?.textContent?.trim() || 'Aclaración sobre una afirmación';
     const summary = card.querySelector('.claim-result-summary')?.textContent?.trim() || '';
+    const shareUrl = card.querySelector<HTMLButtonElement>('[data-download-story]')?.dataset.storyShareUrl || '';
     const steps = [...story.querySelectorAll<HTMLElement>('li')].map((step) => ({
       title: step.querySelector('strong')?.textContent?.trim() || '',
       text: step.querySelector('p')?.textContent?.trim() || '',
@@ -788,7 +789,7 @@ const bindResultActions = (): void => {
     if (!steps.length) return;
     const canvas = document.createElement('canvas');
     canvas.width = 1200;
-    canvas.height = 675;
+    canvas.height = 700;
     const context = canvas.getContext('2d');
     if (!context) return;
     const colors = { paper: '#f5f1e8', ink: '#171512', muted: '#68635b', red: '#c53526', line: '#d7d0c3' };
@@ -864,7 +865,12 @@ const bindResultActions = (): void => {
     context.stroke();
     context.fillStyle = colors.muted;
     context.font = '600 14px monospace';
-    context.fillText('Orientación basada en evidencia enlazada · elpaisestafatal.es', 64, 650);
+    context.fillText('Orientación basada en evidencia enlazada · elpaisestafatal.es', 64, 654);
+    if (shareUrl) {
+      context.fillStyle = colors.red;
+      context.font = '600 13px monospace';
+      context.fillText(`Abrir la aclaración: ${shareUrl.slice(0, 112)}`, 64, 680);
+    }
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
     if (!blob) return;
     const file = new File([blob], 'aclaracion-visual.png', { type: 'image/png' });

@@ -547,6 +547,8 @@ The shareable visual-story card now reproduces the existing mini-chart bars as w
 
 Dynamic stories also have a short, replayable three-step presentation mode. It animates only the already-rendered evidence cards, disables itself under reduced-motion preferences, and does not create a separate answer or media pipeline.
 
+Exported story cards now include the same clarification URL used by the page share action, giving recipients a direct path back to the sourced result rather than leaving the image as an orphaned summary.
+
 Render structured, reusable components:
 
 The broad-definition UI now chooses one-click follow-up questions from the detected topic, so vague health, housing, employment, immigration, and economic complaints lead to relevant measurable checks instead of the same generic list.

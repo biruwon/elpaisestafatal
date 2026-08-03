@@ -16,6 +16,8 @@ const required = [
   'La idea en ${steps.length} pasos',
   'claim-story-mini-chart',
   'data-download-story',
+  'data-story-share-url',
+  'Abrir la aclaración:',
   'canvas.toBlob',
   'aclaracion-visual.png',
   'getPropertyValue(\'--story-bar\')',
