@@ -341,6 +341,12 @@
       "metricId": "gini_coefficient"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di12?geo=ES&geo=EU27_2020&age=TOTAL&sinceTimePeriod=2015",
+      "title": "Desigualdad de ingresos: España y Unión Europea · Eurostat",
+      "aliases": ["coeficiente de Gini frente a Europa", "desigualdad de ingresos frente a Europa", "España es más desigual que Europa", "España es menos desigual que Europa"],
+      "metricId": "gini_coefficient_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?geo=ES&na_item=B9&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
       "title": "Déficit público de España · Eurostat",
       "aliases": ["déficit público", "déficit del Estado", "superávit público", "déficit sobre PIB"],

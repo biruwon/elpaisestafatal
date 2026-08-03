@@ -201,6 +201,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['¿Cuánto gasta España en prestaciones de protección social por habitante?', 'social_protection_benefits_per_capita', '€ por habitante'],
     ['¿España gasta menos por habitante en protección social que la Unión Europea?', 'social_protection_benefits_per_capita_europe', '€ por habitante'],
     ['¿Tiene España menos déficit público que la Unión Europea?', 'government_deficit_ratio_europe', '% del PIB'],
+    ['¿Es España más desigual que la Unión Europea?', 'gini_coefficient_europe', 'escala Gini 0–100'],
     ['¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?', 'old_age_survivors_benefits_per_capita', '€ por habitante'],
   ]) {
     try {
@@ -469,6 +470,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.status !== 'known' || result.result?.claimSlug !== 'espana-tiene-menos-deficit-ue') failures.push('published public-deficit Europe claim: did not resolve the canonical claim');
     if (!/-3,1|-3\.1/.test(JSON.stringify(result.result || {}))) failures.push('published public-deficit Europe claim: lost the comparison value');
   } catch (error) { failures.push(`published public-deficit Europe claim: ${error.message}`); }
+  try {
+    const result = await resolve('España es más desigual que la Unión Europea');
+    if (result.status !== 'known' || result.result?.claimSlug !== 'espana-mas-desigual-ue') failures.push('published Gini Europe claim: did not resolve the canonical claim');
+    if (!/29,2|29\.2/.test(JSON.stringify(result.result || {}))) failures.push('published Gini Europe claim: lost the comparison value');
+  } catch (error) { failures.push(`published Gini Europe claim: ${error.message}`); }
   try {
     const result = await resolve('La población de España creció en 2025');
     if (result.status !== 'known' || result.result?.claimSlug !== 'espana-poblacion-crece-2025') failures.push('published population-growth claim: did not resolve the canonical claim');

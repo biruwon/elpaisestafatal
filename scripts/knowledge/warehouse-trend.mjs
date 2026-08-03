@@ -42,6 +42,7 @@ const metricLabels = {
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   government_deficit_ratio_europe: 'Saldo presupuestario sobre el PIB: España y la Unión Europea',
+  gini_coefficient_europe: 'Desigualdad de ingresos: España y la Unión Europea',
   government_education_expenditure_ratio: 'Gasto público en educación en España',
   government_education_expenditure_ratio_europe: 'Gasto público en educación: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',

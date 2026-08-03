@@ -1,0 +1,13 @@
+{
+  "id": "prop-gini-espana-europa-core",
+  "claimSlug": "espana-mas-desigual-ue",
+  "text": "España tuvo un coeficiente de Gini mayor que la Unión Europea en 2025",
+  "type": "comparative",
+  "subject": "gini_coefficient_europe",
+  "predicate": "was_higher_than",
+  "object": "European Union",
+  "geography": "Spain and European Union",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["desigualdad-ingresos-espana-europa-eurostat"]
+}

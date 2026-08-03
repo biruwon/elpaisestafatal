@@ -72,6 +72,7 @@ const metricHints = [
   // one arbitrary offence category to the user's claim.
   { ids: ['recorded_offences'], terms: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada', 'corrupcion registrada'] },
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'como se reparte la renta entre los hogares', 'medida de desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
+  { ids: ['gini_coefficient_europe'], terms: ['gini frente a europa', 'gini frente a la union europea', 'desigualdad de ingresos frente a europa', 'desigualdad de ingresos frente a la union europea', 'espana es mas desigual que europa', 'espana es menos desigual que europa', 'comparacion europea de la desigualdad', 'desigualdad europa'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
   { ids: ['government_deficit_ratio_europe'], terms: ['deficit publico frente a europa', 'deficit publico frente a la union europea', 'deficit de espana frente a europa', 'espana tiene menos deficit que europa', 'espana tiene mas deficit que europa', 'saldo presupuestario frente a europa', 'comparacion europea del deficit'] },
   { ids: ['median_equivalised_income'], terms: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuanto ingresan los hogares', 'cuanto ingresan de media los hogares'] },
@@ -107,6 +108,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
   if (hasEuropeReference && hasAny('proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto social', 'prestaciones publicas') && hasAny('gasto', 'gasta', 'ayudas', 'prestaciones')) preferred.add('social_protection_benefits_per_capita_europe');
   if (hasEuropeReference && hasAny('deficit', 'superavit', 'saldo presupuestario') && hasAny('publico', 'estado', 'pib', 'espana')) preferred.add('government_deficit_ratio_europe');
+  if (hasEuropeReference && hasAny('gini', 'desigual', 'desigualdad', 'distribucion de la renta')) preferred.add('gini_coefficient_europe');
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
@@ -196,6 +198,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('life_expectancy_at_birth_europe')) preferred.delete('life_expectancy_at_birth');
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_deficit_ratio_europe')) preferred.delete('government_deficit_ratio');
+  if (preferred.has('gini_coefficient_europe')) preferred.delete('gini_coefficient');
   if (preferred.has('government_education_expenditure_ratio_europe')) {
     preferred.delete('government_education_expenditure_ratio');
     preferred.delete('government_expenditure_ratio');

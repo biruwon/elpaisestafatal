@@ -479,6 +479,14 @@
     "notEquivalentTo": ["arope_rate", "median_equivalised_income"],
     "dimensions": ["period", "geography", "age"]
   },
+  "gini_coefficient_europe": {
+    "name": "Gini coefficient of equivalised disposable income: Spain and the European Union",
+    "aliases": ["coeficiente de Gini frente a Europa", "desigualdad de ingresos frente a Europa", "España es más desigual que Europa", "España es menos desigual que Europa", "desigualdad comparada con la Unión Europea"],
+    "unit": "Gini scale 0 to 100",
+    "population": "total population by equivalised disposable income in Spain and the European Union",
+    "notEquivalentTo": ["gini_coefficient", "arope_rate_europe", "median_equivalised_income_europe"],
+    "dimensions": ["period", "geography", "age", "statistical_information"]
+  },
   "government_deficit_ratio": {
     "name": "General government deficit or surplus as a share of GDP",
     "aliases": ["déficit público", "déficit del Estado", "superávit público", "déficit sobre PIB"],

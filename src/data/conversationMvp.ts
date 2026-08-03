@@ -627,6 +627,19 @@ definitions['espana-tiene-menos-deficit-ue'] = {
   visuals: { key: { value: '−2,4% vs −3,1%', label: 'Saldo público sobre el PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Saldo público sobre el PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [-2.4, -3.1], label: 'Saldo público sobre el PIB', unit: '% del PIB · valores negativos = déficit' }, caveat: 'Ambos saldos son negativos: la comparación indica un déficit español menor, no un superávit. El saldo no es la deuda acumulada.' },
 };
 
+definitions['espana-mas-desigual-ue'] = {
+  prompt: 'España es más desigual que la Unión Europea',
+  aliases: ['España tiene más desigualdad que Europa', 'España es más desigual que Europa', 'el Gini español es mayor que el europeo', '¿Es España más desigual que la Unión Europea?'],
+  propositions: ['En 2025 el coeficiente de Gini fue 30,8 en España y 29,2 en la Unión Europea.', 'Un Gini más alto indica mayor desigualdad relativa de renta disponible equivalente.', 'Un Gini mayor demuestra por sí solo que todos los hogares españoles están peor o que hay más pobreza.'],
+  concern: 'España registró más desigualdad relativa en esta medida, pero un único índice no explica qué grupos están detrás de la diferencia ni mide todas las dimensiones del bienestar.',
+  supports: 'Eurostat registra un Gini de 30,8 en España y 29,2 en la Unión Europea en 2025.',
+  limit: 'El Gini resume la distribución de la renta disponible equivalente. No equivale a pobreza, riqueza acumulada, renta media ni a la situación de cada hogar.',
+  question: '¿Quieres comparar desigualdad, pobreza, renta por grupos o riqueza acumulada?',
+  reply: 'Sí: en 2025 España tuvo un coeficiente de Gini de 30,8 frente a 29,2 en la Unión Europea, 1,6 puntos más. Eso indica más desigualdad relativa de renta disponible equivalente, pero no mide por sí solo pobreza ni riqueza.',
+  visualLabel: 'Más desigualdad relativa no equivale a más pobreza',
+  visuals: { key: { value: '30,8 vs 29,2', label: 'Coeficiente de Gini de la renta disponible', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Desigualdad relativa de ingresos', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [30.8, 29.2], label: 'Coeficiente de Gini', unit: 'escala 0–100 · más alto = más desigualdad' }, caveat: 'El Gini es un resumen de la distribución de la renta disponible equivalente; no mide por sí solo pobreza, riqueza ni la situación de cada hogar.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

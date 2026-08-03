@@ -334,6 +334,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el indicador de Eurostat “net lending (+)/net borrowing (-)” para las administraciones públicas, expresado como porcentaje del PIB y con el último año común disponible. Un valor negativo representa déficit; menos negativo significa un déficit menor.',
     caveat: 'Es el saldo agregado de las administraciones públicas, no la deuda acumulada, el gasto total ni la situación financiera de cada hogar.',
   },
+  gini_coefficient_europe: {
+    label: 'Desigualdad de ingresos (coeficiente de Gini)',
+    verb: 'registró un coeficiente de Gini',
+    replyLead: 'el coeficiente de Gini fue de',
+    differenceVerb: ['el Gini español fue más alto', 'el Gini español fue más bajo', 'España y la Unión Europea registraron el mismo Gini'],
+    unit: 'escala Gini 0–100',
+    replyUnit: 'escala Gini 0–100',
+    differenceUnit: 'puntos Gini',
+    method: 'La comparación usa el coeficiente de Gini de la renta disponible equivalente para la población total según Eurostat. Un valor más alto indica mayor desigualdad relativa; no equivale a pobreza, riqueza acumulada ni renta media.',
+    caveat: 'Es un resumen de la distribución de la renta disponible equivalente, no una medida de la situación de cada hogar ni de todas las formas de desigualdad.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {

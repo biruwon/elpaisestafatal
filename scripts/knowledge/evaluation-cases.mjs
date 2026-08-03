@@ -43,6 +43,7 @@ const knownSeeds = [
   ['prestaciones-proteccion-social-sube', 'trend', 'España gasta más por habitante en prestaciones de protección social que en 2015'],
   ['espana-gasta-menos-proteccion-social-europa', 'comparison', 'España gasta menos por habitante en protección social que la Unión Europea'],
   ['espana-tiene-menos-deficit-ue', 'comparison', 'España tiene menos déficit público que la Unión Europea'],
+  ['espana-mas-desigual-ue', 'comparison', 'España es más desigual que la Unión Europea'],
   ['espana-gasta-menos-sanidad-europa', 'comparative', 'España gasta menos por habitante en sanidad que la Unión Europea'],
   ['espana-gasta-menos-pensiones-europa', 'comparative', 'España gasta menos por habitante en pensiones que la Unión Europea'],
   ['espana-cobra-menos-impuestos-renta-riqueza-europa', 'comparative', 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea'],

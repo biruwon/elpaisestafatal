@@ -57,6 +57,7 @@ const questionOverrides: Record<string, string> = {
   arope_rate: '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
   arope_rate_europe: '¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?',
   gini_coefficient: '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
+  gini_coefficient_europe: '¿Es España más desigual que la Unión Europea?',
   median_equivalised_income: '¿Cuánto ingresan de media los hogares?',
   median_equivalised_income_europe: '¿España tiene más renta mediana que la Unión Europea?',
   early_school_leaving_rate: '¿Cómo ha evolucionado el abandono escolar temprano en España?',
@@ -128,6 +129,7 @@ const domainByMetric: Record<string, string> = {
   arope_rate: 'Desigualdad',
   arope_rate_europe: 'Desigualdad · Europa',
   gini_coefficient: 'Desigualdad',
+  gini_coefficient_europe: 'Desigualdad · Europa',
 };
 
 const metrics = Object.entries(metricRegistry).map(([id, item]) => ({
