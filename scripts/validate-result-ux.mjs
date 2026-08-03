@@ -18,6 +18,7 @@ const required = [
   'data-download-story',
   'canvas.toBlob',
   'aclaracion-visual.png',
+  'getPropertyValue(\'--story-bar\')',
 ];
 
 for (const snippet of required) {

@@ -781,6 +781,9 @@ const bindResultActions = (): void => {
       title: step.querySelector('strong')?.textContent?.trim() || '',
       text: step.querySelector('p')?.textContent?.trim() || '',
       number: step.querySelector('.claim-visual-story-number')?.textContent?.trim() || '',
+      bars: [...step.querySelectorAll<HTMLElement>('.claim-story-mini-chart b')]
+        .map((bar) => Number.parseFloat(bar.style.getPropertyValue('--story-bar')))
+        .filter((value) => Number.isFinite(value)),
     }));
     if (!steps.length) return;
     const canvas = document.createElement('canvas');
@@ -840,6 +843,19 @@ const bindResultActions = (): void => {
       context.fillStyle = colors.muted;
       context.font = '15px Arial, sans-serif';
       drawLines(wrap(step.text, cardWidth - 40, '15px Arial, sans-serif').slice(0, 5), x + 20, stepY + 18, 21);
+      if (step.bars.length) {
+        const baseline = cardTop + cardHeight - 22;
+        const chartHeight = 46;
+        const barGap = 4;
+        const barWidth = Math.max(5, (cardWidth - 40 - barGap * (step.bars.length - 1)) / step.bars.length);
+        context.fillStyle = colors.line;
+        context.fillRect(x + 20, baseline, cardWidth - 40, 1);
+        context.fillStyle = colors.red;
+        step.bars.slice(0, 12).forEach((height, barIndex) => {
+          const normalizedHeight = Math.max(0, Math.min(100, height)) / 100 * chartHeight;
+          context.fillRect(x + 20 + barIndex * (barWidth + barGap), baseline - normalizedHeight, barWidth, normalizedHeight);
+        });
+      }
     });
     context.strokeStyle = colors.line;
     context.beginPath();
