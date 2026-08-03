@@ -12,6 +12,7 @@
     "audit:investigations": "node scripts/audit-investigations.mjs",
     "audit:roadmap": "node scripts/audit-roadmap.mjs",
     "smoke:production": "node scripts/smoke-production.mjs",
+    "smoke:pages": "node scripts/smoke-pages-functions.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
     "ux:homepage": "node scripts/validate-homepage-ux.mjs",
     "ux:data": "node scripts/validate-data-catalogue-ux.mjs",

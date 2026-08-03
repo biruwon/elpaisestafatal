@@ -1,4 +1,5 @@
 const base = (process.env.SMOKE_BASE_URL || 'https://elpaisestafatal.es').replace(/\/$/, '');
+const allowOperationalUnavailable = process.env.SMOKE_ALLOW_OPERATIONAL_UNAVAILABLE === '1';
 const checks = [
   { path: '/', status: 200, title: 'El país está fatal' },
   { path: '/aclarar/inmigracion-delincuencia/', status: 200, title: 'Aclaración' },
@@ -73,6 +74,10 @@ const apiChecks = [
     path: '/api/questions',
     init: { method: 'GET' },
     validate(response, body) {
+      if (allowOperationalUnavailable && response.status === 503) {
+        if (!body || body.status !== 'unavailable' || !Array.isArray(body.claims)) failures.push('/api/questions: missing generic unavailable fallback');
+        return;
+      }
       if (response.status !== 200) failures.push(`/api/questions: expected 200 with the operational database bound, received ${response.status}`);
       if (!body || body.status !== 'ok' || !Array.isArray(body.claims)) failures.push('/api/questions: missing operational popularity feed');
       if (forbidden.test(JSON.stringify(body))) failures.push('/api/questions: exposed implementation details');

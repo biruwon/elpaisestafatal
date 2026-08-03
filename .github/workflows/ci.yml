@@ -67,6 +67,9 @@ jobs:
       - name: Build public site and audit public surface
         run: npm run build
 
+      - name: Smoke-test the built Pages Functions boundary
+        run: npm run smoke:pages
+
       - name: Validate request lifecycle and static fallback contracts
         run: |
           npm run input:validate
