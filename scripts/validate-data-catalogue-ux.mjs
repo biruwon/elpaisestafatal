@@ -6,6 +6,9 @@ const required = [
   'data-catalogue-search',
   'data-catalogue-count',
   'data-catalogue-empty',
+  'data-data-filter',
+  'aria-pressed',
+  'data-domain',
   'no es un veredicto',
   '/#comprobar',
 ];
