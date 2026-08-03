@@ -170,6 +170,19 @@ definitions['titulacion-superior-aumenta'] = {
   visuals: { key: { value: '52,5 %', label: 'Personas de 25 a 34 con educación terciaria', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [41.0, 42.6, 46.5, 48.5, 52.0, 52.5], label: 'Titulación superior entre 25 y 34 años', unit: '% de personas de 25 a 34 años' }, caveat: 'La proporción de titulados no mide por sí sola calidad del empleo, sobrecualificación, salarios, especialidad, vacantes o diferencias territoriales.' },
 };
 
+definitions['neet-baja'] = {
+  prompt: 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan',
+  aliases: ['hay menos ninis', 'menos jóvenes ni estudian ni trabajan', 'ha bajado la tasa de ninis', 'menos jóvenes fuera del empleo y los estudios', 'los jóvenes estudian o trabajan más'],
+  propositions: ['La proporción de personas de 15 a 29 años que ni trabajan ni estudian pasó del 19,4% en 2015 al 11,5% en 2025.', 'La mejora significa que todos los jóvenes estudian o trabajan.', 'La tasa de ninis es la misma medida que el paro juvenil.'],
+  concern: 'La proporción ha bajado, pero el indicador no dice que todos los jóvenes tengan empleo o estudios ni sustituye al paro juvenil.',
+  supports: 'Eurostat registra una bajada del 19,4% en 2015 al 11,5% en 2025 entre las personas de 15 a 29 años.',
+  limit: 'La tasa mide población fuera del empleo y de la educación o formación. No es la tasa de paro, que usa la población activa, ni mide estabilidad laboral.',
+  question: '¿Quieres comparar la tasa de ninis, el paro juvenil o la calidad del empleo?',
+  reply: 'Sí: la proporción de personas de 15 a 29 años que ni trabajan ni estudian bajó del 19,4% en 2015 al 11,5% en 2025, según Eurostat. No es lo mismo que el paro juvenil y no significa que todos tengan un empleo estable.',
+  visualLabel: 'Ninis y paro juvenil usan poblaciones distintas',
+  visuals: { key: { value: '11,5 %', label: 'Personas de 15–29 fuera de empleo y estudios', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [19.4, 16.4, 14.9, 14.2, 12.3, 11.5], label: 'Personas que ni trabajan ni estudian', unit: '% de jóvenes de 15 a 29 años' }, caveat: 'No es la tasa de paro juvenil: el denominador y la definición son distintos.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

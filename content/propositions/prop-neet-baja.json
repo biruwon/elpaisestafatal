@@ -1,0 +1,13 @@
+{
+  "id": "prop-neet-baja-core",
+  "claimSlug": "neet-baja",
+  "text": "La proporción de personas de 15 a 29 años que ni trabajan ni estudian disminuyó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "neet_rate",
+  "predicate": "decreased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["neet-eurostat"]
+}
