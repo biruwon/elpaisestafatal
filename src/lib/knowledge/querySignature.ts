@@ -32,7 +32,7 @@ const containsAlias = (text: string, alias: string): boolean => {
 const claimType = (text: string): string => {
   if (/(deberia|deberian|justo|prioridad|merecen)/.test(text)) return 'normative';
   if (/(que significa|que se entiende por|significado de|(?:^|\s)que es(?:\s|$)|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
-  if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relaciona|relacionad|hace que|hacen que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
+  if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|disminuye|dispara|disparado|encarece|empeora|mejora|no deja de|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
@@ -44,7 +44,7 @@ const semanticTokens = (text: string): string[] => [...new Set(
   text.split(' ').filter((token) => token.length > 3 && !stopWords.has(token) && !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)),
 )].slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'que']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
 
 const relationShape = (value: string): string => {
   const concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
@@ -59,9 +59,21 @@ const rankingDirection = (text: string): string | null => {
   return /\b(?:menos|menor)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
 };
 
+const associationRelation = (text: string): string | null => {
+  const paired = text.match(/^(.*?)\s+(?:y|e)\s+(.*?)\s+(?:estan|son|parecen)\s+(?:relacionadas?|vinculadas?|asociadas?|correlacionadas?)(?:\s+en\s+.+)?$/)
+    || text.match(/^(?:hay|existe)\s+(?:una\s+)?(?:relacion|vinculo|asociacion|correlacion)\s+entre\s+(.+?)\s+(?:y|e)\s+(.+?)(?:\s+en\s+.+)?$/)
+    || text.match(/^(.*?)\s+(?:esta|estan|tiene|tienen)\s+(?:relacionad[oa]s?|vinculad[oa]s?|asociad[oa]s?|correlacionad[oa]s?|relacion)\s+(?:con|a)\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:y|e)\s+(.*?)\s+(?:van|parecen ir)\s+de la mano(?:\s+en\s+.+)?$/);
+  if (!paired) return null;
+  const pair = [relationShape(paired[1]), relationShape(paired[2])].sort();
+  return `association:associated:${pair[0]}:${pair[1]}`;
+};
+
 const directionalRelation = (text: string): string | null => {
   const ranking = rankingDirection(text);
   if (ranking) return `ranking:${ranking}:${relationShape(text)}`;
+  const association = associationRelation(text);
+  if (association) return association;
   const relativeComparison = text.match(/^(.*?)\s+(mejor|peor|igual|distinto)\s+que\s+(.+)$/);
   if (relativeComparison) return `comparison:${({ mejor: 'better', peor: 'worse', igual: 'equal', distinto: 'different' } as Record<string, string>)[relativeComparison[2]]}:${relationShape(relativeComparison[1])}:${relationShape(relativeComparison[3])}`;
   const positionalComparison = text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+?)\s+en\s+(.+)$/) || text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+)$/);

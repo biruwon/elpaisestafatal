@@ -59,7 +59,7 @@ const semanticConcepts = (value) => semanticConceptAliases
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'que']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
 
 const relationShapeText = (value) => {
   const concepts = semanticConcepts(value);
@@ -73,6 +73,24 @@ const relationShapeText = (value) => {
 // can reverse the conclusion while leaving all the same vocabulary behind.
 export const propositionShapeFor = (value) => {
   const text = normalise(value);
+  const pairedAssociation = text.match(/^(.*?)\s+(?:y|e)\s+(.*?)\s+(?:estan|son|parecen)\s+(?:relacionadas?|vinculadas?|asociadas?|correlacionadas?)(?:\s+en\s+.+)?$/);
+  if (pairedAssociation) {
+    return {
+      subject: relationShapeText(pairedAssociation[1]),
+      predicate: 'associated_with',
+      object: relationShapeText(pairedAssociation[2]),
+    };
+  }
+  const relationship = text.match(/^(?:hay|existe)\s+(?:una\s+)?(?:relacion|vinculo|asociacion|correlacion)\s+entre\s+(.+?)\s+(?:y|e)\s+(.+?)(?:\s+en\s+.+)?$/)
+    || text.match(/^(.*?)\s+(?:esta|estan|tiene|tienen)\s+(?:relacionad[oa]s?|vinculad[oa]s?|asociad[oa]s?|correlacionad[oa]s?|relacion)\s+(?:con|a)\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:y|e)\s+(.*?)\s+(?:van|parecen ir)\s+de la mano(?:\s+en\s+.+)?$/);
+  if (relationship) {
+    return {
+      subject: relationShapeText(relationship[1]),
+      predicate: 'associated_with',
+      object: relationShapeText(relationship[2]),
+    };
+  }
   const relativeComparison = text.match(/^(.*?)\s+(mejor|peor|igual|distinto)\s+que\s+(.+)$/);
   if (relativeComparison) {
     return {
@@ -159,10 +177,15 @@ export const semanticSignatureFor = ({ claimType, propositions = [], entities = 
     const shape = item.subject && item.predicate && item.object ? item : propositionShapeFor(item.text);
     const trendRelation = item.type === 'trend' ? trendDirectionFor(item.text) : null;
     const rankingRelation = item.type === 'comparative' ? rankingDirectionFor(item.text) : null;
+    const associationPair = shape.predicate === 'associated_with' && shape.subject && shape.object
+      ? [shape.subject, shape.object].sort()
+      : null;
     const relation = trendRelation
       ? `:trend:${trendRelation}`
       : rankingRelation
         ? `:ranking:${rankingRelation}`
+      : associationPair
+        ? `:${shape.predicate}:${associationPair[0]}:${associationPair[1]}`
       : shape.subject && shape.predicate && shape.object
         ? `:${shape.predicate}:${shape.subject}:${shape.object}`
         : '';
@@ -202,7 +225,7 @@ const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'relacionad', 'hace que', 'hacen que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text)) return 'causal';
+  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'dispara', 'disparado', 'encarece', 'empeora', 'mejora', 'no deja de', 'va a peor', 'va peor', 'va mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';

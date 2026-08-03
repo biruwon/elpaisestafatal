@@ -19,6 +19,13 @@ assert(causal.population === 'personas inmigrantes o extranjeras', 'Causal popul
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
 assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.length === 1, 'Explicit/implied proposition groups were not created');
 
+const association = deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas en España');
+const reversedAssociation = deterministicFallbackCompiler('Existe una relación entre la delincuencia y la inmigración en España');
+assert(association.claimType === 'causal', 'Association wording lost the evidence-focused causal guidance path');
+assert(association.explicitPropositions[0].predicate === 'associated_with', 'Association relation was not extracted');
+assert(association.semanticSignature === reversedAssociation.semanticSignature, 'Symmetric association wording did not share a semantic family');
+assert(association.semanticSignature !== causal.semanticSignature, 'Association and causal relations collapsed into the same semantic family');
+
 const comparison = deterministicFallbackCompiler('España cobra más impuestos que Europa en 2025');
 assert(comparison.claimType === 'comparative' && comparison.period === '2025', 'Comparative claim or period was not detected');
 assert(comparison.numbers.length === 0, 'Year was incorrectly treated as a numeric amount');
