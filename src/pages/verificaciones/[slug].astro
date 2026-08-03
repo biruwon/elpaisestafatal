@@ -1,5 +1,11 @@
 ---
 import { claims } from '../../data/claims';
-export function getStaticPaths(){return claims.map((item)=>({params:{slug:item.slug}}));}
+import { markdownClaims } from '../../data/content';
+export function getStaticPaths(){
+  const legacySlugs=new Set(claims.map((claim)=>claim.slug));
+  const legacy=claims.map((item)=>({params:{slug:item.slug}}));
+  const markdownOnly=markdownClaims.filter((item)=>item.status==='published'&&!legacySlugs.has(item.slug)).map((item)=>({params:{slug:item.slug}}));
+  return [...legacy,...markdownOnly];
+}
 return Astro.redirect(`/afirmaciones/${Astro.params.slug}`, 301);
 ---

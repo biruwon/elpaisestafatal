@@ -14,6 +14,9 @@ for (const file of html) {
   const source = await readFile(file, 'utf8');
   const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');
   if (route.startsWith('/verificaciones')) continue;
+  // Compatibility routes generated with Astro.redirect are intentionally
+  // minimal documents and are validated as redirects below, not as pages.
+  if (source.includes('http-equiv="refresh"') || source.includes('location.replace')) continue;
   if (!/<html[^>]+lang="es"/.test(source)) failures.push(`${route}: missing lang=es`);
   if (!/<title>[^<]+<\/title>/.test(source)) failures.push(`${route}: missing title`);
   if (!/<meta name="description" content="[^"]+"/.test(source)) failures.push(`${route}: missing description`);

@@ -1,0 +1,13 @@
+{
+  "id": "prop-prestaciones-proteccion-social-sube-core",
+  "claimSlug": "prestaciones-proteccion-social-sube",
+  "text": "España gasta más por habitante en prestaciones de protección social en 2024 que en 2015.",
+  "type": "trend",
+  "subject": "social_protection_benefits_per_capita",
+  "predicate": "increased",
+  "object": "2015-2024",
+  "geography": "España",
+  "period": "2015-2024",
+  "status": "supported",
+  "evidenceIds": ["prestaciones-proteccion-social-eurostat"]
+}

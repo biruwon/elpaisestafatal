@@ -276,6 +276,7 @@
     {"evidenceId":"sobrecarga-vivienda-espana-europa-eurostat","propositionId":"prop-sobrecarga-vivienda-espana-no-mayor-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"gasto-publico-educacion-espana-ue-eurostat","propositionId":"prop-gasto-publico-educacion-espana-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"dependencia-mayores-eurostat","propositionId":"prop-dependencia-mayores-2025-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"poblacion-cambio-eurostat","propositionId":"prop-espana-poblacion-crece-2025-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"poblacion-cambio-eurostat","propositionId":"prop-espana-poblacion-crece-2025-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"prestaciones-proteccion-social-eurostat","propositionId":"prop-prestaciones-proteccion-social-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
 ]
 }

@@ -40,6 +40,7 @@ const knownSeeds = [
   ['deuda-publica-crece', 'trend', 'La deuda pública de España ha aumentado en euros desde 2015'],
   ['sobrecarga-vivienda-baja', 'trend', 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015'],
   ['gasto-sanitario-habitante-sube', 'trend', 'España gasta más por habitante en sanidad que en 2015'],
+  ['prestaciones-proteccion-social-sube', 'trend', 'España gasta más por habitante en prestaciones de protección social que en 2015'],
   ['espana-gasta-menos-sanidad-europa', 'comparative', 'España gasta menos por habitante en sanidad que la Unión Europea'],
   ['espana-gasta-menos-pensiones-europa', 'comparative', 'España gasta menos por habitante en pensiones que la Unión Europea'],
   ['espana-cobra-menos-impuestos-renta-riqueza-europa', 'comparative', 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea'],

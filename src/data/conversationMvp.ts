@@ -588,6 +588,19 @@ definitions['espana-poblacion-crece-2025'] = {
   visuals: { key: { value: '+9,4', label: 'Cambio total por cada 1.000 habitantes', period: '2025' }, trend: { available: true, labels: ['2015', '2018', '2020', '2022', '2023', '2024', '2025'], values: [-0.1, 5.9, 0.6, 8.8, 11.1, 10.4, 9.4], label: 'Tasa de cambio total de la población', unit: 'por cada 1.000 habitantes' }, caveat: 'El saldo nacional no indica por sí solo si el cambio procede de nacimientos, defunciones o migración, y oculta diferencias territoriales.' },
 };
 
+definitions['prestaciones-proteccion-social-sube'] = {
+  prompt: 'España gasta más por habitante en prestaciones de protección social que en 2015',
+  aliases: ['ha aumentado el gasto en protección social', 'España gasta más en ayudas sociales por habitante', 'las prestaciones sociales han subido', 'el gasto social por habitante ha crecido', 'cuánto se gasta por persona en prestaciones sociales'],
+  propositions: ['El gasto en prestaciones de protección social por habitante pasó de 5.630,92 € en 2015 a 8.221,52 € en 2024.', 'Todas las personas reciben la misma cantidad o tienen derecho a las mismas prestaciones.', 'El agregado identifica por sí solo qué ayuda aumentó o quién recibió el dinero.'],
+  concern: 'El gasto social por habitante ha aumentado, pero un agregado nacional no responde por sí solo a quién recibe cada prestación ni a sus requisitos.',
+  supports: 'Eurostat registra 5.630,92 € por habitante en 2015 y 8.221,52 € en 2024 en prestaciones de protección social.',
+  limit: 'La serie suma funciones y esquemas de financiación distintos, está expresada en euros corrientes y no equivale a la prestación de una persona concreta ni a la pensión media.',
+  question: '¿Quieres medir el gasto total, una prestación concreta, sus beneficiarios o la cantidad que recibe cada persona?',
+  reply: 'Sí: el gasto en prestaciones de protección social por habitante pasó de 5.630,92 € en 2015 a 8.221,52 € en 2024. Es un agregado en euros corrientes; no indica quién recibe cada ayuda ni cuánto cobra cada persona.',
+  visualLabel: 'Gasto agregado no es la ayuda de cada persona',
+  visuals: { key: { value: '8.221,52 €', label: 'Prestaciones de protección social por habitante', period: '2024' }, trend: { available: true, labels: ['2015', '2024'], values: [5630.92, 8221.52], label: 'Gasto en prestaciones de protección social por habitante', unit: '€ por habitante · euros corrientes' }, caveat: 'La comparación usa únicamente los años respaldados por la ficha; el agregado no identifica beneficiarios, requisitos, importes individuales ni la función concreta que explica el cambio.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

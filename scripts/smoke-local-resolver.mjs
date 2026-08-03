@@ -453,6 +453,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'personas mayores por cada 100 en edad de trabajar') failures.push('ageing warehouse: did not localize the unit');
   } catch (error) { failures.push(`ageing warehouse: ${error.message}`); }
   try {
+    const result = await resolve('España gasta más por habitante en prestaciones de protección social que en 2015');
+    if (result.status !== 'known' || result.result?.claimSlug !== 'prestaciones-proteccion-social-sube') failures.push('published social-protection claim: did not resolve the canonical claim');
+    if (!/8.221,52|8\.221,52|8221,52/.test(JSON.stringify(result.result || {}))) failures.push('published social-protection claim: lost the measured value');
+  } catch (error) { failures.push(`published social-protection claim: ${error.message}`); }
+  try {
     const result = await resolve('La población de España creció en 2025');
     if (result.status !== 'known' || result.result?.claimSlug !== 'espana-poblacion-crece-2025') failures.push('published population-growth claim: did not resolve the canonical claim');
     if (!/9,4|9\.4/.test(JSON.stringify(result.result || {}))) failures.push('published population-growth claim: lost the measured value');

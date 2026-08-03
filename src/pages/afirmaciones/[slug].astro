@@ -8,12 +8,23 @@ import ClaimSnapshot from '../../components/ClaimSnapshot.astro';
 import ClaimEvidenceTrail from '../../components/ClaimEvidenceTrail.astro';
 import ClaimSeriesChart from '../../components/ClaimSeriesChart.astro';
 import { claims, getClaim, assessmentLabels } from '../../data/claims';
+import { markdownClaims } from '../../data/content';
 import { concerns } from '../../data/concerns';
 import { getSource } from '../../data/registry';
 import { sourceTypeLabel } from '../../data/sourceTitle';
 
-export function getStaticPaths(){return claims.filter((claim)=>claim.published).map((item)=>({params:{slug:item.slug}}));}
-const item=getClaim(Astro.params.slug!); if(!item || !item.published)return Astro.redirect('/afirmaciones');
+export function getStaticPaths(){
+  const legacySlugs=new Set(claims.map((claim)=>claim.slug));
+  const legacy=claims.filter((claim)=>claim.published).map((item)=>({params:{slug:item.slug}}));
+  const markdownOnly=markdownClaims.filter((item)=>item.status==='published'&&!legacySlugs.has(item.slug)).map((item)=>({params:{slug:item.slug}}));
+  return [...legacy,...markdownOnly];
+}
+const item=getClaim(Astro.params.slug!);
+if(!item || !item.published){
+  const markdownClaim=markdownClaims.find((claim)=>claim.slug===Astro.params.slug&&claim.status==='published'&&!claims.some((legacy)=>legacy.slug===claim.slug));
+  if(markdownClaim)return Astro.redirect(`/aclarar/${markdownClaim.slug}`, 301);
+  return Astro.redirect('/afirmaciones');
+}
 const relatedSlugs=new Set(item.relatedSlugs);
 const related=claims.filter((claim)=>claim.published&&claim.slug!==item.slug&&(relatedSlugs.has(claim.slug)||claim.topicSlugs.some((slug)=>item.topicSlugs.includes(slug))||claim.keywords.some((keyword)=>item.keywords.includes(keyword)))).slice(0,6);
 const concern=item.contextMode === 'direct' ? undefined : concerns.find((entry)=>item.topicSlugs.includes(entry.slug));
