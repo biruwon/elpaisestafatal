@@ -51,6 +51,11 @@ const aropeComparisonRecords = [
 ];
 const aropeComparison = summarizeWarehouseEuropeanComparison('¿España tiene más riesgo de pobreza o exclusión que la Unión Europea?', aropeComparisonRecords);
 if (!aropeComparison || aropeComparison.metricId !== 'arope_rate_europe' || !aropeComparison.summary.includes('25,7') || !aropeComparison.summary.includes('20,9') || !aropeComparison.points.some((point) => point.includes('4,8 puntos porcentuales más')) || !aropeComparison.reply.includes('tasa española fue más alta')) throw new Error('European AROPE comparison did not preserve the same-period Spain/EU comparison or composite-indicator caveat');
+const lifeExpectancyComparison = summarizeWarehouseEuropeanComparison('¿España vive más que Europa?', [
+  { id: 'life-es-2024', metricId: 'life_expectancy_at_birth_europe', datasetId: 'Life expectancy comparison', value: 84, unit: 'Years', period: '2024', dimensions: { geo: 'ES', age: 'Y_LT1', sex: 'T' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'life-eu-2024', metricId: 'life_expectancy_at_birth_europe', datasetId: 'Life expectancy comparison', value: 81.5, unit: 'Years', period: '2024', dimensions: { geo: 'EU27_2020', age: 'Y_LT1', sex: 'T' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+]);
+if (!lifeExpectancyComparison || lifeExpectancyComparison.metricId !== 'life_expectancy_at_birth_europe' || !lifeExpectancyComparison.summary.includes('84') || !lifeExpectancyComparison.summary.includes('81,5') || !lifeExpectancyComparison.reply.includes('esperanza de vida española fue más alta')) throw new Error('European life-expectancy comparison did not preserve the same-period Spain/EU comparison');
 const gdpPerCapitaRecords = [
   { id: 'gdp-capita-es-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 38135.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
   { id: 'gdp-capita-eu-2025', metricId: 'gdp_per_capita_europe', datasetId: 'GDP per capita comparison', value: 41565.7, unit: 'Current prices, purchasing power standard (PPS, EU27 from 2020) per capita', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },

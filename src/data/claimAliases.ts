@@ -413,4 +413,10 @@ export const claimAliases: Record<string, string[]> = {
     'España tiene más riesgo de pobreza que la UE',
     'comparación europea de AROPE',
   ],
+  'esperanza-vida-espana-ue': [
+    'España vive más que Europa',
+    'la esperanza de vida española supera a la europea',
+    'España tiene más años de vida que la UE',
+    'comparación europea de esperanza de vida',
+  ],
 };

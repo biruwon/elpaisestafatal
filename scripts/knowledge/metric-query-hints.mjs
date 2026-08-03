@@ -51,6 +51,7 @@ const metricHints = [
   { ids: ['health_expenditure_per_capita_europe'], terms: ['gasto sanitario frente a europa', 'gasto sanitario frente a la union europea', 'como se compara el gasto sanitario de espana con europa', 'comparacion europea del gasto de salud por habitante', 'gasto en sanidad frente a europa', 'gasto en sanidad frente a la union europea', 'espana gasta mas en sanidad que europa', 'espana gasta menos en sanidad que europa', 'espana gasta mas en sanidad que la union europea', 'espana gasta menos en sanidad que la union europea', 'espana gasta mas por habitante en sanidad', 'espana gasta menos por habitante en sanidad', 'gasto sanitario europa', 'sanidad europa'] },
   { ids: ['unmet_healthcare_waiting_list_rate'], terms: ['lista de espera medica', 'lista de espera sanitaria', 'no recibe atencion por lista de espera', 'personas sin atencion por lista de espera', 'espera medica impide atencion', 'necesidad medica no atendida por espera'] },
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
+  { ids: ['life_expectancy_at_birth_europe'], terms: ['esperanza de vida frente a europa', 'esperanza de vida frente a la union europea', 'años de vida frente a europa', 'espana vive mas que europa', 'espana vive mas que la union europea', 'comparacion europea de esperanza de vida', 'esperanza de vida europa'] },
   { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos por mujer'] },
   { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida'] },
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
@@ -157,6 +158,7 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('youth_unemployment_rate_europe');
   }
   if (preferred.has('arope_rate_europe')) preferred.delete('arope_rate');
+  if (preferred.has('life_expectancy_at_birth_europe')) preferred.delete('life_expectancy_at_birth');
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_current_taxes_income_wealth_europe')) {
     preferred.delete('government_revenue_ratio');
@@ -231,6 +233,8 @@ export const excludedMetricIdsForQuery = (query) => {
   const neetEuropeRequested = metricHints.find((hint) => hint.ids.includes('neet_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const aropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const aropeEuropeRequested = metricHints.find((hint) => hint.ids.includes('arope_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const lifeExpectancyRequested = metricHints.find((hint) => hint.ids.includes('life_expectancy_at_birth'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const lifeExpectancyEuropeRequested = metricHints.find((hint) => hint.ids.includes('life_expectancy_at_birth_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const educationContext = ['educacion', 'educativo', 'estudios', 'escolar', 'universitari', 'titulacion', 'formacion'].some((term) => normalized.includes(term));
   const genericUnemployment = ['paro', 'desemple', 'unemployment', 'encuentra trabajo', 'sin trabajo', 'no trabaja'].some((term) => normalized.includes(term));
   const employmentEuropeRequested = metricHints.find((hint) => hint.ids.includes('employment_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -259,6 +263,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
   if (aropeEuropeRequested) excluded.add('arope_rate');
   if (aropeRequested && !aropeEuropeRequested) excluded.add('arope_rate_europe');
+  if (lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth');
+  if (lifeExpectancyRequested && !lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth_europe');
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');

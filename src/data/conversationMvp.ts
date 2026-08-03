@@ -446,6 +446,19 @@ definitions['arope-espana-ue'] = {
   visuals: { key: { value: '+4,8 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Tasa AROPE', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [25.7, 20.9], label: 'Población en riesgo de pobreza o exclusión social', unit: '% de la población · 2025' }, caveat: 'AROPE combina varias dimensiones y no es una medida de pobreza absoluta ni una explicación de las causas.' },
 };
 
+definitions['esperanza-vida-espana-ue'] = {
+  prompt: 'España tiene más esperanza de vida que la Unión Europea',
+  aliases: ['España vive más que Europa', 'la esperanza de vida española supera a la europea', 'España tiene más años de vida que la UE', 'comparación europea de esperanza de vida'],
+  propositions: ['En 2024, la esperanza de vida al nacer fue de 84,0 años en España frente a 81,5 años en la Unión Europea.', 'La diferencia fue de 2,5 años.', 'La comparación demuestra por sí sola la calidad o el acceso de la sanidad en todos los territorios.'],
+  concern: 'España registra una esperanza de vida al nacer superior a la de la Unión Europea, pero la diferencia no explica por sí sola sus causas ni la experiencia de cada persona.',
+  supports: 'Eurostat registra 84,0 años en España y 81,5 años en la Unión Europea en 2024: 2,5 años de diferencia.',
+  limit: 'Es una media poblacional basada en las tasas de mortalidad observadas. No predice cuánto vivirá una persona concreta ni mide por sí sola los años vividos con buena salud o la calidad sanitaria.',
+  question: '¿Quieres comparar esperanza de vida, años vividos con buena salud o acceso a la sanidad?',
+  reply: 'Sí: en 2024 España registró 84,0 años de esperanza de vida al nacer, frente a 81,5 en la Unión Europea. Son 2,5 años más en una media poblacional; no explica por sí sola la calidad sanitaria.',
+  visualLabel: 'Una media de longevidad no es una medida completa de salud',
+  visuals: { key: { value: '+2,5 años', label: 'España frente a la Unión Europea', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Esperanza de vida al nacer', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [84, 81.5], label: 'Esperanza de vida al nacer', unit: 'años · 2024' }, caveat: 'La esperanza de vida resume mortalidad poblacional; no equivale a años vividos con buena salud ni a acceso sanitario igual.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

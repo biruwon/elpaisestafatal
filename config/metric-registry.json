@@ -391,6 +391,14 @@
     "notEquivalentTo": ["health_expenditure_per_capita"],
     "dimensions": ["period", "geography", "sex"]
   },
+  "life_expectancy_at_birth_europe": {
+    "name": "Life expectancy at birth: Spain and the European Union",
+    "aliases": ["esperanza de vida frente a Europa", "años de vida frente a Europa", "España vive más que Europa", "comparación europea de esperanza de vida"],
+    "unit": "years",
+    "population": "newborn cohort under current mortality conditions in Spain and the European Union",
+    "notEquivalentTo": ["life_expectancy_at_birth", "health_expenditure_per_capita"],
+    "dimensions": ["period", "geography", "sex"]
+  },
   "fertility_rate": {
     "name": "Total fertility rate",
     "aliases": ["fecundidad", "tasa de fecundidad", "natalidad", "tasa de natalidad", "hijos por mujer", "nacimientos por mujer"],

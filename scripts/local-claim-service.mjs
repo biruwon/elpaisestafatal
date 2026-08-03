@@ -60,7 +60,7 @@ const boundedExcerpt = (value, limit = 900) => {
 const displayUnit = (value, metricId = '') => {
   const unit = normalise(value);
   if (metricId === 'gini_coefficient') return 'escala Gini 0–100';
-  if (metricId === 'life_expectancy_at_birth') return 'años';
+  if (metricId === 'life_expectancy_at_birth' || metricId === 'life_expectancy_at_birth_europe') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
@@ -504,7 +504,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // example monthly inflation). Keep the broad path small, but let an
   // explicit metric retrieve enough of its own series to retain the latest
   // periods for the chart.
-  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe');
+  const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('life_expectancy_at_birth_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe');
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
@@ -832,7 +832,16 @@ const classify = async (text) => {
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = queryMeaningfulTokens;
   const compileEligible = meaningfulTokens.length >= 3 || (meaningfulTokens.length >= 2 && /\b\d[\d.,%]*\b/.test(text));
-  const compiledCandidate = !evidenceUnavailableSignal(text) && (hasPlausibleCandidate || compileEligible) ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : []) : fallbackCompiler(text);
+  // Deterministic broad-complaint handling is already the safety authority.
+  // Calling the local model here only to have reconcileCompilerSafety discard
+  // its structure adds several seconds to vague inputs such as “España está
+  // destruida” and can leave the UI looking stuck. Keep the fast clarification
+  // path synchronous; reserve model extraction for claims that can benefit
+  // from proposition parsing or candidate disambiguation.
+  const needsModelCompilation = !deterministicCompiler.clarificationRequired && (hasPlausibleCandidate || compileEligible);
+  const compiledCandidate = !evidenceUnavailableSignal(text) && needsModelCompilation
+    ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
+    : fallbackCompiler(text);
   const compiled = reconcileCompilerSafety(text, deterministicCompiler, compiledCandidate);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');

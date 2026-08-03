@@ -1,0 +1,13 @@
+{
+  "id": "prop-esperanza-vida-espana-ue-core",
+  "claimSlug": "esperanza-vida-espana-ue",
+  "text": "En 2024, España tuvo una esperanza de vida al nacer mayor que la Unión Europea.",
+  "type": "comparative",
+  "subject": "life_expectancy_at_birth_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "84.0 years versus 81.5 years",
+  "geography": "España y Unión Europea",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["esperanza-vida-espana-ue-eurostat"]
+}

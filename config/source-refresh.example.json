@@ -269,6 +269,12 @@
       "metricId": "life_expectancy_at_birth"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?geo=ES&geo=EU27_2020&sex=T&age=Y_LT1&sinceTimePeriod=2015",
+      "title": "Esperanza de vida: España y Unión Europea · Eurostat",
+      "aliases": ["esperanza de vida frente a Europa", "años de vida frente a Europa", "España vive más que Europa", "comparación europea de esperanza de vida"],
+      "metricId": "life_expectancy_at_birth_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?geo=ES&age=TOTAL&unit=NR&sinceTimePeriod=2015",
       "title": "Tasa global de fecundidad en España · Eurostat",
       "aliases": ["fecundidad", "tasa de fecundidad", "natalidad", "tasa de natalidad", "hijos por mujer", "nacimientos por mujer"],

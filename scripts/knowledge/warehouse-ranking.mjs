@@ -170,6 +170,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la tasa AROPE de la población total según Eurostat, con la misma definición para España y la Unión Europea; no equivale a pobreza absoluta ni a una medida de la situación de cada hogar.',
     caveat: 'AROPE combina riesgo de pobreza, carencia material y social severa o baja intensidad laboral; no describe una única intensidad de privación ni identifica por sí sola sus causas.',
   },
+  life_expectancy_at_birth_europe: {
+    label: 'Esperanza de vida al nacer',
+    verb: 'registró una esperanza de vida al nacer de',
+    replyLead: 'la esperanza de vida al nacer fue de',
+    differenceVerb: ['la esperanza de vida española fue más alta', 'la esperanza de vida española fue más baja', 'España y la Unión Europea registraron la misma esperanza de vida'],
+    unit: 'años',
+    replyUnit: 'años',
+    differenceUnit: 'años',
+    method: 'La comparación usa la esperanza de vida al nacer para el total de población según Eurostat, con la misma definición para España y la Unión Europea; no predice cuánto vivirá una persona concreta ni mide por sí sola los años vividos con buena salud.',
+    caveat: 'Es una media poblacional basada en las tasas de mortalidad observadas; no demuestra por sí sola igualdad de acceso, calidad sanitaria o bienestar.',
+  },
   government_revenue_ratio_europe: {
     label: 'Ingresos públicos sobre el PIB',
     verb: 'registró unos ingresos públicos',

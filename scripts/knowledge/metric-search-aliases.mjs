@@ -29,6 +29,7 @@ export const metricSearchAliases = Object.freeze({
   foreign_citizenship_population: ['poblacion extranjera', 'nacionalidad extranjera', 'ciudadania extranjera', 'extranjeros', 'ciudadanos', 'residentes'],
   immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],
   arope_rate_europe: ['arope frente a europa', 'riesgo de pobreza frente a europa', 'pobreza o exclusion frente a europa', 'riesgo de pobreza frente a la union europea', 'pobreza o exclusion frente a la union europea', 'espana tiene mas riesgo de pobreza que europa', 'comparacion europea de arope', 'europa', 'union europea', 'comparacion europea'],
+  life_expectancy_at_birth_europe: ['esperanza de vida frente a europa', 'años de vida frente a europa', 'espana vive mas que europa', 'comparacion europea de esperanza de vida', 'europa', 'union europea', 'comparacion europea'],
   arope_rate: ['arope', 'riesgo de pobreza', 'pobreza o exclusion', 'exclusion social', 'pobreza relativa'],
   gdp_current_prices: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'produccion economica nacional'],
   gdp_real_growth_europe: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'espana crece mas que europa', 'espana crece menos que europa', 'crecimiento economico europeo', 'pib espana union europea'],

@@ -522,6 +522,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseComparison?.reply?.includes('tasa española fue más alta')) failures.push('Spain/EU AROPE: comparison reply did not preserve the composite-indicator wording');
   } catch (error) { failures.push(`Spain/EU AROPE: ${error.message}`); }
   try {
+    const result = await resolve('¿España vive más que Europa?');
+    if (result.status !== 'complete') failures.push(`Spain/EU life expectancy: expected complete, received ${result.status}`);
+    if (result.relatedClaims?.[0]?.slug !== 'esperanza-vida-espana-ue') failures.push('Spain/EU life expectancy: did not route to the reviewed claim');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('Spain/EU life expectancy: comparison visual missing');
+    if (!/84,0/.test(JSON.stringify(result.result)) || !/81,5/.test(JSON.stringify(result.result))) failures.push('Spain/EU life expectancy: lost the reviewed values');
+  } catch (error) { failures.push(`Spain/EU life expectancy: ${error.message}`); }
+  try {
   const result = await resolve('El salario mínimo ha subido en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`minimum wage warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'minimum_wage_monthly') failures.push('minimum wage warehouse: selected the wrong metric family');

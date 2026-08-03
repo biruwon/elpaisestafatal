@@ -29,6 +29,7 @@ const metricLabels = {
   youth_unemployment_rate_europe: 'Tasa de paro juvenil: España y la Unión Europea',
   early_school_leaving_rate_europe: 'Abandono escolar temprano: España y la Unión Europea',
   neet_rate_europe: 'Jóvenes que ni estudian ni trabajan: España y la Unión Europea',
+  life_expectancy_at_birth_europe: 'Esperanza de vida al nacer: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
   old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',
@@ -110,7 +111,7 @@ const displayUnit = (item) => {
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe' || metricId === 'older_population_share' || metricId === 'young_population_share' || metricId === 'arope_rate' || metricId === 'arope_rate_europe') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
-  if (metricId === 'life_expectancy_at_birth') return 'años';
+  if (metricId === 'life_expectancy_at_birth' || metricId === 'life_expectancy_at_birth_europe') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'household_electricity_price') return '€ por kWh';

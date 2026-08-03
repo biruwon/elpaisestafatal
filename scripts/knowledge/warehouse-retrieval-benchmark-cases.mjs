@@ -296,6 +296,8 @@ export const warehouseRetrievalBenchmarkCases = [
   ['sanidad-dinero-persona', 'Cuánto dinero se dedica por persona a la sanidad', 'health_expenditure_per_capita'],
   ['salud-vida', 'Cómo ha evolucionado la esperanza de vida en España', 'life_expectancy_at_birth'],
   ['salud-longevidad', 'Cuántos años vive de media una persona al nacer', 'life_expectancy_at_birth'],
+  ['vida-europa', '¿España vive más que Europa?', 'life_expectancy_at_birth_europe'],
+  ['vida-comparacion', 'Comparación europea de esperanza de vida', 'life_expectancy_at_birth_europe'],
   ['demografia-fecundidad', 'Cómo ha evolucionado la fecundidad en España', 'fertility_rate'],
   ['demografia-hijos', 'Cuántos hijos tiene de media cada mujer en España', 'fertility_rate'],
   ['demografia-envejecimiento', 'Cómo ha evolucionado el envejecimiento de la población española', 'old_age_dependency_ratio'],

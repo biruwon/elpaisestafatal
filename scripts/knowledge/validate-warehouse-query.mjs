@@ -84,6 +84,8 @@ if (!preferredMetricIdsForQuery('Mi cuñado insiste: España tiene más empleo q
 if (!preferredMetricIdsForQuery('España tasa de paro alta en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for compressed comparison wording');
 if (!preferredMetricIdsForQuery('España millones habitantes').has('resident_population')) throw new Error('Metric hints did not prefer resident population for compressed population wording');
 if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life_expectancy_at_birth')) throw new Error('Metric hints did not prefer life expectancy for compressed wording');
+if (!preferredMetricIdsForQuery('¿España vive más que Europa?').has('life_expectancy_at_birth_europe')) throw new Error('Metric hints did not prefer the Spain/EU life-expectancy comparison');
+if (!excludedMetricIdsForQuery('¿Cómo ha evolucionado la esperanza de vida en España?').has('life_expectancy_at_birth_europe')) throw new Error('Metric hints did not keep Spain/EU life expectancy separate from the Spain-only question');
 if (!preferredMetricIdsForQuery('Cuál es el tamaño de la economía española').has('gdp_current_prices')) throw new Error('Metric hints did not prefer nominal GDP for economy-size wording');
 if (!preferredMetricIdsForQuery('¿Crece España más que la Unión Europea?').has('gdp_real_growth_europe')) throw new Error('Metric hints did not prefer the Spain/EU real-GDP comparison family');
 if (preferredMetricIdsForQuery('¿Crece España más que la Unión Europea?').has('gdp_real_growth_quarterly')) throw new Error('Metric hints kept the Spain-only GDP family alongside the Spain/EU comparison');
