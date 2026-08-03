@@ -13,6 +13,10 @@ requireText('¿De qué estáis', 'the conversation-first heading');
 requireText('id="conversation-form"', 'the claim form');
 requireText('id="conversation-counter"', 'the input character counter');
 requireText('class="examples-heading"', 'the popular prompt heading');
+for (const prompt of ['Los inmigrantes crean inseguridad', 'Los inmigrantes reciben todas las ayudas', 'España es el país que más impuestos cobra de Europa']) {
+  requireText(`data-example="${prompt}"`, `a first-use everyday debate prompt (${prompt})`);
+}
+if (homepage.indexOf('data-example="Los inmigrantes crean inseguridad"') > homepage.indexOf('data-example="¿Cómo ha cambiado el precio de la luz para los hogares?"')) failures.push('everyday debate prompts should appear before warehouse indicator prompts');
 requireText('data-example-filter="all"', 'the popular prompt filters');
 requireText('data-example-filter="seguridad"', 'the security popular prompt filter');
 requireText('data-example-more', 'the progressive popular-prompt list');
