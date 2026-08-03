@@ -27,6 +27,7 @@ const popularSlugs = [
   'paro-epa-registro',
   'juventud-emancipacion',
   'economia-crece-coste-vida',
+  'precio-vivienda-ha-subido',
   'precio-vivienda-sube',
   'cibercriminalidad-crece',
   'esperanza-vida-alta',

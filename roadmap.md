@@ -71,9 +71,10 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 246 Markdown claim records exist; 68 are published.
-- The 68 published claims now expose typed, evidence-linked core propositions; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
-- All 68 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, tourism, prices, taxes, inequality, security, politics, youth, corruption, legal rules, demographic change, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
+- 247 Markdown claim records exist; 69 are published.
+- The 69 published claims now expose typed, evidence-linked core propositions; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- All 69 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, tourism, prices, taxes, inequality, security, politics, youth, corruption, legal rules, demographic change, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
+- The high-demand `precios vivienda España` cluster is now a reviewed published family with Spanish aliases, an INE-backed trend visual, explicit limits between national house-price transactions and rents/listings, and regression coverage; equivalent wording no longer needs a provisional warehouse answer.
 - The resolver now preserves proposition traceability through the Pages API smoke path, while the deterministic fallback distinguishes definition and trend inputs before enrichment.
 - Compound fallback inputs now expose up to four explicit propositions for common contrast/result structures while preserving ordinary noun lists as one claim; each clause keeps its own detected type before handler selection.
 - The fallback compiler now preserves a directional proposition shape for common comparisons and causal statements (`subject`, `predicate`, `object`), so reversed comparisons cannot silently share a semantic family with the original formulation; the checker labels breakdown rows as facts, comparisons, causes, definitions, predictions, rules, priorities, or implications.

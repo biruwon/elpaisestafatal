@@ -1,6 +1,13 @@
 {
   "schemaVersion": 1,
   "links": [
+    {
+      "evidenceId": "vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1",
+      "propositionId": "prop-precio-vivienda-ha-subido-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
   {"evidenceId":"alquileres-serie-eurostat","propositionId":"prop-alquileres-suben-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
   {"evidenceId":"poblacion-cambio-eurostat","propositionId":"prop-espana-pierde-poblacion-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},
     {"evidenceId":"vivienda-indice-de-precios-de-vivienda-t1-2026","propositionId":"prop-airbnb-vivienda-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-02"},

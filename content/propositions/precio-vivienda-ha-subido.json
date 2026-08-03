@@ -1,0 +1,13 @@
+{
+  "id": "prop-precio-vivienda-ha-subido-core",
+  "claimSlug": "precio-vivienda-ha-subido",
+  "text": "El precio nacional de la vivienda libre ha subido en España en los últimos periodos disponibles.",
+  "type": "trend",
+  "subject": "precio_vivienda_libre",
+  "predicate": "increases",
+  "object": "España",
+  "geography": "España",
+  "period": "2024-2026",
+  "status": "supported",
+  "evidenceIds": ["vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+}
