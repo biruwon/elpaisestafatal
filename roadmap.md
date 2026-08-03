@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Re-ran the bounded local compiler benchmark against the installed candidates. `gemma3:4b` produced no usable parses at a 2.5-second budget, and `qwen2.5:7b` reached only 0.13 quality with 0.20 safety preservation and roughly 10-second p50/p95 latency. Neither meets the 0.80 quality and perfect-safety gate, so no local model is promoted and deterministic compilation remains the release path.
+
 - Fixed the local compiler benchmark report path: it now parses and records the configured local endpoint before running model cases, so a completed benchmark can produce a valid report and recommendation instead of failing at report serialization. The benchmark contract now protects this initialization.
 
 - Corrected the local screenshot-extraction request to use the same numeric keep-alive contract as text compilation and embeddings. The local-container release gate now checks every local chat/embed path so a runtime-specific duration string cannot silently disable image enrichment.
