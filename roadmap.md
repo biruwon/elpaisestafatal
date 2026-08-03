@@ -265,7 +265,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 
 ## Phase 1 — Knowledge contracts and migration
 
-Status: started; published-claim proposition migration and runtime traceability are implemented for all 83 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures. Evidence-to-proposition relationships are now stored in a versioned manifest, validated against proposition status and references, and exposed to the published evidence trail; richer per-link limitations and independent review remain future work.
+Status: started; published-claim proposition migration and runtime traceability are implemented for all 83 published claims; the fallback compiler now performs bounded multi-proposition decomposition for contrast, result, semicolon, and safe conjunction clauses, preserves directional proposition shapes, and emits deterministic semantic family signatures. Evidence-to-proposition relationships are now stored in a versioned manifest, validated against proposition status and references, and exposed to the published evidence trail. Each relationship now has an expandable explanation that names the linked proposition and explains whether the record supports, contradicts, qualifies, contextualizes, or is insufficient for it; independent review metadata remains future work.
 
 Create and enforce shared contracts for:
 

@@ -31,6 +31,7 @@ for (const file of pages) {
   if (!/evidence-trail-card/.test(source)) failures.push(`${route}: evidence trail has no records`);
   if (!/class="evidence-label"/.test(source)) failures.push(`${route}: evidence trail has no explicit finding label`);
   if (!/class="evidence-finding"/.test(source)) failures.push(`${route}: evidence trail does not expose the finding inline`);
+  if (!/class="evidence-relation-details"/.test(source) || !source.includes('Por qué está vinculado')) failures.push(`${route}: evidence trail does not explain proposition-level relationships`);
   const hasChart = /class="claim-series-chart"/.test(source);
   const hasDirectVisual = /class="claim-data-direct"/.test(source);
   if (!hasChart && !hasDirectVisual) failures.push(`${route}: missing accessible evidence visual`);

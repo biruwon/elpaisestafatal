@@ -30,6 +30,14 @@ export type EvidencePropositionLink = {
   reviewedAt?: string;
 };
 
+export const relationshipGuidance: Record<EvidencePropositionLink['relationship'], string> = {
+  supports: 'Este registro mide directamente la proposición enlazada, dentro de su periodo, ámbito y definición.',
+  contradicts: 'Este registro muestra un resultado incompatible con la formulación enlazada en la medida indicada.',
+  qualifies: 'Este registro añade una condición o límite importante; no demuestra por sí solo toda la afirmación.',
+  context: 'Este registro ayuda a situar la conversación, pero no comprueba por sí solo la proposición.',
+  insufficient: 'Este registro es relevante, pero no contiene la medida necesaria para resolver la proposición.',
+};
+
 const sourceFiles = import.meta.glob('../../content/sources/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const evidenceFiles = import.meta.glob('../../content/evidence/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 import relationshipManifest from '../../content/relationships/evidence-proposition-links.json';

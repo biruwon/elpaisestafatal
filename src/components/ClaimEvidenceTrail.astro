@@ -1,6 +1,7 @@
 ---
 import type { ClaimVerification } from '../data/claims';
-import { getEvidence, getSource } from '../data/registry';
+import { getEvidence, getSource, relationshipGuidance } from '../data/registry';
+import { propositions } from '../data/propositions';
 import { sourceTypeLabel } from '../data/sourceTitle';
 
 interface Props { claim: ClaimVerification }
@@ -16,6 +17,7 @@ const kindLabels: Record<string, string> = {
 const sourceFor = (ids: string[]) => ids.map(getSource).find((source): source is NonNullable<typeof source> => Boolean(source));
 const uniqueSources = [...new Set(evidence.flatMap((item) => item.sourceIds))].map(getSource).filter((source): source is NonNullable<typeof source> => Boolean(source));
 const propositionIds = new Set(claim.propositionIds);
+const propositionText = new Map(propositions.map((item) => [item.id, item.text]));
 const relationshipLabels: Record<string, string> = {
   supports: 'Apoya la proposición',
   contradicts: 'Contradice la proposición',
@@ -40,7 +42,7 @@ const relationshipLabels: Record<string, string> = {
         <p class="evidence-label">Qué establece este registro</p>
         <p class="evidence-finding">{item.summary}</p>
         {item.limitation && <p class="evidence-limit"><strong>Límite:</strong> {item.limitation}</p>}
-        {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span>)}
+        {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <div class="evidence-relation-wrap"><span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span><details class="evidence-relation-details"><summary>Por qué está vinculado</summary><p><strong>Proposición:</strong> {propositionText.get(link.propositionId) || 'Proposición publicada asociada'}</p><p>{relationshipGuidance[link.relationship]}</p></details></div>)}
         {source && <a href={source.url} target="_blank" rel="noreferrer">{sourceTypeLabel(source.type)} · Abrir fuente <span aria-hidden="true">↗</span></a>}
       </article>;
     })}
@@ -67,8 +69,9 @@ const relationshipLabels: Record<string, string> = {
   .evidence-limit strong{color:var(--ink);font-weight:600}
   .evidence-trail-card a{font:600 .65rem var(--mono);color:var(--red)}
   .evidence-trail-card a span{margin-left:5px}
-  .evidence-relation{display:inline-block;margin:0 6px 16px 0;padding:5px 7px;border:1px solid var(--line);font:600 .58rem var(--mono);text-transform:uppercase}
+  .evidence-relation-wrap{display:block;margin:0 0 14px}.evidence-relation{display:inline-block;margin:0 6px 0 0;padding:5px 7px;border:1px solid var(--line);font:600 .58rem var(--mono);text-transform:uppercase}
   .evidence-relation-supports{background:#d9ead5}.evidence-relation-contradicts{background:#f1b4aa}.evidence-relation-qualifies,.evidence-relation-insufficient{background:var(--yellow)}.evidence-relation-context{background:var(--paper)}
+  .evidence-relation-details{display:inline-block;vertical-align:middle;max-width:100%;font:.68rem/1.4 var(--mono)}.evidence-relation-details summary{display:inline-block;cursor:pointer;color:var(--red);font-weight:600}.evidence-relation-details p{max-width:620px;margin:8px 0 0;padding:9px 10px;background:var(--paper);border-left:2px solid var(--line);color:var(--muted)}.evidence-relation-details p strong{color:var(--ink)}
   .evidence-source-count{color:var(--muted);font:.68rem/1.4 var(--mono);margin:18px 0 0}
   @media(max-width:700px){.evidence-heading{grid-template-columns:1fr;gap:20px}.evidence-trail-grid{grid-template-columns:1fr}.claim-evidence{padding:65px 0 45px}}
 </style>
