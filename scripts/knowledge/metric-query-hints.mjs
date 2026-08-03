@@ -22,6 +22,7 @@ const metricHints = [
   { ids: ['minimum_wage_monthly'], terms: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'cuanto es el salario minimo', 'ha subido el salario minimo', 'sube el salario minimo', 'salario minimo en espana'] },
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
   { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
+  { ids: ['old_age_survivors_benefits_per_capita_europe'], terms: ['gasto en pensiones frente a europa', 'gasto en pensiones por habitante frente a europa', 'pensiones de espana frente a europa', 'pensiones por habitante frente a europa', 'espana gasta mas en pensiones que europa', 'espana gasta menos en pensiones que europa', 'espana gasta mas por habitante en pensiones que la union europea', 'espana gasta menos por habitante en pensiones que la union europea', 'pensiones por habitante que europa', 'pensiones frente a la union europea', 'pensiones y supervivencia frente a la union europea', 'comparacion europea del gasto en pensiones'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
   { ids: ['early_school_leaving_rate'], terms: ['abandono escolar temprano', 'abandono escolar', 'abandono educativo', 'dejan los estudios', 'dejan los estudios antes de tiempo', 'jovenes que abandonan los estudios', 'fracaso escolar temprano'] },
@@ -102,6 +103,13 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('median_equivalised_income');
   }
   if (preferred.has('old_age_survivors_benefits_per_capita')) {
+    preferred.delete('social_protection_benefits_per_capita');
+    preferred.delete('government_expenditure_ratio');
+    preferred.delete('health_expenditure_per_capita');
+    preferred.delete('median_equivalised_income');
+  }
+  if (preferred.has('old_age_survivors_benefits_per_capita_europe')) {
+    preferred.delete('old_age_survivors_benefits_per_capita');
     preferred.delete('social_protection_benefits_per_capita');
     preferred.delete('government_expenditure_ratio');
     preferred.delete('health_expenditure_per_capita');

@@ -177,6 +177,14 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     } catch (error) { failures.push(`${metricId} warehouse: ${error.message}`); }
   }
   try {
+    const result = await resolve('¿España gasta más por habitante en pensiones que la Unión Europea?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`old-age pension Europe warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'old_age_survivors_benefits_per_capita_europe') failures.push('old-age pension Europe warehouse: selected the wrong metric family');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length !== 2) failures.push('old-age pension Europe warehouse: missing the Spain/EU comparison observations');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('old-age pension Europe warehouse: did not render a comparison visual');
+    if (!/pension|vejez/i.test(`${result.result?.summary || ''} ${result.result?.reply || ''}`)) failures.push('old-age pension Europe warehouse: lost the pension-specific explanation');
+  } catch (error) { failures.push(`old-age pension Europe warehouse: ${error.message}`); }
+  try {
     const result = await resolve('Madrid tiene más densidad que Andalucía');
     const series = result.result?.warehouseSeries;
     const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'densidad-madrid-andalucia';

@@ -372,6 +372,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
             ? [
               '¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?',
               '¿Cuánto gasta España en prestaciones de protección social por habitante?',
+              '¿España gasta más por habitante en pensiones que la Unión Europea?',
               '¿Cómo ha evolucionado el envejecimiento de la población española?',
               '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?',
             ]

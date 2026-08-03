@@ -35,6 +35,12 @@
       "metricId": "old_age_survivors_benefits_per_capita"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&geo=EU27_2020&spdeps=SPR&spfunc=OLD_SRV&unit=EUR_HAB&sinceTimePeriod=2015",
+      "title": "Gasto en prestaciones de vejez y supervivencia: España y Unión Europea · Eurostat",
+      "aliases": ["gasto en pensiones frente a Europa", "pensiones de España frente a Europa", "España gasta más en pensiones que Europa", "España gasta menos en pensiones que Europa", "pensiones y supervivencia frente a la Unión Europea"],
+      "metricId": "old_age_survivors_benefits_per_capita_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=ES&coicop=CP00&sinceTimePeriod=2015",
       "title": "Inflación anual armonizada de España · Eurostat",
       "aliases": ["inflación anual", "tasa de inflación", "subida de precios", "ritmo de los precios", "precios aumentan"],

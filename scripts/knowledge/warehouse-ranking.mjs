@@ -168,6 +168,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la renta disponible mediana equivalente expresada en estándares de poder adquisitivo (PPS), con la misma población total y metodología de Eurostat; no equivale al salario medio, al PIB por habitante ni al ingreso de cada hogar.',
     caveat: 'Es una mediana ajustada por el tamaño y composición del hogar; no describe por sí sola la desigualdad, la vivienda que puede pagar cada familia ni todos los costes locales.',
   },
+  old_age_survivors_benefits_per_capita_europe: {
+    label: 'Gasto en prestaciones de vejez y supervivencia por habitante',
+    verb: 'registró un gasto en vejez y supervivencia por habitante',
+    replyLead: 'el gasto en vejez y supervivencia por habitante fue de',
+    differenceVerb: ['el gasto español fue más alto', 'el gasto español fue más bajo', 'España y la Unión Europea registraron el mismo gasto'],
+    unit: '€ por habitante',
+    replyUnit: '€ por habitante',
+    differenceUnit: '€ por habitante',
+    method: 'La comparación usa el gasto en prestaciones de protección social para vejez y supervivencia por habitante según Eurostat, con el último año común disponible; no equivale a la pensión media ni al gasto de una administración concreta.',
+    caveat: 'Es un promedio agregado comparable, no la pensión de cada persona ni una prueba por sí sola de la sostenibilidad del sistema.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
