@@ -161,13 +161,17 @@ const compilerSignalTokens = (value) => [...new Set(String(value || '')
   .replace(/[\u0300-\u036f]/g, '')
   .match(/[a-z0-9]{3,}/g) || [])].filter((token) => !compilerSignalWords.has(token));
 
+export const isBroadComplaint = (deterministic) => Boolean(
+  deterministic?.impliedPropositions?.some((item) => item?.type === 'definition' && /valoraci[oó]n amplia|concretar/i.test(item.text || '')),
+);
+
 // Model extraction is useful for a genuinely new, ordinary sentence, but it
 // should not add latency to empty/random input, explicit warehouse questions,
 // or broad complaints that already have a safe deterministic path. Keep this
 // policy in the shared contract so the local service and its tests agree on
 // when model work is justified.
 export const shouldUseLocalCompiler = ({ text, deterministic, hasPlausibleCandidate = false } = {}) => {
-  if (!String(text || '').trim() || deterministic?.clarificationRequired === true) return false;
+  if (!String(text || '').trim() || isBroadComplaint(deterministic)) return false;
   if (hasPlausibleCandidate || (deterministic?.propositions?.length || 0) > 1) return true;
   if (['mixed', 'causal', 'legal', 'normative', 'predictive'].includes(deterministic?.claimType)) return true;
   const signalCount = compilerSignalTokens(text).length;

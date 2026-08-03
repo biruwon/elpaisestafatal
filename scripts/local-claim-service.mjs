@@ -13,7 +13,7 @@ import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowled
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
-import { compilerSchema, normalizeCompilerOutput, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
+import { compilerSchema, isBroadComplaint, normalizeCompilerOutput, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -26,6 +26,7 @@ const bindHost = process.env.LOCAL_CLASSIFIER_BIND_HOST || '127.0.0.1';
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
+const compilerTimeoutMs = Math.min(15000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 12000)));
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
@@ -177,7 +178,10 @@ const ollama = async (path, body, timeout = 5000) => {
     if (!response.ok) throw new Error(`Inference request failed: ${response.status} ${String(await response.text()).slice(0, 240)}`);
     return response.json();
   } catch (error) {
-    inferenceDisabledUntil = Date.now() + inferenceBackoffMs;
+    // Embeddings are an optional ranking enhancement. Their timeout must not
+    // suppress the text compiler, which can still enrich a claim using
+    // lexical candidates and deterministic metadata.
+    if (path !== '/api/embed') inferenceDisabledUntil = Date.now() + inferenceBackoffMs;
     throw error;
   }
 };
@@ -212,11 +216,20 @@ const compileClaim = async (text, candidates = []) => {
     : 'ninguno';
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. En routing solo puedes usar como primarySlug un candidato marcado published que exprese la misma afirmación; si solo comparte tema o no hay coincidencia, usa uncovered y primarySlug vacío. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
   try {
-    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, 1800);
+    // This is background enrichment: the deterministic result is already
+    // available to the user. Allow one bounded cold-start model load, while
+    // keeping failures finite and configurable for slower local hardware.
+    const response = await ollama('/api/chat', { model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
     const value = parseModelJson(response.message?.content);
-    if (!value || !Array.isArray(value.propositions)) return fallbackCompiler(text);
+    if (!value || !Array.isArray(value.propositions)) {
+      if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] Model response did not satisfy the compiler schema: ${boundedExcerpt(response.message?.content, 600)}`);
+      return fallbackCompiler(text);
+    }
     return normalizeCompilerOutput(value, text);
-  } catch { return fallbackCompiler(text); }
+  } catch (error) {
+    if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
+    return fallbackCompiler(text);
+  }
 };
 
 // The local model can improve phrasing, but it must not weaken a deterministic
@@ -225,7 +238,7 @@ const compileClaim = async (text, candidates = []) => {
 // Keep the deterministic proposition set, retrieval hints, and uncovered route
 // for those inputs so unrelated evidence cannot leak into the answer.
 const reconcileCompilerSafety = (text, deterministic, candidate) => {
-  if (!candidate || !deterministic?.clarificationRequired) return candidate || deterministic;
+  if (!candidate || !isBroadComplaint(deterministic)) return candidate || deterministic;
   return {
     ...candidate,
     claimType: deterministic.claimType,
