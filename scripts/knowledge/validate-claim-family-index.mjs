@@ -74,6 +74,11 @@ if (!match) {
       variants: ['el paro juvenil sigue por encima del 20%', 'uno de cada cuatro jóvenes está en paro', 'los jóvenes tienen mucho paro'],
     },
     {
+      slug: 'paro-juvenil-baja',
+      prompt: 'El paro juvenil ha bajado casi a la mitad desde 2015',
+      variants: ['ha bajado el paro juvenil', 'el desempleo juvenil se ha reducido', 'hay menos paro entre los jóvenes'],
+    },
+    {
       slug: 'ingresos-publicos-superan-40',
       prompt: 'Los ingresos públicos de España superan el 40% del PIB',
       variants: ['España recauda más del 40% del PIB', 'los ingresos públicos superan el 40 por ciento', 'la recaudación pública supera el 40%'],

@@ -36,7 +36,8 @@ const relationshipLabels: Record<string, string> = {
       return <article class="evidence-trail-card">
         <div class="evidence-trail-top"><span>{String(index + 1).padStart(2, '0')}</span><strong>{kindLabels[item.kind] || 'Registro de evidencia'}</strong></div>
         <h3>{source?.title || 'Fuente pública vinculada'}</h3>
-        <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div></dl>
+        <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div>{source?.date && <div><dt>Fuente fechada</dt><dd>{source.date}</dd></div>}</dl>
+        <p class="evidence-label">Qué establece este registro</p>
         <p class="evidence-finding">{item.summary}</p>
         {item.limitation && <p class="evidence-limit"><strong>Límite:</strong> {item.limitation}</p>}
         {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span>)}
@@ -60,6 +61,7 @@ const relationshipLabels: Record<string, string> = {
   .evidence-trail-card dl{display:flex;flex-wrap:wrap;gap:12px 20px;margin:0 0 22px}
   .evidence-trail-card dt{font:600 .58rem var(--mono);text-transform:uppercase;color:var(--muted)}
   .evidence-trail-card dd{font:.72rem var(--mono);margin:4px 0 0}
+  .evidence-label{font:600 .6rem var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--red);margin:0 0 7px}
   .evidence-finding{font:1rem/1.35 var(--serif);margin:0 0 12px}
   .evidence-limit{color:var(--muted);font:.72rem/1.45 var(--mono);margin:0 0 16px}
   .evidence-limit strong{color:var(--ink);font-weight:600}

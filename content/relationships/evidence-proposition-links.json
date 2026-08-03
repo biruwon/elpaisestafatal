@@ -165,6 +165,7 @@
     {"evidenceId":"esperanza-vida-eurostat","propositionId":"prop-esperanza-vida-alta-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"electricidad-hogares-eurostat","propositionId":"prop-electricidad-hogares-alta-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"paro-juvenil-eurostat","propositionId":"prop-paro-juvenil-alto-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    ,{"evidenceId":"paro-juvenil-eurostat","propositionId":"prop-paro-juvenil-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"paro-epa-supera-10","propositionId":"prop-paro-epa-supera-10-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"deuda-publica-eurostat","propositionId":"prop-deuda-publica-supera-100-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
     ,{"evidenceId":"paro-espana-ue-eurostat","propositionId":"prop-paro-espana-supera-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}

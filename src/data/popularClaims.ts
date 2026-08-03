@@ -47,6 +47,7 @@ const popularSlugs = [
   'esperanza-vida-alta',
   'electricidad-hogares-sube',
   'paro-juvenil-alto',
+  'paro-juvenil-baja',
   'paro-epa-supera-10',
   'tasa-empleo-sube',
   'paro-espana-supera-ue',

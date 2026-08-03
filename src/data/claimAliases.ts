@@ -132,6 +132,13 @@ export const claimAliases: Record<string, string[]> = {
     'el desempleo juvenil en España es del 25%',
     'paro entre los jóvenes',
   ],
+  'paro-juvenil-baja': [
+    'ha bajado el paro juvenil',
+    'el desempleo juvenil se ha reducido',
+    'hay menos paro entre los jóvenes',
+    'el paro juvenil cayó desde 2015',
+    'España ha reducido el paro juvenil',
+  ],
   'paro-epa-supera-10': [
     'el paro de la EPA supera el 10%',
     'la EPA todavía marca más de un 10% de paro',

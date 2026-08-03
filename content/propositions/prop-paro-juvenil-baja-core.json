@@ -1,0 +1,13 @@
+{
+  "id": "prop-paro-juvenil-baja-core",
+  "claimSlug": "paro-juvenil-baja",
+  "text": "La tasa de paro de las personas de 15 a 24 años bajó del 48,3% en 2015 al 24,9% en 2025.",
+  "type": "trend",
+  "subject": "youth_unemployment_rate",
+  "predicate": "decreased",
+  "object": "48.3 percent to 24.9 percent",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["paro-juvenil-eurostat"]
+}
