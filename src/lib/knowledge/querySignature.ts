@@ -9,8 +9,8 @@ const normalize = (value: string): string => value.toLocaleLowerCase('es').norma
   .replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 
 const conceptAliases: Array<[string, string[]]> = [
-  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'patera', 'pateras', 'asilo']],
-  ['crime', ['delincuencia', 'delito', 'delitos', 'crimen', 'inseguridad', 'inseguro', 'peligrosa', 'peligro', 'violencia', 'robos']],
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
+  ['crime', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'presion fiscal']],
@@ -32,7 +32,7 @@ const containsAlias = (text: string, alias: string): boolean => {
 const claimType = (text: string): string => {
   if (/(deberia|deberian|justo|prioridad|merecen)/.test(text)) return 'normative';
   if (/(que significa|que se entiende por|significado de|(?:^|\s)que es(?:\s|$)|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
-  if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relaciona|aumenta la|reduce los|destruye)/.test(text)) return 'causal';
+  if (/(causa|causan|causal|provoca|por culpa|genera|crea inseguridad|crean inseguridad|relaciona|relacionad|hace que|hacen que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico|va a)/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|disminuye|record|historico)/.test(text)) return 'trend';
@@ -44,7 +44,7 @@ const semanticTokens = (text: string): string[] => [...new Set(
   text.split(' ').filter((token) => token.length > 3 && !stopWords.has(token) && !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)),
 )].slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'destruye', 'destruyen', 'representa', 'representan']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'mas', 'menos', 'que']);
 
 const relationShape = (value: string): string => {
   const concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
@@ -56,7 +56,11 @@ const relationShape = (value: string): string => {
 const directionalRelation = (text: string): string | null => {
   const comparison = text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
   if (comparison) return `comparison:${comparison[2]}:${relationShape(comparison[1])}:${relationShape(comparison[4])}`;
-  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|reduce|reducen|destruye|destruyen)\s+(.+)$/);
+  const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/);
+  if (comparativeCausal) return `causal:causes:${relationShape(comparativeCausal[1])}:${relationShape(comparativeCausal[2])}`;
+  const causedByClause = text.match(/^(.*?)\s+(?:hace|hacen)\s+que\s+(.+)$/);
+  if (causedByClause) return `causal:causes:${relationShape(causedByClause[1])}:${relationShape(causedByClause[2])}`;
+  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|incrementa|incrementan|reduce|reducen|destruye|destruyen|trae|traen|lleva|llevan|vuelve|vuelven|favorece|favorecen|contribuye|contribuyen|influye|influyen)\s+(.+)$/);
   if (causal) {
     const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;

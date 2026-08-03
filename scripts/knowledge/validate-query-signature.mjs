@@ -14,6 +14,15 @@ for (const [left, right] of equivalent) {
 }
 if (module.canonicalQuerySignature('España está destruida') === module.canonicalQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated inputs produced the same signature');
 if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') !== module.semanticQuerySignature('La inmigración aumenta la delincuencia en España')) throw new Error('Equivalent semantic families produced different signatures');
+const causalParaphrases = [
+  'Los migrantes hacen que aumenten los delitos en España',
+  'La llegada de extranjeros vuelve inseguro a España',
+  'Con más inmigración hay más delitos en España',
+];
+for (const paraphrase of causalParaphrases) {
+  if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') !== module.semanticQuerySignature(paraphrase)) throw new Error(`Natural causal paraphrase produced a different signature: ${paraphrase}`);
+}
+if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') === module.semanticQuerySignature('La inmigración y la delincuencia están relacionadas')) throw new Error('Association wording was incorrectly collapsed into a causal family');
 if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') === module.semanticQuerySignature('La inmigración no aumenta la delincuencia en España')) throw new Error('Opposing semantic families produced the same signature');
 if (module.semanticQuerySignature('España cobra más impuestos que Europa') === module.semanticQuerySignature('Europa cobra más impuestos que España')) throw new Error('Reversed comparison families produced the same signature');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');

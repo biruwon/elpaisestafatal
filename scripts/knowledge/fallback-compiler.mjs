@@ -26,12 +26,12 @@ const hasNegation = (value) => /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.te
 
 const entityAliases = [
   ['gobierno de España', ['gobierno', 'moncloa', 'sanchez', 'presidencia']],
-  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'patera', 'pateras', 'asilo']],
+  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
   ['vivienda', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas']],
   ['empleo', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados']],
   ['impuestos', ['impuestos', 'tributos', 'fiscalidad', 'hacienda']],
   ['sanidad', ['sanidad', 'hospital', 'medico', 'salud', 'espera']],
-  ['seguridad y delincuencia', ['delincuencia', 'delito', 'delitos', 'crimen', 'inseguridad', 'robos']],
+  ['seguridad y delincuencia', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['educación', ['educacion', 'colegio', 'escuela', 'becas', 'universidad']],
   ['Europa', ['europa', 'europeo', 'europea', 'ue']],
 ];
@@ -40,8 +40,8 @@ const entityAliases = [
 // give equivalent long-tail wording one stable family key without pretending
 // that every semantically related sentence is the same published claim.
 const semanticConceptAliases = [
-  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'patera', 'pateras', 'asilo']],
-  ['crime', ['delincuencia', 'delito', 'delitos', 'crimen', 'inseguridad', 'inseguro', 'peligrosa', 'peligro', 'violencia', 'robos']],
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
+  ['crime', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'recaudación', 'presion fiscal']],
@@ -59,7 +59,7 @@ const semanticConcepts = (value) => semanticConceptAliases
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
 
-const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'destruye', 'destruyen', 'representa', 'representan']);
+const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'es', 'son', 'esta', 'estan', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'mas', 'menos', 'que']);
 
 const relationShapeText = (value) => {
   const concepts = semanticConcepts(value);
@@ -81,7 +81,23 @@ export const propositionShapeFor = (value) => {
       object: relationShapeText(comparison[4]),
     };
   }
-  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|reduce|reducen|destruye|destruyen)\s+(.+)$/);
+  const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/);
+  if (comparativeCausal) {
+    return {
+      subject: relationShapeText(comparativeCausal[1]),
+      predicate: 'causes',
+      object: relationShapeText(comparativeCausal[2]),
+    };
+  }
+  const causedByClause = text.match(/^(.*?)\s+(?:hace|hacen)\s+que\s+(.+)$/);
+  if (causedByClause) {
+    return {
+      subject: relationShapeText(causedByClause[1]),
+      predicate: 'causes',
+      object: relationShapeText(causedByClause[2]),
+    };
+  }
+  const causal = text.match(/^(.*?)\s+(causa|causan|provoca|provocan|genera|generan|crea|crean|aumenta|aumentan|incrementa|incrementan|reduce|reducen|destruye|destruyen|trae|traen|lleva|llevan|vuelve|vuelven|favorece|favorecen|contribuye|contribuyen|influye|influyen)\s+(.+)$/);
   if (causal) {
     const predicate = /^(reduce|reducen|destruye|destruyen)$/.test(causal[2]) ? 'reduces' : 'causes';
     return {
@@ -139,7 +155,7 @@ const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'aumenta la', 'reduce los', 'destruye'])) return 'causal';
+  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'por culpa', 'genera', 'crea inseguridad', 'crean inseguridad', 'relaciona', 'relacionad', 'hace que', 'hacen que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico', 'va a'])) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'disminuye', 'record', 'historico', 'se esta volviendo'])) return 'trend';
