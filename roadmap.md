@@ -38,8 +38,9 @@ Remaining model capacity is reserved for two controlled uses:
 
 Generated claims must not be published merely because a model can write them. New public claims require source records, evidence relations, limitations, and the existing validation gates. When evidence is missing, the system should improve the “not yet established” experience and add the gap to the review queue.
 
-## Latest completed milestone — 2026-08-03
+## Latest completed milestone — 2026-08-04
 
+- Added explicit workflow concurrency policies: stale push validation runs are cancelled, while refresh, backup, monitoring, and release-evaluation jobs are serialized without cancelling an in-progress operational job.
 - Closed the CI UX-verification gap: global navigation and result-hierarchy audits now run explicitly on every push and pull request, alongside the existing homepage, data, claim, catalogue, topic, journey, and roadmap contracts.
 - Hardened the deferred tunnel profile to fail closed when its token is absent: enabling the profile can no longer start a public-origin sidecar with an empty credential. The authenticated account currently has no named tunnel, so persistent production tunnelling remains explicitly deferred and the deterministic fallback remains authoritative.
 - Hardened operations backup scheduling: the existing verified artifact workflow now runs weekly when Cloudflare credentials are configured, skips safely when scheduled without credentials, and fails clearly for manual runs missing required configuration. No secret or deployment value is committed.

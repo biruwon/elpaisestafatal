@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '17 2 * * 0'
 
+concurrency:
+  group: operations-backup-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 

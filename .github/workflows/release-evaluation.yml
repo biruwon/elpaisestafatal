@@ -5,6 +5,10 @@ on:
     - cron: '47 3 * * 1'
   workflow_dispatch:
 
+concurrency:
+  group: release-evaluation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
