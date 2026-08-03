@@ -175,6 +175,14 @@
     "notEquivalentTo": ["employment_rate", "unemployment_rate", "unemployment_rate_europe"],
     "dimensions": ["period", "geography", "age", "sex"]
   },
+  "minimum_wage_monthly": {
+    "name": "Statutory minimum wage per month",
+    "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "mínimo salarial"],
+    "unit": "EUR per month",
+    "population": "statutory gross monthly minimum wage reported for Spain",
+    "notEquivalentTo": ["median_equivalised_income", "employment_rate", "unemployment_rate"],
+    "dimensions": ["period", "geography", "currency", "frequency"]
+  },
   "resident_population": {
     "name": "Resident population",
     "aliases": ["población", "habitantes", "demografía", "residentes"],

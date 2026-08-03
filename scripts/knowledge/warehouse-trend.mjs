@@ -4,6 +4,7 @@ const metricPrecision = {
   household_electricity_price: 4,
   fertility_rate: 2,
   life_expectancy_at_birth: 1,
+  minimum_wage_monthly: 0,
 };
 const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-ES', {
   maximumFractionDigits: metricPrecision[metricId] || 2,
@@ -19,6 +20,7 @@ const metricLabels = {
   gdp_per_capita_europe: 'PIB por habitante: España y la Unión Europea',
   employment_rate: 'Tasa de empleo en España',
   employment_rate_europe: 'Tasa de empleo: España y la Unión Europea',
+  minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
@@ -76,6 +78,7 @@ const displayUnit = (item) => {
   const unit = normalise(item.unit);
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
+  if (metricId === 'minimum_wage_monthly') return '€ al mes';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
@@ -103,6 +106,15 @@ const deltaUnit = (unit) => {
   if (unit === 'índice (2015=100)') return 'puntos del índice';
   if (unit.startsWith('%')) return 'puntos porcentuales';
   return unit;
+};
+
+export const displayPeriod = (period, metricId = '') => {
+  const value = String(period || '');
+  if (metricId === 'minimum_wage_monthly') {
+    const match = /^(\d{4})-S([12])$/.exec(value);
+    if (match) return `${match[2] === '1' ? 'primer' : 'segundo'} semestre de ${match[1]}`;
+  }
+  return value;
 };
 
 const comparableDimensions = (item) => Object.entries(item.dimensions || {})
@@ -141,11 +153,13 @@ export const summarizeWarehouseTrend = (text, observations) => {
   const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
   const changeUnit = deltaUnit(unit);
   const change = `${formatNumber(Math.abs(delta), latest.metricId)}${changeUnit ? ` ${changeUnit}` : ''}`;
+  const firstPeriod = displayPeriod(first.period, first.metricId);
+  const latestPeriod = displayPeriod(latest.period, latest.metricId);
   const directionWords = normalise(text);
   const expectedLower = directionWords.includes('menos') || directionWords.includes('baja') || directionWords.includes('disminuye') || directionWords.includes('cae');
   const expectedHigher = directionWords.includes('mas') || directionWords.includes('sube') || directionWords.includes('aumenta') || directionWords.includes('crece');
   const points = [
-    `${metric} ${direction}, de ${formatNumber(first.value, first.metricId)}${suffix} (${first.period}) a ${formatNumber(latest.value, latest.metricId)}${suffix} (${latest.period}).`,
+    `${metric} ${direction}, de ${formatNumber(first.value, first.metricId)}${suffix} (${firstPeriod}) a ${formatNumber(latest.value, latest.metricId)}${suffix} (${latestPeriod}).`,
     `El cambio entre esos dos puntos es de ${change}${delta < 0 ? ' menos' : delta > 0 ? ' más' : ''}.`,
   ];
   if ((expectedLower || expectedHigher) && Math.abs(delta) >= 0.000001) {
@@ -154,8 +168,8 @@ export const summarizeWarehouseTrend = (text, observations) => {
   }
   return {
     observations: numeric,
-    headline: `${metric}: comparación entre ${first.period} y ${latest.period}`,
-    summary: `${metric} ${direction} entre el primer y el último periodo localizado (${first.period}–${latest.period}).`,
+    headline: `${metric}: comparación entre ${firstPeriod} y ${latestPeriod}`,
+    summary: `${metric} ${direction} entre el primer y el último periodo localizado (${firstPeriod}–${latestPeriod}).`,
     points,
     reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} a ${formatNumber(latest.value, latest.metricId)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.`,
     replyEvidenceIds: numeric.map((item) => item.id),

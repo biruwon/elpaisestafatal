@@ -9,7 +9,7 @@ import { discoverOfficialDocuments, discoveryObservation } from './knowledge/off
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-contract.mjs';
-import { displayMetric, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
+import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
@@ -68,6 +68,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_per_capita_current_prices') return '€ por habitante';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
+  if (metricId === 'minimum_wage_monthly') return '€ al mes';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate_europe') return '% interanual';
@@ -1249,7 +1250,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const evidenceObservations = isGroupComparison ? groupObservations : isQuantityLike ? (quantity?.observations || (!quantityClaim ? observations : [])) : isLegal ? legalObservations : (isDefinition ? [] : observations);
   const seriesForVisual = ranking ? numericObservations.slice(0, 6) : numericObservations.slice(-6);
   const warehouseSeries = numericObservations.length >= 2 ? {
-    labels: seriesForVisual.map((item) => ranking ? displayWarehouseGroup(item) : String(item.period || item.id)),
+    labels: seriesForVisual.map((item) => ranking ? displayWarehouseGroup(item) : displayPeriod(item.period || item.id, item.metricId)),
     values: seriesForVisual.map((item) => Number(item.value)),
     label: displayMetric(numericObservations[0]),
     unit: displayUnit(numericObservations[0].unit, numericObservations[0].metricId),

@@ -357,6 +357,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
           '¿Qué porcentaje de la población activa encuentra trabajo?',
           '¿Está creciendo el empleo en España?',
           '¿Han subido los salarios en España?',
+          '¿Cómo ha cambiado el salario mínimo en España?',
         ]
         : query.includes('inmigr') || query.includes('extranj') || query.includes('patera') || query.includes('refug')
           ? [

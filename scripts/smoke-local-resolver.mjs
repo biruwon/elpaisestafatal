@@ -164,6 +164,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['Cuántas personas inmigraron a España durante el último año', 'immigration_flows', 'personas'],
     ['Cuál es el tamaño de la economía española', 'gdp_current_prices', 'millones de euros'],
     ['Cómo ha cambiado el PIB por habitante en España', 'gdp_per_capita_current_prices', '€ por habitante'],
+    ['¿Cómo ha cambiado el salario mínimo en España?', 'minimum_wage_monthly', '€ al mes'],
   ]) {
     try {
       const result = await resolve(text);
