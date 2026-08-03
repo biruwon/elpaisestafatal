@@ -312,9 +312,16 @@ const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][
   return `<div class="claim-plan-chart ${block.type === 'line_chart' ? 'claim-plan-chart-line' : 'claim-plan-chart-bars'}"><span class="clarification-label">${escapeHtml(series.label)}</span><svg class="claim-plan-chart-svg" role="img" aria-labelledby="${chartId}-title ${chartId}-description" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><title id="${chartId}-title">${escapeHtml(title)}</title><desc id="${chartId}-description">${escapeHtml(`Valores de ${series.label} expresados en ${series.unit}.`)}</desc>${tickMarkup}${plotMarkup}${xLabels}</svg>${chartDataMarkup(entries, series.unit)}<small>${escapeHtml(series.unit)}</small></div>`;
 };
 
-const blockEvidenceMarkup = (_plan: AnswerPlan, evidenceIds?: string[]): string => {
+const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
   if (!evidenceIds?.length) return '';
-  return `<div class="claim-plan-block-evidence"><span>Conecta con ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''} de evidencia</span></div>`;
+  const sourceLinks = plan.sourceLinks?.slice(0, 2) || [];
+  const sourceLabel = sourceLinks.length
+    ? `Fuente: ${sourceLinks[0].title}${sourceLinks.length > 1 ? ` +${sourceLinks.length - 1}` : ''}`
+    : `Conecta con ${evidenceIds.length} registro${evidenceIds.length > 1 ? 's' : ''} de evidencia`;
+  const sourceAction = sourceLinks.length
+    ? '<button type="button" data-focus-result="sources">Ver fuente</button>'
+    : '';
+  return `<div class="claim-plan-block-evidence"><span>${escapeHtml(sourceLabel)}</span>${sourceAction}</div>`;
 };
 
 const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][number]): string => {

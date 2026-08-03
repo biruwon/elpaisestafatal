@@ -9,6 +9,8 @@ const required = [
   'data-result-target="actions"',
   'resultActionsMarkup(requestId ? shareUrl : undefined)',
   'resultActionsMarkup(primary?.answer ? shareUrlFor',
+  'Fuente: ${sourceLinks[0].title}',
+  'data-focus-result="sources"',
 ];
 
 for (const snippet of required) {
