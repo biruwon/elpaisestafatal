@@ -221,6 +221,7 @@
     {"evidenceId":"paro-juvenil-espana-ue-eurostat","propositionId":"prop-paro-juvenil-espana-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"ingresos-publicos-espana-ue-eurostat","propositionId":"prop-espana-ingresos-publicos-menores-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"gasto-publico-espana-ue-eurostat","propositionId":"prop-espana-gasto-publico-menor-ue-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"salario-hora-mediano-espana-europa-eurostat","propositionId":"prop-salario-hora-mediano-espana-menor-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+  {"evidenceId":"salario-hora-mediano-espana-europa-eurostat","propositionId":"prop-salario-hora-mediano-espana-menor-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+  {"evidenceId":"sobrecarga-vivienda-espana-europa-eurostat","propositionId":"prop-sobrecarga-vivienda-espana-no-mayor-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
 ]
 }

@@ -406,6 +406,19 @@ definitions['espana-cobra-igual-por-hora-que-europa'] = {
   visuals: { key: { value: '11,02 €', label: 'España · ganancia bruta mediana por hora', period: '2022' }, trend: { available: false, labels: [], values: [], label: 'Ganancias por hora', unit: 'Última observación comparable: 2022' }, comparison: { labels: ['España', 'Unión Europea'], values: [11.02, 14.91], label: 'Ganancia bruta mediana por hora', unit: '€ por hora · empresas de 10 o más personas · 2022' }, caveat: 'La comparación es una mediana bruta de 2022. No equivale al salario neto, al salario mínimo ni a la renta disponible.' },
 };
 
+definitions['espana-sobrecarga-vivienda-europa'] = {
+  prompt: 'En España la vivienda pesa más que en Europa',
+  aliases: ['España soporta más esfuerzo de vivienda que Europa', 'la vivienda pesa más en España que en Europa', 'España tiene más sobrecarga de vivienda que la UE', 'en España se gasta más renta en vivienda que en Europa'],
+  propositions: ['En 2025, el 7,2% de la población en España estaba en hogares con sobrecarga de vivienda, frente al 7,7% en la Unión Europea.', 'España tiene siempre una sobrecarga de vivienda mayor que Europa.', 'La sobrecarga mide todos los problemas de acceso, precio y calidad de la vivienda.'],
+  concern: 'La comparación depende de la medida y del año: el último dato de este indicador sitúa a España ligeramente por debajo de la UE, mientras que en 2022 estaba ligeramente por encima.',
+  supports: 'Eurostat registra un 7,2% en España y un 7,7% en la Unión Europea en 2025; en 2022 registraba 9,2% y 8,7%, respectivamente.',
+  limit: 'Sobrecarga significa costes totales de vivienda superiores al 40% de la renta disponible equivalente. No mide por sí sola precios, oferta, calidad, hacinamiento, desahucios ni la experiencia de cada ciudad u hogar.',
+  question: '¿Quieres comparar sobrecarga, alquileres, precios de compra, oferta o la situación de una ciudad concreta?',
+  reply: 'Depende del año y de la medida. En 2025 la sobrecarga comparable fue del 7,2% en España frente al 7,7% en la UE; en 2022 España estaba ligeramente por encima. Eso no resume por sí solo la crisis de vivienda ni la situación de cada hogar.',
+  visualLabel: 'Una medida de sobrecarga cambia según el periodo y no resume toda la vivienda',
+  visuals: { key: { value: '7,2 %', label: 'España · población en hogares con sobrecarga', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Sobrecarga del coste de la vivienda', unit: 'Comparación puntual; el resultado relativo cambia según el año' }, comparison: { labels: ['España', 'Unión Europea'], values: [7.2, 7.7], label: 'Población en hogares con sobrecarga de vivienda', unit: '% de la población · 2025' }, caveat: 'El umbral es el 40% de la renta disponible equivalente. No mide directamente precios, oferta, calidad, hacinamiento o diferencias entre ciudades.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

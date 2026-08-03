@@ -239,6 +239,12 @@
       "metricId": "housing_cost_overburden_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_lvho07a?geo=ES&geo=EU27_2020&unit=PC&rskpovth=TOTAL&age=TOTAL&sex=T&sinceTimePeriod=2015",
+      "title": "Sobrecarga del coste de la vivienda: España y Unión Europea · Eurostat",
+      "aliases": ["sobrecarga de vivienda frente a Europa", "esfuerzo de vivienda frente a Europa", "España tiene más sobrecarga de vivienda que Europa", "España tiene menos sobrecarga de vivienda que Europa", "comparación europea del esfuerzo de vivienda"],
+      "metricId": "housing_cost_overburden_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_sha11_hf?geo=ES&unit=EUR_HAB&icha11_hf=TOT_HF&sinceTimePeriod=2015",
       "title": "Gasto sanitario por habitante en España · Eurostat",
       "aliases": ["gasto sanitario por habitante", "gasto en sanidad", "gasto en salud", "recursos sanitarios", "gasto sanitario por persona", "dinero por persona en sanidad", "cuánto dinero se dedica a sanidad", "cuánto se gasta en salud"],

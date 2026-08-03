@@ -47,6 +47,8 @@ const longTailBenchmarkCases = [
   ['sueldo-hora', 'Lo que se cobra por hora en España', 'median_hourly_earnings'],
   ['salario-hora-ue', '¿España cobra menos por hora que Europa?', 'median_hourly_earnings_europe'],
   ['salario-hora-comparacion', 'Comparación europea del salario bruto por hora', 'median_hourly_earnings_europe'],
+  ['sobrecarga-vivienda-europa', '¿España tiene más sobrecarga de vivienda que Europa?', 'housing_cost_overburden_rate_europe'],
+  ['esfuerzo-vivienda-europa', 'Comparación europea del esfuerzo de vivienda', 'housing_cost_overburden_rate_europe'],
   ['smi-mensual', '¿Cuál es el salario mínimo legal mensual?', 'minimum_wage_monthly'],
   ['smi-evolucion', 'El salario mínimo interprofesional ha subido', 'minimum_wage_monthly'],
   ['smi-sueldo-legal', '¿Qué sueldo mínimo establece la ley en España?', 'minimum_wage_monthly'],

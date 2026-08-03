@@ -351,6 +351,14 @@
     "notEquivalentTo": ["house_price_index", "cpi_index"],
     "dimensions": ["period", "geography", "age", "sex", "poverty_status"]
   },
+  "housing_cost_overburden_rate_europe": {
+    "name": "Housing cost overburden rate: Spain and the European Union",
+    "aliases": ["sobrecarga de vivienda frente a Europa", "esfuerzo de vivienda frente a Europa", "España tiene más sobrecarga de vivienda que Europa", "España tiene menos sobrecarga de vivienda que Europa", "comparación europea del esfuerzo de vivienda"],
+    "unit": "percent of population",
+    "population": "usual residents with housing costs above the overburden threshold in Spain and the European Union",
+    "notEquivalentTo": ["housing_cost_overburden_rate", "house_price_index", "cpi_index"],
+    "dimensions": ["period", "geography", "age", "sex", "poverty_status"]
+  },
   "health_expenditure_per_capita": {
     "name": "Current health expenditure per inhabitant",
     "aliases": ["gasto sanitario por habitante", "gasto en sanidad", "gasto en salud", "recursos sanitarios", "salud pública", "gasto sanitario por persona", "dinero por persona en sanidad", "cuánto dinero se dedica a sanidad", "cuánto se gasta en salud"],

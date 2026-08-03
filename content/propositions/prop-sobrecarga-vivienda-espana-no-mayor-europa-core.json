@@ -1,0 +1,8 @@
+{
+  "id": "prop-sobrecarga-vivienda-espana-no-mayor-europa-core",
+  "claimSlug": "espana-sobrecarga-vivienda-europa",
+  "type": "comparative",
+  "text": "In 2025, Spain's housing-cost overburden rate was not higher than the EU27 rate in the comparable total-population measure.",
+  "status": "supported",
+  "evidenceIds": ["sobrecarga-vivienda-espana-europa-eurostat"]
+}

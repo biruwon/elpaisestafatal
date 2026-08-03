@@ -11,6 +11,7 @@ export const metricSearchAliases = Object.freeze({
   temporary_employment_rate_europe: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'temporalidad', 'europa', 'union europea', 'comparacion europea'],
   median_hourly_earnings: ['salario mediano por hora', 'salario bruto por hora', 'ganancia mediana por hora', 'sueldo por hora', 'lo que se cobra por hora', 'salario', 'sueldo'],
   median_hourly_earnings_europe: ['salario por hora', 'sueldo por hora', 'salario mediano', 'europa', 'union europea', 'comparacion europea'],
+  housing_cost_overburden_rate_europe: ['sobrecarga vivienda', 'esfuerzo vivienda', 'coste vivienda', 'europa', 'union europea', 'comparacion europea'],
   minimum_wage_monthly: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'euros al mes'],
   social_protection_benefits_per_capita: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'euros por habitante'],
   old_age_survivors_benefits_per_capita: ['pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'euros por habitante'],

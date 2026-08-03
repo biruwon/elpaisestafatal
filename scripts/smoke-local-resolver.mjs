@@ -176,6 +176,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     ['¿España tiene más temporalidad que Europa?', 'temporary_employment_rate_europe', '%'],
     ['¿Cuál es el salario mediano por hora en España?', 'median_hourly_earnings', '€ por hora'],
     ['¿España cobra menos por hora que Europa?', 'median_hourly_earnings_europe', '€ por hora'],
+    ['¿España tiene más sobrecarga de vivienda que Europa?', 'housing_cost_overburden_rate_europe', '% de la población'],
     ['Cuántos habitantes viven normalmente en España', 'resident_population', 'personas'],
     ['Cuántos residentes nacieron fuera de España', 'foreign_born_population', 'personas'],
     ['Cuántos residentes tienen ciudadanía extranjera en España', 'foreign_citizenship_population', 'personas'],

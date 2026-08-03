@@ -43,6 +43,7 @@ const metricLabels = {
   government_expenditure_ratio: 'Gasto público sobre el PIB en España',
   house_price_index: 'Precios de la vivienda en España',
   housing_cost_overburden_rate: 'Sobrecarga del coste de la vivienda en España',
+  housing_cost_overburden_rate_europe: 'Sobrecarga del coste de la vivienda: España y la Unión Europea',
   health_expenditure_per_capita: 'Gasto sanitario por habitante en España',
   life_expectancy_at_birth: 'Esperanza de vida al nacer en España',
   fertility_rate: 'Fecundidad en España',
@@ -103,7 +104,7 @@ const displayUnit = (item) => {
   if (metricId === 'median_hourly_earnings' || metricId === 'median_hourly_earnings_europe') return '€ por hora';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
-  if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
+  if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'life_expectancy_at_birth') return 'años';
