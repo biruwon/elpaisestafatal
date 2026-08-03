@@ -70,6 +70,7 @@ Generated claims must not be published merely because a model can write them. Ne
 - Improved the broad-complaint result UX: the first orientation is followed immediately by up to six concrete “what do you mean?” choices, before the detailed evidence method. This keeps “España está destruida” useful without assigning it an unrelated verdict or forcing the user through a wall of text.
 - Added reusable reduced-motion-safe motion to static and dynamic SVG charts: trend lines draw, points appear, and comparison bars rise while exact-value tables and the accessible evidence contract remain unchanged.
 - Added a scheduled GitHub Actions production monitor that runs the live static/API smoke suite every 30 minutes and allows only the documented operational-database-unavailable fallback. It checks the generic health boundary, text classification, screenshot/audio multipart handling, popular-claims fallback, and representative public routes without exposing or requiring the deferred local-origin tunnel.
+- Added response-time budgets to the production smoke contract: static routes and dynamic API checks now fail the monitor when they exceed configurable limits, and successful runs report the slowest checks for lightweight operational visibility.
 - Validation completed: `npm run check`, `npm run build` (350 static pages), the 50-case local resolver smoke suite, roadmap audit, all public UX audits, media/input validation, and the 324-case warehouse benchmark. The local-only inference path remains unchanged; persistent production tunnelling is still explicitly todo.
 
 ## Architectural principles
@@ -634,6 +635,7 @@ dynamic answer
 - CI now runs the homepage, data-catalogue, published-claim, catalogue, topic, and public-journey UX contracts on every push and pull request, alongside ranking, semantic-clustering, resolver-lifecycle, and roadmap audits.
 - Client-side enrichment polling now has bounded per-request and total deadlines, and the lifecycle contract verifies that a slow optional analysis cannot leave the first deterministic result pending indefinitely.
 - A scheduled production monitor now re-runs the public smoke contract outside deploys, so static availability, generic health, handled text/media requests, and deterministic operational fallback are checked continuously rather than only during pushes.
+- The production smoke contract now measures each route/API request and enforces configurable latency budgets (`SMOKE_MAX_ROUTE_MS` and `SMOKE_MAX_API_MS`), making regressions visible without exposing provider or origin details publicly.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements

@@ -1,5 +1,7 @@
 const base = (process.env.SMOKE_BASE_URL || 'https://elpaisestafatal.es').replace(/\/$/, '');
 const allowOperationalUnavailable = process.env.SMOKE_ALLOW_OPERATIONAL_UNAVAILABLE === '1';
+const maxRouteMs = Math.max(250, Number(process.env.SMOKE_MAX_ROUTE_MS || 8000));
+const maxApiMs = Math.max(500, Number(process.env.SMOKE_MAX_API_MS || 12000));
 const checks = [
   { path: '/', status: 200, title: 'El país está fatal' },
   { path: '/aclarar/inmigracion-delincuencia/', status: 200, title: 'Aclaración' },
@@ -12,10 +14,15 @@ const checks = [
 ];
 
 const failures = [];
+const timings = [];
 const forbidden = /ollama|localhost|127\.0\.0\.1|host\.docker\.internal|local_classifier|whisper_command|cloudflare_api_token|cors/i;
 for (const check of checks) {
   try {
+    const startedAt = performance.now();
     const response = await fetch(`${base}${check.path}`, { redirect: 'manual', signal: AbortSignal.timeout(15000) });
+    const elapsedMs = Math.round(performance.now() - startedAt);
+    timings.push({ path: check.path, elapsedMs });
+    if (elapsedMs > maxRouteMs) failures.push(`${check.path}: exceeded ${maxRouteMs}ms route budget (${elapsedMs}ms)`);
     const body = await response.text();
     if (response.status !== check.status) failures.push(`${check.path}: expected ${check.status}, received ${response.status}`);
     const title = body.match(/<title>([^<]*)<\/title>/)?.[1] || '';
@@ -77,7 +84,11 @@ const apiChecks = [
 
 for (const check of apiChecks) {
   try {
+    const startedAt = performance.now();
     const response = await fetch(`${base}${check.path}`, { ...check.init, signal: AbortSignal.timeout(15000) });
+    const elapsedMs = Math.round(performance.now() - startedAt);
+    timings.push({ path: check.path, elapsedMs });
+    if (elapsedMs > maxApiMs) failures.push(`${check.path}: exceeded ${maxApiMs}ms API budget (${elapsedMs}ms)`);
     const body = await response.json().catch(() => ({}));
     check.validate(response, body);
   } catch (error) {
@@ -89,4 +100,5 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log(`Production smoke passed: ${checks.length} routes and ${apiChecks.length} API checks at ${base}`);
+const slowest = [...timings].sort((left, right) => right.elapsedMs - left.elapsedMs).slice(0, 3).map((item) => `${item.path} ${item.elapsedMs}ms`).join(', ');
+console.log(`Production smoke passed: ${checks.length} routes and ${apiChecks.length} API checks at ${base}; slowest: ${slowest}`);
