@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Terminal classifier outcomes now update the original learning record for typed claims instead of creating a second cluster entry. File-only media keeps its resolver request identity, while typed text reuses the initial wording digest; the review queue therefore sees the final status without inflating demand.
+
 - Removed the remaining audio-runtime compatibility branch: local speech now accepts only the canonical `LOCAL_SPEECH_*` contract, and the retired `WHISPER_*` variables are absent from the service and Compose profile. The media validator protects this invariant.
 
 - Removed the last stale homepage CSS from the retired clarification implementation, kept the canonical claim routes as the only runtime path, and updated the visual roadmap terminology to refer only to canonical claim pages and dynamic results. The release build now also validates the shared screenshot/audio contract, so media regressions fail before deployment.

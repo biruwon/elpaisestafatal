@@ -10,9 +10,12 @@ const requireText = (source, text, label) => {
 
 requireText(input, 'const recordQuestion =', 'immediate learning capture helper');
 requireText(input, "recordQuestion(query, { inputType: 'text', status: 'received' })", 'early capture before background analysis');
+requireText(input, 'const capturedText = query || data.input?.canonical ||', 'terminal capture identity');
+requireText(input, 'status: data.status', 'terminal status update');
+requireText(input, 'requestId: query ? undefined : data.requestId', 'idempotent typed/media request identity');
 requireText(input, 'data-learning-note', 'uncovered-result learning feedback');
-requireText(input, "if (file && data.input?.canonical)", 'media-derived learning capture');
-requireText(input, 'recordQuestion(data.input.canonical', 'media-derived canonical claim capture');
+requireText(input, 'if (file) rememberRecentCheck(data.input?.canonical || capturedText)', 'media-derived learning capture');
+requireText(input, 'canonical: data.input?.canonical || capturedText', 'media-derived canonical claim capture');
 requireText(questions, 'const isNewRequest =', 'idempotent request detection');
 requireText(questions, 'if (isNewRequest)', 'count-once cluster update gate');
 requireText(questions, 'ON CONFLICT(semantic_signature)', 'semantic cluster persistence');

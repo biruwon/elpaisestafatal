@@ -1234,13 +1234,18 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (!file && cacheKey) {
       responseCache.set(cacheKey, data);
     }
-    if (file && data.input?.canonical) {
-      rememberRecentCheck(data.input.canonical);
-      recordQuestion(data.input.canonical, {
+    const capturedText = query || data.input?.canonical || '';
+    if (capturedText) {
+      if (file) rememberRecentCheck(data.input?.canonical || capturedText);
+      recordQuestion(capturedText, {
         inputType,
         status: data.status,
-        requestId: data.requestId,
-        canonical: data.input.canonical,
+        // Typed submissions were captured before classification using the
+        // digest of their original wording. Reuse that identity when writing
+        // the terminal status so the learning cluster is updated, not counted
+        // a second time. File-only requests have no earlier identity.
+        requestId: query ? undefined : data.requestId,
+        canonical: data.input?.canonical || capturedText,
         semanticSignature: data.canonicalSignature,
       });
     }
