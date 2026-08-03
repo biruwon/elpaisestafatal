@@ -1,11 +1,20 @@
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
+  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destruy|ruina|fatal|desastre/.test(value)) return '¿Hablas de una decisión del Gobierno, economía, vivienda, empleo, inmigración o instituciones?';
   if (/viviend|alquiler|piso|casa/.test(value)) return '¿Hablas de precios, alquileres, vivienda pública o disponibilidad?';
   if (/inmigr|extranj|patera|ayuda|prestaci/.test(value)) return '¿Hablas de población, ayudas, empleo, llegadas o seguridad?';
   if (/empleo|trabaj|paro|salario|sueldo/.test(value)) return '¿Qué medida quieres comprobar: empleo, paro, salario, jornada o estabilidad?';
   if (/impuest|hacienda|recaud|deuda|gasto público/.test(value)) return '¿Qué impuesto, gasto, periodo o comparación quieres comprobar?';
   if (/sanidad|hospital|médic|medic|espera/.test(value)) return '¿Hablas de acceso, listas de espera, gasto, personal o resultados?';
   return '¿Qué hecho concreto, periodo o lugar quieres comprobar?';
+};
+
+const topicReference = (text) => {
+  const value = String(text || '').toLocaleLowerCase('es');
+  if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destruy|ruina|fatal|desastre/.test(value)) {
+    return { kind: 'topic', slug: 'politica', title: 'Contexto político en España', href: '/preocupaciones/politica', confidence: 0.36 };
+  }
+  return undefined;
 };
 
 const fallbackGuidance = (text, inputType) => {
@@ -26,9 +35,10 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   const original = String(text || '').trim().slice(0, 1200);
   const guidance = fallbackGuidance(original, inputType);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
+  const related = topicReference(original);
   return {
     status: 'uncovered',
-    relatedClaims: [],
+    relatedClaims: related ? [related] : [],
     guidance,
     result: {
       schemaVersion: '1',
@@ -44,7 +54,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       limitation: guidance.limitation,
       evidenceIds: [],
       sourceIds: [],
-      knowledgeVersion: 'deterministic-fallback-1',
+      knowledgeVersion: 'deterministic-fallback-2',
     },
   };
 };

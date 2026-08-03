@@ -9,6 +9,11 @@ if (textPlan?.['sourceLinks'] || textPlan?.evidenceIds?.length) throw new Error(
 const housing = deterministicApiFallback({ text: 'La vivienda está imposible', inputType: 'text' });
 if (!/precios|alquileres|vivienda pública|disponibilidad/i.test(housing.guidance.questions[0])) throw new Error('topic-aware fallback lost housing guidance');
 
+const political = deterministicApiFallback({ text: 'pedro sanchez está destruyendo españa', inputType: 'text' });
+if (political.relatedClaims?.[0]?.kind !== 'topic' || political.relatedClaims[0].slug !== 'politica') throw new Error('political fallback did not preserve topic-only context');
+if (political.result?.evidenceIds?.length || political.result?.sourceIds?.length) throw new Error('political fallback invented evidence');
+if (/impuestos/i.test(JSON.stringify(political))) throw new Error('political fallback attached unrelated tax context');
+
 const media = deterministicApiFallback({ inputType: 'audio' });
 if (media.status !== 'uncovered' || media.result || !/audio/i.test(media.guidance.limitation)) throw new Error('file-only fallback did not provide a generic retry path');
 

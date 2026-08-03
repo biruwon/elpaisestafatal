@@ -13,7 +13,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
   if (!classify.includes(fragment)) failures.push(`/api/classify is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('deterministicApiFallback')) failures.push('/api/classify must retain deterministic guidance when the optional origin is unavailable');
-for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'deterministic-fallback-1']) {
+for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'deterministic-fallback-2']) {
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
 }
 if (!gateway.includes("replace(/^\\/api\\/classify/, '/v1/classify')")) failures.push('local gateway must map /api/classify to the local /v1/classify contract');
