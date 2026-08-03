@@ -11,7 +11,7 @@ type SearchResponse = {
   input?: { original?: string; canonical?: string };
   primary?: { kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number; reason: string };
   alternatives?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
-  guidance?: { questions?: string[]; limitation?: string; suggestions?: Array<{ title: string; href: string }>; suggestionsLabel?: string };
+  guidance?: { questions?: string[]; limitation?: string; suggestions?: Array<{ title: string; href?: string; prompt?: string }>; suggestionsLabel?: string };
   result?: AnswerPlan;
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
@@ -88,6 +88,69 @@ const assessmentLabels: Record<string, string> = {
 
 const coverageLabel = (value?: string): string => coverageLabels[value || ''] || 'Aclaración provisional';
 
+const topicFollowUpPrompts: Record<string, string[]> = {
+  politica: [
+    '¿Está creciendo la economía española?',
+    '¿Cómo ha evolucionado el empleo en España?',
+    '¿Cómo ha cambiado el gasto público sobre el PIB?',
+    '¿Qué porcentaje del PIB representa la deuda pública?',
+  ],
+  economia: [
+    '¿Está creciendo la economía española?',
+    '¿Cómo ha cambiado la inflación anual en España?',
+    '¿Cómo ha evolucionado la renta mediana de los hogares?',
+    '¿Cómo ha cambiado la desigualdad de ingresos en España?',
+  ],
+  vivienda: [
+    '¿Cómo han cambiado los alquileres en España?',
+    '¿Han subido los precios de la vivienda en España?',
+    '¿Qué porcentaje de hogares sufre sobrecarga de vivienda?',
+    '¿Ha empeorado el acceso a la vivienda en España?',
+  ],
+  empleo: [
+    '¿Cómo ha evolucionado el desempleo en España?',
+    '¿Tiene España una tasa de empleo mayor que la Unión Europea?',
+    '¿Cómo ha cambiado el salario mínimo en España?',
+    '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+  ],
+  inmigracion: [
+    '¿Cuántos residentes nacieron fuera de España?',
+    '¿Cuántos residentes tienen ciudadanía extranjera en España?',
+    '¿Cuántas personas inmigraron a España durante el último año?',
+    '¿La inmigración aumenta la inseguridad?',
+  ],
+  seguridad: [
+    '¿Cómo han evolucionado los homicidios registrados en España?',
+    '¿Cómo han evolucionado las estafas registradas en España?',
+    '¿Cómo han evolucionado los robos registrados en España?',
+    '¿La inmigración aumenta la inseguridad?',
+  ],
+  sanidad: [
+    '¿Cuánto gasta España en sanidad por habitante?',
+    '¿Ha aumentado la falta de atención médica por listas de espera?',
+    '¿Cómo ha evolucionado la esperanza de vida en España?',
+    '¿España gasta más por habitante en sanidad que la Unión Europea?',
+  ],
+  impuestos: [
+    '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
+    '¿España recauda más o menos que la Unión Europea?',
+    '¿Cuánto debe España en euros?',
+    '¿Qué porcentaje del PIB representa la deuda pública de España?',
+  ],
+  desigualdad: [
+    '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
+    '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
+    '¿Cómo ha evolucionado la renta mediana de los hogares?',
+    '¿Qué porcentaje de hogares sufre sobrecarga de vivienda?',
+  ],
+  juventud: [
+    '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+    '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?',
+    '¿Cómo ha evolucionado el abandono escolar temprano en España?',
+    '¿Cómo ha evolucionado el envejecimiento de la población española?',
+  ],
+};
+
 const propositionTypeLabels: Record<string, string> = {
   descriptive: 'Hecho',
   comparative: 'Comparación',
@@ -144,6 +207,20 @@ const broadTopicSuggestions = (original: string): { items: Array<{ title: string
   // input makes the result look like a recommendation and was the source of
   // misleading “closest” answers for genuinely unknown text.
   return { items: [], label: '' };
+};
+
+const contextualFollowUps = (original: string, primary?: ClaimIndexEntry): { items: Array<{ title: string; prompt: string }>; label: string } => {
+  const query = normaliseClaimText(original);
+  if (query.length < 12) return { items: [], label: '' };
+  const topics = claimIndex.filter((entry) => entry.kind === 'topic');
+  const matchedTopic = primary?.kind === 'topic'
+    ? primary.slug
+    : topics.find((entry) => [...entry.aliases, ...entry.keywords].some((alias) => {
+      const normalizedAlias = normaliseClaimText(alias);
+      return normalizedAlias.length > 3 && (query.includes(normalizedAlias) || normalizedAlias.includes(query));
+    }))?.slug;
+  const prompts = matchedTopic ? topicFollowUpPrompts[matchedTopic] || [] : [];
+  return { items: prompts.slice(0, 4).map((prompt) => ({ title: prompt, prompt })), label: 'Para concretar esta discusión' };
 };
 
 const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
@@ -473,6 +550,12 @@ const bindResultActions = (): void => {
     input.value = choice;
     form.requestSubmit();
   }));
+  result?.querySelectorAll<HTMLButtonElement>('[data-guidance-example]').forEach((button) => button.addEventListener('click', () => {
+    if (!input) return;
+    input.value = button.dataset.guidanceExample || '';
+    updateCounter();
+    form?.requestSubmit();
+  }));
 };
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'related' | 'uncovered' = 'published'): void => {
@@ -523,7 +606,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const body = state === 'loading'
       ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
     : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><div>${guidance.suggestions.slice(0, 4).map((suggestion) => `<a href="${escapeHtml(suggestion.href)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
+      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">Para comprobarla haría falta concretar</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><div>${guidance.suggestions.slice(0, 4).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
     : state === 'unavailable'
         ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
       : state === 'invalid'
@@ -547,28 +630,35 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
     return;
   }
   if (coverage.status === 'qualified' && primary) {
+    const followUps = contextualFollowUps(original, primary);
     renderCard('related', original, primary, alternatives, {
       questions: ['¿Qué fecha, lugar o decisión concreta quieres comprobar?'],
       limitation: 'Esta es la orientación más cercana que hemos encontrado; todavía no es una comprobación de esta frase exacta.',
+      suggestions: followUps.items,
+      suggestionsLabel: followUps.label,
     }, 'Estamos comprobando si esta relación es la más útil.');
     return;
   }
   if (primary?.kind === 'topic' && primary.score >= 36) {
+    const followUps = contextualFollowUps(original, primary);
     renderCard('related', original, primary, alternatives, {
       questions: ['¿Qué decisión, dato o consecuencia concreta quieres comprobar dentro de este tema?'],
       limitation: 'La frase es amplia, pero este es el contexto más cercano que tenemos publicado. Concreta el hecho para comprobarlo mejor.',
+      suggestions: followUps.items,
+      suggestionsLabel: followUps.label,
     }, primary.answer);
     return;
   }
   const suggestions = broadTopicSuggestions(original);
+  const followUps = contextualFollowUps(original);
   renderCard('uncovered', original, undefined, [], {
     questions: [
       '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
       '¿Qué fuente o publicación quieres que revisemos?',
     ],
     limitation: 'No tenemos una comprobación publicada de esta afirmación. Puedes concretarla para encontrar una orientación más útil.',
-    suggestions: suggestions.items,
-    suggestionsLabel: suggestions.label,
+    suggestions: (followUps.items.length ? followUps.items : suggestions.items).slice(0, 4),
+    suggestionsLabel: followUps.items.length ? followUps.label : suggestions.label,
   });
 };
 
@@ -649,13 +739,14 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
       return;
     }
     const localSuggestions = broadTopicSuggestions(original);
+    const followUps = contextualFollowUps(original, primary);
     const guidance = {
       ...(response.guidance || {
       questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
       limitation: response.result?.limitation,
       }),
-      suggestions: response.guidance?.suggestions || localSuggestions.items,
-      suggestionsLabel: response.guidance?.suggestionsLabel || localSuggestions.label,
+      suggestions: response.guidance?.suggestions?.length ? response.guidance.suggestions : (followUps.items.length ? followUps.items : localSuggestions.items).slice(0, 4),
+      suggestionsLabel: response.guidance?.suggestionsLabel || (followUps.items.length ? followUps.label : localSuggestions.label),
     };
     renderCard('uncovered', original, undefined, [], guidance);
     return;

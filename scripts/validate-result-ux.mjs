@@ -33,6 +33,11 @@ for (const snippet of [
   '.claim-result-card[data-result-mode=understand] .claim-plan-reply{display:none}',
   '.claim-result-card[data-result-mode=reply]',
   'data-result-mode="understand"',
+  'const topicFollowUpPrompts',
+  'const contextualFollowUps',
+  'data-guidance-example',
+  'Para concretar esta discusión',
+  'form?.requestSubmit()',
 ]) {
   if (!page.includes(snippet) && !source.includes(snippet)) failures.push(`result modes are missing ${snippet}`);
 }
