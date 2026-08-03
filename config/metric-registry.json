@@ -518,5 +518,13 @@
     "population": "usual residents aged 16 or over reporting an unmet medical need because of a waiting list",
     "notEquivalentTo": ["health_expenditure_per_capita"],
     "dimensions": ["period", "geography", "age", "sex", "income_quantile", "unmet_need_reason"]
+  },
+  "unmet_healthcare_waiting_list_rate_europe": {
+    "name": "People reporting unmet medical needs because of a waiting list: Spain and the European Union",
+    "aliases": ["lista de espera médica frente a Europa", "necesidades médicas no atendidas frente a Europa", "España tiene más espera sanitaria que Europa", "comparación europea de listas de espera"],
+    "unit": "percent of population aged 16 or over",
+    "population": "usual residents aged 16 or over reporting an unmet medical need because of a waiting list in Spain and the European Union",
+    "notEquivalentTo": ["unmet_healthcare_waiting_list_rate", "health_expenditure_per_capita_europe"],
+    "dimensions": ["period", "geography", "age", "sex", "income_quantile", "unmet_need_reason"]
   }
 }

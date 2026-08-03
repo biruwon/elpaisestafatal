@@ -212,6 +212,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el gasto sanitario corriente total por habitante, financiado por todos los esquemas, según Eurostat; no equivale al gasto de un hospital concreto ni mide por sí sola el acceso o la calidad de la atención.',
     caveat: 'Es un promedio nacional comparable, no el gasto de cada persona ni una medida directa de resultados sanitarios.',
   },
+  unmet_healthcare_waiting_list_rate_europe: {
+    label: 'Necesidades médicas no atendidas por lista de espera',
+    verb: 'registró una proporción de necesidades médicas no atendidas por lista de espera del',
+    replyLead: 'la proporción declarada de necesidades médicas no atendidas por lista de espera fue del',
+    differenceVerb: ['la proporción española fue más alta', 'la proporción española fue más baja', 'España y la Unión Europea registraron la misma proporción'],
+    unit: '% de la población de 16 años o más',
+    replyUnit: '% de la población de 16 años o más',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la proporción de personas de 16 años o más que declaran una necesidad médica no atendida por estar en una lista de espera, con la misma definición de Eurostat para España y la Unión Europea; no es el número administrativo de pacientes ni la espera media.',
+    caveat: 'Es una barrera de acceso declarada y comparable, no una medida completa de la calidad sanitaria, de todas las listas administrativas ni de la espera de cada paciente.',
+  },
   median_equivalised_income_europe: {
     label: 'Renta disponible mediana por persona equivalente',
     verb: 'registró una renta disponible mediana por persona equivalente',

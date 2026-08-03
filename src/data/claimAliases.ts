@@ -419,4 +419,10 @@ export const claimAliases: Record<string, string[]> = {
     'España tiene más años de vida que la UE',
     'comparación europea de esperanza de vida',
   ],
+  'necesidades-medicas-lista-espera-espana-ue': [
+    'España tiene más espera sanitaria que Europa',
+    'España tiene más lista de espera que la UE',
+    'necesidades médicas no atendidas frente a Europa',
+    'comparación europea de listas de espera',
+  ],
 };

@@ -38,6 +38,7 @@ const metricLabels = {
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   health_expenditure_per_capita_europe: 'Gasto sanitario por habitante: España y la Unión Europea',
+  unmet_healthcare_waiting_list_rate_europe: 'Necesidades médicas no atendidas por lista de espera: España y la Unión Europea',
   median_equivalised_income_europe: 'Renta disponible mediana: España y la Unión Europea',
   unemployment_rate: 'Tasa de desempleo en España',
   unemployment_rate_europe: 'Tasa de desempleo de España frente a Europa',
@@ -104,6 +105,7 @@ const displayUnit = (item) => {
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'part_time_employment_rate' || metricId === 'part_time_employment_rate_europe' || metricId === 'temporary_employment_rate' || metricId === 'temporary_employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe' || metricId === 'youth_unemployment_rate' || metricId === 'youth_unemployment_rate_europe' || metricId === 'neet_rate' || metricId === 'neet_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
   if (metricId === 'health_expenditure_per_capita_europe') return '€ por habitante';
+  if (metricId === 'unmet_healthcare_waiting_list_rate_europe') return '% de la población de 16 años o más';
   if (metricId === 'median_equivalised_income_europe') return 'PPS por persona';
   if (metricId === 'median_hourly_earnings' || metricId === 'median_hourly_earnings_europe') return '€ por hora';
   if (metricId === 'house_price_index') return 'índice (2015=100)';

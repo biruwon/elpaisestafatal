@@ -49,6 +49,7 @@ const metricHints = [
   { ids: ['housing_cost_overburden_rate_europe'], terms: ['sobrecarga de vivienda frente a europa', 'sobrecarga de vivienda frente a la union europea', 'esfuerzo de vivienda frente a europa', 'esfuerzo de vivienda frente a la union europea', 'espana tiene mas sobrecarga de vivienda que europa', 'espana tiene menos sobrecarga de vivienda que europa', 'comparacion europea del esfuerzo de vivienda', 'sobrecarga vivienda europa'] },
   { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por habitante', 'gasto sanitario por persona', 'gasto por habitante en sanidad', 'gasta en sanidad por habitante', 'gasta sanidad por habitante', 'gasta sanidad habitante', 'cuanto gasta sanidad habitante', 'sanidad por habitante', 'gasto por persona en sanidad', 'dinero por persona en sanidad', 'cuanto dinero se dedica a sanidad', 'cuanto dinero se dedica por persona a la sanidad', 'cuanto se gasta en sanidad', 'cuanto se gasta en salud'] },
   { ids: ['health_expenditure_per_capita_europe'], terms: ['gasto sanitario frente a europa', 'gasto sanitario frente a la union europea', 'como se compara el gasto sanitario de espana con europa', 'comparacion europea del gasto de salud por habitante', 'gasto en sanidad frente a europa', 'gasto en sanidad frente a la union europea', 'espana gasta mas en sanidad que europa', 'espana gasta menos en sanidad que europa', 'espana gasta mas en sanidad que la union europea', 'espana gasta menos en sanidad que la union europea', 'espana gasta mas por habitante en sanidad', 'espana gasta menos por habitante en sanidad', 'gasto sanitario europa', 'sanidad europa'] },
+  { ids: ['unmet_healthcare_waiting_list_rate_europe'], terms: ['lista de espera frente a europa', 'lista de espera frente a la union europea', 'espera sanitaria frente a europa', 'necesidades medicas no atendidas frente a europa', 'espana tiene mas espera sanitaria que europa', 'espana tiene menos espera sanitaria que europa', 'espana tiene mas lista de espera que europa', 'comparacion europea de listas de espera', 'comparacion europea de la espera sanitaria', 'lista de espera europa'] },
   { ids: ['unmet_healthcare_waiting_list_rate'], terms: ['lista de espera medica', 'lista de espera sanitaria', 'no recibe atencion por lista de espera', 'personas sin atencion por lista de espera', 'espera medica impide atencion', 'necesidad medica no atendida por espera'] },
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
   { ids: ['life_expectancy_at_birth_europe'], terms: ['esperanza de vida frente a europa', 'esperanza de vida frente a la union europea', 'años de vida frente a europa', 'espana vive mas que europa', 'espana vive mas que la union europea', 'comparacion europea de esperanza de vida', 'esperanza de vida europa'] },
@@ -175,7 +176,8 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('youth_unemployment_rate')) preferred.delete('employment_rate');
   if (preferred.has('older_population_share') && /\b(?:porcentaje|proporcion|65 anos|65 o mas)\b/.test(normalized)) preferred.delete('old_age_dependency_ratio');
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');
-  if (preferred.has('unmet_healthcare_waiting_list_rate')) preferred.delete('health_expenditure_per_capita');
+  if (preferred.has('unmet_healthcare_waiting_list_rate') || preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('health_expenditure_per_capita');
+  if (preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('unmet_healthcare_waiting_list_rate');
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
   if (preferred.has('gdp_per_capita_europe')) {
     preferred.delete('gdp_per_capita_current_prices');
@@ -241,6 +243,7 @@ export const excludedMetricIdsForQuery = (query) => {
   const healthSpendRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const healthSpendEuropeRequested = metricHints.find((hint) => hint.ids.includes('health_expenditure_per_capita_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const unmetWaitingListRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
+  const unmetWaitingListEuropeRequested = metricHints.find((hint) => hint.ids.includes('unmet_healthcare_waiting_list_rate_europe'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const vagueHealthOutcome = ['colaps', 'lista de espera', 'espera sanitaria', 'acceso a la sanidad', 'calidad de la sanidad', 'personal sanitario'].some((term) => normalized.includes(term));
   const populationChangeRequested = metricHints.find((hint) => hint.ids.includes('population_change_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const inflationRequested = metricHints.find((hint) => hint.ids.includes('inflation_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
@@ -270,6 +273,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');
   if (vagueHealthOutcome && !healthSpendEuropeRequested) excluded.add('health_expenditure_per_capita_europe');
   if (vagueHealthOutcome && !unmetWaitingListRequested) excluded.add('unmet_healthcare_waiting_list_rate');
+  if (vagueHealthOutcome && !unmetWaitingListEuropeRequested) excluded.add('unmet_healthcare_waiting_list_rate_europe');
+  if (unmetWaitingListRequested && !unmetWaitingListEuropeRequested) excluded.add('unmet_healthcare_waiting_list_rate_europe');
   // Total population and population-change rate are different questions. Keep
   // the change series out of generic population, migration, fertility, and
   // out-of-domain matches unless the wording explicitly asks about change.

@@ -123,6 +123,8 @@ const longTailBenchmarkCases = [
   ['sanidad-ue-dato', 'Comparación europea del gasto de salud por habitante', 'health_expenditure_per_capita_europe'],
   ['salud-anos', '¿Cuántos años vive de media la población española?', 'life_expectancy_at_birth'],
   ['vida-evolucion', '¿Ha aumentado la esperanza de vida al nacer?', 'life_expectancy_at_birth'],
+  ['espera-ue-compara', '¿España tiene más espera sanitaria que Europa?', 'unmet_healthcare_waiting_list_rate_europe'],
+  ['espera-ue-dato', 'Comparación europea de necesidades médicas no atendidas por lista de espera', 'unmet_healthcare_waiting_list_rate_europe'],
   ['longevidad-espana', 'Evolución de los años de vida esperados en España', 'life_expectancy_at_birth'],
   ['fecundidad-mujer', '¿Cuántos hijos tiene de media cada mujer?', 'fertility_rate'],
   ['fecundidad-cambio', '¿Cómo ha evolucionado la tasa de fecundidad?', 'fertility_rate'],

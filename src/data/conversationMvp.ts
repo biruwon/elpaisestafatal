@@ -459,6 +459,19 @@ definitions['esperanza-vida-espana-ue'] = {
   visuals: { key: { value: '+2,5 años', label: 'España frente a la Unión Europea', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Esperanza de vida al nacer', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [84, 81.5], label: 'Esperanza de vida al nacer', unit: 'años · 2024' }, caveat: 'La esperanza de vida resume mortalidad poblacional; no equivale a años vividos con buena salud ni a acceso sanitario igual.' },
 };
 
+definitions['necesidades-medicas-lista-espera-espana-ue'] = {
+  prompt: 'España tiene más necesidades médicas no atendidas por lista de espera que la Unión Europea',
+  aliases: ['España tiene más espera sanitaria que Europa', 'España tiene más lista de espera que la UE', 'necesidades médicas no atendidas frente a Europa', 'comparación europea de listas de espera'],
+  propositions: ['En 2025, el 1,6% de las personas de 16 años o más en España declaró una necesidad médica no atendida por una lista de espera, frente al 1,2% en la Unión Europea.', 'La diferencia fue de 0,4 puntos porcentuales.', 'La comparación demuestra por sí sola la calidad completa de la sanidad o el tamaño de las listas administrativas.'],
+  concern: 'España registra una proporción mayor de necesidades médicas no atendidas por lista de espera que la Unión Europea en esta medida declarada, pero no es lo mismo que contar pacientes administrativos.',
+  supports: 'Eurostat registra un 1,6% en España y un 1,2% en la Unión Europea en 2025: 0,4 puntos porcentuales de diferencia.',
+  limit: 'El indicador recoge una barrera de acceso declarada entre personas de 16 años o más. No es la lista quirúrgica, la espera media ni una medida completa de la calidad sanitaria.',
+  question: '¿Quieres comparar esta barrera de acceso, la espera media o el número de pacientes en listas administrativas?',
+  reply: 'Sí, según esta medida: en 2025 un 1,6% de las personas de 16 años o más en España declaró una necesidad médica no atendida por una lista de espera, frente al 1,2% en la Unión Europea. Son 0,4 puntos más, pero no es el número administrativo de pacientes ni la espera media.',
+  visualLabel: 'Una barrera de acceso declarada no es el tamaño de la lista',
+  visuals: { key: { value: '+0,4 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Necesidades médicas no atendidas por lista de espera', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [1.6, 1.2], label: 'Necesidad médica no atendida por lista de espera', unit: '% de personas de 16 años o más · 2025' }, caveat: 'Es una medida declarada de acceso, no el número administrativo de pacientes, la espera media o una medida completa de la calidad sanitaria.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

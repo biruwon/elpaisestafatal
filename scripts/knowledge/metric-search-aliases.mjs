@@ -43,6 +43,7 @@ export const metricSearchAliases = Object.freeze({
   government_debt_ratio: ['deuda pública', 'deuda del Estado', 'deuda sobre PIB', 'deuda española', 'endeudamiento público', 'cuánto debe España', 'deuda del país', 'nivel de deuda española'],
   health_expenditure_per_capita: ['gasto sanitario por habitante', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por persona', 'dinero por persona en sanidad', 'cuánto dinero se dedica a sanidad', 'cuánto se gasta en salud'],
   health_expenditure_per_capita_europe: ['gasto sanitario', 'gasto', 'sanidad', 'habitante', 'europa', 'union europea', 'comparacion europea'],
+  unmet_healthcare_waiting_list_rate_europe: ['lista de espera', 'espera sanitaria', 'necesidad medica no atendida', 'europa', 'union europea', 'comparacion europea'],
   gdp_per_capita_europe: ['pib por habitante', 'pib per capita', 'pib por persona', 'europa', 'union europea', 'comparacion europea', 'poder adquisitivo'],
   median_equivalised_income: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'renta de las familias', 'ingresos medianos de las familias', 'cuánto ingresan los hogares'],
   median_equivalised_income_europe: ['renta mediana', 'ingresos medianos', 'renta disponible', 'ingresos de los hogares', 'europa', 'union europea', 'comparacion europea', 'poder adquisitivo'],

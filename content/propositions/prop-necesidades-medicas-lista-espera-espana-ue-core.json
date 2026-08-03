@@ -1,0 +1,13 @@
+{
+  "id": "prop-necesidades-medicas-lista-espera-espana-ue-core",
+  "claimSlug": "necesidades-medicas-lista-espera-espana-ue",
+  "text": "En 2025, España tuvo una proporción mayor que la Unión Europea de personas que declararon una necesidad médica no atendida por estar en una lista de espera.",
+  "type": "comparative",
+  "subject": "unmet_healthcare_waiting_list_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "1.6% versus 1.2% of people aged 16 or over",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["necesidades-medicas-lista-espera-espana-ue-eurostat"]
+}
