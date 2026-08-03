@@ -67,6 +67,7 @@ const cases = [
   { text: 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan.', status: 'complete', slug: 'neet-baja' },
   { text: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera.', status: 'complete', slug: 'necesidades-medicas-lista-espera-aumentan' },
   { text: 'El PIB por habitante en España supera los 34.000 euros.', status: 'complete', slug: 'pib-por-habitante-supera-34000' },
+  { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
   { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },
@@ -263,6 +264,13 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('public debt warehouse: missing a multi-period series');
     if (/government debt|associated data/i.test(result.result?.headline || '')) failures.push('public debt warehouse: leaked raw dataset title into the public headline');
   } catch (error) { failures.push(`public debt warehouse: ${error.message}`); }
+  try {
+    const result = await resolve('¿Cuánto debe España en euros?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`absolute public debt warehouse: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'government_debt_current_prices') failures.push('absolute public debt warehouse: selected the ratio instead of the debt stock');
+    if (!result.result?.warehouseSeries?.values?.length || result.result.warehouseSeries.values.length < 2) failures.push('absolute public debt warehouse: missing a multi-period series');
+    if (result.result?.warehouseSeries?.unit !== 'millones de euros') failures.push('absolute public debt warehouse: did not localize the unit');
+  } catch (error) { failures.push(`absolute public debt warehouse: ${error.message}`); }
   try {
     const result = await resolve('Qué porcentaje del PIB representan los ingresos públicos españoles');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`public revenue warehouse: expected provisional result, received ${result.status}`);

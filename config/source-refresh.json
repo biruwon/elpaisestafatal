@@ -59,6 +59,12 @@
       "metricId": "government_debt_ratio"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?geo=ES&na_item=GD&unit=MIO_EUR&sector=S13&sinceTimePeriod=2015",
+      "title": "Deuda pública de España en euros · Eurostat",
+      "aliases": ["deuda pública en euros", "deuda pública total", "importe de la deuda pública", "cuánto dinero debe España", "deuda pública en millones", "deuda nominal"],
+      "metricId": "government_debt_current_prices"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_main?geo=ES&na_item=TR&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
       "title": "Ingresos públicos de España · Eurostat",
       "aliases": ["ingresos públicos", "recaudación pública", "ingresos del Estado", "recaudación sobre PIB", "porcentaje del PIB"],

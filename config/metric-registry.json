@@ -71,6 +71,14 @@
     "notEquivalentTo": ["gdp_current_prices", "government_revenue_ratio"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
+  "government_debt_current_prices": {
+    "name": "General government gross debt at current prices",
+    "aliases": ["deuda pública en euros", "deuda pública total", "importe de la deuda pública", "cuánto dinero debe España", "deuda pública en millones", "deuda nominal"],
+    "unit": "million euro",
+    "population": "general government consolidated gross debt at current prices",
+    "notEquivalentTo": ["government_debt_ratio", "government_deficit_ratio", "gdp_current_prices"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item", "unit"]
+  },
   "government_revenue_ratio": {
     "name": "General government total revenue as a share of GDP",
     "aliases": ["ingresos públicos", "recaudación pública", "ingresos del Estado", "recaudación sobre PIB", "ingresos públicos sobre PIB", "porcentaje del PIB"],

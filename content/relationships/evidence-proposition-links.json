@@ -155,6 +155,7 @@
     {"evidenceId":"titulacion-superior-eurostat","propositionId":"prop-titulacion-superior-aumenta-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"neet-eurostat","propositionId":"prop-neet-baja-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"necesidades-medicas-lista-espera-eurostat","propositionId":"prop-necesidades-medicas-lista-espera-aumentan-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"pib-por-habitante-eurostat","propositionId":"prop-pib-por-habitante-supera-34000-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
-  ]
+  {"evidenceId":"pib-por-habitante-eurostat","propositionId":"prop-pib-por-habitante-supera-34000-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+  {"evidenceId":"deuda-publica-euros-eurostat","propositionId":"prop-deuda-publica-supera-16-billones-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+]
 }

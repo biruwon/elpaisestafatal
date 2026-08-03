@@ -22,6 +22,7 @@ const metricHints = [
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
   { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt', 'cuanto debe españa', 'deuda del pais', 'nivel de deuda española'] },
+  { ids: ['government_debt_current_prices'], terms: ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe españa', 'cuanto debe españa en euros', 'cuanto debe españa en dinero', 'deuda de españa en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
   { ids: ['housing_cost_overburden_rate'], terms: ['sobrecarga', 'coste de la vivienda', 'gastos de vivienda', 'esfuerzo de vivienda', 'sobrecarga coste vivienda', 'hogares soportan el coste de la vivienda', 'porcentaje de hogares soporta'] },
@@ -67,6 +68,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');
   if (preferred.has('unmet_healthcare_waiting_list_rate')) preferred.delete('health_expenditure_per_capita');
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
+  if (preferred.has('government_debt_current_prices')) preferred.delete('government_debt_ratio');
   return preferred;
 };
 

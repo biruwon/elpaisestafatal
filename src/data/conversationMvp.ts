@@ -209,6 +209,19 @@ definitions['pib-por-habitante-supera-34000'] = {
   visuals: { key: { value: '34.210 €', label: 'PIB por habitante a precios corrientes', period: '2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [23440, 24190, 25160, 25950, 26620, 23850, 26090, 28790, 30980, 32630, 34210], label: 'PIB por habitante', unit: '€ por habitante' }, caveat: 'La serie está a precios corrientes. El aumento nominal no demuestra que la renta disponible o la riqueza de cada hogar hayan aumentado en la misma proporción.' },
 };
 
+definitions['deuda-publica-supera-16-billones'] = {
+  prompt: 'La deuda pública de España supera 1,6 billones de euros',
+  aliases: ['España debe más de 1,6 billones', 'cuánto dinero debe España', 'la deuda pública en euros supera el billón', 'la deuda pública total de España', 'deuda pública española en euros'],
+  propositions: ['La deuda bruta consolidada de las administraciones públicas españolas alcanzó 1.698.224,6 millones de euros en 2025.', 'El importe equivale al déficit generado durante 2025.', 'La cifra demuestra por sí sola que la deuda es insostenible o que cada hogar debe esa cantidad.'],
+  concern: 'La deuda pública puede expresarse como un importe acumulado o como una ratio sobre el PIB. El importe responde a cuánto stock existe, pero no resuelve por sí solo su sostenibilidad ni su distribución.',
+  supports: 'Eurostat registra 1.698.224,6 millones de euros de deuda bruta consolidada de las administraciones públicas españolas en 2025, frente a 1.114.129 millones en 2015.',
+  limit: 'Es un stock nominal de las administraciones públicas. No es el déficit anual, la deuda de cada familia ni una conclusión completa sobre sostenibilidad; para eso hacen falta intereses, vencimientos, crecimiento, ratio sobre PIB y composición.',
+  question: '¿Quieres ver el importe total, la deuda sobre el PIB, el déficit anual o cuánto se paga en intereses?',
+  reply: 'Sí: la deuda pública española alcanzó aproximadamente 1,70 billones de euros en 2025. Es el stock acumulado de las administraciones públicas, no el déficit de un año ni la deuda de cada familia; para valorar si es sostenible hacen falta más datos.',
+  visualLabel: 'Importe acumulado y ratio sobre PIB responden a preguntas distintas',
+  visuals: { key: { value: '1,70 billones €', label: 'Deuda pública bruta consolidada', period: '2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [1114129, 1145655, 1184148.3, 1209741.8, 1224363.8, 1346916.4, 1429403.6, 1504105.1, 1575376.7, 1620573.4, 1698224.6], label: 'Deuda pública bruta consolidada', unit: 'millones de euros' }, caveat: 'La serie está a precios corrientes. El aumento del importe nominal no permite valorar por sí solo la sostenibilidad; hay que compararlo con el PIB, los intereses, los vencimientos y el crecimiento.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

@@ -30,6 +30,7 @@ const knownSeeds = [
   ['gasto-publico-supera-45', 'trend', 'El gasto público de España supera el 45% del PIB'],
   ['deficit-publico-baja-3', 'trend', 'El déficit público de España baja del 3% del PIB'],
   ['deuda-publica-supera-100', 'trend', 'La deuda pública de España supera el 100% del PIB'],
+  ['deuda-publica-supera-16-billones', 'descriptive', 'La deuda pública de España supera 1,6 billones de euros'],
   ['sobrecarga-vivienda-baja', 'trend', 'La sobrecarga del coste de la vivienda ha bajado en España desde 2015'],
   ['gasto-sanitario-habitante-sube', 'trend', 'España gasta más por habitante en sanidad que en 2015'],
   ['desigualdad-renta-baja', 'trend', 'La desigualdad de renta ha bajado en España desde 2015'],

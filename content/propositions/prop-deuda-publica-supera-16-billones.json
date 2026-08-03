@@ -1,0 +1,13 @@
+{
+  "id": "prop-deuda-publica-supera-16-billones-core",
+  "claimSlug": "deuda-publica-supera-16-billones",
+  "text": "El stock de deuda bruta consolidada de las administraciones públicas españolas superó 1,6 billones de euros en 2025.",
+  "type": "descriptive",
+  "subject": "government_debt_current_prices",
+  "predicate": "exceeded",
+  "object": "1.6 trillion EUR",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["deuda-publica-euros-eurostat"]
+}
