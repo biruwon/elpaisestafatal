@@ -1,0 +1,13 @@
+{
+  "id": "prop-abandono-escolar-temprano-baja-core",
+  "claimSlug": "abandono-escolar-temprano-baja",
+  "text": "La proporción de personas de 18 a 24 años que abandonaron pronto la educación y la formación disminuyó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "early_school_leaving_rate",
+  "predicate": "decreased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["abandono-escolar-eurostat"]
+}

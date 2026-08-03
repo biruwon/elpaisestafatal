@@ -69,6 +69,8 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
+  if (metricId === 'early_school_leaving_rate') return '% de jóvenes de 18 a 24 años';
+  if (metricId === 'tertiary_education_attainment_rate') return '% de personas de 25 a 34 años';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate') return '% de la población';
   if (metricId === 'household_electricity_price') return '€ por kWh';

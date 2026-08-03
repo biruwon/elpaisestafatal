@@ -144,6 +144,32 @@ definitions['densidad-madrid-andalucia'] = {
   visuals: { key: { value: '885,8 vs 99,7', label: 'Personas por km²', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Densidad regional', unit: 'Comparación puntual; no es una tendencia nacional' }, comparison: { labels: ['Comunidad de Madrid', 'Andalucía'], values: [885.8, 99.7], label: 'Densidad de población', unit: 'personas por km²' }, caveat: 'La densidad usa población y superficie. No mide por sí sola la presión sobre vivienda, transporte, sanidad, empleo o calidad de vida.' },
 };
 
+definitions['abandono-escolar-temprano-baja'] = {
+  prompt: 'España ha reducido el abandono escolar temprano',
+  aliases: ['ha bajado el abandono escolar', 'hay menos abandono escolar temprano', 'menos jóvenes dejan los estudios', 'España mejora en abandono escolar', 'el abandono educativo ha bajado'],
+  propositions: ['La proporción de personas de 18 a 24 años que abandonaron pronto la educación y la formación pasó del 20,0% en 2015 al 12,8% en 2025.', 'La mejora nacional significa que el abandono escolar ha desaparecido.', 'La serie nacional identifica por sí sola las causas de la mejora.'],
+  concern: 'El abandono escolar temprano ha bajado con claridad, pero la mejora nacional no dice que el problema haya desaparecido ni explica por sí sola qué lo causó.',
+  supports: 'Eurostat registra una bajada del 20,0% en 2015 al 12,8% en 2025 entre las personas de 18 a 24 años.',
+  limit: 'Es una proporción nacional con una definición concreta. No describe igual cada comunidad, grupo, centro o trayectoria individual y no prueba una causa única.',
+  question: '¿Quieres comparar la tasa nacional, las diferencias territoriales o las causas del abandono?',
+  reply: 'Sí: el abandono escolar temprano bajó del 20,0% de las personas de 18 a 24 años en 2015 al 12,8% en 2025, según Eurostat. Es una mejora clara, pero no significa que el problema haya desaparecido ni explica por sí sola sus causas.',
+  visualLabel: 'Una mejora nacional no significa problema resuelto',
+  visuals: { key: { value: '12,8 %', label: 'Abandono escolar temprano', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [20.0, 18.3, 17.3, 13.3, 13.7, 12.8], label: 'Abandono escolar temprano', unit: '% de jóvenes de 18 a 24 años' }, caveat: 'La serie nacional no identifica por sí sola las causas ni describe igual cada comunidad, grupo social, centro o trayectoria individual.' },
+};
+
+definitions['titulacion-superior-aumenta'] = {
+  prompt: 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado',
+  aliases: ['hay más jóvenes con estudios superiores', 'ha subido la titulación superior', 'más universitarios entre 25 y 34 años', 'España tiene más personas con estudios superiores', 'han aumentado los graduados'],
+  propositions: ['La proporción de personas de 25 a 34 años con educación terciaria pasó del 41,0% en 2015 al 52,5% en 2025.', 'Más titulados demuestra que sobran universitarios.', 'La proporción de titulados demuestra por sí sola que sus estudios encajan con el empleo.'],
+  concern: 'La proporción de titulados superiores ha aumentado, pero ese dato no decide por sí solo si existe sobrecualificación ni cómo encajan los estudios con cada mercado laboral.',
+  supports: 'Eurostat registra una subida del 41,0% en 2015 al 52,5% en 2025 entre las personas de 25 a 34 años.',
+  limit: 'La serie mide nivel educativo, no calidad del empleo, sobrecualificación, salarios, especialidad, vacantes o diferencias territoriales.',
+  question: '¿Quieres comparar titulación, sobrecualificación, empleo, salarios o vacantes por especialidad?',
+  reply: 'Sí: la proporción de personas de 25 a 34 años con educación terciaria subió del 41,0% en 2015 al 52,5% en 2025, según Eurostat. Ese aumento no demuestra por sí solo que haya demasiados universitarios ni que los estudios encajen con cada empleo.',
+  visualLabel: 'Más titulación no equivale automáticamente a mejor encaje laboral',
+  visuals: { key: { value: '52,5 %', label: 'Personas de 25 a 34 con educación terciaria', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [41.0, 42.6, 46.5, 48.5, 52.0, 52.5], label: 'Titulación superior entre 25 y 34 años', unit: '% de personas de 25 a 34 años' }, caveat: 'La proporción de titulados no mide por sí sola calidad del empleo, sobrecualificación, salarios, especialidad, vacantes o diferencias territoriales.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

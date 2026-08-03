@@ -62,6 +62,8 @@ const cases = [
   { text: 'Los alquileres son más caros que en 2015.', status: 'complete', slug: 'alquileres-suben' },
   { text: 'España está en recesión.', status: 'complete', slug: 'espana-recesion' },
   { text: 'La recaudación tributaria bajó en 2025.', status: 'complete', slug: 'recaudacion-tributaria-crece' },
+  { text: 'España ha reducido el abandono escolar temprano.', status: 'complete', slug: 'abandono-escolar-temprano-baja' },
+  { text: 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado.', status: 'complete', slug: 'titulacion-superior-aumenta' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
   { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },

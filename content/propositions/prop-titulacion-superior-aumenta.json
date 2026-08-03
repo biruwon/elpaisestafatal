@@ -1,0 +1,13 @@
+{
+  "id": "prop-titulacion-superior-aumenta-core",
+  "claimSlug": "titulacion-superior-aumenta",
+  "text": "La proporción de personas de 25 a 34 años con educación terciaria aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "tertiary_education_attainment_rate",
+  "predicate": "increased",
+  "object": "2015-2025",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["titulacion-superior-eurostat"]
+}

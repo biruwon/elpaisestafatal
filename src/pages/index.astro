@@ -55,6 +55,8 @@ const warehousePrompts = [
   '¿Cómo ha cambiado el precio de la electricidad para los hogares?',
   '¿Cuánto ingresan de media los hogares en España?',
   '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?',
+  '¿Cómo ha evolucionado el abandono escolar temprano en España?',
+  '¿Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores?',
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
@@ -75,6 +77,8 @@ const warehouseHighlights = [
   { label: 'Gasto público', prompt: '¿Cuánto gasta el sector público sobre el PIB?', detail: 'Gasto agregado separado de la factura de cada hogar.' },
   { label: 'Renta', prompt: '¿Cuánto ingresan de media los hogares en España?', detail: 'Renta mediana equivalente, no una media que oculte la distribución.' },
   { label: 'Envejecimiento', prompt: '¿Qué porcentaje de personas mayores depende de la población en edad de trabajar?', detail: 'Dependencia demográfica y límites de una proporción agregada.' },
+  { label: 'Educación', prompt: '¿Cómo ha evolucionado el abandono escolar temprano en España?', detail: 'Personas de 18 a 24 años y una definición explícita.' },
+  { label: 'Educación superior', prompt: '¿Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores?', detail: 'Titulación superior separada del empleo y del abandono escolar.' },
 ];
 const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');

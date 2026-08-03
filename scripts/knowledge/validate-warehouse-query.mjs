@@ -50,6 +50,10 @@ if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life
 if (!preferredMetricIdsForQuery('Cuál es el tamaño de la economía española').has('gdp_current_prices')) throw new Error('Metric hints did not prefer nominal GDP for economy-size wording');
 if (!preferredMetricIdsForQuery('Porcentaje población menos años').has('young_population_share')) throw new Error('Metric hints did not prefer young population for compressed wording');
 if (!preferredMetricIdsForQuery('Cómo ha evolucionado la criminalidad registrada en España').has('recorded_offences')) throw new Error('Metric hints did not prefer recorded offences for explicit crime wording');
+if (!preferredMetricIdsForQuery('Cómo ha evolucionado el abandono escolar temprano en España').has('early_school_leaving_rate')) throw new Error('Metric hints did not prefer early school leaving for education wording');
+if (!preferredMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('tertiary_education_attainment_rate')) throw new Error('Metric hints did not prefer tertiary attainment for higher-education wording');
+if (preferredMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('youth_unemployment_rate')) throw new Error('Metric hints confused tertiary attainment with youth unemployment');
+if (!excludedMetricIdsForQuery('Qué porcentaje de jóvenes de 25 a 34 años tiene estudios superiores').has('early_school_leaving_rate')) throw new Error('Metric hints did not keep early school leaving separate from tertiary attainment');
 for (const query of ['Cómo han evolucionado los robos registrados en España', 'Cómo han evolucionado las estafas registradas en España', 'Cómo han evolucionado las agresiones sexuales registradas en España']) {
   if (!preferredMetricIdsForQuery(query).has('recorded_offences')) throw new Error(`Metric hints did not prefer recorded offences for ${query}`);
 }

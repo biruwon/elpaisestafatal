@@ -262,5 +262,21 @@
     "population": "total population by equivalised disposable income",
     "notEquivalentTo": ["gini_coefficient", "government_revenue_ratio"],
     "dimensions": ["period", "geography", "age", "currency"]
+  },
+  "early_school_leaving_rate": {
+    "name": "Early leavers from education and training",
+    "aliases": ["abandono escolar temprano", "abandono educativo", "dejan los estudios", "dejan los estudios antes de tiempo", "jóvenes que abandonan los estudios", "fracaso escolar temprano"],
+    "unit": "percent of population aged 18 to 24",
+    "population": "usual residents aged 18 to 24 who left education and training early",
+    "notEquivalentTo": ["youth_unemployment_rate", "tertiary_education_attainment_rate", "young_population_share"],
+    "dimensions": ["period", "geography", "age", "sex", "labour_status"]
+  },
+  "tertiary_education_attainment_rate": {
+    "name": "Tertiary educational attainment among people aged 25 to 34",
+    "aliases": ["estudios superiores", "educación superior", "titulación superior", "universitarios", "graduados", "titulados", "universitarios de 25 a 34", "jóvenes con estudios universitarios", "personas con estudios superiores"],
+    "unit": "percent of population aged 25 to 34",
+    "population": "usual residents aged 25 to 34 with tertiary education levels 5 to 8",
+    "notEquivalentTo": ["early_school_leaving_rate", "employment_rate", "youth_unemployment_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "education_level"]
   }
 }
