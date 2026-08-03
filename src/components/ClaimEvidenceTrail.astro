@@ -35,14 +35,19 @@ const relationshipLabels: Record<string, string> = {
   <div class="evidence-trail-grid">
     {evidence.map((item, index) => {
       const source = sourceFor(item.sourceIds);
+      const reviewedAt = item.relationships
+        .filter((link) => propositionIds.has(link.propositionId) && link.reviewStatus === 'reviewed' && link.reviewedAt)
+        .map((link) => link.reviewedAt as string)
+        .sort()
+        .at(-1);
       return <article class="evidence-trail-card">
         <div class="evidence-trail-top"><span>{String(index + 1).padStart(2, '0')}</span><strong>{kindLabels[item.kind] || 'Registro de evidencia'}</strong></div>
         <h3>{source?.title || 'Fuente pública vinculada'}</h3>
-        <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div>{source?.date && <div><dt>Fuente fechada</dt><dd>{source.date}</dd></div>}</dl>
+        <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div>{source?.date && <div><dt>Fuente fechada</dt><dd>{source.date}</dd></div>}{reviewedAt && <div><dt>Vínculo revisado</dt><dd>{reviewedAt}</dd></div>}</dl>
         <p class="evidence-label">Qué establece este registro</p>
         <p class="evidence-finding">{item.summary}</p>
         {item.limitation && <p class="evidence-limit"><strong>Límite:</strong> {item.limitation}</p>}
-        {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <div class="evidence-relation-wrap"><span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span><details class="evidence-relation-details"><summary>Por qué está vinculado</summary><p><strong>Proposición:</strong> {propositionText.get(link.propositionId) || 'Proposición publicada asociada'}</p><p>{relationshipGuidance[link.relationship]}</p></details></div>)}
+        {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <div class="evidence-relation-wrap"><span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span><details class="evidence-relation-details"><summary>Por qué está vinculado</summary><p><strong>Proposición:</strong> {propositionText.get(link.propositionId) || 'Proposición publicada asociada'}</p><p>{relationshipGuidance[link.relationship]}</p>{link.reviewedAt && <p class="evidence-review-meta"><strong>Revisión del vínculo:</strong> {link.reviewedAt}</p>}</details></div>)}
         {source && <a href={source.url} target="_blank" rel="noreferrer">{sourceTypeLabel(source.type)} · Abrir fuente <span aria-hidden="true">↗</span></a>}
       </article>;
     })}
@@ -67,6 +72,7 @@ const relationshipLabels: Record<string, string> = {
   .evidence-finding{font:1rem/1.35 var(--serif);margin:0 0 12px}
   .evidence-limit{color:var(--muted);font:.72rem/1.45 var(--mono);margin:0 0 16px}
   .evidence-limit strong{color:var(--ink);font-weight:600}
+  .evidence-review-meta{font-size:.64rem!important;color:var(--muted)}
   .evidence-trail-card a{font:600 .65rem var(--mono);color:var(--red)}
   .evidence-trail-card a span{margin-left:5px}
   .evidence-relation-wrap{display:block;margin:0 0 14px}.evidence-relation{display:inline-block;margin:0 6px 0 0;padding:5px 7px;border:1px solid var(--line);font:600 .58rem var(--mono);text-transform:uppercase}
