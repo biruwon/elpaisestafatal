@@ -111,6 +111,22 @@
     "notEquivalentTo": ["government_revenue_ratio", "gdp_current_prices"],
     "dimensions": ["period", "geography", "government_sector", "national_account_item"]
   },
+  "government_revenue_ratio_europe": {
+    "name": "General government total revenue as a share of GDP: Spain and the European Union",
+    "aliases": ["ingresos públicos frente a Europa", "recaudación pública frente a Europa", "España recauda más que Europa", "España recauda menos que Europa", "ingresos públicos de España frente a la Unión Europea"],
+    "unit": "percent of GDP",
+    "population": "general government total revenue in Spain and the European Union",
+    "notEquivalentTo": ["government_revenue_ratio", "government_expenditure_ratio", "government_debt_ratio"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item"]
+  },
+  "government_expenditure_ratio_europe": {
+    "name": "General government total expenditure as a share of GDP: Spain and the European Union",
+    "aliases": ["gasto público frente a Europa", "gasto del Estado frente a Europa", "España gasta más que Europa", "España gasta menos que Europa", "gasto público de España frente a la Unión Europea"],
+    "unit": "percent of GDP",
+    "population": "general government total expenditure in Spain and the European Union",
+    "notEquivalentTo": ["government_expenditure_ratio", "government_revenue_ratio", "government_debt_ratio"],
+    "dimensions": ["period", "geography", "government_sector", "national_account_item"]
+  },
   "youth_unemployment_rate": {
     "name": "Youth unemployment rate",
     "aliases": ["paro juvenil", "desempleo juvenil", "jóvenes sin trabajo", "paro de los jóvenes"],

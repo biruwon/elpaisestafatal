@@ -45,4 +45,16 @@ const employmentRecords = [
 ];
 const employmentComparison = summarizeWarehouseEuropeanComparison('¿Tiene España una tasa de empleo mayor que la Unión Europea?', employmentRecords);
 if (!employmentComparison || employmentComparison.metricId !== 'employment_rate_europe' || !employmentComparison.summary.includes('75,8') || !employmentComparison.summary.includes('75') || !employmentComparison.reply.includes('tasa de empleo española fue más alta') || employmentComparison.reply.includes('interanual')) throw new Error('European employment comparison did not preserve the same-period Spain/EU comparison or localized its unit');
+const revenueRecords = [
+  { id: 'revenue-es-2025', metricId: 'government_revenue_ratio_europe', datasetId: 'Government revenue comparison', value: 42.9, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'revenue-eu-2025', metricId: 'government_revenue_ratio_europe', datasetId: 'Government revenue comparison', value: 46.4, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const revenueComparison = summarizeWarehouseEuropeanComparison('¿España recauda más o menos que la media de la Unión Europea?', revenueRecords);
+if (!revenueComparison || revenueComparison.metricId !== 'government_revenue_ratio_europe' || !revenueComparison.summary.includes('42,9') || !revenueComparison.summary.includes('46,4') || !revenueComparison.reply.includes('ingresos públicos españoles fueron más bajos')) throw new Error('European public-revenue comparison did not preserve the same-period comparison or public-aggregate caveat');
+const expenditureRecords = [
+  { id: 'expenditure-es-2025', metricId: 'government_expenditure_ratio_europe', datasetId: 'Government expenditure comparison', value: 45.3, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source },
+  { id: 'expenditure-eu-2025', metricId: 'government_expenditure_ratio_europe', datasetId: 'Government expenditure comparison', value: 49.5, unit: 'Percentage of gross domestic product', period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },
+];
+const expenditureComparison = summarizeWarehouseEuropeanComparison('¿España gasta más o menos que la media de la Unión Europea?', expenditureRecords);
+if (!expenditureComparison || expenditureComparison.metricId !== 'government_expenditure_ratio_europe' || !expenditureComparison.summary.includes('45,3') || !expenditureComparison.summary.includes('49,5') || !expenditureComparison.reply.includes('gasto público español fue más bajo')) throw new Error('European public-expenditure comparison did not preserve the same-period comparison or public-aggregate caveat');
 console.log('Warehouse ranking validation passed: same-period comparable regions are ranked with Spanish geography preserved.');

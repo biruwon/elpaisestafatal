@@ -22,6 +22,10 @@ if (!excludedMetricIdsForQuery('evolución del desempleo en España').has('youth
 if (excludedMetricIdsForQuery('desempleo juvenil en España').size) throw new Error('Metric hints incorrectly suppressed youth unemployment when youth wording was explicit');
 if (!preferredMetricIdsForQuery('evolución de la recaudación pública').has('government_revenue_ratio')) throw new Error('Metric hints did not prefer public revenue for revenue wording');
 if (!preferredMetricIdsForQuery('gasto público sobre PIB').has('government_expenditure_ratio')) throw new Error('Metric hints did not prefer public expenditure for spending wording');
+if (!preferredMetricIdsForQuery('España recauda más o menos que la media de la Unión Europea').has('government_revenue_ratio_europe')) throw new Error('Metric hints did not prefer European public revenue for comparison wording');
+if (preferredMetricIdsForQuery('España recauda más o menos que la media de la Unión Europea').has('government_revenue_ratio')) throw new Error('Metric hints kept Spain-only public revenue alongside European comparison wording');
+if (!preferredMetricIdsForQuery('España gasta más o menos que la media de la Unión Europea').has('government_expenditure_ratio_europe')) throw new Error('Metric hints did not prefer European public expenditure for comparison wording');
+if (preferredMetricIdsForQuery('España gasta más o menos que la media de la Unión Europea').has('government_expenditure_ratio')) throw new Error('Metric hints kept Spain-only public expenditure alongside European comparison wording');
 if (!preferredMetricIdsForQuery('sobrecarga del coste de la vivienda').has('housing_cost_overburden_rate')) throw new Error('Metric hints did not prefer housing cost overburden for affordability wording');
 if (!preferredMetricIdsForQuery('gasto sanitario por habitante').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for resource wording');
 if (!preferredMetricIdsForQuery('cuánto gasta sanidad por habitante en España').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for conversational wording');

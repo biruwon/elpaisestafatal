@@ -28,6 +28,8 @@ const metricHints = [
   { ids: ['government_debt_current_prices'], terms: ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe españa', 'cuanto debe españa en euros', 'cuanto debe españa en dinero', 'deuda de españa en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
+  { ids: ['government_revenue_ratio_europe'], terms: ['ingresos publicos frente a europa', 'ingresos publicos frente a la union europea', 'recaudacion publica frente a europa', 'recaudacion publica frente a la union europea', 'espana recauda mas que europa', 'espana recauda menos que europa', 'espana recauda mas que la union europea', 'espana recauda menos que la union europea', 'recauda mas o menos que la media europea', 'recauda mas o menos que la media de la union europea', 'ingresos publicos europa', 'recaudacion europa'] },
+  { ids: ['government_expenditure_ratio_europe'], terms: ['gasto publico frente a europa', 'gasto publico frente a la union europea', 'gasto del estado frente a europa', 'gasto del estado frente a la union europea', 'espana gasta mas que europa', 'espana gasta menos que europa', 'espana gasta mas que la union europea', 'espana gasta menos que la union europea', 'gasta mas o menos que la media europea', 'gasta mas o menos que la media de la union europea', 'gasto publico europa', 'gasto europa'] },
   { ids: ['housing_cost_overburden_rate'], terms: ['sobrecarga', 'coste de la vivienda', 'gastos de vivienda', 'esfuerzo de vivienda', 'sobrecarga coste vivienda', 'hogares soportan el coste de la vivienda', 'porcentaje de hogares soporta'] },
   { ids: ['health_expenditure_per_capita'], terms: ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'recursos sanitarios', 'gasto sanitario por habitante', 'gasto sanitario por persona', 'gasto por habitante en sanidad', 'gasta en sanidad por habitante', 'gasta sanidad por habitante', 'gasta sanidad habitante', 'cuanto gasta sanidad habitante', 'sanidad por habitante', 'gasto por persona en sanidad', 'dinero por persona en sanidad', 'cuanto dinero se dedica a sanidad', 'cuanto dinero se dedica por persona a la sanidad', 'cuanto se gasta en sanidad', 'cuanto se gasta en salud'] },
   { ids: ['unmet_healthcare_waiting_list_rate'], terms: ['lista de espera medica', 'lista de espera sanitaria', 'no recibe atencion por lista de espera', 'personas sin atencion por lista de espera', 'espera medica impide atencion', 'necesidad medica no atendida por espera'] },
@@ -70,6 +72,8 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('employment_rate');
     preferred.delete('unemployment_rate_europe');
   }
+  if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
+  if (preferred.has('government_expenditure_ratio_europe')) preferred.delete('government_expenditure_ratio');
   if (preferred.has('youth_unemployment_rate')) preferred.delete('unemployment_rate');
   if (preferred.has('youth_unemployment_rate')) preferred.delete('employment_rate');
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');

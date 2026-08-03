@@ -18,6 +18,8 @@ const metricLabels = {
   gdp_real_growth_europe: 'Crecimiento interanual del PIB real: España y la Unión Europea',
   employment_rate: 'Tasa de empleo en España',
   employment_rate_europe: 'Tasa de empleo: España y la Unión Europea',
+  government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
+  government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   unemployment_rate: 'Tasa de desempleo en España',
   unemployment_rate_europe: 'Tasa de desempleo de España frente a Europa',
   government_debt_ratio: 'Deuda pública sobre el PIB en España',
@@ -72,6 +74,7 @@ const displayUnit = (item) => {
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe') return '%';
+  if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
   if (metricId === 'house_price_index') return 'índice (2015=100)';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';

@@ -115,6 +115,26 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa la tasa de empleo de la población de 20 a 64 años según la definición comparable de Eurostat; no equivale a la tasa de paro ni describe todos los grupos de edad.',
     caveat: 'Es una medida de empleo entre 20 y 64 años, no una descripción completa de la calidad o estabilidad del trabajo.',
   },
+  government_revenue_ratio_europe: {
+    label: 'Ingresos públicos sobre el PIB',
+    verb: 'registró unos ingresos públicos',
+    replyLead: 'los ingresos públicos equivalieron al',
+    differenceVerb: ['los ingresos públicos españoles fueron más altos', 'los ingresos públicos españoles fueron más bajos', 'España y la Unión Europea registraron el mismo nivel de ingresos públicos'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    method: 'La comparación usa los ingresos totales de las administraciones públicas como porcentaje del PIB según las cuentas nacionales de Eurostat; no equivale a la presión fiscal de cada hogar ni a los impuestos de una persona concreta.',
+    caveat: 'Es un agregado de todas las administraciones públicas, no una medida directa de cuánto paga cada familia.',
+  },
+  government_expenditure_ratio_europe: {
+    label: 'Gasto público sobre el PIB',
+    verb: 'registró un gasto público',
+    replyLead: 'el gasto público equivalió al',
+    differenceVerb: ['el gasto público español fue más alto', 'el gasto público español fue más bajo', 'España y la Unión Europea registraron el mismo nivel de gasto público'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    method: 'La comparación usa el gasto total de las administraciones públicas como porcentaje del PIB según las cuentas nacionales de Eurostat; no identifica cuánto gasta un servicio concreto ni permite juzgar por sí sola su eficiencia.',
+    caveat: 'Es un agregado de todas las administraciones públicas, no una medida directa de la calidad o del coste de un servicio.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
