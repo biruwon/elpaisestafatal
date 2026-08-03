@@ -1,6 +1,8 @@
+import { readdirSync, readFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -12,6 +14,80 @@ const outputPath = args.get('output') || join(root, '.local/materialization-cand
 const minimumCount = Math.max(1, Number(args.get('min-count') || 3));
 const limit = Math.max(1, Number(args.get('limit') || 50));
 
+const normalise = (value) => String(value || '')
+  .toLocaleLowerCase('es')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/ñ/g, 'n')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim()
+  .slice(0, 12000);
+const stripConversationWrapper = (value) => normalise(value)
+  .replace(/^(?:es verdad que|de verdad|segun los datos|en el grupo dicen que|mi cunado insiste|he leido esto|que hay de cierto en que)\s+/, '')
+  .replace(/^no me creo que\s+/, '')
+  .replace(/\s+y por eso todo va peor$/, '')
+  .replace(/[?¿.!]+$/g, '')
+  .trim();
+const parseFrontmatter = (raw) => {
+  const match = String(raw || '').match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  return Object.fromEntries(match[1].split('\n').flatMap((line) => {
+    const index = line.indexOf(':');
+    return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]];
+  }));
+};
+const scalar = (value) => {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  try { return typeof JSON.parse(text) === 'string' ? JSON.parse(text) : text; } catch { return text.replace(/^['"]|['"]$/g, ''); }
+};
+const list = (value) => {
+  try {
+    const parsed = JSON.parse(String(value || '[]'));
+    return Array.isArray(parsed) ? parsed.map(scalar).filter(Boolean) : [];
+  } catch { return []; }
+};
+const publishedClaimRecords = () => {
+  let files = [];
+  try { files = readdirSync(join(root, 'content/claims')).filter((file) => file.endsWith('.md')); } catch { return []; }
+  return files.flatMap((file) => {
+    const frontmatter = parseFrontmatter(readFileSync(join(root, 'content/claims', file), 'utf8'));
+    if (frontmatter.status !== 'published' || !frontmatter.slug || !frontmatter.claim) return [];
+    return [{ slug: scalar(frontmatter.slug), phrases: [scalar(frontmatter.claim), ...list(frontmatter.aliases)] }];
+  });
+};
+const publishedClaims = publishedClaimRecords();
+const clusterPhrases = (cluster) => [
+  cluster?.canonicalText,
+  cluster?.canonical,
+  cluster?.text,
+  cluster?.normalized,
+  ...(Array.isArray(cluster?.surfaceSignatures) ? cluster.surfaceSignatures : []),
+].filter(Boolean).map(stripConversationWrapper).filter(Boolean);
+const publishedClaimForCluster = (cluster) => {
+  const values = clusterPhrases(cluster);
+  if (!values.length) return null;
+  return publishedClaims.find((claim) => {
+    const phrases = claim.phrases.map(stripConversationWrapper).filter(Boolean);
+    return values.some((value) => phrases.includes(value));
+  }) || null;
+};
+const warehouseRouteForCluster = (cluster) => preferredMetricIdsForQuery(clusterPhrases(cluster).join(' ')).size > 0;
+export const reconcileMaterializationCluster = (cluster) => {
+  if (!cluster || cluster.newlyCovered) return cluster;
+  const publishedClaim = cluster.linkedClaimSlug
+    ? { slug: cluster.linkedClaimSlug }
+    : publishedClaimForCluster(cluster);
+  if (!publishedClaim) return cluster;
+  return {
+    ...cluster,
+    coverageStatus: 'covered',
+    reviewStatus: 'published',
+    linkedClaimSlug: cluster.linkedClaimSlug || publishedClaim.slug,
+    newlyCovered: false,
+  };
+};
+
 const slugify = (value) => String(value || '')
   .toLocaleLowerCase('es')
   .normalize('NFD')
@@ -22,6 +98,8 @@ const slugify = (value) => String(value || '')
   .slice(0, 72) || 'aclaracion-sin-titulo';
 
 export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50 } = {}) => (Array.isArray(clusters) ? clusters : [])
+  .map(reconcileMaterializationCluster)
+  .filter((cluster) => !warehouseRouteForCluster(cluster))
   .filter((cluster) => cluster && cluster.reviewable !== false && Number(cluster.count ?? cluster.exampleCount) >= minCount && Array.isArray(cluster.sourceIds) && cluster.sourceIds.length > 0 && cluster.reviewStatus !== 'published' && (cluster.coverageStatus !== 'covered' || cluster.newlyCovered))
   .map((cluster) => ({
     clusterId: String(cluster.id || `cluster-${slugify(cluster.signature)}`),

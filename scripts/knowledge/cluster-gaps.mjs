@@ -216,8 +216,8 @@ const clusterRecords = (records, publishedClaims = []) => {
       current.text = publicText(item.text || current.text);
       current.firstSeen = earliest(current.firstSeen, item.firstSeen);
       current.lastSeen = latest(current.lastSeen, item.lastSeen);
-      current.coverageStatus = item.coverageStatus || current.coverageStatus;
-      current.reviewStatus = item.reviewStatus || current.reviewStatus;
+      if (current.coverageStatus !== 'covered') current.coverageStatus = item.coverageStatus || current.coverageStatus;
+      if (current.reviewStatus !== 'published') current.reviewStatus = item.reviewStatus || current.reviewStatus;
       current.linkedClaimSlug = item.linkedClaimSlug || current.linkedClaimSlug;
       current.sourceIds = [...new Set([...current.sourceIds, ...asArray(item.sourceIds)])].slice(0, 20);
       if (surfaceSignature !== current.signature) current.surfaceSignatures = [...new Set([...current.surfaceSignatures, surfaceSignature])].slice(0, 10);
