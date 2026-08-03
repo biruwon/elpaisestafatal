@@ -359,6 +359,22 @@ const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
   ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
   : '';
 
+const quickResultOverviewMarkup = (
+  state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid',
+  primary?: ClaimIndexEntry,
+  guidance?: SearchResponse['guidance'],
+): string => {
+  if (state === 'loading' || state === 'invalid') return '';
+  const found = primary?.answer
+    || (state === 'published' ? 'Hemos encontrado una ficha publicada que coincide con la frase.' : state === 'related' ? 'Hemos encontrado contexto cercano, pero no una coincidencia exacta.' : 'Todavía no hay una ficha publicada que responda directamente a esta frase.');
+  const limitation = primary?.cannotProve
+    || guidance?.limitation
+    || (state === 'unavailable' ? 'El análisis adicional no está disponible ahora; esta orientación no debe interpretarse como una comprobación exacta.' : 'La frase necesita un hecho, fecha, lugar o programa concreto para poder comprobarse.');
+  const next = guidance?.questions?.[0]
+    || (primary?.kind === 'topic' ? 'Elige una pregunta concreta dentro de este tema.' : state === 'published' ? 'Abre la ficha para revisar el dato y sus fuentes.' : '¿Qué hecho concreto, fecha o lugar quieres comprobar?');
+  return `<div class="claim-result-overview claim-result-overview-quick" aria-label="Resumen rápido de la orientación"><div><span>Lo que encontramos</span><strong>${escapeHtml(found)}</strong></div><div><span>Lo que no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(next)}</strong></div></div>`;
+};
+
 const broadTopicSuggestions = (original: string): { items: Array<{ title: string; href: string }>; label: string } => {
   const query = normaliseClaimText(original);
   if (query.length < 12) return { items: [], label: '' };
@@ -1002,7 +1018,8 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
   const inputMarkup = inputKind === 'media' ? submittedClaimMarkup(original, 'media') : submittedClaimMarkup(original);
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${resultActionsMarkup(primary?.answer ? shareUrlFor(original, primary, state === 'published' ? 'published' : 'related') : undefined)}${alternativesMarkup}</article>`;
+  const overview = ['published', 'related', 'uncovered', 'unavailable'].includes(state) ? quickResultOverviewMarkup(state, primary, guidance) : '';
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${overview}${resultActionsMarkup(primary?.answer ? shareUrlFor(original, primary, state === 'published' ? 'published' : 'related') : undefined)}${alternativesMarkup}</article>`;
   bindResultActions();
 };
 

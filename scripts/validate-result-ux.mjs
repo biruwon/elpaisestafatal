@@ -74,7 +74,7 @@ if (!page.includes('id="conversation-result" role="region" aria-label="Resultado
 if (source.includes('La frase que comprobamos:')) {
   failures.push('structured result headings should not repeat the user-facing phrase prefix');
 }
-for (const snippet of ['const submittedClaimMarkup', 'class="claim-result-submission"', 'resetMediaSelection()', 'const title = primary ? primary.title']) {
+for (const snippet of ['const submittedClaimMarkup', 'const quickResultOverviewMarkup', 'claim-result-overview-quick', 'Lo que encontramos', 'Lo que no demuestra', 'Siguiente paso', 'class="claim-result-submission"', 'resetMediaSelection()', 'const title = primary ? primary.title']) {
   if (!source.includes(snippet)) failures.push(`result hierarchy is missing ${snippet}`);
 }
 
