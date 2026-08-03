@@ -35,6 +35,8 @@ const warehousePrompts = [
   '¿Cuántos residentes nacieron fuera de España?',
   '¿Cuántas personas inmigraron a España durante el último año?',
   '¿Cómo han evolucionado los homicidios registrados en España?',
+  '¿Qué comunidad tiene mayor densidad de población?',
+  '¿Madrid tiene más densidad que Andalucía?',
 ];
 const warehouseHighlights = [
   { label: 'Coste de vida', prompt: '¿Cuál es la inflación anual en España?', detail: 'Precios recientes y evolución anual.' },
@@ -43,6 +45,7 @@ const warehouseHighlights = [
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },
   { label: 'Sanidad', prompt: '¿Cuánto gasta España en sanidad por habitante?', detail: 'Gasto comparable, unidad y fuente.' },
   { label: 'Seguridad', prompt: '¿Cómo han evolucionado los homicidios registrados en España?', detail: 'La categoría exacta, no una etiqueta genérica de “crimen”.' },
+  { label: 'Territorio', prompt: '¿Madrid tiene más densidad que Andalucía?', detail: 'Compara dos comunidades con el mismo indicador y periodo.' },
 ];
 const conversationPayload = JSON.stringify(conversationMvpClaims).replace(/</g, '\\u003c');
 const claimIndexPayload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');

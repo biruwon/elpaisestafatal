@@ -21,6 +21,8 @@ const required = [
   'Leyendo archivo',
   'statusState',
   'const assessmentLabels',
+  'const displayedAssessment',
+  'La frase que comprobamos:',
   'const resetChecker',
   'data-new-check',
   'const shareUrlFor',

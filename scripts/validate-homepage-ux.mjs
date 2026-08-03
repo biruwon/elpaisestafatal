@@ -17,6 +17,7 @@ requireText('data-example-filter="all"', 'the popular prompt filters');
 requireText('data-example-more', 'the progressive popular-prompt list');
 requireText('data-example-topic=', 'topic metadata for popular prompts');
 requireText('data-example-source="warehouse"', 'fresh warehouse prompt entry points');
+requireText('Madrid tiene más densidad que Andalucía', 'regional comparison discovery prompt');
 requireText('class="warehouse-prompts"', 'fresh warehouse prompt section');
 requireText('class="latest-home"', 'automatic recent-clarifications section');
 requireText('data-latest-claim=', 'recent claim cards sourced from published content');
