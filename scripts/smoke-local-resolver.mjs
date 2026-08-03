@@ -339,7 +339,15 @@ if (process.env.SMOKE_OFFICIAL === '1') {
     if (!moneyFlow?.evidenceIds?.length) failures.push('official transfer: money flow lost its evidence IDs');
     if (!reply?.evidenceIds?.length) failures.push('official transfer: conversation reply lost its evidence IDs');
     if (!result.result?.sourceLinks?.length || !result.result.sourceLinks.every((source) => /^https:\/\//i.test(source.url))) failures.push('official transfer: source link is missing or not attributable');
+    if (!result.result?.headline?.toLocaleLowerCase('es').includes('transferencia')) failures.push('official transfer: result did not summarize the documented transfer clearly');
   } catch (error) { failures.push(`official transfer: ${error.message}`); }
+  for (const text of ['Bolaños se lleva 310 millones de Educación', 'Educación pierde 310 millones para Presidencia']) {
+    try {
+      const result = await resolve(text);
+      const moneyFlow = result.result?.blocks?.find((block) => block.type === 'money_flow');
+      if (result.status !== 'draft' || !moneyFlow?.evidenceIds?.length) failures.push(`official transfer paraphrase: no structured money flow for ${text}`);
+    } catch (error) { failures.push(`official transfer paraphrase ${text}: ${error.message}`); }
+  }
   try {
     const result = await resolve('¿La información pública se puede reutilizar sin condiciones?');
     const legalTree = result.result?.blocks?.find((block) => block.type === 'legal_decision_tree');

@@ -8,8 +8,9 @@ export const handlerForInput = (input, claimType = '') => {
     ? input.impliedPropositions
     : Array.isArray(input?.propositions) ? input.propositions : [];
   const impliedDefinition = propositions.some((item) => item && item.explicit === false && item.type === 'definition');
-  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'ministerio', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo'])
-    || (includesAny(text, ['quita', 'recorta']) && includesAny(text, ['gobierno', 'educacion', 'presidencia']));
+  const budgetMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'se lleva', 'lleva', 'quita', 'quitar', 'recorta', 'recorte', 'pierde', 'pierden', 'pasa', 'pasan', 'destina', 'asigna', 'recibe'])
+    && includesAny(text, ['presupuesto', 'millones', 'dinero', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
+  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'ministerio', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
   if (budgetSignal) return 'budget_transfer';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
