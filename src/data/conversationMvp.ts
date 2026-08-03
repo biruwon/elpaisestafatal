@@ -575,6 +575,19 @@ definitions['dependencia-mayores-espana-312'] = {
   visuals: { key: { value: '31,2', label: 'Mayores por cada 100 personas de 15–64 años', period: '2025' }, trend: { available: true, labels: ['2015', '2020', '2022', '2023', '2024', '2025'], values: [27.8, 29.5, 30.2, 30.4, 30.8, 31.2], label: 'Ratio de dependencia de personas mayores', unit: 'personas mayores por cada 100 en edad laboral' }, caveat: 'El denominador es población de 15 a 64 años, no personas que trabajan o cotizan. La ratio no determina por sí sola la edad de jubilación ni el equilibrio financiero de las pensiones.' },
 };
 
+definitions['espana-poblacion-crece-2025'] = {
+  prompt: 'La población de España creció en 2025',
+  aliases: ['España está ganando población', 'la población española aumenta', 'España crece en habitantes', 'en España cada vez hay más gente', 'la población de España no está bajando'],
+  propositions: ['La tasa de cambio total de la población española fue positiva en 2025, con 9,4 por cada 1.000 habitantes.', 'Todos los municipios y territorios ganaron población.', 'La tasa nacional demuestra por sí sola que el crecimiento procede de la inmigración.'],
+  concern: 'El saldo nacional de población fue positivo, pero una media española no describe cada territorio ni separa por sí sola nacimientos, defunciones y migración.',
+  supports: 'Eurostat registra una tasa de cambio total de 9,4 por cada 1.000 habitantes en España en 2025, frente a -0,1 en 2015.',
+  limit: 'La tasa es un saldo agregado. Para explicar sus componentes hay que consultar por separado nacimientos, defunciones y migración; tampoco todos los municipios siguen la media nacional.',
+  question: '¿Quieres medir el saldo nacional, la evolución de tu territorio o qué componente explica el cambio?',
+  reply: 'Sí: la población residente de España creció en el saldo nacional de 2025, con una tasa de cambio total de 9,4 por cada 1.000 habitantes. Es una media nacional; para explicar el cambio hay que separar nacimientos, defunciones y migración.',
+  visualLabel: 'Saldo nacional y componentes demográficos son preguntas distintas',
+  visuals: { key: { value: '+9,4', label: 'Cambio total por cada 1.000 habitantes', period: '2025' }, trend: { available: true, labels: ['2015', '2018', '2020', '2022', '2023', '2024', '2025'], values: [-0.1, 5.9, 0.6, 8.8, 11.1, 10.4, 9.4], label: 'Tasa de cambio total de la población', unit: 'por cada 1.000 habitantes' }, caveat: 'El saldo nacional no indica por sí solo si el cambio procede de nacimientos, defunciones o migración, y oculta diferencias territoriales.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

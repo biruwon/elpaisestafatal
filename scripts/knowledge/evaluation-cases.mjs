@@ -10,6 +10,7 @@ const knownSeeds = [
   ['viviendas-vacias', 'causal', 'Hay millones de viviendas vacías, así que no hace falta construir'],
   ['alquileres-suben', 'trend', 'Los alquileres han subido en España desde 2015'],
   ['espana-pierde-poblacion', 'trend', 'España está perdiendo población'],
+  ['espana-poblacion-crece-2025', 'quantity', 'La población de España creció en 2025'],
   ['espana-envejece', 'trend', 'España está cada vez más envejecida'],
   ['dependencia-mayores-espana-312', 'quantity', 'España tiene 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años'],
   ['espana-fecundidad-baja', 'quantity', 'España tiene menos de 1,2 hijos por mujer'],

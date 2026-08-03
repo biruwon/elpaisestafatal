@@ -453,6 +453,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'personas mayores por cada 100 en edad de trabajar') failures.push('ageing warehouse: did not localize the unit');
   } catch (error) { failures.push(`ageing warehouse: ${error.message}`); }
   try {
+    const result = await resolve('La población de España creció en 2025');
+    if (result.status !== 'known' || result.result?.claimSlug !== 'espana-poblacion-crece-2025') failures.push('published population-growth claim: did not resolve the canonical claim');
+    if (!/9,4|9\.4/.test(JSON.stringify(result.result || {}))) failures.push('published population-growth claim: lost the measured value');
+  } catch (error) { failures.push(`published population-growth claim: ${error.message}`); }
+  try {
     const result = await resolve('España tiene 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años');
     if (result.status !== 'known' || result.result?.claimSlug !== 'dependencia-mayores-espana-312') failures.push('published old-age dependency claim: did not resolve the canonical claim');
     if (!/31,2|31\.2/.test(JSON.stringify(result.result || {}))) failures.push('published old-age dependency claim: lost the measured value');

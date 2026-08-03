@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-poblacion-crece-2025-core",
+  "claimSlug": "espana-poblacion-crece-2025",
+  "text": "La tasa de cambio total de la población española fue positiva en 2025, con 9,4 por cada 1.000 habitantes.",
+  "type": "descriptive",
+  "subject": "population_change_rate",
+  "predicate": "was_positive",
+  "object": "9.4_per_1000_inhabitants",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-cambio-eurostat"]
+}
