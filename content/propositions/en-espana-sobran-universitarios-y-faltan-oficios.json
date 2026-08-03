@@ -1,0 +1,17 @@
+{
+  "id": "prop-en-espana-sobran-universitarios-y-faltan-oficios-core",
+  "claimSlug": "en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios",
+  "text": "España tiene demasiadas personas con estudios universitarios y la falta de trabajadores de oficios se debe a ese exceso.",
+  "type": "mixed",
+  "subject": "educacion_y_mercado_laboral",
+  "predicate": "explains",
+  "object": "desajuste_de_cualificaciones",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "insufficient",
+  "evidenceIds": [
+    "empleo-microdatos-del-barometro-de-abril-de-2026-md3557",
+    "empleo-encuesta-de-poblacion-activa-t1-2026",
+    "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"
+  ]
+}

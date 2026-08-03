@@ -66,6 +66,7 @@ const knownSeeds = [
   ['juventud-emancipacion', 'definition', 'Casi la mitad de las personas de 26 a 34 años sigue viviendo con sus padres'],
   ['espana-recesion', 'trend', 'España está en recesión'],
   ['demasiados-graduados', 'definition', 'España tiene demasiados universitarios'],
+  ['en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios', 'definition', 'En España sobran universitarios y faltan trabajadores de oficios'],
   ['abandono-escolar-temprano-baja', 'trend', 'España ha reducido el abandono escolar temprano'],
   ['titulacion-superior-aumenta', 'trend', 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado'],
   ['neet-baja', 'trend', 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan'],

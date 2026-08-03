@@ -498,6 +498,19 @@ definitions['necesidades-medicas-lista-espera-espana-ue'] = {
   visuals: { key: { value: '+0,4 p.p.', label: 'España frente a la Unión Europea', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Necesidades médicas no atendidas por lista de espera', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [1.6, 1.2], label: 'Necesidad médica no atendida por lista de espera', unit: '% de personas de 16 años o más · 2025' }, caveat: 'Es una medida declarada de acceso, no el número administrativo de pacientes, la espera media o una medida completa de la calidad sanitaria.' },
 };
 
+definitions['en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios'] = {
+  prompt: 'En España sobran universitarios y faltan trabajadores de oficios',
+  aliases: ['sobran universitarios y faltan trabajadores', 'faltan trabajadores de oficios por culpa de tantos universitarios', 'España está llena de universitarios y faltan oficios'],
+  propositions: ['Puede existir un desajuste entre estudios, vacantes y cualificaciones técnicas.', 'La falta de trabajadores de oficios demuestra que sobran los universitarios.', 'La proporción de titulados superiores mide por sí sola la mezcla óptima de formación.'],
+  concern: 'Puede haber desajustes reales entre formación y vacantes, pero la frase convierte una escasez concreta de perfiles técnicos en una conclusión general sobre todos los universitarios.',
+  supports: 'En 2025, el 52,5% de las personas de 25 a 34 años en España tenía educación terciaria; el dato describe nivel educativo, no vacantes, especialidades, salarios ni sobrecualificación.',
+  limit: 'La evidencia no permite concluir que sobren los universitarios en general ni que estudiar una carrera cause la falta de trabajadores de oficios. Hay que comparar especialidad, territorio, vacantes y salarios.',
+  question: '¿Qué oficio, especialidad, territorio y tipo de vacante quieres comparar?',
+  reply: 'La frase mezcla un desajuste real entre formación y vacantes con una conclusión demasiado amplia. Puede faltar personal técnico en oficios concretos y existir sobrecualificación en algunos empleos, pero eso no demuestra que sobren los universitarios en general.',
+  visualLabel: 'Nivel educativo y encaje laboral no son la misma medida',
+  visuals: { key: { value: '52,5 %', label: 'Personas de 25 a 34 con educación terciaria', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Formación y vacantes', unit: 'La proporción de titulados no mide por sí sola la demanda de oficios' }, caveat: 'La evidencia distingue nivel educativo, sobrecualificación, vacantes, especialidad, salarios y territorio.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the
