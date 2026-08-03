@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const source = await readFile(new URL('../src/scripts/claim-input.ts', import.meta.url), 'utf8');
+const page = await readFile(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
 const failures = [];
 const required = [
   'const resultActionsMarkup',
@@ -27,6 +28,14 @@ if (quickActions < 0 || quickAlternatives < 0 || quickActions > quickAlternative
 }
 
 if (source.includes('const shareAction')) failures.push('quick results retain a duplicate share-action path');
+
+for (const snippet of [
+  '.claim-result-card[data-result-mode=understand] .claim-plan-reply{display:none}',
+  '.claim-result-card[data-result-mode=reply]',
+  'data-result-mode="understand"',
+]) {
+  if (!page.includes(snippet) && !source.includes(snippet)) failures.push(`result modes are missing ${snippet}`);
+}
 
 if (failures.length) {
   console.error(failures.join('\n'));
