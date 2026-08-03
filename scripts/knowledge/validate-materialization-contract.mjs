@@ -14,7 +14,7 @@ const valid = validateMaterializationRecords({
   knownSources,
   knownPropositions,
 });
-const errorKeys = ['missingEvidence', 'missingSources', 'missingPropositions', 'wrongClaimPropositions', 'unlinkedEvidence'];
+const errorKeys = ['missingEvidence', 'missingSources', 'missingPropositions', 'wrongClaimPropositions', 'propositionsWithoutEvidence', 'unlinkedEvidence'];
 assert(!errorKeys.some((key) => valid[key].length), 'Valid materialization records were rejected');
 
 const missingProposition = validateMaterializationRecords({
@@ -35,4 +35,12 @@ const wrongClaim = validateMaterializationRecords({
 });
 assert(wrongClaim.wrongClaimPropositions.includes('prop-1'), 'A proposition from another claim bypassed validation');
 assert(wrongClaim.unlinkedEvidence.includes('prop-1:evidence-1'), 'Unlinked proposition evidence bypassed validation');
+const noEvidence = validateMaterializationRecords({
+  slug: 'new-claim',
+  answer: { propositionIds: ['prop-1'], evidenceIds: ['evidence-1'], sourceIds: ['source-1'] },
+  knownEvidence,
+  knownSources,
+  knownPropositions: new Map([['prop-1', { claimSlug: 'new-claim', evidenceIds: [] }]]),
+});
+assert(noEvidence.propositionsWithoutEvidence.includes('prop-1'), 'A proposition without evidence bypassed validation');
 console.log('Materialization contract validation passed: proposition-level review traceability is mandatory.');

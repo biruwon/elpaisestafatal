@@ -5,7 +5,8 @@ export const validateMaterializationRecords = ({ answer = {}, slug = '', knownEv
   const missingEvidence = evidenceIds.filter((id) => !knownEvidence.has(id));
   const missingSources = sourceRefs.filter((id) => !knownSources.has(id));
   const missingPropositions = propositionIds.filter((id) => !knownPropositions.has(id));
-  const wrongClaimPropositions = propositionIds.filter((id) => knownPropositions.get(id)?.claimSlug && knownPropositions.get(id).claimSlug !== slug);
+  const wrongClaimPropositions = propositionIds.filter((id) => knownPropositions.has(id) && knownPropositions.get(id)?.claimSlug !== slug);
+  const propositionsWithoutEvidence = propositionIds.filter((id) => knownPropositions.has(id) && (!Array.isArray(knownPropositions.get(id)?.evidenceIds) || knownPropositions.get(id).evidenceIds.length === 0));
   const unlinkedEvidence = propositionIds.flatMap((id) => (knownPropositions.get(id)?.evidenceIds || []).filter((evidenceId) => !evidenceIds.includes(evidenceId)).map((evidenceId) => `${id}:${evidenceId}`));
-  return { evidenceIds, sourceRefs, propositionIds, missingEvidence, missingSources, missingPropositions, wrongClaimPropositions, unlinkedEvidence };
+  return { evidenceIds, sourceRefs, propositionIds, missingEvidence, missingSources, missingPropositions, wrongClaimPropositions, propositionsWithoutEvidence, unlinkedEvidence };
 };
