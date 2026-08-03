@@ -11,6 +11,7 @@ const popularSlugs = [
   'brecha-salarial-genero-no-es-mito',
   'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control',
   'la-amnistia-rompe-la-igualdad-ante-la-ley',
+  'desalojar-a-un-ocupante-ilegal-tarda-anos',
   'paro-epa-t2-2026-baja-10',
   'precios-hoteles-sube-junio-2026',
   'sanidad-colapsada',

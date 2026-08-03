@@ -1,0 +1,14 @@
+{
+  "id": "prop-ocupacion-no-plazo-universal",
+  "claimSlug": "desalojar-a-un-ocupante-ilegal-tarda-anos",
+  "text": "No existe un plazo universal de años para recuperar la posesión de un inmueble ocupado sin consentimiento.",
+  "type": "legal",
+  "subject": "recuperación de la posesión",
+  "predicate": "depends_on",
+  "object": "supuesto y vía procesal",
+  "geography": "España",
+  "period": "vigente desde 2025",
+  "verificationRequirements": ["tipo de inmueble", "vía civil o penal", "situación procesal"],
+  "evidenceIds": ["ocupacion-vias-procesales-2025", "ocupacion-recuperacion-civil-2018", "ocupacion-limites-procedimiento-penal"],
+  "status": "qualified"
+}

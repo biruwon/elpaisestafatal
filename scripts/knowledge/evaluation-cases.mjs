@@ -21,6 +21,7 @@ const knownSeeds = [
   ['brecha-salarial-genero-no-es-mito', 'comparison', 'La brecha salarial de género es un mito'],
   ['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'legal', 'La ley trans permite cambiar de sexo sin ningún control'],
   ['la-amnistia-rompe-la-igualdad-ante-la-ley', 'legal', 'La amnistía rompe la igualdad ante la ley'],
+  ['desalojar-a-un-ocupante-ilegal-tarda-anos', 'legal', 'Desalojar a un ocupante ilegal tarda años'],
   ['precios-hoteles-sube-junio-2026', 'comparison', 'Los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026'],
   ['tasa-empleo-sube', 'trend', 'La tasa de empleo de 20 a 64 años ha subido desde 2015'],
   ['paro-espana-supera-ue', 'ranking', 'España tiene más paro que la media de la Unión Europea'],
@@ -64,7 +65,6 @@ const knownSeeds = [
 // These are deliberately present in the corpus as unpublished claims. The
 // resolver must not expose planned editorial records as public answers.
 const unpublishedSeeds = [
-  ['desalojar-a-un-ocupante-ilegal-tarda-anos', 'legal', 'Desalojar a un ocupante ilegal tarda años'],
   ['la-brecha-salarial-de-genero-es-un-mito', 'group_comparison', 'La brecha salarial de género es un mito'],
   ['espana-esta-sufriendo-un-reemplazo-poblacional', 'prediction', 'España está sufriendo un reemplazo poblacional'],
 ];

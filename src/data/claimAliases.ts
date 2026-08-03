@@ -55,6 +55,13 @@ export const claimAliases: Record<string, string[]> = {
     'amnistía y desigualdad ante la ley',
     'la amnistía rompe la igualdad',
   ],
+  'desalojar-a-un-ocupante-ilegal-tarda-anos': [
+    'la okupación tarda años en resolverse',
+    'echar a los okupas tarda años',
+    'la ley protege a los okupas durante años',
+    'desahuciar a un ocupante ilegal tarda años',
+    'desalojar a un ocupante ilegal lleva años',
+  ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
     'el precio de los hoteles sube y las pernoctaciones bajan',

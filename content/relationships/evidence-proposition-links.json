@@ -103,6 +103,12 @@
     {"evidenceId":"ees-2022-brecha-salarial","propositionId":"prop-brecha-salarial-genero-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"ley-4-2023-rectificacion-sexo","propositionId":"prop-ley-trans-no-control-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"lo-1-2024-amnistia-ambito","propositionId":"prop-amnistia-trato-diferenciado-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"tc-2026-amnistia-igualdad","propositionId":"prop-amnistia-tc-no-vulnera-igualdad","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"tc-2026-amnistia-igualdad","propositionId":"prop-amnistia-tc-no-vulnera-igualdad","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-vias-procesales-2025","propositionId":"prop-ocupacion-no-plazo-universal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-no-plazo-universal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-limites-procedimiento-penal","propositionId":"prop-ocupacion-no-plazo-universal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-vias-procesales-2025","propositionId":"prop-ocupacion-via-rapida-penal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-limites-procedimiento-penal","propositionId":"prop-ocupacion-via-rapida-penal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-recuperacion-civil","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }

@@ -101,6 +101,19 @@ definitions['la-amnistia-rompe-la-igualdad-ante-la-ley'] = {
   visuals: { key: { value: 'Excepción definida', label: 'Ámbito legal acotado y revisado constitucionalmente', period: '2024–2026' }, trend: { available: false, labels: [], values: [], label: 'Ley, sentencia y debate político', unit: 'Una diferencia jurídica no decide por sí sola la justicia de la medida' }, caveat: 'La respuesta separa el texto vigente, el fallo mayoritario y el desacuerdo político o moral.' },
 };
 
+definitions['desalojar-a-un-ocupante-ilegal-tarda-anos'] = {
+  prompt: 'Desalojar a un ocupante ilegal tarda años',
+  aliases: ['la okupación tarda años en resolverse', 'echar a los okupas tarda años', 'la ley protege a los okupas durante años', 'desahuciar a un ocupante ilegal tarda años'],
+  propositions: ['Recuperar la posesión puede exigir un procedimiento judicial.', 'Todo desalojo de un ocupante ilegal tarda años.', 'La vía penal rápida y la vía civil tienen los mismos requisitos y plazos.'],
+  concern: 'Algunos expedientes pueden alargarse, pero no hay un plazo universal: el tipo de inmueble, la vía procesal, la relación previa, la prueba y el juzgado cambian el recorrido.',
+  supports: 'La Ley Orgánica 1/2025 abre el procedimiento rápido para determinados supuestos de allanamiento y usurpación, y la Ley 5/2018 regula una vía civil de recuperación para determinados titulares.',
+  limit: 'La Fiscalía distingue el delito leve de usurpación, que continúa por el juicio sobre delitos leves. Ninguna de estas normas permite deducir la duración concreta de un caso individual.',
+  question: '¿Hablamos de una morada, una vivienda que no es morada, una relación de alquiler o una ocupación sin título desde el inicio?',
+  reply: 'No hay un plazo universal para desalojar a un ocupante: algunos supuestos pueden tramitarse por una vía penal rápida y ciertos titulares tienen una vía civil específica, pero el tiempo depende del inmueble, la relación previa, la prueba y el juzgado.',
+  visualLabel: 'La vía procesal importa más que una cifra única de años',
+  visuals: { key: { value: 'Vías distintas', label: 'Penal rápida en supuestos previstos · civil sumaria para ciertos titulares', period: 'Desde 2025' }, trend: { available: false, labels: [], values: [], label: 'Duración real de los expedientes', unit: 'No existe una serie nacional comparable para afirmar “años” en todos los casos' }, caveat: 'Una ruta procesal más rápida no garantiza un lanzamiento inmediato; el supuesto concreto y el órgano judicial siguen importando.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

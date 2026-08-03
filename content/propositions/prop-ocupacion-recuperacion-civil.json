@@ -1,0 +1,14 @@
+{
+  "id": "prop-ocupacion-recuperacion-civil",
+  "claimSlug": "desalojar-a-un-ocupante-ilegal-tarda-anos",
+  "text": "Existe una vía civil de tutela sumaria para que determinados titulares recuperen la posesión de una vivienda ocupada sin consentimiento.",
+  "type": "legal",
+  "subject": "Ley 5/2018",
+  "predicate": "provides_possession_recovery_route",
+  "object": "determinados titulares de vivienda",
+  "geography": "España",
+  "period": "vigente",
+  "verificationRequirements": ["titular legitimado", "vivienda", "privación sin consentimiento"],
+  "evidenceIds": ["ocupacion-recuperacion-civil-2018"],
+  "status": "supported"
+}

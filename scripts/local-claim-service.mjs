@@ -763,10 +763,11 @@ const requestId = (text) => digest(normalise(text)).slice(0, 24);
 const startResolveJob = (text, origin = 'runtime') => {
   const id = requestId(text);
   const signature = canonicalSignatureFor(text);
-  // Coalesce exact duplicate submissions only. A canonical signature removes
-  // useful conversational context and can make a prefixed variant inherit an
-  // uncovered result from another wording.
-  const existing = resolveJobs.get(id);
+  // Coalesce equivalent text submissions by their deterministic claim
+  // signature. The signature removes conversational wrappers such as “mi
+  // cuñado insiste”, while preserving meaningful words and polarity, so one
+  // local inference job can serve the same claim phrased in several ways.
+  const existing = resolveJobs.get(id) || [...resolveJobs.values()].find((item) => item.canonicalSignature === signature);
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
@@ -889,6 +890,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Control constitucional', status: 'known', detail: 'Las resoluciones de 2026 consultadas rechazaron que la medida vulnerase el principio de igualdad, con votos particulares.' },
         { label: 'Caso individual', status: 'missing', detail: 'La aplicación concreta depende de los hechos, los artículos aplicables y la resolución del órgano judicial competente.' },
         { label: 'Juicio de justicia o conveniencia', status: 'missing', detail: 'Los datos y el fallo mayoritario no resuelven por sí solos si la medida es políticamente o moralmente justa.' },
+      ]
+      : primary?.slug === 'desalojar-a-un-ocupante-ilegal-tarda-anos'
+        ? [
+        { label: 'Plazo universal', status: 'missing', detail: 'No existe un calendario único: la duración depende del inmueble, la relación previa, la prueba, la vía procesal y el órgano judicial.' },
+        { label: 'Vía penal desde 2025', status: 'known', detail: 'La Ley Orgánica 1/2025 incluye determinados supuestos de allanamiento y usurpación en el procedimiento para el enjuiciamiento rápido.' },
+        { label: 'Vía civil para ciertos titulares', status: 'known', detail: 'La Ley 5/2018 prevé tutela sumaria para determinadas personas físicas, entidades sin ánimo de lucro y entidades públicas de vivienda social.' },
+        { label: 'Límite de la vía rápida', status: 'known', detail: 'La Fiscalía distingue el delito leve de usurpación, que continúa por el juicio sobre delitos leves; “rápido” no significa lanzamiento automático.' },
+        { label: 'Caso concreto', status: 'missing', detail: 'Para estimar el recorrido hacen falta el tipo de inmueble, la relación con quien lo ocupa, los hechos acreditables y el procedimiento iniciado.' },
       ]
       : [
         { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? 'Hay una fuente jurídica localizada para el territorio y periodo indicados.' : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
@@ -1114,6 +1123,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? 'La ley elimina un requisito médico, pero mantiene un procedimiento'
     : primary?.slug === 'la-amnistia-rompe-la-igualdad-ante-la-ley'
       ? 'La amnistía establece una excepción definida, pero el TC no la consideró contraria a la igualdad'
+      : primary?.slug === 'desalojar-a-un-ocupante-ilegal-tarda-anos'
+        ? 'No hay un plazo único: el tipo de caso determina la vía de desalojo'
     : primary?.title;
   const result = {
     schemaVersion: '1',

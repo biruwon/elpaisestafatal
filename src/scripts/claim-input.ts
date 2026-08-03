@@ -476,8 +476,14 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   const progress = state === 'running'
     ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
     : '';
-  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Orientación inicial disponible' : state === 'slow' ? 'La orientación inicial es el resultado disponible' : 'La orientación inicial se conserva'}</strong><span>${escapeHtml(message)}</span></div>`;
+  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Respuesta disponible' : state === 'slow' ? 'Respuesta disponible' : 'Respuesta disponible'}</strong><span>${escapeHtml(message)}</span></div>${state === 'running' ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Seguir sin esperar</button>' : ''}`;
   result.querySelector('article')?.append(status);
+  status.querySelector<HTMLButtonElement>('[data-stop-enrichment]')?.addEventListener('click', () => {
+    activeRequest?.abort();
+    activeRequest = null;
+    requestVersion += 1;
+    clearDynamicStatus();
+  });
 };
 
 const applyResponse = (response: SearchResponse, original: string, fallback: RankedClaimIndexEntry[]): void => {

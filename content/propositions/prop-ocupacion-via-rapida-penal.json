@@ -1,0 +1,14 @@
+{
+  "id": "prop-ocupacion-via-rapida-penal",
+  "claimSlug": "desalojar-a-un-ocupante-ilegal-tarda-anos",
+  "text": "Desde 2025 determinados delitos de allanamiento de morada y usurpación pueden tramitarse por el procedimiento para el enjuiciamiento rápido.",
+  "type": "legal",
+  "subject": "Ley Orgánica 1/2025",
+  "predicate": "includes_in_fast_procedure",
+  "object": "allanamiento y usurpación en supuestos previstos",
+  "geography": "España",
+  "period": "desde 2025",
+  "verificationRequirements": ["texto legal vigente", "delito aplicable"],
+  "evidenceIds": ["ocupacion-vias-procesales-2025", "ocupacion-limites-procedimiento-penal"],
+  "status": "qualified"
+}
