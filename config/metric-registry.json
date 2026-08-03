@@ -231,6 +231,14 @@
     "notEquivalentTo": ["immigration_flows", "resident_population"],
     "dimensions": ["period", "geography", "country_of_birth", "age", "sex"]
   },
+  "foreign_citizenship_population": {
+    "name": "Population by country of citizenship",
+    "aliases": ["población extranjera", "nacionalidad extranjera", "ciudadanía extranjera", "extranjeros por nacionalidad"],
+    "unit": "persons",
+    "population": "usual residents with foreign citizenship or stateless status",
+    "notEquivalentTo": ["foreign_born_population", "immigration_flows", "resident_population"],
+    "dimensions": ["period", "geography", "citizenship", "age", "sex"]
+  },
   "arope_rate": {
     "name": "At-risk-of-poverty-or-social-exclusion rate",
     "aliases": ["AROPE", "riesgo de pobreza", "pobreza o exclusión", "exclusión social", "pobreza relativa"],

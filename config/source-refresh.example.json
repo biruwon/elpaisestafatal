@@ -17,6 +17,12 @@
   ],
   "eurostat": [
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_pop1ctz?geo=ES&citizen=FOR_STLS&age=TOTAL&sex=T&sinceTimePeriod=2015",
+      "title": "Población con ciudadanía extranjera en España · Eurostat",
+      "aliases": ["población extranjera", "nacionalidad extranjera", "ciudadanía extranjera", "extranjeros por nacionalidad"],
+      "metricId": "foreign_citizenship_population"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_mw_cur?geo=ES&currency=EUR&sinceTimePeriod=2015",
       "title": "Salario mínimo legal mensual en España · Eurostat",
       "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "ha subido el salario mínimo"],

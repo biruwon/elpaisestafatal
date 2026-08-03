@@ -364,6 +364,7 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
           : query.includes('inmigr') || query.includes('extranj') || query.includes('patera') || query.includes('refug')
           ? [
             '¿Cuántos residentes nacieron fuera de España?',
+            '¿Cuántos residentes tienen ciudadanía extranjera en España?',
             '¿Cuántas personas inmigraron a España durante el último año?',
             '¿La inmigración aumenta la inseguridad?',
             '¿Las personas inmigrantes reciben prioridad en las ayudas?',

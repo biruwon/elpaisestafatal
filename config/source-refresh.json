@@ -179,6 +179,12 @@
       "metricId": "foreign_born_population"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_pop1ctz?geo=ES&citizen=FOR_STLS&age=TOTAL&sex=T&sinceTimePeriod=2015",
+      "title": "Población con ciudadanía extranjera en España · Eurostat",
+      "aliases": ["población extranjera", "nacionalidad extranjera", "ciudadanía extranjera", "extranjeros por nacionalidad"],
+      "metricId": "foreign_citizenship_population"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_peps01n?geo=ES&unit=PC&age=TOTAL&sex=T&sinceTimePeriod=2015",
       "title": "Riesgo de pobreza o exclusión social (AROPE) en España · Eurostat",
       "aliases": ["AROPE", "riesgo de pobreza", "pobreza o exclusión", "exclusión social"],

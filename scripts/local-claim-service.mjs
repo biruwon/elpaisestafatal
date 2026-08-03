@@ -87,7 +87,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'housing_cost_overburden_rate') return '% de la población';
   if (metricId === 'household_electricity_price') return '€ por kWh';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
-  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'immigration_flows') return 'personas';
+  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'recorded_offences') return 'delitos registrados';
   if (metricId === 'regional_population_density') return 'personas por km²';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';

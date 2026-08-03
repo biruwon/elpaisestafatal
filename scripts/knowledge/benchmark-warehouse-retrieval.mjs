@@ -33,10 +33,20 @@ const cosine = (left, right) => {
   return leftNorm && rightNorm ? dot / Math.sqrt(leftNorm * rightNorm) : 0;
 };
 const embed = async (input) => {
-  const response = await fetch(`${endpoint}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input, keep_alive: -1 }), signal: AbortSignal.timeout(120_000) });
-  if (!response.ok) throw new Error(`Local embedding benchmark failed with ${response.status}: ${String(await response.text()).slice(0, 240)}`);
-  const embeddings = (await response.json()).embeddings;
-  if (!Array.isArray(embeddings) || embeddings.length !== input.length || embeddings.some((item) => !validateEmbedding(item))) throw new Error('Benchmark received malformed embeddings');
+  // Keep requests bounded: one large 300+ input call can exceed the local
+  // model server's tokenize/context limits even though each individual input
+  // is small. Batching also mirrors the ingestion path used for larger
+  // evidence collections.
+  const batchSize = 32;
+  const embeddings = [];
+  for (let offset = 0; offset < input.length; offset += batchSize) {
+    const batch = input.slice(offset, offset + batchSize);
+    const response = await fetch(`${endpoint}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input: batch, keep_alive: -1 }), signal: AbortSignal.timeout(120_000) });
+    if (!response.ok) throw new Error(`Local embedding benchmark failed with ${response.status}: ${String(await response.text()).slice(0, 240)}`);
+    const batchEmbeddings = (await response.json()).embeddings;
+    if (!Array.isArray(batchEmbeddings) || batchEmbeddings.length !== batch.length || batchEmbeddings.some((item) => !validateEmbedding(item))) throw new Error('Benchmark received malformed embeddings');
+    embeddings.push(...batchEmbeddings);
+  }
   return embeddings;
 };
 
@@ -53,10 +63,11 @@ const outcomes = warehouseRetrievalBenchmarkCases.map((item, caseIndex) => {
   // An explicit language hint is a deterministic routing signal. Do not let
   // a semantically broad neighbour (for example all-age unemployment) erase
   // a lexical metric whose wording the user explicitly selected.
-  const resolved = preferred.has(lexical[0]?.id)
-    ? { lexical, semantic, winner: 'lexical', preferredId: lexical[0].id }
+  const explicitPreferredId = [...preferred].find((metricId) => candidates.some((candidate) => candidate.id === metricId)) || null;
+  const resolved = explicitPreferredId
+    ? { lexical, semantic, winner: 'hint', preferredId: explicitPreferredId }
     : resolveMetricConflict(lexical, semantic);
-  const hintedPreference = [...preferred].find((metricId) => candidates.some((candidate) => candidate.id === metricId)) || null;
+  const hintedPreference = explicitPreferredId;
   const hybrid = reciprocalRankFusion(resolved.lexical, resolved.semantic, { limit: 5, preferredId: resolved.preferredId || hintedPreference });
   const expected = registry[item.expectedMetricId];
   const forbidden = new Set(expected?.notEquivalentTo || []);

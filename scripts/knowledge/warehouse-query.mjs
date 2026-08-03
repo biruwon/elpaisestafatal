@@ -68,6 +68,15 @@ const filterForeignBornObservations = (observations) => observations.filter((ite
   return birthCategory === 'total' || birthCategory.includes('foreign country');
 });
 
+const filterForeignCitizenshipObservations = (observations) => observations.filter((item) => {
+  if (item.metricId !== 'foreign_citizenship_population') return true;
+  // The citizenship feed contains one series per country and several
+  // aggregates. Generic foreign-nationality wording must use the explicit
+  // foreign-country/stateless aggregate, never the first country returned.
+  const citizenship = normalise(item.dimensionLabels?.citizen || item.dimensions?.citizen || '');
+  return citizenship === 'foreign country and stateless' || citizenship === 'for stls';
+});
+
 const populationVocabulary = [
   { aliases: ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'foreign', 'migrant', 'migrants', 'nacido en el extranjero'], terms: ['inmigr', 'extranj', 'foreign', 'migr', 'born abroad'] },
   { aliases: ['residente', 'residentes', 'poblacion', 'habitantes', 'personas que viven', 'resident', 'population'], terms: ['resident', 'poblacion', 'habit', 'population'] },
@@ -143,7 +152,7 @@ const recordText = (record) => [
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2) return [];
-  const scopedRecords = filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)).filter((record) => {
+  const scopedRecords = filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records))).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;
@@ -183,7 +192,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
 export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding, metricIds } = {}) => {
   if (postgresEnabled()) {
     const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
-    if (results) return filterForeignBornObservations(filterRecordedOffenceObservations(query, results));
+    if (results) return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, results)));
   }
-  return filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds })));
+  return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds }))));
 };

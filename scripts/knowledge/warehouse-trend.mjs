@@ -46,6 +46,7 @@ const metricLabels = {
   regional_population_density: 'Densidad de población por región',
   resident_population: 'Población residente en España',
   foreign_born_population: 'Población nacida en el extranjero en España',
+  foreign_citizenship_population: 'Población con ciudadanía extranjera en España',
   immigration_flows: 'Inmigración anual en España',
   arope_rate: 'Riesgo de pobreza o exclusión social en España',
 };
@@ -96,7 +97,7 @@ const displayUnit = (item) => {
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
-  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'immigration_flows') return 'personas';
+  if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'life_expectancy_at_birth') return 'años';
   if (metricId === 'fertility_rate') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';

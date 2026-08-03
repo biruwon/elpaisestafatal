@@ -12,4 +12,5 @@ for (const file of files) {
 }
 if (!searchAliasesForMetric('employment_rate').includes('encuentra')) throw new Error('Shared metric aliases are missing the employment vocabulary');
 if (!searchAliasesForMetric('resident_population').includes('habitantes')) throw new Error('Shared metric aliases are missing the resident-population vocabulary');
+if (!searchAliasesForMetric('foreign_citizenship_population').includes('nacionalidad extranjera')) throw new Error('Shared metric aliases are missing the foreign-citizenship vocabulary');
 console.log(`Warehouse index contract passed: ${files.length} derived indexes share metric search aliases.`);

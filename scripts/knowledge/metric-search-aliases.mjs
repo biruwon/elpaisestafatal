@@ -16,6 +16,7 @@ export const metricSearchAliases = Object.freeze({
   inflation_rate_europe: ['inflacion', 'precios', 'europa', 'union europea', 'comparacion europea'],
   resident_population: ['poblacion', 'habitantes', 'residentes', 'viven', 'normalmente'],
   foreign_born_population: ['inmigracion', 'inmigrantes', 'extranjeros', 'nacidos', 'nacieron', 'fuera', 'residentes'],
+  foreign_citizenship_population: ['poblacion extranjera', 'nacionalidad extranjera', 'ciudadania extranjera', 'extranjeros', 'ciudadanos', 'residentes'],
   immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],
   gdp_current_prices: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'produccion economica nacional'],
   gdp_real_growth_europe: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'espana crece mas que europa', 'espana crece menos que europa', 'crecimiento economico europeo', 'pib espana union europea'],
