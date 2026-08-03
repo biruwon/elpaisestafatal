@@ -7,6 +7,8 @@ export const metricSearchAliases = Object.freeze({
   employment_rate_europe: ['empleo', 'ocupacion', 'europa', 'union europea', 'comparacion europea'],
   part_time_employment_rate: ['tiempo parcial', 'trabajo parcial', 'empleo parcial', 'jornada parcial', 'contratos parciales', 'empleo', 'ocupacion'],
   part_time_employment_rate_europe: ['tiempo parcial', 'trabajo parcial', 'empleo parcial', 'jornada parcial', 'europa', 'union europea', 'comparacion europea'],
+  temporary_employment_rate: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'temporalidad', 'duracion determinada', 'empleo', 'ocupacion'],
+  temporary_employment_rate_europe: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'temporalidad', 'europa', 'union europea', 'comparacion europea'],
   minimum_wage_monthly: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'euros al mes'],
   social_protection_benefits_per_capita: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'euros por habitante'],
   old_age_survivors_benefits_per_capita: ['pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'euros por habitante'],

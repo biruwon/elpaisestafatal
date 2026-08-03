@@ -22,6 +22,8 @@ const metricLabels = {
   employment_rate_europe: 'Tasa de empleo: España y la Unión Europea',
   part_time_employment_rate: 'Empleo a tiempo parcial en España',
   part_time_employment_rate_europe: 'Empleo a tiempo parcial: España y la Unión Europea',
+  temporary_employment_rate: 'Empleo temporal en España',
+  temporary_employment_rate_europe: 'Empleo temporal: España y la Unión Europea',
   youth_unemployment_rate_europe: 'Tasa de paro juvenil: España y la Unión Europea',
   minimum_wage_monthly: 'Salario mínimo legal mensual en España',
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
@@ -92,7 +94,7 @@ const displayUnit = (item) => {
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_current_taxes_income_wealth_europe') return '% del PIB';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
-  if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'part_time_employment_rate' || metricId === 'part_time_employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe' || metricId === 'youth_unemployment_rate' || metricId === 'youth_unemployment_rate_europe') return '%';
+  if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'part_time_employment_rate' || metricId === 'part_time_employment_rate_europe' || metricId === 'temporary_employment_rate' || metricId === 'temporary_employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe' || metricId === 'youth_unemployment_rate' || metricId === 'youth_unemployment_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';
   if (metricId === 'health_expenditure_per_capita_europe') return '€ por habitante';
   if (metricId === 'median_equivalised_income_europe') return 'PPS por persona';

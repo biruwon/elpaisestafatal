@@ -21,6 +21,8 @@ const metricHints = [
   { ids: ['employment_rate_europe'], terms: ['tasa de empleo frente a europa', 'tasa de empleo frente a la union europea', 'tasa de empleo mayor que europa', 'tasa de empleo mayor que la union europea', 'tasa de empleo menor que europa', 'tasa de empleo menor que la union europea', 'tasa de empleo de espana es inferior a la de europa', 'tasa de empleo de espana inferior a europa', 'como queda el empleo espanol frente al europeo', 'tasa de ocupacion de espana frente a la union europea', 'empleo de espana frente a europa', 'empleo de espana frente a la union europea', 'espana tiene mas empleo que europa', 'espana tiene menos empleo que europa', 'espana tiene una tasa de empleo mayor que la union europea', 'espana tiene una tasa de empleo menor que la union europea', 'comparacion europea del empleo', 'comparacion europea de la ocupacion', 'empleo mas alto que europa', 'empleo mas bajo que europa', 'empleo europa'] },
   { ids: ['part_time_employment_rate'], terms: ['empleo a tiempo parcial', 'trabajo a tiempo parcial', 'tiempo parcial', 'empleo parcial', 'jornada parcial', 'contratos parciales', 'trabajos a tiempo parcial', 'empleos a tiempo parcial', 'cuanto empleo es parcial', 'cuanto trabajo es parcial'] },
   { ids: ['part_time_employment_rate_europe'], terms: ['empleo a tiempo parcial frente a europa', 'empleo a tiempo parcial frente a la union europea', 'trabajo a tiempo parcial frente a europa', 'tiempo parcial frente a europa', 'empleo parcial que europa', 'empleo parcial que la union europea', 'espana tiene mas empleo parcial que europa', 'espana tiene menos empleo parcial que europa', 'comparacion europea del empleo parcial', 'empleo parcial europa'] },
+  { ids: ['temporary_employment_rate'], terms: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'contrato temporal', 'temporalidad laboral', 'empleo de duracion determinada', 'trabajo de duracion determinada', 'cuanto empleo es temporal', 'parte del empleo temporal', 'es temporal', 'temporalidad'] },
+  { ids: ['temporary_employment_rate_europe'], terms: ['empleo temporal frente a europa', 'empleo temporal frente a la union europea', 'trabajo temporal frente a europa', 'temporalidad frente a europa', 'temporalidad que europa', 'espana tiene mas temporalidad que europa', 'espana tiene menos temporalidad que europa', 'comparacion europea de la temporalidad', 'temporalidad europa'] },
   { ids: ['minimum_wage_monthly'], terms: ['salario minimo', 'salario minimo interprofesional', 'smi', 'sueldo minimo', 'minimo salarial', 'cuanto es el salario minimo', 'ha subido el salario minimo', 'sube el salario minimo', 'salario minimo en espana'] },
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
   { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
@@ -97,6 +99,19 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('unemployment_rate_europe');
   }
   if (preferred.has('part_time_employment_rate')) {
+    preferred.delete('employment_rate');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('unemployment_rate');
+    preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('temporary_employment_rate_europe')) {
+    preferred.delete('temporary_employment_rate');
+    preferred.delete('employment_rate');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('unemployment_rate');
+    preferred.delete('unemployment_rate_europe');
+  }
+  if (preferred.has('temporary_employment_rate')) {
     preferred.delete('employment_rate');
     preferred.delete('employment_rate_europe');
     preferred.delete('unemployment_rate');

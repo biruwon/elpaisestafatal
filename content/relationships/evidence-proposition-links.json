@@ -9,6 +9,13 @@
       "reviewedAt": "2026-08-03"
     },
     {
+      "evidenceId": "empleo-temporal-espana-ue-eurostat",
+      "propositionId": "prop-mayoria-empleo-temporal-core",
+      "relationship": "contradicts",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "pensiones-vejez-supervivencia-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-pensiones-europa-core",
       "relationship": "supports",

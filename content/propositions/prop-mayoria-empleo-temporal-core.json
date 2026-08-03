@@ -1,0 +1,13 @@
+{
+  "id": "prop-mayoria-empleo-temporal-core",
+  "claimSlug": "la-mayoria-del-empleo-es-temporal",
+  "text": "La mayoría del empleo en España es temporal.",
+  "type": "descriptive",
+  "subject": "empleo",
+  "predicate": "is_mostly_temporary",
+  "object": "empleo temporal",
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["empleo-temporal-espana-ue-eurostat"]
+}

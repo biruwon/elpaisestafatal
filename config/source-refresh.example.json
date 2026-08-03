@@ -185,6 +185,18 @@
       "metricId": "part_time_employment_rate_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_etpgan?geo=ES&sex=T&age=Y15-64&citizen=TOTAL&sinceTimePeriod=2015",
+      "title": "Empleo temporal en España · Eurostat",
+      "aliases": ["empleo temporal", "trabajo temporal", "contratos temporales", "temporalidad laboral"],
+      "metricId": "temporary_employment_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_etpgan?geo=ES&geo=EU27_2020&sex=T&age=Y15-64&citizen=TOTAL&sinceTimePeriod=2015",
+      "title": "Empleo temporal: España y Unión Europea · Eurostat",
+      "aliases": ["empleo temporal frente a Europa", "trabajo temporal frente a la UE", "España tiene más temporalidad que Europa", "comparación europea de la temporalidad"],
+      "metricId": "temporary_employment_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"],

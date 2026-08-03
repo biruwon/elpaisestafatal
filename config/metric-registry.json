@@ -207,6 +207,22 @@
     "notEquivalentTo": ["part_time_employment_rate", "employment_rate_europe", "unemployment_rate_europe"],
     "dimensions": ["period", "geography", "age", "sex"]
   },
+  "temporary_employment_rate": {
+    "name": "Temporary employees as a share of total employees",
+    "aliases": ["empleo temporal", "trabajo temporal", "contratos temporales", "empleo de duración determinada", "temporalidad laboral"],
+    "unit": "percent of employees",
+    "population": "employees aged 15-64",
+    "notEquivalentTo": ["employment_rate", "unemployment_rate", "part_time_employment_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "citizenship"]
+  },
+  "temporary_employment_rate_europe": {
+    "name": "Temporary employees as a share of total employees: Spain and the European Union",
+    "aliases": ["empleo temporal frente a Europa", "trabajo temporal frente a la UE", "España tiene más temporalidad que Europa", "comparación europea de la temporalidad"],
+    "unit": "percent of employees",
+    "population": "employees aged 15-64 in Spain and the European Union",
+    "notEquivalentTo": ["temporary_employment_rate", "employment_rate_europe", "unemployment_rate_europe", "part_time_employment_rate_europe"],
+    "dimensions": ["period", "geography", "age", "sex", "citizenship"]
+  },
   "minimum_wage_monthly": {
     "name": "Statutory minimum wage per month",
     "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "mínimo salarial"],

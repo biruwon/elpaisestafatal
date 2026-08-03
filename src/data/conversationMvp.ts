@@ -380,6 +380,19 @@ definitions['empleo-creado-es-solo-tiempo-parcial'] = {
   visuals: { key: { value: '13,5%', label: 'España · empleo a tiempo parcial', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Empleo a tiempo parcial', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [13.5, 17.7], label: 'Empleo a tiempo parcial entre 15 y 64 años', unit: '% de las personas ocupadas · 2025' }, caveat: 'El indicador describe el empleo existente en el año. No prueba qué proporción de los puestos creados fue parcial ni si el trabajo parcial fue voluntario.' },
 };
 
+definitions['la-mayoria-del-empleo-es-temporal'] = {
+  prompt: 'La mayoría del empleo en España es temporal',
+  aliases: ['La mayoría de los trabajos son temporales', 'Casi todos los empleos son temporales', 'España tiene empleo temporal mayoritario', 'La temporalidad es la mayoría del empleo'],
+  propositions: ['En 2025, el 15,4% de los empleados de 15 a 64 años en España tenía un contrato temporal.', 'La mayoría del empleo español es temporal.', 'La temporalidad por sí sola mide toda la precariedad laboral.'],
+  concern: 'La temporalidad sigue siendo una dimensión relevante del mercado laboral español, pero su proporción no es mayoritaria y no resume por sí sola la calidad del empleo.',
+  supports: 'Eurostat registra un 15,4% de empleados temporales en España en 2025, frente al 12,6% en la Unión Europea en la misma medida comparable.',
+  limit: 'El indicador mide empleados de 15 a 64 años con contrato temporal. No es el número de contratos firmados durante el año y no mide por sí solo salario, involuntariedad, derechos o precariedad completa.',
+  question: '¿Quieres medir la proporción de empleados temporales, los contratos firmados o la calidad y estabilidad del empleo?',
+  reply: 'No: en 2025 el 15,4% de los empleados de 15 a 64 años en España tenía un contrato temporal. Es una proporción relevante y superior a la de la UE, pero no una mayoría ni una medida completa de precariedad.',
+  visualLabel: 'Una proporción relevante no es una mayoría y no resume toda la calidad laboral',
+  visuals: { key: { value: '15,4%', label: 'España · empleados con contrato temporal', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Empleo temporal', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [15.4, 12.6], label: 'Empleados temporales de 15 a 64 años', unit: '% de los empleados · 2025' }, caveat: 'El indicador describe la duración prevista del contrato. No demuestra por sí solo bajos salarios, involuntariedad, falta de derechos ni precariedad completa.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the
