@@ -46,6 +46,7 @@
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:family-index": "node scripts/knowledge/validate-claim-family-index.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
+    "knowledge:cluster:validate": "node scripts/knowledge/validate-query-clusters.mjs",
     "knowledge:backfill-signatures": "node scripts/knowledge/backfill-gap-signatures.mjs",
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs && node scripts/knowledge/validate-boe-legal-discovery.mjs",

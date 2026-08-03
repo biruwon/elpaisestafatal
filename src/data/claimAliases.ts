@@ -221,9 +221,12 @@ export const claimAliases: Record<string, string[]> = {
     'cuantos inmigrantes llegan en patera',
   ],
   'inmigrantes-pensiones': [
+    'los inmigrantes pagarán nuestras pensiones',
+    'los inmigrantes pagan nuestras pensiones',
     'los inmigrantes nos pagarán la jubilación',
     'sin inmigración no hay pensiones',
     'los extranjeros pagan nuestras pensiones',
+    'inmigratnes pagaran nuestras pensiones',
   ],
   'inmigracion-delincuencia': [
     'la inmigración trae delincuencia',

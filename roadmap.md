@@ -466,7 +466,7 @@ Add SSRF protection, size limits, MIME validation, timeouts, temporary media ret
 
 ## Phase 9 — Learning, popularity, and materialisation
 
-Status: started; durable review-queue merge, recency ranking, and deterministic semantic-family merging are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved.
+Status: started; durable review-queue merge, recency ranking, deterministic semantic-family merging, and published-catalogue reconciliation are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved.
 
 Cluster inputs by canonical proposition signature. Track:
 
@@ -478,7 +478,9 @@ Cluster inputs by canonical proposition signature. Track:
 
 Rank the owner review queue using frequency, growth, potential harm, evidence availability, and feasibility.
 
-The queue is a derived artifact, not a second source of truth. `knowledge:export-query-clusters` exports the current operational D1 clusters, including semantic family signatures, and `knowledge:cluster --d1-input ...` merges them with local learning records. Each output cluster carries query count, seven-day activity, growth rate, coverage/review state, linked claim, input types, source IDs, a neutralized review text, and a reason for its priority. The materialization command accepts only candidates with enough demand and source references; newly covered clusters remain reviewable, while already published clusters do not re-enter the queue.
+The queue is a derived artifact, not a second source of truth. `knowledge:export-query-clusters` exports the current operational D1 clusters, including semantic family signatures, and `knowledge:cluster --d1-input ...` merges them with local learning records. During clustering, historical wording and common conversation wrappers are reconciled against the current published Markdown aliases, so a claim published after a submission does not remain a false knowledge gap. Each output cluster carries query count, seven-day activity, growth rate, coverage/review state, linked claim, input types, source IDs, a neutralized review text, and a reason for its priority. The materialization command accepts only candidates with enough demand and source references; newly covered clusters remain reviewable, while already published clusters do not re-enter the queue.
+
+`knowledge:cluster:validate` protects representative published-family reconciliations, including typo-tolerant long-tail wording for the pensions claim. This keeps the review queue focused on genuinely uncovered claims rather than stale copies of known answers.
 
 Do not expose raw insulting submissions as public popular claims. Use neutral canonical wording.
 

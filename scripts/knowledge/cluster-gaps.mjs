@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
@@ -80,6 +80,54 @@ const latest = (left, right) => !left ? right : !right ? left : timestamp(left) 
 const increment = (map, key, amount = 1) => { if (!key) return; map[key] = (map[key] || 0) + amount; };
 const asArray = (value) => Array.isArray(value) ? value : [];
 
+const parseFrontmatter = (raw) => {
+  const match = String(raw || '').match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  return Object.fromEntries(match[1].split('\n').flatMap((line) => {
+    const index = line.indexOf(':');
+    return index < 0 ? [] : [[line.slice(0, index).trim(), line.slice(index + 1).trim()]];
+  }));
+};
+const scalar = (value) => {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  try { return typeof JSON.parse(text) === 'string' ? JSON.parse(text) : text; } catch { return text.replace(/^['"]|['"]$/g, ''); }
+};
+const list = (value) => {
+  try {
+    const parsed = JSON.parse(String(value || '[]'));
+    return Array.isArray(parsed) ? parsed.map(scalar).filter(Boolean) : [];
+  } catch { return []; }
+};
+const publishedClaimRecords = async () => {
+  const directory = join(root, 'content/claims');
+  let files = [];
+  try { files = (await readdir(directory)).filter((file) => file.endsWith('.md')); } catch { return []; }
+  return (await Promise.all(files.map(async (file) => {
+    const frontmatter = parseFrontmatter(await readFile(join(directory, file), 'utf8'));
+    if (frontmatter.status !== 'published' || !frontmatter.slug || !frontmatter.claim) return null;
+    return {
+      slug: scalar(frontmatter.slug),
+      phrases: [scalar(frontmatter.claim), ...list(frontmatter.aliases)],
+    };
+  }))).filter(Boolean);
+};
+const stripConversationWrapper = (value) => normalise(value)
+  .replace(/^(?:es verdad que|de verdad|segun los datos|en el grupo dicen que|mi cunado insiste|he leido esto|que hay de cierto en que)\s+/, '')
+  .replace(/^no me creo que\s+/, '')
+  .replace(/\s+y por eso todo va peor$/, '')
+  .replace(/[?¿.!]+$/g, '')
+  .trim();
+const publishedClaimFor = (record, publishedClaims) => {
+  const values = [record?.canonical, record?.normalized, record?.text, record?.extractedText, record?.input]
+    .filter(Boolean).map(stripConversationWrapper).filter(Boolean);
+  if (!values.length) return null;
+  return publishedClaims.find((claim) => {
+    const phrases = claim.phrases.map(stripConversationWrapper).filter(Boolean);
+    return values.some((value) => phrases.includes(value));
+  }) || null;
+};
+
 const meaningfulTokens = (value) => [...tokens(value)].filter((token) => token.length >= 3);
 const operationalFailurePattern = /ollama|local transcription|transcription (?:is )?unavailable|audio input requires|no se ejecuto|fetch failed|provider|runtime (?:is )?not installed|screenshot attached/i;
 const excludedOrigins = new Set(['evaluation', 'smoke', 'fixture', 'test']);
@@ -123,7 +171,7 @@ const parseD1Clusters = (value) => {
   })).filter((item) => item.signature || item.text);
 };
 
-const clusterRecords = (records) => {
+const clusterRecords = (records, publishedClaims = []) => {
   const clusters = new Map();
   for (const item of records) {
     const createdAt = item.createdAt || item.lastSeen || item.lastSeenAt || new Date().toISOString();
@@ -135,6 +183,7 @@ const clusterRecords = (records) => {
       const related = relatedClusterFor(clusters, clusterKey, normalized);
       if (related) clusterKey = related.signature;
     }
+    const publishedClaim = publishedClaimFor(item, publishedClaims);
     const current = clusters.get(clusterKey) || {
       id: item.id || `cluster-${normalise(clusterKey).replace(/ /g, '-').slice(0, 72)}`,
       signature: clusterKey,
@@ -151,7 +200,14 @@ const clusterRecords = (records) => {
       coverageStatus: 'uncovered',
       reviewStatus: 'unreviewed',
       linkedClaimSlug: null,
+      linkedClaimReason: null,
     };
+    if (publishedClaim) {
+      current.coverageStatus = 'covered';
+      current.reviewStatus = 'published';
+      current.linkedClaimSlug = publishedClaim.slug;
+      current.linkedClaimReason = 'Matched to a published claim by canonical wording or alias.';
+    }
     if (item.fromD1) {
       current.count = Math.max(current.count, Number(item.count) || 0);
       current.count7d = Math.max(current.count7d, Number(item.count7d) || 0);
@@ -184,7 +240,9 @@ const clusterRecords = (records) => {
     clusters.set(clusterKey, current);
   }
   return [...clusters.values()].map((cluster) => {
-    const unresolved = (cluster.statuses.uncovered || 0) + (cluster.statuses.draft || 0) + (cluster.statuses.partial || 0) || (cluster.coverageStatus !== 'covered' ? cluster.count : 0);
+    const unresolved = cluster.linkedClaimSlug
+      ? 0
+      : (cluster.statuses.uncovered || 0) + (cluster.statuses.draft || 0) + (cluster.statuses.partial || 0) || (cluster.coverageStatus !== 'covered' ? cluster.count : 0);
     const unresolvedRate = cluster.count ? unresolved / cluster.count : 0;
     const recentCount = cluster.count7d || (timestamp(cluster.lastSeen) >= sevenDaysAgo ? cluster.count : 0);
     const baseline = Math.max(1, cluster.count30d - recentCount);
@@ -200,7 +258,13 @@ const clusterRecords = (records) => {
       growthRate,
       newlyCovered,
       unresolved: !newlyCovered && cluster.coverageStatus !== 'covered',
-      reason: newlyCovered ? 'Nueva cobertura disponible: necesita revisión antes de publicarse.' : cluster.sourceIds.length ? 'Tiene fuentes candidatas: comprobar cobertura directa y límites.' : 'Sin fuentes vinculadas: investigar o marcar como no verificable.',
+      reason: cluster.linkedClaimSlug
+        ? cluster.linkedClaimReason || 'Ya existe una ficha publicada para esta formulación.'
+        : newlyCovered
+          ? 'Nueva cobertura disponible: necesita revisión antes de publicarse.'
+          : cluster.sourceIds.length
+            ? 'Tiene fuentes candidatas: comprobar cobertura directa y límites.'
+            : 'Sin fuentes vinculadas: investigar o marcar como no verificable.',
       priorityScore,
     };
   }).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
@@ -222,6 +286,7 @@ if (!localRecords.length && !d1Records.length) {
   console.log('No local or exported operational knowledge gaps yet.');
   process.exit(0);
 }
-const result = clusterRecords([...localRecords, ...d1Records]);
+const publishedClaims = await publishedClaimRecords();
+const result = clusterRecords([...localRecords, ...d1Records], publishedClaims);
 await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length }, clusters: result }, null, 2));
 console.log(`Knowledge-gap review queue written: ${result.length} clusters from ${localRecords.length} reviewable local records and ${d1Records.length} D1 clusters; excluded ${parsedLocalRecords.length - localRecords.length} low-signal or failed records.`);

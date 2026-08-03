@@ -3,7 +3,7 @@ slug: inmigrantes-pensiones
 claim: "“Los inmigrantes pagarán nuestras pensiones.”"
 assessment: mostly-true
 topicSlugs: ["inmigracion"]
-aliases: ["'pensiones'","'cotizaciones'","'envejecimiento'"]
+aliases: ["los inmigrantes pagarán nuestras pensiones", "los inmigrantes pagan nuestras pensiones", "los inmigrantes nos pagarán la jubilación", "sin inmigración no hay pensiones", "los extranjeros pagan nuestras pensiones", "inmigratnes pagaran nuestras pensiones"]
 claimType: mixed
 evidenceStrength: medium
 geography: España
