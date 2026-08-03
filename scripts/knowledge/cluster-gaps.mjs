@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -345,7 +346,6 @@ const mergeClusterMetadata = (left, right) => {
   });
 };
 
-const localEmbeddingHostnames = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
 const cosine = (left, right) => {
   if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length || !left.length) return 0;
   let dot = 0; let leftNorm = 0; let rightNorm = 0;
@@ -358,19 +358,12 @@ const cosine = (left, right) => {
 };
 
 const embedForClustering = async (clusters, endpoint, model, timeoutMs) => {
-  const url = new URL(endpoint);
-  if (!localEmbeddingHostnames.has(url.hostname)) throw new Error('Embedding endpoint must be local');
+  const inference = createLocalInferenceProvider({ endpoint });
+  if (inference.kind !== 'local') throw new Error('Embedding provider is unavailable');
   const vectors = [];
   for (let offset = 0; offset < clusters.length; offset += 32) {
     const batch = clusters.slice(offset, offset + 32).map((cluster) => String(cluster.text || '').slice(0, 1200));
-    const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/embed`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ model, input: batch, keep_alive: -1 }),
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-    if (!response.ok) throw new Error(`Embedding request failed with ${response.status}`);
-    const payload = await response.json();
+    const payload = await inference.embed({ model, input: batch, keep_alive: -1 }, timeoutMs);
     if (!Array.isArray(payload.embeddings) || payload.embeddings.length !== batch.length) throw new Error('Embedding response length is invalid');
     if (payload.embeddings.some((vector) => !Array.isArray(vector) || !vector.length || vector.some((value) => !Number.isFinite(Number(value))))) throw new Error('Embedding response contains invalid vectors');
     vectors.push(...payload.embeddings);

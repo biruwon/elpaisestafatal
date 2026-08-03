@@ -2,11 +2,12 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
 import { warehouseRetrievalBenchmarkCases } from './warehouse-retrieval-benchmark-cases.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
 const endpoint = (process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434').replace(/\/$/, '');
 const model = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
-const url = new URL(endpoint);
-if (!['127.0.0.1', 'localhost', '::1', 'host.docker.internal'].includes(url.hostname)) throw new Error('Benchmark embedding endpoint must be local');
+const inference = createLocalInferenceProvider({ endpoint });
+if (inference.kind !== 'local') throw new Error('Benchmark embedding provider is unavailable');
 
 const registry = JSON.parse(await readFile(new URL('../../config/metric-registry.json', import.meta.url), 'utf8'));
 const candidates = Object.entries(registry)
@@ -41,9 +42,7 @@ const embed = async (input) => {
   const embeddings = [];
   for (let offset = 0; offset < input.length; offset += batchSize) {
     const batch = input.slice(offset, offset + batchSize);
-    const response = await fetch(`${endpoint}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input: batch, keep_alive: -1 }), signal: AbortSignal.timeout(120_000) });
-    if (!response.ok) throw new Error(`Local embedding benchmark failed with ${response.status}: ${String(await response.text()).slice(0, 240)}`);
-    const batchEmbeddings = (await response.json()).embeddings;
+    const batchEmbeddings = (await inference.embed({ model, input: batch, keep_alive: -1 }, 120_000)).embeddings;
     if (!Array.isArray(batchEmbeddings) || batchEmbeddings.length !== batch.length || batchEmbeddings.some((item) => !validateEmbedding(item))) throw new Error('Benchmark received malformed embeddings');
     embeddings.push(...batchEmbeddings);
   }

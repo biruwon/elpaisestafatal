@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { compilerSchema, normalizeCompilerOutput } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
+import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -15,9 +16,8 @@ const minimumQuality = Math.min(1, Math.max(0, Number(args.get('min-quality') ||
 const requestedModels = String(args.get('models') || process.env.COMPILER_BENCHMARK_MODELS || 'gemma3:4b,qwen3.6:latest')
   .split(',').map((model) => model.trim()).filter(Boolean);
 
-const localHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
-const endpointUrl = new URL(endpoint);
-if (!localHosts.has(endpointUrl.hostname)) throw new Error('Compiler benchmark endpoint must be local.');
+const inference = createLocalInferenceProvider({ endpoint });
+if (inference.kind !== 'local') throw new Error('Compiler benchmark provider is unavailable.');
 
 const cases = [
   { id: 'immigration-crime', input: 'Los inmigrantes crean inseguridad', claimTypes: ['causal'], mustMention: ['inmigrantes', 'inseguridad'] },
@@ -47,9 +47,7 @@ const hasRequiredConcepts = (output, required) => {
 const sameList = (left, right) => JSON.stringify(left || []) === JSON.stringify(right || []);
 
 const getAvailableModels = async () => {
-  const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/tags`, { signal: AbortSignal.timeout(timeoutMs) });
-  if (!response.ok) throw new Error(`Model inventory request failed with ${response.status}`);
-  const payload = await response.json();
+  const payload = await inference.listModels(timeoutMs);
   return new Set(Array.isArray(payload.models) ? payload.models.map((model) => String(model.name || '')) : []);
 };
 
@@ -57,13 +55,7 @@ const runCase = async (model, testCase) => {
   const startedAt = Date.now();
   const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica entidades, población, periodo, números y tipo de afirmación. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${testCase.input}`;
   try {
-    const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/chat`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }),
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-    if (!response.ok) throw new Error(`model response ${response.status}`);
-    const payload = await response.json();
+    const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
     const raw = parseJson(payload.message?.content);
     const deterministic = deterministicFallbackCompiler(testCase.input);
     const normalized = normalizeCompilerOutput(raw, testCase.input);
@@ -111,4 +103,3 @@ const report = {
 };
 await writeFile(outputPath, JSON.stringify(report, null, 2));
 console.log(`Local compiler benchmark written: ${reports.length} model(s), ${cases.length} cases, recommended=${recommended || 'none'}.`);
-

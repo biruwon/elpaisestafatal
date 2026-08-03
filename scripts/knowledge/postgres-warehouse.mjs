@@ -5,6 +5,7 @@ import { sourceFreshness } from './source-freshness.mjs';
 import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
 import { loadMetricRegistry } from './metric-registry.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
+import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
 const { Pool } = pg;
 const connectionString = process.env.WAREHOUSE_DATABASE_URL || '';
@@ -178,16 +179,14 @@ export const queryPostgresWarehouse = async (query, limit = 12, { queryEmbedding
 
 export const populateWarehouseEmbeddings = async ({ endpoint, model, batchSize = 32 } = {}) => {
   if (!endpoint || !model) return null;
-  const url = new URL(endpoint);
-  if (!['127.0.0.1', 'localhost', '::1', 'host.docker.internal'].includes(url.hostname)) throw new Error('Warehouse embedding endpoint must be local');
+  const inference = createLocalInferenceProvider({ endpoint });
+  if (inference.kind !== 'local') throw new Error('Warehouse embedding provider is unavailable');
   return withWarehousePool(async (database) => {
     const pending = await database.query('SELECT id, search_text FROM observations WHERE search_text <> $1 AND (search_embedding IS NULL OR embedding_model IS DISTINCT FROM $2) ORDER BY id', ['', model]);
     let written = 0;
     for (let offset = 0; offset < pending.rows.length; offset += batchSize) {
       const batch = pending.rows.slice(offset, offset + batchSize);
-      const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/embed`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model, input: batch.map((row) => row.search_text), keep_alive: -1 }), signal: AbortSignal.timeout(60_000) });
-      if (!response.ok) throw new Error(`Embedding request failed with ${response.status}`);
-      const embeddings = (await response.json()).embeddings;
+      const embeddings = (await inference.embed({ model, input: batch.map((row) => row.search_text), keep_alive: -1 }, 60_000)).embeddings;
       if (!Array.isArray(embeddings) || embeddings.length !== batch.length || embeddings.some((embedding) => !validateEmbedding(embedding, embeddingDimensions))) throw new Error(`Embedding response must contain ${embeddingDimensions}-dimension vectors`);
       for (let index = 0; index < batch.length; index += 1) {
         await database.query('UPDATE observations SET search_embedding = $1::vector, embedding_model = $2 WHERE id = $3', [JSON.stringify(embeddings[index]), model, batch[index].id]);
