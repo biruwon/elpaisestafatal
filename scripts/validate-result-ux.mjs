@@ -11,6 +11,10 @@ const required = [
   'resultActionsMarkup(primary?.answer ? shareUrlFor',
   'Fuente: ${sourceLinks[0].title}',
   'data-focus-result="sources"',
+  'const visualStoryMarkup',
+  'class="claim-visual-story"',
+  'La idea en ${steps.length} pasos',
+  'claim-story-mini-chart',
 ];
 
 for (const snippet of required) {
@@ -48,6 +52,9 @@ for (const snippet of [
 }
 for (const snippet of ['@keyframes claim-chart-draw', 'prefers-reduced-motion', 'claim-chart-bar-in']) {
   if (!page.includes(snippet)) failures.push(`dynamic chart motion is missing ${snippet}`);
+}
+if (!page.includes('.claim-visual-story ol{') || !page.includes('@media(prefers-reduced-motion:reduce){.claim-story-mini-chart')) {
+  failures.push('visual story is missing responsive or reduced-motion styling');
 }
 
 if (!page.includes('id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="off"')) {

@@ -422,11 +422,15 @@ const formatChartValue = (value: number): string => Number(value).toLocaleString
 
 const chartDataMarkup = (entries: Array<{ label: string; value: number }>, unit: string): string => `<details class="claim-chart-data"><summary>Ver valores</summary><table><thead><tr><th>Periodo o grupo</th><th>Valor</th></tr></thead><tbody>${entries.map((entry) => `<tr><th scope="row">${escapeHtml(entry.label)}</th><td>${escapeHtml(formatChartValue(entry.value))} ${escapeHtml(unit)}</td></tr>`).join('')}</tbody></table></details>`;
 
-const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
+const chartSeriesForBlock = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): { labels: string[]; values: number[]; label: string; unit: string } | undefined => {
   const visual = conversationVisuals.find((item) => item.slug === block.visualId)?.visuals;
-  const series = block.visualId === 'warehouse-observation'
+  return block.visualId === 'warehouse-observation'
     ? plan.warehouseSeries
     : block.type === 'line_chart' ? visual?.trend : visual?.comparison;
+};
+
+const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
+  const series = chartSeriesForBlock(plan, block);
   if (!series || !series.values.length) return '';
   const entries = series.labels.slice(0, 8).map((label: string, index: number) => ({ label: String(label), value: Number(series.values[index]) })).filter((entry) => Number.isFinite(entry.value));
   if (!entries.length) return '';
@@ -472,6 +476,42 @@ const planVisualMarkup = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][
   }).join('');
   const plotMarkup = block.type === 'line_chart' ? lineMarkup : `${barsMarkup}<line class="claim-chart-baseline" x1="${left}" y1="${baseline.toFixed(2)}" x2="${width - right}" y2="${baseline.toFixed(2)}"></line>`;
   return `<div class="claim-plan-chart ${block.type === 'line_chart' ? 'claim-plan-chart-line' : 'claim-plan-chart-bars'}"><span class="clarification-label">${escapeHtml(series.label)}</span><svg class="claim-plan-chart-svg" role="img" aria-labelledby="${chartId}-title ${chartId}-description" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><title id="${chartId}-title">${escapeHtml(title)}</title><desc id="${chartId}-description">${escapeHtml(`Valores de ${series.label} expresados en ${series.unit}.`)}</desc>${tickMarkup}${plotMarkup}${xLabels}</svg>${chartDataMarkup(entries, series.unit)}<small>${escapeHtml(series.unit)}</small></div>`;
+};
+
+type VisualStoryStep = { label: string; title: string; content: string; evidenceIds?: string[] };
+
+const visualStoryChart = (plan: AnswerPlan, block: Extract<AnswerPlan['blocks'][number], { type: 'line_chart' | 'bar_chart' | 'comparison_chart' }>): string => {
+  const series = chartSeriesForBlock(plan, block);
+  if (!series?.values.length) return '';
+  const values = series.values.slice(0, 8).map(Number).filter(Number.isFinite);
+  if (!values.length) return '';
+  const max = Math.max(...values.map(Math.abs), 1);
+  const bars = values.map((value) => `<i style="--story-bar:${Math.max(8, Math.round(Math.abs(value) / max * 100))}%" title="${escapeHtml(formatChartValue(value))} ${escapeHtml(series.unit)}"><b></b></i>`).join('');
+  const label = `${series.label}: ${values.map((value) => `${formatChartValue(value)} ${series.unit}`).join(', ')}`;
+  return `<div class="claim-story-mini-chart" role="img" aria-label="${escapeHtml(label)}">${bars}</div><small class="claim-story-unit">${escapeHtml(series.unit)}</small>`;
+};
+
+const visualStoryMarkup = (plan: AnswerPlan): string => {
+  const steps: VisualStoryStep[] = [];
+  for (const block of plan.blocks) {
+    if (steps.length >= 3) break;
+    if (block.type === 'key_number') {
+      steps.push({ label: 'Dato clave', title: block.value, content: block.label, evidenceIds: [block.evidenceId] });
+    } else if (block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') {
+      const chart = visualStoryChart(plan, block);
+      if (chart) steps.push({ label: block.type === 'comparison_chart' ? 'Comparación' : 'Evolución', title: chart, content: chartSeriesForBlock(plan, block)?.label || 'Serie de datos', evidenceIds: block.evidenceIds });
+    } else if (block.type === 'money_flow') {
+      steps.push({ label: 'Movimiento documentado', title: `${block.origin || 'Origen'} → ${block.destination || 'Destino'}`, content: block.amount || block.purpose || 'Transferencia localizada', evidenceIds: block.evidenceIds });
+    } else if (block.type === 'confirmed' && block.points?.[0]) {
+      steps.push({ label: 'Sí está respaldado', title: '✓', content: block.points[0], evidenceIds: block.evidenceIds });
+    } else if (block.type === 'cannot_conclude' && block.points[0]) {
+      steps.push({ label: 'Límite importante', title: '×', content: block.points[0], evidenceIds: block.evidenceIds });
+    } else if (block.type === 'data_finding' && block.points[0]) {
+      steps.push({ label: 'Dato localizado', title: '→', content: block.points[0], evidenceIds: block.evidenceIds });
+    }
+  }
+  if (steps.length < 2) return '';
+  return `<section class="claim-visual-story" aria-labelledby="claim-visual-story-title"><div class="claim-visual-story-heading"><div><span class="clarification-label">Lectura visual</span><h4 id="claim-visual-story-title">La idea en ${steps.length} pasos</h4></div><small>Datos y límites de la misma respuesta</small></div><ol>${steps.map((step, index) => `<li><span class="claim-visual-story-number">0${index + 1}</span><div><span class="claim-visual-story-label">${escapeHtml(step.label)}</span><strong>${step.title.startsWith('<') ? step.title : escapeHtml(step.title)}</strong><p>${escapeHtml(step.content)}</p>${step.evidenceIds?.length ? blockEvidenceMarkup(plan, step.evidenceIds) : ''}</div></li>`).join('')}</ol></section>`;
 };
 
 const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
@@ -780,7 +820,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
     || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
   const limitation = plan.limitation || 'La evidencia disponible no permite responder a todas las implicaciones de la frase.';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined)}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${visualStoryMarkup(plan)}${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined)}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
