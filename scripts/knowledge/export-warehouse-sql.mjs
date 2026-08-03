@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const outputPath = join(root, 'warehouse-load.sql');
@@ -25,7 +26,8 @@ for (const file of manifestFiles) {
     const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
     const dimensions = JSON.stringify(record.dimensions || {});
     const dimensionLabels = JSON.stringify(record.dimensionLabels || {});
-    const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), record.datasetId, record.metric, record.excerpt, record.unit, record.period, record.geography, record.population, dimensions, dimensionLabels, record.url].filter(Boolean).join(' '));
+    const metricId = record.metricId || manifest.metricId;
+    const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), metricId, ...searchAliasesForMetric(metricId), record.datasetId, record.metric, record.excerpt, record.unit, record.period, record.geography, record.population, dimensions, dimensionLabels, record.url].filter(Boolean).join(' '));
     statements.push(`INSERT INTO datasets (id, source_document_id, title, metric, unit, geography, population, period_start, period_end, definition) VALUES (${sql(datasetId)}, ${sql(manifest.id)}, ${sql(record.datasetId || 'Observations')}, ${sql(record.metric || null)}, ${sql(record.unit || null)}, ${sql(record.geography || null)}, ${sql(record.population || null)}, ${sql(record.period || null)}, ${sql(record.period || null)}, NULL) ON CONFLICT (id) DO NOTHING;`);
     statements.push(`INSERT INTO observations (id, dataset_id, source_document_id, metric, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, excerpt, search_text) VALUES (${sql(record.id)}, ${sql(datasetId)}, ${sql(manifest.id)}, ${sql(record.metric || null)}, ${number(record.value)}, ${sql(record.unit || null)}, ${sql(record.period || null)}, ${sql(record.geography || null)}, ${sql(record.population || null)}, ${sql(dimensions)}, ${sql(dimensionLabels)}, ${sql(record.kind || 'observation')}, ${sql(record.url || null)}, ${sql(record.excerpt || null)}, ${sql(searchText)}) ON CONFLICT (id) DO UPDATE SET value = EXCLUDED.value, dimensions_json = EXCLUDED.dimensions_json, dimension_labels_json = EXCLUDED.dimension_labels_json, kind = EXCLUDED.kind, url = EXCLUDED.url, excerpt = EXCLUDED.excerpt, search_text = EXCLUDED.search_text;`);
     observationCount += 1;

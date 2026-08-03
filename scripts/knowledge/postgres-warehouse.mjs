@@ -4,6 +4,7 @@ import pg from 'pg';
 import { sourceFreshness } from './source-freshness.mjs';
 import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
 import { loadMetricRegistry } from './metric-registry.mjs';
+import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const { Pool } = pg;
 const connectionString = process.env.WAREHOUSE_DATABASE_URL || '';
@@ -76,7 +77,8 @@ export const loadWarehouse = async () => withWarehousePool(async (database) => {
         const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
         const dimensions = record.dimensions || {};
         const labels = record.dimensionLabels || {};
-        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), manifest.metricId, record.metricId, record.datasetId, record.metric, record.excerpt, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
+        const metricId = record.metricId || manifest.metricId;
+        const searchText = normalise([manifest.publisher, manifest.title, ...(manifest.aliases || []), metricId, ...searchAliasesForMetric(metricId), record.datasetId, record.metric, record.excerpt, record.unit, record.period, record.geography, record.population, JSON.stringify(dimensions), JSON.stringify(labels), record.url].filter(Boolean).join(' '));
         await database.query(`
           INSERT INTO datasets (id, source_document_id, title, metric, unit, geography, population, period_start, period_end, definition)
           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8,NULL)
@@ -86,7 +88,7 @@ export const loadWarehouse = async () => withWarehousePool(async (database) => {
         INSERT INTO observations (id, dataset_id, source_document_id, metric, metric_id, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, excerpt, search_text)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
         ON CONFLICT (id) DO UPDATE SET ${observationUpdate}
-        `, [record.id, datasetId, manifest.id, record.metric || null, record.metricId || manifest.metricId || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, record.excerpt || null, searchText]);
+        `, [record.id, datasetId, manifest.id, record.metric || null, metricId || null, typeof record.value === 'number' && Number.isFinite(record.value) ? record.value : null, record.unit || null, record.period || null, record.geography || null, record.population || null, JSON.stringify(dimensions), JSON.stringify(labels), record.kind || 'observation', record.url || null, record.excerpt || null, searchText]);
         observationCount += 1;
       }
     }

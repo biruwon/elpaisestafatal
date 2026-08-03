@@ -475,7 +475,7 @@ Add SSRF protection, size limits, MIME validation, timeouts, temporary media ret
 
 ## Phase 9 — Learning, popularity, and materialisation
 
-Status: started; durable review-queue merge, recency ranking, deterministic semantic-family merging, and published-catalogue reconciliation are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved.
+Status: started; durable review-queue merge, recency ranking, deterministic semantic-family merging, and published-catalogue reconciliation are implemented. Local and production D1 clusters now also merge compatible near-signatures across runtime versions, while polarity, relation, geography, population, period, and numeric conflicts remain separate; public promotion and static materialisation remain owner-approved. Warehouse-routable compressed and colloquial cluster signatures are now excluded from the manual materialisation queue, and metric search aliases are shared by local JSON, PostgreSQL, and SQL-export indexes so deployment paths keep the same long-tail coverage.
 
 Cluster inputs by canonical proposition signature. Track:
 

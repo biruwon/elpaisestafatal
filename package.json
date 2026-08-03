@@ -37,6 +37,7 @@
     "knowledge:warehouse": "node scripts/knowledge/validate-warehouse.mjs",
     "knowledge:normalizer": "node scripts/knowledge/validate-normalizer.mjs",
     "knowledge:warehouse:query": "node scripts/knowledge/validate-warehouse-query.mjs",
+    "knowledge:warehouse:index": "node scripts/knowledge/validate-warehouse-index-contract.mjs",
     "knowledge:warehouse:cache": "node scripts/knowledge/validate-warehouse-cache.mjs",
     "knowledge:trend": "node scripts/knowledge/validate-warehouse-trend.mjs",
     "knowledge:ranking": "node scripts/knowledge/validate-warehouse-ranking.mjs",

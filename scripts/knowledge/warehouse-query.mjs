@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { queryPostgresWarehouse, postgresEnabled } from './postgres-warehouse.mjs';
 import { sourceFreshness } from './source-freshness.mjs';
+import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
@@ -32,16 +33,6 @@ const recordedOffenceCategories = [
   { terms: ['blanqueo'], labels: ['money laundering'] },
   { terms: ['ciberdelincuencia', 'delitos informaticos'], labels: ['acts against computer systems'] },
 ];
-
-const metricSearchAliases = {
-  youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
-  employment_rate: ['porcentaje', 'poblacion', 'activa', 'personas', 'encuentra', 'trabajo', 'ocupacion'],
-  unemployment_rate: ['paro', 'desempleo', 'personas', 'sin trabajo', 'encuentra trabajo'],
-  unemployment_rate_europe: ['paro', 'desempleo', 'europa', 'comparacion europea'],
-  resident_population: ['poblacion', 'habitantes', 'residentes', 'viven', 'normalmente'],
-  foreign_born_population: ['inmigracion', 'inmigrantes', 'extranjeros', 'nacidos', 'nacieron', 'fuera', 'residentes'],
-  immigration_flows: ['inmigracion', 'inmigrantes', 'inmigraron', 'llegadas', 'personas', 'entradas'],
-};
 
 export const recordedOffenceCategoryForQuery = (query) => {
   const normalized = normalise(query);
@@ -142,7 +133,7 @@ const recordText = (record) => [
   record.source?.url,
   record.url,
   record.excerpt,
-  ...(metricSearchAliases[record.metricId] || []),
+  ...searchAliasesForMetric(record.metricId),
   ...recordedOffenceSearchAliases(record),
   JSON.stringify(record.dimensions || {}),
   JSON.stringify(record.dimensionLabels || {}),
