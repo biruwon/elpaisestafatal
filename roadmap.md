@@ -537,6 +537,8 @@ dynamic answer
 - Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
 - Run production smoke checks against both static routes and the generic `/api/health` and `/api/resolve` boundaries without requiring dynamic inference to be available.
 - Exercise text, screenshot, and audio multipart requests against the local boundary in CI with inference unavailable; each request must finish with a useful result or generic unavailable state.
+- Source freshness now uses the real runtime clock, with an explicit deterministic test override; unregistered discovery snapshots do not block the authoritative freshness gate, while ad-hoc BOE consolidated-legislation snapshots use a weekly cadence instead of inheriting daily-summary freshness.
+- BOE daily-summary refreshes now retry a bounded window of previous publication dates when the requested date is a non-publication day, while preserving immediate failures for other source errors.
 - CI now runs the homepage, published-claim, catalogue, topic, and public-journey UX contracts on every push and pull request, alongside the resolver lifecycle and roadmap audits.
 - Commit and push every completed milestone; never include unrelated user files.
 

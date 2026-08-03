@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { sourceRegistry } from './source-registry.mjs';
+import { boeSummaryCandidates, isBoeSummaryUrl } from './refresh-utils.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -52,16 +53,40 @@ const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
 });
 if (!jobs.length) { console.log('Refresh configuration contains no URLs.'); process.exit(0); }
 
+const runIngest = (job, url) => new Promise((resolve, reject) => {
+  const childArgs = ['scripts/knowledge/ingest-source.mjs', '--url', url];
+  if (job.title) childArgs.push('--title', job.title);
+  if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
+  if (job.metricId) childArgs.push('--metric-id', job.metricId);
+  const child = spawn(process.execPath, childArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk; });
+  child.stderr.on('data', (chunk) => { output += chunk; });
+  child.on('error', reject);
+  child.on('exit', (code) => code === 0
+    ? resolve(output)
+    : reject(Object.assign(new Error(`Ingestion failed for ${url} (${code})`), { output })));
+});
+
 for (const job of jobs) {
-  console.log(`Refreshing ${job.sourceId}: ${job.url}`);
-  await new Promise((resolve, reject) => {
-    const childArgs = ['scripts/knowledge/ingest-source.mjs', '--url', job.url];
-    if (job.title) childArgs.push('--title', job.title);
-    if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
-    if (job.metricId) childArgs.push('--metric-id', job.metricId);
-    const child = spawn(process.execPath, childArgs, { stdio: 'inherit' });
-    child.on('error', reject);
-    child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Ingestion failed for ${job.url} (${code})`)));
-  });
+  const candidates = job.sourceId === 'boe' && isBoeSummaryUrl(job.url) ? boeSummaryCandidates(job.url) : [job.url];
+  let refreshed = false;
+  let lastError;
+  for (const [index, url] of candidates.entries()) {
+    console.log(`Refreshing ${job.sourceId}: ${url}`);
+    try {
+      const output = await runIngest(job, url);
+      if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
+      refreshed = true;
+      if (index > 0) console.log(`BOE had no publication for the requested day; used the latest available summary (${url}).`);
+      break;
+    } catch (error) {
+      lastError = error;
+      const missingBoeSummary = job.sourceId === 'boe' && isBoeSummaryUrl(url) && /Source returned 404/.test(error?.output || '');
+      if (!missingBoeSummary) throw error;
+      console.warn(`No BOE summary at ${url}; trying the previous day.`);
+    }
+  }
+  if (!refreshed) throw lastError || new Error(`Ingestion failed for ${job.url}`);
 }
 console.log(`Refreshed ${jobs.length} configured source resource(s).`);

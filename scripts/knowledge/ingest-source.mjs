@@ -6,6 +6,7 @@ import { normalizeXmlPayload } from './normalize-xml.mjs';
 import { sourceForHost } from './source-registry.mjs';
 import { connectorForId, connectorSupports, formatForContentType } from './connector-registry.mjs';
 import { hasMetric } from './metric-registry.mjs';
+import { isBoeLegalDiscoveryUrl } from './refresh-utils.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -56,7 +57,8 @@ const objectPath = join(root, 'objects', hash);
 try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); }
 const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
 const connectorDefinition = connectorForId(connector);
-const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule: sourceDefinition?.schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
+const schedule = isBoeLegalDiscoveryUrl(sourceUrl) ? 'weekly' : sourceDefinition?.schedule;
+const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
