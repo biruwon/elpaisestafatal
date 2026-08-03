@@ -153,6 +153,7 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
       const result = await resolve(text);
       if (!['draft', 'partial'].includes(result.status)) failures.push(`${metricId} shorthand: expected provisional result, received ${result.status}`);
       if (result.result?.warehouseSeries?.metricId !== metricId) failures.push(`${metricId} shorthand: selected the wrong metric family`);
+      if (/quarterly index|chain linked volumes|percentage of population|gross domestic product/i.test(JSON.stringify(result.result || {}))) failures.push(`${metricId} shorthand: leaked raw warehouse unit text`);
     } catch (error) { failures.push(`${metricId} shorthand: ${error.message}`); }
   }
   try {

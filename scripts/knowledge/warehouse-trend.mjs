@@ -1,7 +1,50 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
 const formatNumber = (value) => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
-const displayMetric = (item) => String(item.source?.title || item.metric || item.datasetId || 'La serie localizada');
+const metricLabels = {
+  inflation_rate: 'Inflación anual en España',
+  household_electricity_price: 'Precio de la electricidad para los hogares en España',
+  rental_price_index: 'Precios del alquiler en España',
+  gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
+  government_debt_ratio: 'Deuda pública sobre el PIB en España',
+  government_revenue_ratio: 'Ingresos públicos sobre el PIB en España',
+  government_expenditure_ratio: 'Gasto público sobre el PIB en España',
+  house_price_index: 'Precios de la vivienda en España',
+  housing_cost_overburden_rate: 'Sobrecarga del coste de la vivienda en España',
+  health_expenditure_per_capita: 'Gasto sanitario por habitante en España',
+  life_expectancy_at_birth: 'Esperanza de vida al nacer en España',
+  fertility_rate: 'Fecundidad en España',
+  old_age_dependency_ratio: 'Dependencia de las personas mayores en España',
+  older_population_share: 'Población de 65 años o más en España',
+  young_population_share: 'Población menor de 15 años en España',
+  population_change_rate: 'Cambio anual de la población en España',
+  arope_rate: 'Riesgo de pobreza o exclusión social en España',
+};
+export const displayMetric = (item) => metricLabels[item.metricId] || String(item.metric || item.source?.title || item.datasetId || 'La serie localizada');
+const displayUnit = (item) => {
+  const metricId = String(item.metricId || '');
+  const unit = normalise(item.unit);
+  if (metricId === 'gdp_real_growth_quarterly' || metricId === 'inflation_rate') return '% interanual';
+  if (metricId === 'house_price_index') return 'índice (2015=100)';
+  if (metricId === 'rental_price_index') return 'índice (2015=100)';
+  if (metricId === 'housing_cost_overburden_rate' || metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
+  if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
+  if (metricId === 'life_expectancy_at_birth') return 'años';
+  if (metricId === 'fertility_rate') return 'hijos por mujer';
+  if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
+  if (metricId === 'household_electricity_price') return '€ por kWh';
+  if (unit === 'percentage' || unit === 'percentage of population' || unit === 'percentage of population in the labour force') return '%';
+  if (unit.includes('percentage of gross domestic product')) return '% del PIB';
+  if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
+  if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
+  if (unit.includes('gini scale')) return 'escala Gini 0–100';
+  return String(item.unit || '').trim();
+};
+const deltaUnit = (unit) => {
+  if (unit === 'índice (2015=100)') return 'puntos del índice';
+  if (unit.startsWith('%')) return 'puntos porcentuales';
+  return unit;
+};
 
 const comparableDimensions = (item) => Object.entries(item.dimensions || {})
   .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
@@ -33,11 +76,12 @@ export const summarizeWarehouseTrend = (text, observations) => {
   const first = numeric[0];
   const latest = numeric[numeric.length - 1];
   const delta = latest.value - first.value;
-  const unit = String(latest.unit || first.unit || '').trim();
+  const unit = displayUnit(latest) || displayUnit(first);
   const suffix = unit ? ` ${unit}` : '';
   const metric = displayMetric(latest);
   const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
-  const change = `${formatNumber(Math.abs(delta))}${suffix}`;
+  const changeUnit = deltaUnit(unit);
+  const change = `${formatNumber(Math.abs(delta))}${changeUnit ? ` ${changeUnit}` : ''}`;
   const directionWords = normalise(text);
   const expectedLower = directionWords.includes('menos') || directionWords.includes('baja') || directionWords.includes('disminuye') || directionWords.includes('cae');
   const expectedHigher = directionWords.includes('mas') || directionWords.includes('sube') || directionWords.includes('aumenta') || directionWords.includes('crece');

@@ -9,7 +9,7 @@ import { discoverOfficialDocuments, discoveryObservation } from './knowledge/off
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-contract.mjs';
-import { summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
+import { displayMetric, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
@@ -66,6 +66,9 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'inflation_rate') return '% interanual';
+  if (metricId === 'gdp_real_growth_quarterly') return '% interanual';
+  if (metricId === 'house_price_index') return 'índice (2015=100)';
+  if (metricId === 'housing_cost_overburden_rate') return '% de la población';
   if (metricId === 'household_electricity_price') return '€ por kWh';
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
@@ -1092,7 +1095,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       }) || series[0]
       : series.at(-1);
     return [
-      { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${keyObservation.metric || keyObservation.datasetId || 'Valor comparado'}` : keyObservation.metric || keyObservation.datasetId || 'Valor localizado', value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
+      { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${displayMetric(keyObservation)}` : displayMetric(keyObservation), value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
       ...((ranking || trend || causalContext) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend || causalContext).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend || causalContext).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend || causalContext).reply }] : []),
       ...(periods.length >= 2 && !isPrediction ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: isPrediction
@@ -1108,7 +1111,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const warehouseSeries = numericObservations.length >= 2 ? {
     labels: seriesForVisual.map((item) => ranking ? String(item.dimensionLabels?.geo || item.dimensions?.geo || item.id) : String(item.period || item.id)),
     values: seriesForVisual.map((item) => Number(item.value)),
-    label: String(numericObservations[0].source?.title || numericObservations[0].metric || numericObservations[0].datasetId || 'Dato localizado'),
+    label: displayMetric(numericObservations[0]),
     unit: displayUnit(numericObservations[0].unit, numericObservations[0].metricId),
     metricId: numericObservations[0].metricId,
     population: numericObservations[0].population,
