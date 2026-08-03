@@ -351,6 +351,8 @@ Status: started; the conversation-first homepage, topic-filtered popular prompts
 
 Before using a model:
 
+The browser enrichment lifecycle now has per-request timeouts and hard overall deadlines for text and media polling; when the optional background path is slow, the deterministic result becomes terminal and usable rather than remaining in a processing state. The published-claim UX audit also treats canonical noindex redirects from legacy `/afirmaciones` URLs as valid compatibility surfaces while continuing to enforce the complete answer-first contract on real claim pages.
+
 1. Normalize accents, punctuation, spelling variants, and common Spanish forms.
 2. Check exact normalized-input and canonical-signature caches.
 3. Search aliases, keywords, entities, numbers, dates, and known propositions.
@@ -625,6 +627,7 @@ dynamic answer
 - Source freshness now uses the real runtime clock, with an explicit deterministic test override; unregistered discovery snapshots do not block the authoritative freshness gate, while ad-hoc BOE consolidated-legislation snapshots use a weekly cadence instead of inheriting daily-summary freshness.
 - BOE daily-summary refreshes now retry a bounded window of previous publication dates when the requested date is a non-publication day, while preserving immediate failures for other source errors.
 - CI now runs the homepage, data-catalogue, published-claim, catalogue, topic, and public-journey UX contracts on every push and pull request, alongside ranking, semantic-clustering, resolver-lifecycle, and roadmap audits.
+- Client-side enrichment polling now has bounded per-request and total deadlines, and the lifecycle contract verifies that a slow optional analysis cannot leave the first deterministic result pending indefinitely.
 - Commit and push every completed milestone; never include unrelated user files.
 
 ## Evaluation requirements

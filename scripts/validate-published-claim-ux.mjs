@@ -17,6 +17,13 @@ const failures = [];
 for (const file of pages) {
   const source = await readFile(file, 'utf8');
   const route = '/' + relative(root, file).replace(/\\/g, '/').replace(/index\.html$/, '');
+  const redirectTarget = source.match(/<meta http-equiv="refresh" content="0;url=([^"]+)">/)?.[1];
+  if (redirectTarget) {
+    if (!source.includes('name="robots" content="noindex"') || !source.includes(`<link rel="canonical" href="${redirectTarget}">`)) {
+      failures.push(`${route}: compatibility redirect is missing noindex or canonical metadata`);
+    }
+    continue;
+  }
   const required = [
     ['claim-top', 'missing claim page root'],
     ['claim-snapshot', 'missing answer-first snapshot'],
