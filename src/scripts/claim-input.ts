@@ -145,6 +145,7 @@ const topicFollowUpPrompts: Record<string, string[]> = {
   ],
   juventud: [
     '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+    '¿Tiene España más paro juvenil que la Unión Europea?',
     '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?',
     '¿Cómo ha evolucionado el abandono escolar temprano en España?',
     '¿Cómo ha evolucionado el envejecimiento de la población española?',
@@ -443,8 +444,9 @@ const definitionChoiceMarkup = (original: string, plan: AnswerPlan): string => {
       ]
       : query.includes('empleo') || query.includes('trabajo') || query.includes('paro') || query.includes('sueldo') || query.includes('salario')
         ? [
-              '¿Cómo ha evolucionado el desempleo en España?',
-              '¿Tiene España una tasa de empleo mayor que la Unión Europea?',
+          '¿Cómo ha evolucionado el desempleo en España?',
+          '¿Tiene España una tasa de empleo mayor que la Unión Europea?',
+          '¿Tiene España más paro juvenil que la Unión Europea?',
           '¿Qué porcentaje de la población activa encuentra trabajo?',
           '¿Está creciendo el empleo en España?',
           '¿Han subido los salarios en España?',
@@ -699,8 +701,8 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
     ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
     : '';
   const title = mode === 'media'
-    ? state === 'running' ? 'Añadiendo contexto en segundo plano' : state === 'slow' ? 'La orientación rápida sigue disponible' : 'Contexto adicional no disponible'
-    : state === 'running' ? 'Mejorando la orientación en segundo plano' : state === 'slow' ? 'La orientación rápida sigue disponible' : 'Contexto adicional no disponible';
+    ? state === 'running' ? 'Orientación inicial lista · leyendo el archivo' : state === 'slow' ? 'La orientación inicial sigue disponible' : 'Contexto adicional no disponible'
+    : state === 'running' ? 'Orientación inicial lista · buscando más contexto' : state === 'slow' ? 'La orientación inicial sigue disponible' : 'Contexto adicional no disponible';
   status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>`;
   result.querySelector('article')?.append(status);
   if (state === 'running') {

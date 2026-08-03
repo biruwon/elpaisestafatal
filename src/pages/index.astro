@@ -18,7 +18,7 @@ const featuredConversationSlugs = [
   'espana-impuestos-europa',
   'sanidad-colapsada',
   'espana-mas-peligrosa',
-  'juventud-emancipacion',
+  'paro-juvenil-espana-ue',
 ];
 const featuredConversation = featuredConversationSlugs
   .map((slug) => conversationMvpClaims.find((item) => item.slug === slug))
@@ -69,6 +69,7 @@ const warehousePrompts = [
   '¿Madrid tiene más densidad que Andalucía?',
   '¿Cómo ha evolucionado la deuda pública española sobre el PIB?',
   '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+  '¿Tiene España más paro juvenil que la Unión Europea?',
   '¿Cuánto debe España?',
   '¿Cuánto dinero se dedica por persona a la sanidad?',
   '¿Cuánto ingresan de media los hogares?',
@@ -104,6 +105,7 @@ const warehouseHighlights = [
   { label: 'Vivienda', prompt: '¿Cómo han cambiado los alquileres en España?', detail: 'Una serie para separar sensación y tendencia.' },
   { label: 'Empleo', prompt: '¿Cómo ha evolucionado el desempleo en España?', detail: 'La medida y el periodo aparecen junto al dato.' },
   { label: 'Empleo · Europa', prompt: '¿Tiene España una tasa de empleo mayor que la Unión Europea?', detail: 'Misma población de 20 a 64 años y definición comparable.' },
+  { label: 'Empleo juvenil · Europa', prompt: '¿Tiene España más paro juvenil que la Unión Europea?', detail: 'Misma población activa de 15 a 24 años y tasa comparable.' },
   { label: 'Población', prompt: '¿Cuántos habitantes viven normalmente en España?', detail: 'Población residente y cambio en el tiempo.' },
   { label: 'Inmigración · nacionalidad', prompt: '¿Cuántos residentes tienen ciudadanía extranjera en España?', detail: 'Nacionalidad y país de nacimiento son medidas distintas; tampoco equivale a llegadas anuales.' },
   { label: 'Sanidad', prompt: '¿Cuánto dinero se dedica por persona a la sanidad?', detail: 'Gasto comparable, unidad y fuente.' },
