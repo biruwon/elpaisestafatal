@@ -6,6 +6,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 const currentPath = Astro.url.pathname;
 const isChecking = currentPath === '/' || currentPath.startsWith('/aclarar');
+const isSearch = currentPath.startsWith('/buscar');
 const isAffirmations = currentPath.startsWith('/afirmaciones');
 const isTopics = currentPath.startsWith('/investigaciones') || currentPath.startsWith('/preocupaciones');
 const isData = currentPath.startsWith('/datos');
@@ -40,11 +41,11 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
     <link rel="stylesheet" href="/topic.css" />
     <link rel="stylesheet" href="/home.css" />
     <link rel="stylesheet" href="/quick-answer.css" />
-    <style>.site-header nav{max-width:min(70vw,720px);overflow-x:auto;white-space:nowrap;scrollbar-width:none}.site-header nav::-webkit-scrollbar{display:none}@media(max-width:700px){.site-header{gap:14px}.site-header nav{max-width:68vw;gap:14px;font-size:.64rem}}</style>
+    <style>html{scroll-padding-top:82px}.site-header{position:sticky;top:0;z-index:50;background:var(--paper)}.site-header nav{max-width:min(76vw,820px);overflow-x:auto;white-space:nowrap;scrollbar-width:none}.site-header nav::-webkit-scrollbar{display:none}.site-header nav a{display:inline-block}.site-header nav a:focus-visible{outline:2px solid var(--red);outline-offset:5px}@media(max-width:700px){html{scroll-padding-top:70px}.site-header{gap:14px}.site-header nav{max-width:72vw;gap:14px;font-size:.64rem}}</style>
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a class:list={{ 'nav-primary': isChecking, 'is-current': isChecking }} href="/#comprobar" aria-current={isChecking ? 'page' : undefined}>Comprobar</a><a class:list={{ 'is-current': isAffirmations }} href="/afirmaciones" aria-current={isAffirmations ? 'page' : undefined}>Afirmaciones</a><a class:list={{ 'is-current': isTopics }} href="/investigaciones" aria-current={isTopics ? 'page' : undefined}>Temas</a><a class:list={{ 'is-current': isData }} href="/datos" aria-current={isData ? 'page' : undefined}>Datos</a><a class:list={{ 'is-current': isMethod }} href="/metodologia" aria-current={isMethod ? 'page' : undefined}>Método</a></nav></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a class:list={{ 'nav-primary': isChecking, 'is-current': isChecking }} href="/#comprobar" aria-current={isChecking ? 'page' : undefined}>Comprobar</a><a class:list={{ 'is-current': isSearch }} href="/buscar" aria-current={isSearch ? 'page' : undefined}>Buscar</a><a class:list={{ 'is-current': isAffirmations }} href="/afirmaciones" aria-current={isAffirmations ? 'page' : undefined}>Afirmaciones</a><a class:list={{ 'is-current': isTopics }} href="/investigaciones" aria-current={isTopics ? 'page' : undefined}>Temas</a><a class:list={{ 'is-current': isData }} href="/datos" aria-current={isData ? 'page' : undefined}>Datos</a><a class:list={{ 'is-current': isMethod }} href="/metodologia" aria-current={isMethod ? 'page' : undefined}>Método</a></nav></header>
     <main id="contenido"><slot /></main>
     <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente y sin financiación externa. Las fuentes y los límites están visibles para que puedas comprobarlos.</p></footer>
     <script is:inline>
