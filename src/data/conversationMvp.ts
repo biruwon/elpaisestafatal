@@ -524,6 +524,19 @@ definitions['el-envejecimiento-hara-inevitable-retrasar-la-jubilacion'] = {
   visuals: { key: { value: '20,7 %', label: 'Población de 65 años o más', period: '2025' }, trend: { available: true, labels: ['2015', '2025'], values: [18.4, 20.7], label: 'Población de 65 años o más', unit: '% de la población' }, caveat: 'El envejecimiento no es una proyección financiera ni demuestra por sí solo qué edad de jubilación debe aplicarse.' },
 };
 
+definitions['sin-inmigracion-el-sistema-de-pensiones-quebraria-inmediatamente'] = {
+  prompt: 'Sin inmigración el sistema de pensiones quebraría inmediatamente',
+  aliases: ['sin inmigrantes no habría pensiones', 'las pensiones quebrarían sin inmigración', 'sin inmigración se hunden las pensiones', 'la inmigración es imprescindible para pagar las pensiones'],
+  propositions: ['La inmigración puede aportar población en edad de trabajar y cotizaciones.', 'Sin inmigración el sistema de pensiones quebraría inmediatamente.', 'La población nacida fuera equivale al número de cotizantes y demuestra el equilibrio financiero del sistema.'],
+  concern: 'La inmigración puede aliviar parte del envejecimiento, pero la frase presenta como inmediata una predicción que requiere un modelo completo del sistema.',
+  supports: 'La población residente nacida en un país extranjero pasó de 5,88 millones en 2015 a 9,46 millones en 2025; ese stock no equivale al número de cotizantes.',
+  limit: 'No hay evidencia suficiente para afirmar un colapso inmediato. Habría que modelar empleo, salarios, cotizaciones, edades, productividad, pensiones, impuestos y reformas.',
+  question: '¿Quieres comparar población, cotizantes, gasto en pensiones o una proyección financiera concreta?',
+  reply: 'La inmigración aporta trabajadores y puede aliviar parte del envejecimiento, pero no hay datos que demuestren que sin nuevas entradas las pensiones quebrarían inmediatamente. Esa hipótesis exige un modelo completo de empleo, salarios, cotizaciones, población y reformas.',
+  visualLabel: 'Población nacida fuera y equilibrio de pensiones no son la misma medida',
+  visuals: { key: { value: '9,46 M', label: 'Residentes nacidos en un país extranjero', period: '2025' }, trend: { available: true, labels: ['2015', '2025'], values: [5.884, 9.464], label: 'Residentes nacidos fuera de España', unit: 'millones de personas' }, caveat: 'Este stock no equivale a cotizantes, no es una proyección y no demuestra por sí solo el equilibrio financiero de las pensiones.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

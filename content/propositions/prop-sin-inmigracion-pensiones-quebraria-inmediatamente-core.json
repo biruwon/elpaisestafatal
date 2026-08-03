@@ -1,0 +1,13 @@
+{
+  "id": "prop-sin-inmigracion-pensiones-quebraria-inmediatamente-core",
+  "claimSlug": "sin-inmigracion-el-sistema-de-pensiones-quebraria-inmediatamente",
+  "text": "Sin inmigración el sistema español de pensiones quebraría inmediatamente.",
+  "type": "predictive",
+  "subject": "ausencia_de_nuevas_entradas_migratorias",
+  "predicate": "causes_immediate_collapse",
+  "object": "sistema_de_pensiones",
+  "geography": "España",
+  "period": "futuro",
+  "status": "insufficient",
+  "evidenceIds": ["inmigracion-estadistica-continua-de-poblacion-t1-2026", "inmigracion-poblacion-residente-a-1-de-abril-labels-2023-2024-2025-2026-values-48-20"]
+}

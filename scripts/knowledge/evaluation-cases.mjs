@@ -68,6 +68,7 @@ const knownSeeds = [
   ['demasiados-graduados', 'definition', 'España tiene demasiados universitarios'],
   ['en-espana-sobran-universitarios-y-faltan-trabajadores-de-oficios', 'definition', 'En España sobran universitarios y faltan trabajadores de oficios'],
   ['el-envejecimiento-hara-inevitable-retrasar-la-jubilacion', 'causal', 'El envejecimiento hará inevitable retrasar la jubilación'],
+  ['sin-inmigracion-el-sistema-de-pensiones-quebraria-inmediatamente', 'prediction', 'Sin inmigración el sistema de pensiones quebraría inmediatamente'],
   ['abandono-escolar-temprano-baja', 'trend', 'España ha reducido el abandono escolar temprano'],
   ['titulacion-superior-aumenta', 'trend', 'La proporción de jóvenes de 25 a 34 años con estudios superiores ha aumentado'],
   ['neet-baja', 'trend', 'España ha reducido la proporción de jóvenes que ni estudian ni trabajan'],
