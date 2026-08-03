@@ -1,4 +1,4 @@
-type PopularCluster = { text?: string; count?: number; status?: string };
+type PopularCluster = { text?: string; count?: number; status?: string; linkedClaimSlug?: string };
 
 const escapeHtml = (value: string): string => value
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -54,10 +54,12 @@ if (container && input && form) {
         : [];
       if (!claims.length) return;
       container.hidden = false;
-      container.innerHTML = `<span class="dynamic-popular-label">Lo más preguntado</span><div class="dynamic-popular-grid">${claims.map((item) => {
+      container.innerHTML = `<div class="dynamic-popular-heading"><span class="dynamic-popular-label">Lo más preguntado</span><small>Solo preguntas con una aclaración publicada y revisada</small></div><div class="dynamic-popular-grid">${claims.map((item) => {
         const text = String(item.text).trim().slice(0, 240);
         const count = Number.isFinite(item.count) ? ` · ${Number(item.count).toLocaleString('es-ES')} consultas` : '';
-        return `<button type="button" class="dynamic-popular-card" data-dynamic-example="${escapeHtml(text)}"><span>${escapeHtml(`Pregunta frecuente${count}`)}</span><strong>${escapeHtml(text)}</strong><em>Comprobar →</em></button>`;
+        const slug = typeof item.linkedClaimSlug === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.linkedClaimSlug) ? item.linkedClaimSlug : '';
+        const content = `<span>${escapeHtml(`Pregunta frecuente${count}`)}</span><strong>${escapeHtml(text)}</strong><em>${slug ? 'Ver ficha →' : 'Comprobar →'}</em>`;
+        return slug ? `<a class="dynamic-popular-card" href="/afirmaciones/${escapeHtml(slug)}">${content}</a>` : `<button type="button" class="dynamic-popular-card" data-dynamic-example="${escapeHtml(text)}">${content}</button>`;
       }).join('')}</div>`;
       container.querySelectorAll<HTMLButtonElement>('[data-dynamic-example]').forEach((button) => button.addEventListener('click', () => {
         input.value = button.dataset.dynamicExample || '';

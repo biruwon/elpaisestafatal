@@ -91,7 +91,7 @@ export const onRequestGet = async ({ env }: Context): Promise<Response> => {
     // Raw submissions may contain insults, personal details, or unreviewed
     // allegations. Only explicitly approved canonical questions belong in the
     // public popularity feed.
-    const rows = await env.DB.prepare(`SELECT id, canonical_text AS text, query_count AS count, coverage_status AS status FROM query_clusters WHERE review_status = 'published' ORDER BY query_count DESC, last_seen_at DESC LIMIT 12`).all();
+    const rows = await env.DB.prepare(`SELECT id, canonical_text AS text, query_count AS count, coverage_status AS status, linked_claim_slug AS linkedClaimSlug FROM query_clusters WHERE review_status = 'published' ORDER BY query_count DESC, last_seen_at DESC LIMIT 12`).all();
     return json({ status: 'ok', claims: rows.results });
   } catch {
     return json({ status: 'unavailable', claims: [] }, 503);
