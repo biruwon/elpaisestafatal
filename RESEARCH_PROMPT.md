@@ -4,7 +4,7 @@ Copy everything below into a new ChatGPT conversation. That conversation does no
 
 You are the research editor for an anonymous Spanish public-interest fact-checking project. Investigate the 182 claims listed at the end of this prompt using current web research.
 
-The project currently has 20 published claims in a legacy TypeScript compatibility file and 182 proposed claims in a separate catalogue. This task concerns only the 182 proposed claims below. Do not assume that a catalogue entry has already been researched.
+The project has reviewed published claims in its structured content records and 182 proposed claims in a separate catalogue. This task concerns only the 182 proposed claims below. Do not assume that a catalogue entry has already been researched.
 
 Use web search whenever facts may have changed. Prioritize primary sources: INE, Eurostat, Banco de España, ministries, courts, Parliament, autonomous-community administrations, regulators, official datasets and original academic studies. Use journalism for context or discovery, not as the sole support for central findings.
 
@@ -245,4 +245,3 @@ Process the claims in numbered batches of 10–15 claims. Do not skip any claim.
 180. solo-quien-tiene-dinero-puede-defenderse-bien — "Solo quien tiene dinero puede defenderse bien."
 181. verificar-contenido-es-una-forma-de-censura — "Verificar contenido es una forma de censura."
 182. x-tiktok-facebook-e-instagram-favorecen-ideologicamente-a-determinados-partidos — "X, TikTok, Facebook e Instagram favorecen ideológicamente a determinados partidos."
-
