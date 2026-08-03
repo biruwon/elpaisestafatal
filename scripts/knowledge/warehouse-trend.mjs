@@ -28,6 +28,7 @@ const metricLabels = {
   older_population_share: 'Población de 65 años o más en España',
   young_population_share: 'Población menor de 15 años en España',
   population_change_rate: 'Cambio anual de la población en España',
+  regional_population_density: 'Densidad de población por región',
   resident_population: 'Población residente en España',
   foreign_born_population: 'Población nacida en el extranjero en España',
   immigration_flows: 'Inmigración anual en España',
@@ -76,6 +77,7 @@ const displayUnit = (item) => {
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'household_electricity_price') return '€ por kWh';
   if (metricId === 'recorded_offences') return 'delitos registrados';
+  if (metricId === 'regional_population_density') return 'personas por km²';
   if (unit === 'percentage' || unit === 'percentage of population' || unit === 'percentage of population in the labour force') return '%';
   if (unit.includes('percentage of gross domestic product')) return '% del PIB';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';

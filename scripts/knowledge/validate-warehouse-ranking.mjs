@@ -1,4 +1,4 @@
-import { summarizeWarehouseRanking } from './warehouse-ranking.mjs';
+import { summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
 
 const source = { id: 'eurostat', title: 'Desempleo en Europa', url: 'https://ec.europa.eu/eurostat/' };
 const records = [
@@ -11,4 +11,13 @@ const result = summarizeWarehouseRanking('España tiene la tasa de paro más alt
 if (!result || !result.points.some((point) => point.includes('España ocupa la posición'))) throw new Error('Ranking handler did not rank Spain correctly');
 const contradictory = summarizeWarehouseRanking('España tiene la tasa de paro más baja de Europa', records);
 if (!contradictory || !contradictory.points.some((point) => point.includes('España no ocupa la posición'))) throw new Error('Ranking handler did not flag a contradictory ranking');
+const regionalSource = { id: 'eurostat-regional', title: 'Densidad de población por región · Eurostat', url: 'https://ec.europa.eu/eurostat/' };
+const regionalRecords = [
+  { id: 'madrid-2024', metricId: 'regional_population_density', value: 850, unit: 'Persons per square kilometre', period: '2024', dimensions: { geo: 'ES30' }, dimensionLabels: { geo: 'Comunidad de Madrid' }, source: regionalSource },
+  { id: 'andalucia-2024', metricId: 'regional_population_density', value: 97, unit: 'Persons per square kilometre', period: '2024', dimensions: { geo: 'ES61' }, dimensionLabels: { geo: 'Andalucía' }, source: regionalSource },
+  { id: 'madrid-2023', metricId: 'regional_population_density', value: 840, unit: 'Persons per square kilometre', period: '2023', dimensions: { geo: 'ES30' }, dimensionLabels: { geo: 'Comunidad de Madrid' }, source: regionalSource },
+  { id: 'andalucia-2023', metricId: 'regional_population_density', value: 96, unit: 'Persons per square kilometre', period: '2023', dimensions: { geo: 'ES61' }, dimensionLabels: { geo: 'Andalucía' }, source: regionalSource },
+];
+const regional = summarizeWarehouseRegionalComparison('Madrid tiene más densidad que Andalucía', regionalRecords);
+if (!regional || !regional.regional || !regional.headline.includes('Comunidad de Madrid') || !regional.reply.includes('850')) throw new Error('Regional comparison did not use the requested Spanish regions and common period');
 console.log('Warehouse ranking validation passed: same-period comparable countries are ranked.');

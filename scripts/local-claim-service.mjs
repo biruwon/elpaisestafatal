@@ -10,7 +10,7 @@ import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-contract.mjs';
 import { displayMetric, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
-import { summarizeWarehouseRanking } from './knowledge/warehouse-ranking.mjs';
+import { summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './knowledge/fallback-compiler.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
@@ -74,6 +74,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'rental_price_index') return 'índice (2015=100)';
   if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'immigration_flows') return 'personas';
   if (metricId === 'recorded_offences') return 'delitos registrados';
+  if (metricId === 'regional_population_density') return 'personas por km²';
   if (unit === 'percentage of population in the labour force' || unit === 'percentage' || unit === 'percent') return '%';
   if (unit.includes('euro per inhabitant') || unit.includes('euro per capita')) return '€ por habitante';
   if (unit.includes('euro per person') || unit === 'euro') return '€ por persona';
@@ -442,7 +443,9 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
 
 const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const normalizedQuery = normalise(query);
-  const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto');
+  const explicitComparison = /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(normalizedQuery)
+    || /\b(?:que|frente a|comparad)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(normalizedQuery);
+  const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto') || explicitComparison;
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
@@ -952,7 +955,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       : classified.status === 'related'
         ? 'partial'
         : usableSource ? 'draft' : 'uncovered';
-  const ranking = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : null;
+  const regionalComparison = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRegionalComparison(text, observations) : null;
+  const ranking = !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalContext = causalObservations.length >= 2 ? {
@@ -1164,9 +1168,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       }) || series[0]
       : series.at(-1);
     return [
-      { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `España · ${displayMetric(keyObservation)}` : displayMetric(keyObservation), value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
+      { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `${ranking.regional ? 'Comparación regional' : 'España'} · ${displayMetric(keyObservation)}` : displayMetric(keyObservation), value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
       ...((ranking || trend || causalContext) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend || causalContext).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend || causalContext).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend || causalContext).reply }] : []),
-      ...(periods.length >= 2 && !isPrediction ? [{ type: 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
+      ...(periods.length >= 2 && !isPrediction ? [{ type: ranking ? 'comparison_chart' : 'line_chart', visualId: 'warehouse-observation', evidenceIds: series.map((item) => item.id) }] : []),
       { type: 'cannot_conclude', evidenceIds: series.map((item) => item.id), points: isPrediction
         ? ['Estos valores describen el pasado, pero no demuestran la predicción.', 'Faltan una fecha límite, un indicador y una magnitud que permitan comprobarla.']
         : isGroupComparison

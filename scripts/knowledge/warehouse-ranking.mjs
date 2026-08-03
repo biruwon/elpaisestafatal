@@ -7,6 +7,71 @@ const comparableDimensions = (item) => Object.entries(item.dimensions || {})
 const baseKey = (item) => JSON.stringify({ source: item.source?.id || item.sourceId || '', metric: item.metric || item.datasetId || '', unit: item.unit || '', dimensions: comparableDimensions(item) });
 const countryName = (item) => String(item.dimensionLabels?.geo || item.dimensions?.geo || item.geo || 'Territorio');
 
+const spanishRegions = [
+  { label: 'Galicia', aliases: ['galicia'] },
+  { label: 'Principado de Asturias', aliases: ['asturias', 'principado de asturias'] },
+  { label: 'Cantabria', aliases: ['cantabria'] },
+  { label: 'País Vasco', aliases: ['pais vasco', 'euskadi'] },
+  { label: 'Comunidad Foral de Navarra', aliases: ['navarra', 'comunidad foral de navarra'] },
+  { label: 'La Rioja', aliases: ['la rioja', 'rioja'] },
+  { label: 'Aragón', aliases: ['aragon'] },
+  { label: 'Comunidad de Madrid', aliases: ['madrid', 'comunidad de madrid'] },
+  { label: 'Castilla y León', aliases: ['castilla y leon', 'castilla leon'] },
+  { label: 'Castilla-La Mancha', aliases: ['castilla la mancha'] },
+  { label: 'Extremadura', aliases: ['extremadura'] },
+  { label: 'Cataluña', aliases: ['cataluna', 'catalunya'] },
+  { label: 'Comunitat Valenciana', aliases: ['comunidad valenciana', 'comunitat valenciana', 'valencia'] },
+  { label: 'Illes Balears', aliases: ['illes balears', 'islas baleares', 'baleares'] },
+  { label: 'Andalucía', aliases: ['andalucia'] },
+  { label: 'Región de Murcia', aliases: ['murcia', 'region de murcia'] },
+  { label: 'Canarias', aliases: ['canarias'] },
+];
+
+const regionName = (item) => String(item.dimensionLabels?.geo || item.dimensions?.geo || '').trim();
+const regionMatches = (query, region) => {
+  const normalized = normalise(query);
+  return region.aliases.some((alias) => normalized.includes(normalise(alias)));
+};
+
+export const requestedSpanishRegions = (query) => spanishRegions.filter((region) => regionMatches(query, region));
+
+export const summarizeWarehouseRegionalComparison = (text, observations) => {
+  const regions = requestedSpanishRegions(text);
+  if (regions.length < 2) return null;
+  const regional = observations.filter((item) => item.metricId === 'regional_population_density' && /^ES\d/.test(String(item.dimensions?.geo || '')));
+  if (!regional.length) return null;
+  const matching = regions.map((region) => ({ region, observations: regional.filter((item) => regionMatches(region.label, { aliases: [regionName(item)] })) }));
+  if (matching.some((item) => !item.observations.length)) return null;
+  const commonPeriods = matching.reduce((periods, item) => {
+    const values = new Set(item.observations.map((observation) => String(observation.period)));
+    return new Set([...periods].filter((period) => values.has(period)));
+  }, new Set(matching[0].observations.map((observation) => String(observation.period))));
+  const period = [...commonPeriods].sort((left, right) => right.localeCompare(left))[0];
+  if (!period) return null;
+  const rows = matching.map(({ region, observations: items }) => ({ region, item: items.find((item) => String(item.period) === period) })).filter((item) => item.item);
+  if (rows.length < 2) return null;
+  const unit = 'personas por km²';
+  const values = rows.map(({ region, item }) => `${region.label}: ${formatNumber(item.value)} ${unit}`);
+  const [first, second] = rows;
+  const comparison = Number(first.item.value) === Number(second.item.value)
+    ? 'registran la misma densidad'
+    : Number(first.item.value) > Number(second.item.value)
+      ? `${first.region.label} registra ${formatNumber(first.item.value - second.item.value)} ${unit} más que ${second.region.label}`
+      : `${second.region.label} registra ${formatNumber(second.item.value - first.item.value)} ${unit} más que ${first.region.label}`;
+  return {
+    regional: true,
+    observations: rows.map(({ item }) => item),
+    headline: `Densidad de población: ${first.region.label} frente a ${second.region.label} (${period})`,
+    summary: `En ${period}, ${first.region.label} y ${second.region.label} ${comparison}.`,
+    points: [
+      ...values,
+      'La comparación usa densidad de población: personas por kilómetro cuadrado; no mide por sí sola saturación de servicios ni calidad de vida.',
+    ],
+    reply: `En ${period}, ${first.region.label} registra ${formatNumber(first.item.value)} ${unit} y ${second.region.label} ${formatNumber(second.item.value)} ${unit}. Es una comparación de densidad, no una explicación automática de las diferencias entre territorios.`,
+    replyEvidenceIds: rows.map(({ item }) => item.id),
+  };
+};
+
 export const summarizeWarehouseRanking = (text, observations) => {
   const numeric = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && item.period);
   if (numeric.length < 2) return null;
