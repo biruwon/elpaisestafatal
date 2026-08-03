@@ -13,6 +13,9 @@ const order = (first, second, label) => { if (homepage.indexOf(first) < 0 || hom
 requireText('¿De qué estáis', 'the conversation-first heading');
 requireText('id="conversation-form"', 'the claim form');
 requireText('id="conversation-counter"', 'the input character counter');
+requireText('id="recent-checks"', 'the local recent-checks surface');
+requireText('data-recent-list', 'the recent-checks list target');
+if (!claimInput.includes('recentChecksStorageKey') || !claimInput.includes('data-recent-query')) failures.push('recent checks do not provide local replay controls');
 requireText('data-media-trigger="image"', 'the explicit screenshot upload action');
 requireText('data-media-trigger="audio"', 'the explicit audio upload action');
 requireText('data-media-dropzone', 'the drag-and-drop media surface');

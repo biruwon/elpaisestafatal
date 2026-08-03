@@ -48,16 +48,54 @@ const fileName = document.querySelector<HTMLElement>('[data-file-name]');
 const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
 const result = document.querySelector<HTMLElement>('#conversation-result');
+const recentChecks = document.querySelector<HTMLElement>('#recent-checks');
+const recentChecksList = document.querySelector<HTMLElement>('[data-recent-list]');
 const mediaTriggers = document.querySelectorAll<HTMLElement>('[data-media-trigger]');
 const defaultMediaAccept = 'image/*,audio/*';
 const catalogElement = document.querySelector<HTMLElement>('#claim-index-data');
 const advancedEnabled = catalogElement?.dataset.advanced === 'true';
+const recentChecksStorageKey = 'elpaisestafatal:recent-checks:v1';
+const recentChecksLimit = 6;
 let activeRequest: AbortController | null = null;
 let requestVersion = 0;
 const responseCache = new Map<string, SearchResponse>();
 
 const updateCounter = (): void => {
   if (counter) counter.textContent = `${input?.value.length || 0}/${INPUT_LIMITS.maxTextCharacters}`;
+};
+
+type RecentCheck = { text: string; checkedAt: number };
+
+const readRecentChecks = (): RecentCheck[] => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(recentChecksStorageKey) || '[]');
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item): item is RecentCheck => typeof item?.text === 'string' && item.text.trim().length > 0)
+      .map((item) => ({ text: item.text.slice(0, INPUT_LIMITS.maxTextCharacters), checkedAt: Number(item.checkedAt) || Date.now() }))
+      .slice(0, recentChecksLimit);
+  } catch { return []; }
+};
+
+const writeRecentChecks = (items: RecentCheck[]): void => {
+  try { localStorage.setItem(recentChecksStorageKey, JSON.stringify(items.slice(0, recentChecksLimit))); } catch { /* Local history is optional. */ }
+};
+
+const renderRecentChecks = (): void => {
+  if (!recentChecks || !recentChecksList) return;
+  const items = readRecentChecks();
+  recentChecks.hidden = items.length === 0;
+  recentChecksList.innerHTML = items.map((item, index) => `<div class="recent-check"><button type="button" class="recent-check-query" data-recent-query="${escapeHtml(item.text)}">${escapeHtml(item.text)}</button><button type="button" class="recent-check-remove" data-remove-recent="${index}" aria-label="Eliminar esta comprobación">×</button></div>`).join('');
+};
+
+const rememberRecentCheck = (text: string): void => {
+  const trimmed = text.trim().slice(0, INPUT_LIMITS.maxTextCharacters);
+  if (!trimmed) return;
+  const normalized = normaliseClaimText(trimmed);
+  const items = readRecentChecks().filter((item) => normaliseClaimText(item.text) !== normalized);
+  items.unshift({ text: trimmed, checkedAt: Date.now() });
+  writeRecentChecks(items);
+  renderRecentChecks();
 };
 
 const resetMediaSelection = (): void => {
@@ -647,6 +685,32 @@ const resetChecker = (): void => {
   input?.focus();
 };
 
+recentChecksList?.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement;
+  const removeButton = target.closest<HTMLButtonElement>('[data-remove-recent]');
+  if (removeButton) {
+    const index = Number(removeButton.dataset.removeRecent);
+    if (Number.isInteger(index)) {
+      const items = readRecentChecks();
+      items.splice(index, 1);
+      writeRecentChecks(items);
+      renderRecentChecks();
+    }
+    return;
+  }
+  const queryButton = target.closest<HTMLButtonElement>('[data-recent-query]');
+  if (!queryButton || !input || !form) return;
+  resetMediaSelection();
+  input.value = queryButton.dataset.recentQuery || '';
+  updateCounter();
+  form.requestSubmit();
+});
+
+document.querySelector<HTMLButtonElement>('[data-clear-recent]')?.addEventListener('click', () => {
+  writeRecentChecks([]);
+  renderRecentChecks();
+});
+
 const bindResultActions = (): void => {
   result?.querySelectorAll<HTMLButtonElement>('[data-copy-answer]').forEach((button) => button.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(button.dataset.copyAnswer || ''); button.textContent = 'Respuesta copiada'; } catch { button.textContent = 'Selecciona el texto para copiarlo'; }
@@ -971,6 +1035,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       responseCache.set(cacheKey, data);
     }
     if (file && data.input?.canonical) {
+      rememberRecentCheck(data.input.canonical);
       recordQuestion(data.input.canonical, {
         inputType,
         status: data.status,
@@ -998,6 +1063,7 @@ form?.addEventListener('submit', (event) => {
   const query = input?.value.trim() || '';
   const file = fileInput?.files?.[0];
   if ((!query && !file) || !result) return;
+  if (query) rememberRecentCheck(query);
   window.history.replaceState({}, '', query ? `/?q=${encodeURIComponent(query)}#comprobar` : '/#comprobar');
   if (file) {
     const inputType = file.type.startsWith('audio/') ? 'audio' : 'image';
@@ -1067,6 +1133,7 @@ mediaTriggers.forEach((trigger) => trigger.addEventListener('click', () => {
 }));
 
 input?.addEventListener('input', updateCounter);
+renderRecentChecks();
 updateCounter();
 const initialQuery = new URLSearchParams(window.location.search).get('q')?.trim() || '';
 if (initialQuery && input) {
