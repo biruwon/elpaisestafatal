@@ -495,6 +495,14 @@
     "notEquivalentTo": ["government_debt_ratio", "government_expenditure_ratio"],
     "dimensions": ["period", "geography", "government_sector"]
   },
+  "government_debt_ratio_europe": {
+    "name": "General government gross debt as a share of GDP: Spain and the European Union",
+    "aliases": ["deuda pública frente a Europa", "deuda de España frente a la Unión Europea", "España tiene más deuda que Europa", "España está más endeudada que Europa", "comparación europea de la deuda pública"],
+    "unit": "percentage of GDP",
+    "population": "consolidated general government gross debt for all government subsectors in Spain and the European Union",
+    "notEquivalentTo": ["government_debt_ratio", "government_debt_current_prices", "government_deficit_ratio_europe"],
+    "dimensions": ["period", "geography", "government_sector", "national_accounts_item"]
+  },
   "government_deficit_ratio_europe": {
     "name": "General government deficit or surplus as a share of GDP: Spain and the European Union",
     "aliases": ["déficit público frente a Europa", "déficit de España frente a la Unión Europea", "España tiene menos déficit que Europa", "España tiene más déficit que Europa", "saldo presupuestario frente a Europa"],

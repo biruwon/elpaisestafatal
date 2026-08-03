@@ -177,6 +177,7 @@ const longTailBenchmarkCases = [
   ['deficit-superavit', '¿Tiene España déficit o superávit en sus cuentas públicas?', 'government_deficit_ratio'],
   ['deficit-europa', '¿Tiene España menos déficit público que la Unión Europea?', 'government_deficit_ratio_europe'],
   ['gini-europa', '¿Es España más desigual que la Unión Europea?', 'gini_coefficient_europe'],
+  ['deuda-europa', '¿Tiene España más deuda pública que la Unión Europea?', 'government_debt_ratio_europe'],
   ['renta-hogares', '¿Cuál es la renta disponible mediana de los hogares?', 'median_equivalised_income'],
   ['renta-mediana-cambio', '¿Cómo ha cambiado la renta mediana española?', 'median_equivalised_income'],
   ['ingresos-familias-mediana', 'Ingresos medianos equivalentes de las familias', 'median_equivalised_income'],

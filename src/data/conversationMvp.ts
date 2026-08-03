@@ -640,6 +640,19 @@ definitions['espana-mas-desigual-ue'] = {
   visuals: { key: { value: '30,8 vs 29,2', label: 'Coeficiente de Gini de la renta disponible', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Desigualdad relativa de ingresos', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [30.8, 29.2], label: 'Coeficiente de Gini', unit: 'escala 0–100 · más alto = más desigualdad' }, caveat: 'El Gini es un resumen de la distribución de la renta disponible equivalente; no mide por sí solo pobreza, riqueza ni la situación de cada hogar.' },
 };
 
+definitions['espana-mas-deuda-publica-ue'] = {
+  prompt: 'España tiene más deuda pública que la Unión Europea',
+  aliases: ['España está más endeudada que Europa', 'España tiene más deuda que Europa', 'la deuda española supera la europea', '¿Tiene España más deuda pública que la Unión Europea?'],
+  propositions: ['En 2025 la deuda pública bruta fue del 100,7% del PIB en España y del 81,7% en la Unión Europea.', 'La deuda española fue 19 puntos porcentuales mayor en esta ratio.', 'Una ratio de deuda mayor demuestra por sí sola que España es insolvente o que cada hogar debe esa proporción.'],
+  concern: 'España registra una deuda pública bruta más alta que la Unión Europea en relación con su PIB, pero la ratio no resuelve por sí sola la sostenibilidad ni la factura de cada hogar.',
+  supports: 'Eurostat registra una deuda pública bruta del 100,7% del PIB en España y del 81,7% en la Unión Europea en 2025.',
+  limit: 'Es un stock acumulado de deuda pública sobre el PIB. No equivale al déficit anual, a una factura inmediata de cada hogar ni a una conclusión completa sobre sostenibilidad.',
+  question: '¿Quieres comparar deuda acumulada, déficit anual, intereses o vencimientos?',
+  reply: 'Sí: en 2025 la deuda pública bruta de España equivalía al 100,7% del PIB frente al 81,7% de la Unión Europea, 19 puntos más. Es una ratio de deuda acumulada, no el déficit de un año ni una factura idéntica para cada hogar.',
+  visualLabel: 'Deuda acumulada y déficit anual son medidas distintas',
+  visuals: { key: { value: '100,7% vs 81,7%', label: 'Deuda pública bruta sobre PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Deuda pública sobre PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [100.7, 81.7], label: 'Deuda pública bruta sobre PIB', unit: '% del PIB · stock acumulado' }, caveat: 'La ratio de deuda no es el déficit de un año ni decide por sí sola la sostenibilidad; importan también intereses, crecimiento, vencimientos y composición.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

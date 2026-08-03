@@ -334,6 +334,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el indicador de Eurostat “net lending (+)/net borrowing (-)” para las administraciones públicas, expresado como porcentaje del PIB y con el último año común disponible. Un valor negativo representa déficit; menos negativo significa un déficit menor.',
     caveat: 'Es el saldo agregado de las administraciones públicas, no la deuda acumulada, el gasto total ni la situación financiera de cada hogar.',
   },
+  government_debt_ratio_europe: {
+    label: 'Deuda pública bruta sobre el PIB',
+    verb: 'registró una deuda pública bruta',
+    replyLead: 'la deuda pública bruta fue del',
+    differenceVerb: ['la deuda pública española fue más alta', 'la deuda pública española fue más baja', 'España y la Unión Europea registraron la misma deuda pública'],
+    unit: '% del PIB',
+    replyUnit: '% del PIB',
+    differenceUnit: 'puntos porcentuales',
+    method: 'La comparación usa la deuda bruta consolidada de las administraciones públicas como porcentaje del PIB según Eurostat, con el último año común disponible. Es un stock acumulado y no el déficit anual.',
+    caveat: 'Es una ratio agregada de deuda pública bruta, no una factura inmediata de cada hogar ni una medida completa de sostenibilidad financiera; también importan intereses, crecimiento, vencimientos y composición.',
+  },
   gini_coefficient_europe: {
     label: 'Desigualdad de ingresos (coeficiente de Gini)',
     verb: 'registró un coeficiente de Gini',

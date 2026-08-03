@@ -40,6 +40,7 @@ const metricHints = [
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera del empleo y de la educacion', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
   { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt', 'cuanto debe españa', 'deuda del pais', 'nivel de deuda española'] },
+  { ids: ['government_debt_ratio_europe'], terms: ['deuda publica frente a europa', 'deuda publica frente a la union europea', 'deuda de espana frente a europa', 'espana tiene mas deuda que europa', 'espana esta mas endeudada que europa', 'comparacion europea de la deuda publica'] },
   { ids: ['government_debt_current_prices'], terms: ['deuda publica en euros', 'deuda publica total', 'importe total de la deuda publica', 'importe de la deuda publica', 'importe en millones de euros de la deuda publica', 'deuda publica española expresada en euros', 'deuda publica expresada en euros', 'cuanto dinero debe el sector publico', 'cuanto dinero debe españa', 'cuanto debe españa en euros', 'cuanto debe españa en dinero', 'deuda de españa en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda'] },
   { ids: ['government_revenue_ratio'], terms: ['recaudacion', 'recaudación', 'ingresos publicos', 'ingresos públicos', 'ingresos del estado'] },
   { ids: ['government_expenditure_ratio'], terms: ['gasto publico', 'gasto público', 'gasto del estado', 'presupuesto publico', 'presupuesto público'] },
@@ -108,6 +109,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('electricidad', 'luz', 'kwh', 'kilovatio') && hasAny('precio', 'paga', 'coste', 'factura', 'tarifa')) preferred.add('household_electricity_price_europe');
   if (hasEuropeReference && hasAny('proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto social', 'prestaciones publicas') && hasAny('gasto', 'gasta', 'ayudas', 'prestaciones')) preferred.add('social_protection_benefits_per_capita_europe');
   if (hasEuropeReference && hasAny('deficit', 'superavit', 'saldo presupuestario') && hasAny('publico', 'estado', 'pib', 'espana')) preferred.add('government_deficit_ratio_europe');
+  if (hasEuropeReference && hasAny('deuda', 'endeudamiento', 'endeudada') && hasAny('publico', 'estado', 'pib', 'espana')) preferred.add('government_debt_ratio_europe');
   if (hasEuropeReference && hasAny('gini', 'desigual', 'desigualdad', 'distribucion de la renta')) preferred.add('gini_coefficient_europe');
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
@@ -198,6 +200,11 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('life_expectancy_at_birth_europe')) preferred.delete('life_expectancy_at_birth');
   if (preferred.has('government_revenue_ratio_europe')) preferred.delete('government_revenue_ratio');
   if (preferred.has('government_deficit_ratio_europe')) preferred.delete('government_deficit_ratio');
+  if (preferred.has('government_debt_ratio_europe')) {
+    preferred.delete('government_debt_ratio');
+    preferred.delete('government_debt_current_prices');
+    preferred.delete('government_deficit_ratio_europe');
+  }
   if (preferred.has('gini_coefficient_europe')) preferred.delete('gini_coefficient');
   if (preferred.has('government_education_expenditure_ratio_europe')) {
     preferred.delete('government_education_expenditure_ratio');

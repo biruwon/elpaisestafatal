@@ -280,6 +280,7 @@
     {"evidenceId":"prestaciones-proteccion-social-eurostat","propositionId":"prop-prestaciones-proteccion-social-sube-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"prestaciones-proteccion-social-europa-eurostat","propositionId":"prop-prestaciones-proteccion-social-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deficit-publico-espana-europa-eurostat","propositionId":"prop-deficit-publico-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"desigualdad-ingresos-espana-europa-eurostat","propositionId":"prop-gini-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"desigualdad-ingresos-espana-europa-eurostat","propositionId":"prop-gini-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"deuda-publica-espana-europa-eurostat","propositionId":"prop-deuda-publica-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
 ]
 }

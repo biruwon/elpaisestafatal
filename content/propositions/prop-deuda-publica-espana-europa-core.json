@@ -1,0 +1,13 @@
+{
+  "id": "prop-deuda-publica-espana-europa-core",
+  "claimSlug": "espana-mas-deuda-publica-ue",
+  "text": "España tuvo una deuda pública bruta sobre el PIB mayor que la Unión Europea en 2025",
+  "type": "comparative",
+  "subject": "government_debt_ratio_europe",
+  "predicate": "was_higher_than",
+  "object": "European Union",
+  "geography": "Spain and European Union",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["deuda-publica-espana-europa-eurostat"]
+}

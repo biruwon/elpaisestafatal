@@ -47,6 +47,12 @@
       "metricId": "government_deficit_ratio_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?geo=ES&geo=EU27_2020&na_item=GD&unit=PC_GDP&sector=S13&sinceTimePeriod=2015",
+      "title": "Deuda pública: España y Unión Europea · Eurostat",
+      "aliases": ["deuda pública frente a Europa", "deuda de España frente a la Unión Europea", "España tiene más deuda que Europa", "España está más endeudada que Europa"],
+      "metricId": "government_debt_ratio_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&spdeps=SPR&spfunc=OLD_SRV&unit=EUR_HAB&sinceTimePeriod=2015",
       "title": "Gasto en prestaciones de vejez y supervivencia por habitante en España · Eurostat",
       "aliases": ["gasto en pensiones", "prestaciones de vejez", "pensiones por habitante", "gasto en jubilación", "pensiones y supervivencia"],
