@@ -29,6 +29,11 @@ if (!match) {
       variants: ['España pierde población', 'la población está bajando', 'España se está despoblando'],
     },
     {
+      slug: 'poblacion-ciudadania-extranjera-sube',
+      prompt: 'La población con ciudadanía extranjera ha aumentado desde 2015',
+      variants: ['ha aumentado la población con nacionalidad extranjera', 'hay más residentes con ciudadanía extranjera', 'España tiene más extranjeros por nacionalidad'],
+    },
+    {
       slug: 'espana-esta-sufriendo-un-reemplazo-poblacional',
       prompt: 'España está sufriendo un reemplazo poblacional',
       variants: ['están reemplazando a los españoles', 'España vive un reemplazo demográfico', 'reemplazo étnico en España'],

@@ -3,7 +3,7 @@ slug: espana-impuestos-europa
 claim: "“España es el país que más impuestos cobra de Europa.”"
 assessment: false
 topicSlugs: ["impuestos"]
-aliases: ["'impuestos europa'","'infierno fiscal'","'presion fiscal'"]
+aliases: ["'impuestos europa'","'infierno fiscal'","'presion fiscal'", "España cobra demasiados impuestos"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

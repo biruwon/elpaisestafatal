@@ -1,0 +1,13 @@
+{
+  "id": "prop-poblacion-ciudadania-extranjera-sube-core",
+  "claimSlug": "poblacion-ciudadania-extranjera-sube",
+  "text": "La población residente con ciudadanía extranjera o apátrida aumentó en España entre 2015 y 2025",
+  "type": "trend",
+  "subject": "población residente por ciudadanía",
+  "predicate": "increased_between",
+  "object": "2015 y 2025",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-ciudadania-extranjera-sube"]
+}

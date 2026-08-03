@@ -235,6 +235,19 @@ definitions['deuda-publica-crece'] = {
   visuals: { key: { value: '1,11 → 1,70 billones €', label: 'Deuda pública bruta consolidada', period: '2015–2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [1114129, 1145655, 1184148.3, 1209741.8, 1224363.8, 1346916.4, 1429403.6, 1504105.1, 1575376.7, 1620573.4, 1698224.6], label: 'Deuda pública bruta consolidada', unit: 'millones de euros' }, caveat: 'La serie está a precios corrientes. Hay que comparar el stock con el PIB, los intereses, los vencimientos y el crecimiento antes de valorar la sostenibilidad.' },
 };
 
+definitions['poblacion-ciudadania-extranjera-sube'] = {
+  prompt: 'La población con ciudadanía extranjera ha aumentado desde 2015',
+  aliases: ['hay más residentes con nacionalidad extranjera', 'hay más residentes con ciudadanía extranjera', 'ha aumentado la población con ciudadanía extranjera', 'ha aumentado la población con nacionalidad extranjera', 'España tiene más extranjeros por nacionalidad', 'cada vez hay más residentes extranjeros'],
+  propositions: ['La población residente con ciudadanía de un país extranjero o apátrida pasó de 4.453.985 personas en 2015 a 6.911.971 en 2025.', 'Ciudadanía y país de nacimiento son la misma medida.', 'El aumento nacional demuestra por sí solo sus efectos en empleo, ayudas, seguridad o integración.'],
+  concern: 'La población con ciudadanía extranjera ha aumentado, pero la cifra necesita conservar la diferencia entre ciudadanía, país de nacimiento, flujos y efectos.',
+  supports: 'Eurostat registra 4.453.985 residentes con ciudadanía extranjera o apátrida en 2015 y 6.911.971 en 2025.',
+  limit: 'Es un stock anual por ciudadanía. No equivale a país de nacimiento, llegadas de un año, situación administrativa ni una explicación causal de sus efectos.',
+  question: '¿Quieres comparar ciudadanía, país de nacimiento, llegadas o la distribución por territorio?',
+  reply: 'Sí: Eurostat registra 6,91 millones de residentes con ciudadanía extranjera o apátrida en 2025, frente a 4,45 millones en 2015. Es una medida de ciudadanía; no equivale a país de nacimiento, llegadas anuales ni una explicación automática de sus efectos.',
+  visualLabel: 'Ciudadanía, origen y llegadas son medidas distintas',
+  visuals: { key: { value: '6,91 M', label: 'Residentes con ciudadanía extranjera o apátrida', period: '2025' }, trend: { available: true, labels: ['2015', '2017', '2019', '2021', '2023', '2025'], values: [4.454, 4.418, 4.851, 5.403, 6.090, 6.912], label: 'Residentes por ciudadanía', unit: 'millones de personas' }, caveat: 'Ciudadanía y país de nacimiento no son equivalentes; la serie tampoco mide llegadas anuales ni situación administrativa.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

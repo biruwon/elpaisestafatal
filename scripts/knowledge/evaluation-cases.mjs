@@ -1,6 +1,7 @@
 const knownSeeds = [
   ['poblacion-residente-supera-49m', 'trend', 'España supera los 49 millones de residentes'],
   ['poblacion-nacida-fuera-sube', 'trend', 'La población nacida fuera de España ha aumentado desde 2015'],
+  ['poblacion-ciudadania-extranjera-sube', 'trend', 'La población con ciudadanía extranjera ha aumentado desde 2015'],
   ['espana-esta-sufriendo-un-reemplazo-poblacional', 'definition', 'España está sufriendo un reemplazo poblacional'],
   ['ipc-junio-2026-positivo', 'trend', 'Los precios de consumo subieron un 3,2% interanual en junio de 2026'],
   ['inmigracion-delincuencia', 'causal', 'Los inmigrantes crean inseguridad'],

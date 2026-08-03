@@ -296,6 +296,7 @@ export const claimAliases: Record<string, string[]> = {
     'España es un infierno fiscal',
     'somos el país que más impuestos paga',
     'en España se pagan más impuestos que en toda Europa',
+    'España cobra demasiados impuestos',
   ],
   'sanidad-colapsada': [
     'La sanidad española está colapsada',
@@ -369,5 +370,14 @@ export const claimAliases: Record<string, string[]> = {
     'la pobreza está bajando pero sigue siendo alta',
     'el crecimiento acabó con la pobreza',
     'España ya no tiene un problema de pobreza',
+  ],
+  'poblacion-ciudadania-extranjera-sube': [
+    'hay más residentes con nacionalidad extranjera',
+    'hay más residentes con ciudadanía extranjera',
+    'ha aumentado la población con ciudadanía extranjera',
+    'ha aumentado la población con nacionalidad extranjera',
+    'España tiene más extranjeros por nacionalidad',
+    'cada vez hay más residentes extranjeros',
+    'la población por nacionalidad extranjera ha crecido',
   ],
 };
