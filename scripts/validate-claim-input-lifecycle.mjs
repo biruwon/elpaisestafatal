@@ -11,12 +11,14 @@ const required = [
   'conversation-counter',
   "primary?.kind === 'topic'",
   "if (data.status === 'unavailable')",
-  'Respuesta disponible',
+  'Añadimos contexto',
   'data-stop-enrichment',
-  'Seguir sin esperar',
+  'Quedarme con lo rápido',
   'claim-result-progress',
   'Orientación rápida disponible',
   'claim-result-enrichment',
+  "'enrichment' | 'media'",
+  'Leyendo archivo',
   'statusState',
   'const assessmentLabels',
   'const resetChecker',
@@ -54,9 +56,9 @@ const required = [
   'Elige por dónde concretarla',
   'fallbackPublishedClaims',
   'La orientación de la frase sigue disponible',
-  'estamos leyendo el texto de la captura',
-  'estamos transcribiendo el audio',
-  'estamos leyendo la página enlazada',
+  'leemos la captura para comprobar si añade contexto',
+  'transcribimos el audio para comprobar si añade contexto',
+  'leemos la página enlazada para comprobar si añade contexto',
   "const alternativesMarkup = ['published', 'related', 'unavailable']",
   "renderCard('uncovered', original, undefined, [],",
   "response.status === 'draft' && response.result",
@@ -73,6 +75,7 @@ const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
 if (/if \(data\.status === 'processing'\)[\s\S]{0,180}renderCard\('unavailable'/.test(source)) throw new Error('Processing timeout replaces the deterministic result with an unavailable card');
 if (source.includes('Pendiente de revisión · no es un veredicto publicado')) throw new Error('Provisional structured results still use pending language');
-if (source.includes("state === 'running' ? 'Añadiendo contexto'")) throw new Error('Enrichment state still presents the initial result as if it were waiting');
+if (source.includes("state === 'running' ? 'Respuesta disponible'")) throw new Error('Enrichment state still presents the initial result as if it were the completed answer');
+if (source.includes('La orientación rápida está lista; comprobamos si podemos añadir contexto.')) throw new Error('File loading state still claims that a quick result is already ready');
 if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');

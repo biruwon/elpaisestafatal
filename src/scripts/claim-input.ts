@@ -424,7 +424,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const shareAction = primary?.answer ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrlFor(original, primary, state === 'published' ? 'published' : 'related'))}">Compartir aclaración</button>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}${state === 'loading' ? '<p class="classifier-status" aria-live="polite">La orientación rápida está lista; comprobamos si podemos añadir contexto.</p>' : ''}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><span class="eyebrow">${labels[state]}</span>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
   bindResultActions();
 };
 
@@ -464,7 +464,7 @@ const clearDynamicStatus = (): void => {
   result?.querySelector('[data-dynamic-status]')?.remove();
 };
 
-const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavailable' = 'running'): void => {
+const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavailable' = 'running', mode: 'enrichment' | 'media' = 'enrichment'): void => {
   if (!result) return;
   clearDynamicStatus();
   const status = document.createElement('div');
@@ -476,7 +476,11 @@ const setDynamicStatus = (message: string, state: 'running' | 'slow' | 'unavaila
   const progress = state === 'running'
     ? '<span class="claim-result-progress" aria-hidden="true"><b>1</b><i></i><b class="is-active">2</b></span>'
     : '';
-  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${state === 'running' ? 'Respuesta disponible' : state === 'slow' ? 'Respuesta disponible' : 'Respuesta disponible'}</strong><span>${escapeHtml(message)}</span></div>${state === 'running' ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Seguir sin esperar</button>' : ''}`;
+  const title = mode === 'media'
+    ? state === 'running' ? 'Leyendo archivo' : 'No hemos podido leer el archivo'
+    : state === 'running' ? 'Añadimos contexto' : 'Lectura rápida conservada';
+  const action = state === 'running' && mode === 'enrichment' ? '<button type="button" class="claim-result-enrichment-stop" data-stop-enrichment>Quedarme con lo rápido</button>' : '';
+  status.innerHTML = `${progress}<span class="claim-result-enrichment-dot" aria-hidden="true"></span><div><strong>${title}</strong><span>${escapeHtml(message)}</span></div>${action}`;
   result.querySelector('article')?.append(status);
   status.querySelector<HTMLButtonElement>('[data-stop-enrichment]')?.addEventListener('click', () => {
     activeRequest?.abort();
@@ -554,13 +558,13 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const processingMessage = inputType === 'image'
-        ? 'La orientación inicial está lista; estamos leyendo el texto de la captura.'
+        ? query ? 'La lectura rápida de la frase ya está lista; ahora leemos la captura para comprobar si añade contexto.' : 'Hemos recibido la captura; leemos su texto para encontrar una comprobación.'
         : inputType === 'audio'
-          ? 'La orientación inicial está lista; estamos transcribiendo el audio.'
+          ? query ? 'La lectura rápida de la frase ya está lista; ahora transcribimos el audio para comprobar si añade contexto.' : 'Hemos recibido el audio; extraemos su contenido para encontrar una comprobación.'
           : inputType === 'url'
-            ? 'La orientación inicial está lista; estamos leyendo la página enlazada.'
-            : 'La respuesta rápida ya está lista; añadimos contexto automático si encontramos una ficha o datos útiles.';
-      setDynamicStatus(processingMessage, 'running');
+            ? 'La lectura rápida ya está lista; leemos la página enlazada para comprobar si añade contexto.'
+            : 'La lectura rápida ya está lista; buscamos una ficha publicada o datos directos para mejorarla automáticamente.';
+      setDynamicStatus(processingMessage, 'running', file && !query ? 'media' : 'enrichment');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 120 : 20;
       const waitMs = file ? 500 : 350;
@@ -576,7 +580,9 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      setDynamicStatus('No hemos podido añadir una ficha automática ahora. Esto no significa que la afirmación sea verdadera o falsa; puedes usar la orientación visible y concretarla cuando tengas una fecha, lugar o fuente.', 'slow');
+      setDynamicStatus(file && !query
+        ? 'No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.'
+        : 'No hemos podido añadir contexto automático a tiempo. Esto no significa que la afirmación sea verdadera o falsa; la lectura rápida visible sigue disponible.', 'slow', file && !query ? 'media' : 'enrichment');
       return;
     }
     if (data.status === 'unavailable') {
