@@ -1,0 +1,13 @@
+{
+  "id": "prop-salario-minimo-supera-1400-core",
+  "claimSlug": "salario-minimo-supera-1400",
+  "text": "El salario mínimo legal mensual equivalente en España supera los 1.400 euros en 2026.",
+  "type": "descriptive",
+  "subject": "minimum_wage_monthly",
+  "predicate": "exceeded",
+  "object": "1400 EUR per month",
+  "geography": "España",
+  "period": "2026-S2",
+  "status": "supported",
+  "evidenceIds": ["salario-minimo-eurostat"]
+}
