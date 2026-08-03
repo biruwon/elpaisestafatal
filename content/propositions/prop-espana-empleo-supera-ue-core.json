@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-empleo-supera-ue-core",
+  "claimSlug": "espana-tiene-mayor-tasa-empleo-europa",
+  "text": "La tasa de empleo de 20 a 64 años de España supera la de la Unión Europea en 2025.",
+  "type": "comparative",
+  "subject": "España",
+  "predicate": "has_higher_employment_rate_than",
+  "object": "Unión Europea",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["empleo-20-64-espana-ue-eurostat"]
+}

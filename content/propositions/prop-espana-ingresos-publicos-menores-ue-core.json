@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-ingresos-publicos-menores-ue-core",
+  "claimSlug": "espana-recauda-menos-que-ue",
+  "text": "Los ingresos públicos de España son inferiores a los de la Unión Europea como porcentaje del PIB en 2025.",
+  "type": "comparative",
+  "subject": "España",
+  "predicate": "has_lower_public_revenue_ratio_than",
+  "object": "Unión Europea",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["ingresos-publicos-espana-ue-eurostat"]
+}

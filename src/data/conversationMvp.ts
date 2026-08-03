@@ -313,6 +313,58 @@ definitions['espana-tiene-menor-pib-habitante-europa'] = {
   visuals: { key: { value: '38.135,7 PPS', label: 'España · PIB por habitante', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'PIB por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [38135.7, 41565.7], label: 'PIB por habitante', unit: 'PPS por habitante · 2025' }, caveat: 'El PIB por habitante no es la renta disponible ni la riqueza. La comparación no decide por sí sola el bienestar de cada hogar o territorio.' },
 };
 
+definitions['espana-tiene-mas-inflacion-que-europa'] = {
+  prompt: 'España tiene más inflación que la Unión Europea',
+  aliases: ['España tiene una inflación más alta que Europa', 'los precios suben más en España que en la UE', 'la inflación española supera la europea', '¿Está la inflación de España por encima de la Unión Europea?'],
+  propositions: ['En junio de 2026 la inflación armonizada fue del 2,3% en España.', 'En junio de 2026 la Unión Europea registró el 2,0% en la misma medida.', 'La tasa media demuestra que todos los precios y hogares evolucionaron igual.'],
+  concern: 'La inflación armonizada española fue ligeramente superior a la de la Unión Europea en junio de 2026, pero la diferencia de la tasa no describe por sí sola el nivel de precios de cada hogar.',
+  supports: 'Eurostat registra un 2,3% en España y un 2,0% en la Unión Europea en junio de 2026.',
+  limit: 'Es una variación interanual del índice armonizado de precios de consumo. No es el nivel acumulado de precios ni la cesta de gasto de cada familia.',
+  question: '¿Quieres comparar la inflación, el nivel acumulado de precios o el coste de vida de una familia concreta?',
+  reply: 'Sí: en junio de 2026 la inflación armonizada fue del 2,3% en España frente al 2,0% en la UE. Es una diferencia de variación interanual; no significa que todos los precios ni todos los hogares hayan evolucionado igual.',
+  visualLabel: 'La inflación española quedó ligeramente por encima de la UE',
+  visuals: { key: { value: '2,3%', label: 'España · inflación armonizada interanual', period: 'Junio de 2026' }, trend: { available: false, labels: [], values: [], label: 'Inflación armonizada', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [2.3, 2], label: 'Inflación armonizada interanual', unit: '% · junio de 2026' }, caveat: 'Una tasa de inflación más baja no implica precios más bajos. La media no describe la cesta de cada hogar ni el nivel acumulado de precios.' },
+};
+
+definitions['espana-tiene-mayor-tasa-empleo-europa'] = {
+  prompt: 'España tiene una tasa de empleo mayor que la Unión Europea',
+  aliases: ['España tiene más empleo que Europa', 'la tasa de empleo española supera la europea', 'España está mejor que la UE en ocupación', '¿Tiene España una tasa de empleo mayor que la Unión Europea?'],
+  propositions: ['En 2025 la tasa de empleo de 20 a 64 años fue del 75,8% en España.', 'En 2025 la Unión Europea registró el 75,0% en la misma medida.', 'La tasa de empleo demuestra por sí sola que todos los trabajos son estables y de calidad.'],
+  concern: 'La tasa de empleo española quedó ligeramente por encima de la media de la Unión Europea en 2025, pero la ocupación agregada no resuelve por sí sola la cuestión de la calidad del trabajo.',
+  supports: 'Eurostat registra un 75,8% en España y un 75,0% en la Unión Europea para la población de 20 a 64 años en 2025.',
+  limit: 'Es la proporción de personas ocupadas dentro de la población de 20 a 64 años. No mide por sí sola salarios, horas, estabilidad, productividad o desempleo juvenil.',
+  question: '¿Quieres comparar ocupación, paro, salarios o estabilidad del empleo?',
+  reply: 'Sí, pero por poco: en 2025 la tasa de empleo de 20 a 64 años fue del 75,8% en España frente al 75,0% en la UE. Es una medida de ocupación, no una prueba de que todos los empleos sean estables o de calidad.',
+  visualLabel: 'La tasa de empleo española quedó ligeramente por encima',
+  visuals: { key: { value: '75,8%', label: 'España · tasa de empleo de 20 a 64 años', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Tasa de empleo', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [75.8, 75], label: 'Tasa de empleo de 20 a 64 años', unit: '% de la población · 2025' }, caveat: 'La tasa de empleo no mide salarios ni calidad. Una diferencia pequeña frente a la UE no significa que todos los trabajadores estén igual.' },
+};
+
+definitions['espana-recauda-menos-que-ue'] = {
+  prompt: 'España recauda menos que la Unión Europea como porcentaje del PIB',
+  aliases: ['España recauda menos que Europa', 'los ingresos públicos españoles son menores que los europeos', 'España tiene menos ingresos públicos que la UE', '¿España recauda más o menos que la media de la Unión Europea?'],
+  propositions: ['En 2025 los ingresos públicos equivalieron al 42,9% del PIB en España.', 'En 2025 la Unión Europea registró el 46,4% del PIB en la misma medida.', 'El dato demuestra por sí solo cuánto paga cada hogar español.'],
+  concern: 'Los ingresos públicos agregados de España quedaron por debajo de la media de la Unión Europea en 2025, pero la medida no es la factura fiscal de un hogar.',
+  supports: 'Eurostat registra el 42,9% del PIB en España y el 46,4% en la Unión Europea en 2025.',
+  limit: 'Es el total de ingresos públicos sobre el PIB. Incluye categorías agregadas y no identifica un impuesto concreto, un hogar o la calidad de los servicios.',
+  question: '¿Quieres comparar ingresos públicos, presión fiscal total o lo que paga un hogar concreto?',
+  reply: 'Como agregado público, España recaudó menos: los ingresos públicos fueron el 42,9% del PIB frente al 46,4% en la UE en 2025. Eso no dice cuánto paga cada hogar ni sustituye la comparación de un impuesto concreto.',
+  visualLabel: 'Los ingresos públicos españoles quedaron por debajo de la UE',
+  visuals: { key: { value: '42,9%', label: 'España · ingresos públicos sobre el PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Ingresos públicos sobre el PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [42.9, 46.4], label: 'Ingresos públicos sobre el PIB', unit: '% del PIB · 2025' }, caveat: 'No es la factura fiscal de una familia ni la recaudación de un impuesto concreto. Es un agregado de las administraciones públicas.' },
+};
+
+definitions['espana-gasta-menos-que-ue'] = {
+  prompt: 'España gasta menos que la Unión Europea como porcentaje del PIB',
+  aliases: ['España gasta menos que Europa', 'el gasto público español es menor que el europeo', 'España tiene menos gasto público que la UE', '¿España gasta más o menos que la media de la Unión Europea?'],
+  propositions: ['En 2025 el gasto público equivalió al 45,3% del PIB en España.', 'En 2025 la Unión Europea registró el 49,5% del PIB en la misma medida.', 'El dato demuestra por sí solo que los servicios españoles son peores o que existe despilfarro.'],
+  concern: 'El gasto público agregado de España quedó por debajo de la media de la Unión Europea en 2025, pero esta comparación no dice qué políticas explican la diferencia.',
+  supports: 'Eurostat registra el 45,3% del PIB en España y el 49,5% en la Unión Europea en 2025.',
+  limit: 'Es gasto público total sobre el PIB. No identifica cuánto corresponde a sanidad, educación, pensiones, inversión o intereses, ni mide eficiencia.',
+  question: '¿Quieres comparar gasto total o una política concreta como sanidad, educación o pensiones?',
+  reply: 'Como agregado público, España gastó menos: el gasto público fue el 45,3% del PIB frente al 49,5% en la UE en 2025. Eso no dice cuánto se gastó en sanidad, educación o pensiones, ni si el gasto fue suficiente.',
+  visualLabel: 'El gasto público español quedó por debajo de la UE',
+  visuals: { key: { value: '45,3%', label: 'España · gasto público sobre el PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Gasto público sobre el PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [45.3, 49.5], label: 'Gasto público sobre el PIB', unit: '% del PIB · 2025' }, caveat: 'El agregado no muestra qué políticas reciben el gasto ni demuestra por sí solo calidad, suficiencia o despilfarro.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

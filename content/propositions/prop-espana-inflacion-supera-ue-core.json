@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-inflacion-supera-ue-core",
+  "claimSlug": "espana-tiene-mas-inflacion-que-europa",
+  "text": "La inflación armonizada de España supera la de la Unión Europea en junio de 2026.",
+  "type": "comparative",
+  "subject": "España",
+  "predicate": "has_higher_harmonised_inflation_than",
+  "object": "Unión Europea",
+  "geography": "España y Unión Europea",
+  "period": "2026-06",
+  "status": "supported",
+  "evidenceIds": ["inflacion-armonizada-espana-ue-eurostat"]
+}

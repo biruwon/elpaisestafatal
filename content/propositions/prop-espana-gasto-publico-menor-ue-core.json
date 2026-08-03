@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-gasto-publico-menor-ue-core",
+  "claimSlug": "espana-gasta-menos-que-ue",
+  "text": "El gasto público de España es inferior al de la Unión Europea como porcentaje del PIB en 2025.",
+  "type": "comparative",
+  "subject": "España",
+  "predicate": "has_lower_public_expenditure_ratio_than",
+  "object": "Unión Europea",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["gasto-publico-espana-ue-eurostat"]
+}
