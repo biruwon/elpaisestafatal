@@ -331,7 +331,7 @@
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?geo=ES&indic_de=OLDDEP1&sinceTimePeriod=2015",
       "title": "Dependencia de personas mayores en España · Eurostat",
-      "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida"],
+      "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida", "personas mayores por cada 100", "personas mayores por cada cien", "edad laboral", "edad de trabajar", "dependencia demográfica", "ratio de dependencia"],
       "metricId": "old_age_dependency_ratio"
     },
     {

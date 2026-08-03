@@ -1,0 +1,13 @@
+{
+  "id": "prop-dependencia-mayores-2025-core",
+  "claimSlug": "dependencia-mayores-espana-312",
+  "text": "En 2025, España registró 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años.",
+  "type": "descriptive",
+  "subject": "old_age_dependency_ratio",
+  "predicate": "measured",
+  "object": "31.2_per_100_working_age_residents",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["dependencia-mayores-eurostat"]
+}

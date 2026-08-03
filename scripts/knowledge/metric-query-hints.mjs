@@ -57,7 +57,7 @@ const metricHints = [
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
   { ids: ['life_expectancy_at_birth_europe'], terms: ['esperanza de vida frente a europa', 'esperanza de vida frente a la union europea', 'años de vida frente a europa', 'espana vive mas que europa', 'espana vive mas que la union europea', 'comparacion europea de esperanza de vida', 'esperanza de vida europa'] },
   { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos por mujer'] },
-  { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida'] },
+  { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida', 'personas mayores por cada 100', 'personas mayores por cada cien', 'edad laboral', 'edad de trabajar', 'dependencia demografica', 'ratio de dependencia'] },
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
   { ids: ['young_population_share'], terms: ['poblacion de 0 a 14 anos', 'menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'proporcion de menores', 'poblacion menos anos', 'porcentaje poblacion menos anos', 'menos de quince anos'] },
   { ids: ['population_change_rate'], terms: ['crecimiento demografico', 'crecimiento poblacional', 'esta creciendo o bajando la poblacion', 'cambio anual de habitantes', 'tasa de variacion demografica', 'variacion de poblacion', 'variacion demografica', 'crecimiento de la poblacion', 'crece la poblacion', 'esta creciendo', 'la poblacion esta creciendo', 'poblacion creciendo', 'pierde poblacion', 'perdiendo poblacion', 'espana esta perdiendo poblacion', 'despoblacion', 'cambio demografico', 'cambio poblacional'] },
@@ -219,6 +219,8 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('youth_unemployment_rate')) preferred.delete('unemployment_rate');
   if (preferred.has('youth_unemployment_rate')) preferred.delete('employment_rate');
   if (preferred.has('older_population_share') && /\b(?:porcentaje|proporcion|65 anos|65 o mas)\b/.test(normalized)) preferred.delete('old_age_dependency_ratio');
+  const dependencyWording = /(?:por cada (?:100|cien)|edad laboral|edad de trabajar|dependencia demografica|ratio de dependencia)/.test(normalized);
+  if (dependencyWording && preferred.has('old_age_dependency_ratio')) preferred.delete('older_population_share');
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');
   if (preferred.has('unmet_healthcare_waiting_list_rate') || preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('health_expenditure_per_capita');
   if (preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('unmet_healthcare_waiting_list_rate');

@@ -87,6 +87,8 @@ if (!preferredMetricIdsForQuery('Mi cuñado insiste: España tiene más empleo q
 if (!preferredMetricIdsForQuery('España tasa de paro alta en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not prefer European unemployment for compressed comparison wording');
 if (!preferredMetricIdsForQuery('España millones habitantes').has('resident_population')) throw new Error('Metric hints did not prefer resident population for compressed population wording');
 if (!preferredMetricIdsForQuery('Evolucionado esperanza vida España').has('life_expectancy_at_birth')) throw new Error('Metric hints did not prefer life expectancy for compressed wording');
+if (!preferredMetricIdsForQuery('¿Cuántas personas mayores hay por cada cien en edad laboral?').has('old_age_dependency_ratio')) throw new Error('Metric hints did not prefer old-age dependency for per-working-age wording');
+if (preferredMetricIdsForQuery('¿Cuántas personas mayores hay por cada cien en edad laboral?').has('older_population_share')) throw new Error('Metric hints confused old-age dependency with the 65+ population share');
 if (!preferredMetricIdsForQuery('¿España vive más que Europa?').has('life_expectancy_at_birth_europe')) throw new Error('Metric hints did not prefer the Spain/EU life-expectancy comparison');
 if (!excludedMetricIdsForQuery('¿Cómo ha evolucionado la esperanza de vida en España?').has('life_expectancy_at_birth_europe')) throw new Error('Metric hints did not keep Spain/EU life expectancy separate from the Spain-only question');
 if (!preferredMetricIdsForQuery('¿España tiene más espera sanitaria que Europa?').has('unmet_healthcare_waiting_list_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU healthcare-access comparison');

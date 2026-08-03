@@ -11,6 +11,7 @@ const knownSeeds = [
   ['alquileres-suben', 'trend', 'Los alquileres han subido en España desde 2015'],
   ['espana-pierde-poblacion', 'trend', 'España está perdiendo población'],
   ['espana-envejece', 'trend', 'España está cada vez más envejecida'],
+  ['dependencia-mayores-espana-312', 'quantity', 'España tiene 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años'],
   ['espana-fecundidad-baja', 'quantity', 'España tiene menos de 1,2 hijos por mujer'],
   ['espana-menores-disminuyen', 'trend', 'En España hay cada vez menos menores de 15 años'],
   ['renta-mediana-sube', 'trend', 'La renta mediana disponible ha subido en España desde 2015'],

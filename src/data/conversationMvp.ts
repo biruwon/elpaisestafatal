@@ -562,6 +562,19 @@ for (const claim of claims.filter((item) => item.published)) {
   };
 }
 
+definitions['dependencia-mayores-espana-312'] = {
+  prompt: 'España tiene 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años',
+  aliases: ['hay 31 mayores por cada 100 personas en edad de trabajar', 'la dependencia de mayores es de 31 por cada 100', 'por cada 100 personas de 15 a 64 años hay 31 mayores', 'ratio de dependencia de mayores en España', 'cuántas personas mayores hay por cada cien en edad laboral'],
+  propositions: ['En 2025 España registró 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años.', 'La ratio equivale a jubilados por trabajador que cotiza.', 'La cifra demuestra por sí sola que haya que retrasar la jubilación.'],
+  concern: 'La ratio muestra una presión demográfica creciente, pero no es una cuenta de jubilados frente a cotizantes ni decide por sí sola la política de pensiones.',
+  supports: 'Eurostat registra 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años en España en 2025, frente a 27,8 en 2015.',
+  limit: 'La ratio compara grupos de edad de la población residente. No mide empleo, cotizaciones, pensiones efectivamente cobradas ni el equilibrio financiero del sistema.',
+  question: '¿Quieres medir la estructura de edades, el número de cotizantes o el gasto y equilibrio de las pensiones?',
+  reply: 'Sí: en 2025 había 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años. Es una ratio demográfica, no el número de jubilados por trabajador que cotiza ni una prueba de que exista una única política posible.',
+  visualLabel: 'Dependencia demográfica no es lo mismo que cotizantes',
+  visuals: { key: { value: '31,2', label: 'Mayores por cada 100 personas de 15–64 años', period: '2025' }, trend: { available: true, labels: ['2015', '2020', '2022', '2023', '2024', '2025'], values: [27.8, 29.5, 30.2, 30.4, 30.8, 31.2], label: 'Ratio de dependencia de personas mayores', unit: 'personas mayores por cada 100 en edad laboral' }, caveat: 'El denominador es población de 15 a 64 años, no personas que trabajan o cotizan. La ratio no determina por sí sola la edad de jubilación ni el equilibrio financiero de las pensiones.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

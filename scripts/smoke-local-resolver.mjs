@@ -453,6 +453,11 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
     if (result.result?.warehouseSeries?.unit !== 'personas mayores por cada 100 en edad de trabajar') failures.push('ageing warehouse: did not localize the unit');
   } catch (error) { failures.push(`ageing warehouse: ${error.message}`); }
   try {
+    const result = await resolve('España tiene 31,2 personas de 65 años o más por cada 100 personas de 15 a 64 años');
+    if (result.status !== 'known' || result.result?.claimSlug !== 'dependencia-mayores-espana-312') failures.push('published old-age dependency claim: did not resolve the canonical claim');
+    if (!/31,2|31\.2/.test(JSON.stringify(result.result || {}))) failures.push('published old-age dependency claim: lost the measured value');
+  } catch (error) { failures.push(`published old-age dependency claim: ${error.message}`); }
+  try {
     const result = await resolve('Qué porcentaje de personas mayores de 65 años hay en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`older-population warehouse: expected provisional result, received ${result.status}`);
     if (result.result?.warehouseSeries?.metricId !== 'older_population_share') failures.push('older-population warehouse: selected the wrong metric family');
