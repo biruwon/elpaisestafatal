@@ -882,6 +882,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Límites y efectos', status: 'known', detail: 'La norma define efectos jurídicos y permite una reversión después de seis meses bajo las condiciones previstas.' },
         { label: 'Lo que la fuente no demuestra', status: 'missing', detail: 'Que no exista ningún control, que el cambio sea automático o que todos los casos produzcan los mismos efectos.' },
       ]
+      : primary?.slug === 'la-amnistia-rompe-la-igualdad-ante-la-ley'
+        ? [
+        { label: 'Ámbito de la ley', status: 'known', detail: 'La Ley Orgánica 1/2024 establece una amnistía para actos vinculados al proceso independentista catalán dentro de fechas, materias y exclusiones concretas.' },
+        { label: 'Diferencia jurídica', status: 'known', detail: 'La medida trata de forma distinta los actos incluidos y los que quedan fuera de su ámbito.' },
+        { label: 'Control constitucional', status: 'known', detail: 'Las resoluciones de 2026 consultadas rechazaron que la medida vulnerase el principio de igualdad, con votos particulares.' },
+        { label: 'Caso individual', status: 'missing', detail: 'La aplicación concreta depende de los hechos, los artículos aplicables y la resolución del órgano judicial competente.' },
+        { label: 'Juicio de justicia o conveniencia', status: 'missing', detail: 'Los datos y el fallo mayoritario no resuelven por sí solos si la medida es políticamente o moralmente justa.' },
+      ]
       : [
         { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? 'Hay una fuente jurídica localizada para el territorio y periodo indicados.' : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
         { label: 'Artículo aplicable', status: currentLegalRule ? 'known' : 'missing', detail: currentLegalRule ? 'La fuente incluye una regla vigente relacionada con el supuesto.' : 'Localizar el precepto que regula exactamente el supuesto.' },
@@ -1104,6 +1112,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const relatedTopic = !primary ? classified.alternatives?.find((item) => item.kind === 'topic') : undefined;
   const primaryHeadline = primary?.slug === 'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control'
     ? 'La ley elimina un requisito médico, pero mantiene un procedimiento'
+    : primary?.slug === 'la-amnistia-rompe-la-igualdad-ante-la-ley'
+      ? 'La amnistía establece una excepción definida, pero el TC no la consideró contraria a la igualdad'
     : primary?.title;
   const result = {
     schemaVersion: '1',

@@ -1,0 +1,14 @@
+{
+  "id": "prop-amnistia-tc-no-vulnera-igualdad",
+  "claimSlug": "la-amnistia-rompe-la-igualdad-ante-la-ley",
+  "text": "La mayoría del Tribunal Constitucional ha rechazado que la Ley Orgánica 1/2024 vulnere el principio de igualdad en las resoluciones de 2026 consultadas.",
+  "type": "legal",
+  "subject": "Tribunal Constitucional",
+  "predicate": "rejects_equality_violation",
+  "object": "Ley Orgánica 1/2024",
+  "geography": "España",
+  "period": "2026",
+  "verificationRequirements": ["sentencia constitucional", "fallo", "votos particulares"],
+  "evidenceIds": ["tc-2026-amnistia-igualdad"],
+  "status": "supported"
+}

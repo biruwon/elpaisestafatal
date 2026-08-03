@@ -48,6 +48,13 @@ export const claimAliases: Record<string, string[]> = {
     'la autodeterminación de género no tiene controles',
     'la ley trans permite cambiar el sexo sin control',
   ],
+  'la-amnistia-rompe-la-igualdad-ante-la-ley': [
+    'la amnistía da privilegios a los independentistas',
+    'la amnistía trata a unos españoles mejor que a otros',
+    'la amnistía es inconstitucional por desigualdad',
+    'amnistía y desigualdad ante la ley',
+    'la amnistía rompe la igualdad',
+  ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
     'el precio de los hoteles sube y las pernoctaciones bajan',

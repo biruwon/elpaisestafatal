@@ -1,0 +1,14 @@
+{
+  "id": "prop-amnistia-trato-diferenciado-core",
+  "claimSlug": "la-amnistia-rompe-la-igualdad-ante-la-ley",
+  "text": "La Ley Orgánica 1/2024 establece un trato jurídico diferenciado para actos definidos por materia y periodo.",
+  "type": "legal",
+  "subject": "Ley Orgánica 1/2024",
+  "predicate": "establishes_differentiated_legal_treatment",
+  "object": "acts within defined scope",
+  "geography": "España",
+  "period": "vigente desde 2024",
+  "verificationRequirements": ["texto legal vigente", "ámbito temporal", "exclusiones"],
+  "evidenceIds": ["lo-1-2024-amnistia-ambito"],
+  "status": "supported"
+}

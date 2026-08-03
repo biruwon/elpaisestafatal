@@ -88,6 +88,19 @@ definitions['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control'] = {
   visuals: { key: { value: 'Procedimiento', label: 'Rectificación registral con reglas por edad', period: 'Ley vigente desde 2023' }, trend: { available: false, labels: [], values: [], label: 'Requisitos, procedimiento y efectos', unit: 'La ley distingue ausencia de requisito médico y ausencia de control' }, caveat: 'La valoración jurídica debe leer el texto vigente y el supuesto concreto, no solo una frase política.' },
 };
 
+definitions['la-amnistia-rompe-la-igualdad-ante-la-ley'] = {
+  prompt: 'La amnistía rompe la igualdad ante la ley',
+  aliases: ['la amnistía da privilegios a los independentistas', 'la amnistía trata a unos españoles mejor que a otros', 'la amnistía es inconstitucional por desigualdad', 'amnistía y desigualdad ante la ley'],
+  propositions: ['La ley establece un trato jurídico diferenciado para actos y fechas concretas.', 'El Tribunal Constitucional declaró que la ley vulnera la igualdad ante la ley.', 'Discutir si la excepción es justa equivale a demostrar que es inconstitucional.'],
+  concern: 'La amnistía establece una excepción legal definida, mientras que la mayoría del Tribunal Constitucional no la consideró una vulneración del principio de igualdad.',
+  supports: 'La ley delimita actos, fechas y exclusiones, y las resoluciones constitucionales de 2026 consultadas rechazan la alegación de desigualdad.',
+  limit: 'La constitucionalidad mayoritaria no resuelve si la amnistía es justa o conveniente, y los votos particulares muestran que hubo desacuerdo constitucional.',
+  question: '¿Quieres comprobar el ámbito de la ley, la decisión del Tribunal Constitucional o el debate político sobre si es justa?',
+  reply: 'La amnistía sí crea una excepción legal para actos y fechas concretas, pero la mayoría del Tribunal Constitucional no la consideró contraria a la igualdad. Se puede discutir si es justa o conveniente; eso es distinto de una declaración mayoritaria de inconstitucionalidad.',
+  visualLabel: 'Excepción legal, control constitucional y juicio político son preguntas distintas',
+  visuals: { key: { value: 'Excepción definida', label: 'Ámbito legal acotado y revisado constitucionalmente', period: '2024–2026' }, trend: { available: false, labels: [], values: [], label: 'Ley, sentencia y debate político', unit: 'Una diferencia jurídica no decide por sí sola la justicia de la medida' }, caveat: 'La respuesta separa el texto vigente, el fallo mayoritario y el desacuerdo político o moral.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {
