@@ -40,6 +40,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-03
 
+- Deployed the validated Pages build to production and reran the live smoke contract. The public `/api/classify` boundary now returns topic-only political context for uncovered political complaints, with no fabricated evidence or unrelated claim, and the live site matches the pushed source state.
 - Fixed the deterministic API fallback for explicit political complaints such as `pedro sanchez está destruyendo españa`: it now returns topic-only political context, never invents evidence or a verdict, and has a production smoke regression check for unrelated-topic leakage.
 - Improved checker discoverability for the new evidence families: Spain–EU inequality and public-deficit questions now appear in the primary conversation prompts, warehouse prompt list, and homepage data highlights. The initial visible set remains bounded, while the new questions are still reachable through the expanded indicator list.
 - Made `npm run build` enforce the complete static UX contract, including input lifecycle, homepage, data catalogue, published claims, claim catalogue, topic pages, public journeys, navigation, and result UX. A locally green release build now checks the same UI surfaces previously checked only by the broader CI workflow.
