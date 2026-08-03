@@ -82,6 +82,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Compound fallback inputs now expose up to four explicit propositions for common contrast/result structures while preserving ordinary noun lists as one claim; each clause keeps its own detected type before handler selection.
 - The fallback compiler now preserves a directional proposition shape for common comparisons and causal statements (`subject`, `predicate`, `object`), so reversed comparisons cannot silently share a semantic family with the original formulation; the checker labels breakdown rows as facts, comparisons, causes, definitions, predictions, rules, priorities, or implications.
 - The deterministic language path now also preserves direction for everyday Spanish trend paraphrases (`cada vez hay más`, `se ha disparado`, `va a peor`, `está mejorando`) and positional comparisons (`por encima de`, `por debajo de`, `supera`), while separating opposing trend/comparison families.
+- Ranking language now preserves highest/lowest direction for forms such as `el paro más alto de Europa`, `el país con más paro`, and `el paro más bajo`, so the long tail cannot merge opposite ranking claims into one review family.
 - Explicit group comparisons are guarded against nearby but non-equivalent published claims: a question such as “¿reciben más ayudas que los españoles?” cannot inherit a generic benefits answer that does not measure both groups.
 - 68 evidence records and 61 source records are currently linked; the new demographic claim reuses five existing Eurostat source records and adds one explicit synthesis record for the undefined “replacement” conclusion.
 - The browser has a deterministic claim index and automatic local classification support.
@@ -281,7 +282,7 @@ geography or population mismatch
 
 ## Phase 2 — Deterministic fast path
 
-Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. Results now offer context-specific jumps to the reply, next question, and sources. Semantic-family signatures now also recognize common Spanish causal paraphrases such as `hacen que aumenten`, `vuelve inseguro`, and `con más ... hay más ...`, plus directional trend and positional-comparison paraphrases, while keeping association wording, opposing polarity, and reversed comparisons separate; broader semantic clustering remains pending.
+Status: started; the conversation-first homepage, topic-filtered popular prompts, broad-topic guidance, and answer-first published-claim layout are implemented alongside the deterministic match, fallback, input, and timeout states. The evaluation now confirms full known-family recall and unknown-safety after phrase-level alias matching, transposition tolerance, and suppression of irrelevant context for local/private claims. Results now offer context-specific jumps to the reply, next question, and sources. Semantic-family signatures now also recognize common Spanish causal paraphrases such as `hacen que aumenten`, `vuelve inseguro`, and `con más ... hay más ...`, plus directional trend, positional-comparison, and highest/lowest-ranking paraphrases, while keeping association wording, opposing polarity, and reversed comparisons separate; broader semantic clustering remains pending.
 
 Before using a model:
 
@@ -304,7 +305,7 @@ No weak match may be presented as an answer. For example, `España está destrui
 
 ## Phase 3 — Local claim compiler
 
-Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses and directional subject/relation/object shapes before model escalation. The compiler now shares conservative semantic signatures across additional everyday Spanish causal, trend, and comparison constructions while retaining explicit versus implied propositions; broader semantic extraction expansion remains pending.
+Status: boundary implemented; first compiler-result slice complete; deterministic decomposition now preserves separate explicit clauses and directional subject/relation/object shapes before model escalation. The compiler now shares conservative semantic signatures across additional everyday Spanish causal, trend, comparison, and ranking constructions while retaining explicit versus implied propositions; broader semantic extraction expansion remains pending.
 
 Run the local service on a dedicated always-on machine. Package it with Docker Compose so the current Mac remains suitable for development.
 

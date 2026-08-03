@@ -76,6 +76,13 @@ assert(positionalComparison.claimType === 'comparative', 'Positional comparison 
 assert(positionalComparison.explicitPropositions[0].predicate === 'more_than' && positionalComparison.explicitPropositions[0].metric === 'taxes', 'Positional comparison direction or metric was not extracted');
 assert(positionalComparison.semanticSignature !== reversedPositionalComparison.semanticSignature, 'Reversed positional comparisons collapsed into the same semantic family');
 
+const highestRanking = deterministicFallbackCompiler('España tiene el paro más alto de Europa');
+const equivalentHighestRanking = deterministicFallbackCompiler('España es el país con más paro de Europa');
+const lowestRanking = deterministicFallbackCompiler('España tiene el paro más bajo de Europa');
+assert(highestRanking.claimType === 'comparative', 'Highest-ranking claim was not detected');
+assert(highestRanking.semanticSignature === equivalentHighestRanking.semanticSignature, 'Equivalent highest-ranking wording did not receive the same semantic signature');
+assert(highestRanking.semanticSignature !== lowestRanking.semanticSignature, 'Highest and lowest ranking claims collapsed into the same semantic family');
+
 const broad = deterministicFallbackCompiler('España está destruida');
 const negatedBroad = deterministicFallbackCompiler('España no está destruida');
 assert(broad.claimType === 'descriptive' && broad.impliedPropositions.some((item) => item.type === 'definition'), 'Broad evaluative claim was not marked for definition/context clarification');

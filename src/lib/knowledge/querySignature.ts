@@ -53,7 +53,15 @@ const relationShape = (value: string): string => {
   return terms.length ? terms.sort().join('+') : 'unknown';
 };
 
+const rankingDirection = (text: string): string | null => {
+  const ranking = text.match(/\b(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/);
+  if (!ranking) return null;
+  return /\b(?:menos|menor)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
+};
+
 const directionalRelation = (text: string): string | null => {
+  const ranking = rankingDirection(text);
+  if (ranking) return `ranking:${ranking}:${relationShape(text)}`;
   const positionalComparison = text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+?)\s+en\s+(.+)$/) || text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+)$/);
   if (positionalComparison) return `comparison:${positionalComparison[2] === 'encima' ? 'more' : 'less'}:${relationShape(positionalComparison[1])}:${relationShape(positionalComparison[3])}`;
   const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);

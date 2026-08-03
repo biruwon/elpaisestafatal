@@ -135,6 +135,13 @@ const trendDirectionFor = (value) => {
   return null;
 };
 
+const rankingDirectionFor = (value) => {
+  const text = normalise(value);
+  const ranking = text.match(/\b(?:mas|menos|mayor|menor)\b.*\b(?:de|entre)\b/);
+  if (!ranking) return null;
+  return /\b(?:menos|menor)\b/.test(ranking[0]) || /\b(?:mas|mayor)\s+(?:bajo|baja|bajos|bajas)\b/.test(ranking[0]) ? 'lowest' : 'highest';
+};
+
 export const semanticSignatureFor = ({ claimType, propositions = [], entities = [], geography = null, period = null, population = null, numbers = [], negated = false } = {}) => {
   const explicit = propositions.filter((item) => item && item.explicit !== false);
   const comparisonLike = claimType === 'comparative' || claimType === 'mixed' || explicit.some((item) => item.type === 'comparative');
@@ -143,8 +150,11 @@ export const semanticSignatureFor = ({ claimType, propositions = [], entities = 
     const terms = concepts.length ? concepts : semanticTermFallback(item.text);
     const shape = item.subject && item.predicate && item.object ? item : propositionShapeFor(item.text);
     const trendRelation = item.type === 'trend' ? trendDirectionFor(item.text) : null;
+    const rankingRelation = item.type === 'comparative' ? rankingDirectionFor(item.text) : null;
     const relation = trendRelation
       ? `:trend:${trendRelation}`
+      : rankingRelation
+        ? `:ranking:${rankingRelation}`
       : shape.subject && shape.predicate && shape.object
         ? `:${shape.predicate}:${shape.subject}:${shape.object}`
         : '';
