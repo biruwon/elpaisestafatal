@@ -6,6 +6,22 @@ const retired = [
   'src/data/search.ts',
   'src/data/concernComparison.ts',
   'src/data/evidence.ts',
+  'scripts/audit-investigations.mjs',
+  'investigaciones/README.md',
+  'investigaciones/corrupcion.md',
+  'investigaciones/crisis-valores.md',
+  'investigaciones/desigualdad.md',
+  'investigaciones/economia.md',
+  'investigaciones/empleo.md',
+  'investigaciones/extremismos.md',
+  'investigaciones/impuestos.md',
+  'investigaciones/inmigracion.md',
+  'investigaciones/juventud.md',
+  'investigaciones/politica.md',
+  'investigaciones/problemas-sociales.md',
+  'investigaciones/sanidad.md',
+  'investigaciones/seguridad.md',
+  'investigaciones/vivienda.md',
 ];
 
 const failures = [];

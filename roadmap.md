@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Removed the unused root `investigaciones/` Markdown tree and its audit script. The live Astro topic routes already use the structured investigation records, so the obsolete duplicate source path is gone rather than retained as compatibility code; the legacy validator now prevents it from returning.
+
 - Hardened the optional production classifier origin to fail closed when its authentication token is absent: text requests retain deterministic guidance, polling returns unavailable, and health reports static/deterministic mode. The origin and classifier validators now protect the endpoint-plus-token contract, preventing an accidentally public local origin.
 
 - Re-ran the bounded local compiler benchmark against the installed candidates. `gemma3:4b` produced no usable parses at a 2.5-second budget, and `qwen2.5:7b` reached only 0.13 quality with 0.20 safety preservation and roughly 10-second p50/p95 latency. Neither meets the 0.80 quality and perfect-safety gate, so no local model is promoted and deterministic compilation remains the release path.
