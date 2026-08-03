@@ -459,6 +459,11 @@ if (process.env.SMOKE_LONG_TAIL === '1') {
     if (!result.result?.blocks?.some((block) => block.type === 'data_finding')) failures.push('quantity long-tail: missing numeric comparison details');
   } catch (error) { failures.push(`quantity long-tail: ${error.message}`); }
   try {
+    const result = await resolve('España tiene tres millones de habitantes');
+    if (result.status !== 'draft') failures.push(`written quantity long-tail: expected provisional mismatch, received ${result.status}`);
+    if (!result.result?.blocks?.some((block) => block.type === 'key_number')) failures.push('written quantity long-tail: written number did not reach numeric comparison');
+  } catch (error) { failures.push(`written quantity long-tail: ${error.message}`); }
+  try {
     const result = await resolve('España tiene 100 millones de habitantes');
     if (result.status !== 'complete' || result.relatedClaims?.[0]?.slug !== 'espana-no-tiene-100-millones') failures.push(`mismatched quantity: expected published mismatch clarification, received ${result.status}`);
   } catch (error) { failures.push(`mismatched quantity: ${error.message}`); }

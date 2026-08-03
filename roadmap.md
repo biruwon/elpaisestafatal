@@ -316,6 +316,8 @@ Benchmark the installed small models against a Spanish evaluation set and retain
 
 The compiler must produce strict JSON containing:
 
+The deterministic fallback now preserves common written Spanish quantities and percentages such as `tres millones` and `treinta por ciento`, so numeric claims remain clusterable and comparable even when local inference is unavailable.
+
 - original and normalized input;
 - explicit propositions;
 - implied propositions;

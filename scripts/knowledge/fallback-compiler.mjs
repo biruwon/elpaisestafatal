@@ -6,6 +6,12 @@ const normalise = (value) => String(value || '')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
 
+const numberWordTokens = ['cero', 'uno', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciseis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa', 'cien', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+const textualNumberPattern = new RegExp(`\\b(?:${numberWordTokens.join('|')})(?:\\s+(?:y\\s+)?(?:${numberWordTokens.join('|')}|mil|mill[oó]n|millones|bill[oó]n|billones)){0,4}(?:\\s+por\\s+ciento)?\\b`, 'gi');
+const textualNumberMatches = (value) => [...normalise(value).matchAll(textualNumberPattern)]
+  .map((match) => match[0])
+  .filter((match) => /(?:mil|millon|billon|por ciento)/.test(match));
+
 const stopWords = new Set([
   'como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'dice', 'grupo', 'insiste', 'hay', 'datos', 'mas', 'menos', 'todo', 'va', 'peor', 'verdad', 'cierto', 'cierta', 'mi', 'me', 'creo', 'esto', 'eso', 'es', 'son', 'se', 'su',
 ]);
@@ -214,7 +220,10 @@ export const deterministicFallbackCompiler = (text) => {
   const population = populationAliases.find(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias)))?.[0] || null;
   const years = [...normalized.matchAll(/\b(19\d{2}|20\d{2})\b/g)].map((match) => match[1]);
   const period = years.length ? [...new Set(years)].join('–') : /hace\s+(\d+)\s+anos?/.exec(normalized)?.[0] || null;
-  const numbers = [...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)).slice(0, 12);
+  const numbers = [...new Set([
+    ...[...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)),
+    ...textualNumberMatches(original),
+  ])].slice(0, 12);
   const retrievalHints = [...new Set([...tokens(original).slice(0, 10), ...entities, ...(geography ? [geography] : [])])].slice(0, 12);
   const impliedPropositions = [...new Map(
     explicitTypes

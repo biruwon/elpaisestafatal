@@ -51,8 +51,8 @@ let inferenceDisabledUntil = 0;
 let indexPromise;
 let warehousePromise;
 
-const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', cien: '100', ciento: '100' };
-const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|cien|ciento)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
+const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
+const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
 const boundedExcerpt = (value, limit = 900) => {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
@@ -521,6 +521,19 @@ const directGroupObservations = (query, observations) => {
 };
 
 const parseSpanishNumber = (value) => {
+  const textual = normalise(value);
+  if (/[a-z]/.test(textual) && /\b(?:mil|millones?|billones?)\b/.test(textual)) {
+    let total = 0;
+    let current = 0;
+    for (const token of textual.split(' ')) {
+      if (/^\d+$/.test(token)) current += Number(token);
+      else if (token === 'mil') { total += (current || 1) * 1e3; current = 0; }
+      else if (/^millones?$/.test(token)) { total += (current || 1) * 1e6; current = 0; }
+      else if (/^billones?$/.test(token)) { total += (current || 1) * 1e9; current = 0; }
+    }
+    const parsedTextual = total + current;
+    if (Number.isFinite(parsedTextual) && parsedTextual > 0) return parsedTextual;
+  }
   const raw = String(value || '').replace(/\s/g, '');
   if (!raw) return null;
   const normalized = raw.includes(',') && raw.includes('.')

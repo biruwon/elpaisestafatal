@@ -41,6 +41,11 @@ const budget = deterministicFallbackCompiler('El Gobierno transfiere 310 millone
 assert(budget.numbers[0] === '310' && budget.entities.includes('educación') && budget.entities.includes('gobierno de España'), 'Budget entities or amount were not extracted');
 assert(budget.propositions.some((item) => item.explicit === false && item.type === 'mixed'), 'Budget implication was not created');
 
+const writtenAmount = deterministicFallbackCompiler('España tiene tres millones de habitantes');
+assert(writtenAmount.numbers.includes('tres millones'), 'Written Spanish amounts were not retained in the compiler output');
+const writtenPercentage = deterministicFallbackCompiler('El paro bajó al treinta por ciento');
+assert(writtenPercentage.numbers.includes('treinta por ciento'), 'Written Spanish percentages were not retained in the compiler output');
+
 const benefits = deterministicFallbackCompiler('¿Cuántas personas beneficiarias reciben ayudas en España?');
 assert(benefits.population === 'personas beneficiarias', 'Benefit population was not detected');
 
