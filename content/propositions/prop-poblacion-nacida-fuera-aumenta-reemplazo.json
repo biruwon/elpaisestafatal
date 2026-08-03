@@ -1,0 +1,13 @@
+{
+  "id": "prop-poblacion-nacida-fuera-aumenta-reemplazo",
+  "claimSlug": "espana-esta-sufriendo-un-reemplazo-poblacional",
+  "text": "La población residente nacida en un país extranjero aumentó en España entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "población residente por país de nacimiento",
+  "predicate": "increased_between",
+  "object": "2015 y 2025",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-nacida-fuera-sube"]
+}

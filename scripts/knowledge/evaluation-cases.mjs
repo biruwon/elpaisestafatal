@@ -1,6 +1,7 @@
 const knownSeeds = [
   ['poblacion-residente-supera-49m', 'trend', 'España supera los 49 millones de residentes'],
   ['poblacion-nacida-fuera-sube', 'trend', 'La población nacida fuera de España ha aumentado desde 2015'],
+  ['espana-esta-sufriendo-un-reemplazo-poblacional', 'definition', 'España está sufriendo un reemplazo poblacional'],
   ['ipc-junio-2026-positivo', 'trend', 'Los precios de consumo subieron un 3,2% interanual en junio de 2026'],
   ['inmigracion-delincuencia', 'causal', 'Los inmigrantes crean inseguridad'],
   ['inmigrantes-ayudas', 'group_comparison', 'Los inmigrantes vienen a España a vivir de ayudas'],
@@ -62,12 +63,10 @@ const knownSeeds = [
   ['politica-no-es-mayoria', 'quantity', 'La política es la preocupación de la mayoría de españoles'],
 ];
 
-// These are deliberately present in the corpus as unpublished claims. The
-// resolver must not expose planned editorial records as public answers.
-const unpublishedSeeds = [
-  ['la-brecha-salarial-de-genero-es-un-mito', 'group_comparison', 'La brecha salarial de género es un mito'],
-  ['espana-esta-sufriendo-un-reemplazo-poblacional', 'prediction', 'España está sufriendo un reemplazo poblacional'],
-];
+// Keep this list for future planned-only regressions. A planned legacy file
+// whose wording is now covered by a published claim must not be treated as an
+// unknown case: exact published coverage is the intended result.
+const unpublishedSeeds = [];
 
 const accentless = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 const typo = (value) => value.replace('España', 'Espana').replace('inmigrantes', 'inmigratnes').replace('vivienda', 'vivenda');

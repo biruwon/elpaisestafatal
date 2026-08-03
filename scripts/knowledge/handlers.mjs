@@ -28,6 +28,16 @@ export const handlerForInput = (input, claimType = '') => {
 
 export const visualBlockForHandler = (handler, visualId, evidenceIds = []) => {
   if (!visualId || !evidenceIds.length) return null;
+  if (visualId === 'espana-esta-sufriendo-un-reemplazo-poblacional') return {
+    type: 'evidence_ladder',
+    evidenceIds,
+    steps: [
+      { label: 'Aumenta la población nacida fuera', status: 'available', detail: 'La serie de Eurostat registra un aumento entre 2015 y 2025.' },
+      { label: 'Cambia la estructura de edades', status: 'available', detail: 'Baja la proporción menor de 15 años y sube la de 65 años o más.' },
+      { label: 'Existe una métrica única de “reemplazo”', status: 'missing', detail: 'La expresión no fija una población de referencia, una definición, un territorio ni un indicador único.' },
+      { label: 'Hay una sustitución coordinada demostrada', status: 'missing', detail: 'Los indicadores agregados no demuestran por sí solos coordinación, intención política o una causa atribuida a un grupo.' },
+    ],
+  };
   if (handler === 'budget_transfer') return { type: 'money_flow', evidenceIds };
   if (handler === 'trend' || handler === 'prediction') return { type: 'line_chart', visualId, evidenceIds };
   if (handler === 'ranking' || handler === 'group_comparison') return { type: 'comparison_chart', visualId, evidenceIds };

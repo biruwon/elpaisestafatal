@@ -13,6 +13,13 @@ export const claimAliases: Record<string, string[]> = {
     'cada vez hay más gente nacida fuera',
     'la población extranjera ha crecido',
   ],
+  'espana-esta-sufriendo-un-reemplazo-poblacional': [
+    'están reemplazando a los españoles',
+    'España vive un reemplazo demográfico',
+    'nos están sustituyendo',
+    'reemplazo étnico en España',
+    'la inmigración está reemplazando a los españoles',
+  ],
   'ipc-junio-2026-positivo': [
     'el IPC de junio fue del 3,2%',
     'la inflación anual fue del 3,2% en junio',

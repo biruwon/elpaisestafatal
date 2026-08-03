@@ -3,6 +3,7 @@ import { claims, type ClaimVerification } from './claims';
 const popularSlugs = [
   'poblacion-residente-supera-49m',
   'poblacion-nacida-fuera-sube',
+  'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',
   'viviendas-vacias',
   'inmigrantes-ayudas',

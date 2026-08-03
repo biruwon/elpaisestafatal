@@ -1,0 +1,13 @@
+{
+  "id": "prop-estructura-edades-cambia-reemplazo",
+  "claimSlug": "espana-esta-sufriendo-un-reemplazo-poblacional",
+  "text": "La estructura de edades de la población residente española cambió entre 2015 y 2025: bajó la proporción menor de 15 años y subió la de 65 años o más.",
+  "type": "trend",
+  "subject": "estructura de edades",
+  "predicate": "changed_between",
+  "object": "2015 y 2025",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "qualified",
+  "evidenceIds": ["poblacion-menor-15-eurostat", "poblacion-mayores-eurostat"]
+}

@@ -29,6 +29,11 @@ if (!match) {
       variants: ['España pierde población', 'la población está bajando', 'España se está despoblando'],
     },
     {
+      slug: 'espana-esta-sufriendo-un-reemplazo-poblacional',
+      prompt: 'España está sufriendo un reemplazo poblacional',
+      variants: ['están reemplazando a los españoles', 'España vive un reemplazo demográfico', 'reemplazo étnico en España'],
+    },
+    {
       slug: 'espana-envejece',
       prompt: 'España está cada vez más envejecida',
       variants: ['España envejece', 'hay cada vez más personas mayores', 'cada vez hay más jubilados'],

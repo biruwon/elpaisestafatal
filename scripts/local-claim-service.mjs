@@ -1125,6 +1125,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       ? 'La amnistía establece una excepción definida, pero el TC no la consideró contraria a la igualdad'
       : primary?.slug === 'desalojar-a-un-ocupante-ilegal-tarda-anos'
         ? 'No hay un plazo único: el tipo de caso determina la vía de desalojo'
+      : primary?.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional'
+        ? 'Hay cambios demográficos, pero no una métrica de “reemplazo”'
     : primary?.title;
   const result = {
     schemaVersion: '1',

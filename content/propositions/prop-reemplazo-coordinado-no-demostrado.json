@@ -1,0 +1,13 @@
+{
+  "id": "prop-reemplazo-coordinado-no-demostrado",
+  "claimSlug": "espana-esta-sufriendo-un-reemplazo-poblacional",
+  "text": "Los indicadores demográficos disponibles no demuestran por sí solos una sustitución coordinada de la población española.",
+  "type": "causal",
+  "subject": "cambio demográfico",
+  "predicate": "does_not_establish",
+  "object": "reemplazo coordinado de españoles",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "insufficient",
+  "evidenceIds": ["reemplazo-poblacional-indicadores-no-equivalentes"]
+}

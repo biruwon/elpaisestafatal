@@ -109,6 +109,11 @@
     {"evidenceId":"ocupacion-limites-procedimiento-penal","propositionId":"prop-ocupacion-no-plazo-universal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"ocupacion-vias-procesales-2025","propositionId":"prop-ocupacion-via-rapida-penal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"ocupacion-limites-procedimiento-penal","propositionId":"prop-ocupacion-via-rapida-penal","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-recuperacion-civil","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-recuperacion-civil","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"reemplazo-poblacional-indicadores-no-equivalentes","propositionId":"prop-reemplazo-poblacional-no-metrica","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"poblacion-nacida-fuera-sube","propositionId":"prop-poblacion-nacida-fuera-aumenta-reemplazo","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"poblacion-menor-15-eurostat","propositionId":"prop-estructura-edades-cambia-reemplazo","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"poblacion-mayores-eurostat","propositionId":"prop-estructura-edades-cambia-reemplazo","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"reemplazo-poblacional-indicadores-no-equivalentes","propositionId":"prop-reemplazo-coordinado-no-demostrado","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }

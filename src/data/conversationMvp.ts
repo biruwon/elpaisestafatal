@@ -114,6 +114,19 @@ definitions['desalojar-a-un-ocupante-ilegal-tarda-anos'] = {
   visuals: { key: { value: 'Vías distintas', label: 'Penal rápida en supuestos previstos · civil sumaria para ciertos titulares', period: 'Desde 2025' }, trend: { available: false, labels: [], values: [], label: 'Duración real de los expedientes', unit: 'No existe una serie nacional comparable para afirmar “años” en todos los casos' }, caveat: 'Una ruta procesal más rápida no garantiza un lanzamiento inmediato; el supuesto concreto y el órgano judicial siguen importando.' },
 };
 
+definitions['espana-esta-sufriendo-un-reemplazo-poblacional'] = {
+  prompt: 'España está sufriendo un reemplazo poblacional',
+  aliases: ['están reemplazando a los españoles', 'España vive un reemplazo demográfico', 'nos están sustituyendo', 'reemplazo étnico en España', 'la inmigración está reemplazando a los españoles'],
+  propositions: ['La población residente nacida fuera de España aumentó entre 2015 y 2025.', 'La estructura de edades cambió: bajó el peso de los menores y subió el de las personas mayores.', 'Los datos demográficos demuestran una sustitución coordinada de españoles.'],
+  concern: 'El cambio demográfico es real, pero la palabra “reemplazo” añade una interpretación que no corresponde a una métrica oficial única.',
+  supports: 'Eurostat registra más residentes nacidos en un país extranjero y un cambio en la estructura de edades entre 2015 y 2025.',
+  limit: 'País de nacimiento, nacionalidad, migración, nacimientos y edad son medidas distintas. Las series agregadas no demuestran por sí solas coordinación, intención política ni una causa única.',
+  question: '¿Quieres comparar país de nacimiento, nacionalidad, nacimientos, edades o la evolución de un territorio concreto?',
+  reply: 'España está cambiando demográficamente y ha aumentado la población nacida fuera, pero “reemplazo poblacional” no es una medida estadística única. Los datos no demuestran por sí solos una sustitución coordinada: hay que separar nacimiento, nacionalidad, edades, migración y territorio.',
+  visualLabel: 'Cambio demográfico observado ≠ reemplazo demostrado',
+  visuals: { key: { value: 'Cambio real', label: 'Varios indicadores cambian; ninguno mide por sí solo “reemplazo”', period: '2015–2025' }, trend: { available: false, labels: [], values: [], label: 'Indicadores demográficos', unit: 'No deben combinarse en una única escala porque miden poblaciones y proporciones distintas' }, caveat: 'La respuesta conserva los cambios observados y marca como no demostrada la interpretación coordinada.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

@@ -1,0 +1,13 @@
+{
+  "id": "prop-reemplazo-poblacional-no-metrica",
+  "claimSlug": "espana-esta-sufriendo-un-reemplazo-poblacional",
+  "text": "La expresión «reemplazo poblacional» no identifica una métrica demográfica oficial única para España.",
+  "type": "definition",
+  "subject": "reemplazo poblacional",
+  "predicate": "lacks_single_official_measure",
+  "object": "España",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "insufficient",
+  "evidenceIds": ["reemplazo-poblacional-indicadores-no-equivalentes"]
+}
