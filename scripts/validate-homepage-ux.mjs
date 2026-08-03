@@ -26,6 +26,11 @@ requireText('class="popular-assessment', 'assessment labels on discovery cards')
 requireText('class="warehouse-home"', 'visible warehouse discovery section');
 requireText('data-example-source="warehouse"', 'warehouse discovery metadata');
 if ((homepage.match(/class="warehouse-highlight"/g) || []).length < 20) failures.push('homepage exposes fewer than twenty warehouse-backed discovery cards');
+requireText('class="warehouse-more"', 'progressive warehouse discovery disclosure');
+requireText('Ver más indicadores', 'the secondary warehouse discovery control');
+if (!/<details class="warehouse-more"(?:\s[^>]*)?>/.test(homepage)) failures.push('warehouse discovery overflow must use a native details disclosure');
+if (/<details class="warehouse-more"[^>]*\sopen(?:\s|=|>)/.test(homepage)) failures.push('secondary warehouse discovery must remain collapsed by default');
+if (!styles.includes('.warehouse-more') || !styles.includes('.warehouse-more-grid')) failures.push('warehouse discovery disclosure is missing responsive styling');
 if (!/<details class="warehouse-prompts"(?:\s[^>]*)?>/.test(homepage)) failures.push('homepage is missing collapsed secondary prompt section');
 if (/<details class="warehouse-prompts"[^>]*\sopen(?:\s|=|>)/.test(homepage)) failures.push('secondary warehouse prompts must remain collapsed by default');
 requireText('href="/afirmaciones"', 'the full claim catalogue link');
