@@ -20,6 +20,8 @@ const required = [
   'aclaracion-visual.png',
   'getPropertyValue(\'--story-bar\')',
   'data-play-story',
+  'aria-pressed="false"',
+  "setAttribute('aria-pressed', 'true')",
   'Reproducir',
 ];
 

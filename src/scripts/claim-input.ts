@@ -511,7 +511,7 @@ const visualStoryMarkup = (plan: AnswerPlan): string => {
     }
   }
   if (steps.length < 2) return '';
-  return `<section class="claim-visual-story" aria-labelledby="claim-visual-story-title"><div class="claim-visual-story-heading"><div><span class="clarification-label">Lectura visual</span><h4 id="claim-visual-story-title">La idea en ${steps.length} pasos</h4></div><div class="claim-visual-story-tools"><small>Datos y límites de la misma respuesta</small><button type="button" data-play-story aria-label="Reproducir la historia visual">Reproducir</button></div></div><ol>${steps.map((step, index) => `<li><span class="claim-visual-story-number">0${index + 1}</span><div><span class="claim-visual-story-label">${escapeHtml(step.label)}</span><strong>${step.title.startsWith('<') ? step.title : escapeHtml(step.title)}</strong><p>${escapeHtml(step.content)}</p>${step.evidenceIds?.length ? blockEvidenceMarkup(plan, step.evidenceIds) : ''}</div></li>`).join('')}</ol></section>`;
+  return `<section class="claim-visual-story" aria-labelledby="claim-visual-story-title"><div class="claim-visual-story-heading"><div><span class="clarification-label">Lectura visual</span><h4 id="claim-visual-story-title">La idea en ${steps.length} pasos</h4></div><div class="claim-visual-story-tools"><small>Datos y límites de la misma respuesta</small><button type="button" data-play-story aria-label="Reproducir la historia visual" aria-pressed="false">Reproducir</button></div></div><ol>${steps.map((step, index) => `<li><span class="claim-visual-story-number">0${index + 1}</span><div><span class="claim-visual-story-label">${escapeHtml(step.label)}</span><strong>${step.title.startsWith('<') ? step.title : escapeHtml(step.title)}</strong><p>${escapeHtml(step.content)}</p>${step.evidenceIds?.length ? blockEvidenceMarkup(plan, step.evidenceIds) : ''}</div></li>`).join('')}</ol></section>`;
 };
 
 const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string => {
@@ -891,9 +891,11 @@ const bindResultActions = (): void => {
     window.requestAnimationFrame(() => {
       story.classList.add('is-playing');
       button.textContent = 'Reproduciendo';
+      button.setAttribute('aria-pressed', 'true');
       window.setTimeout(() => {
         story.classList.remove('is-playing');
         button.textContent = 'Reproducir';
+        button.setAttribute('aria-pressed', 'false');
       }, 1600);
     });
   });
