@@ -149,6 +149,7 @@
     {"evidenceId":"poblacion-nacida-fuera-sube","propositionId":"prop-poblacion-nacida-fuera-aumenta-reemplazo","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"poblacion-menor-15-eurostat","propositionId":"prop-estructura-edades-cambia-reemplazo","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"poblacion-mayores-eurostat","propositionId":"prop-estructura-edades-cambia-reemplazo","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"reemplazo-poblacional-indicadores-no-equivalentes","propositionId":"prop-reemplazo-coordinado-no-demostrado","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"reemplazo-poblacional-indicadores-no-equivalentes","propositionId":"prop-reemplazo-coordinado-no-demostrado","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"densidad-regional-madrid-andalucia","propositionId":"prop-densidad-madrid-andalucia-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
   ]
 }

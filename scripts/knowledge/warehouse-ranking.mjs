@@ -108,12 +108,21 @@ export const summarizeWarehouseRanking = (text, observations) => {
     `El valor más alto del conjunto es ${formatNumber(highest.value)}${suffix} (${countryName(highest)}).`,
   ];
   if ((claimsHighest || claimsLowest) && spain) points.push(matchesClaim ? 'España ocupa la posición que expresa la afirmación en este conjunto y periodo.' : 'España no ocupa la posición que expresa la afirmación en este conjunto y periodo.');
+  const isRegionalDensity = String(highest.metricId || '') === 'regional_population_density';
   return {
     observations: rows,
-    headline: `${metric}: ranking comparable de ${period}`,
-    summary: spain ? `España ocupa el puesto ${spainIndex + 1} de ${rows.length} territorios en la comparación disponible para ${period}.` : `Se ha localizado una comparación de ${rows.length} territorios para ${period}.`,
+    headline: isRegionalDensity ? `La mayor densidad regional en ${period}` : `${metric}: ranking comparable de ${period}`,
+    summary: spain
+      ? `España ocupa el puesto ${spainIndex + 1} de ${rows.length} territorios en la comparación disponible para ${period}.`
+      : isRegionalDensity
+        ? `${countryName(highest)} registra la mayor densidad del conjunto localizado: ${formatNumber(highest.value)}${suffix} en ${period}.`
+        : `Se ha localizado una comparación de ${rows.length} territorios para ${period}.`,
     points,
-    reply: spain ? `En ${period}, España aparece en el puesto ${spainIndex + 1} de ${rows.length} territorios con ${formatNumber(spain.value)}${suffix}. El resultado depende de esta definición, población y conjunto de países.` : 'La comparación localizada no incluye una observación identificable de España.',
+    reply: spain
+      ? `En ${period}, España aparece en el puesto ${spainIndex + 1} de ${rows.length} territorios con ${formatNumber(spain.value)}${suffix}. El resultado depende de esta definición, población y conjunto de países.`
+      : isRegionalDensity
+        ? `En ${period}, ${countryName(highest)} registra la mayor densidad del conjunto localizado con ${formatNumber(highest.value)}${suffix}. La densidad no mide por sí sola la presión sobre servicios o la calidad de vida.`
+        : 'La comparación localizada no incluye una observación identificable de España.',
     replyEvidenceIds: rows.map((item) => item.id),
   };
 };

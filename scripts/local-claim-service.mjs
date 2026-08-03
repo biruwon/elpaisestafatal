@@ -465,7 +465,11 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
     if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
     const populationFit = populationEvidenceFit(compiler?.population, item);
-    if (populationFit === 'mismatch') return false;
+    // A direct regional-density hint is more specific than a small model's
+    // inferred population label. Do not let an accidental age/group label
+    // discard the requested territory series and fall through to an unrelated
+    // demographic answer.
+    if (populationFit === 'mismatch' && !hintedMetricIds.has('regional_population_density')) return false;
     item.populationFit = populationFit;
     return true;
   });

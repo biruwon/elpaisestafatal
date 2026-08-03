@@ -16,6 +16,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
+  if (includesAny(text, ['densidad de poblacion', 'densidad poblacion', 'personas por kilometro', 'personas por km']) && includesAny(text, ['comunidad', 'region', 'madrid', 'andalucia'])) return 'ranking';
   if (claimType === 'trend') return 'trend';
   if (claimType === 'definition' || impliedDefinition) return 'definition';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';

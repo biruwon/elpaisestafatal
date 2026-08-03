@@ -1,0 +1,13 @@
+{
+  "id": "prop-densidad-madrid-andalucia-core",
+  "claimSlug": "densidad-madrid-andalucia",
+  "text": "En 2024 la Comunidad de Madrid registró una densidad de población mayor que Andalucía.",
+  "type": "comparative",
+  "subject": "Comunidad de Madrid",
+  "predicate": "has_higher_density_than",
+  "object": "Andalucía",
+  "geography": "España",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["densidad-regional-madrid-andalucia"]
+}

@@ -71,9 +71,9 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 ## Current baseline
 
 - 14 investigation/topic routes remain available.
-- 250 Markdown claim records exist; 72 are published.
-- The 72 published claims now expose typed, evidence-linked core propositions; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
-- All 72 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, tourism, prices, taxes, inequality, security, politics, youth, corruption, legal rules, demographic change, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
+- 251 Markdown claim records exist; 73 are published.
+- The 73 published claims now expose typed, evidence-linked core propositions; the browser index carries proposition IDs, the local resolver carries them into published answer plans, and the build validates the claim → proposition → evidence → source chain.
+- All 73 published claim families now have structured conversation definitions covering everyday immigration, housing, employment, healthcare, tourism, prices, taxes, inequality, security, politics, youth, corruption, legal rules, demographic change, and economic debates. They reuse the existing reviewed evidence warehouse and are exposed through the compact popular-entry set and topic filters.
 - The high-demand `precios vivienda España` cluster is now a reviewed published family with Spanish aliases, an INE-backed trend visual, explicit limits between national house-price transactions and rents/listings, and regression coverage; equivalent wording no longer needs a provisional warehouse answer.
 - The high-demand `precios vivienda causan crisis España` cluster now has a separate causal family: the observed price rise is shown as a real outcome, while the page refuses to treat it as proof of one cause and points to the comparisons needed to investigate the mechanism.
 - The high-demand `España 100 millones habitantes` cluster now has a numeric contradiction family backed by Eurostat’s 49.13-million resident count; current totals, future predictions, arrivals, and population-floating claims remain distinct.
@@ -90,6 +90,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - The homepage now exposes six warehouse-backed indicator questions as a first-class discovery layer, while the full indicator prompt set remains progressive inside the checker; users can reach current data coverage without waiting for a manually authored claim page.
 - Regional density comparisons now preserve the territories named by the user: a question such as `Madrid tiene más densidad que Andalucía` uses the latest common period, renders a comparison rather than a national trend, and labels density separately from service pressure or quality of life.
+- The first regional comparison is now a reviewed published claim family: `Madrid tiene más densidad de población que Andalucía` has Eurostat-linked evidence, a typed proposition, reusable aliases, and a static comparison visual that can be reused for exact and paraphrased inputs.
 - Published result cards now keep the claim assessment (`Falso`, `Generalización engañosa`, or similar) separate from evidence coverage (`Evidencia directa` or `Cobertura parcial`), and label the heading as the phrase being checked so an unsupported claim cannot look like an endorsed conclusion.
 - The homepage regional-data discovery rail now includes a one-click Madrid–Andalucía density comparison, making the new same-period comparison path discoverable without requiring users to know the exact query wording.
 - Shared knowledge contracts and relation validation are now part of the build.

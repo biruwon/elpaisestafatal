@@ -131,6 +131,19 @@ definitions['espana-esta-sufriendo-un-reemplazo-poblacional'] = {
   visuals: { key: { value: 'Cambio real', label: 'Varios indicadores cambian; ninguno mide por sí solo “reemplazo”', period: '2015–2025' }, trend: { available: false, labels: [], values: [], label: 'Indicadores demográficos', unit: 'No deben combinarse en una única escala porque miden poblaciones y proporciones distintas' }, caveat: 'La respuesta conserva los cambios observados y marca como no demostrada la interpretación coordinada.' },
 };
 
+definitions['densidad-madrid-andalucia'] = {
+  prompt: 'Madrid tiene más densidad de población que Andalucía',
+  aliases: ['madrid tiene más densidad que andalucía', 'hay más personas por km² en madrid que en andalucía', 'hay más personas por kilómetro cuadrado en madrid que en andalucía', 'densidad de madrid frente a andalucía', 'madrid está más poblada por kilómetro cuadrado'],
+  propositions: ['En 2024 la Comunidad de Madrid registró 885,8 personas por km².', 'En 2024 Andalucía registró 99,7 personas por km².', 'La densidad por sí sola explica la presión sobre los servicios o la calidad de vida.'],
+  concern: 'Madrid y Andalucía tienen densidades muy distintas, pero ese dato no explica por sí solo la disponibilidad de vivienda, los servicios o la calidad de vida.',
+  supports: 'Eurostat registra 885,8 personas por km² en Madrid y 99,7 en Andalucía en 2024.',
+  limit: 'La densidad es población por superficie; no equivale a población total, demanda de vivienda, saturación de servicios ni bienestar.',
+  question: '¿Quieres comparar densidad, población total, vivienda o presión sobre un servicio concreto?',
+  reply: 'Sí: en 2024 la Comunidad de Madrid registró 885,8 personas por km² y Andalucía 99,7, según Eurostat. Es una diferencia de densidad, no una explicación automática de vivienda o servicios.',
+  visualLabel: 'Más personas por km² no equivale a más presión en todo',
+  visuals: { key: { value: '885,8 vs 99,7', label: 'Personas por km²', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Densidad regional', unit: 'Comparación puntual; no es una tendencia nacional' }, comparison: { labels: ['Comunidad de Madrid', 'Andalucía'], values: [885.8, 99.7], label: 'Densidad de población', unit: 'personas por km²' }, caveat: 'La densidad usa población y superficie. No mide por sí sola la presión sobre vivienda, transporte, sanidad, empleo o calidad de vida.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

@@ -158,12 +158,25 @@ if (process.env.SMOKE_WAREHOUSE === '1') {
   try {
     const result = await resolve('Madrid tiene más densidad que Andalucía');
     const series = result.result?.warehouseSeries;
-    if (!['draft', 'partial'].includes(result.status)) failures.push(`regional comparison: expected provisional result, received ${result.status}`);
-    if (series?.metricId !== 'regional_population_density') failures.push('regional comparison: selected the wrong metric family');
-    if (!series || series.labels.length !== 2 || !series.labels.some((label) => /Madrid/i.test(label)) || !series.labels.some((label) => /Andaluc[ií]a/i.test(label))) failures.push('regional comparison: did not isolate both requested autonomous communities');
-    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === 'warehouse-observation')) failures.push('regional comparison: did not render a comparison visual');
-    if (!/frente a/i.test(result.result?.headline || '') || !/personas por km/i.test(result.result?.summary || '')) failures.push('regional comparison: public answer lost the explicit territory comparison or unit');
+    const published = result.status === 'complete' && result.relatedClaims?.[0]?.slug === 'densidad-madrid-andalucia';
+    if (!published && !['draft', 'partial'].includes(result.status)) failures.push(`regional comparison: expected a published or provisional result, received ${result.status}`);
+    if (published) {
+      if (!result.result?.blocks?.some((block) => block.type === 'comparison' || block.type === 'comparison_chart')) failures.push('published regional comparison: lost the comparison visual');
+      if (!/885,8/.test(JSON.stringify(result.result)) || !/99,7/.test(JSON.stringify(result.result))) failures.push('published regional comparison: lost the reviewed regional values');
+    } else {
+      if (series?.metricId !== 'regional_population_density') failures.push('regional comparison: selected the wrong metric family');
+      if (!series || series.labels.length !== 2 || !series.labels.some((label) => /Madrid/i.test(label)) || !series.labels.some((label) => /Andaluc[ií]a/i.test(label))) failures.push('regional comparison: did not isolate both requested autonomous communities');
+      if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === 'warehouse-observation')) failures.push('regional comparison: did not render a comparison visual');
+      if (!/frente a/i.test(result.result?.headline || '') || !/personas por km/i.test(result.result?.summary || '')) failures.push('regional comparison: public answer lost the explicit territory comparison or unit');
+    }
   } catch (error) { failures.push(`regional comparison: ${error.message}`); }
+  try {
+    const result = await resolve('¿Qué comunidad tiene mayor densidad de población?');
+    if (!['draft', 'partial'].includes(result.status)) failures.push(`regional density ranking: expected provisional result, received ${result.status}`);
+    if (result.result?.warehouseSeries?.metricId !== 'regional_population_density') failures.push('regional density ranking: selected an unrelated metric family');
+    if (!/mayor densidad/i.test(result.result?.headline || '') || !/Comunidad de Madrid/i.test(result.result?.summary || '')) failures.push('regional density ranking: did not identify the highest-density region');
+    if (!result.result?.blocks?.some((block) => block.type === 'comparison_chart')) failures.push('regional density ranking: did not render a comparison visual');
+  } catch (error) { failures.push(`regional density ranking: ${error.message}`); }
   try {
     const result = await resolve('Cómo han evolucionado los homicidios registrados en España');
     if (!['draft', 'partial'].includes(result.status)) failures.push(`recorded crime warehouse: expected provisional result, received ${result.status}`);
