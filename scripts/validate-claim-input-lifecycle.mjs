@@ -92,6 +92,13 @@ const required = [
   "inputKind === 'media'",
   'Archivo recibido:',
   'No pudimos extraer una afirmación del archivo',
+  'data-media-dropzone',
+  'const assignMediaFile',
+  'dragover',
+  'dataTransfer?.files',
+  'event.clipboardData?.files',
+  "if (selected) form?.requestSubmit()",
+  "is-dragging",
 ];
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
@@ -103,4 +110,5 @@ if (source.includes('url: location.href')) throw new Error('Share action still l
 if (source.includes('data-stop-enrichment') || source.includes('Seguir solo con esta orientación')) throw new Error('Background enrichment still asks the user to stop or advance it manually');
 if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
 if (source.includes("renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });")) throw new Error('Media failure state still presents the filename as a typed claim');
+if (!/if \(selected\) form\?\.requestSubmit\(\);/.test(source)) throw new Error('Selected media still requires a second manual submission');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');

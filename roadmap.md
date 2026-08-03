@@ -493,7 +493,7 @@ Reusable video/animated scenes are deferred until deterministic charts are relia
 
 ## Phase 8 — Links, screenshots, and audio
 
-Status: started; browser media validation, automatic file submission, live media status guidance, and typed-caption fallback are implemented. A screenshot/audio submission with a typed claim now retains that claim's deterministic guidance when local extraction is unavailable, while file-only failures offer published alternatives instead of a dead end. The local link adapter supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional, use a provider-neutral speech command contract, and fail back without blocking deterministic text guidance.
+Status: started; browser media validation, automatic file submission, paste/drag-and-drop screenshot intake, live media status guidance, and typed-caption fallback are implemented. A screenshot/audio submission with a typed claim now retains that claim's deterministic guidance when local extraction is unavailable, while file-only failures offer published alternatives instead of a dead end. Selecting, dragging, or pasting a screenshot submits it automatically, so media input does not create a hidden second step. The local link adapter supports public HTTPS pages with DNS-based SSRF protection, bounded redirects, response limits, and generic failure states. Local vision and speech runtimes remain optional, use a provider-neutral speech command contract, and fail back without blocking deterministic text guidance.
 
 All inputs end in the same compiler:
 

@@ -43,6 +43,7 @@ const conversationVisuals = readJson<ConversationVisual[]>('conversation-mvp-dat
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
 const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
+const mediaDropZone = document.querySelector<HTMLElement>('[data-media-dropzone]');
 const fileName = document.querySelector<HTMLElement>('[data-file-name]');
 const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
@@ -55,6 +56,18 @@ const responseCache = new Map<string, SearchResponse>();
 
 const updateCounter = (): void => {
   if (counter) counter.textContent = `${input?.value.length || 0}/${INPUT_LIMITS.maxTextCharacters}`;
+};
+
+const assignMediaFile = (file: File): void => {
+  if (!fileInput) return;
+  try {
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    fileInput.files = transfer.files;
+    fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+  } catch {
+    // Browsers without a writable FileList still retain the normal picker path.
+  }
 };
 
 const coverageLabels: Record<string, string> = {
@@ -380,7 +393,8 @@ const resetChecker = (): void => {
   if (input) input.value = '';
   if (fileInput) fileInput.value = '';
   if (fileName) fileName.textContent = 'Añadir captura o audio';
-  if (mediaHelp) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
+  if (mediaDropZone) mediaDropZone.classList.remove('is-dragging');
+  if (mediaHelp) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
   updateCounter();
   if (result) result.innerHTML = '';
   window.history.replaceState({}, '', '/#comprobar');
@@ -433,7 +447,7 @@ const bindResultActions = (): void => {
     if (!choice || !input || !form) return;
     if (fileInput) fileInput.value = '';
     if (fileName) fileName.textContent = 'Añadir captura o audio';
-    if (mediaHelp) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
+    if (mediaHelp) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
     input.value = choice;
     form.requestSubmit();
   }));
@@ -727,12 +741,35 @@ form?.addEventListener('submit', (event) => {
   void classify(query, ranked, file);
 });
 
+mediaDropZone?.addEventListener('dragover', (event) => {
+  event.preventDefault();
+  mediaDropZone.classList.add('is-dragging');
+});
+
+mediaDropZone?.addEventListener('dragleave', (event) => {
+  if (!mediaDropZone.contains(event.relatedTarget as Node | null)) mediaDropZone.classList.remove('is-dragging');
+});
+
+mediaDropZone?.addEventListener('drop', (event) => {
+  event.preventDefault();
+  mediaDropZone.classList.remove('is-dragging');
+  const file = event.dataTransfer?.files?.[0];
+  if (file) assignMediaFile(file);
+});
+
+form?.addEventListener('paste', (event) => {
+  const file = Array.from(event.clipboardData?.files || []).find((item) => item.type.startsWith('image/'));
+  if (!file) return;
+  event.preventDefault();
+  assignMediaFile(file);
+});
+
 fileInput?.addEventListener('change', () => {
   const selected = fileInput.files?.[0];
   if (fileName) fileName.textContent = selected ? selected.name : 'Añadir captura o audio';
   if (mediaHelp && selected) mediaHelp.textContent = 'Archivo listo: se está enviando automáticamente para buscar una orientación.';
-  if (mediaHelp && !selected) mediaHelp.textContent = 'Al elegir una captura o un audio, se enviará automáticamente.';
-  if (selected && !input?.value.trim()) form?.requestSubmit();
+  if (mediaHelp && !selected) mediaHelp.textContent = 'También puedes arrastrar o pegar una captura; se enviará automáticamente.';
+  if (selected) form?.requestSubmit();
 });
 
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((button) => button.addEventListener('click', () => {
