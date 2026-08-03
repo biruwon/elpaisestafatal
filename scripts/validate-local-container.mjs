@@ -25,5 +25,9 @@ requireText(compose, 'healthcheck:', 'Compose');
 if (!packageJson.dependencies?.pg) errors.push('package.json: PostgreSQL runtime dependency is missing');
 const localService = await readFile('scripts/local-claim-service.mjs', 'utf8');
 if (/keep_alive:\s*['"]-1['"]/.test(localService)) errors.push('Local resolver: keep_alive must use numeric -1, not an invalid duration string');
+const localDevAi = await readFile('scripts/dev-local-ai.mjs', 'utf8');
+for (const fragment of ['isPortInUse', 'LOCAL_GATEWAY_PORT', 'LOCAL_ASTRO_PORT', 'LOCAL_CLASSIFIER_PORT']) {
+  if (!localDevAi.includes(fragment)) errors.push(`Local dev stack: missing startup port guard ${fragment}`);
+}
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log('Local container contract valid: runtime dependencies, derived data paths, token, binding, and healthcheck are present.');
