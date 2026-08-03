@@ -95,6 +95,9 @@ for (const item of cases) {
     if (result.status === 'processing') failures.push(`${item.text}: request remained processing after polling`);
     if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
+    const guidanceTypes = new Set(['strongest_valid_concern', 'evidence_ladder', 'legal_decision_tree', 'prediction_conditions', 'trade_offs', 'group_comparison_requirements']);
+    const guidanceBlockTypes = (result.result?.blocks || []).map((block) => block.type).filter((type) => guidanceTypes.has(type));
+    if (new Set(guidanceBlockTypes).size !== guidanceBlockTypes.length) failures.push(`${item.text}: result repeated a guidance block type (${guidanceBlockTypes.join(', ')})`);
     if (item.slug && item.status === 'complete' && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
     if (item.slug === 'precios-hoteles-sube-junio-2026' && !result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === item.slug)) failures.push(`${item.text}: published tourism result did not retain its signed comparison visual`);
     if (['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'la-amnistia-rompe-la-igualdad-ante-la-ley', 'desalojar-a-un-ocupante-ilegal-tarda-anos'].includes(item.slug) && !result.result?.blocks?.some((block) => block.type === 'legal_decision_tree' && block.items?.some((entry) => entry.status === 'known'))) failures.push(`${item.text}: published legal result did not retain its decision path`);
