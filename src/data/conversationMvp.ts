@@ -653,6 +653,19 @@ definitions['espana-mas-deuda-publica-ue'] = {
   visuals: { key: { value: '100,7% vs 81,7%', label: 'Deuda pública bruta sobre PIB', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Deuda pública sobre PIB', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [100.7, 81.7], label: 'Deuda pública bruta sobre PIB', unit: '% del PIB · stock acumulado' }, caveat: 'La ratio de deuda no es el déficit de un año ni decide por sí sola la sostenibilidad; importan también intereses, crecimiento, vencimientos y composición.' },
 };
 
+definitions['espana-menos-fecundidad-ue'] = {
+  prompt: 'España tiene menos hijos por mujer que la Unión Europea',
+  aliases: ['España tiene menos hijos que Europa', 'la fecundidad española es menor que la europea', 'España registra menos fecundidad que la UE', '¿Tiene España menos hijos por mujer que la Unión Europea?'],
+  propositions: ['En 2024 la tasa global de fecundidad fue de 1,10 hijos por mujer en España y de 1,34 en la Unión Europea.', 'La fecundidad española fue aproximadamente 0,24 hijos por mujer menor en esa comparación.', 'La diferencia demuestra por sí sola las causas de las decisiones familiares o el futuro de la población.'],
+  concern: 'España registró una fecundidad inferior a la Unión Europea en esta medida comparable, pero el indicador no explica por sí solo las decisiones familiares.',
+  supports: 'Eurostat registra 1,10 hijos por mujer en España y 1,34 en la Unión Europea en 2024.',
+  limit: 'La tasa global de fecundidad es un indicador sintético. No equivale al número de nacimientos, a la tasa bruta de natalidad ni a una predicción demográfica.',
+  question: '¿Quieres comparar fecundidad, nacimientos totales, edad al tener el primer hijo o cambios de población?',
+  reply: 'Sí: en 2024 España registró 1,10 hijos por mujer frente a 1,34 en la Unión Europea, 0,24 menos. Es una tasa sintética y no explica por sí sola las causas de las decisiones familiares ni el futuro de la población.',
+  visualLabel: 'Una diferencia comparable no explica las decisiones familiares',
+  visuals: { key: { value: '1,10 vs 1,34', label: 'Tasa global de fecundidad', period: '2024' }, trend: { available: false, labels: [], values: [], label: 'Fecundidad total', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [1.10, 1.34], label: 'Tasa global de fecundidad', unit: 'hijos por mujer · 2024' }, caveat: 'La tasa global de fecundidad es un indicador sintético: no es el número de nacimientos ni una explicación causal de las decisiones familiares.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

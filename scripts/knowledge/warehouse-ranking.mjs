@@ -356,6 +356,17 @@ const europeanComparisonDefinitions = {
     method: 'La comparación usa el coeficiente de Gini de la renta disponible equivalente para la población total según Eurostat. Un valor más alto indica mayor desigualdad relativa; no equivale a pobreza, riqueza acumulada ni renta media.',
     caveat: 'Es un resumen de la distribución de la renta disponible equivalente, no una medida de la situación de cada hogar ni de todas las formas de desigualdad.',
   },
+  fertility_rate_europe: {
+    label: 'Fecundidad total',
+    verb: 'registró una fecundidad total de',
+    replyLead: 'la fecundidad total fue de',
+    differenceVerb: ['la fecundidad española fue más alta', 'la fecundidad española fue más baja', 'España y la Unión Europea registraron la misma fecundidad'],
+    unit: 'hijos por mujer',
+    replyUnit: 'hijos por mujer',
+    differenceUnit: 'hijos por mujer',
+    method: 'La comparación usa la tasa global de fecundidad de Eurostat para el mismo año y la definición total de mujeres; no es el número de nacimientos, la natalidad anual ni una predicción demográfica.',
+    caveat: 'Es un indicador sintético de fecundidad, no una explicación de por qué las personas tienen hijos ni una medida de las decisiones de cada familia.',
+  },
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
@@ -382,13 +393,12 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
   const difference = Number(spain.value) - Number(europeanUnion.value);
   const directionIndex = Math.abs(difference) < 0.000001 ? 2 : difference > 0 ? 0 : 1;
   const direction = directionIndex === 2 ? 'al mismo ritmo que' : directionIndex === 0 ? 'por encima de' : 'por debajo de';
-  const comparison = `${formatNumber(spain.value, metricId)} ${definition.unit} en España frente a ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} en la Unión Europea`;
   return {
     european: true,
     metricId,
     observations: [spain, europeanUnion],
     headline: `${definition.label}: España frente a la Unión Europea (${period})`,
-    summary: `En ${period}, España ${definition.verb} ${direction} la Unión Europea: ${comparison}.`,
+    summary: `En ${period}, España registró ${formatNumber(spain.value, metricId)} ${definition.unit} frente a ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]}, ${direction} la Unión Europea.`,
     points: [
       `España: ${formatNumber(spain.value, metricId)} ${definition.unit}.`,
       `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`,

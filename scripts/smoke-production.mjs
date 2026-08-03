@@ -4,6 +4,8 @@ const checks = [
   { path: '/aclarar/inmigracion-delincuencia/', status: 200, title: 'Aclaración' },
   { path: '/aclarar/viviendas-vacias/', status: 200, title: 'Aclaración' },
   { path: '/aclarar/empleo-record/', status: 200, title: 'Aclaración' },
+  { path: '/aclarar/espana-menos-fecundidad-ue/', status: 200, title: 'Aclaración' },
+  { path: '/datos/', status: 200, title: 'Datos' },
   { path: '/afirmaciones/inmigrantes-ayudas/', status: 200, title: 'El país está fatal' },
   { path: '/preocupaciones/vivienda/', status: 200, title: 'Vivienda' },
   { path: '/verificaciones/inmigrantes-ayudas/', status: 301 },

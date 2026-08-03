@@ -35,6 +35,7 @@ const featuredConversationSlugs = [
   'espana-mas-desigual-ue',
   'espana-tiene-menos-deficit-ue',
   'espana-mas-deuda-publica-ue',
+  'espana-menos-fecundidad-ue',
   'espana-menos-empleo-tiempo-parcial-europa',
   'espana-mas-empleo-temporal-europa',
 ];
@@ -53,6 +54,7 @@ const warehousePrompts = [
   '¿Cómo ha cambiado el déficit público sobre el PIB?',
   '¿Tiene España menos déficit público que la Unión Europea?',
   '¿Tiene España más deuda pública que la Unión Europea?',
+  '¿Tiene España menos hijos por mujer que la Unión Europea?',
   '¿Cómo ha evolucionado la renta mediana de los hogares?',
   '¿Ha bajado la desigualdad de renta en España?',
   '¿Es España más desigual que la Unión Europea?',
@@ -135,6 +137,7 @@ const warehouseHighlights = [
   { label: 'Desigualdad · Europa', prompt: '¿Es España más desigual que la Unión Europea?', detail: 'Coeficiente de Gini de la renta disponible equivalente; no equivale a pobreza ni a riqueza acumulada.' },
   { label: 'Finanzas públicas · Europa', prompt: '¿Tiene España menos déficit público que la Unión Europea?', detail: 'Saldo público sobre el PIB; ambos valores pueden ser negativos y menos déficit no significa superávit.' },
   { label: 'Finanzas públicas · deuda · Europa', prompt: '¿Tiene España más deuda pública que la Unión Europea?', detail: 'Deuda pública bruta sobre el PIB; es un stock acumulado, no el déficit anual ni una factura individual.' },
+  { label: 'Demografía · Europa', prompt: '¿Tiene España menos hijos por mujer que la Unión Europea?', detail: 'Tasa global de fecundidad comparable; la diferencia existe, pero no explica por sí sola las decisiones familiares.' },
   { label: 'Economía por habitante · Europa', prompt: '¿Tiene España más PIB por habitante que la Unión Europea?', detail: 'PIB por habitante expresado en poder adquisitivo; no es la renta disponible de los hogares.' },
   { label: 'Empleo · salario mínimo', prompt: '¿Cómo ha cambiado el salario mínimo en España?', detail: 'Salario mínimo legal mensual; no equivale al salario medio ni a la renta de cada hogar.' },
   { label: 'Demografía', prompt: '¿Está creciendo o perdiendo población España?', detail: 'Tasa de cambio total de la población; separa el país en conjunto de la realidad de cada municipio.' },

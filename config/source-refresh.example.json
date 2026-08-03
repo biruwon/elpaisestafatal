@@ -317,6 +317,12 @@
       "metricId": "fertility_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?geo=ES&geo=EU27_2020&age=TOTAL&unit=NR&sinceTimePeriod=2015",
+      "title": "Fecundidad: España y Unión Europea · Eurostat",
+      "aliases": ["fecundidad frente a Europa", "tasa de fecundidad frente a Europa", "España tiene menos hijos que Europa", "España tiene más hijos que Europa", "comparación europea de fecundidad"],
+      "metricId": "fertility_rate_europe"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?geo=ES&indic_de=OLDDEP1&sinceTimePeriod=2015",
       "title": "Dependencia de personas mayores en España · Eurostat",
       "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida", "personas mayores por cada 100", "personas mayores por cada cien", "edad laboral", "edad de trabajar", "dependencia demográfica", "ratio de dependencia"],

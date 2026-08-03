@@ -439,6 +439,14 @@
     "notEquivalentTo": ["resident_population", "immigration_flows"],
     "dimensions": ["period", "geography", "age"]
   },
+  "fertility_rate_europe": {
+    "name": "Total fertility rate: Spain and the European Union",
+    "aliases": ["fecundidad frente a Europa", "tasa de fecundidad frente a Europa", "España tiene menos hijos que Europa", "España tiene más hijos que Europa", "comparación europea de fecundidad"],
+    "unit": "live births per woman",
+    "population": "women under the total fertility rate definition in Spain and the European Union",
+    "notEquivalentTo": ["fertility_rate", "population_change_rate", "young_population_share"],
+    "dimensions": ["period", "geography", "age"]
+  },
   "old_age_dependency_ratio": {
     "name": "Old-age dependency ratio",
     "aliases": ["envejecimiento", "población envejecida", "personas mayores", "dependencia de mayores", "mayores de 65", "sociedad envejecida"],

@@ -42,6 +42,7 @@ export const metricSearchAliases = Object.freeze({
   gdp_real_growth_europe: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'espana crece mas que europa', 'espana crece menos que europa', 'crecimiento economico europeo', 'pib espana union europea'],
   life_expectancy_at_birth: ['esperanza de vida', 'años de vida', 'vida media', 'longevidad'],
   fertility_rate: ['fecundidad', 'natalidad', 'hijos por mujer', 'nacimientos por mujer'],
+  fertility_rate_europe: ['fecundidad frente a europa', 'tasa de fecundidad frente a europa', 'hijos por mujer', 'europa', 'union europea', 'comparacion europea'],
   old_age_dependency_ratio: ['envejecimiento', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'personas mayores por cada 100', 'personas mayores por cada cien', 'edad laboral', 'edad de trabajar', 'dependencia demográfica', 'ratio de dependencia'],
   older_population_share: ['mayores de 65', 'personas mayores', 'poblacion mayor'],
   young_population_share: ['menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'poblacion menos anos'],

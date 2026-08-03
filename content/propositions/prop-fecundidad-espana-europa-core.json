@@ -1,0 +1,13 @@
+{
+  "id": "prop-fecundidad-espana-europa-core",
+  "claimSlug": "espana-menos-fecundidad-ue",
+  "text": "España registró una tasa global de fecundidad inferior a la Unión Europea en 2024",
+  "type": "comparative",
+  "subject": "fertility_rate_europe",
+  "predicate": "was_lower_than",
+  "object": "European Union",
+  "geography": "Spain and European Union",
+  "period": "2024",
+  "status": "supported",
+  "evidenceIds": ["fecundidad-espana-europa-eurostat"]
+}

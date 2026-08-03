@@ -42,6 +42,7 @@ const metricLabels = {
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
   government_expenditure_ratio_europe: 'Gasto público sobre el PIB: España y la Unión Europea',
   government_deficit_ratio_europe: 'Saldo presupuestario sobre el PIB: España y la Unión Europea',
+  government_debt_ratio_europe: 'Deuda pública sobre el PIB: España y la Unión Europea',
   gini_coefficient_europe: 'Desigualdad de ingresos: España y la Unión Europea',
   government_education_expenditure_ratio: 'Gasto público en educación en España',
   government_education_expenditure_ratio_europe: 'Gasto público en educación: España y la Unión Europea',
@@ -111,6 +112,7 @@ const displayUnit = (item) => {
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_current_taxes_income_wealth_europe') return '% del PIB';
   if (metricId === 'government_deficit_ratio_europe') return '% del PIB';
+  if (metricId === 'government_debt_ratio_europe') return '% del PIB';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'part_time_employment_rate' || metricId === 'part_time_employment_rate_europe' || metricId === 'temporary_employment_rate' || metricId === 'temporary_employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe' || metricId === 'youth_unemployment_rate' || metricId === 'youth_unemployment_rate_europe' || metricId === 'neet_rate' || metricId === 'neet_rate_europe') return '%';
   if (metricId === 'government_revenue_ratio_europe' || metricId === 'government_expenditure_ratio_europe') return '% del PIB';

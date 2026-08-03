@@ -45,6 +45,7 @@ const knownSeeds = [
   ['espana-tiene-menos-deficit-ue', 'comparison', 'España tiene menos déficit público que la Unión Europea'],
   ['espana-mas-desigual-ue', 'comparison', 'España es más desigual que la Unión Europea'],
   ['espana-mas-deuda-publica-ue', 'comparison', 'España tiene más deuda pública que la Unión Europea'],
+  ['espana-menos-fecundidad-ue', 'comparison', 'España tiene menos hijos por mujer que la Unión Europea'],
   ['espana-gasta-menos-sanidad-europa', 'comparative', 'España gasta menos por habitante en sanidad que la Unión Europea'],
   ['espana-gasta-menos-pensiones-europa', 'comparative', 'España gasta menos por habitante en pensiones que la Unión Europea'],
   ['espana-cobra-menos-impuestos-renta-riqueza-europa', 'comparative', 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea'],

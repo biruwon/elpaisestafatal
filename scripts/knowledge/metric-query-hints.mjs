@@ -59,6 +59,7 @@ const metricHints = [
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
   { ids: ['life_expectancy_at_birth_europe'], terms: ['esperanza de vida frente a europa', 'esperanza de vida frente a la union europea', 'años de vida frente a europa', 'espana vive mas que europa', 'espana vive mas que la union europea', 'comparacion europea de esperanza de vida', 'esperanza de vida europa'] },
   { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos por mujer'] },
+  { ids: ['fertility_rate_europe'], terms: ['fecundidad frente a europa', 'fecundidad frente a la union europea', 'tasa de fecundidad frente a europa', 'espana tiene menos hijos que europa', 'espana tiene mas hijos que europa', 'comparacion europea de fecundidad', 'hijos por mujer europa'] },
   { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida', 'personas mayores por cada 100', 'personas mayores por cada cien', 'edad laboral', 'edad de trabajar', 'dependencia demografica', 'ratio de dependencia'] },
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
   { ids: ['young_population_share'], terms: ['poblacion de 0 a 14 anos', 'menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'proporcion de menores', 'poblacion menos anos', 'porcentaje poblacion menos anos', 'menos de quince anos'] },
@@ -111,6 +112,10 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('deficit', 'superavit', 'saldo presupuestario') && hasAny('publico', 'estado', 'pib', 'espana')) preferred.add('government_deficit_ratio_europe');
   if (hasEuropeReference && hasAny('deuda', 'endeudamiento', 'endeudada') && hasAny('publico', 'estado', 'pib', 'espana')) preferred.add('government_debt_ratio_europe');
   if (hasEuropeReference && hasAny('gini', 'desigual', 'desigualdad', 'distribucion de la renta')) preferred.add('gini_coefficient_europe');
+  if (hasEuropeReference && hasAny('fecundidad', 'natalidad', 'hijos', 'nacimientos') && hasAny('espana', 'europa', 'union europea')) {
+    preferred.add('fertility_rate_europe');
+    preferred.delete('fertility_rate');
+  }
   // “Inflation” can mean either the annual rate or the harmonised index.
   // When the user explicitly asks for European comparability, the index is
   // the intended family and must win over the generic inflation hint.
@@ -346,6 +351,8 @@ export const excludedMetricIdsForQuery = (query) => {
   if (aropeRequested && !aropeEuropeRequested) excluded.add('arope_rate_europe');
   if (lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth');
   if (lifeExpectancyRequested && !lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth_europe');
+  if (preferred.has('fertility_rate_europe')) excluded.add('fertility_rate');
+  if (preferred.has('fertility_rate') && !preferred.has('fertility_rate_europe')) excluded.add('fertility_rate_europe');
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');
