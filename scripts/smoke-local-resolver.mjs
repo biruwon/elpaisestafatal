@@ -68,6 +68,7 @@ const cases = [
   { text: 'Ha aumentado la proporción de personas que no reciben atención médica por una lista de espera.', status: 'complete', slug: 'necesidades-medicas-lista-espera-aumentan' },
   { text: 'El PIB por habitante en España supera los 34.000 euros.', status: 'complete', slug: 'pib-por-habitante-supera-34000' },
   { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
+  { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
   { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },

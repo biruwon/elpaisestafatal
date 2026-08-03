@@ -1,0 +1,13 @@
+{
+  "id": "prop-deuda-publica-crece-core",
+  "claimSlug": "deuda-publica-crece",
+  "text": "El stock de deuda bruta consolidada de las administraciones públicas españolas aumentó entre 2015 y 2025.",
+  "type": "trend",
+  "subject": "government_debt_current_prices",
+  "predicate": "increased",
+  "object": "nominal debt stock",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "supported",
+  "evidenceIds": ["deuda-publica-euros-eurostat"]
+}

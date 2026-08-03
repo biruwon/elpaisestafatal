@@ -222,6 +222,19 @@ definitions['deuda-publica-supera-16-billones'] = {
   visuals: { key: { value: '1,70 billones €', label: 'Deuda pública bruta consolidada', period: '2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [1114129, 1145655, 1184148.3, 1209741.8, 1224363.8, 1346916.4, 1429403.6, 1504105.1, 1575376.7, 1620573.4, 1698224.6], label: 'Deuda pública bruta consolidada', unit: 'millones de euros' }, caveat: 'La serie está a precios corrientes. El aumento del importe nominal no permite valorar por sí solo la sostenibilidad; hay que compararlo con el PIB, los intereses, los vencimientos y el crecimiento.' },
 };
 
+definitions['deuda-publica-crece'] = {
+  prompt: 'La deuda pública de España ha aumentado en euros desde 2015',
+  aliases: ['España está cada vez más endeudada', 'la deuda pública crece', 'la deuda pública sube en euros', 'España debe cada vez más dinero', 'ha aumentado el importe de la deuda pública'],
+  propositions: ['El stock de deuda bruta consolidada de las administraciones públicas españolas aumentó de 1.114.129 millones en 2015 a 1.698.224,6 millones en 2025.', 'El aumento nominal demuestra por sí solo que la deuda es más insostenible.', 'El aumento del stock significa que cada hogar debe esa cantidad adicional.'],
+  concern: 'La deuda pública puede crecer en euros mientras la ratio sobre el PIB cambia de otra manera. El aumento nominal es real, pero no resuelve por sí solo su significado económico.',
+  supports: 'Eurostat registra un aumento de 1.114.129 millones de euros en 2015 a 1.698.224,6 millones en 2025.',
+  limit: 'La serie mide el stock nominal de las administraciones públicas. No identifica el gasto que lo originó ni permite valorar por sí sola intereses, vencimientos, crecimiento o sostenibilidad.',
+  question: '¿Quieres comparar el importe nominal, la deuda sobre el PIB, el déficit anual o el coste de los intereses?',
+  reply: 'Sí: la deuda pública española aumentó en euros, de unos 1,11 billones en 2015 a 1,70 billones en 2025. Es un crecimiento nominal del stock; para interpretarlo hay que compararlo con el PIB, los intereses y los vencimientos.',
+  visualLabel: 'Más euros de deuda no responde por sí solo a la pregunta de sostenibilidad',
+  visuals: { key: { value: '1,11 → 1,70 billones €', label: 'Deuda pública bruta consolidada', period: '2015–2025' }, trend: { available: true, labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'], values: [1114129, 1145655, 1184148.3, 1209741.8, 1224363.8, 1346916.4, 1429403.6, 1504105.1, 1575376.7, 1620573.4, 1698224.6], label: 'Deuda pública bruta consolidada', unit: 'millones de euros' }, caveat: 'La serie está a precios corrientes. Hay que comparar el stock con el PIB, los intereses, los vencimientos y el crecimiento antes de valorar la sostenibilidad.' },
+};
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {
