@@ -128,7 +128,12 @@ assert(publicDebt.semanticSignature === equivalentPublicDebt.semanticSignature, 
 
 const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
 const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');
+const neet = deterministicFallbackCompiler('La tasa de ninis ha bajado en España');
+const equivalentNeet = deterministicFallbackCompiler('Cada vez hay menos jóvenes que ni estudian ni trabajan en España');
+const youthUnemployment = deterministicFallbackCompiler('El paro juvenil ha bajado en España');
 assert(healthAccess.semanticSignature !== healthSpending.semanticSignature, 'Health-access and health-spending families were merged');
+assert(neet.semanticSignature === equivalentNeet.semanticSignature, 'NEET paraphrases did not share a semantic family');
+assert(neet.semanticSignature !== youthUnemployment.semanticSignature, 'NEET and youth unemployment families were merged');
 assert(costOfLiving.semanticSignature !== publicDebt.semanticSignature, 'Cost-of-living and public-finance families were merged');
 assert(costOfLiving.claimType === 'trend', 'Cost-of-living pressure was not detected as a trend');
 assert(deterministicFallbackCompiler('Cada vez cuesta más llegar a fin de mes en España').claimType !== 'comparative', 'Cost-of-living pressure was misclassified as a ranking/comparison');

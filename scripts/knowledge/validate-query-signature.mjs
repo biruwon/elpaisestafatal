@@ -46,11 +46,13 @@ const longTailFamilies = [
   ['Las listas de espera sanitarias están colapsadas', 'La sanidad está saturada por sus esperas largas'],
   ['La renta de las familias sube', 'Los ingresos familiares han aumentado'],
   ['Cada vez hay menos jóvenes en España', 'La población joven está disminuyendo en España'],
+  ['Cada vez hay menos jóvenes que ni estudian ni trabajan en España', 'La tasa de ninis ha bajado en España'],
 ];
 for (const [left, right] of longTailFamilies) {
   if (module.semanticQuerySignature(left) !== module.semanticQuerySignature(right)) throw new Error(`Long-tail semantic family did not merge: ${left} / ${right}`);
 }
 if (module.semanticQuerySignature('Cada vez cuesta más llegar a fin de mes en España') === module.semanticQuerySignature('La deuda pública de España crece')) throw new Error('Cost-of-living and public-finance families were merged');
 if (module.semanticQuerySignature('La sanidad no da abasto con las listas de espera') === module.semanticQuerySignature('España gasta más por habitante en sanidad')) throw new Error('Health access and health spending families were merged');
+if (module.semanticQuerySignature('La tasa de ninis ha bajado en España') === module.semanticQuerySignature('El paro juvenil ha bajado en España')) throw new Error('NEET and youth unemployment families were merged');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
 console.log('Query signature validation passed.');

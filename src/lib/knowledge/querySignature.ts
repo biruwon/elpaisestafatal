@@ -27,6 +27,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
+  ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
 ];
 
 const containsAlias = (text: string, alias: string): boolean => {
@@ -54,7 +55,8 @@ const semanticTokens = (text: string): string[] => [...new Set(
 const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 'recibe', 'reciben', 'hay', 'existe', 'es', 'son', 'esta', 'estan', 'se', 'ha', 'han', 'sigue', 'siguen', 'cada', 'vez', 'no', 'deja', 'de', 'va', 'a', 'peor', 'mejor', 'sube', 'baja', 'crece', 'aumenta', 'aumentan', 'incrementa', 'incrementan', 'disminuye', 'disminuyen', 'reduce', 'reducen', 'genera', 'generan', 'crea', 'crean', 'causa', 'causan', 'provoca', 'provocan', 'hace', 'hacen', 'vuelve', 'vuelven', 'trae', 'traen', 'lleva', 'llevan', 'favorece', 'favorecen', 'contribuye', 'contribuyen', 'influye', 'influyen', 'destruye', 'destruyen', 'representa', 'representan', 'dispara', 'disparado', 'disparada', 'encarece', 'encarecen', 'abarata', 'abaratan', 'mejora', 'mejoran', 'empeora', 'empeoran', 'cuesta', 'alcanza', 'llega', 'mas', 'menos', 'mayor', 'menor', 'supera', 'inferior', 'encima', 'debajo', 'relacion', 'relacionadas', 'relacionados', 'vinculo', 'vinculada', 'vinculados', 'asociacion', 'asociadas', 'asociados', 'correlacion', 'correlacionadas', 'correlacionados', 'entre', 'van', 'mano', 'que']);
 
 const relationShape = (value: string): string => {
-  const concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
+  let concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
+  if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (concepts.length) return [...new Set(concepts)].sort().join('+');
   const terms = normalize(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token) && !relationStopWords.has(token) && !['pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
   return terms.length ? terms.sort().join('+') : 'unknown';
@@ -90,7 +92,8 @@ const directionalRelation = (text: string): string | null => {
   if (positionalComparison) return `comparison:${positionalComparison[2] === 'encima' ? 'more' : 'less'}:${relationShape(positionalComparison[1])}:${relationShape(positionalComparison[3])}`;
   const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
   if (superiorityComparison) return `comparison:${/inferior/.test(superiorityComparison[2]) ? 'less' : 'more'}:${relationShape(superiorityComparison[1])}:${relationShape(superiorityComparison[3])}`;
-  const comparison = text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
+  const trendLead = /^(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+(?:mas|menos)\b/.test(text);
+  const comparison = trendLead ? null : text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
   if (comparison) return `comparison:${comparison[2] === 'mas' ? 'more' : 'less'}:${relationShape(comparison[1])}:${relationShape(comparison[4])}`;
   const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/)
     || text.match(/^cuanto\s+mas\s+(.+?),?\s+mas\s+(.+)$/)
@@ -127,9 +130,10 @@ export const canonicalQuerySignature = (value: string): string => [...new Set(
 export const semanticQuerySignature = (value: string): string => {
   const text = normalize(value);
   if (!text) return '';
-  const concepts = conceptAliases
+  let concepts = conceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsAlias(text, alias)))
     .map(([concept]) => concept);
+  if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   const fallback = concepts.length ? [] : semanticTokens(text);
   const polarity = /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
   const relation = directionalRelation(text);

@@ -58,11 +58,16 @@ const semanticConceptAliases = [
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
+  ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
 ];
 
-const semanticConcepts = (value) => semanticConceptAliases
-  .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
-  .map(([concept]) => concept);
+const semanticConcepts = (value) => {
+  let concepts = semanticConceptAliases
+    .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
+    .map(([concept]) => concept);
+  if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
+  return concepts;
+};
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
 
