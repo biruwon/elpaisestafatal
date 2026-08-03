@@ -88,6 +88,10 @@ const required = [
   'claim-chart-series',
   'claim-chart-bar',
   'Ver valores',
+  "inputKind: 'text' | 'media' = 'text'",
+  "inputKind === 'media'",
+  'Archivo recibido:',
+  'No pudimos extraer una afirmación del archivo',
 ];
 const missing = required.filter((snippet) => !source.includes(snippet));
 if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
@@ -98,4 +102,5 @@ if (source.includes('La orientación rápida está lista; comprobamos si podemos
 if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
 if (source.includes("state === 'running' && mode === 'enrichment'")) throw new Error('Media enrichment has no way to stop the optional background request');
 if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
+if (source.includes("renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });")) throw new Error('Media failure state still presents the filename as a typed claim');
 console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');

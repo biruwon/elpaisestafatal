@@ -459,7 +459,7 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   }));
 };
 
-const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = ''): void => {
+const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = '', inputKind: 'text' | 'media' = 'text'): void => {
   if (!result) return;
   const labels = {
     loading: 'Procesando el archivo',
@@ -469,7 +469,7 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
     unavailable: 'Orientación rápida disponible',
     invalid: 'Archivo no compatible',
   };
-  const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
+  const title = primary ? (state === 'published' ? `La frase que comprobamos: ${primary.title}` : primary.title) : (state === 'uncovered' ? 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
   const stateDescription: Record<typeof state, string> = {
     loading: 'El archivo se está leyendo',
     published: 'Coincidencia con una ficha revisada',
@@ -490,7 +490,10 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const shareAction = primary?.answer ? `<button type="button" data-share-result data-share-url="${escapeHtml(shareUrlFor(original, primary, state === 'published' ? 'published' : 'related'))}">Compartir aclaración</button>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div><p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p><h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
+  const inputMarkup = inputKind === 'media'
+    ? `<p class="claim-result-input">Archivo recibido: “${escapeHtml(original)}”</p>`
+    : original ? `<p class="claim-result-input">Has escrito: “${escapeHtml(original)}”</p>` : '';
+  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${alternativesMarkup}<div class="claim-result-actions"><button type="button" data-new-check>Comprobar otra frase</button>${primary?.answer ? shareAction : ''}</div></article>`;
   bindResultActions();
 };
 
@@ -662,7 +665,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
-      });
+      }, '', 'media');
       else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
       return;
     }
@@ -675,7 +678,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (error instanceof DOMException && error.name === 'AbortError') return;
     if (version === requestVersion) {
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
-      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });
+      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' }, '', 'media');
       else setDynamicStatus('No hemos podido añadir más contexto ahora. La respuesta inicial de arriba sigue siendo utilizable.', 'unavailable');
     }
   }
@@ -699,13 +702,13 @@ form?.addEventListener('submit', (event) => {
         : validation.code === 'invalid_audio'
           ? 'El audio debe estar en WAV, MP3, M4A, OGG, WebM o FLAC.'
           : 'La imagen debe estar en PNG, JPEG, WebP o GIF.';
-      renderCard('invalid', file.name, undefined, [], { limitation });
+      renderCard('invalid', file.name, undefined, [], { limitation }, '', 'media');
       return;
     }
   }
   const ranked = query ? rankClaimIndex(query, claimIndex) : [];
   if (query) renderDeterministic(query, ranked);
-  else renderCard('loading', file?.name || 'Archivo enviado');
+  else renderCard('loading', file?.name || 'Archivo enviado', undefined, [], undefined, '', 'media');
   result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   result.setAttribute('tabindex', '-1');
   result.focus({ preventScroll: true });
