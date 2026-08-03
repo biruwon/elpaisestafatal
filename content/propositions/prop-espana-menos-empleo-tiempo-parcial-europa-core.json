@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-menos-empleo-tiempo-parcial-europa-core",
+  "claimSlug": "espana-menos-empleo-tiempo-parcial-europa",
+  "text": "En 2025, España registró una proporción menor de empleo a tiempo parcial que la Unión Europea.",
+  "type": "comparative",
+  "subject": "part_time_employment_rate_europe",
+  "predicate": "was_lower_in_spain_than_european_union",
+  "object": "13.5 percent versus 17.7 percent of employed people aged 15 to 64",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["empleo-tiempo-parcial-espana-ue-eurostat"]
+}

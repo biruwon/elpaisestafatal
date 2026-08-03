@@ -123,6 +123,10 @@ if (preferredMetricIdsForQuery('¿España gasta menos en educación que la Unió
 if (!preferredMetricIdsForQuery('¿Cómo ha evolucionado el gasto público en educación?').has('government_education_expenditure_ratio')) throw new Error('Metric hints did not prefer Spain-only education spending for the education budget trend');
 if (preferredMetricIdsForQuery('¿Cómo ha evolucionado el gasto público en educación?').has('government_expenditure_ratio')) throw new Error('Metric hints confused education spending with total government spending');
 if (!excludedMetricIdsForQuery('¿Cómo ha evolucionado la titulación superior en España?').has('government_education_expenditure_ratio')) throw new Error('Metric hints allowed education spending to answer an education-outcome query');
+if (!preferredMetricIdsForQuery('¿España tiene menos empleo a tiempo parcial que la Unión Europea?').has('part_time_employment_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU part-time employment comparison');
+if (preferredMetricIdsForQuery('¿España tiene menos empleo a tiempo parcial que la Unión Europea?').has('part_time_employment_rate')) throw new Error('Metric hints kept Spain-only part-time employment alongside the Spain/EU comparison');
+if (!preferredMetricIdsForQuery('¿España tiene más empleo temporal que la Unión Europea?').has('temporary_employment_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU temporary employment comparison');
+if (preferredMetricIdsForQuery('¿España tiene más empleo temporal que la Unión Europea?').has('temporary_employment_rate')) throw new Error('Metric hints kept Spain-only temporary employment alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU NEET comparison');
 if (preferredMetricIdsForQuery('¿España tiene más ninis que la Unión Europea?').has('neet_rate')) throw new Error('Metric hints kept Spain-only NEET alongside the Spain/EU comparison');
 for (const [query, expected, base] of [

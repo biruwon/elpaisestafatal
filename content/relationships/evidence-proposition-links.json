@@ -30,6 +30,20 @@
       "reviewedAt": "2026-08-03"
     },
     {
+      "evidenceId": "empleo-tiempo-parcial-espana-ue-eurostat",
+      "propositionId": "prop-espana-menos-empleo-tiempo-parcial-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
+      "evidenceId": "empleo-temporal-espana-ue-eurostat",
+      "propositionId": "prop-espana-mas-empleo-temporal-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "pensiones-vejez-supervivencia-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-pensiones-europa-core",
       "relationship": "supports",

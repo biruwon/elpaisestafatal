@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-mas-empleo-temporal-europa-core",
+  "claimSlug": "espana-mas-empleo-temporal-europa",
+  "text": "En 2025, España registró una proporción mayor de empleo temporal que la Unión Europea.",
+  "type": "comparative",
+  "subject": "temporary_employment_rate_europe",
+  "predicate": "was_higher_in_spain_than_european_union",
+  "object": "15.4 percent versus 12.6 percent of employees aged 15 to 64",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["empleo-temporal-espana-ue-eurostat"]
+}
