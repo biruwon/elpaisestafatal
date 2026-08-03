@@ -1,5 +1,6 @@
 import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { validateMaterializationRecords } from './materialization-contract.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (value.startsWith('--')) pairs.push([value.slice(2), values[index + 1] && !values[index + 1].startsWith('--') ? values[index + 1] : 'true']);
@@ -15,9 +16,6 @@ if (!inputPath || !slug || args.get('approved') !== 'true') {
 
 const answer = JSON.parse(await readFile(inputPath, 'utf8'));
 if (answer.reviewed !== true && answer.reviewStatus !== 'reviewed') throw new Error('Materialization requires answer.reviewed=true or answer.reviewStatus="reviewed".');
-const evidenceIds = Array.isArray(answer.evidenceIds) ? answer.evidenceIds.filter((id) => typeof id === 'string') : [];
-const sourceRefs = Array.isArray(answer.sourceIds) ? answer.sourceIds.filter((id) => typeof id === 'string') : [];
-if (!evidenceIds.length || !sourceRefs.length) throw new Error('Cannot materialize an answer without evidenceIds and sourceIds.');
 const idsFromDirectory = async (directory) => {
   const files = (await readdir(directory)).filter((file) => file.endsWith('.md'));
   const ids = new Set();
@@ -28,12 +26,22 @@ const idsFromDirectory = async (directory) => {
   }
   return ids;
 };
+const propositionRecords = async () => {
+  const directory = new URL('../../content/propositions/', import.meta.url).pathname;
+  const records = new Map();
+  for (const file of (await readdir(directory)).filter((entry) => entry.endsWith('.json'))) {
+    const data = JSON.parse(await readFile(join(directory, file), 'utf8'));
+    if (data?.id) records.set(data.id, data);
+  }
+  return records;
+};
 const evidenceDirectory = new URL('../../content/evidence/', import.meta.url).pathname;
 const sourceDirectory = new URL('../../content/sources/', import.meta.url).pathname;
-const [knownEvidence, knownSources] = await Promise.all([idsFromDirectory(evidenceDirectory), idsFromDirectory(sourceDirectory)]);
-const missingEvidence = evidenceIds.filter((id) => !knownEvidence.has(id));
-const missingSources = sourceRefs.filter((id) => !knownSources.has(id));
-if (missingEvidence.length || missingSources.length) throw new Error(`Materialization requires reviewed Git records. Missing evidence: ${missingEvidence.join(', ') || 'none'}; missing sources: ${missingSources.join(', ') || 'none'}.`);
+const [knownEvidence, knownSources, knownPropositions] = await Promise.all([idsFromDirectory(evidenceDirectory), idsFromDirectory(sourceDirectory), propositionRecords()]);
+const traceability = validateMaterializationRecords({ answer, slug, knownEvidence, knownSources, knownPropositions });
+const { evidenceIds, sourceRefs, propositionIds, missingEvidence, missingSources, missingPropositions, wrongClaimPropositions, unlinkedEvidence } = traceability;
+if (!evidenceIds.length || !sourceRefs.length || !propositionIds.length) throw new Error('Cannot materialize an answer without propositionIds, evidenceIds, and sourceIds.');
+if (missingEvidence.length || missingSources.length || missingPropositions.length || wrongClaimPropositions.length || unlinkedEvidence.length) throw new Error(`Materialization requires reviewed Git records and proposition traceability. Missing evidence: ${missingEvidence.join(', ') || 'none'}; missing sources: ${missingSources.join(', ') || 'none'}; missing propositions: ${missingPropositions.join(', ') || 'none'}; propositions for another claim: ${wrongClaimPropositions.join(', ') || 'none'}; proposition evidence not linked by answer: ${unlinkedEvidence.join(', ') || 'none'}.`);
 const target = new URL(`../../content/claims/${slug}.md`, import.meta.url).pathname;
 try { await access(target); throw new Error(`Claim already exists: ${slug}`); } catch (error) { if (error.message.startsWith('Claim already exists')) throw error; }
 
@@ -55,6 +63,7 @@ reviewed: ${new Date().toISOString().slice(0, 10)}
 status: published
 sourceRefs: ${JSON.stringify(sourceRefs)}
 evidenceIds: ${JSON.stringify(evidenceIds)}
+propositionIds: ${JSON.stringify(propositionIds)}
 ---
 
 `;

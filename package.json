@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && npm run knowledge:triage:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && astro build && npm run ux:navigation && npm run ux:result && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -79,6 +79,7 @@
     "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",
+    "knowledge:materialize:validate": "node scripts/knowledge/validate-materialization-contract.mjs",
     "knowledge:materialization-candidates": "node scripts/knowledge/materialization-candidates.mjs",
     "knowledge:materialization-candidates:validate": "node scripts/knowledge/validate-materialization-candidates.mjs",
     "knowledge:review-queue": "node scripts/knowledge/review-queue.mjs",
