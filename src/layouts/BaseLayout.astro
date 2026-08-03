@@ -5,7 +5,7 @@ const { title = 'El país está fatal. ¿Seguro?', description = `Comprueba afir
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
 const currentPath = Astro.url.pathname;
-const isChecking = currentPath === '/' || currentPath.startsWith('/aclarar');
+const isChecking = currentPath === '/';
 const isSearch = currentPath.startsWith('/buscar');
 const isAffirmations = currentPath.startsWith('/afirmaciones');
 const isTopics = currentPath.startsWith('/investigaciones') || currentPath.startsWith('/preocupaciones');

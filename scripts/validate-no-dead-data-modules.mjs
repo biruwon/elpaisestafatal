@@ -1,4 +1,4 @@
-import { access } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -32,6 +32,11 @@ for (const relativePath of retired) {
   } catch {
     // Expected: dead modules are intentionally absent.
   }
+}
+
+const layout = await readFile(join(root, 'src/layouts/BaseLayout.astro'), 'utf8');
+if (layout.includes("startsWith('/aclarar')") || layout.includes('startsWith("/aclarar")')) {
+  failures.push('BaseLayout still contains the retired /aclarar compatibility branch');
 }
 
 if (failures.length) {
