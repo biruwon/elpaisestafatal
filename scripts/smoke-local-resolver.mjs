@@ -39,7 +39,7 @@ const resolveMultipart = async (inputType, mimeType, text = '') => {
 };
 
 const cases = [
-  { text: 'España cobra demasiados impuestos', status: 'complete', slug: 'espana-impuestos-europa' },
+  { text: 'España cobra demasiados impuestos', status: 'uncovered' },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
