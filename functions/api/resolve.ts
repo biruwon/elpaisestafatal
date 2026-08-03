@@ -2,6 +2,7 @@ interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: str
 interface Context { request: Request; env: Env }
 type InputType = 'text' | 'image' | 'audio' | 'url';
 import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
+import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const windowMs = 60_000;
@@ -55,8 +56,11 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   let body: { text: string; inputType: InputType; file?: File };
   try { body = await requestBody(request); } catch { return json({ status: 'unavailable', relatedClaims: [] }, 400); }
   const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
-  if (!validation.ok) return json({ status: validation.code === 'empty' || validation.code === 'text_too_large' || validation.code === 'invalid_url' ? 'uncovered' : 'unavailable', relatedClaims: [] }, validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'invalid_url' || validation.code === 'empty' ? 400 : 415);
-  if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json({ status: 'unavailable', relatedClaims: [] });
+  if (!validation.ok) {
+    if (validation.code === 'empty') return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }), 400);
+    return json({ status: validation.code === 'text_too_large' || validation.code === 'invalid_url' ? 'uncovered' : 'unavailable', relatedClaims: [] }, validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'invalid_url' ? 400 : 415);
+  }
+  if (!env.LOCAL_CLASSIFIER_ENDPOINT) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   try {
     const isMultipart = Boolean(body.file);
     const payload = isMultipart ? (() => {
@@ -74,9 +78,9 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     try {
       response = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/resolve`, { method: 'POST', headers, body: payload, signal: upstream.signal });
     } finally { upstream.dispose(); }
-    if (!response.ok) return json({ status: 'unavailable', relatedClaims: [] });
+    if (!response.ok) return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
     return new Response(response.body, { status: response.status, headers: { 'content-type': 'application/json', 'Cache-Control': 'no-store' } });
   } catch {
-    return json({ status: 'unavailable', relatedClaims: [] });
+    return json(deterministicApiFallback({ text: body.text, inputType: body.inputType }));
   }
 };
