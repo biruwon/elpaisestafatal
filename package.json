@@ -71,6 +71,8 @@
     "knowledge:warehouse:postgres:validate": "node scripts/knowledge/validate-postgres-warehouse.mjs",
     "knowledge:hybrid": "node scripts/knowledge/validate-hybrid-retrieval.mjs",
     "knowledge:hybrid:corpus": "node scripts/knowledge/validate-warehouse-retrieval-benchmark.mjs",
+    "knowledge:postgres:benchmark": "node scripts/knowledge/benchmark-postgres-warehouse.mjs",
+    "knowledge:postgres:benchmark:validate": "node scripts/knowledge/validate-postgres-benchmark.mjs",
     "knowledge:hybrid:benchmark": "node scripts/knowledge/benchmark-warehouse-retrieval.mjs",
     "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
