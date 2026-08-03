@@ -261,6 +261,31 @@ definitions['espana-gasta-menos-sanidad-europa'] = {
   visuals: { key: { value: '2.857 €', label: 'España · gasto sanitario por habitante', period: '2023' }, trend: { available: false, labels: [], values: [], label: 'Gasto sanitario por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [2857.25, 3836.68], label: 'Gasto sanitario corriente por habitante', unit: '€ por habitante · 2023' }, caveat: 'La comparación no mide por sí sola acceso, calidad, resultados clínicos ni eficiencia; las definiciones y los euros corrientes deben mantenerse visibles.' },
 };
 
+// Published claims are the reviewed source of truth. If a claim has not yet
+// received a bespoke conversation card, expose a conservative starter card
+// from its existing evidence fields instead of silently removing it from the
+// conversational library. This keeps discovery scalable without inventing
+// numbers, charts, or conclusions.
+for (const claim of claims.filter((item) => item.published)) {
+  if (definitions[claim.slug]) continue;
+  definitions[claim.slug] = {
+    prompt: claim.claim.replace(/[“”]/g, ''),
+    aliases: [...new Set([...(claim.aliases || []), ...(claim.keywords || [])])].slice(0, 12),
+    propositions: [claim.whatIsTrue, claim.cannotProve].filter(Boolean),
+    concern: claim.whatIsTrue,
+    supports: claim.decisiveEvidence,
+    limit: claim.cannotProve,
+    question: '¿Qué fecha, territorio, grupo o medida concreta quieres comparar?',
+    reply: claim.shareable,
+    visualLabel: 'La evidencia publicada y sus límites quedan separados',
+    visuals: {
+      key: { value: 'Ficha publicada', label: 'Consulta la comprobación y su evidencia', period: claim.period },
+      trend: { available: false, labels: [], values: [], label: claim.claimType, unit: 'La ficha muestra la medida respaldada' },
+      caveat: claim.cannotProve,
+    },
+  };
+}
+
 export const conversationMvpClaims: ConversationMvpClaim[] = Object.entries(definitions).map(([slug, definition]) => {
   const markdownClaim = markdownClaims.find((claim) => claim.slug === slug);
   return {

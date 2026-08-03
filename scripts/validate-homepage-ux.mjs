@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const homepage = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+const catalogue = JSON.parse(await readFile(new URL('../dist/claim-catalog.json', import.meta.url), 'utf8'));
 const claimInput = await readFile(new URL('../src/scripts/claim-input.ts', import.meta.url), 'utf8');
 const popularScript = await readFile(new URL('../src/scripts/popular-claims.ts', import.meta.url), 'utf8');
 const stylesheetPath = homepage.match(/href="(\/_astro\/[^\"]+\.css)"/)?.[1];
@@ -45,6 +46,14 @@ if (!homepage.includes('hero-promises')) failures.push('homepage is missing the 
 if (!styles.includes('max-width:900px')) failures.push('homepage is missing the responsive checker layout');
 if (!popularScript.includes('data-example-filter') || !popularScript.includes('aria-pressed') || !popularScript.includes('updateExampleVisibility')) failures.push('popular prompt filter behavior is missing');
 if (!popularScript.includes('linkedClaimSlug') || !popularScript.includes('Solo preguntas con una aclaración publicada y revisada')) failures.push('dynamic popularity feed does not distinguish reviewed destinations');
+
+const conversationPayload = homepage.match(/<script type="application\/json" id="conversation-mvp-data">([\s\S]*?)<\/script>/)?.[1];
+let conversationClaims = [];
+try { conversationClaims = JSON.parse(conversationPayload || '[]'); } catch { failures.push('conversation library payload is not valid JSON'); }
+const publishedSlugs = catalogue.filter((entry) => entry.kind === 'claim').map((entry) => entry.slug);
+const conversationSlugs = new Set(conversationClaims.map((entry) => entry.slug));
+for (const slug of publishedSlugs) if (!conversationSlugs.has(slug)) failures.push(`published claim ${slug} is missing from the conversation library`);
+if (conversationClaims.length < publishedSlugs.length) failures.push(`conversation library has ${conversationClaims.length} entries for ${publishedSlugs.length} published claims`);
 
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log('Homepage UX validation passed: conversation entry, popular prompts, navigation state, and responsive checker markers are present.');
