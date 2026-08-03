@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { createServer } from 'node:http';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -52,6 +53,50 @@ try {
   const mergedD1 = d1Result.clusters.find((cluster) => cluster.signature === first.semanticSignature);
   assert(mergedD1?.exampleCount === 9, 'A D1 semantic family did not merge with an equivalent local family');
   assert(d1Result.clusters.length === 3, 'Cross-source clustering merged or split incompatible families');
+
+  const embeddingInput = join(directory, 'embedding-gaps.jsonl');
+  const embeddingOutput = join(directory, 'embedding-clusters.json');
+  const embeddingRecords = [
+    { id: 'embedding-born-1', input: 'España tiene muchos residentes nacidos fuera', text: 'España tiene muchos residentes nacidos fuera', semanticSignature: 'descriptive|geo:espana|subject:foreign_born_population', status: 'uncovered', createdAt: new Date().toISOString() },
+    { id: 'embedding-born-2', input: 'Hay muchas personas que nacieron en otro país', text: 'Hay muchas personas que nacieron en otro país', semanticSignature: 'descriptive|geo:espana|subject:population_born_abroad', status: 'uncovered', createdAt: new Date().toISOString() },
+    { id: 'embedding-tax-1', input: 'España recauda muchos impuestos', text: 'España recauda muchos impuestos', semanticSignature: 'descriptive|geo:espana|subject:tax_revenue', status: 'uncovered', createdAt: new Date().toISOString() },
+  ].map((record) => JSON.stringify(record)).join('\n');
+  await writeFile(embeddingInput, `${embeddingRecords}\n`);
+  const embeddingServer = createServer(async (request, response) => {
+    let body = '';
+    for await (const chunk of request) body += chunk;
+    const parsed = JSON.parse(body || '{}');
+    const inputs = Array.isArray(parsed.input) ? parsed.input : [parsed.input];
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({ embeddings: inputs.map((text) => /nacid|otro pais|fuera/i.test(String(text)) ? [1, 0, 0] : [0, 1, 0]) }));
+  });
+  await new Promise((resolve) => embeddingServer.listen(0, '127.0.0.1', resolve));
+  const embeddingPort = embeddingServer.address().port;
+  try {
+    await execFileAsync(process.execPath, [
+      'scripts/knowledge/cluster-gaps.mjs',
+      '--input', embeddingInput,
+      '--output', embeddingOutput,
+      '--embedding-endpoint', `http://127.0.0.1:${embeddingPort}`,
+      '--embedding-threshold', '0.95',
+    ]);
+    const embeddingResult = JSON.parse(await readFile(embeddingOutput, 'utf8'));
+    assert(embeddingResult.semanticClustering?.enabled === true, 'Local semantic clustering did not activate with a local embedding endpoint');
+    assert(embeddingResult.semanticClustering.merged === 1, 'Embedding-assisted clustering did not merge the two equivalent foreign-born families');
+    assert(embeddingResult.clusters.length === 2, 'Embedding-assisted clustering merged an unrelated family');
+  } finally {
+    await new Promise((resolve) => embeddingServer.close(resolve));
+  }
+
+  const remoteOutput = join(directory, 'remote-embedding-clusters.json');
+  await execFileAsync(process.execPath, [
+    'scripts/knowledge/cluster-gaps.mjs',
+    '--input', embeddingInput,
+    '--output', remoteOutput,
+    '--embedding-endpoint', 'https://example.com',
+  ]);
+  const remoteResult = JSON.parse(await readFile(remoteOutput, 'utf8'));
+  assert(remoteResult.semanticClustering?.enabled === false && /local/i.test(remoteResult.semanticClustering?.skipped || ''), 'Non-local embedding endpoints were not rejected before sending gap text');
 } finally {
   await rm(directory, { recursive: true, force: true });
 }

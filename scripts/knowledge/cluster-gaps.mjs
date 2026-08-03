@@ -275,6 +275,150 @@ const clusterRecords = (records, publishedClaims = []) => {
   }).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen));
 };
 
+const refreshCluster = (cluster) => {
+  const unresolved = cluster.linkedClaimSlug
+    ? 0
+    : (cluster.statuses?.uncovered || 0) + (cluster.statuses?.draft || 0) + (cluster.statuses?.partial || 0) || (cluster.coverageStatus !== 'covered' ? cluster.count : 0);
+  const unresolvedRate = cluster.count ? unresolved / cluster.count : 0;
+  const recentCount = cluster.count7d || (timestamp(cluster.lastSeen) >= sevenDaysAgo ? cluster.count : 0);
+  const baseline = Math.max(1, cluster.count30d - recentCount);
+  const growthRate = recentCount ? Math.round((recentCount / baseline) * 100) / 100 : 0;
+  const newlyCovered = cluster.coverageStatus === 'covered' && cluster.reviewStatus !== 'published';
+  const directSources = directSourceIds(cluster.sourceIds);
+  const evidenceAvailability = directSources.length ? 1.2 : cluster.sourceIds.length ? 0.9 : 1;
+  const momentum = 1 + Math.min(growthRate, 4) * 0.15;
+  const priorityScore = Math.round(cluster.count * Math.max(unresolvedRate, newlyCovered ? 0.25 : 0) * evidenceAvailability * harmWeight(cluster.text) * momentum * 100) / 100;
+  return {
+    ...cluster,
+    text: cluster.text || `Afirmación sobre ${cluster.signature}`,
+    exampleCount: cluster.count,
+    growthRate,
+    newlyCovered,
+    unresolved: !newlyCovered && cluster.coverageStatus !== 'covered',
+    reason: cluster.linkedClaimSlug
+      ? cluster.linkedClaimReason || 'Ya existe una ficha publicada para esta formulación.'
+      : newlyCovered
+        ? 'Nueva cobertura disponible: necesita revisión antes de publicarse.'
+        : directSources.length
+          ? 'Tiene fuentes directas o candidatas: comprobar cobertura, geografía y límites.'
+          : cluster.sourceIds.length
+            ? 'Solo tiene fuentes de descubrimiento: sirven como pistas, no como evidencia suficiente.'
+            : 'Sin fuentes vinculadas: investigar o marcar como no verificable.',
+    priorityScore,
+  };
+};
+
+const mergeClusterMetadata = (left, right) => {
+  if (left.linkedClaimSlug && right.linkedClaimSlug && left.linkedClaimSlug !== right.linkedClaimSlug) return null;
+  const sumMaps = (first = {}, second = {}) => Object.entries(second).reduce((result, [key, value]) => {
+    result[key] = (result[key] || 0) + Number(value || 0);
+    return result;
+  }, { ...first });
+  const isCovered = (value) => ['covered', 'complete', 'published'].includes(String(value || '').toLowerCase());
+  const isPartial = (value) => String(value || '').toLowerCase() === 'partial';
+  const coverageStatus = isCovered(left.coverageStatus) || isCovered(right.coverageStatus)
+    ? 'covered'
+    : isPartial(left.coverageStatus) || isPartial(right.coverageStatus) ? 'partial' : 'uncovered';
+  const reviewStatus = left.reviewStatus === 'published' || right.reviewStatus === 'published'
+    ? 'published'
+    : left.reviewStatus === 'reviewed' || right.reviewStatus === 'reviewed' ? 'reviewed' : 'unreviewed';
+  return refreshCluster({
+    ...left,
+    count: left.count + right.count,
+    count7d: left.count7d + right.count7d,
+    count30d: left.count30d + right.count30d,
+    statuses: sumMaps(left.statuses, right.statuses),
+    inputTypes: sumMaps(left.inputTypes, right.inputTypes),
+    firstSeen: earliest(left.firstSeen, right.firstSeen),
+    lastSeen: latest(left.lastSeen, right.lastSeen),
+    sourceIds: [...new Set([...asArray(left.sourceIds), ...asArray(right.sourceIds)])].slice(0, 20),
+    surfaceSignatures: [...new Set([
+      ...asArray(left.surfaceSignatures),
+      left.signature,
+      ...asArray(right.surfaceSignatures),
+      right.signature,
+    ])].filter(Boolean).slice(0, 100),
+    coverageStatus,
+    reviewStatus,
+    linkedClaimSlug: left.linkedClaimSlug || right.linkedClaimSlug || null,
+    linkedClaimReason: left.linkedClaimReason || right.linkedClaimReason || null,
+  });
+};
+
+const localEmbeddingHostnames = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
+const cosine = (left, right) => {
+  if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length || !left.length) return 0;
+  let dot = 0; let leftNorm = 0; let rightNorm = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    const a = Number(left[index]); const b = Number(right[index]);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return 0;
+    dot += a * b; leftNorm += a * a; rightNorm += b * b;
+  }
+  return leftNorm && rightNorm ? dot / Math.sqrt(leftNorm * rightNorm) : 0;
+};
+
+const embedForClustering = async (clusters, endpoint, model, timeoutMs) => {
+  const url = new URL(endpoint);
+  if (!localEmbeddingHostnames.has(url.hostname)) throw new Error('Embedding endpoint must be local');
+  const vectors = [];
+  for (let offset = 0; offset < clusters.length; offset += 32) {
+    const batch = clusters.slice(offset, offset + 32).map((cluster) => String(cluster.text || '').slice(0, 1200));
+    const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/embed`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ model, input: batch, keep_alive: -1 }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) throw new Error(`Embedding request failed with ${response.status}`);
+    const payload = await response.json();
+    if (!Array.isArray(payload.embeddings) || payload.embeddings.length !== batch.length) throw new Error('Embedding response length is invalid');
+    if (payload.embeddings.some((vector) => !Array.isArray(vector) || !vector.length || vector.some((value) => !Number.isFinite(Number(value))))) throw new Error('Embedding response contains invalid vectors');
+    vectors.push(...payload.embeddings);
+  }
+  return vectors;
+};
+
+const mergeByLocalEmbeddings = async (clusters) => {
+  const endpoint = args.get('embedding-endpoint') || process.env.GAP_CLUSTER_EMBEDDING_ENDPOINT || '';
+  const model = args.get('embedding-model') || process.env.GAP_CLUSTER_EMBEDDING_MODEL || process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
+  const configuredThreshold = Number(args.get('embedding-threshold') || process.env.GAP_CLUSTER_EMBEDDING_THRESHOLD || 0.88);
+  const configuredMaxClusters = Number(args.get('embedding-max') || process.env.GAP_CLUSTER_EMBEDDING_MAX || 2000);
+  const threshold = Math.min(0.99, Math.max(0.75, Number.isFinite(configuredThreshold) ? configuredThreshold : 0.88));
+  const maxClusters = Math.max(1, Number.isFinite(configuredMaxClusters) ? Math.floor(configuredMaxClusters) : 2000);
+  if (!endpoint) return { clusters, metadata: { enabled: false, model, threshold, merged: 0, skipped: 'endpoint_not_configured' } };
+  const candidates = clusters.slice(0, maxClusters);
+  try {
+    const vectors = await embedForClustering(candidates, endpoint, model, 30000);
+    const merged = [];
+    let mergeCount = 0;
+    candidates.forEach((candidate, index) => {
+      let targetIndex = -1;
+      for (let candidateIndex = 0; candidateIndex < merged.length; candidateIndex += 1) {
+        const target = merged[candidateIndex];
+        if (!compatibleSemanticFamily(target.signature, candidate.signature)) continue;
+        if (target.linkedClaimSlug && candidate.linkedClaimSlug && target.linkedClaimSlug !== candidate.linkedClaimSlug) continue;
+        const targetVector = target.__embedding;
+        if (cosine(targetVector, vectors[index]) >= threshold) { targetIndex = candidateIndex; break; }
+      }
+      if (targetIndex < 0) merged.push({ ...candidate, __embedding: vectors[index] });
+      else {
+        const target = merged[targetIndex];
+        const combined = mergeClusterMetadata(target, candidate);
+        if (combined) merged[targetIndex] = { ...combined, __embedding: target.__embedding };
+        else merged.push({ ...candidate, __embedding: vectors[index] });
+        if (combined) mergeCount += 1;
+      }
+    });
+    const untouched = clusters.slice(maxClusters);
+    return {
+      clusters: [...merged, ...untouched].map(({ __embedding, ...cluster }) => cluster).sort((left, right) => right.priorityScore - left.priorityScore || right.count - left.count || right.lastSeen.localeCompare(left.lastSeen)),
+      metadata: { enabled: true, model, threshold, merged: mergeCount, embedded: candidates.length, skipped: untouched.length ? `max_clusters_${maxClusters}` : null },
+    };
+  } catch (error) {
+    return { clusters, metadata: { enabled: false, model, threshold, merged: 0, skipped: error instanceof Error ? error.message : 'embedding_failed' } };
+  }
+};
+
 const localRaw = await readText(inputPath);
 const parsedLocalRecords = localRaw.split('\n').filter(Boolean).flatMap((line) => {
   try { return [JSON.parse(line)]; } catch { return []; }
@@ -292,6 +436,7 @@ if (!localRecords.length && !d1Records.length) {
   process.exit(0);
 }
 const publishedClaims = await publishedClaimRecords();
-const result = clusterRecords([...localRecords, ...d1Records], publishedClaims);
-await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length }, clusters: result }, null, 2));
-console.log(`Knowledge-gap review queue written: ${result.length} clusters from ${localRecords.length} reviewable local records and ${d1Records.length} D1 clusters; excluded ${parsedLocalRecords.length - localRecords.length} low-signal or failed records.`);
+const initialClusters = clusterRecords([...localRecords, ...d1Records], publishedClaims);
+const semanticResult = await mergeByLocalEmbeddings(initialClusters);
+await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length }, semanticClustering: semanticResult.metadata, clusters: semanticResult.clusters }, null, 2));
+console.log(`Knowledge-gap review queue written: ${semanticResult.clusters.length} clusters from ${localRecords.length} reviewable local records and ${d1Records.length} D1 clusters; excluded ${parsedLocalRecords.length - localRecords.length} low-signal or failed records. Local semantic merge: ${semanticResult.metadata.enabled ? `${semanticResult.metadata.merged} merged` : `not used (${semanticResult.metadata.skipped})`}.`);

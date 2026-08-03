@@ -26,7 +26,7 @@ const run = async (command, commandArgs) => {
 const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
 
 if (args.has('help')) {
-  console.log('Usage: npm run knowledge:triage [--export-d1] [--input path] [--d1-input path] [--min-count 3] [--limit 25]');
+  console.log('Usage: npm run knowledge:triage [--export-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25]');
   console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}. Production D1 export is opt-in.');
   process.exit(0);
 }
@@ -47,6 +47,9 @@ if (!hasLocalInput && !hasD1Input) {
 await unlink(clusterOutput).catch(() => {});
 const clusterArgs = ['scripts/knowledge/cluster-gaps.mjs', '--input', localInput, '--output', clusterOutput];
 if (hasD1Input) clusterArgs.push('--d1-input', d1Input);
+for (const option of ['embedding-endpoint', 'embedding-model', 'embedding-threshold', 'embedding-max']) {
+  if (args.has(option)) clusterArgs.push(`--${option}`, args.get(option));
+}
 await run(process.execPath, clusterArgs);
 
 if (!(await exists(clusterOutput))) {
