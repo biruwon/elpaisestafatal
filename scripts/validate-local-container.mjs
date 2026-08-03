@@ -27,6 +27,7 @@ requireText(compose, 'CLOUDFLARED_TUNNEL_TOKEN', 'Compose');
 requireText(compose, 'profiles: ["tunnel"]', 'Compose');
 requireText(compose, 'claim-resolver:', 'Compose tunnel dependency');
 requireText(compose, 'healthcheck:', 'Compose');
+requireText(compose, '${CLOUDFLARED_TUNNEL_TOKEN:?Set CLOUDFLARED_TUNNEL_TOKEN', 'Compose tunnel fail-closed token guard');
 if (!packageJson.dependencies?.pg) errors.push('package.json: PostgreSQL runtime dependency is missing');
 const localService = await readFile('scripts/local-claim-service.mjs', 'utf8');
 if (/keep_alive:\s*['"]-1['"]/.test(localService)) errors.push('Local resolver: keep_alive must use numeric -1, not an invalid duration string');

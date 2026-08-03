@@ -59,8 +59,8 @@ services:
     image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
     profiles: ["tunnel"]
     environment:
-      CLOUDFLARED_TUNNEL_TOKEN: ${CLOUDFLARED_TUNNEL_TOKEN:-}
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN:-}
+      CLOUDFLARED_TUNNEL_TOKEN: ${CLOUDFLARED_TUNNEL_TOKEN:?Set CLOUDFLARED_TUNNEL_TOKEN before enabling the tunnel profile}
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN:?Set CLOUDFLARED_TUNNEL_TOKEN before enabling the tunnel profile}
     depends_on:
       claim-resolver:
         condition: service_healthy

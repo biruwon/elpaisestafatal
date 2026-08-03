@@ -40,6 +40,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-03
 
+- Hardened the deferred tunnel profile to fail closed when its token is absent: enabling the profile can no longer start a public-origin sidecar with an empty credential. The authenticated account currently has no named tunnel, so persistent production tunnelling remains explicitly deferred and the deterministic fallback remains authoritative.
 - Hardened operations backup scheduling: the existing verified artifact workflow now runs weekly when Cloudflare credentials are configured, skips safely when scheduled without credentials, and fails clearly for manual runs missing required configuration. No secret or deployment value is committed.
 - Unified the deterministic result UX with the structured answer hierarchy: published, related, uncovered, and unavailable states now show “what we found”, “what it does not establish”, and “next step” as a compact three-part overview, keeping weak matches useful without making them look like verdicts.
 - Made the evidence relationship review policy explicit in the knowledge manifest and public evidence trail: published links are maintainer traceability checks, not independent reviews, and validation now rejects missing or ambiguous policy metadata.
