@@ -91,6 +91,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Provisional numeric, ranking, trend, and budget-transfer answers now include a concise conversation-ready reply whose evidence IDs are retained alongside the rendered block; unreviewed replies remain explicitly qualified.
 - The homepage now exposes six warehouse-backed indicator questions as a first-class discovery layer, while the full indicator prompt set remains progressive inside the checker; users can reach current data coverage without waiting for a manually authored claim page.
 - The concrete security-data slice is now more discoverable: homepage prompts and the warehouse vocabulary route homicide, robbery, fraud, theft, and sexual-violence wording to the reviewed category-level offence series. Broad crime, local insecurity, and immigration-causality wording still refuse arbitrary category substitution.
+- A new static `/datos` catalogue exposes all 34 configured metric/document families with a lightweight search and one-click checker prompts, making warehouse coverage discoverable without adding another long homepage prompt list.
 - Regional density comparisons now preserve the territories named by the user: a question such as `Madrid tiene más densidad que Andalucía` uses the latest common period, renders a comparison rather than a national trend, and labels density separately from service pressure or quality of life.
 - The first regional comparison is now a reviewed published claim family: `Madrid tiene más densidad de población que Andalucía` has Eurostat-linked evidence, a typed proposition, reusable aliases, and a static comparison visual that can be reused for exact and paraphrased inputs.
 - Generic density rankings now default to Spanish autonomous regions, exclude unrelated European NUTS-2 regions unless the user explicitly asks for Europe or the EU, localize the `personas por km²` unit, and identify the highest regional value in the answer summary.
@@ -322,7 +323,7 @@ The deterministic fallback now preserves common written Spanish quantities and p
 
 The client fallback now keeps broad complaints from receiving arbitrary topic suggestions: detected topics get relevant context, while topic-free inputs get a clearly labelled set of published starting checks. Common political formulations such as `España está destruida` also route to the political context family.
 
-The homepage now exposes twelve warehouse-backed discovery cards across cost of living, macroeconomics, housing, employment, health, security, territory, public debt, youth unemployment, demography, and inequality. These are reusable data entry points rather than manually authored verdicts.
+The homepage now exposes twelve warehouse-backed discovery cards across cost of living, macroeconomics, housing, employment, health, security, territory, public debt, youth unemployment, demography, and inequality. These are reusable data entry points rather than manually authored verdicts. The `/datos` catalogue provides the longer-tail discovery layer for all configured metric families without turning the main checker into a catalogue.
 
 - original and normalized input;
 - explicit propositions;

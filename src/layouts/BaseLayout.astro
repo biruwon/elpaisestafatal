@@ -8,6 +8,7 @@ const currentPath = Astro.url.pathname;
 const isChecking = currentPath === '/' || currentPath.startsWith('/aclarar');
 const isAffirmations = currentPath.startsWith('/afirmaciones');
 const isTopics = currentPath.startsWith('/investigaciones') || currentPath.startsWith('/preocupaciones');
+const isData = currentPath.startsWith('/datos');
 const isMethod = ['/metodologia', '/acerca-de', '/fuentes', '/revisiones'].some((path) => currentPath.startsWith(path));
 const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type': pageType === 'article' ? 'Article' : 'WebPage', name: title, description, url: canonical.toString(), image: socialImage.toString(), isPartOf: { '@type': 'WebSite', name: 'El país está fatal', url: Astro.site?.toString() ?? Astro.url.origin } });
 ---
@@ -43,7 +44,7 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a class:list={{ 'nav-primary': isChecking, 'is-current': isChecking }} href="/#comprobar" aria-current={isChecking ? 'page' : undefined}>Comprobar</a><a class:list={{ 'is-current': isAffirmations }} href="/afirmaciones" aria-current={isAffirmations ? 'page' : undefined}>Afirmaciones</a><a class:list={{ 'is-current': isTopics }} href="/investigaciones" aria-current={isTopics ? 'page' : undefined}>Temas</a><a class:list={{ 'is-current': isMethod }} href="/metodologia" aria-current={isMethod ? 'page' : undefined}>Método</a></nav></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="El país está fatal, inicio"><span>el país</span><strong>está fatal</strong><i>.</i></a><nav aria-label="Principal"><a class:list={{ 'nav-primary': isChecking, 'is-current': isChecking }} href="/#comprobar" aria-current={isChecking ? 'page' : undefined}>Comprobar</a><a class:list={{ 'is-current': isAffirmations }} href="/afirmaciones" aria-current={isAffirmations ? 'page' : undefined}>Afirmaciones</a><a class:list={{ 'is-current': isTopics }} href="/investigaciones" aria-current={isTopics ? 'page' : undefined}>Temas</a><a class:list={{ 'is-current': isData }} href="/datos" aria-current={isData ? 'page' : undefined}>Datos</a><a class:list={{ 'is-current': isMethod }} href="/metodologia" aria-current={isMethod ? 'page' : undefined}>Método</a></nav></header>
     <main id="contenido"><slot /></main>
     <footer><p><strong>El país está fatal — compruébalo.</strong> Proyecto independiente y sin financiación externa. Las fuentes y los límites están visibles para que puedas comprobarlos.</p></footer>
     <script is:inline>

@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import metricRegistry from '../../../config/metric-registry.json';
+
+const questionOverrides: Record<string, string> = {
+  official_publication: '¿Qué decisiones y normas publica el BOE?',
+  cpi_index: '¿Cómo ha cambiado el índice de precios de consumo en España?',
+  inflation_rate: '¿Cuál es la inflación anual en España?',
+  household_electricity_price: '¿Cómo ha cambiado el precio de la luz para los hogares?',
+  rental_price_index: '¿Cómo han cambiado los alquileres en España?',
+  gdp_current_prices: '¿Cuál es el tamaño de la economía española?',
+  gdp_real_growth_quarterly: '¿Sigue creciendo el PIB real de España?',
+  government_debt_ratio: '¿Cómo ha evolucionado la deuda pública española sobre el PIB?',
+  government_revenue_ratio: '¿Cómo han evolucionado los ingresos públicos sobre el PIB?',
+  government_expenditure_ratio: '¿Cómo ha evolucionado el gasto público sobre el PIB?',
+  youth_unemployment_rate: '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
+  unemployment_rate: '¿Cómo ha evolucionado el desempleo en España?',
+  employment_rate: '¿Qué porcentaje de la población activa encuentra trabajo?',
+  resident_population: '¿Cuántos habitantes viven normalmente en España?',
+  foreign_born_population: '¿Cuántos residentes nacieron fuera de España?',
+  immigration_flows: '¿Cuántas personas inmigraron a España durante el último año?',
+  recorded_offences: '¿Cómo han evolucionado los delitos registrados en España?',
+  regional_population_density: '¿Qué comunidad tiene mayor densidad de población?',
+  house_price_index: '¿Cómo han cambiado los precios de la vivienda en España?',
+  housing_cost_overburden_rate: '¿Qué porcentaje de hogares sufre sobrecarga de vivienda?',
+  arope_rate: '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
+};
+
+const metrics = Object.entries(metricRegistry).map(([id, item]) => ({
+  id,
+  ...item,
+  question: questionOverrides[id] || `¿Qué muestran los datos sobre ${item.aliases[0]} en España?`,
+}));
+---
+<BaseLayout title="Datos disponibles — El país está fatal" description="Explora las familias de datos que el comprobador puede usar para responder preguntas sobre España.">
+  <section class="data-catalogue-hero">
+    <p class="eyebrow">La base de datos detrás del comprobador</p>
+    <h1>Pregunta por un dato.<br /><em>No hace falta conocer su nombre.</em></h1>
+    <p class="data-catalogue-dek">Estas son las familias de indicadores y documentos que podemos consultar directamente. Elige una pregunta para lanzarla en el comprobador o escribe una formulación distinta.</p>
+    <a class="data-catalogue-cta" href="/#comprobar">Escribir una afirmación <span aria-hidden="true">→</span></a>
+  </section>
+
+  <section class="data-catalogue" aria-labelledby="data-catalogue-title">
+    <header class="data-catalogue-heading">
+      <div><p class="eyebrow">Cobertura actual</p><h2 id="data-catalogue-title">{metrics.length} familias<br /><em>para empezar.</em></h2></div>
+      <div><label for="data-catalogue-search">Buscar una medida</label><input id="data-catalogue-search" type="search" placeholder="Ej. alquileres, paro, inmigración…" autocomplete="off" /><p id="data-catalogue-count" aria-live="polite">Mostrando {metrics.length} familias de datos.</p></div>
+    </header>
+    <div class="data-catalogue-grid" id="data-catalogue-grid">
+      {metrics.map((metric) => <article class="data-catalogue-card" data-metric-card data-search-text={`${metric.name} ${metric.aliases.join(' ')} ${metric.population}`}>
+        <div class="data-catalogue-card-top"><span>{metric.unit}</span><small>{metric.dimensions.length} dimensiones</small></div>
+        <h3>{metric.name}</h3>
+        <p>{metric.population}</p>
+        <a href={`/?q=${encodeURIComponent(metric.question)}#comprobar`}>Probar: {metric.question} <span aria-hidden="true">→</span></a>
+      </article>)}
+    </div>
+    <p class="data-catalogue-empty" id="data-catalogue-empty" hidden>No encontramos esa medida. Prueba una palabra más general o <a href="/#comprobar">escribe la afirmación completa</a>.</p>
+    <p class="data-catalogue-note">Una familia de datos no es un veredicto: cada respuesta muestra su definición, periodo, unidad y fuente. Si la pregunta pide una causa, una intención o un dato local que no aparece aquí, el comprobador lo marcará como cobertura parcial o insuficiente.</p>
+  </section>
+</BaseLayout>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('#data-catalogue-search');
+  const cards = [...document.querySelectorAll('[data-metric-card]')];
+  const count = document.querySelector('#data-catalogue-count');
+  const empty = document.querySelector('#data-catalogue-empty');
+  const update = () => {
+    const query = search?.value.trim().toLocaleLowerCase('es') || '';
+    const visible = cards.filter((card) => {
+      const matches = !query || (card.getAttribute('data-search-text') || '').toLocaleLowerCase('es').includes(query);
+      card.toggleAttribute('hidden', !matches);
+      return matches;
+    }).length;
+    if (count) count.textContent = `Mostrando ${visible} ${visible === 1 ? 'familia' : 'familias'} de datos.`;
+    if (empty) empty.toggleAttribute('hidden', visible > 0);
+  };
+  search?.addEventListener('input', update);
+</script>
+
+<style>
+  .data-catalogue-hero{padding:clamp(80px,12vw,160px) clamp(20px,12vw,190px) 74px;border-bottom:1px solid var(--line)}
+  .data-catalogue-hero h1{font:400 clamp(3.4rem,7vw,7rem)/.86 var(--serif);letter-spacing:-.07em;margin:0;max-width:1050px}
+  .data-catalogue-hero h1 em{font-weight:400;color:var(--red)}
+  .data-catalogue-dek{max-width:620px;font:1.15rem/1.4 var(--serif);margin:32px 0 24px}
+  .data-catalogue-cta{display:inline-block;background:var(--ink);color:var(--paper);padding:12px 15px;font:600 .68rem var(--mono)}
+  .data-catalogue-cta span{color:var(--yellow);margin-left:10px}
+  .data-catalogue{padding:clamp(58px,8vw,100px) clamp(20px,7vw,110px)}
+  .data-catalogue-heading{max-width:1240px;margin:0 auto 34px;display:grid;grid-template-columns:1fr minmax(250px,.55fr);gap:50px;align-items:end}
+  .data-catalogue-heading h2{font:400 clamp(2.8rem,5vw,5.2rem)/.88 var(--serif);letter-spacing:-.06em;margin:0}
+  .data-catalogue-heading label{display:block;font:600 .65rem var(--mono);text-transform:uppercase;margin-bottom:8px}
+  .data-catalogue-heading input{width:100%;border:2px solid var(--ink);background:var(--paper);padding:14px 15px;font:1rem var(--sans);outline:0}
+  .data-catalogue-heading input:focus{box-shadow:inset 0 0 0 2px var(--focus)}
+  .data-catalogue-heading p:last-child{font:.68rem var(--mono);color:var(--muted);margin:9px 0 0}
+  .data-catalogue-grid{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line)}
+  .data-catalogue-card{background:var(--paper-deep);padding:20px;min-height:230px;display:flex;flex-direction:column}
+  .data-catalogue-card[hidden]{display:none}
+  .data-catalogue-card:hover{background:var(--yellow)}
+  .data-catalogue-card-top{display:flex;justify-content:space-between;gap:12px;font:600 .59rem var(--mono);text-transform:uppercase;color:var(--red)}
+  .data-catalogue-card-top small{color:var(--muted);font-size:.56rem;text-transform:none}
+  .data-catalogue-card h3{font:400 clamp(1.35rem,2vw,1.8rem)/1 var(--serif);letter-spacing:-.035em;margin:28px 0 9px}
+  .data-catalogue-card p{font:.72rem/1.4 var(--mono);color:var(--muted);margin:0}
+  .data-catalogue-card a{margin-top:auto;padding-top:20px;color:var(--ink);font:600 .64rem/1.35 var(--mono)}
+  .data-catalogue-card a span{color:var(--red);margin-left:5px}
+  .data-catalogue-empty{max-width:1240px;margin:28px auto;font:1.05rem var(--serif)}
+  .data-catalogue-empty a{color:var(--red)}
+  .data-catalogue-note{max-width:1240px;margin:24px auto 0;padding-top:18px;border-top:1px solid var(--line);font:.72rem/1.5 var(--mono);color:var(--muted)}
+  @media(max-width:900px){.data-catalogue-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.data-catalogue-heading{grid-template-columns:1fr;gap:28px}}
+  @media(max-width:650px){.data-catalogue-hero{padding-top:66px}.data-catalogue-grid{grid-template-columns:1fr}.data-catalogue-card{min-height:190px}}
+</style>

@@ -14,6 +14,7 @@
     "smoke:production": "node scripts/smoke-production.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
     "ux:homepage": "node scripts/validate-homepage-ux.mjs",
+    "ux:data": "node scripts/validate-data-catalogue-ux.mjs",
     "ux:claims": "node scripts/validate-published-claim-ux.mjs",
     "ux:catalogue": "node scripts/validate-claim-catalog-ux.mjs",
     "ux:topics": "node scripts/validate-topic-ux.mjs",
