@@ -287,6 +287,32 @@ definitions['espana-cobra-menos-impuestos-renta-riqueza-europa'] = {
   visuals: { key: { value: '12,5 %', label: 'España · impuestos corrientes sobre renta y riqueza', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Impuestos sobre renta y riqueza', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [12.5, 13.2], label: 'Impuestos corrientes sobre renta y riqueza', unit: '% del PIB · 2025' }, caveat: 'La cifra es recaudación agregada sobre el PIB. No es la presión fiscal total ni el porcentaje que paga cada hogar.' },
 };
 
+definitions['espana-tiene-menor-renta-mediana-europa'] = {
+  prompt: 'España tiene menos renta mediana que la Unión Europea',
+  aliases: ['España tiene menos renta que Europa', 'la renta mediana española está por debajo de la UE', 'España tiene menos ingresos medianos que Europa', '¿España tiene menos renta mediana que la Unión Europea?'],
+  propositions: ['En 2025 la renta disponible mediana equivalente fue de 22.408 PPS por persona en España.', 'En 2025 la Unión Europea registró 22.638 PPS por persona en la misma medida.', 'La comparación demuestra por sí sola el salario, la riqueza o el coste de vida de cada hogar.'],
+  concern: 'La renta disponible mediana equivalente de España quedó ligeramente por debajo de la media de la Unión Europea en 2025, pero esta comparación no describe por sí sola el salario ni la situación de cada familia.',
+  supports: 'Eurostat registra 22.408 PPS por persona en España y 22.638 PPS en la Unión Europea en 2025.',
+  limit: 'La mediana sitúa el punto central de la distribución y usa paridad de poder adquisitivo. No es la renta media, el salario medio, la riqueza ni una medida local del coste de vida.',
+  question: '¿Quieres comparar renta mediana, salario, desigualdad o poder de compra en un territorio concreto?',
+  reply: 'Sí, pero por poco: en 2025 la renta disponible mediana equivalente fue de 22.408 PPS por persona en España frente a 22.638 en la UE. Es una mediana ajustada por poder de compra, no el salario medio ni la renta de cada hogar.',
+  visualLabel: 'La mediana de renta queda ligeramente por debajo de la UE',
+  visuals: { key: { value: '22.408 PPS', label: 'España · renta disponible mediana equivalente por persona', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'Renta disponible mediana equivalente', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [22408, 22638], label: 'Renta disponible mediana equivalente', unit: 'PPS por persona · 2025' }, caveat: 'La mediana no es el salario medio ni la riqueza. El PPS mejora la comparación de poder adquisitivo, pero no elimina la desigualdad ni las diferencias locales.' },
+};
+
+definitions['espana-tiene-menor-pib-habitante-europa'] = {
+  prompt: 'España tiene menos PIB por habitante que la Unión Europea',
+  aliases: ['España tiene menos PIB por persona que Europa', 'el PIB per cápita español está por debajo de la UE', 'España produce menos por habitante que Europa', '¿España tiene menos PIB por habitante que la Unión Europea?'],
+  propositions: ['En 2025 el PIB por habitante fue de 38.135,7 PPS en España.', 'En 2025 la Unión Europea registró 41.565,7 PPS por habitante en la misma medida.', 'El PIB por habitante demuestra por sí solo la renta, la riqueza o el bienestar de cada persona.'],
+  concern: 'El PIB por habitante de España quedó por debajo de la media de la Unión Europea en 2025, pero producción agregada y bienestar individual no son la misma medida.',
+  supports: 'Eurostat registra 38.135,7 PPS por habitante en España y 41.565,7 PPS en la Unión Europea en 2025.',
+  limit: 'Es producción agregada dividida por población y expresada en PPS. No es renta disponible, salario, riqueza, reparto del ingreso ni un resultado idéntico para todos los territorios.',
+  question: '¿Quieres comparar producción, renta disponible, salarios o desigualdad?',
+  reply: 'Sí: en 2025 el PIB por habitante español fue de 38.135,7 PPS frente a 41.565,7 en la UE. Es producción agregada por habitante, no el salario, la renta disponible ni la riqueza de cada persona.',
+  visualLabel: 'El PIB por habitante queda por debajo de la media de la UE',
+  visuals: { key: { value: '38.135,7 PPS', label: 'España · PIB por habitante', period: '2025' }, trend: { available: false, labels: [], values: [], label: 'PIB por habitante', unit: 'Comparación puntual España–UE' }, comparison: { labels: ['España', 'Unión Europea'], values: [38135.7, 41565.7], label: 'PIB por habitante', unit: 'PPS por habitante · 2025' }, caveat: 'El PIB por habitante no es la renta disponible ni la riqueza. La comparación no decide por sí sola el bienestar de cada hogar o territorio.' },
+};
+
 // Published claims are the reviewed source of truth. If a claim has not yet
 // received a bespoke conversation card, expose a conservative starter card
 // from its existing evidence fields instead of silently removing it from the

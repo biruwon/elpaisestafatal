@@ -1,0 +1,13 @@
+{
+  "id": "prop-pib-habitante-espana-menor-europa-core",
+  "claimSlug": "espana-tiene-menor-pib-habitante-europa",
+  "text": "El PIB por habitante de España fue inferior al de la Unión Europea en 2025.",
+  "type": "comparative",
+  "subject": "gdp_per_capita",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["pib-habitante-europa-eurostat"]
+}

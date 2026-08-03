@@ -38,6 +38,8 @@ const knownSeeds = [
   ['espana-gasta-menos-sanidad-europa', 'comparative', 'España gasta menos por habitante en sanidad que la Unión Europea'],
   ['espana-gasta-menos-pensiones-europa', 'comparative', 'España gasta menos por habitante en pensiones que la Unión Europea'],
   ['espana-cobra-menos-impuestos-renta-riqueza-europa', 'comparative', 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea'],
+  ['espana-tiene-menor-renta-mediana-europa', 'comparative', 'España tiene menos renta mediana que la Unión Europea'],
+  ['espana-tiene-menor-pib-habitante-europa', 'comparative', 'España tiene menos PIB por habitante que la Unión Europea'],
   ['desigualdad-renta-baja', 'trend', 'La desigualdad de renta ha bajado en España desde 2015'],
   ['pib-real-sigue-creciendo', 'trend', 'El PIB real de España sigue creciendo'],
   ['airbnb-vivienda', 'causal', 'Los pisos turísticos han causado la crisis de vivienda'],

@@ -1,0 +1,13 @@
+{
+  "id": "prop-renta-mediana-espana-menor-europa-core",
+  "claimSlug": "espana-tiene-menor-renta-mediana-europa",
+  "text": "La renta disponible mediana equivalente de España fue inferior a la de la Unión Europea en 2025.",
+  "type": "comparative",
+  "subject": "median_equivalised_income",
+  "predicate": "below",
+  "object": "European Union",
+  "geography": "España y Unión Europea",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["renta-mediana-europa-eurostat"]
+}

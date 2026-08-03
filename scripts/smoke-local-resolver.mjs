@@ -44,6 +44,8 @@ const cases = [
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
   { text: 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea', status: 'complete', slug: 'espana-cobra-menos-impuestos-renta-riqueza-europa' },
+  { text: 'España tiene menos renta mediana que la Unión Europea', status: 'complete', slug: 'espana-tiene-menor-renta-mediana-europa' },
+  { text: 'España tiene menos PIB por habitante que la Unión Europea', status: 'complete', slug: 'espana-tiene-menor-pib-habitante-europa' },
   { text: 'El paro registrado y el de la EPA son la misma cifra.', status: 'complete', slug: 'paro-epa-registro' },
   { text: 'La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },
   { text: 'El desempleo EPA bajó del diez por ciento.', status: 'complete', slug: 'paro-epa-t2-2026-baja-10' },

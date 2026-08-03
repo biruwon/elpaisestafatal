@@ -16,6 +16,20 @@
       "reviewedAt": "2026-08-03"
     },
     {
+      "evidenceId": "renta-mediana-europa-eurostat",
+      "propositionId": "prop-renta-mediana-espana-menor-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
+      "evidenceId": "pib-habitante-europa-eurostat",
+      "propositionId": "prop-pib-habitante-espana-menor-europa-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-03"
+    },
+    {
       "evidenceId": "gasto-sanitario-europa-eurostat",
       "propositionId": "prop-espana-gasta-menos-sanidad-europa-core",
       "relationship": "supports",

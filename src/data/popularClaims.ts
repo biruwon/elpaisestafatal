@@ -9,6 +9,8 @@ const popularSlugs = [
   'espana-gasta-menos-sanidad-europa',
   'espana-gasta-menos-pensiones-europa',
   'espana-cobra-menos-impuestos-renta-riqueza-europa',
+  'espana-tiene-menor-renta-mediana-europa',
+  'espana-tiene-menor-pib-habitante-europa',
   'espana-esta-sufriendo-un-reemplazo-poblacional',
   'ipc-junio-2026-positivo',
   'viviendas-vacias',
