@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Extended the bounded local compiler benchmark to three additional installed local candidates. `gemma4:e4b` scored 0.54 quality and 0.80 safety with roughly 8.6-second p50 latency; `aya-expanse:8b` scored 0.18 quality and 0.30 safety with roughly 12-second p50 latency; and `gpt-oss:latest` scored 0.48 quality and 0.80 safety with roughly 8.9-second p50 latency. None meets the release gate, so no model is promoted and deterministic compilation remains authoritative.
+
 - Removed the unused root `investigaciones/` Markdown tree and its audit script. The live Astro topic routes already use the structured investigation records, so the obsolete duplicate source path is gone rather than retained as compatibility code; the legacy validator now prevents it from returning.
 
 - Hardened the optional production classifier origin to fail closed when its authentication token is absent: text requests retain deterministic guidance, polling returns unavailable, and health reports static/deterministic mode. The origin and classifier validators now protect the endpoint-plus-token contract, preventing an accidentally public local origin.
