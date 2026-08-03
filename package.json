@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run deployment:validate && astro build && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:connectors && npm run classifier:validate && npm run deployment:validate && astro build && npm run knowledge:family-index && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -22,6 +22,7 @@
     "container:validate": "node scripts/validate-local-container.mjs",
     "media:validate": "node scripts/validate-local-media.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
+    "classifier:validate": "node scripts/validate-classifier-boundary.mjs",
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",
     "backup:operations": "node scripts/backup-operations.mjs",
     "backup:validate": "node scripts/validate-backup-config.mjs",

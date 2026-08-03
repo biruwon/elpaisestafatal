@@ -19,7 +19,7 @@ createServer((request, response) => {
     return;
   }
   if (request.url?.startsWith('/api/classify') || request.url?.startsWith('/api/resolve') || request.url?.startsWith('/api/v1/resolve')) {
-    const targetPath = request.url.startsWith('/api/v1/resolve') ? request.url.replace(/^\/api\/v1\/resolve/, '/v1/resolve') : request.url.startsWith('/api/resolve') ? request.url.replace(/^\/api\/resolve/, '/v1/resolve') : request.url;
+    const targetPath = request.url.startsWith('/api/v1/resolve') ? request.url.replace(/^\/api\/v1\/resolve/, '/v1/resolve') : request.url.startsWith('/api/resolve') ? request.url.replace(/^\/api\/resolve/, '/v1/resolve') : request.url.replace(/^\/api\/classify/, '/v1/resolve');
     forward(request, response, classifierPort, targetPath);
     return;
   }

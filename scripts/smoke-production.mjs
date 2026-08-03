@@ -44,6 +44,15 @@ const apiChecks = [
     },
   },
   {
+    path: '/api/classify',
+    init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}) },
+    validate(response, body) {
+      if (![200, 400].includes(response.status)) failures.push(`/api/classify: expected a handled response, received ${response.status}`);
+      if (!body || typeof body !== 'object' || typeof body.status !== 'string') failures.push('/api/classify: missing generic status payload');
+      if (forbidden.test(JSON.stringify(body))) failures.push('/api/classify: exposed implementation details');
+    },
+  },
+  {
     path: '/api/questions',
     init: { method: 'GET' },
     validate(response, body) {

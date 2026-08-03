@@ -102,7 +102,7 @@ Do not use a temporary account-less tunnel as the production configuration. Unti
 - Exact published matches now use assessment-aware result headings for false, misleading, unsupported, uncertain, and mostly-true claims, so a causal claim such as `Los inmigrantes crean inseguridad` cannot render its unsupported conclusion as if it were the site's finding.
 - The homepage regional-data discovery rail now includes a one-click Madrid–Andalucía density comparison, making the new same-period comparison path discoverable without requiring users to know the exact query wording.
 - Shared knowledge contracts and relation validation are now part of the build.
-- `/api/resolve` and the local `/v1/resolve` boundary are available; `/api/classify` remains temporarily compatible.
+- `/api/classify` is now the public provider-neutral classifier boundary used by the claim input, with the same JSON/multipart validation, timeout, token forwarding, generic failures, and polling contract as the backward-compatible `/api/resolve` route.
 - `bge-m3`, `gemma3:4b`, and `qwen3-vl:8b` are installed on the development machine. The current local evaluation corpus contains 804 Spanish inputs across 13 categories; the latest validated corpus includes the newest reviewed demographic and legal families, while the last completed runtime run reached 744/744 known-family retrieval, 60/60 unknown-safety cases, 0 irrelevant matches, and 804/804 traceable outcomes. Adjacent-letter transposition typos now resolve to the intended published family, while local/private claims suppress unrelated national guidance and sources; published results also carry their reviewed HTTPS source links into the answer plan.
 - The source warehouse now preserves real dated observations from INE `DATOS_TABLA` responses instead of indexing row metadata as measurements.
 - Refresh resources can carry source-specific titles and aliases, which are included in derived retrieval indexes for long-tail wording such as `inflación`, `IPC`, and `PIB`.
@@ -346,11 +346,13 @@ The answer planner receives only a validated evidence packet and returns an `Ans
 API:
 
 ```http
-POST /api/v1/resolve
-GET  /api/v1/resolve/:requestId
+POST /api/classify
+GET  /api/classify/:requestId
 ```
 
 The frontend submits once and polls automatically when a request is processing. There is no second classification click.
+
+`/api/resolve`, `/api/v1/resolve`, and the local `/v1/resolve` paths remain compatibility/internal routes so existing smoke tests and deployments do not break.
 
 ## Phase 4 — Retrieval and evidence warehouse
 
@@ -538,7 +540,7 @@ dynamic answer
 - Preserve all existing public URLs and route behavior.
 - Monitor ingestion failures, stale evidence, cache hits, p95 latency, unsupported-conclusion rate, origin availability, and unresolved clusters.
 - Run repository CI on every push and pull request, including the public-surface audit, knowledge contracts, container contract, request lifecycle, and offline fallback.
-- Run production smoke checks against both static routes and the generic `/api/health` and `/api/resolve` boundaries without requiring dynamic inference to be available.
+- Run production smoke checks against both static routes and the generic `/api/health`, `/api/classify`, and backward-compatible `/api/resolve` boundaries without requiring dynamic inference to be available.
 - Exercise text, screenshot, and audio multipart requests against the local boundary in CI with inference unavailable; each request must finish with a useful result or generic unavailable state.
 - Source freshness now uses the real runtime clock, with an explicit deterministic test override; unregistered discovery snapshots do not block the authoritative freshness gate, while ad-hoc BOE consolidated-legislation snapshots use a weekly cadence instead of inheriting daily-summary freshness.
 - BOE daily-summary refreshes now retry a bounded window of previous publication dates when the requested date is a non-publication day, while preserving immediate failures for other source errors.

@@ -627,7 +627,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   try {
     const inputType = file?.type.startsWith('audio/') ? 'audio' : file ? 'image' : /^https:\/\//i.test(query) ? 'url' : 'text';
     const requestBody = file ? (() => { const body = new FormData(); body.set('text', query); body.set('inputType', inputType); body.set('file', file); return body; })() : JSON.stringify({ text: query, inputType });
-    const response = await fetch('/api/resolve', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
+    const response = await fetch('/api/classify', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: requestBody, signal: activeRequest.signal });
     let data = await response.json() as SearchResponse;
     if (data.status === 'processing' && data.requestId) {
       const processingMessage = inputType === 'image'
@@ -646,7 +646,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
           const timeout = window.setTimeout(resolve, waitMs);
           activeRequest?.signal.addEventListener('abort', () => { window.clearTimeout(timeout); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
         });
-        const pending = await fetch(`/api/resolve/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal });
+        const pending = await fetch(`/api/classify/${encodeURIComponent(pendingRequestId)}`, { signal: activeRequest.signal });
         data = await pending.json() as SearchResponse;
         if (data.status !== 'processing') break;
       }
