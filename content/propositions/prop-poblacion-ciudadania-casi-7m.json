@@ -1,0 +1,13 @@
+{
+  "id": "prop-poblacion-ciudadania-casi-7m-core",
+  "claimSlug": "poblacion-ciudadania-casi-7m",
+  "text": "España tenía casi 7 millones de residentes con ciudadanía extranjera o apátrida en 2025.",
+  "type": "descriptive",
+  "subject": "foreign_citizenship_population",
+  "predicate": "was_approximately",
+  "object": "6.9 million residents",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["poblacion-ciudadania-extranjera-sube"]
+}

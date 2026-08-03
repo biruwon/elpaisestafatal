@@ -80,6 +80,7 @@ const cases = [
   { text: 'El PIB por habitante en España supera los 34.000 euros.', status: 'complete', slug: 'pib-por-habitante-supera-34000' },
   { text: 'El PIB nominal de España supera 1,6 billones de euros.', status: 'complete', slug: 'pib-nominal-supera-16-billones' },
   { text: 'El salario mínimo legal mensual equivalente en España supera los 1.400 euros.', status: 'complete', slug: 'salario-minimo-supera-1400' },
+  { text: 'España tiene casi 7 millones de residentes con ciudadanía extranjera.', status: 'complete', slug: 'poblacion-ciudadania-casi-7m' },
   { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
   { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
