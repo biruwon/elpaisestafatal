@@ -42,6 +42,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Removed the last live navigation compatibility branch for the retired `/aclarar` route. The global layout now marks only the canonical homepage checker as active, and the legacy validator prevents the removed route from being reintroduced into runtime navigation.
 
+- Closed the local-only semantic-clustering release gate: non-loopback embedding endpoints are rejected before any gap text is sent, the rejection is covered by the clustering regression suite, and `npm run build` now runs that suite on every release.
+
 - Hardened the public health boundary: upstream operational telemetry is now reduced to bounded provider-neutral counters, latency, hit rate, queue depth, and known status counts before it reaches `/api/health`. Unexpected metrics, negative values, implementation fields, and oversized values are discarded, with a build-time regression validator protecting the contract.
 
 - Tightened the same health boundary to fail closed on malformed `200` responses: dynamic availability is now reported only when the origin returns the expected `status`, deterministic, and dynamic fields, while valid optional telemetry remains filtered and bounded.

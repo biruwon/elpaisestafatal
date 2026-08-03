@@ -379,6 +379,9 @@ const mergeByLocalEmbeddings = async (clusters) => {
   const threshold = Math.min(0.99, Math.max(0.75, Number.isFinite(configuredThreshold) ? configuredThreshold : 0.88));
   const maxClusters = Math.max(1, Number.isFinite(configuredMaxClusters) ? Math.floor(configuredMaxClusters) : 2000);
   if (!endpoint) return { clusters, metadata: { enabled: false, model, threshold, merged: 0, skipped: 'endpoint_not_configured' } };
+  if (!/^https?:\/\/127\.0\.0\.1(?::\d+)?(?:\/|$)/i.test(endpoint) && !/^https?:\/\/localhost(?::\d+)?(?:\/|$)/i.test(endpoint)) {
+    return { clusters, metadata: { enabled: false, model, threshold, merged: 0, skipped: 'non_local_embedding_endpoint_rejected' } };
+  }
   const candidates = clusters.slice(0, maxClusters);
   try {
     const vectors = await embedForClustering(candidates, endpoint, model, 30000);
