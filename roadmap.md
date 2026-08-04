@@ -58,7 +58,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Removed an unsafe tax alias that conflated the vague burden/value statement `España cobra demasiados impuestos` with the specific Europe-wide ranking claim. The deterministic path now keeps that wording out of the exact published result and the claim-index regression protects the distinction.
 
-- Removed the last live navigation compatibility branch for the retired `/aclarar` route. The global layout now marks only the canonical homepage checker as active, and the legacy validator prevents the removed route from being reintroduced into runtime navigation.
+- Removed the last live navigation compatibility branch for the retired `/aclarar` route. The global layout now marks only the canonical homepage checker as active, and the retired route has no runtime implementation.
 
 - Closed the local-only semantic-clustering release gate: non-loopback embedding endpoints are rejected before any gap text is sent, the rejection is covered by the clustering regression suite, and `npm run build` now runs that suite on every release.
 
@@ -72,7 +72,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Extended the bounded local compiler benchmark to three additional installed local candidates. `gemma4:e4b` scored 0.54 quality and 0.80 safety with roughly 8.6-second p50 latency; `aya-expanse:8b` scored 0.18 quality and 0.30 safety with roughly 12-second p50 latency; and `gpt-oss:latest` scored 0.48 quality and 0.80 safety with roughly 8.9-second p50 latency. None meets the release gate, so no model is promoted and deterministic compilation remains authoritative.
 
-- Removed the unused root `investigaciones/` Markdown tree and its audit script. The live Astro topic routes already use the structured investigation records, so the obsolete duplicate source path is gone rather than retained as compatibility code; the legacy validator now prevents it from returning.
+- Removed the unused root `investigaciones/` Markdown tree and its audit script. The live Astro topic routes already use the structured investigation records, so the obsolete duplicate source path is gone rather than retained as compatibility code.
 
 - Hardened the optional production classifier origin to fail closed when its authentication token is absent: text requests retain deterministic guidance, polling returns unavailable, and health reports static/deterministic mode. The origin and classifier validators now protect the endpoint-plus-token contract, preventing an accidentally public local origin.
 
@@ -82,7 +82,7 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Corrected the local screenshot-extraction request to use the same numeric keep-alive contract as text compilation and embeddings. The local-container release gate now checks every local chat/embed path so a runtime-specific duration string cannot silently disable image enrichment.
 
-- Removed three orphaned modules from the retired catalogue/search implementation (`src/data/search.ts`, `src/data/concernComparison.ts`, and `src/data/evidence.ts`). The current site has no imports for them, and the release build now fails if they are reintroduced.
+- Removed three orphaned modules from the retired catalogue/search implementation (`src/data/search.ts`, `src/data/concernComparison.ts`, and `src/data/evidence.ts`). The current site has no imports for them and those files are no longer part of the project.
 
 - Added credential-gated daily maintenance for the durable rate-limit table. It prunes only windows older than two days, skips safely when scheduled without credentials, and fails clearly for manual runs without configuration; the rate-limit validator prevents it from touching claims, submissions, or reviewed knowledge.
 
