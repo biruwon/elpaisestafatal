@@ -632,6 +632,13 @@ const getIndex = async () => {
   return indexPromise;
 };
 
+const isSpecificSemanticSignature = (signature) => {
+  const parts = String(signature || '').split('|');
+  return parts.some((part) => part.startsWith('relation:'))
+    || parts.filter((part) => part.startsWith('concept:')).length >= 2
+    || parts.filter((part) => part.startsWith('term:')).length >= 2;
+};
+
 const classify = async (text) => {
   // Do not reuse a result generated for a different conversational wrapper.
   // “La sanidad está colapsada” and “¿Es verdad que la sanidad está
@@ -659,7 +666,7 @@ const classify = async (text) => {
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
-    semanticFamilyMatch: entry.kind === 'claim' && entry.semanticSignatures?.includes(querySemanticSignature),
+    semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && entry.semanticSignatures?.includes(querySemanticSignature),
   })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
     // distinctive words in a short political claim. Keep lexical evidence
