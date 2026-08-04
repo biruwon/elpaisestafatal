@@ -1,4 +1,4 @@
-import { consolidatedQuery, isPublicReuseQuery, rankConsolidatedLaws, rankLegalRules } from './boe-legal-discovery.mjs';
+import { consolidatedQuery, isPublicReuseQuery, rankConsolidatedLaws, rankLegalRules, titleQueries } from './boe-legal-discovery.mjs';
 
 const query = consolidatedQuery('La normativa exige condiciones para reutilizar documentos públicos');
 const queryText = query ? JSON.parse(query).query?.query_string?.query : '';
@@ -12,6 +12,19 @@ if (!colloquialHousingText.includes('desahucio*') || !colloquialHousingText.incl
 const colloquialEmploymentQuery = consolidatedQuery('¿Puede el jefe despedirme sin causa?');
 const colloquialEmploymentText = colloquialEmploymentQuery ? JSON.parse(colloquialEmploymentQuery).query?.query_string?.query : '';
 if (!colloquialEmploymentText.includes('laboral*') || !colloquialEmploymentText.includes('estatuto*')) throw new Error('Colloquial employment wording did not expand to bounded formal legal terms');
+
+const depositQuery = consolidatedQuery('¿Puede el casero quedarse con la fianza del alquiler?');
+const depositText = depositQuery ? JSON.parse(depositQuery).query?.query_string?.query : '';
+if (!depositText.includes('fianza*') || !depositText.includes('arrendamie*')) throw new Error('Specific deposit wording was lost when formal legal terms were added');
+
+const familyQuery = consolidatedQuery('¿Quién decide la custodia de los hijos?');
+const familyText = familyQuery ? JSON.parse(familyQuery).query?.query_string?.query : '';
+if (!familyText.includes('custodia*') || !familyText.includes('familia*')) throw new Error('Family-law wording did not retain the user term and formal expansion');
+
+const socialSecurityQuery = consolidatedQuery('¿Puedo perder la prestación por desempleo?');
+const socialSecurityText = socialSecurityQuery ? JSON.parse(socialSecurityQuery).query?.query_string?.query : '';
+const socialSecurityQueries = titleQueries('¿Puedo perder la prestación por desempleo?').map((item) => JSON.parse(item).query?.query_string?.query || '');
+if (!socialSecurityText.includes('prest*') || !socialSecurityQueries.some((item) => item.includes('segur*'))) throw new Error('Social-security wording did not preserve the user term and bounded formal expansion');
 
 const laws = rankConsolidatedLaws([
   { identificador: 'BOE-A-1', titulo: 'Ley sobre documentos públicos', rango: { texto: 'Ley' }, vigencia_agotada: 'N', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260101' },

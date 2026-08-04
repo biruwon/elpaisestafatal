@@ -23,16 +23,29 @@ const legalTermExpansions = [
   { triggers: ['violencia machista', 'violencia mujer'], terms: ['violencia', 'genero', 'integral'] },
   { triggers: ['herencia', 'heredar'], terms: ['sucesiones', 'donaciones'] },
   { triggers: ['multa', 'sancion'], terms: ['sancionador', 'infracciones'] },
+  { triggers: ['fianza', 'deposito alquiler'], terms: ['arrendamiento', 'fianza', 'deposito'] },
+  { triggers: ['custodia', 'divorcio', 'pension alimenticia'], terms: ['familia', 'menores', 'alimentos', 'custodia'] },
+  { triggers: ['irpf', 'declaracion renta', 'hacienda'], terms: ['tributario', 'fiscal', 'renta'] },
+  { triggers: ['garantia', 'devolver compra', 'tienda', 'consumidor'], terms: ['consumo', 'consumidores', 'usuarios'] },
+  { triggers: ['carnet', 'velocidad', 'conducir', 'trafico'], terms: ['trafico', 'seguridad vial', 'circulacion'] },
+  { triggers: ['paro', 'prestacion', 'pension', 'cotizacion'], terms: ['seguridad social', 'prestacion', 'desempleo', 'cotizaciones'] },
 ];
+
+const triggerMatches = (text, trigger) => {
+  const wanted = normalise(trigger);
+  if (wanted.includes(' ')) return (` ${text} `).includes(` ${wanted} `);
+  return new RegExp(`\\b${wanted.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}[a-z0-9]*\\b`).test(text);
+};
 
 const expansionTermsForQuery = (query) => {
   const text = normalise(query);
   return legalTermExpansions
-    .filter(({ triggers }) => triggers.some((trigger) => text.includes(normalise(trigger))))
+    .filter(({ triggers }) => triggers.some((trigger) => triggerMatches(text, trigger)))
     .flatMap(({ terms }) => terms);
 };
 
-const expandedLegalTokens = (query) => [...new Set([...tokens(query), ...expansionTermsForQuery(query)])].slice(0, 12);
+const expandedTermsForQuery = (query) => expansionTermsForQuery(query).flatMap((term) => tokens(term));
+const expandedLegalTokens = (query) => [...new Set([...tokens(query), ...expandedTermsForQuery(query)])].slice(0, 12);
 
 const includesAny = (value, values) => values.some((item) => String(value || '').includes(item));
 const publicReuseArticles = new Map([
@@ -67,17 +80,22 @@ const publicReuseScore = (record, query) => {
   return articleBonus + operativeTextBonus + directTextBonus;
 };
 
-const titleQueries = (query) => {
+export const titleQueries = (query) => {
   if (isPublicReuseQuery(query)) {
     return [
       JSON.stringify({ query: { query_string: { query: 'titulo:(reutiliz* and informacion*)' }, range: {} }, sort: [] }),
       JSON.stringify({ query: { query_string: { query: 'titulo:(reutiliz* and sector*)' }, range: {} }, sort: [] }),
     ];
   }
-  const wanted = (expansionTermsForQuery(query).length ? expansionTermsForQuery(query) : tokens(query)).map(stem).filter((item) => item.length >= 4);
+  const originalTerms = tokens(query).map(stem).filter((item) => item.length >= 4);
+  const formalTerms = expandedTermsForQuery(query).map(stem).filter((item) => item.length >= 4);
+  const wanted = [...new Set([...originalTerms, ...formalTerms])];
   const pairs = [];
   for (let left = 0; left < wanted.length; left += 1) for (let right = left + 1; right < wanted.length; right += 1) pairs.push([wanted[left], wanted[right]]);
-  return pairs.sort((left, right) => (right[0].length + right[1].length) - (left[0].length + left[1].length)).slice(0, 3).map((pair) => JSON.stringify({ query: { query_string: { query: `titulo:(${pair.map((item) => `${item}*`).join(' and ')})` }, range: {} }, sort: [] }));
+  const formalSet = new Set(formalTerms);
+  const originalSet = new Set(originalTerms);
+  const pairScore = (pair) => pair.reduce((score, term) => score + (formalSet.has(term) ? 4 : 0) + (originalSet.has(term) ? 3 : 0) + term.length / 100, 0);
+  return pairs.sort((left, right) => pairScore(right) - pairScore(left)).slice(0, 3).map((pair) => JSON.stringify({ query: { query_string: { query: `titulo:(${pair.map((item) => `${item}*`).join(' and ')})` }, range: {} }, sort: [] }));
 };
 
 export const consolidatedQuery = (query) => {
