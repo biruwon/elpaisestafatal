@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Local development now enables the Ollama answer-planning pass by default for meaningful unresolved claims; `LOCAL_ANSWER_PLANNER=0` remains available for deterministic-only benchmarks. Planner failures still return the deterministic result, while production remains provider-neutral until a persistent local origin is configured.
+
 - The local compiler now preserves a bounded methodological `evidenceNeeds` vocabulary for richer extraction of compound and genuinely novel Spanish claims (for example denominator, programme, impact, territory, cause, and comparison). These hints flow into evidence-packet planning and warehouse retrieval without gaining authority over numbers, polarity, semantic signatures, claim routing, or verdicts. The local benchmark now includes compound housing, budget-impact, and local-causality cases; the current installed model remains below the release gate, so deterministic compilation stays authoritative.
 
 - Official discovery now has a bounded `government_event` path for newly published decisions, appointments, grants, and other official acts. It preserves the specialised budget-transfer finding when available, extracts a constrained action/person/role shape for appointments, and otherwise retains a short official action excerpt. The local resolver now renders an evidence ladder and provisional conversation response that separates the published act from execution, impact, intention, and other unsupported implications; a generic ministry decision is no longer treated as a budget transfer merely because it names a ministry.

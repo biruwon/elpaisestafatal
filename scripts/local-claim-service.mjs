@@ -31,7 +31,11 @@ const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
 const compilerTimeoutMs = Math.min(15000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 12000)));
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
-const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER === '1';
+// Local development should use the installed Ollama model automatically for
+// structured answer enrichment. Set LOCAL_ANSWER_PLANNER=0 to benchmark the
+// deterministic path in isolation. Every planner failure still returns the
+// already-built deterministic result.
+const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER !== '0';
 const semanticWarehouseEnabled = process.env.WAREHOUSE_SEMANTIC_SEARCH === '1';
 const speechCommand = process.env.LOCAL_SPEECH_COMMAND || '';
 const speechArgs = (() => {

@@ -25,6 +25,7 @@ for (const file of integrationFiles) {
   const source = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
   if (/\/api\/(?:chat|embed|tags)|ollama\(/i.test(source)) throw new Error(`${file} bypasses the shared local inference provider`);
   if (!source.includes('local-inference-provider.mjs')) throw new Error(`${file} does not declare the shared local inference provider dependency`);
+  if (file === 'scripts/local-claim-service.mjs' && !source.includes("process.env.LOCAL_ANSWER_PLANNER !== '0'")) throw new Error('Local answer planning must be enabled by default and explicitly disableable for benchmarks');
 }
 
 console.log('Local inference provider contract valid: local and unavailable adapters share bounded chat/embed/model-inventory methods.');
