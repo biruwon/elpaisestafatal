@@ -539,12 +539,27 @@ const claimedNumericValue = (text, compiler) => {
 };
 
 const observationIsPercentage = (item) => includesAny(normalise(`${item.unit || ''} ${item.metric || ''} ${item.datasetId || ''}`), ['%', 'percent', 'porcentaje', 'rate', 'tasa', 'share', 'proporcion']);
+const claimUnitClass = (text) => {
+  const value = normalise(text);
+  if (includesAny(value, ['euros', 'euro', 'millones de euros', 'millones de €', 'por habitante', 'por persona'])) return includesAny(value, ['por habitante', 'por persona']) ? 'per_capita' : 'currency';
+  if (includesAny(value, ['personas', 'habitantes', 'residentes', 'hogares', 'trabajadores'])) return 'people';
+  if (includesAny(value, ['indice', 'índice', 'base 100'])) return 'index';
+  return null;
+};
+const observationUnitClass = (item) => {
+  const value = normalise(`${item.unit || ''} ${item.metric || ''} ${item.datasetId || ''}`);
+  if (includesAny(value, ['euro', 'eur', 'currency'])) return includesAny(value, ['habitante', 'capita', 'persona']) ? 'per_capita' : 'currency';
+  if (includesAny(value, ['personas', 'inhabitants', 'population', 'habitantes', 'households', 'hogares'])) return 'people';
+  if (includesAny(value, ['index', 'indice'])) return 'index';
+  return null;
+};
 
 const quantityAssessment = (text, compiler, observations) => {
   const claim = claimedNumericValue(text, compiler);
   const numeric = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   if (!claim || !numeric.length) return null;
-  const compatible = numeric.filter((item) => observationIsPercentage(item) === claim.percentage);
+  const requestedUnit = claimUnitClass(text);
+  const compatible = numeric.filter((item) => observationIsPercentage(item) === claim.percentage && (!requestedUnit || !observationUnitClass(item) || observationUnitClass(item) === requestedUnit));
   if (!compatible.length) return null;
   const ordered = compatible.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
   const latest = ordered.at(-1);
