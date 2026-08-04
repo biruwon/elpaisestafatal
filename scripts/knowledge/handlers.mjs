@@ -24,7 +24,11 @@ export const handlerForInput = (input, claimType = '') => {
   if (includesAny(text, ['densidad de poblacion', 'densidad poblacion', 'personas por kilometro', 'personas por km']) && includesAny(text, ['comunidad', 'region', 'madrid', 'andalucia'])) return 'ranking';
   if (claimType === 'trend') return 'trend';
   if (claimType === 'definition' || impliedDefinition) return 'definition';
-  if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres', 'mayores', 'jubilados'])) return 'group_comparison';
+  const groupSignal = includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres', 'mayores', 'jubilados', 'politicos', 'trabajadores', 'hogares', 'jóvenes', 'jovenes']);
+  const universalSignal = includesAny(text, ['todos', 'todas', 'todo', 'toda', 'nadie', 'ningun', 'ninguna', 'ninguno']);
+  if (groupSignal && universalSignal) return 'group_comparison';
+  if (groupSignal) return 'group_comparison';
+  if (universalSignal) return 'proportion';
   if (claimType === 'comparative') return 'ranking';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';

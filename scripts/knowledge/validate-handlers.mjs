@@ -19,7 +19,7 @@ const probes = {
   ranking: 'España cobra más impuestos que Europa',
   group_comparison: 'Los inmigrantes reciben más ayudas',
   proportion: 'La mayoría de la población vive en ciudades',
-  quantity: 'Todos los políticos son corruptos',
+  quantity: 'Hay 500 mil viviendas vacías',
   budget_transfer: 'El Gobierno transfiere 310 millones del presupuesto',
   government_event: 'El Ministerio de Sanidad aprueba una ayuda para municipios',
   legal_rule: 'La ley permite desalojar al ocupante',
@@ -39,6 +39,9 @@ for (const wording of [
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
 for (const wording of ['Uno de cada tres jóvenes está en paro', 'La mitad de los hogares llega justo a fin de mes']) {
   if (handlerForInput(wording, 'descriptive') !== 'proportion') throw new Error(`Natural fraction wording was not routed as a proportion: ${wording}`);
+}
+for (const wording of ['Todos los políticos son corruptos', 'Nadie encuentra vivienda asequible']) {
+  if (handlerForInput(wording, 'descriptive') !== (wording.startsWith('Todos') ? 'group_comparison' : 'proportion')) throw new Error(`Absolute quantifier wording was not routed safely: ${wording}`);
 }
 for (const wording of ['Los marroquíes reciben más ayudas que los españoles', 'Los rumanos delinquen más que los españoles']) {
   if (handlerForInput(wording, 'comparative') !== 'group_comparison') throw new Error(`Named demographic group was not routed as group comparison: ${wording}`);
