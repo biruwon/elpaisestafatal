@@ -20,6 +20,7 @@ import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
 import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
+import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -1052,7 +1053,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   } : null;
   const predictionContext = isPrediction && !primary ? {
     headline: 'Esto es una predicción, no un hecho ya comprobable',
-    summary: 'Una serie histórica puede aportar contexto, pero no confirma por sí sola lo que ocurrirá. Para evaluar la predicción hay que fijar una fecha, un indicador, una magnitud y las condiciones que podrían cambiar el resultado.',
+    summary: (() => { const spec = predictionSpecFor(text, classified.compiler); return spec.measurable ? 'La predicción ya contiene un indicador, una magnitud y una fecha; todavía hay que fijar las condiciones y la fuente de seguimiento.' : 'Una serie histórica puede aportar contexto, pero no confirma por sí sola lo que ocurrirá. Para evaluar la predicción hay que fijar una fecha, un indicador, una magnitud y las condiciones que podrían cambiar el resultado.'; })(),
   } : null;
   const legalContext = isLegal && !primary ? {
     headline: publicReuseClaim ? 'No: la información pública no es automáticamente reutilizable sin condiciones' : 'La respuesta legal depende del supuesto concreto',
@@ -1112,12 +1113,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ] : []),
     ...(isPrediction ? [
       { type: 'strongest_valid_concern', text: 'La predicción puede ser plausible, pero necesita formularse de manera que pueda comprobarse cuando llegue la fecha.' },
-      { type: 'prediction_conditions', items: [
-        { label: 'Indicador', value: 'Qué variable exacta debe cambiar', status: 'missing' },
-        { label: 'Magnitud', value: 'Cuánto debe subir o bajar', status: /\d/.test(text) ? 'specified' : 'missing' },
-        { label: 'Fecha límite', value: 'Cuándo debe haberse producido', status: /a[nñ]o que viene|\b20\d{2}\b|mes|trimestre/i.test(text) ? 'specified' : 'missing' },
-        { label: 'Condiciones', value: 'Qué cambios externos invalidarían la comparación', status: 'missing' },
-      ] },
+      { type: 'prediction_conditions', items: predictionStepsFor(predictionSpecFor(text, classified.compiler)).map((step) => ({ ...step, value: step.label === 'Resultado comprobable' ? 'La predicción puede revisarse con los campos anteriores' : 'Fijar este campo antes de evaluarla' })) },
     ] : []),
     ...(isNormative ? [
       { type: 'strongest_valid_concern', text: 'Cuando un recurso es limitado, decidir quién debe recibir prioridad es una pregunta legítima de justicia y reparto.' },
