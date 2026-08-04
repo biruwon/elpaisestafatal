@@ -28,6 +28,8 @@ assert(causal.entities.includes('inmigración') && causal.geography === 'España
 const local = deterministicFallbackCompiler('En Málaga los alquileres están expulsando a los vecinos');
 assert(local.geography === 'malaga', 'Province/city geography was not detected for a local claim');
 assert(causal.population === 'personas inmigrantes o extranjeras', 'Causal population was not detected');
+const subgroup = deterministicFallbackCompiler('Los marroquíes reciben más ayudas que los españoles');
+assert(subgroup.claimType === 'comparative' && subgroup.entities.includes('inmigración') && subgroup.population === 'personas de una nacionalidad concreta', 'Named demographic subgroup was not extracted for comparison');
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
 assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.length === 1, 'Explicit/implied proposition groups were not created');
 

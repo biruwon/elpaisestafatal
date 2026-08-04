@@ -32,7 +32,7 @@ const hasNegation = (value) => {
 
 const entityAliases = [
   ['gobierno de España', ['gobierno', 'moncloa', 'sanchez', 'presidencia']],
-  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
+  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
   ['vivienda', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas']],
   ['empleo', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados']],
   ['impuestos', ['impuestos', 'tributos', 'fiscalidad', 'hacienda']],
@@ -260,6 +260,7 @@ const regions = [
 
 const populationAliases = [
   ['personas inmigrantes o extranjeras', ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'nacido en el extranjero']],
+  ['personas de una nacionalidad concreta', ['marroqui', 'marroquies', 'rumano', 'rumanos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'latino', 'latinos']],
   ['personas residentes', ['residentes', 'poblacion', 'habitantes', 'personas que viven']],
   ['hogares', ['hogar', 'hogares', 'familias']],
   ['personas trabajadoras', ['trabajador', 'trabajadores', 'afiliados', 'ocupado', 'ocupados', 'empleados']],
@@ -271,6 +272,7 @@ const populationAliases = [
   ['pacientes', ['paciente', 'pacientes', 'personas en lista de espera']],
   ['personas jóvenes', ['joven', 'jovenes', 'jóvenes', 'menor', 'menores']],
   ['mujeres y hombres', ['mujeres', 'hombres', 'sexo']],
+  ['personas mayores', ['mayor', 'mayores', '65 anos', 'jubilado', 'jubilados']],
 ];
 
 const claimTypeFor = (value) => {
