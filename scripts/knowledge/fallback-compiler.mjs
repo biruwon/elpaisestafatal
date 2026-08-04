@@ -251,7 +251,12 @@ export const semanticSignatureFor = ({ claimType, propositions = [], entities = 
   return [...new Set(dimensions)].join('|').slice(0, 600);
 };
 
-const regions = ['andalucia', 'aragon', 'asturias', 'baleares', 'canarias', 'cantabria', 'castilla la mancha', 'castilla y leon', 'cataluna', 'comunidad valenciana', 'extremadura', 'galicia', 'madrid', 'murcia', 'navarra', 'pais vasco', 'rioja', 'ceuta', 'melilla'];
+const regions = [
+  'andalucia', 'aragon', 'asturias', 'baleares', 'canarias', 'cantabria', 'castilla la mancha', 'castilla y leon', 'cataluna', 'comunidad valenciana', 'extremadura', 'galicia', 'madrid', 'murcia', 'navarra', 'pais vasco', 'rioja', 'ceuta', 'melilla',
+  // Common province/city wording in everyday claims. This is a bounded
+  // routing hint, not a substitute for the canonical geography registry.
+  'barcelona', 'malaga', 'sevilla', 'valencia', 'alicante', 'zaragoza', 'bilbao', 'palma', 'valladolid', 'vigo', 'a coruna', 'granada', 'cordoba', 'salamanca', 'tarragona', 'girona', 'cadiz', 'jaen', 'almeria', 'toledo', 'santander', 'oviedo', 'pamplona',
+];
 
 const populationAliases = [
   ['personas inmigrantes o extranjeras', ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'nacido en el extranjero']],

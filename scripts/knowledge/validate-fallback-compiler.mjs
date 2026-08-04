@@ -25,6 +25,8 @@ const publishedCausal = deterministicFallbackCompiler('La inmigración es la cau
 assert(temporalCausal.semanticSignature === publishedCausal.semanticSignature, 'Temporal causal paraphrase did not preserve the same published claim family');
 assert(causal.semanticSignature !== deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas').semanticSignature, 'Association wording was incorrectly collapsed into a causal family');
 assert(causal.entities.includes('inmigración') && causal.geography === 'España', 'Causal entities/geography were not detected');
+const local = deterministicFallbackCompiler('En Málaga los alquileres están expulsando a los vecinos');
+assert(local.geography === 'malaga', 'Province/city geography was not detected for a local claim');
 assert(causal.population === 'personas inmigrantes o extranjeras', 'Causal population was not detected');
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
 assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.length === 1, 'Explicit/implied proposition groups were not created');
