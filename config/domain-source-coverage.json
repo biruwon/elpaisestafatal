@@ -1,0 +1,51 @@
+{
+  "immigration_benefits": {
+    "status": "gap",
+    "requiredEvidence": [
+      "benefit_program",
+      "eligibility_rules",
+      "beneficiary_counts_by_group",
+      "comparable_population_denominator",
+      "period"
+    ],
+    "preferredSources": [
+      { "publisher": "Seguridad Social", "role": "contributory_benefits" },
+      { "publisher": "Ministerio de Inclusión", "role": "means_tested_benefits" },
+      { "publisher": "Autonomous communities and municipalities", "role": "regional_and_local_programmes" }
+    ],
+    "knownLimitation": "National social-protection spending is not beneficiary data and cannot answer whether immigrants receive more individual benefits."
+  },
+  "immigration_crime": {
+    "status": "partial",
+    "requiredEvidence": [
+      "offence_category",
+      "suspects_or_convictions_definition",
+      "group_population_denominator",
+      "period_and_territory",
+      "age_sex_adjustment"
+    ],
+    "preferredSources": [
+      { "publisher": "Ministerio del Interior", "role": "police_and_crime_statistics" },
+      { "publisher": "INE", "role": "population_denominators" },
+      { "publisher": "CGPJ", "role": "convictions_and_court_statistics" },
+      { "publisher": "Peer-reviewed research", "role": "causal_adjustment" }
+    ],
+    "knownLimitation": "Recorded offences, arrests, suspects, convictions, and prison population are different measures and cannot be substituted."
+  },
+  "public_housing_allocation": {
+    "status": "gap",
+    "requiredEvidence": [
+      "programme_and_territory",
+      "eligibility_rules",
+      "eligible_applicants_by_group",
+      "allocations_by_group",
+      "period"
+    ],
+    "preferredSources": [
+      { "publisher": "Municipal housing authority", "role": "allocation_records" },
+      { "publisher": "Autonomous community housing authority", "role": "programme_rules_and_records" },
+      { "publisher": "BOE or regional official gazette", "role": "legal_rules" }
+    ],
+    "knownLimitation": "Foreign-born population or employment totals cannot establish priority in a specific housing programme."
+  }
+}
