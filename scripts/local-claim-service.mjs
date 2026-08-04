@@ -21,6 +21,7 @@ import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
 import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
+import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -963,6 +964,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       .sort((left, right) => Number(right.topicScore || 0) - Number(left.topicScore || 0) || Number(right.score || 0) - Number(left.score || 0))
     : [];
   const currentLegalRule = selectCurrentLegalRule(legalObservations);
+  const legalProfile = isLegal ? legalEvidenceProfile(legalObservations) : null;
   const legalPrimaryBlock = isLegal ? {
     type: 'legal_decision_tree',
     items: primary?.slug === 'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control'
@@ -996,12 +998,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         { label: 'Límites', status: publicReuseRules.some((item) => /art[ií]culo 3/i.test(item.metric)) ? 'known' : 'missing', detail: 'Quedan fuera, entre otros, documentos con límites de acceso, información reservada o confidencial y documentos con derechos de terceros.' },
         { label: 'Uso responsable', status: publicReuseRules.some((item) => /art[ií]culo 8/i.test(item.metric)) ? 'known' : 'missing', detail: 'Las condiciones pueden exigir no alterar el contenido, no desnaturalizarlo, citar la fuente y señalar la fecha de actualización.' },
       ]
-      : [
-        { label: 'Jurisdicción y norma vigente', status: legalObservations.length ? 'known' : 'missing', detail: legalObservations.length ? 'Hay una fuente jurídica localizada para el territorio y periodo indicados.' : 'Identificar el territorio y la norma aplicable en la fecha del caso.' },
-        { label: 'Artículo aplicable', status: currentLegalRule ? 'known' : 'missing', detail: currentLegalRule ? 'La fuente incluye una regla vigente relacionada con el supuesto.' : 'Localizar el precepto que regula exactamente el supuesto.' },
-        { label: 'Situación y procedimiento', status: 'missing', detail: 'Distinguir la condición de las partes, la autoridad competente y los plazos.' },
-        { label: 'Excepciones y efectos', status: 'missing', detail: 'Comprobar medidas especiales, excepciones, recursos y efectos jurídicos.' },
-      ],
+      : legalEvidenceSteps(legalProfile || { hasRule: false, current: false, effectiveDate: false, procedure: false, exceptions: false }).map((step) => ({ ...step, detail: step.label === 'Aplicación al caso' ? 'La regla general no decide por sí sola los hechos, pruebas y procedimiento concretos.' : 'Comprobar este elemento en la norma y el expediente aplicables.' })),
   } : null;
   const quantityClaim = isQuantityLike ? claimedNumericValue(text, classified.compiler) : null;
   const quantity = isQuantityLike ? quantityAssessment(text, classified.compiler, observations) : null;
