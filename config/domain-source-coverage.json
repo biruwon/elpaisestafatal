@@ -13,6 +13,10 @@
       { "publisher": "Ministerio de Inclusión", "role": "means_tested_benefits" },
       { "publisher": "Autonomous communities and municipalities", "role": "regional_and_local_programmes" }
     ],
+    "discoverySources": [
+      "https://revista.seg-social.es/",
+      "https://www.inclusion.gob.es/"
+    ],
     "knownLimitation": "National social-protection spending is not beneficiary data and cannot answer whether immigrants receive more individual benefits."
   },
   "immigration_crime": {
@@ -30,6 +34,11 @@
       { "publisher": "CGPJ", "role": "convictions_and_court_statistics" },
       { "publisher": "Peer-reviewed research", "role": "causal_adjustment" }
     ],
+    "discoverySources": [
+      "https://www.interior.gob.es/opencms/es/archivos-y-documentacion/documentacion-y-publicaciones/anuarios-y-estadisticas/",
+      "https://www.ine.es/",
+      "https://www.poderjudicial.es/"
+    ],
     "knownLimitation": "Recorded offences, arrests, suspects, convictions, and prison population are different measures and cannot be substituted."
   },
   "public_housing_allocation": {
@@ -45,6 +54,10 @@
       { "publisher": "Municipal housing authority", "role": "allocation_records" },
       { "publisher": "Autonomous community housing authority", "role": "programme_rules_and_records" },
       { "publisher": "BOE or regional official gazette", "role": "legal_rules" }
+    ],
+    "discoverySources": [
+      "https://sede.transportes.gob.es/areas-actividad/subvenciones/gestion-transferencias-prtr-ccaa/programas-ayuda-materia-rehabilitacion-residencial-incremento-parque-vivienda-alquiler-social-regulados-real-decreto-8532021-5-octubre",
+      "https://publicaciones.transportes.gob.es/observatorio-de-vivienda-y-suelo-boletin-especial-alquiler-residencial-2024"
     ],
     "knownLimitation": "Foreign-born population or employment totals cannot establish priority in a specific housing programme."
   }

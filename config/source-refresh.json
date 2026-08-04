@@ -13,6 +13,12 @@
       "title": "Índice de precios de consumo e inflación en España",
       "aliases": ["IPC", "inflación", "precios", "coste de vida"],
       "metricId": "cpi_index"
+    },
+    {
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM",
+      "title": "Población por sexo, nacionalidad y país de nacimiento",
+      "aliases": ["población por nacionalidad", "españoles", "extranjeros", "país de nacimiento", "denominador migratorio"],
+      "metricId": "foreign_citizenship_population"
     }
   ],
   "eurostat": [

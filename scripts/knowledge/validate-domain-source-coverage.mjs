@@ -9,6 +9,7 @@ for (const id of required) {
   if (!['gap', 'partial', 'covered'].includes(contract.status)) errors.push(`${id}: invalid status`);
   if (!Array.isArray(contract.requiredEvidence) || contract.requiredEvidence.length < 4) errors.push(`${id}: insufficient evidence requirements`);
   if (!Array.isArray(contract.preferredSources) || contract.preferredSources.length < 3) errors.push(`${id}: insufficient preferred sources`);
+  if (!Array.isArray(contract.discoverySources) || contract.discoverySources.length < 2 || contract.discoverySources.some((url) => !/^https:\/\//.test(url))) errors.push(`${id}: discovery sources must be HTTPS URLs`);
   if (!contract.knownLimitation) errors.push(`${id}: missing limitation`);
 }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
