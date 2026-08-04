@@ -102,13 +102,14 @@ const phraseMatches = (query: string, text: string): number => {
 export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
-  const searchable = [entry.title, ...entry.aliases, ...entry.keywords].map(normaliseClaimText);
+  const searchablePhrases = [entry.title, ...entry.aliases].map(normaliseClaimText);
+  const searchable = [...searchablePhrases, ...entry.keywords.map(normaliseClaimText)];
   const searchableText = searchable.join(' ');
   const searchableTokens = new Set(claimTokens(searchableText));
   const matchedTokens = queryTokens.filter((token) => matchesToken(token, searchableTokens));
   const matchedTerms = matchedTokens.filter((token) => !lowSignalWords.has(token));
   const weightedMatches = matchedTokens.reduce((total, token) => total + (lowSignalWords.has(token) ? 0.25 : 1), 0);
-  const phraseScore = Math.max(...searchable.map((text) => phraseMatches(query, text)), 0);
+  const phraseScore = Math.max(...searchablePhrases.map((text) => phraseMatches(query, text)), 0);
   const overlapScore = queryTokens.length ? (weightedMatches / queryTokens.length) * 55 : 0;
   const score = Math.round(phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0));
   return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms };
