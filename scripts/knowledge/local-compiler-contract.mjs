@@ -63,6 +63,21 @@ const safeList = (value, maximumItems, maximumLength) => Array.isArray(value)
   ? value.filter((item) => typeof item === 'string' && item.trim()).slice(0, maximumItems).map((item) => item.trim().slice(0, maximumLength))
   : [];
 
+// Give the local compiler enough reviewed context to distinguish a paraphrase
+// from a merely related topic. This is still a bounded routing hint: the
+// compiler cannot publish a candidate without the deterministic score,
+// compatibility, and evidence gates in the resolver.
+export const formatCompilerCandidates = (candidates = []) => candidates
+  .slice(0, 8)
+  .map((entry) => {
+    const aliases = safeList(entry.aliases, 6, 180).join(' | ') || 'none';
+    const type = bounded(entry.claimType, 80) || 'unknown';
+    const geography = bounded(entry.geography, 100) || 'unknown';
+    const period = bounded(entry.period, 100) || 'unknown';
+    return `${entry.published ? 'published' : 'internal'}:${bounded(entry.slug, 160)} — ${bounded(entry.title, 260)} [type=${type}; geography=${geography}; period=${period}; aliases=${aliases}]`;
+  })
+  .join('\n');
+
 const meaningfulTokens = (value) => new Set(String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').match(/[a-z0-9]{3,}/g) || []);
 
 // A model can translate or normalise a population label, but it must not be

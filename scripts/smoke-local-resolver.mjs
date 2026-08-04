@@ -43,6 +43,7 @@ const cases = [
   // metric, but it must never promote this vague wording to the precise
   // published European tax-ranking claim.
   { text: 'España cobra demasiados impuestos', statuses: ['uncovered', 'draft'], forbiddenSlug: 'espana-impuestos-europa' },
+  { text: 'Desde que llegaron más extranjeros hay más inseguridad', status: 'complete', slug: 'inmigracion-delincuencia' },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
