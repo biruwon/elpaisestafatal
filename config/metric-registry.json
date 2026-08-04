@@ -598,5 +598,29 @@
     "population": "usual residents aged 16 or over reporting an unmet medical need because of a waiting list in Spain and the European Union",
     "notEquivalentTo": ["unmet_healthcare_waiting_list_rate", "health_expenditure_per_capita_europe"],
     "dimensions": ["period", "geography", "age", "sex", "income_quantile", "unmet_need_reason"]
+  },
+  "benefit_recipients_by_group": {
+    "name": "Benefit recipients by group and programme",
+    "aliases": ["beneficiarios por grupo", "ayudas por nacionalidad", "prestaciones por grupo", "beneficiarios extranjeros"],
+    "unit": "people or households",
+    "population": "eligible recipients of the named benefit programme, separated by the source's group definition",
+    "notEquivalentTo": ["social_protection_benefits_per_capita", "old_age_survivors_benefits_per_capita"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility"]
+  },
+  "crime_rate_by_group": {
+    "name": "Crime, suspects, or convictions by group",
+    "aliases": ["delitos por grupo", "tasa de delitos por nacionalidad", "condenas por nacionalidad", "criminalidad por grupo"],
+    "unit": "source-defined count or rate",
+    "population": "the source-defined suspects, convicted persons, or residents used for the comparison",
+    "notEquivalentTo": ["recorded_offences"],
+    "dimensions": ["period", "geography", "offence_category", "group", "measure", "denominator"]
+  },
+  "public_housing_allocations_by_group": {
+    "name": "Public-housing allocations by programme and group",
+    "aliases": ["adjudicaciones de vivienda pública", "vivienda social por grupo", "viviendas públicas por nacionalidad"],
+    "unit": "allocations",
+    "population": "eligible applicants and successful allocations in the named public-housing programme",
+    "notEquivalentTo": ["foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "programme", "group", "eligibility"]
   }
 }
