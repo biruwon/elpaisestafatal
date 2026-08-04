@@ -1332,7 +1332,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
-  const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || [])].join(' ').slice(0, 6000);
+  const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const explicitMetricRoute = preferredMetricIdsForQuery(retrievalText).size > 0;
   const recordedOffenceRoute = preferredMetricIdsForQuery(retrievalText).has('recorded_offences');
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;

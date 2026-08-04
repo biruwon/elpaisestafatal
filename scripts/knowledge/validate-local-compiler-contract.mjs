@@ -15,6 +15,7 @@ const maliciousModelOutput = {
   period: '2026',
   population: 'personas que no aparecen en la frase',
   retrievalHints: ['población España', 'fuente irrelevante inventada'],
+  evidenceNeeds: ['denominador', 'fuente inventada', 'impacto'],
   semanticSignature: 'published:unrelated-claim',
   clarificationRequired: false,
   routing: { status: 'published', primarySlug: 'unrelated-claim', reason: 'invented route', questions: [] },
@@ -31,6 +32,8 @@ assert(normalized.period === deterministic.period, 'Model period replaced determ
 assert(normalized.population === deterministic.population, 'Model population replaced deterministic population context');
 assert(!normalized.entities.includes('un organismo inventado'), 'Unrelated model entity entered the retrieval context');
 assert(!normalized.retrievalHints.includes('fuente irrelevante inventada'), 'Unrelated model retrieval hint entered the retrieval context');
+assert(normalized.evidenceNeeds.includes('denominador') && normalized.evidenceNeeds.includes('impacto'), 'Allowed methodological evidence needs were not preserved');
+assert(!normalized.evidenceNeeds.includes('fuente inventada'), 'Unbounded model evidence need entered the compiler contract');
 assert(!Object.hasOwn(normalized, 'answer') && !Object.hasOwn(normalized, 'evidenceIds') && !Object.hasOwn(normalized, 'assessment'), 'Model answer/evidence fields leaked into the compiler contract');
 assert(normalized.propositions.length === 1 && normalized.propositions[0].explicit === true, 'Valid model propositions were not preserved');
 
@@ -45,8 +48,9 @@ assert(bounded.retrievalHints.length <= compilerContractFacts.maxRetrievalHints,
 assert(compilerSchema.additionalProperties === false, 'Compiler schema allows undeclared top-level model fields');
 assert(compilerSchema.properties.propositions.maxItems === 6, 'Compiler schema does not bound proposition output');
 assert(compilerSchema.properties.retrievalHints.maxItems === 8, 'Compiler schema does not bound retrieval hints');
+assert(compilerSchema.properties.evidenceNeeds.maxItems === 8, 'Compiler schema does not bound evidence needs');
 assert(compilerContractFacts.deterministicOnly.includes('numbers') && compilerContractFacts.deterministicOnly.includes('semanticSignature'), 'Deterministic-only compiler fields are not documented');
-assert(/varias cl[aá]usulas independientes/i.test(compilerInstruction) && /proposici[oó]n expl[ií]cita separada/i.test(compilerInstruction), 'Local compiler prompt does not require compound-claim decomposition');
+assert(/varias cl[aá]usulas independientes/i.test(compilerInstruction) && /proposici[oó]n expl[ií]cita separada/i.test(compilerInstruction) && /dimensiones de evidencia/i.test(compilerInstruction), 'Local compiler prompt does not require compound decomposition and evidence needs');
 const candidateContext = formatCompilerCandidates([{ published: true, slug: 'claim-a', title: 'Afirmación de prueba', claimType: 'causal', geography: 'España', period: '2025', aliases: ['otra forma de decirlo'] }]);
 assert(candidateContext.includes('type=causal') && candidateContext.includes('geography=España') && candidateContext.includes('period=2025') && candidateContext.includes('otra forma de decirlo'), 'Local compiler candidate context omitted reviewed routing metadata');
 const candidateWithReviewContext = formatCompilerCandidates([{ published: true, slug: 'claim-b', title: 'Afirmación contextual', claimType: 'trend', whatIsTrue: 'El indicador se ha mantenido estable durante el periodo revisado.', whatIsMissing: 'No permite inferir una causa concreta.' }]);

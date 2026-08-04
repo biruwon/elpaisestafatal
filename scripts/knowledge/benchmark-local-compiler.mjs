@@ -31,6 +31,9 @@ const cases = [
   { id: 'local-anecdote', input: 'En mi barrio ha subido la inseguridad este mes', claimTypes: ['descriptive', 'trend'], mustMention: ['barrio', 'inseguridad'] },
   { id: 'broad-complaint', input: 'España está destruida', claimTypes: ['definition', 'mixed'], mustMention: ['españa'] },
   { id: 'value-disagreement', input: 'Primero los españoles en las ayudas públicas', claimTypes: ['normative', 'mixed'], mustMention: ['españoles', 'ayudas'] },
+  { id: 'compound-housing', input: 'Los alquileres han subido y los salarios no alcanzan para vivir', claimTypes: ['mixed', 'comparative', 'trend'], mustMention: ['alquileres', 'salarios'], mustNeed: ['métrica', 'comparación'] },
+  { id: 'compound-budget-impact', input: 'El Gobierno mueve dinero de Educación para pagar personal y eso recorta las becas', claimTypes: ['mixed', 'descriptive'], mustMention: ['educación', 'becas'], mustNeed: ['partida', 'impacto'] },
+  { id: 'novel-local-causality', input: 'En mi municipio la llegada de turistas está expulsando a los vecinos', claimTypes: ['causal', 'descriptive'], mustMention: ['municipio', 'turistas'], mustNeed: ['territorio', 'causa'] },
 ];
 
 const bounded = (value, limit) => String(value || '').slice(0, limit);
@@ -44,6 +47,10 @@ const propositionText = (value) => Array.isArray(value) ? value.map((item) => it
 const hasRequiredConcepts = (output, required) => {
   const text = normalise(`${output?.normalized || ''} ${propositionText(output?.propositions)} ${output?.entities?.join(' ') || ''}`);
   return required.every((term) => text.includes(normalise(term)));
+};
+const hasRequiredNeeds = (output, required = []) => {
+  const needs = new Set((output?.evidenceNeeds || []).map((item) => normalise(item)));
+  return required.every((term) => needs.has(normalise(term)));
 };
 const sameList = (left, right) => JSON.stringify(left || []) === JSON.stringify(right || []);
 
@@ -63,14 +70,15 @@ const runCase = async (model, testCase) => {
     const validJson = Boolean(raw && Array.isArray(raw.propositions));
     const typeMatch = testCase.claimTypes.includes(normalized.claimType);
     const conceptMatch = hasRequiredConcepts(normalized, testCase.mustMention);
+    const evidenceNeedMatch = hasRequiredNeeds(normalized, testCase.mustNeed);
     const safetyPreserved = sameList(normalized.numbers, deterministic.numbers)
       && normalized.semanticSignature === deterministic.semanticSignature
       && normalized.geography === deterministic.geography
       && normalized.period === deterministic.period;
-    const quality = Math.round((Number(validJson) * 0.35 + Number(typeMatch) * 0.2 + Number(conceptMatch) * 0.25 + Number(safetyPreserved) * 0.2) * 100) / 100;
-    return { id: testCase.id, validJson, typeMatch, conceptMatch, safetyPreserved, quality, latencyMs: Date.now() - startedAt, propositionCount: normalized.propositions.length, error: null };
+    const quality = Math.round((Number(validJson) * 0.3 + Number(typeMatch) * 0.18 + Number(conceptMatch) * 0.22 + Number(evidenceNeedMatch) * 0.1 + Number(safetyPreserved) * 0.2) * 100) / 100;
+    return { id: testCase.id, validJson, typeMatch, conceptMatch, evidenceNeedMatch, safetyPreserved, quality, latencyMs: Date.now() - startedAt, propositionCount: normalized.propositions.length, error: null };
   } catch (error) {
-    return { id: testCase.id, validJson: false, typeMatch: false, conceptMatch: false, safetyPreserved: false, quality: 0, latencyMs: Date.now() - startedAt, propositionCount: 0, error: bounded(error instanceof Error ? error.message : 'benchmark failure', 180) };
+    return { id: testCase.id, validJson: false, typeMatch: false, conceptMatch: false, evidenceNeedMatch: false, safetyPreserved: false, quality: 0, latencyMs: Date.now() - startedAt, propositionCount: 0, error: bounded(error instanceof Error ? error.message : 'benchmark failure', 180) };
   }
 };
 

@@ -38,6 +38,7 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
       type: boundedString(item.type, 40),
       explicit: item.explicit !== false,
     })) : [],
+    evidenceNeeds: Array.isArray(compiler?.evidenceNeeds) ? compiler.evidenceNeeds.slice(0, 8) : [],
     deterministicPlan: {
       headline: boundedString(plan?.headline, 300),
       summary: boundedString(plan?.summary, 700),

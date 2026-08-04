@@ -2,7 +2,7 @@ import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFo
 
 export const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 
-export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Para routing, compara la relación completa entre sujeto, acción, resultado, población, métrica, dirección, periodo y territorio: una diferencia de palabras puede ser una paráfrasis (por ejemplo inmigrantes/extranjeros o inseguridad/delincuencia), pero compartir solo un tema no basta. Solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación; si cambia la relación, población, métrica, dirección, periodo o territorio, usa uncovered y primarySlug vacío. Nunca uses un candidato internal como primarySlug. Devuelve únicamente JSON según el esquema proporcionado.';
+export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Identifica también qué necesitaríamos medir o comprobar para responder: una lista breve de dimensiones de evidencia como métrica, periodo, territorio, población, denominador, fuente normativa, programa, impacto o comparación. No inventes valores ni fuentes. Para routing, compara la relación completa entre sujeto, acción, resultado, población, métrica, dirección, periodo y territorio: una diferencia de palabras puede ser una paráfrasis (por ejemplo inmigrantes/extranjeros o inseguridad/delincuencia), pero compartir solo un tema no basta. Solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación; si cambia la relación, población, métrica, dirección, periodo o territorio, usa uncovered y primarySlug vacío. Nunca uses un candidato internal como primarySlug. Devuelve únicamente JSON según el esquema proporcionado.';
 
 // The local model is a parser, not an evidence source. Keep this schema small
 // and bounded so model latency and the amount of untrusted text entering the
@@ -10,7 +10,7 @@ export const compilerInstruction = 'Extrae la estructura de esta afirmación en 
 export const compilerSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired', 'routing'],
+  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   properties: {
     normalized: { type: 'string', maxLength: 300 },
     claimType: { type: 'string', enum: [...compilerTypes] },
@@ -40,6 +40,7 @@ export const compilerSchema = {
     period: { type: ['string', 'null'], maxLength: 120 },
     population: { type: ['string', 'null'], maxLength: 120 },
     retrievalHints: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
+    evidenceNeeds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     // The model may return this for inspection, but signatures are always
     // derived below so it cannot manufacture a cluster or bypass polarity
     // and claim-type boundaries.
@@ -107,6 +108,19 @@ const safeRelatedList = (value, fallback, text, maximumItems, maximumLength) => 
   return [...new Set([...fallbackValues, ...modelValues])].slice(0, maximumItems);
 };
 
+// Evidence needs are an intent vocabulary, not factual content. Accept only
+// bounded methodological labels so a model can say that a claim needs a
+// denominator or a legal programme without smuggling in a new number, source,
+// or conclusion.
+const allowedEvidenceNeeds = new Set([
+  'metrica', 'periodo', 'territorio', 'poblacion', 'denominador', 'fuente',
+  'norma', 'programa', 'partida', 'importe', 'destino', 'impacto', 'causa',
+  'comparacion', 'definicion', 'ejecucion', 'fecha', 'categoria', 'tasa',
+]);
+const evidenceNeedsList = (value) => [...new Set(safeList(value, 8, 120)
+  .map((item) => item.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim())
+  .filter((item) => allowedEvidenceNeeds.has(item)))].slice(0, 8);
+
 export const normalizeCompilerOutput = (value, text) => {
   const deterministic = deterministicFallbackCompiler(text);
   if (!value || typeof value !== 'object') return deterministic;
@@ -155,6 +169,7 @@ export const normalizeCompilerOutput = (value, text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints: safeRelatedList(value.retrievalHints, deterministic.retrievalHints, text, 8, 120),
+    evidenceNeeds: evidenceNeedsList(value.evidenceNeeds),
     // Never trust the model's signature. The deterministic compiler owns
     // polarity, direction, relation and metric-family boundaries.
     semanticSignature: semanticSignatureFor({
@@ -178,7 +193,7 @@ export const normalizeCompilerOutput = (value, text) => {
 };
 
 export const compilerContractFacts = {
-  modelMayProvide: ['normalized', 'claimType', 'propositions', 'entities', 'geography', 'period', 'population', 'retrievalHints', 'clarificationRequired', 'routing'],
+  modelMayProvide: ['normalized', 'claimType', 'propositions', 'entities', 'geography', 'period', 'population', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   deterministicOnly: ['numbers', 'semanticSignature'],
   maxPropositions: 6,
   maxRetrievalHints: 8,
