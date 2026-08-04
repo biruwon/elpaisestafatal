@@ -27,6 +27,9 @@ if (!match) {
   if (taxClaim?.aliases?.some((alias) => normalise(alias) === taxBurdenPhrase)) {
     failures.push('tax ranking claim must not treat the vague tax-burden wording as an exact alias');
   }
+  if (taxClaim?.aliases?.some((alias) => normalise(alias) === 'impuestos')) {
+    failures.push('claim topics must not be used as exact aliases for the tax ranking claim');
+  }
 
   const families = [
     {
@@ -192,7 +195,7 @@ if (!match) {
     {
       slug: 'empleo-record-calidad',
       prompt: 'Tener más personas ocupadas demuestra que todo el empleo es de calidad',
-      variants: ['más empleo significa buen empleo', 'más ocupados mejor trabajo'],
+      variants: ['más empleo significa empleo de calidad', 'más ocupados mejor trabajo'],
     },
     {
       slug: 'cibercriminalidad-crece',
@@ -207,7 +210,7 @@ if (!match) {
     {
       slug: 'politica-no-es-mayoria',
       prompt: 'La política es la preocupación de la mayoría de españoles',
-      variants: ['la mayoría está preocupada por la política', 'política principal problema mayoría'],
+      variants: ['todos consideran la política el principal problema', 'la política preocupa a la mayoría'],
     },
     {
       slug: 'precio-vivienda-caera',
@@ -237,7 +240,7 @@ if (!match) {
     {
       slug: 'recaudacion-no-factura-hogar',
       prompt: 'Si la recaudación tributaria sube un 10,4%, todos pagan un 10,4% más',
-      variants: ['todos pagan un 10,4% más', 'Hacienda sube los impuestos a todos'],
+      variants: ['todos pagamos un 10,4 por ciento más', 'la recaudación sube igual que los impuestos de todos'],
     },
     {
       slug: 'arope-no-es-pobreza-absoluta',
@@ -257,12 +260,12 @@ if (!match) {
     {
       slug: 'subida-vivienda-no-todas-igual',
       prompt: 'Si la vivienda sube un 12,9%, todas las casas suben lo mismo',
-      variants: ['todas las casas suben un 12,9%', '12,9% en cada vivienda'],
+      variants: ['todas las casas suben un 12,9%', 'la subida media afecta igual a todas las casas'],
     },
     {
       slug: 'inmigracion-flujos-no-total',
       prompt: 'Las llegadas irregulares representan toda la inmigración que vive en España',
-      variants: ['las pateras son toda la inmigración', 'todos los inmigrantes llegan irregularmente'],
+      variants: ['toda la inmigración llega en patera', 'todos los inmigrantes llegan irregularmente'],
     },
     {
       slug: 'recaudacion-tributaria-crece',

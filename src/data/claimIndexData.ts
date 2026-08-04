@@ -40,7 +40,7 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     slug: claim.slug,
     title: clean(claim.claim),
     href: `/afirmaciones/${claim.slug}`,
-    aliases: [...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? []), claim.topic],
+    aliases: [...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? [])],
     keywords: [...claim.keywords, ...claim.topicSlugs],
     assessment: claim.assessment,
     answer: claim.shareable,
