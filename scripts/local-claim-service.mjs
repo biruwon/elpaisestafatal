@@ -471,7 +471,7 @@ const observationText = (item) => normalise([
 
 const directGroupObservations = (query, observations) => {
   const queryText = normalise(query);
-  const requestedGroup = includesAny(queryText, ['inmigr', 'extranj', 'nacionalidad', 'foreign', 'espanol', 'espanola', 'hombre', 'mujer', 'edad', 'joven', 'mayor', 'benefici', 'ayudas']);
+  const requestedGroup = includesAny(queryText, ['inmigr', 'extranj', 'nacionalidad', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'foreign', 'espanol', 'espanola', 'hombre', 'mujer', 'edad', 'joven', 'mayor', 'benefici', 'ayudas']);
   if (!requestedGroup) return [];
   const measureFamilies = [
     { query: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'], evidence: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'] },
@@ -1378,7 +1378,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const counterpartTerms = handlerId === 'group_comparison'
     ? (() => {
       const normalized = normalise(text);
-      if (includesAny(normalized, ['inmigr', 'extranj', 'nacionalidad'])) return 'españoles nacionales extranjeros inmigrantes';
+      if (includesAny(normalized, ['inmigr', 'extranj', 'nacionalidad', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano'])) return 'españoles nacionales extranjeros inmigrantes';
       if (includesAny(normalized, ['español', 'nacional'])) return 'españoles nacionales extranjeros inmigrantes';
       if (includesAny(normalized, ['mujer', 'hombre', 'sexo'])) return 'mujeres hombres sexo';
       if (includesAny(normalized, ['joven', 'mayor', 'edad'])) return 'jóvenes mayores edad';

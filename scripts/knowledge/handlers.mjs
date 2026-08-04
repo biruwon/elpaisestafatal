@@ -22,7 +22,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (includesAny(text, ['densidad de poblacion', 'densidad poblacion', 'personas por kilometro', 'personas por km']) && includesAny(text, ['comunidad', 'region', 'madrid', 'andalucia'])) return 'ranking';
   if (claimType === 'trend') return 'trend';
   if (claimType === 'definition' || impliedDefinition) return 'definition';
-  if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres'])) return 'group_comparison';
+  if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres', 'mayores', 'jubilados'])) return 'group_comparison';
   if (claimType === 'comparative') return 'ranking';
   if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';

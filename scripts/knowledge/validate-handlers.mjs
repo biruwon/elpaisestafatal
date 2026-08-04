@@ -37,6 +37,9 @@ for (const wording of [
   if (handlerForInput(wording, 'descriptive') !== 'budget_transfer') throw new Error(`Budget event wording was not routed: ${wording}`);
 }
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
+for (const wording of ['Los marroquíes reciben más ayudas que los españoles', 'Los rumanos delinquen más que los españoles']) {
+  if (handlerForInput(wording, 'comparative') !== 'group_comparison') throw new Error(`Named demographic group was not routed as group comparison: ${wording}`);
+}
 if (handlerForInput('La vivienda acabará cayendo como en 2008', 'mixed') !== 'prediction') throw new Error('Forecast wording must remain a prediction');
 if (handlerForInput({ retrievalHints: ['España está destruida'], impliedPropositions: [{ type: 'definition', explicit: false }] }, 'descriptive') !== 'definition') throw new Error('Broad evaluative claims must use definition guidance');
 
