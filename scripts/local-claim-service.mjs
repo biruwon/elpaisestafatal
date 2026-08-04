@@ -602,7 +602,12 @@ const getIndex = async () => {
           .filter(Boolean))].slice(0, 32)
         : [],
     }));
-    const signature = digest(JSON.stringify(entries) + embedModel);
+    const signature = digest(JSON.stringify({
+      entries,
+      embedModel,
+      indexVersion: RUNTIME_VERSIONS.indexKnowledge,
+      compilerVersion: RUNTIME_VERSIONS.fallbackKnowledge,
+    }));
     const hydrateEmbeddings = (value) => {
       if (value.embeddings?.length === entries.length || !entries.length) return;
       // Semantic hydration is an optimisation. Never make the first claim

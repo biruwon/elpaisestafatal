@@ -11,6 +11,7 @@ for (const version of Object.values(RUNTIME_VERSIONS)) {
 for (const [name, source, marker] of [
   ['deterministic fallback', fallback, 'RUNTIME_VERSIONS.fallbackKnowledge'],
   ['local resolver', resolver, 'RUNTIME_VERSIONS.warehouseKnowledge'],
+  ['local semantic index', resolver, 'RUNTIME_VERSIONS.indexKnowledge'],
 ]) {
   if (!source.includes("runtime-versions.mjs")) failures.push(`${name} does not import the central runtime version manifest`);
   if (!source.includes(marker)) failures.push(`${name} does not use ${marker}`);
