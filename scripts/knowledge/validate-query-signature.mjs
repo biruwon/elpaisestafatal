@@ -36,6 +36,8 @@ const causalParaphrases = [
 for (const paraphrase of causalParaphrases) {
   if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') !== module.semanticQuerySignature(paraphrase)) throw new Error(`Natural causal paraphrase produced a different signature: ${paraphrase}`);
 }
+if (module.semanticQuerySignature('Los marroquíes crean inseguridad en España') !== module.semanticQuerySignature('Los inmigrantes crean inseguridad en España')) throw new Error('Named demographic subgroup did not join the guarded immigration causal family');
+if (module.semanticQuerySignature('Los marroquíes reciben más ayudas que los españoles') === module.semanticQuerySignature('Los marroquíes reciben menos ayudas que los españoles')) throw new Error('Opposing subgroup comparison directions were collapsed');
 if (module.semanticQuerySignature('Los inmigrantes crean inseguridad en España') === module.semanticQuerySignature('La inmigración y la delincuencia están relacionadas')) throw new Error('Association wording was incorrectly collapsed into a causal family');
 if (module.semanticQuerySignature('La inmigración y la delincuencia están relacionadas en España') !== module.semanticQuerySignature('Existe una relación entre la delincuencia y la inmigración en España')) throw new Error('Equivalent association wording produced different signatures');
 if (module.semanticQuerySignature('La inmigración y la delincuencia están relacionadas en España') !== module.semanticQuerySignature('La inmigración se relaciona con la delincuencia en España')) throw new Error('Informal association wording produced a different signature');

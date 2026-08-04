@@ -9,7 +9,7 @@ const normalize = (value: string): string => value.toLocaleLowerCase('es').norma
   .replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 
 const conceptAliases: Array<[string, string[]]> = [
-  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
   ['crime', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
