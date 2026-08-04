@@ -1,4 +1,4 @@
-import { compilerContractFacts, compilerSchema, formatCompilerCandidates, isBroadComplaint, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './local-compiler-contract.mjs';
+import { compilerContractFacts, compilerInstruction, compilerSchema, formatCompilerCandidates, isBroadComplaint, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -46,6 +46,7 @@ assert(compilerSchema.additionalProperties === false, 'Compiler schema allows un
 assert(compilerSchema.properties.propositions.maxItems === 6, 'Compiler schema does not bound proposition output');
 assert(compilerSchema.properties.retrievalHints.maxItems === 8, 'Compiler schema does not bound retrieval hints');
 assert(compilerContractFacts.deterministicOnly.includes('numbers') && compilerContractFacts.deterministicOnly.includes('semanticSignature'), 'Deterministic-only compiler fields are not documented');
+assert(/varias cl[aá]usulas independientes/i.test(compilerInstruction) && /proposici[oó]n expl[ií]cita separada/i.test(compilerInstruction), 'Local compiler prompt does not require compound-claim decomposition');
 const candidateContext = formatCompilerCandidates([{ published: true, slug: 'claim-a', title: 'Afirmación de prueba', claimType: 'causal', geography: 'España', period: '2025', aliases: ['otra forma de decirlo'] }]);
 assert(candidateContext.includes('type=causal') && candidateContext.includes('geography=España') && candidateContext.includes('period=2025') && candidateContext.includes('otra forma de decirlo'), 'Local compiler candidate context omitted reviewed routing metadata');
 assert(formatCompilerCandidates(Array.from({ length: 20 }, () => ({ published: true, slug: 'claim', title: 'claim' }))).split('\n').length <= 8, 'Local compiler candidate context was not bounded');
@@ -58,6 +59,20 @@ assert(shouldUseLocalCompiler({ text: 'Desde que llegaron más extranjeros hay m
 const reconciledCausal = reconcileCompilerSafety(causal, normalizeCompilerOutput({ claimType: 'descriptive', propositions: [{ text: 'La inmigración es positiva', type: 'descriptive', explicit: true }], entities: [], retrievalHints: [], clarificationRequired: false, routing: { status: 'published', primarySlug: 'unrelated', reason: 'unsafe', questions: [] } }, 'Desde que llegaron más extranjeros hay más inseguridad'));
 assert(reconciledCausal.claimType === 'causal' && reconciledCausal.semanticSignature === causal.semanticSignature, 'Local model was allowed to weaken deterministic causal safety');
 assert(reconciledCausal.propositions[0]?.text === causal.propositions[0]?.text, 'Local model replaced deterministic causal propositions');
+
+const compoundInput = 'Hay más empleo y el paro sigue alto';
+const deterministicCompound = deterministicFallbackCompiler(compoundInput);
+const normalizedCompound = normalizeCompilerOutput({
+  claimType: 'descriptive',
+  propositions: [{ text: compoundInput, type: 'descriptive', explicit: true }],
+  entities: [],
+  retrievalHints: [],
+  clarificationRequired: false,
+  routing: { status: 'uncovered', primarySlug: '', reason: '', questions: [] },
+}, compoundInput);
+assert(deterministicCompound.explicitPropositions.length >= 2, 'Deterministic compiler did not split the compound regression input');
+assert(normalizedCompound.explicitPropositions.length >= 2, 'Model output collapsed independently testable compound clauses');
+assert(normalizedCompound.propositions.length >= 2 && normalizedCompound.claimType === deterministicCompound.claimType, 'Compound normalization lost structure or deterministic claim type');
 
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');

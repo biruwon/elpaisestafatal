@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { compilerSchema, normalizeCompilerOutput } from './local-compiler-contract.mjs';
+import { compilerInstruction, compilerSchema, normalizeCompilerOutput } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
@@ -54,7 +54,7 @@ const getAvailableModels = async () => {
 
 const runCase = async (model, testCase) => {
   const startedAt = Date.now();
-  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica entidades, población, periodo, números y tipo de afirmación. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${testCase.input}`;
+  const prompt = `${compilerInstruction} Identifica también entidades, periodo y números.\n\nAfirmación:\n${testCase.input}`;
   try {
     const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
     const raw = parseJson(payload.message?.content);

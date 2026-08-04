@@ -292,6 +292,7 @@ const hasIndependentPredicate = (value) => {
     ' sube ', ' baja ', ' crece ', ' aumenta ', ' disminuye ', ' reduce ',
     ' recorta ', ' quita ', ' transfiere ', ' llega ', ' llegan ',
     ' cobra ', ' cobran ', ' representa ', ' representan ', ' demuestra ',
+    ' sigue ', ' siguen ', ' mantiene ', ' mantienen ', ' falta ', ' faltan ',
   ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra)\b/.test(text);
 };
 

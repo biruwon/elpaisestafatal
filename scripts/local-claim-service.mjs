@@ -14,7 +14,7 @@ import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowled
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
-import { compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
+import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -200,7 +200,7 @@ const fallbackCompiler = deterministicFallbackCompiler;
 
 const compileClaim = async (text, candidates = []) => {
   const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
-  const prompt = `Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. En routing solo puedes usar como primarySlug un candidato marcado published que exprese la misma afirmación; si solo comparte tema o no hay coincidencia, usa uncovered y primarySlug vacío. Devuelve únicamente JSON según el esquema proporcionado.\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
+  const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
   try {
     // This is background enrichment: the deterministic result is already
     // available to the user. Allow one bounded cold-start model load, while

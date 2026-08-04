@@ -2,6 +2,8 @@ import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFo
 
 export const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 
+export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. En routing solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación de afirmaciones; si solo comparte tema o no hay coincidencia, usa uncovered y primarySlug vacío. Devuelve únicamente JSON según el esquema proporcionado.';
+
 // The local model is a parser, not an evidence source. Keep this schema small
 // and bounded so model latency and the amount of untrusted text entering the
 // retrieval layer stay predictable.
@@ -120,9 +122,20 @@ export const normalizeCompilerOutput = (value, text) => {
     })
     : [];
   if (!propositions.length) return deterministic;
-  const explicitPropositions = propositions.filter((item) => item.explicit);
+  const modelExplicitPropositions = propositions.filter((item) => item.explicit);
   const impliedPropositions = propositions.filter((item) => !item.explicit);
-  const claimType = compilerTypes.has(value.claimType) ? value.claimType : 'mixed';
+  // A model may collapse a compound sentence into one broad proposition.
+  // Deterministic clause splitting is the minimum structural guarantee, so
+  // retain every independently testable explicit clause it found and only
+  // keep model-implied context around it. This does not add evidence or a
+  // conclusion; it prevents information loss before retrieval and rendering.
+  const explicitPropositions = deterministic.explicitPropositions.length > modelExplicitPropositions.length
+    ? deterministic.explicitPropositions
+    : modelExplicitPropositions;
+  const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 6);
+  const claimType = deterministic.explicitPropositions.length > 1
+    ? deterministic.claimType
+    : (compilerTypes.has(value.claimType) ? value.claimType : deterministic.claimType);
   const entities = safeRelatedList(value.entities, deterministic.entities, text, 12, 120);
   const geography = safeContextField(value.geography, deterministic.geography, text, 120);
   const period = safeContextField(value.period, deterministic.period, text, 120);
@@ -131,7 +144,7 @@ export const normalizeCompilerOutput = (value, text) => {
   return {
     normalized: bounded(value.normalized, 300) || deterministic.normalized,
     claimType,
-    propositions,
+    propositions: normalizedPropositions,
     entities,
     numbers,
     geography,
@@ -144,7 +157,7 @@ export const normalizeCompilerOutput = (value, text) => {
     // polarity, direction, relation and metric-family boundaries.
     semanticSignature: semanticSignatureFor({
       claimType,
-      propositions,
+      propositions: normalizedPropositions,
       entities,
       geography,
       period,

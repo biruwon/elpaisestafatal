@@ -44,6 +44,7 @@ const cases = [
   // published European tax-ranking claim.
   { text: 'España cobra demasiados impuestos', statuses: ['uncovered', 'draft'], forbiddenSlug: 'espana-impuestos-europa' },
   { text: 'Desde que llegaron más extranjeros hay más inseguridad', status: 'complete', slug: 'inmigracion-delincuencia' },
+  { text: 'La vivienda es cada vez más cara y los salarios no siguen el ritmo', statuses: ['draft', 'partial', 'uncovered'], compound: true },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
@@ -112,6 +113,7 @@ for (const item of cases) {
     if (new Set(guidanceBlockTypes).size !== guidanceBlockTypes.length) failures.push(`${item.text}: result repeated a guidance block type (${guidanceBlockTypes.join(', ')})`);
     if (item.slug && item.status === 'complete' && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
     if (item.forbiddenSlug && (result.primary?.slug === item.forbiddenSlug || result.relatedClaims?.some((claim) => claim.slug === item.forbiddenSlug))) failures.push(`${item.text}: vague wording was routed to forbidden precise claim ${item.forbiddenSlug}`);
+    if (item.compound && (result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items || []).filter((item) => item.explicit !== false).length < 2) failures.push(`${item.text}: compound input was not decomposed into separate explicit propositions`);
     if (item.slug === 'precios-hoteles-sube-junio-2026' && !result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === item.slug)) failures.push(`${item.text}: published tourism result did not retain its signed comparison visual`);
     if (['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'la-amnistia-rompe-la-igualdad-ante-la-ley', 'desalojar-a-un-ocupante-ilegal-tarda-anos'].includes(item.slug) && !result.result?.blocks?.some((block) => block.type === 'legal_decision_tree' && block.items?.some((entry) => entry.status === 'known'))) failures.push(`${item.text}: published legal result did not retain its decision path`);
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder' && block.steps?.some((step) => step.status === 'missing'))) failures.push(`${item.text}: population-replacement result did not retain its evidence ladder`);
