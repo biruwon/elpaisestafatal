@@ -3,7 +3,7 @@ slug: espana-cobra-menos-impuestos-renta-riqueza-europa
 claim: "España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea."
 assessment: true
 topicSlugs: ["impuestos", "economia"]
-aliases: ["España cobra menos impuestos que Europa", "España recauda menos impuestos sobre renta y riqueza que la UE", "la presión sobre renta y riqueza es menor en España", "¿España cobra menos impuestos sobre la renta que la Unión Europea?"]
+aliases: ["España cobra menos impuestos que Europa", "España cobra menos impuestos sobre renta y riqueza que la Unión Europea", "España recauda menos impuestos sobre renta y riqueza que la UE", "la presión sobre renta y riqueza es menor en España", "¿España cobra menos impuestos sobre la renta que la Unión Europea?"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea
