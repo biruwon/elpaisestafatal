@@ -1369,7 +1369,17 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const propositionQueries = Array.isArray(retrievalClassified.compiler?.explicitPropositions)
     ? retrievalClassified.compiler.explicitPropositions.map((item) => item.text).filter(Boolean)
     : [];
-  const warehouseQueries = [...new Set([warehouseQuery, ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].slice(0, 4);
+  const counterpartTerms = handlerId === 'group_comparison'
+    ? (() => {
+      const normalized = normalise(text);
+      if (includesAny(normalized, ['inmigr', 'extranj', 'nacionalidad'])) return 'españoles nacionales extranjeros inmigrantes';
+      if (includesAny(normalized, ['español', 'nacional'])) return 'españoles nacionales extranjeros inmigrantes';
+      if (includesAny(normalized, ['mujer', 'hombre', 'sexo'])) return 'mujeres hombres sexo';
+      if (includesAny(normalized, ['joven', 'mayor', 'edad'])) return 'jóvenes mayores edad';
+      return '';
+    })()
+    : '';
+  const warehouseQueries = [...new Set([warehouseQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 4);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
     : [];
