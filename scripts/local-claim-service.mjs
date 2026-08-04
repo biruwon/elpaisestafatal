@@ -19,6 +19,7 @@ import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvide
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
+import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -1017,6 +1018,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const ranking = !primary && !regionalComparison && !europeanComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison || europeanComparison;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
+  const causalProfile = isCausal ? causalEvidenceProfile(causalObservations) : null;
   const causalContext = causalObservations.length >= 2 ? {
     observations: causalObservations,
     headline: 'Hay datos relacionados, pero no una prueba de causalidad',
@@ -1025,6 +1027,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       `La serie localizada contiene ${causalObservations.length} observaciones comparables.`,
       'Una coincidencia temporal o territorial no identifica por sí sola el efecto causal.',
       'Para evaluar la causa harían falta comparación, magnitud, mecanismo y explicaciones alternativas.',
+      ...(causalProfile?.hasDirectCausalStudy ? ['Hay una fuente que se presenta como estudio de impacto o efecto; todavía debe comprobarse su diseño y población.'] : ['No hemos localizado un estudio o mecanismo causal directo en las observaciones recuperadas.']),
     ],
     reply: 'La serie aporta contexto, pero no demuestra por sí sola que una causa explique el cambio. Habría que comparar territorios o periodos y descartar otras explicaciones.',
     replyEvidenceIds: causalObservations.map((item) => item.id),
@@ -1090,12 +1093,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const handlerBlocks = !primary ? [
     ...(isCausal ? [
       { type: 'strongest_valid_concern', text: 'Puede existir un cambio real que merezca explicación, aunque la causa propuesta todavía no esté demostrada.' },
-      { type: 'evidence_ladder', evidenceIds: causalContext?.observations.map((item) => item.id) || [], steps: [
-        { label: 'Cambio observado', status: causalContext ? 'available' : 'missing', detail: causalContext ? 'Hay una serie relacionada que permite describir el contexto.' : 'Falta una serie directa y comparable del resultado mencionado.' },
-        { label: 'Secuencia temporal', status: causalContext ? 'context' : 'missing', detail: causalContext ? 'La evolución temporal orienta, pero no separa causa y coincidencia.' : 'Falta comprobar que la causa aparece antes que el efecto.' },
-        { label: 'Comparación y magnitud', status: 'missing', detail: 'Hace falta comparar grupos, territorios o periodos y estimar cuánto cambia el resultado.' },
-        { label: 'Explicaciones alternativas', status: 'missing', detail: 'Hay que comprobar si otros factores explican el mismo patrón.' },
-      ] },
+      { type: 'evidence_ladder', evidenceIds: causalContext?.observations.map((item) => item.id) || [], steps: causalEvidenceSteps(causalProfile || { observationCount: 0, hasTemporalSequence: false, hasCrossContextComparison: false, hasDirectCausalStudy: false, supportsCausalConclusion: false }).map((step) => ({ ...step, detail: step.label === 'Conclusión causal' ? (step.status === 'qualified' ? 'La evidencia directa permite una evaluación cualificada, no una afirmación universal.' : 'Los datos recuperados no permiten atribuir el resultado a la causa propuesta.') : undefined })) },
     ] : []),
     ...(isLegal ? [
       { type: 'strongest_valid_concern', text: publicReuseClaim ? 'Que un documento sea público o accesible no significa que pueda reutilizarse de cualquier manera. La preocupación es válida, pero la frase elimina límites que la propia ley mantiene.' : 'Una regla general puede tener efectos importantes, pero su aplicación depende del supuesto y del procedimiento concretos.' },
