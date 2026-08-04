@@ -272,7 +272,7 @@ const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir', 'primero los espanoles', 'espanoles primero', 'los espanoles antes', 'prioridad para los espanoles'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a que', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
+  if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a que', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'van a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
@@ -341,6 +341,47 @@ const impliedFor = (claimType, value) => {
   return [];
 };
 
+// Keep the long-tail path useful even when the local model is unavailable.
+// These are methodological requirements, not facts: they tell retrieval and
+// the renderer what kind of evidence is needed without allowing the fallback
+// compiler to invent a source, value, or conclusion.
+export const evidenceNeedsFor = (value, claimType, propositions = []) => {
+  const text = normalise(value);
+  const needs = new Set(['metrica', 'periodo']);
+  if (claimType === 'comparative' || claimType === 'mixed' || /\b(?:mas|menos|mayor|menor|supera|inferior|superior|ranking|europa)\b/.test(text)) {
+    needs.add('comparacion');
+    needs.add('denominador');
+  }
+  if (claimType === 'causal' || propositions.some((item) => item.type === 'causal')) {
+    needs.add('causa');
+    needs.add('comparacion');
+  }
+  if (claimType === 'legal') {
+    needs.add('norma');
+    needs.add('fuente');
+  }
+  if (claimType === 'normative') needs.add('definicion');
+  if (claimType === 'predictive') {
+    needs.add('fecha');
+    needs.add('metrica');
+  }
+  if (/\b(?:programa|ayuda|prestacion|beca|subsidio|vivienda publica)\b/.test(text)) needs.add('programa');
+  if (/\b(?:presupuesto|millones|transferencia|recorta|recorte|quita|gasto|partida|personal)\b/.test(text)) {
+    needs.add('importe');
+    needs.add('partida');
+    needs.add('impacto');
+  }
+  if (/\b(?:porcentaje|tasa|proporcion|mayoria|minor[ií]a|por cada|por habitante)\b/.test(text)) {
+    needs.add('tasa');
+    needs.add('denominador');
+  }
+  if (/\b(?:donde|local|municipio|provincia|comunidad|barrio|espana|europa|nacional)\b/.test(text)) needs.add('territorio');
+  if (/\b(?:inmigrante|extranjero|residentes|hogares|trabajadores|beneficiarios|alumnos|pacientes|jovenes|mujeres|hombres)\b/.test(text)) needs.add('poblacion');
+  if (/\b(?:ejecucion|gastado|gastados|cumplido|entregado|realizado)\b/.test(text)) needs.add('ejecucion');
+  if (/\b(?:categoria|tipo de delito|delito concreto|renta|salario|edad)\b/.test(text)) needs.add('categoria');
+  return [...needs].slice(0, 8);
+};
+
 export const deterministicFallbackCompiler = (text) => {
   const original = String(text || '').trim().slice(0, 300);
   const normalized = normalise(original);
@@ -370,6 +411,7 @@ export const deterministicFallbackCompiler = (text) => {
     ...explicitPropositions,
     ...impliedPropositions,
   ];
+  const evidenceNeeds = evidenceNeedsFor(original, claimType, propositions);
   const signaturePropositions = causalConnector
     ? [...propositions, { text: original, type: 'causal', explicit: true }]
     : propositions;
@@ -385,6 +427,7 @@ export const deterministicFallbackCompiler = (text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints,
+    evidenceNeeds,
     semanticSignature: semanticSignatureFor({ claimType, propositions: signaturePropositions, entities, geography, period, population, numbers, negated: hasNegation(original) }),
     clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !original,
   };

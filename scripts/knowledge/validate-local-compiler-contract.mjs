@@ -36,6 +36,7 @@ assert(normalized.evidenceNeeds.includes('denominador') && normalized.evidenceNe
 assert(!normalized.evidenceNeeds.includes('fuente inventada'), 'Unbounded model evidence need entered the compiler contract');
 assert(!Object.hasOwn(normalized, 'answer') && !Object.hasOwn(normalized, 'evidenceIds') && !Object.hasOwn(normalized, 'assessment'), 'Model answer/evidence fields leaked into the compiler contract');
 assert(normalized.propositions.length === 1 && normalized.propositions[0].explicit === true, 'Valid model propositions were not preserved');
+assert(normalized.evidenceNeeds.includes('metrica') && normalized.evidenceNeeds.includes('periodo'), 'Deterministic evidence requirements were lost when the model returned an incomplete list');
 
 const bounded = normalizeCompilerOutput({
   ...maliciousModelOutput,
@@ -79,6 +80,12 @@ const normalizedCompound = normalizeCompilerOutput({
 assert(deterministicCompound.explicitPropositions.length >= 2, 'Deterministic compiler did not split the compound regression input');
 assert(normalizedCompound.explicitPropositions.length >= 2, 'Model output collapsed independently testable compound clauses');
 assert(normalizedCompound.propositions.length >= 2 && normalizedCompound.claimType === deterministicCompound.claimType, 'Compound normalization lost structure or deterministic claim type');
+
+const novelBudget = deterministicFallbackCompiler('El Gobierno quita 310 millones de Educación para pagar personal de Presidencia');
+assert(novelBudget.evidenceNeeds.includes('importe') && novelBudget.evidenceNeeds.includes('partida') && novelBudget.evidenceNeeds.includes('impacto'), 'Novel budget claims do not expose the evidence dimensions needed for official retrieval');
+
+const novelCausal = deterministicFallbackCompiler('La llegada de turistas está expulsando a los vecinos de mi municipio');
+assert(novelCausal.evidenceNeeds.includes('causa') && novelCausal.evidenceNeeds.includes('territorio'), 'Novel local causal claims do not expose causal and geographic evidence requirements');
 
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');

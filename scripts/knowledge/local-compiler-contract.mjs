@@ -169,7 +169,10 @@ export const normalizeCompilerOutput = (value, text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints: safeRelatedList(value.retrievalHints, deterministic.retrievalHints, text, 8, 120),
-    evidenceNeeds: evidenceNeedsList(value.evidenceNeeds),
+    evidenceNeeds: [...new Set([
+      ...evidenceNeedsList(deterministic.evidenceNeeds),
+      ...evidenceNeedsList(value.evidenceNeeds),
+    ])].slice(0, 8),
     // Never trust the model's signature. The deterministic compiler owns
     // polarity, direction, relation and metric-family boundaries.
     semanticSignature: semanticSignatureFor({
