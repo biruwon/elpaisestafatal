@@ -1,3 +1,5 @@
+import { semanticQuerySignature } from '../lib/knowledge/querySignature';
+
 export type ClaimIndexKind = 'claim' | 'topic';
 
 export type ClaimIndexEntry = {
@@ -99,6 +101,19 @@ const phraseMatches = (query: string, text: string): number => {
   return 0;
 };
 
+const numericTokens = (value: string): string[] => value.match(/\b\d+(?:[.,]\d+)?\b/g) || [];
+
+const yearTokens = (value: string): string[] => value.match(/\b(?:19|20)\d{2}\b/g) || [];
+
+const compatibleNumericContext = (query: string, candidate: string): boolean => {
+  const queryNumbers = numericTokens(query);
+  const candidateNumbers = numericTokens(candidate);
+  if (queryNumbers.length && candidateNumbers.length && !queryNumbers.some((number) => candidateNumbers.includes(number))) return false;
+  const queryYears = yearTokens(query);
+  const candidateYears = yearTokens(candidate);
+  return !(queryYears.length && candidateYears.length && !queryYears.some((year) => candidateYears.includes(year)));
+};
+
 export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
@@ -111,7 +126,15 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): Ran
   const weightedMatches = matchedTokens.reduce((total, token) => total + (lowSignalWords.has(token) ? 0.25 : 1), 0);
   const phraseScore = Math.max(...searchablePhrases.map((text) => phraseMatches(query, text)), 0);
   const overlapScore = queryTokens.length ? (weightedMatches / queryTokens.length) * 55 : 0;
-  const score = Math.round(phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0));
+  const querySemanticSignature = entry.kind === 'claim' ? semanticQuerySignature(value) : '';
+  const semanticFamilyMatch = Boolean(querySemanticSignature && entry.kind === 'claim' && searchablePhrases.some((phrase) => (
+    compatibleNumericContext(query, phrase)
+    && querySemanticSignature === semanticQuerySignature(phrase)
+  )));
+  const score = Math.round(Math.max(
+    phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
+    semanticFamilyMatch ? 82 : 0,
+  ));
   return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms };
 };
 

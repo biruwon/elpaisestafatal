@@ -5,6 +5,13 @@ const source = await readFile(new URL('../../src/lib/knowledge/querySignature.ts
 const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const module = await import(`data:text/javascript,${encodeURIComponent(output)}`);
 
+const claimIndexSource = await readFile(new URL('../../src/data/claimIndex.ts', import.meta.url), 'utf8');
+const claimIndexOutput = ts.transpileModule(
+  `const semanticQuerySignature = (() => {\n${source.replaceAll('export ', '')}\nreturn semanticQuerySignature;\n})();\n${claimIndexSource.replace("import { semanticQuerySignature } from '../lib/knowledge/querySignature';", '')}`,
+  { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } },
+).outputText;
+const claimIndex = await import(`data:text/javascript,${encodeURIComponent(claimIndexOutput)}`);
+
 const equivalent = [
   ['Los inmigrantes reciben ayudas', 'ayudas inmigrantes reciben'],
   ['¿Los INMIGRANTES reciben   ayudas?', 'los inmigrantes reciben ayudas'],
@@ -73,4 +80,12 @@ if (module.semanticQuerySignature('Cada vez cuesta más llegar a fin de mes en E
 if (module.semanticQuerySignature('La sanidad no da abasto con las listas de espera') === module.semanticQuerySignature('España gasta más por habitante en sanidad')) throw new Error('Health access and health spending families were merged');
 if (module.semanticQuerySignature('La tasa de ninis ha bajado en España') === module.semanticQuerySignature('El paro juvenil ha bajado en España')) throw new Error('NEET and youth unemployment families were merged');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
+const semanticIndexEntries = [
+  { kind: 'claim', slug: 'inmigracion-delincuencia', title: 'La inmigración aumenta la delincuencia', href: '/', aliases: ['Los inmigrantes crean inseguridad'], keywords: [] },
+  { kind: 'claim', slug: 'espana-impuestos-europa', title: 'España cobra menos impuestos sobre renta y riqueza que la Unión Europea', href: '/', aliases: [], keywords: [] },
+];
+const semanticIndexMatch = claimIndex.rankClaimIndex('Desde que llegaron más extranjeros hay más inseguridad', semanticIndexEntries, 2)[0];
+if (!semanticIndexMatch || semanticIndexMatch.slug !== 'inmigracion-delincuencia' || !claimIndex.isStrongClaimMatch(semanticIndexMatch)) throw new Error('Claim index did not route a causal paraphrase to the published family');
+const vagueTaxMatch = claimIndex.rankClaimIndex('España cobra demasiados impuestos', semanticIndexEntries, 2)[0];
+if (vagueTaxMatch?.slug === 'espana-impuestos-europa' && claimIndex.isStrongClaimMatch(vagueTaxMatch)) throw new Error('Claim index over-routed a vague tax complaint to a comparative tax claim');
 console.log('Query signature validation passed.');
