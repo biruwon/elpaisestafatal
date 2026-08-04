@@ -1,0 +1,16 @@
+import { renderReviewDashboard } from './review-dashboard.mjs';
+
+const html = renderReviewDashboard({
+  generatedAt: '2026-08-04T00:00:00.000Z',
+  inputs: { reviewableLocalRecords: 3 },
+  summary: { candidates: 1, unresolved: 1, researchCandidates: 1 },
+  candidates: [{ rank: 1, clusterId: 'cluster-1', canonicalText: 'Pregunta neutral', queryCount: 4, count7d: 2, priorityScore: 8, coverageStatus: 'covered', suggestedSlug: 'pregunta-neutral', sourceIds: ['source-1'], nextAction: 'Review', reason: 'Direct evidence ready' }],
+  researchCandidates: [{ rank: 1, clusterId: 'cluster-2', canonicalText: 'Pregunta sin fuente', queryCount: 5, count7d: 3, priorityScore: 9, researchOnly: true, sourceAvailability: 'none', sourceIds: [], nextAction: 'Find a direct primary source', reason: 'No direct source' }],
+});
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+assert(html.includes('Private maintainer tool'), 'Dashboard does not identify its private maintainer scope');
+assert(html.includes('Pregunta neutral') && html.includes('Pregunta sin fuente'), 'Dashboard omitted queue candidates');
+assert(html.includes('knowledge:promote-cluster'), 'Dashboard omitted the guarded promotion command');
+assert(html.includes('data-tab="research"') && html.includes('data-copy'), 'Dashboard is missing research filtering or command copy controls');
+assert(!html.includes('/api/') && !html.includes('wrangler d1 execute'), 'Dashboard exposed an operational API or direct mutation command');
+console.log('Review dashboard validation passed: local-only queue rendering, filtering, and guarded promotion instructions are present.');
