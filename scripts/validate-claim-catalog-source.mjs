@@ -11,8 +11,8 @@ try {
 
 const catalog = await readFile(join(root, 'src/data/claimCatalog.ts'), 'utf8');
 if (!catalog.includes("from './content'")) failures.push('claimCatalog.ts does not derive from structured Markdown content');
-for (const legacySymbol of ['baseClaims', 'additionalClaims', 'eventClaims', 'getConcern', 'concernSources']) {
-  if (catalog.includes(legacySymbol)) failures.push(`claimCatalog.ts still contains legacy catalogue symbol ${legacySymbol}`);
+for (const staleSymbol of ['baseClaims', 'additionalClaims', 'eventClaims', 'getConcern', 'concernSources']) {
+  if (catalog.includes(staleSymbol)) failures.push(`claimCatalog.ts still contains stale catalogue symbol ${staleSymbol}`);
 }
 
 const index = await readFile(join(root, 'src/data/claimIndexData.ts'), 'utf8');
@@ -30,4 +30,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log(`Claim catalogue source passed: ${published} published claims derive from Markdown without a legacy catalogue.`);
+console.log(`Claim catalogue source passed: ${published} published claims derive from Markdown without a duplicate catalogue.`);
