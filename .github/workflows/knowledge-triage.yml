@@ -54,7 +54,7 @@ jobs:
         if: steps.configuration.outputs.configured == 'true'
         run: |
           npm run knowledge:triage:validate
-          npm run knowledge:triage -- --export-d1 --database elpaisestafatal-ops --min-count 3 --limit 50
+          npm run knowledge:triage -- --export-d1 --sync-d1 --database elpaisestafatal-ops --min-count 3 --limit 50
 
       - name: Upload maintainer-only review artifacts
         if: steps.configuration.outputs.configured == 'true'

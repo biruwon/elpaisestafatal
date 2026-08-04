@@ -92,7 +92,7 @@
     "knowledge:review-queue": "node scripts/knowledge/review-queue.mjs",
     "knowledge:review-queue:validate": "node scripts/knowledge/validate-review-queue.mjs",
     "knowledge:triage": "node scripts/knowledge/triage.mjs",
-    "knowledge:triage:validate": "node scripts/validate-knowledge-triage.mjs",
+    "knowledge:triage:validate": "node scripts/validate-knowledge-triage.mjs && node scripts/validate-query-triage-persistence.mjs",
     "knowledge:export-query-clusters": "node scripts/knowledge/export-query-clusters.mjs",
     "knowledge:promote-cluster": "node scripts/knowledge/promote-cluster.mjs",
     "knowledge:promote-cluster:validate": "node scripts/knowledge/validate-cluster-promotion.mjs",

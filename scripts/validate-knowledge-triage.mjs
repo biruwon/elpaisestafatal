@@ -10,6 +10,8 @@ requireText(triage, 'export-query-clusters.mjs', 'optional production D1 export'
 requireText(triage, 'cluster-gaps.mjs', 'local and D1 clustering');
 requireText(triage, 'review-queue.mjs', 'ranked maintainer queue');
 requireText(triage, "args.has('export-d1')", 'explicit export opt-in');
+requireText(triage, "args.has('sync-d1')", 'explicit D1 triage sync opt-in');
+requireText(triage, 'sync-query-triage.mjs', 'durable D1 triage sync command');
 requireText(triage, 'review-queue.md', 'human-readable queue output');
 requireText(triage, 'No local or exported production knowledge gaps are available yet.', 'empty-input guard');
 requireText(triage, 'unlink(clusterOutput)', 'stale-output protection');

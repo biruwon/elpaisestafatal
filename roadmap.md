@@ -42,6 +42,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Official discovery now has a bounded `government_event` path for newly published decisions, appointments, grants, and other official acts. It preserves the specialised budget-transfer finding when available, extracts a constrained action/person/role shape for appointments, and otherwise retains a short official action excerpt. The local resolver now renders an evidence ladder and provisional conversation response that separates the published act from execution, impact, intention, and other unsupported implications; a generic ministry decision is no longer treated as a budget transfer merely because it names a ministry.
 
+- Knowledge-gap triage now persists maintainer-only status, priority, next action, and triage time back to D1 through an explicit `--sync-d1` step. The migration and export path are versioned and validated, while the workflow remains review-only: it cannot link, publish, materialize, or promote a claim.
+
 - BOE legal discovery now expands a bounded set of high-signal colloquial Spanish terms into formal statutory vocabulary before searching consolidated legislation. Wording such as `echar a los okupas` and `despedir al trabajador` can generate constrained `desahucio`/`arrendamiento` and `laboral`/`estatuto` title pairs, while current-law, source, expiry, and article-level validation remain unchanged. Regression coverage protects both the expansion boundary and formal-law ranking.
 
 - The semantic claim-index fast path now precomputes published title/alias signatures at build time and evaluates the query signature once per request. This preserves paraphrase routing in the browser and Pages Function while avoiding a per-entry semantic compilation loop that exceeded Cloudflare's free Pages CPU budget in production.
@@ -683,7 +685,7 @@ The maintainer queue now separates `materializationCandidates` from `researchCan
 
 Long-tail capture now starts as soon as a user submits an unresolved text claim, before optional background analysis finishes. This preserves the learning signal when the local runtime is slow or unavailable. Screenshot and audio results can add their extracted canonical wording later. The D1 ingestion path is idempotent by request ID, so retries and repeated UI callbacks update recency without inflating cluster popularity. `npm run learning:validate` protects these guarantees.
 
-The solo-maintainer handoff is now reproducible with `npm run knowledge:triage`: it combines local gap records with an optional explicit `--export-d1` production snapshot, clusters and reconciles them against the published catalogue, then writes one ranked JSON/Markdown review queue. Production export is opt-in and the command never publishes or promotes a claim.
+The solo-maintainer handoff is now reproducible with `npm run knowledge:triage`: it combines local gap records with an optional explicit `--export-d1` production snapshot, clusters and reconciles them against the published catalogue, then writes one ranked JSON/Markdown review queue. With the separate explicit `--sync-d1` flag, the resulting maintainer-only triage status is persisted to the originating D1 clusters; production export and sync are opt-in and the command never publishes or promotes a claim.
 
 Cluster inputs by canonical proposition signature. Track:
 

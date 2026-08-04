@@ -169,6 +169,10 @@ const parseD1Clusters = (value) => {
     coverageStatus: item.coverage_status || item.coverageStatus || 'uncovered',
     reviewStatus: item.review_status || item.reviewStatus || 'unreviewed',
     linkedClaimSlug: item.linked_claim_slug || item.linkedClaimSlug || null,
+    triageStatus: item.triage_status || item.triageStatus || 'untriaged',
+    triagePriority: Number(item.triage_priority ?? item.triagePriority ?? 0),
+    triageNextAction: item.triage_next_action || item.triageNextAction || null,
+    triagedAt: item.triaged_at || item.triagedAt || null,
     sourceIds: asArray(item.source_ids || item.sourceIds),
     fromD1: true,
   })).filter((item) => item.signature || item.text);

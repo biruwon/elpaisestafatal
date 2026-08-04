@@ -6,6 +6,7 @@ const failures = [];
 for (const required of [
   'knowledge:triage:validate',
   'knowledge:triage -- --export-d1',
+  '--sync-d1',
   '.local/review-queue.json',
   '.local/review-queue.md',
   'actions/upload-artifact@v4',

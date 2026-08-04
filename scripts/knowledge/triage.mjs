@@ -26,9 +26,14 @@ const run = async (command, commandArgs) => {
 const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
 
 if (args.has('help')) {
-  console.log('Usage: npm run knowledge:triage [--export-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25]');
-  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}. Production D1 export is opt-in.');
+  console.log('Usage: npm run knowledge:triage [--export-d1] [--sync-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25]');
+  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}. Production D1 export and private triage sync are opt-in.');
   process.exit(0);
+}
+
+if (args.has('sync-d1') && !args.has('export-d1')) {
+  console.error('--sync-d1 requires --export-d1 so the persistent queue is based on a fresh production snapshot.');
+  process.exit(1);
 }
 
 if (args.has('export-d1')) {
@@ -65,4 +70,7 @@ await run(process.execPath, [
   '--min-count', minCount,
   '--limit', limit,
 ]);
+if (args.has('sync-d1')) {
+  await run(process.execPath, ['scripts/knowledge/sync-query-triage.mjs', '--database', database, '--queue', queueOutput]);
+}
 console.log(`Triage complete. Review ${markdownOutput} before promoting any answer.`);
