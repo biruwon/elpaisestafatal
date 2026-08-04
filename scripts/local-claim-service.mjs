@@ -129,6 +129,14 @@ const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token)
 const includesAny = (value, words) => words.some((word) => value.includes(word));
 const canonicalSignatureFor = (value) => tokens(value).join(' ') || normalise(value);
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
+const meaningfulBroadTerms = new Set(['destruida', 'destruido', 'ruina', 'arruinada', 'arruinado', 'colapsada', 'colapsado', 'inseguridad', 'delincuencia', 'crisis', 'impuestos', 'vivienda', 'sanidad', 'empleo', 'paro', 'inmigracion', 'inmigrantes', 'gobierno', 'educacion', 'politica', 'futuro']);
+const isLowSignalInput = (value) => {
+  const normalized = normalise(value);
+  if (!normalized) return true;
+  if (/\d|https?:\/\//.test(normalized)) return false;
+  const meaningful = tokens(normalized).filter((token) => !lowSignalTokens.has(token));
+  return meaningful.length === 0 || (meaningful.length === 1 && !meaningfulBroadTerms.has(meaningful[0]));
+};
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 const evidenceUnavailableSignal = (value) => includesAny(normalise(value), [
   'sin fuente', 'no tiene fuente', 'sin contexto', 'sin fecha', 'no se ha publicado', 'no publicado',
@@ -200,11 +208,24 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   try {
     const response = await inference.chat({ model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
     const draft = parseModelJson(response.message?.content);
-    const upgraded = applySafePlanUpgrade(result.result, draft, packet);
+    const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
     return validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok ? upgraded : result.result;
   } catch {
     return result.result;
   }
+};
+
+const normalizeAnswerPlan = (plan) => {
+  if (!plan || !Array.isArray(plan.blocks)) return plan;
+  const statusMap = { known: 'available', observed: 'available', supported: 'available', strong: 'available', qualified: 'context', partial: 'context', context: 'context', unknown: 'missing', unresolved: 'missing', insufficient: 'missing', missing: 'missing' };
+  return {
+    ...plan,
+    blocks: plan.blocks.map((block) => {
+      if (block?.type !== 'evidence_ladder' || !Array.isArray(block.steps)) return block;
+      const steps = block.steps.map((step) => ({ ...step, status: statusMap[step?.status] || step?.status, label: String(step?.label || '').trim(), detail: String(step?.detail || step?.label || '').trim() })).filter((step) => step.label && ['available', 'context', 'missing'].includes(step.status));
+      return steps.length ? { ...block, steps } : null;
+    }).filter(Boolean),
+  };
 };
 
 const fallbackCompiler = deterministicFallbackCompiler;
@@ -676,6 +697,11 @@ const classify = async (text) => {
   // different decisions for them. Meaning-level caching can be reintroduced
   // only for validated, representation-independent answer plans.
   const key = normalise(text);
+  if (isLowSignalInput(text)) {
+    const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
+    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    return result;
+  }
   const cached = answerCache.get(key);
   if (cached && cached.expiresAt > Date.now()) { telemetry.cacheHits += 1; return cached.value; }
   if (cached) answerCache.delete(key);
@@ -1082,7 +1108,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: 'Esta afirmación necesita datos locales, no una media nacional',
     summary: 'El cambio en un barrio puede ser real, pero para comprobarlo hacen falta el municipio, el periodo y una medida concreta.',
   } : null;
-  const recordedOffenceContext = preferredMetricIdsForQuery(text).has('recorded_offences') && !recordedOffenceCategoryForQuery(text) && !observations.length ? {
+  const recordedOffenceContext = (preferredMetricIdsForQuery(text).has('recorded_offences') || includesAny(normalise(text), ['delincuencia', 'delitos registrados', 'criminalidad'])) && !recordedOffenceCategoryForQuery(text) ? {
     headline: 'La criminalidad registrada debe concretarse por categoría',
     summary: 'La fuente disponible separa homicidios, robos, fraudes y otras categorías. No hemos localizado un total nacional único que permita responder a “la criminalidad” en general sin mezclar medidas distintas.',
   } : null;
@@ -1343,8 +1369,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     knowledgeVersion: observations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
-  const validation = validateAnswerPlan(result, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result, relatedClaims: source && !primary ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  const normalizedResult = normalizeAnswerPlan(result);
+  const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -1364,7 +1391,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const explicitMetricRoute = preferredMetricIdsForQuery(retrievalText).size > 0;
-  const recordedOffenceRoute = preferredMetricIdsForQuery(retrievalText).has('recorded_offences');
+  const recordedOffenceRoute = preferredMetricIdsForQuery(retrievalText).has('recorded_offences') || includesAny(normalise(retrievalText), ['delincuencia', 'delitos registrados', 'robos', 'hurtos', 'homicidios', 'fraudes', 'violencia sexual', 'criminalidad']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
   const topicFallback = classified.primary?.kind === 'topic';
   // A broad topic suggestion must not block a direct warehouse answer when
@@ -1404,7 +1431,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       return '';
     })()
     : '';
-  const warehouseQueries = [...new Set([warehouseQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 4);
+  const recordedOffenceQuery = recordedOffenceCategory
+    ? `${recordedOffenceCategory.terms[0]} España delitos registrados`
+    : '';
+  const warehouseQueries = [...new Set([warehouseQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 4);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
     : [];
