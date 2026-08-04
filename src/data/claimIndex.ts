@@ -115,6 +115,13 @@ const compatibleNumericContext = (query: string, candidate: string): boolean => 
   return !(queryYears.length && candidateYears.length && !queryYears.some((year) => candidateYears.includes(year)));
 };
 
+const isSpecificSemanticSignature = (signature: string): boolean => {
+  const parts = signature.split('|');
+  return parts.some((part) => part.startsWith('relation:'))
+    || parts.filter((part) => part.startsWith('concept:')).length >= 2
+    || parts.filter((part) => part.startsWith('term:')).length >= 2;
+};
+
 export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value)): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
@@ -130,7 +137,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const candidateSemanticSignatures = entry.semanticSignatures?.length
     ? entry.semanticSignatures
     : searchablePhrases.map((phrase) => ({ signature: semanticQuerySignature(phrase), phrase }));
-  const semanticFamilyMatch = Boolean(querySemanticSignatureValue && entry.kind === 'claim' && candidateSemanticSignatures.some(({ signature, phrase }) => (
+  const semanticFamilyMatch = Boolean(querySemanticSignatureValue && isSpecificSemanticSignature(querySemanticSignatureValue) && entry.kind === 'claim' && candidateSemanticSignatures.some(({ signature, phrase }) => (
     compatibleNumericContext(query, phrase)
     && querySemanticSignatureValue === signature
   )));

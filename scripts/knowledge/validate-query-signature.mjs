@@ -88,4 +88,6 @@ const semanticIndexMatch = claimIndex.rankClaimIndex('Desde que llegaron más ex
 if (!semanticIndexMatch || semanticIndexMatch.slug !== 'inmigracion-delincuencia' || !claimIndex.isStrongClaimMatch(semanticIndexMatch)) throw new Error('Claim index did not route a causal paraphrase to the published family');
 const vagueTaxMatch = claimIndex.rankClaimIndex('España cobra demasiados impuestos', semanticIndexEntries, 2)[0];
 if (vagueTaxMatch?.slug === 'espana-impuestos-europa' && claimIndex.isStrongClaimMatch(vagueTaxMatch)) throw new Error('Claim index over-routed a vague tax complaint to a comparative tax claim');
+const vagueEmploymentMatch = claimIndex.rankClaimIndex('La economía y el empleo van a peor', semanticIndexEntries, 2)[0];
+if (vagueEmploymentMatch && claimIndex.isStrongClaimMatch(vagueEmploymentMatch)) throw new Error('Claim index over-routed a broad employment complaint to a specific claim');
 console.log('Query signature validation passed.');
