@@ -86,6 +86,8 @@ assert(novelBudget.evidenceNeeds.includes('importe') && novelBudget.evidenceNeed
 
 const novelCausal = deterministicFallbackCompiler('La llegada de turistas está expulsando a los vecinos de mi municipio');
 assert(novelCausal.evidenceNeeds.includes('causa') && novelCausal.evidenceNeeds.includes('territorio'), 'Novel local causal claims do not expose causal and geographic evidence requirements');
+const fraction = deterministicFallbackCompiler('Uno de cada tres jóvenes está en paro');
+assert(fraction.evidenceNeeds.includes('tasa') && fraction.evidenceNeeds.includes('denominador'), 'Natural fraction claims do not expose rate and denominator requirements');
 
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');

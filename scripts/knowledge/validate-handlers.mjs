@@ -37,6 +37,9 @@ for (const wording of [
   if (handlerForInput(wording, 'descriptive') !== 'budget_transfer') throw new Error(`Budget event wording was not routed: ${wording}`);
 }
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
+for (const wording of ['Uno de cada tres jóvenes está en paro', 'La mitad de los hogares llega justo a fin de mes']) {
+  if (handlerForInput(wording, 'descriptive') !== 'proportion') throw new Error(`Natural fraction wording was not routed as a proportion: ${wording}`);
+}
 for (const wording of ['Los marroquíes reciben más ayudas que los españoles', 'Los rumanos delinquen más que los españoles']) {
   if (handlerForInput(wording, 'comparative') !== 'group_comparison') throw new Error(`Named demographic group was not routed as group comparison: ${wording}`);
 }

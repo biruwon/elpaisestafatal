@@ -393,7 +393,7 @@ export const evidenceNeedsFor = (value, claimType, propositions = []) => {
     needs.add('partida');
     needs.add('impacto');
   }
-  if (/\b(?:porcentaje|tasa|proporcion|mayoria|minor[ií]a|por cada|por habitante)\b/.test(text)) {
+  if (/\b(?:porcentaje|tasa|proporcion|mayoria|minor[ií]a|por cada|uno de cada|mitad|tercio|cuarto|por habitante)\b/.test(text)) {
     needs.add('tasa');
     needs.add('denominador');
   }

@@ -15,6 +15,8 @@ export const handlerForInput = (input, claimType = '') => {
   const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])
     && includesAny(text, ['aprueba', 'aprobo', 'autoriza', 'autorizo', 'acuerda', 'acordo', 'nombra', 'designa', 'cesa', 'concede', 'conceder', 'subvencion', 'ayuda', 'decreto', 'resolucion', 'adjudica', 'adjudico']);
   if (governmentEventSignal) return 'government_event';
+  const proportionSignal = includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', 'uno de cada', 'mitad', 'tercio', 'cuarto', '%']);
+  if (proportionSignal) return 'proportion';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';
@@ -24,7 +26,6 @@ export const handlerForInput = (input, claimType = '') => {
   if (claimType === 'definition' || impliedDefinition) return 'definition';
   if (includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres', 'mayores', 'jubilados'])) return 'group_comparison';
   if (claimType === 'comparative') return 'ranking';
-  if (includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', '%'])) return 'proportion';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';
   if (includesAny(text, ['que significa', 'que se entiende por', 'significado de', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
