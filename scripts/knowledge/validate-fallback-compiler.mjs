@@ -20,6 +20,9 @@ for (const paraphrase of [
 ]) {
   assert(causal.semanticSignature === deterministicFallbackCompiler(paraphrase).semanticSignature, `Natural causal paraphrase did not receive the same semantic signature: ${paraphrase}`);
 }
+const temporalCausal = deterministicFallbackCompiler('Desde que llegaron más extranjeros hay más inseguridad');
+const publishedCausal = deterministicFallbackCompiler('La inmigración es la causa del aumento de la delincuencia.');
+assert(temporalCausal.semanticSignature === publishedCausal.semanticSignature, 'Temporal causal paraphrase did not preserve the same published claim family');
 assert(causal.semanticSignature !== deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas').semanticSignature, 'Association wording was incorrectly collapsed into a causal family');
 assert(causal.entities.includes('inmigración') && causal.geography === 'España', 'Causal entities/geography were not detected');
 assert(causal.population === 'personas inmigrantes o extranjeras', 'Causal population was not detected');

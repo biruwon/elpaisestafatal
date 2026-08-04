@@ -588,7 +588,20 @@ const fetchCatalog = async () => {
 const getIndex = async () => {
   if (indexPromise) return indexPromise;
   indexPromise = (async () => {
-    const entries = [...(await fetchCatalog()).map((entry) => ({ ...entry, published: true })), ...(await plannedClaims())];
+    const rawEntries = [...(await fetchCatalog()).map((entry) => ({ ...entry, published: true })), ...(await plannedClaims())];
+    // Reuse the deterministic compiler's semantic family signatures for
+    // published aliases. This is a cheap, rebuildable routing index: it
+    // recognizes equivalent Spanish claim structure before embeddings or a
+    // local model are needed, while preserving the existing compatibility and
+    // evidence gates before any published result is returned.
+    const entries = rawEntries.map((entry) => ({
+      ...entry,
+      semanticSignatures: entry.published && entry.kind === 'claim'
+        ? [...new Set([entry.title, ...(entry.aliases || [])]
+          .map((phrase) => fallbackCompiler(phrase).semanticSignature)
+          .filter(Boolean))].slice(0, 32)
+        : [],
+    }));
     const signature = digest(JSON.stringify(entries) + embedModel);
     const hydrateEmbeddings = (value) => {
       if (value.embeddings?.length === entries.length || !entries.length) return;
@@ -641,12 +654,19 @@ const classify = async (text) => {
   if ((lexicalRanked[0]?.lexical || 0) >= 0.1) {
     try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
-  const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({ entry, lexical, semantic: cosine(vector, index.embeddings[position]) })).map((item) => {
+  const querySemanticSignature = deterministicCompiler.semanticSignature;
+  const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
+    entry,
+    lexical,
+    semantic: cosine(vector, index.embeddings[position]),
+    semanticFamilyMatch: entry.kind === 'claim' && entry.semanticSignatures?.includes(querySemanticSignature),
+  })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
     // distinctive words in a short political claim. Keep lexical evidence
     // dominant whenever the user supplied a meaningful direct match.
     const lexicalWeight = item.lexical >= 0.55 ? 0.75 : 0.55;
-    return { ...item, score: vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical };
+    const score = vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical;
+    return { ...item, score: item.semanticFamilyMatch ? Math.max(score, 0.82) : score };
   }).sort((a, b) => b.score - a.score);
   // Derive compatibility from each canonical claim wording as well as its
   // metadata. Keywords often describe a broad topic and can incorrectly make
@@ -740,8 +760,9 @@ const classify = async (text) => {
   // published claim's exact wording or alias.
   const nearCanonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
   const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
+  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && compatibleHandlers && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
-  if (canonicalPhrase || (strongMatch && !broadEvaluative)) {
+  if (canonicalPhrase || (strongMatch && !broadEvaluative) || (semanticFamilyMatch && !broadEvaluative)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.

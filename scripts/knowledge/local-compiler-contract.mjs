@@ -2,7 +2,7 @@ import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFo
 
 export const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 
-export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. En routing solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación de afirmaciones; si solo comparte tema o no hay coincidencia, usa uncovered y primarySlug vacío. Devuelve únicamente JSON según el esquema proporcionado.';
+export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Para routing, compara la relación completa entre sujeto, acción, resultado, población, métrica, dirección, periodo y territorio: una diferencia de palabras puede ser una paráfrasis (por ejemplo inmigrantes/extranjeros o inseguridad/delincuencia), pero compartir solo un tema no basta. Solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación; si cambia la relación, población, métrica, dirección, periodo o territorio, usa uncovered y primarySlug vacío. Nunca uses un candidato internal como primarySlug. Devuelve únicamente JSON según el esquema proporcionado.';
 
 // The local model is a parser, not an evidence source. Keep this schema small
 // and bounded so model latency and the amount of untrusted text entering the
@@ -76,7 +76,9 @@ export const formatCompilerCandidates = (candidates = []) => candidates
     const type = bounded(entry.claimType, 80) || 'unknown';
     const geography = bounded(entry.geography, 100) || 'unknown';
     const period = bounded(entry.period, 100) || 'unknown';
-    return `${entry.published ? 'published' : 'internal'}:${bounded(entry.slug, 160)} — ${bounded(entry.title, 260)} [type=${type}; geography=${geography}; period=${period}; aliases=${aliases}]`;
+    const summary = bounded(entry.whatIsTrue, 240) || 'none';
+    const limits = bounded(entry.whatIsMissing || entry.cannotProve, 180) || 'none';
+    return `${entry.published ? 'published' : 'internal'}:${bounded(entry.slug, 160)} — ${bounded(entry.title, 260)} [type=${type}; geography=${geography}; period=${period}; aliases=${aliases}; summary=${summary}; limits=${limits}]`;
   })
   .join('\n');
 
