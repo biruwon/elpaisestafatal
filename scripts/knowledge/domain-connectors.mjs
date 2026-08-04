@@ -52,6 +52,21 @@ export const parseDelimited = (text) => {
   });
 };
 
+export const parseSpreadsheetBuffer = async (buffer) => {
+  const { read, utils } = await import('xlsx');
+  const workbook = read(buffer, { type: 'buffer', cellDates: false });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  return sheet ? utils.sheet_to_json(sheet, { defval: '' }) : [];
+};
+
+export const parsePdfText = (text) => {
+  const lines = String(text || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const headerIndex = lines.findIndex((line) => /period|periodo|año|year/i.test(line) && /grupo|group|nacionalidad|territorio|geography/i.test(line));
+  if (headerIndex < 0) return [];
+  const headers = lines[headerIndex].split(/\t+|;|\s{2,}/).map((item) => item.trim()).filter(Boolean);
+  return lines.slice(headerIndex + 1).map((line) => line.split(/\t+|;|\s{2,}/).map((item) => item.trim())).filter((cells) => cells.length >= headers.length).map((cells) => Object.fromEntries(headers.map((header, index) => [header, cells[index] || ''])));
+};
+
 export const parseDomainPayload = (domain, payload, source) => {
   const parser = domainConnectorFor(domain);
   if (!parser) throw new Error(`Unknown domain connector: ${domain}`);

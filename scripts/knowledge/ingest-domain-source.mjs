@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseDelimited, parseDomainPayload } from './domain-connectors.mjs';
+import { parseDelimited, parseDomainPayload, parsePdfText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -24,7 +24,7 @@ const fetchSource = async (candidate) => {
 };
 const extractLinkedDataUrls = (html, baseUrl) => [...String(html).matchAll(/(?:href|data-url)=["']([^"']+)["']/gi)]
   .map((match) => { try { return new URL(match[1], baseUrl); } catch { return null; } })
-  .filter((candidate) => candidate && candidate.protocol === 'https:' && (candidate.pathname + candidate.search).match(/\.(?:csv|json)(?:$|[?#])|(?:csv|json)/i))
+  .filter((candidate) => candidate && candidate.protocol === 'https:' && (candidate.pathname + candidate.search).match(/\.(?:csv|json|xlsx?|pdf)(?:$|[?#])|(?:csv|json|xlsx?|pdf)/i))
   .filter((candidate) => candidate.hostname === baseUrl.hostname || sourceForHost(candidate.hostname))
   .filter((candidate, index, all) => all.findIndex((item) => item.href === candidate.href) === index)
   .slice(0, 12);
@@ -46,7 +46,16 @@ const contentType = response.contentType;
 const bytes = response.bytes;
 const text = bytes.toString('utf8');
 let payload;
-try { payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text); } catch { throw new Error('Source is not valid JSON or delimited text'); }
+try {
+  if (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname)) payload = await parseSpreadsheetBuffer(bytes);
+  else if (contentType.includes('pdf') || /\.pdf(?:$|[?#])/i.test(response.url.pathname)) {
+    const { PDFParse } = await import('pdf-parse');
+    const parser = new PDFParse({ data: bytes });
+    const extracted = await parser.getText();
+    await parser.destroy();
+    payload = parsePdfText(extracted.text);
+  } else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
+} catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
 const source = { id: `domain-${hash.slice(0, 16)}`, title, url: response.url.toString(), landingUrl: sourceUrl.toString() };
 const records = parseDomainPayload(domain, payload, source);

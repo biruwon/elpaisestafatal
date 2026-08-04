@@ -1,0 +1,36 @@
+{
+  "feeds": [
+    {
+      "id": "ine-foreign-citizenship-denominator",
+      "domain": "immigration_crime",
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM",
+      "schedule": "daily",
+      "mode": "active",
+      "title": "INE population by nationality and country of birth"
+    },
+    {
+      "id": "interior-crime-downloads",
+      "domain": "immigration_crime",
+      "url": "https://www.interior.gob.es/opencms/es/archivos-y-documentacion/documentacion-y-publicaciones/anuarios-y-estadisticas/",
+      "schedule": "weekly",
+      "mode": "discovery",
+      "title": "Interior crime statistics and downloadable tables"
+    },
+    {
+      "id": "social-security-benefits",
+      "domain": "immigration_benefits",
+      "url": "https://revista.seg-social.es/",
+      "schedule": "weekly",
+      "mode": "discovery",
+      "title": "Social Security benefits and recipient statistics"
+    },
+    {
+      "id": "social-housing-programmes",
+      "domain": "public_housing_allocation",
+      "url": "https://sede.transportes.gob.es/areas-actividad/subvenciones/gestion-transferencias-prtr-ccaa/programas-ayuda-materia-rehabilitacion-residencial-incremento-parque-vivienda-alquiler-social-regulados-real-decreto-8532021-5-octubre",
+      "schedule": "weekly",
+      "mode": "discovery",
+      "title": "Official social-housing programme reporting portal"
+    }
+  ]
+}

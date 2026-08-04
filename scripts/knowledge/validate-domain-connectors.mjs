@@ -1,4 +1,4 @@
-import { domainConnectorIds, parseDelimited, parseDomainPayload } from './domain-connectors.mjs';
+import { domainConnectorIds, parseDelimited, parseDomainPayload, parsePdfText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
 const fixtures = {
@@ -12,6 +12,10 @@ for (const domain of domainConnectorIds()) {
 }
 const csv = parseDelimited('period;territorio;grupo;beneficiarios\n2025;España;total;100');
 if (csv.length !== 1 || csv[0].beneficiarios !== '100') throw new Error('Delimited source parsing failed');
+const pdfRows = parsePdfText('Period  Territory  Group  Value\n2025  España  extranjeros  1200');
+if (pdfRows.length !== 1 || pdfRows[0].Group !== 'extranjeros') throw new Error('PDF table text parsing failed');
+const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
+if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;
 try { parseDomainPayload('immigration_crime', [{ valor: '2' }], source); } catch { rejected = true; }
 if (!rejected) throw new Error('Incomplete domain data was not rejected');

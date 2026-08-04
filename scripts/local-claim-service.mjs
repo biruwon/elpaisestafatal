@@ -24,6 +24,7 @@ import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-ev
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
 import { unitCompatible } from './knowledge/numeric-evidence.mjs';
 import { domainProfileFor } from './knowledge/domain-handlers.mjs';
+import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -964,6 +965,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const localClaim = localSpecificClaim(text);
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
+  const groupComparison = isGroupComparison ? compareGroupObservations(groupObservations) : null;
   const isBudgetTransfer = handlerId === 'budget_transfer';
   const budgetObservations = isBudgetTransfer ? observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'budget_transfer') : [];
   const isGovernmentEvent = handlerId === 'government_event';
@@ -1180,6 +1182,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ];
     if (isQuantityLike && quantityClaim && !quantity) return [
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una observación comparable en unidad y medida con la cifra indicada.', 'La cifra necesita una fuente que mida la misma población, unidad y periodo.'] },
+    ];
+    if (isGroupComparison && groupComparison?.comparable) return [
+      { type: 'comparison_chart', evidenceIds: [groupComparison.left.id, groupComparison.right.id], points: [
+        `${groupComparison.left.dimensions?.group || groupComparison.left.population}: ${groupComparison.left.value} ${groupComparison.left.unit || ''}`.trim(),
+        `${groupComparison.right.dimensions?.group || groupComparison.right.population}: ${groupComparison.right.value} ${groupComparison.right.unit || ''}`.trim(),
+        `Diferencia observada: ${groupComparison.difference} ${groupComparison.left.unit || ''}`.trim(),
+      ], caveat: 'Comparación descriptiva: no demuestra por sí sola causalidad ni explica diferencias individuales.' },
+      { type: 'cannot_conclude', evidenceIds: [groupComparison.left.id, groupComparison.right.id], points: ['La comparación usa dos grupos con el mismo periodo, territorio y métrica.', 'Todavía hay que comprobar la definición de la medida, el denominador y los ajustes relevantes antes de atribuir causas.'] },
     ];
     if (isGroupComparison && !groupObservations.length) return [
       { type: 'cannot_conclude', evidenceIds: [], points: ['No hemos localizado una comparación directa para el grupo mencionado.', 'Las cifras generales o de contexto no permiten inferir diferencias entre grupos.'] },
