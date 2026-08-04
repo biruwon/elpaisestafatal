@@ -42,6 +42,10 @@ assert(association.semanticSignature !== causal.semanticSignature, 'Association 
 
 const comparison = deterministicFallbackCompiler('España cobra más impuestos que Europa en 2025');
 assert(comparison.claimType === 'comparative' && comparison.period === '2025', 'Comparative claim or period was not detected');
+const relativePeriod = deterministicFallbackCompiler('El paro bajó el año pasado');
+assert(relativePeriod.period === 'el ano pasado', 'Relative year period was not detected');
+const quarterPeriod = deterministicFallbackCompiler('El empleo subió en el segundo trimestre de 2025');
+assert(quarterPeriod.period === 'trimestre 2 2025', 'Quarter period was not detected');
 assert(comparison.numbers.length === 0, 'Year was incorrectly treated as a numeric amount');
 assert(comparison.explicitPropositions[0].predicate === 'more_than', 'Comparative relation direction was not extracted');
 assert(comparison.explicitPropositions[0].subject.includes('espana') && comparison.explicitPropositions[0].object.includes('europa'), 'Comparative subject/object were not extracted');

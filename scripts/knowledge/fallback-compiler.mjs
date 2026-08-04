@@ -346,6 +346,21 @@ const impliedFor = (claimType, value) => {
   return [];
 };
 
+const periodFor = (normalized, years) => {
+  if (years.length) {
+    const quarter = normalized.match(/\b(?:trimestre|t)\s*([1-4])\s+(19\d{2}|20\d{2})\b/) || normalized.match(/\b(19\d{2}|20\d{2})\s*(?:t|q)\s*([1-4])\b/)
+      || normalized.match(/\b(primer|segundo|tercer|cuarto)\s+trimestre\s+(?:de\s+)?(19\d{2}|20\d{2})\b/);
+    if (quarter) {
+      const ordinal = { primer: '1', segundo: '2', tercer: '3', cuarto: '4' }[quarter[1]];
+      return ordinal ? `trimestre ${ordinal} ${quarter[2]}` : quarter[0].replace(/\s+/g, ' ').trim();
+    }
+    return [...new Set(years)].join('–');
+  }
+  const relative = normalized.match(/\b(?:el|este|durante el|en el)?\s*(?:ano pasado|ultimo ano|año pasado|último año|ano actual|este ano|este año|proximo ano|pr[oó]ximo año|ultimo trimestre|último trimestre|este trimestre|trimestre pasado|mes pasado|este mes)\b/);
+  if (relative) return relative[0].replace(/\s+/g, ' ').trim();
+  return /hace\s+(?:\d+|[a-z]+(?:\s+[a-z]+){0,2})\s+anos?/.exec(normalized)?.[0] || null;
+};
+
 // Keep the long-tail path useful even when the local model is unavailable.
 // These are methodological requirements, not facts: they tell retrieval and
 // the renderer what kind of evidence is needed without allowing the fallback
@@ -401,7 +416,7 @@ export const deterministicFallbackCompiler = (text) => {
     : regions.find((region) => normalized.includes(region)) || null;
   const population = populationAliases.find(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias)))?.[0] || null;
   const years = [...normalized.matchAll(/\b(19\d{2}|20\d{2})\b/g)].map((match) => match[1]);
-  const period = years.length ? [...new Set(years)].join('–') : /hace\s+(?:\d+|[a-z]+(?:\s+[a-z]+){0,2})\s+anos?/.exec(normalized)?.[0] || null;
+  const period = periodFor(normalized, years);
   const numbers = [...new Set([
     ...[...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)),
     ...textualNumberMatches(original),
