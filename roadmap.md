@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- Added a private local knowledge-gap review dashboard generated from `.local/review-queue.json`. It separates review candidates from research-only gaps, supports filtering, shows source readiness and next actions, and offers the existing explicit promotion command only when the queue marks evidence as covered. It is never generated into Astro or deployed to the public site.
+
 - Local development now enables the Ollama answer-planning pass by default for meaningful unresolved claims; `LOCAL_ANSWER_PLANNER=0` remains available for deterministic-only benchmarks. Planner failures still return the deterministic result, while production remains provider-neutral until a persistent local origin is configured.
 
 - The local compiler now preserves a bounded methodological `evidenceNeeds` vocabulary for richer extraction of compound and genuinely novel Spanish claims (for example denominator, programme, impact, territory, cause, and comparison). These hints flow into evidence-packet planning and warehouse retrieval without gaining authority over numbers, polarity, semantic signatures, claim routing, or verdicts. The local benchmark now includes compound housing, budget-impact, and local-causality cases; the current installed model remains below the release gate, so deterministic compilation stays authoritative.
