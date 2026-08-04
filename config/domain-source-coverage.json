@@ -1,6 +1,6 @@
 {
   "immigration_benefits": {
-    "status": "gap",
+    "status": "partial",
     "requiredEvidence": [
       "benefit_program",
       "eligibility_rules",
@@ -17,7 +17,7 @@
       "https://revista.seg-social.es/",
       "https://www.inclusion.gob.es/"
     ],
-    "knownLimitation": "National social-protection spending is not beneficiary data and cannot answer whether immigrants receive more individual benefits."
+    "knownLimitation": "The active IMV feed counts title holders by nationality, not all benefit recipients or all programmes; it cannot answer whether immigrants receive more individual benefits without programme-specific eligibility and denominator data."
   },
   "immigration_crime": {
     "status": "partial",

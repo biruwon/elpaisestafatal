@@ -29,7 +29,7 @@ const common = (row, source, index) => ({
 
 const parsers = {
   immigration_benefits: (rows, source) => rows.map((row, index) => ({
-    ...common(row, source, index), metricId: 'benefit_recipients_by_group', metric: 'Beneficiarios de prestaciones por grupo', value: numberFor(valueFor(row, ['value', 'valor', 'beneficiaries', 'beneficiarios', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'personas',
+    ...common(row, source, index), metricId: row.metricId || 'benefit_recipients_by_group', metric: row.metric || 'Beneficiarios de prestaciones por grupo', value: numberFor(valueFor(row, ['value', 'valor', 'beneficiaries', 'beneficiarios', 'holders', 'titulares', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'personas',
   })),
   immigration_crime: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: 'crime_rate_by_group', metric: 'Delitos o condenas por grupo', value: numberFor(valueFor(row, ['rate', 'tasa', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'tasa o personas',
@@ -61,6 +61,20 @@ export const parseSpreadsheetBuffer = async (buffer) => {
 
 export const parsePdfText = (text) => {
   const lines = String(text || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const nationalityHeader = lines.findIndex((line) => /hombres\s+mujeres\s+española\s+extranjera/i.test(line));
+  if (nationalityHeader >= 0) {
+    const month = lines.join(' ').match(/nómina de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\s+de\s+(20\d{2})/i);
+    const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const period = month ? `${month[2]}-${String(months.indexOf(month[1].toLocaleLowerCase('es')) + 1).padStart(2, '0')}` : null;
+    const row = lines.slice(nationalityHeader + 1).find((line) => /^Total\s+\d[\d.]*\s+\d[\d.]*\s+\d[\d.]*\s+\d[\d.]*\s+\d[\d.]*/i.test(line));
+    if (row && period) {
+      const numbers = [...row.matchAll(/\d[\d.]*/g)].map((match) => numberFor(match[0]));
+      if (numbers.length >= 5) return [
+        { period, geography: 'España', group: 'Española', value: numbers[3], metricId: 'imv_title_holders_by_nationality', metric: 'Titulares del IMV por nacionalidad' },
+        { period, geography: 'España', group: 'Extranjera', value: numbers[4], metricId: 'imv_title_holders_by_nationality', metric: 'Titulares del IMV por nacionalidad' },
+      ];
+    }
+  }
   const headerIndex = lines.findIndex((line) => /period|periodo|año|year/i.test(line) && /grupo|group|nacionalidad|territorio|geography/i.test(line));
   if (headerIndex < 0) return [];
   const headers = lines[headerIndex].split(/\t+|;|\s{2,}/).map((item) => item.trim()).filter(Boolean);

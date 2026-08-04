@@ -13,7 +13,9 @@ for (const domain of domainConnectorIds()) {
 const csv = parseDelimited('period;territorio;grupo;beneficiarios\n2025;España;total;100');
 if (csv.length !== 1 || csv[0].beneficiarios !== '100') throw new Error('Delimited source parsing failed');
 const pdfRows = parsePdfText('Period  Territory  Group  Value\n2025  España  extranjeros  1200');
-if (pdfRows.length !== 1 || pdfRows[0].Group !== 'extranjeros') throw new Error('PDF table text parsing failed');
+if (pdfRows.length !== 1 || pdfRows[0]?.['Group'] !== 'extranjeros') throw new Error('PDF table text parsing failed');
+const imvPdfRows = parsePdfText('1.5. IMV. Sexo y nacionalidad de los titulares. Nómina de junio de 2025.\nHombres Mujeres Española Extranjera\nTotal 736.867 237.646 499.221 606.810 129.794');
+if (imvPdfRows.length !== 2 || imvPdfRows[0].metricId !== 'imv_title_holders_by_nationality' || imvPdfRows[1].value !== 129794) throw new Error('IMV nationality PDF parsing failed');
 const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
 if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;

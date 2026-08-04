@@ -19,10 +19,10 @@
     {
       "id": "social-security-benefits",
       "domain": "immigration_benefits",
-      "url": "https://revista.seg-social.es/",
-      "schedule": "weekly",
-      "mode": "discovery",
-      "title": "Social Security benefits and recipient statistics"
+      "url": "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "IMV title holders by nationality and province"
     },
     {
       "id": "social-housing-programmes",
