@@ -150,7 +150,7 @@ const parseEuroAmount = (value) => {
   return Number.isFinite(amount) ? amount : undefined;
 };
 export const parseBudgetTransferExcerpt = (text) => {
-  const match = String(text || '').match(/por importe de\s+([\d.]+(?:,\d+)?)\s+euros,?\s+desde el\s+(.+?),\s+al\s+(.+?)\s+para financiar\s+(.+?)(?:\.|$)/i);
+  const match = String(text || '').match(/(?:por importe de|por valor de|transferencia de crédito(?:,?\s+por importe de)?|de)\s+([\d.]+(?:,\d+)?)\s+euros?,?\s+desde\s+(?:el\s+)?(.+?),\s+(?:al|a)\s+(?:ministerio\s+)?(.+?)\s+para financiar\s+(.+?)(?:\.|$)/i);
   if (!match) return undefined;
   const amount = parseEuroAmount(match[1]);
   if (!amount) return undefined;

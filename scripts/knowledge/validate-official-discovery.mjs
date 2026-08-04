@@ -19,6 +19,8 @@ const decision = parseGovernmentEventExcerpt('El Gobierno aprueba una ayuda para
 if (!decision || decision.type !== 'government_event' || decision.eventType !== 'official_decision' || !decision.action.includes('aprueba')) throw new Error('Generic government decision extraction did not preserve the official action');
 const budgetEvent = parseGovernmentEventExcerpt('Se autoriza una transferencia de crédito, por importe de 10.000 euros, desde el Ministerio de Educación, al Ministerio de Hacienda para financiar gastos de personal.');
 if (!budgetEvent || budgetEvent.type !== 'budget_transfer' || budgetEvent.eventType !== 'budget_transfer') throw new Error('Government event parser did not retain the specialised budget-transfer finding');
+const alternateBudget = parseBudgetTransferExcerpt('Se autoriza una transferencia de crédito de 12.500 euros desde Educación, a Presidencia para financiar gastos de personal.');
+if (!alternateBudget || alternateBudget.amount !== 12500 || !alternateBudget.originEntity.includes('Educación') || !alternateBudget.destinationEntity.includes('Presidencia')) throw new Error('Budget parser did not support alternate official transfer wording');
 const catalogue = parseDatosGobCatalogResults({ result: { items: [{ _about: 'https://datos.gob.es/catalogo/example-vivienda', title: [{ _value: 'Viviendas y población' }], description: [{ _value: 'Datos de vivienda por municipio y población residente.' }] }] } }, 'vivienda población', 2);
 if (catalogue.length !== 1 || !catalogue[0].url.includes('datos.gob.es/catalogo') || catalogue[0].matchedTerms.length !== 2) throw new Error('Datos.gob.es catalogue parser did not preserve a dataset lead');
 const catalogueObservation = discoveryObservation(catalogue[0]);
