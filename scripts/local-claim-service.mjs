@@ -370,6 +370,11 @@ const findWarehouseSource = async (query) => {
   return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
 };
 
+const findBestWarehouseSource = async (queries = []) => {
+  const candidates = await Promise.all([...new Set(queries.filter(Boolean).slice(0, 4))].map((query) => findWarehouseSource(query)));
+  return candidates.filter(Boolean).sort((left, right) => Number(right.score || 0) - Number(left.score || 0))[0] || null;
+};
+
 const observationSeriesKey = (item) => {
   const dimensions = Object.entries(item.dimensions || {})
     .filter(([key]) => !['time', 'period', 'year'].includes(normalise(key)))
@@ -1398,7 +1403,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // discovery and use their dedicated evidence paths instead.
   const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
   const allowDiscovery = !classified.compiler?.clarificationRequired || discoveryEligible.has(handlerId);
-  const indexedSource = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
+  const indexedSource = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride
+    ? await findBestWarehouseSource([retrievalText, ...propositionQueries])
+    : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
