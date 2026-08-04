@@ -630,5 +630,13 @@
     "population": "eligible applicants and successful allocations in the named public-housing programme",
     "notEquivalentTo": ["foreign_citizenship_population"],
     "dimensions": ["period", "geography", "programme", "group", "eligibility"]
+  },
+  "public_housing_actions": {
+    "name": "Protected-housing actions by territory and status",
+    "aliases": ["vivienda protegida", "viviendas protegidas", "actuaciones de vivienda", "viviendas calificadas", "vivienda pública construida"],
+    "unit": "dwellings",
+    "population": "protected-housing actions recorded by the official source, classified by territory, typology, and administrative status",
+    "notEquivalentTo": ["public_housing_allocations_by_group", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "typology", "status"]
   }
 }

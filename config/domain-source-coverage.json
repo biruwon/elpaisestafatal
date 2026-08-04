@@ -42,7 +42,7 @@
     "knownLimitation": "Recorded offences, arrests, suspects, convictions, and prison population are different measures and cannot be substituted."
   },
   "public_housing_allocation": {
-    "status": "gap",
+    "status": "partial",
     "requiredEvidence": [
       "programme_and_territory",
       "eligibility_rules",
@@ -59,6 +59,6 @@
       "https://sede.transportes.gob.es/areas-actividad/subvenciones/gestion-transferencias-prtr-ccaa/programas-ayuda-materia-rehabilitacion-residencial-incremento-parque-vivienda-alquiler-social-regulados-real-decreto-8532021-5-octubre",
       "https://publicaciones.transportes.gob.es/observatorio-de-vivienda-y-suelo-boletin-especial-alquiler-residencial-2024"
     ],
-    "knownLimitation": "Foreign-born population or employment totals cannot establish priority in a specific housing programme."
+    "knownLimitation": "The active MIVAU feed covers protected-housing actions by territory, typology, and administrative status; it does not contain applicants or allocations by nationality or other group. Foreign-born population or employment totals cannot establish priority in a specific housing programme."
   }
 }

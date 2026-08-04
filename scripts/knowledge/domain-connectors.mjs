@@ -35,7 +35,7 @@ const parsers = {
     ...common(row, source, index), metricId: row.metricId || 'crime_rate_by_group', metric: row.metric || 'Delitos o condenas por grupo', value: numberFor(valueFor(row, ['rate', 'tasa', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'tasa o personas',
   })),
   public_housing_allocation: (rows, source) => rows.map((row, index) => ({
-    ...common(row, source, index), metricId: 'public_housing_allocations_by_group', metric: 'Adjudicaciones de vivienda pública por grupo', value: numberFor(valueFor(row, ['allocations', 'adjudicaciones', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'adjudicaciones',
+    ...common(row, source, index), metricId: row.metricId || 'public_housing_allocations_by_group', metric: row.metric || 'Adjudicaciones de vivienda pública por grupo', value: numberFor(valueFor(row, ['allocations', 'adjudicaciones', 'dwellings', 'viviendas', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'adjudicaciones',
   })),
 };
 
@@ -71,6 +71,18 @@ export const parseCrimeSeriesText = (text) => {
     });
   }
   return records;
+};
+
+export const parsePublicHousingActionsText = (text) => {
+  const rows = parseDelimited(text);
+  return rows.map((row) => {
+    const year = valueFor(row, ['año', 'ano', 'year']);
+    const month = numberFor(valueFor(row, ['mes', 'month']));
+    const geography = valueFor(row, ['provincia', 'comunidad autónoma', 'comunidad autonoma', 'territorio']) || null;
+    const value = numberFor(valueFor(row, ['número de viviendas', 'numero de viviendas', 'viviendas', 'value']));
+    if (!year || !geography || value === null) return null;
+    return { period: `${year}-${String(month || 1).padStart(2, '0')}`, geography, group: 'total', category: [valueFor(row, ['tipología', 'tipologia']), valueFor(row, ['estado'])].filter(Boolean).join(' · '), value, metricId: 'public_housing_actions', metric: 'Actuaciones de vivienda protegida', unit: 'viviendas' };
+  }).filter(Boolean);
 };
 
 export const parseSpreadsheetBuffer = async (buffer) => {

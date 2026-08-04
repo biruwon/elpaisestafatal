@@ -1,4 +1,4 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
+import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
 const fixtures = {
@@ -18,6 +18,8 @@ const imvPdfRows = parsePdfText('1.5. IMV. Sexo y nacionalidad de los titulares.
 if (imvPdfRows.length !== 2 || imvPdfRows[0].metricId !== 'imv_title_holders_by_nationality' || imvPdfRows[1].value !== 129794) throw new Error('IMV nationality PDF parsing failed');
 const crimeRows = parseCrimeSeriesText('Serie\n;2024;2023;\nTOTAL NACIONAL;\n1. Homicidios;1.000;900;\n2. Robos;2.000;1.800;');
 if (crimeRows.length !== 4 || crimeRows[0].metricId !== 'recorded_offences' || crimeRows[0].category !== 'Homicidios') throw new Error('Crime series parsing failed');
+const housingRows = parsePublicHousingActionsText('Comunidad Autónoma;Provincia;Mes;Año;Número de viviendas;Tipología;Estado\nMadrid;Madrid;9;2024;12;Vivienda;Certificación Definitiva');
+if (housingRows.length !== 1 || housingRows[0].metricId !== 'public_housing_actions' || housingRows[0].value !== 12 || housingRows[0].period !== '2024-09') throw new Error('Public housing action parsing failed');
 const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
 if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;
