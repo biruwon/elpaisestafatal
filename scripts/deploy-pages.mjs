@@ -43,12 +43,12 @@ const main = async () => {
   await run('npx', ['wrangler', 'pages', 'deploy', 'dist', '--project-name', project]);
 
   let lastError;
+  let healthVerified = false;
   for (let attempt = 1; attempt <= propagationAttempts; attempt += 1) {
     try {
       await checkCanonicalHealth();
-      console.log(`Canonical deployment is serving the new build: ${productionUrl}`);
-      await run('npm', ['run', 'smoke:production']);
-      return;
+      healthVerified = true;
+      break;
     } catch (error) {
       lastError = error;
       if (attempt < propagationAttempts) {
@@ -57,7 +57,9 @@ const main = async () => {
       }
     }
   }
-  throw new Error(`Canonical deployment did not become verifiable: ${lastError?.message || 'unknown error'}`);
+  if (!healthVerified) throw new Error(`Canonical deployment did not become verifiable: ${lastError?.message || 'unknown error'}`);
+  console.log(`Canonical deployment is serving the new build: ${productionUrl}`);
+  await run('npm', ['run', 'smoke:production']);
 };
 
 main().catch((error) => {

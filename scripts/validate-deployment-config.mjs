@@ -38,6 +38,8 @@ try {
 for (const fragment of ['npm', 'wrangler', 'smoke:production', 'Canonical deployment did not become verifiable']) {
   if (deployScript && !deployScript.includes(fragment)) failures.push(`deploy wrapper is missing ${fragment}`);
 }
+if (deployScript && (deployScript.match(/smoke:production/g) || []).length !== 1) failures.push('deploy wrapper must run the full production smoke suite exactly once after propagation');
+if (deployScript && deployScript.indexOf("await run('npm', ['run', 'smoke:production'])") < deployScript.indexOf('let healthVerified')) failures.push('deploy wrapper must verify canonical health before running the full smoke suite');
 
 if (failures.length) {
   console.error(failures.join('\n'));
