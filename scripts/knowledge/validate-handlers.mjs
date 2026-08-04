@@ -40,6 +40,7 @@ if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_compariso
 for (const wording of ['Uno de cada tres jóvenes está en paro', 'La mitad de los hogares llega justo a fin de mes']) {
   if (handlerForInput(wording, 'descriptive') !== 'proportion') throw new Error(`Natural fraction wording was not routed as a proportion: ${wording}`);
 }
+if (handlerForInput('Por cada diez hogares, tres tienen dificultades para llegar a fin de mes', 'descriptive') !== 'proportion') throw new Error('Ratio wording was not routed as a proportion');
 for (const wording of ['Todos los políticos son corruptos', 'Nadie encuentra vivienda asequible']) {
   if (handlerForInput(wording, 'descriptive') !== (wording.startsWith('Todos') ? 'group_comparison' : 'proportion')) throw new Error(`Absolute quantifier wording was not routed safely: ${wording}`);
 }
