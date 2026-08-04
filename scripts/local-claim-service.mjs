@@ -1362,7 +1362,21 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
-  const warehouse = !retrievalClassified.primary && !suppressUnrelatedContext ? await findWarehouseEvidence(warehouseQuery, retrievalClassified.compiler, queryEmbedding) : { observations: [], source: undefined };
+  // Compound inputs need proposition-level retrieval. Searching only the full
+  // sentence can bury each metric behind unrelated clauses (for example,
+  // employment plus housing in one message). Keep this bounded to the full
+  // query plus at most three deterministic explicit propositions.
+  const propositionQueries = Array.isArray(retrievalClassified.compiler?.explicitPropositions)
+    ? retrievalClassified.compiler.explicitPropositions.map((item) => item.text).filter(Boolean)
+    : [];
+  const warehouseQueries = [...new Set([warehouseQuery, ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].slice(0, 4);
+  const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
+    ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
+    : [];
+  const warehouse = {
+    observations: [...new Map(warehouseResults.flatMap((item) => item.observations || []).map((item) => [item.id, item])).values()].slice(0, 24),
+    source: warehouseResults.find((item) => item.source)?.source,
+  };
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
