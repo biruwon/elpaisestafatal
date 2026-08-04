@@ -10,8 +10,11 @@ export const handlerForInput = (input, claimType = '') => {
   const impliedDefinition = propositions.some((item) => item && item.explicit === false && item.type === 'definition');
   const budgetMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'se lleva', 'lleva', 'quita', 'quitar', 'recorta', 'recorte', 'pierde', 'pierden', 'pasa', 'pasan', 'destina', 'asigna', 'recibe'])
     && includesAny(text, ['presupuesto', 'millones', 'dinero', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
-  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'ministerio', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
+  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
   if (budgetSignal) return 'budget_transfer';
+  const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])
+    && includesAny(text, ['aprueba', 'aprobo', 'autoriza', 'autorizo', 'acuerda', 'acordo', 'nombra', 'designa', 'cesa', 'concede', 'conceder', 'subvencion', 'ayuda', 'decreto', 'resolucion', 'adjudica', 'adjudico']);
+  if (governmentEventSignal) return 'government_event';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'por culpa', 'genera', 'aumenta la', 'destruy'])) return 'causal';

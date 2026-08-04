@@ -7,6 +7,7 @@ const required = [
   'proportion',
   'quantity',
   'budget_transfer',
+  'government_event',
   'legal_rule',
   'causal',
   'prediction',
@@ -20,12 +21,14 @@ const probes = {
   proportion: 'La mayoría de la población vive en ciudades',
   quantity: 'Todos los políticos son corruptos',
   budget_transfer: 'El Gobierno transfiere 310 millones del presupuesto',
+  government_event: 'El Ministerio de Sanidad aprueba una ayuda para municipios',
   legal_rule: 'La ley permite desalojar al ocupante',
   causal: 'Los pisos turísticos causan la crisis',
   prediction: 'La vivienda caerá como en 2008',
   normative: 'Los españoles deberían tener prioridad',
 };
 if (handlerForInput('La información pública se puede reutilizar sin condiciones', 'descriptive') !== 'legal_rule') throw new Error('Public-information reuse claims must use legal guidance');
+if (handlerForInput(probes.government_event, 'descriptive') !== 'government_event') throw new Error('Official government events must use event guidance');
 for (const wording of [
   'Bolaños se lleva 310 millones de Educación',
   'Educación pierde 310 millones para Presidencia',

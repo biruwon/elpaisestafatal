@@ -6,6 +6,7 @@ export type HandlerId =
   | 'ranking'
   | 'definition'
   | 'budget_transfer'
+  | 'government_event'
   | 'legal_rule'
   | 'group_comparison'
   | 'causal'
@@ -27,6 +28,7 @@ export const handlerRegistry: HandlerDefinition[] = [
   { id: 'ranking', claimTypes: ['comparative', 'mixed'], requiredFields: ['metric', 'period', 'comparisonSet'], preferredSources: ['eurostat', 'ine', 'official-ministry'], visual: 'bar_chart', rules: ['Use one definition and one period for every ranked observation.'] },
   { id: 'definition', claimTypes: ['descriptive', 'legal', 'mixed'], requiredFields: ['term', 'definition'], preferredSources: ['boe', 'ine', 'official-ministry'], visual: 'evidence_ladder', rules: ['Do not treat two similarly named measurements as equivalent.'] },
   { id: 'budget_transfer', claimTypes: ['descriptive', 'mixed'], requiredFields: ['amount', 'originEntity', 'destinationEntity', 'purpose'], preferredSources: ['boe', 'council-of-ministers', 'finance'], visual: 'money_flow', rules: ['A credit transfer does not prove a service cut without the affected programme and execution impact.'] },
+  { id: 'government_event', claimTypes: ['descriptive', 'mixed'], requiredFields: ['eventType', 'action', 'date'], preferredSources: ['council-of-ministers', 'boe', 'official-ministry'], visual: 'evidence_ladder', rules: ['An official decision record establishes what was published, not every consequence, intention, or implementation outcome implied by a headline.'] },
   { id: 'legal_rule', claimTypes: ['legal', 'mixed'], requiredFields: ['jurisdiction', 'scenario', 'effectiveDate'], preferredSources: ['boe', 'judicial'], visual: 'decision_tree', rules: ['Resolve the legal scenario and effective date before summarising a rule.'] },
   { id: 'group_comparison', claimTypes: ['comparative', 'mixed'], requiredFields: ['groups', 'metric', 'population', 'period'], preferredSources: ['ine', 'official-ministry', 'eurostat'], visual: 'comparison_chart', rules: ['Arrests, convictions, beneficiaries, residents, and workers are different populations.'] },
   { id: 'causal', claimTypes: ['causal', 'mixed'], requiredFields: ['cause', 'effect', 'period', 'geography'], preferredSources: ['academic', 'official-statistics', 'official-report'], visual: 'evidence_ladder', rules: ['Correlation, co-occurrence, and a plausible mechanism do not by themselves establish causation.'] },

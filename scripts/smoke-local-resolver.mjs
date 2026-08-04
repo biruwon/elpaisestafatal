@@ -46,6 +46,7 @@ const cases = [
   { text: 'Desde que llegaron más extranjeros hay más inseguridad', status: 'complete', slug: 'inmigracion-delincuencia' },
   { text: 'La vivienda es cada vez más cara y los salarios no siguen el ritmo', statuses: ['draft', 'partial', 'uncovered'], compound: true },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
+  { text: 'El Ministerio de Sanidad aprueba una ayuda para municipios', statuses: ['draft', 'partial', 'uncovered'], eventGuidance: true },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
   { text: 'España cobra menos impuestos sobre la renta y la riqueza que la Unión Europea', status: 'complete', slug: 'espana-cobra-menos-impuestos-renta-riqueza-europa' },
@@ -108,6 +109,7 @@ for (const item of cases) {
     const expectedStatuses = item.statuses || [item.status];
     if (!expectedStatuses.includes(result.status)) failures.push(`${item.text}: expected ${expectedStatuses.join(' or ')}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
+    if (item.eventGuidance && !result.result?.headline?.toLocaleLowerCase('es').includes('acto')) failures.push(`${item.text}: official-event guidance did not lead with the published act`);
     const guidanceTypes = new Set(['strongest_valid_concern', 'evidence_ladder', 'legal_decision_tree', 'prediction_conditions', 'trade_offs', 'group_comparison_requirements']);
     const guidanceBlockTypes = (result.result?.blocks || []).map((block) => block.type).filter((type) => guidanceTypes.has(type));
     if (new Set(guidanceBlockTypes).size !== guidanceBlockTypes.length) failures.push(`${item.text}: result repeated a guidance block type (${guidanceBlockTypes.join(', ')})`);

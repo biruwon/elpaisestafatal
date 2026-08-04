@@ -156,6 +156,18 @@ export const parseBudgetTransferExcerpt = (text) => {
   if (!amount) return undefined;
   return { type: 'budget_transfer', amount, currency: 'EUR', originEntity: match[2].trim(), destinationEntity: match[3].trim(), purpose: match[4].trim() };
 };
+const eventSentence = (text) => String(text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).find((sentence) => /\b(aprueba|aprob[oó]|autoriza|autoriz[oó]|acuerda|acord[oó]|nombra|designa|cesa|concede|adjudica|decreto|resoluci[oó]n)\b/i.test(sentence));
+export const parseGovernmentEventExcerpt = (text) => {
+  const budget = parseBudgetTransferExcerpt(text);
+  if (budget) return { ...budget, eventType: 'budget_transfer', action: 'credit_transfer' };
+  const sentence = eventSentence(text);
+  if (!sentence) return undefined;
+  const appointment = sentence.match(/\b(nombra|designa|cesa)\s+(?:a\s+)?([^,.;]+?)(?:\s+como\s+|\s+en\s+el\s+cargo\s+de\s+)([^.;]+)/i);
+  if (appointment) return { type: 'government_event', eventType: appointment[1].toLocaleLowerCase('es'), action: sentence.slice(0, 320), personOrBody: appointment[2].trim(), role: appointment[3].trim() };
+  const grant = sentence.match(/\b(concede|adjudica)\b[^.]{0,240}?(?:subvenci[oó]n|ayuda|fondos?)(?:[^.]{0,180})/i);
+  if (grant) return { type: 'government_event', eventType: grant[1].toLocaleLowerCase('es'), action: grant[0].trim().slice(0, 320) };
+  return { type: 'government_event', eventType: 'official_decision', action: sentence.slice(0, 320) };
+};
 export const extractRelevantExcerpt = (text, wanted, maxLength = 420) => {
   const sentences = String(text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).filter(Boolean);
   const ranked = sentences.map((sentence, index) => ({ sentence, index, matches: wanted.filter((token) => normalise(sentence).includes(token)).length }))
@@ -186,7 +198,7 @@ export const discoverMoncloaDocuments = async (query, limit = 3) => {
         const matchedTerms = wanted.filter((token) => text.includes(token));
         const score = matchedTerms.length / wanted.length;
         if (matchedTerms.length < 2 || score < 0.5) return null;
-        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, excerpt: extractRelevantExcerpt(pageText, matchedTerms), finding: parseBudgetTransferExcerpt(pageText), score, searchScore: score + 0.2 };
+        return { id: `moncloa-${Buffer.from(item.link).toString('base64url')}`, title: extractHeading(html, item.title), url: item.link, publication: item.pubDate, publishedYear: Number(item.pubDate.match(/\b([12]\d{3})\b/)?.[1] || 0), matchedTerms, excerpt: extractRelevantExcerpt(pageText, matchedTerms), finding: parseGovernmentEventExcerpt(pageText), score, searchScore: score + 0.2 };
       } catch { return null; }
     }));
     return pages.filter(Boolean).sort((left, right) => right.searchScore - left.searchScore).slice(0, limit);
@@ -202,7 +214,7 @@ const enrichBoeResults = async (results, limit = 3) => {
       const response = await fetch(item.url, { headers: { accept: 'text/html', 'user-agent': 'elpaisestafatal-local-resolver/1.0' }, signal: AbortSignal.timeout(Math.min(2500, remaining)) });
       if (!response.ok) return item;
       const pageText = extractPageText((await response.text()).slice(0, 2 * 1024 * 1024));
-      return { ...item, excerpt: extractRelevantExcerpt(pageText, item.matchedTerms), finding: parseBudgetTransferExcerpt(pageText) };
+      return { ...item, excerpt: extractRelevantExcerpt(pageText, item.matchedTerms), finding: parseGovernmentEventExcerpt(pageText) };
     } catch { return item; }
   }));
   return enriched;
