@@ -36,6 +36,9 @@ for (const wording of [
 ]) {
   if (handlerForInput(wording, 'descriptive') !== 'budget_transfer') throw new Error(`Budget event wording was not routed: ${wording}`);
 }
+if (handlerForInput('Los menas reciben más dinero que los jubilados', 'comparative') === 'budget_transfer') throw new Error('Generic benefit comparisons must not be routed as budget transfers');
+if (handlerForInput('La inmigración ha disparado la delincuencia', 'descriptive') !== 'causal') throw new Error('Causal wording with disparar was not routed as causal');
+if (handlerForInput('Los okupas pueden quedarse en tu casa durante años', 'descriptive') !== 'legal_rule') throw new Error('Occupation claims must use legal guidance');
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
 for (const wording of ['Uno de cada tres jóvenes está en paro', 'La mitad de los hogares llega justo a fin de mes']) {
   if (handlerForInput(wording, 'descriptive') !== 'proportion') throw new Error(`Natural fraction wording was not routed as a proportion: ${wording}`);

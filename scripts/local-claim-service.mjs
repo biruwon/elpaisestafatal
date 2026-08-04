@@ -759,7 +759,7 @@ const classify = async (text) => {
   const decisionRanked = directPhraseCandidate
     ? [directPhraseCandidate, ...publicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
     : publicRanked;
-  const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score }));
+  const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
   // fallback guidance, but it must not force an exact claim paraphrase through
@@ -933,7 +933,13 @@ const startUrlResolveJob = (url) => {
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
   const broadTopicGuidance = classified.status === 'related' && !classified.primary && classified.alternatives?.some((item) => item.kind === 'topic');
-  const relatedClaims = (classified.alternatives || []).filter((item) => !broadTopicGuidance || item.kind === 'topic').map((item) => ({
+  const requestedHandler = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
+  const relatedClaims = (classified.alternatives || []).filter((item) => {
+    if (broadTopicGuidance && item.kind !== 'topic') return false;
+    if (domainSpecific.has(requestedHandler) && item.kind === 'claim' && item.handlerId && item.handlerId !== requestedHandler) return false;
+    return true;
+  }).map((item) => ({
     kind: item.kind,
     slug: item.slug,
     title: item.title,
