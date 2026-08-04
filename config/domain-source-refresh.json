@@ -11,10 +11,10 @@
     {
       "id": "interior-crime-downloads",
       "domain": "immigration_crime",
-      "url": "https://www.interior.gob.es/opencms/es/archivos-y-documentacion/documentacion-y-publicaciones/anuarios-y-estadisticas/",
+      "url": "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",
       "schedule": "weekly",
-      "mode": "discovery",
-      "title": "Interior crime statistics and downloadable tables"
+      "mode": "active",
+      "title": "Interior annual recorded offences by category and period"
     },
     {
       "id": "social-security-benefits",

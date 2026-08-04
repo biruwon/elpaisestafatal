@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseDelimited, parseDomainPayload, parsePdfText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
+import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -54,7 +54,8 @@ try {
     const extracted = await parser.getText();
     await parser.destroy();
     payload = parsePdfText(extracted.text);
-  } else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
+} else if (domain === 'immigration_crime' && /Series anuales|Hechos conocidos por comunidades/i.test(text)) payload = parseCrimeSeriesText(text);
+  else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
 const source = { id: `domain-${hash.slice(0, 16)}`, title, url: response.url.toString(), landingUrl: sourceUrl.toString() };

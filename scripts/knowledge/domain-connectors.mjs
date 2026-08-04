@@ -32,7 +32,7 @@ const parsers = {
     ...common(row, source, index), metricId: row.metricId || 'benefit_recipients_by_group', metric: row.metric || 'Beneficiarios de prestaciones por grupo', value: numberFor(valueFor(row, ['value', 'valor', 'beneficiaries', 'beneficiarios', 'holders', 'titulares', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'personas',
   })),
   immigration_crime: (rows, source) => rows.map((row, index) => ({
-    ...common(row, source, index), metricId: 'crime_rate_by_group', metric: 'Delitos o condenas por grupo', value: numberFor(valueFor(row, ['rate', 'tasa', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'tasa o personas',
+    ...common(row, source, index), metricId: row.metricId || 'crime_rate_by_group', metric: row.metric || 'Delitos o condenas por grupo', value: numberFor(valueFor(row, ['rate', 'tasa', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'tasa o personas',
   })),
   public_housing_allocation: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: 'public_housing_allocations_by_group', metric: 'Adjudicaciones de vivienda pública por grupo', value: numberFor(valueFor(row, ['allocations', 'adjudicaciones', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'adjudicaciones',
@@ -50,6 +50,27 @@ export const parseDelimited = (text) => {
     const cells = line.split(separator);
     return Object.fromEntries(headers.map((header, index) => [header.trim(), String(cells[index] || '').trim()]));
   });
+};
+
+export const parseCrimeSeriesText = (text) => {
+  const lines = String(text || '').replace(/^\uFEFF/, '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const headerIndex = lines.findIndex((line) => /^;?20\d{2}(;20\d{2})+;?$/.test(line));
+  if (headerIndex < 0) return [];
+  const periods = lines[headerIndex].split(';').map((item) => item.trim()).filter(Boolean);
+  const nationalIndex = lines.findIndex((line, index) => index > headerIndex && /^TOTAL NACIONAL;?$/i.test(line));
+  if (nationalIndex < 0) return [];
+  const records = [];
+  for (const line of lines.slice(nationalIndex + 1)) {
+    if (/^(TOTAL|COMUNIDAD AUTÓNOMA|COMUNIDAD AUTONOMA)/i.test(line)) continue;
+    const cells = line.split(';').map((item) => item.trim());
+    if (cells.length < periods.length + 1 || !cells[0]) continue;
+    const category = cells[0].replace(/^\d+\.\s*/, '').trim();
+    periods.forEach((period, index) => {
+      const value = numberFor(cells[index + 1]);
+      if (value !== null) records.push({ period, geography: 'España', group: 'población general', category, value, metricId: 'recorded_offences', metric: 'Hechos conocidos por categoría penal', unit: 'hechos conocidos' });
+    });
+  }
+  return records;
 };
 
 export const parseSpreadsheetBuffer = async (buffer) => {
