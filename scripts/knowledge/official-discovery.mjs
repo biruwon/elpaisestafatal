@@ -162,9 +162,10 @@ export const parseGovernmentEventExcerpt = (text) => {
   if (budget) return { ...budget, eventType: 'budget_transfer', action: 'credit_transfer' };
   const sentence = eventSentence(text);
   if (!sentence) return undefined;
-  const appointment = sentence.match(/\b(nombra|designa|cesa)\s+(?:a\s+)?([^,.;]+?)(?:\s+como\s+|\s+en\s+el\s+cargo\s+de\s+)([^.;]+)/i);
+  const appointment = sentence.match(/\b(nombra|designa|cesa)\s+(?:a\s+)?([^,.;]+?)(?:\s+como\s+|\s+en\s+el\s+cargo\s+de\s+|\s+para\s+el\s+cargo\s+de\s+)([^.;]+)/i)
+    || sentence.match(/\b(nombra|designa|cesa)\s+(?:a\s+)?([^,.;]+?)\s+(?:director(?:a)?|secretari[oa]|delegad[oa]|president[ae]|vocal)\b([^.;]*)/i);
   if (appointment) return { type: 'government_event', eventType: appointment[1].toLocaleLowerCase('es'), action: sentence.slice(0, 320), personOrBody: appointment[2].trim(), role: appointment[3].trim() };
-  const grant = sentence.match(/\b(concede|adjudica)\b[^.]{0,240}?(?:subvenci[oó]n|ayuda|fondos?)(?:[^.]{0,180})/i);
+  const grant = sentence.match(/\b(aprueba|concede|adjudica)\b[^.]{0,240}?(?:subvenci[oó]n|ayuda|fondos?)(?:[^.]{0,180})/i);
   if (grant) return { type: 'government_event', eventType: grant[1].toLocaleLowerCase('es'), action: grant[0].trim().slice(0, 320) };
   return { type: 'government_event', eventType: 'official_decision', action: sentence.slice(0, 320) };
 };

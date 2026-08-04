@@ -15,8 +15,10 @@ const transfer = parseBudgetTransferExcerpt('ACUERDO por el que se autoriza una 
 if (!transfer || transfer.amount !== 309840377.2 || !transfer.originEntity.includes('Educación') || !transfer.destinationEntity.includes('Presidencia')) throw new Error('Budget transfer extraction did not preserve the official fields');
 const appointment = parseGovernmentEventExcerpt('El Consejo de Ministros nombra a María García como directora general de una agencia pública.');
 if (!appointment || appointment.type !== 'government_event' || appointment.eventType !== 'nombra' || !appointment.personOrBody.includes('María García') || !appointment.role.includes('directora general')) throw new Error('Government appointment extraction did not preserve the action, person, and role');
+const alternateAppointment = parseGovernmentEventExcerpt('El Gobierno designa a Luis Pérez para el cargo de secretario general del ministerio.');
+if (!alternateAppointment || alternateAppointment.eventType !== 'designa' || !alternateAppointment.personOrBody.includes('Luis Pérez') || !alternateAppointment.role.includes('secretario general')) throw new Error('Alternate appointment wording was not extracted');
 const decision = parseGovernmentEventExcerpt('El Gobierno aprueba una ayuda para municipios afectados por la sequía.');
-if (!decision || decision.type !== 'government_event' || decision.eventType !== 'official_decision' || !decision.action.includes('aprueba')) throw new Error('Generic government decision extraction did not preserve the official action');
+if (!decision || decision.type !== 'government_event' || decision.eventType !== 'aprueba' || !decision.action.includes('ayuda')) throw new Error('Government grant extraction did not preserve the official action');
 const budgetEvent = parseGovernmentEventExcerpt('Se autoriza una transferencia de crédito, por importe de 10.000 euros, desde el Ministerio de Educación, al Ministerio de Hacienda para financiar gastos de personal.');
 if (!budgetEvent || budgetEvent.type !== 'budget_transfer' || budgetEvent.eventType !== 'budget_transfer') throw new Error('Government event parser did not retain the specialised budget-transfer finding');
 const alternateBudget = parseBudgetTransferExcerpt('Se autoriza una transferencia de crédito de 12.500 euros desde Educación, a Presidencia para financiar gastos de personal.');
