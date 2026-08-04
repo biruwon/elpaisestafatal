@@ -96,6 +96,9 @@ assert(risingTrend.semanticSignature === equivalentRisingTrend.semanticSignature
 assert(risingTrend.semanticSignature === pastRisingTrend.semanticSignature, 'Past-tense rising-trend paraphrase did not receive the same semantic signature');
 assert(risingTrend.semanticSignature !== fallingTrend.semanticSignature, 'Opposing trend directions collapsed into the same semantic family');
 assert(deterministicFallbackCompiler('El empleo va a peor en España').claimType === 'trend', 'A worsening trend was incorrectly classified as a prediction');
+const pluralWorseningTrend = deterministicFallbackCompiler('La economía y el empleo van a peor');
+assert(pluralWorseningTrend.claimType === 'trend', 'Plural worsening trend was not detected');
+assert(pluralWorseningTrend.semanticSignature.includes('trend:worsening'), 'Plural worsening trend did not preserve its direction');
 const encarecimiento = deterministicFallbackCompiler('La vivienda sigue encareciéndose');
 const persistentRise = deterministicFallbackCompiler('Los precios no dejan de subir');
 assert(encarecimiento.semanticSignature === deterministicFallbackCompiler('La vivienda sube').semanticSignature, 'Inflected rising-price wording did not receive the same semantic signature');
