@@ -42,6 +42,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 - Official discovery now has a bounded `government_event` path for newly published decisions, appointments, grants, and other official acts. It preserves the specialised budget-transfer finding when available, extracts a constrained action/person/role shape for appointments, and otherwise retains a short official action excerpt. The local resolver now renders an evidence ladder and provisional conversation response that separates the published act from execution, impact, intention, and other unsupported implications; a generic ministry decision is no longer treated as a budget transfer merely because it names a ministry.
 
+- BOE legal discovery now expands additional high-signal everyday wording for deportation/expulsion, asylum, nationality, registration, regularisation, incapacity, imprisonment, self-defence, expropriation, freedom of expression, and dismissal compensation. It keeps the user’s concrete term in at least one bounded title query while adding formal vocabulary, preserving the current-law and source-validation gates.
+
 - Knowledge-gap triage now persists maintainer-only status, priority, next action, and triage time back to D1 through an explicit `--sync-d1` step. The migration and export path are versioned and validated, while the workflow remains review-only: it cannot link, publish, materialize, or promote a claim.
 
 - The scheduled triage workflow now applies the versioned D1 migrations before exporting and syncing the private queue, so a newly deployed triage schema cannot leave the maintainer workflow silently out of sync with production.

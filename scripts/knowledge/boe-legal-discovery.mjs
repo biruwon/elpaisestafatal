@@ -29,6 +29,17 @@ const legalTermExpansions = [
   { triggers: ['garantia', 'devolver compra', 'tienda', 'consumidor'], terms: ['consumo', 'consumidores', 'usuarios'] },
   { triggers: ['carnet', 'velocidad', 'conducir', 'trafico'], terms: ['trafico', 'seguridad vial', 'circulacion'] },
   { triggers: ['paro', 'prestacion', 'pension', 'cotizacion'], terms: ['seguridad social', 'prestacion', 'desempleo', 'cotizaciones'] },
+  { triggers: ['deportar', 'expulsar', 'expulsion'], terms: ['extranjeria', 'expulsion', 'retorno'] },
+  { triggers: ['asilo', 'refugiado', 'proteccion internacional'], terms: ['asilo', 'proteccion internacional', 'extranjeria'] },
+  { triggers: ['nacionalidad', 'pasaporte', 'ciudadania'], terms: ['nacionalidad', 'registro civil', 'extranjeria'] },
+  { triggers: ['empadronar', 'empadronamiento', 'padron'], terms: ['padron', 'poblacion', 'regimen local'] },
+  { triggers: ['regularizar', 'papeles'], terms: ['extranjeria', 'residencia', 'autorizacion'] },
+  { triggers: ['indemnizacion', 'despido'], terms: ['laboral', 'trabajadores', 'estatuto'] },
+  { triggers: ['baja laboral', 'incapacidad'], terms: ['seguridad social', 'incapacidad', 'trabajo'] },
+  { triggers: ['carcel', 'prision', 'condena'], terms: ['penal', 'penitenciario', 'codigo penal'] },
+  { triggers: ['legitima defensa', 'armas'], terms: ['penal', 'armas', 'seguridad ciudadana'] },
+  { triggers: ['expropiar', 'expropiacion'], terms: ['expropiacion', 'suelo', 'utilidad publica'] },
+  { triggers: ['libertad de expresion', 'censura'], terms: ['libertad', 'expresion', 'comunicacion'] },
 ];
 
 const triggerMatches = (text, trigger) => {
@@ -42,6 +53,14 @@ const expansionTermsForQuery = (query) => {
   return legalTermExpansions
     .filter(({ triggers }) => triggers.some((trigger) => triggerMatches(text, trigger)))
     .flatMap(({ terms }) => terms);
+};
+
+const expansionTriggersForQuery = (query) => {
+  const text = normalise(query);
+  return legalTermExpansions
+    .filter(({ triggers }) => triggers.some((trigger) => triggerMatches(text, trigger)))
+    .flatMap(({ triggers }) => triggers)
+    .flatMap((trigger) => tokens(trigger).map(stem));
 };
 
 const expandedTermsForQuery = (query) => expansionTermsForQuery(query).flatMap((term) => tokens(term));
@@ -95,7 +114,17 @@ export const titleQueries = (query) => {
   const formalSet = new Set(formalTerms);
   const originalSet = new Set(originalTerms);
   const pairScore = (pair) => pair.reduce((score, term) => score + (formalSet.has(term) ? 4 : 0) + (originalSet.has(term) ? 3 : 0) + term.length / 100, 0);
-  return pairs.sort((left, right) => pairScore(right) - pairScore(left)).slice(0, 3).map((pair) => JSON.stringify({ query: { query_string: { query: `titulo:(${pair.map((item) => `${item}*`).join(' and ')})` }, range: {} }, sort: [] }));
+  const serialize = (pair) => JSON.stringify({ query: { query_string: { query: `titulo:(${pair.map((item) => `${item}*`).join(' and ')})` }, range: {} }, sort: [] });
+  const rankedPairs = pairs.sort((left, right) => pairScore(right) - pairScore(left));
+  const triggerAnchor = expansionTriggersForQuery(query).find((term) => originalSet.has(term));
+  const formalAnchor = formalTerms.find((term) => term !== triggerAnchor);
+  const anchoredPair = triggerAnchor && formalAnchor ? [triggerAnchor, formalAnchor] : null;
+  const serialized = rankedPairs.slice(0, 3).map(serialize);
+  if (anchoredPair) {
+    const anchoredQuery = serialize(anchoredPair);
+    if (!serialized.includes(anchoredQuery)) serialized.push(anchoredQuery);
+  }
+  return serialized.slice(0, 4);
 };
 
 export const consolidatedQuery = (query) => {

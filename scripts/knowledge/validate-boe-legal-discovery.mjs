@@ -26,6 +26,18 @@ const socialSecurityText = socialSecurityQuery ? JSON.parse(socialSecurityQuery)
 const socialSecurityQueries = titleQueries('¿Puedo perder la prestación por desempleo?').map((item) => JSON.parse(item).query?.query_string?.query || '');
 if (!socialSecurityText.includes('prest*') || !socialSecurityQueries.some((item) => item.includes('segur*'))) throw new Error('Social-security wording did not preserve the user term and bounded formal expansion');
 
+const migrationQueries = titleQueries('¿Pueden deportar a una persona extranjera?').map((item) => JSON.parse(item).query?.query_string?.query || '');
+if (!migrationQueries.some((item) => item.includes('deport*')) || !migrationQueries.some((item) => item.includes('extranjeri*'))) throw new Error('Migration wording did not preserve the user term and formal expansion');
+
+const asylumQueries = titleQueries('¿Quién puede pedir asilo y protección internacional?').map((item) => JSON.parse(item).query?.query_string?.query || '');
+if (!asylumQueries.some((item) => item.includes('asilo*')) || !asylumQueries.some((item) => item.includes('proteccion*'))) throw new Error('Asylum wording did not expand to formal protection terminology');
+
+const criminalQueries = titleQueries('¿Cuándo se puede alegar legítima defensa con un arma?').map((item) => JSON.parse(item).query?.query_string?.query || '');
+if (!criminalQueries.some((item) => item.includes('legitima*')) || !criminalQueries.some((item) => item.includes('penal*') || item.includes('armas*'))) throw new Error('Criminal-law wording did not expand to bounded formal terminology');
+
+const employmentQueries = titleQueries('¿Qué indemnización corresponde si me despiden?').map((item) => JSON.parse(item).query?.query_string?.query || '');
+if (!employmentQueries.some((item) => item.includes('indemniz*')) || !employmentQueries.some((item) => item.includes('laboral*'))) throw new Error('Indemnity wording did not expand to labour-law terminology');
+
 const laws = rankConsolidatedLaws([
   { identificador: 'BOE-A-1', titulo: 'Ley sobre documentos públicos', rango: { texto: 'Ley' }, vigencia_agotada: 'N', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260101' },
   { identificador: 'BOE-A-2', titulo: 'Ley derogada sobre documentos públicos', vigencia_agotada: 'S', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260701' },
