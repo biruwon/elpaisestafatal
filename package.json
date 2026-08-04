@@ -83,7 +83,7 @@
     "knowledge:postgres:benchmark": "node scripts/knowledge/benchmark-postgres-warehouse.mjs",
     "knowledge:postgres:benchmark:validate": "node scripts/knowledge/validate-postgres-benchmark.mjs",
     "knowledge:hybrid:benchmark": "node scripts/knowledge/benchmark-warehouse-retrieval.mjs",
-    "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs",
+    "knowledge:discovery": "node scripts/knowledge/validate-official-discovery.mjs && node scripts/knowledge/validate-discovery-query.mjs",
     "knowledge:evaluate:run": "node scripts/knowledge/run-evaluation.mjs",
     "knowledge:evaluate:report": "node scripts/validate-evaluation-report.mjs",
     "knowledge:materialize": "node scripts/knowledge/materialize-answer.mjs",

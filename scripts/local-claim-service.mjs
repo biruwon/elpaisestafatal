@@ -18,6 +18,7 @@ import { compilerInstruction, compilerSchema, formatCompilerCandidates, normaliz
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
+import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -1348,6 +1349,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? { ...classified, primary: undefined, alternatives: [classified.primary, ...(classified.alternatives || [])] }
     : classified;
   const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
   // A bare number is often a dimension label in statistical indexes (for
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.
@@ -1373,7 +1375,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // publication.
   const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
   const discovered = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
-    ? (await discoverOfficialDocuments(retrievalText, 3)).map(discoveryObservation)
+    ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
   const observations = warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
