@@ -39,6 +39,14 @@
       "schedule": "weekly",
       "mode": "discovery",
       "title": "Official social-housing programme reporting portal"
+    },
+    {
+      "id": "madrid-social-housing-statistics",
+      "domain": "public_housing_allocation",
+      "url": "https://www.comunidad.madrid/gobierno/estadistica/patrimonio-datos-estadisticos-agencia-vivienda-social",
+      "schedule": "monthly",
+      "mode": "discovery",
+      "title": "Madrid Social Housing Agency statistics and downloadable assets"
     }
   ]
 }

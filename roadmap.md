@@ -564,7 +564,7 @@ Initial trusted source connectors:
 
 Use deterministic parsers for APIs and stable tables. Use the local model only for irregular documents, constrained by schemas and validation.
 
-Current high-risk domain feeds: the INE population denominator feed is active; Interior's annual recorded-offences CSV is active; Social Security's IMV dossier is active for title holders by Spanish/foreign nationality; and MIVAU's protected-housing action CSV is active by province, month, typology, and administrative status. These feeds are versioned into the local warehouse with typed period, geography, group, category, and metric fields. Public-housing allocation by applicant group remains a gap because the national action feed does not contain applicants or allocations by nationality.
+Current high-risk domain feeds: the INE population denominator feed is active; Interior's annual recorded-offences CSV is active; Social Security's IMV dossier is active for title holders by Spanish/foreign nationality; and MIVAU's protected-housing action CSV is active by province, month, typology, and administrative status. These feeds are versioned into the local warehouse with typed period, geography, group, category, and metric fields. The official MIVAU, Madrid, and regional programme portals are now monitored as discovery sources for applicant-level allocation data. Public-housing allocation by applicant group remains a gap because the active national action feed does not contain applicants or allocations by nationality.
 
 ## Phase 5 — Deterministic claim handlers
 
