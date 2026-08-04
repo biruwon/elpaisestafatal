@@ -40,6 +40,8 @@ Generated claims must not be published merely because a model can write them. Ne
 
 ## Latest completed milestone — 2026-08-04
 
+- BOE legal discovery now expands a bounded set of high-signal colloquial Spanish terms into formal statutory vocabulary before searching consolidated legislation. Wording such as `echar a los okupas` and `despedir al trabajador` can generate constrained `desahucio`/`arrendamiento` and `laboral`/`estatuto` title pairs, while current-law, source, expiry, and article-level validation remain unchanged. Regression coverage protects both the expansion boundary and formal-law ranking.
+
 - The local resolver now derives a bounded semantic-family index from published claim titles and aliases. Equivalent Spanish causal paraphrases such as `Desde que llegaron más extranjeros hay más inseguridad` and `La inmigración genera inseguridad` can resolve to the reviewed immigration/crime clarification before a slow model call, while compatibility, numeric, metric, publication, and evidence gates remain authoritative. Reviewed candidate context also includes a concise finding and limitation so the local model can distinguish a genuine paraphrase from a merely related topic when model enrichment is needed.
 
 - The server-side `/api/classify` boundary now shares the published claim index for strong text matches. Exact published claims resolve immediately without contacting optional inference, keeping browser and server resolution consistent while leaving uncovered and media inputs on the existing fallback path.

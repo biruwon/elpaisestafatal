@@ -5,12 +5,26 @@ const queryText = query ? JSON.parse(query).query?.query_string?.query : '';
 if (!queryText?.startsWith('titulo:(') || !queryText.includes('*') || queryText.split(' and ').length !== 2) throw new Error('Consolidated-law query was not constrained to a bounded BOE title pair');
 if (consolidatedQuery('ley') !== null) throw new Error('Low-signal legal query was accepted');
 
+const colloquialHousingQuery = consolidatedQuery('¿Se puede echar a los okupas de una vivienda?');
+const colloquialHousingText = colloquialHousingQuery ? JSON.parse(colloquialHousingQuery).query?.query_string?.query : '';
+if (!colloquialHousingText.includes('desahucio*') || !colloquialHousingText.includes('arrendamie*')) throw new Error('Colloquial housing wording did not expand to bounded formal legal terms');
+
+const colloquialEmploymentQuery = consolidatedQuery('¿Puede el jefe despedirme sin causa?');
+const colloquialEmploymentText = colloquialEmploymentQuery ? JSON.parse(colloquialEmploymentQuery).query?.query_string?.query : '';
+if (!colloquialEmploymentText.includes('laboral*') || !colloquialEmploymentText.includes('estatuto*')) throw new Error('Colloquial employment wording did not expand to bounded formal legal terms');
+
 const laws = rankConsolidatedLaws([
   { identificador: 'BOE-A-1', titulo: 'Ley sobre documentos públicos', rango: { texto: 'Ley' }, vigencia_agotada: 'N', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260101' },
   { identificador: 'BOE-A-2', titulo: 'Ley derogada sobre documentos públicos', vigencia_agotada: 'S', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260701' },
   { identificador: 'BOE-A-3', titulo: 'Norma desactualizada sobre reutilización', vigencia_agotada: 'N', estado_consolidacion: { texto: 'Desactualizado' }, fecha_actualizacion: '20260702' },
 ], 'documentos públicos reutilización', 3);
 if (laws.length !== 1 || laws[0].identificador !== 'BOE-A-1') throw new Error('Expired or outdated consolidated laws were not rejected');
+
+const colloquialLaws = rankConsolidatedLaws([
+  { identificador: 'BOE-A-HOUSING', titulo: 'Ley de Arrendamientos Urbanos y desahucio', rango: { texto: 'Ley' }, vigencia_agotada: 'N', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260101' },
+  { identificador: 'BOE-A-UNRELATED', titulo: 'Ley de educación', rango: { texto: 'Ley' }, vigencia_agotada: 'N', estado_consolidacion: { texto: 'Finalizado' }, fecha_actualizacion: '20260101' },
+], '¿Se puede echar a los okupas de una vivienda?', 2);
+if (colloquialLaws[0]?.identificador !== 'BOE-A-HOUSING') throw new Error('Colloquial housing wording did not rank the matching formal law');
 
 const rules = rankLegalRules([
   { id: 'old', kind: 'legal_rule', metric: 'Artículo 1', excerpt: 'Los documentos públicos pueden reutilizarse.', period: '2020-01-01', dimensions: { blockId: 'a1', currentVersion: false } },

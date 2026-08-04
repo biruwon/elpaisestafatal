@@ -10,6 +10,30 @@ const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token)
 const asArray = (value) => Array.isArray(value) ? value : value && typeof value === 'object' ? [value] : [];
 const stem = (value) => normalise(value).replace(/(amientos|imientos|aciones|adores|adoras|mente|acion|ucion|idades|idad|icos|icas|ico|ica|es|os|as|ar|er|ir)$/i, '').slice(0, 10);
 
+// People describe legal situations with everyday words, while BOE titles and
+// articles usually use formal terminology. Expand only high-signal legal
+// concepts and keep the expansion bounded so discovery never becomes a broad
+// web search or a substitute for evidence validation.
+const legalTermExpansions = [
+  { triggers: ['okup', 'ocupacion', 'echar', 'desalojo'], terms: ['ocupacion', 'desahucio', 'arrendamiento'] },
+  { triggers: ['alquiler', 'casero', 'inquilino'], terms: ['arrendamiento', 'arrendador', 'desahucio'] },
+  { triggers: ['inmigr', 'extranj', 'residencia'], terms: ['extranjeria', 'inmigracion', 'residencia'] },
+  { triggers: ['dato personal', 'privacidad'], terms: ['proteccion', 'datos', 'personales'] },
+  { triggers: ['despid', 'trabajo', 'empleo', 'jefe'], terms: ['laboral', 'trabajadores', 'estatuto'] },
+  { triggers: ['violencia machista', 'violencia mujer'], terms: ['violencia', 'genero', 'integral'] },
+  { triggers: ['herencia', 'heredar'], terms: ['sucesiones', 'donaciones'] },
+  { triggers: ['multa', 'sancion'], terms: ['sancionador', 'infracciones'] },
+];
+
+const expansionTermsForQuery = (query) => {
+  const text = normalise(query);
+  return legalTermExpansions
+    .filter(({ triggers }) => triggers.some((trigger) => text.includes(normalise(trigger))))
+    .flatMap(({ terms }) => terms);
+};
+
+const expandedLegalTokens = (query) => [...new Set([...tokens(query), ...expansionTermsForQuery(query)])].slice(0, 12);
+
 const includesAny = (value, values) => values.some((item) => String(value || '').includes(item));
 const publicReuseArticles = new Map([
   ['artículo 3', 0.45],
@@ -50,7 +74,7 @@ const titleQueries = (query) => {
       JSON.stringify({ query: { query_string: { query: 'titulo:(reutiliz* and sector*)' }, range: {} }, sort: [] }),
     ];
   }
-  const wanted = tokens(query).map(stem).filter((item) => item.length >= 4);
+  const wanted = (expansionTermsForQuery(query).length ? expansionTermsForQuery(query) : tokens(query)).map(stem).filter((item) => item.length >= 4);
   const pairs = [];
   for (let left = 0; left < wanted.length; left += 1) for (let right = left + 1; right < wanted.length; right += 1) pairs.push([wanted[left], wanted[right]]);
   return pairs.sort((left, right) => (right[0].length + right[1].length) - (left[0].length + left[1].length)).slice(0, 3).map((pair) => JSON.stringify({ query: { query_string: { query: `titulo:(${pair.map((item) => `${item}*`).join(' and ')})` }, range: {} }, sort: [] }));
@@ -61,7 +85,7 @@ export const consolidatedQuery = (query) => {
 };
 
 export const rankConsolidatedLaws = (items, query, limit = 2) => {
-  const wanted = tokens(query);
+  const wanted = expandedLegalTokens(query);
   return asArray(items).filter((item) => item?.identificador && item?.titulo && item.vigencia_agotada !== 'S' && item.estado_consolidacion?.texto !== 'Desactualizado').map((item) => {
     const title = normalise(item.titulo);
     const titleMatches = wanted.filter((token) => title.includes(stem(token)));
@@ -75,7 +99,7 @@ export const rankConsolidatedLaws = (items, query, limit = 2) => {
 };
 
 export const rankLegalRules = (records, query, limit = 6) => {
-  const wanted = tokens(query);
+  const wanted = expandedLegalTokens(query);
   const current = new Map();
   for (const record of records.filter((item) => item.kind === 'legal_rule')) {
     const existing = current.get(record.dimensions?.blockId);
