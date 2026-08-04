@@ -9,6 +9,7 @@ export type ClaimIndexEntry = {
   href: string;
   aliases: string[];
   keywords: string[];
+  semanticSignatures?: Array<{ signature: string; phrase: string }>;
   assessment?: string;
   answer?: string;
   topic?: string;
@@ -114,7 +115,7 @@ const compatibleNumericContext = (query: string, candidate: string): boolean => 
   return !(queryYears.length && candidateYears.length && !queryYears.some((year) => candidateYears.includes(year)));
 };
 
-export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): RankedClaimIndexEntry => {
+export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value)): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
   const searchablePhrases = [entry.title, ...entry.aliases].map(normaliseClaimText);
@@ -126,10 +127,12 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): Ran
   const weightedMatches = matchedTokens.reduce((total, token) => total + (lowSignalWords.has(token) ? 0.25 : 1), 0);
   const phraseScore = Math.max(...searchablePhrases.map((text) => phraseMatches(query, text)), 0);
   const overlapScore = queryTokens.length ? (weightedMatches / queryTokens.length) * 55 : 0;
-  const querySemanticSignature = entry.kind === 'claim' ? semanticQuerySignature(value) : '';
-  const semanticFamilyMatch = Boolean(querySemanticSignature && entry.kind === 'claim' && searchablePhrases.some((phrase) => (
+  const candidateSemanticSignatures = entry.semanticSignatures?.length
+    ? entry.semanticSignatures
+    : searchablePhrases.map((phrase) => ({ signature: semanticQuerySignature(phrase), phrase }));
+  const semanticFamilyMatch = Boolean(querySemanticSignatureValue && entry.kind === 'claim' && candidateSemanticSignatures.some(({ signature, phrase }) => (
     compatibleNumericContext(query, phrase)
-    && querySemanticSignature === semanticQuerySignature(phrase)
+    && querySemanticSignatureValue === signature
   )));
   const score = Math.round(Math.max(
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
@@ -140,8 +143,9 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry): Ran
 
 export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit = 6): RankedClaimIndexEntry[] => {
   if (!normaliseClaimText(value)) return [];
+  const querySemanticSignatureValue = semanticQuerySignature(value);
   return entries
-    .map((entry) => scoreClaimIndexEntry(value, entry))
+    .map((entry) => scoreClaimIndexEntry(value, entry, querySemanticSignatureValue))
     // A shared word such as “España” or “país” is context, not a claim match.
     // Keep weak candidates out of the UI so an unrelated published claim cannot
     // be presented as guidance for an uncovered statement.

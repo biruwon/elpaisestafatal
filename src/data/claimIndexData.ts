@@ -3,6 +3,7 @@ import { concerns } from './concerns';
 import type { ClaimIndexEntry } from './claimIndex';
 import { claimAliases } from './claimAliases';
 import { getSource } from './registry';
+import { semanticQuerySignature } from '../lib/knowledge/querySignature';
 
 const topicVocabulary: Record<string, string[]> = {
   politica: [
@@ -41,6 +42,12 @@ export const claimIndexEntries: ClaimIndexEntry[] = [
     title: clean(claim.claim),
     href: `/afirmaciones/${claim.slug}`,
     aliases: [...claim.aliases, ...(claimAliases[claim.slug] ?? []), ...(scalableAliases[claim.slug] ?? [])],
+    semanticSignatures: [...new Map([
+      clean(claim.claim),
+      ...claim.aliases,
+      ...(claimAliases[claim.slug] ?? []),
+      ...(scalableAliases[claim.slug] ?? []),
+    ].map((phrase) => [semanticQuerySignature(phrase), clean(phrase)] as const).filter(([signature]) => Boolean(signature)))].map(([signature, phrase]) => ({ signature, phrase })).slice(0, 32),
     keywords: [...claim.keywords, ...claim.topicSlugs],
     assessment: claim.assessment,
     answer: claim.shareable,
