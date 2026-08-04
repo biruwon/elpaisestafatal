@@ -64,7 +64,7 @@
     "knowledge:sources": "node scripts/knowledge/validate-source-registry.mjs",
     "knowledge:connectors": "node scripts/knowledge/validate-connectors.mjs && node scripts/knowledge/validate-boe-legal-discovery.mjs",
     "knowledge:freshness": "node scripts/knowledge/validate-source-freshness.mjs",
-  "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs && node scripts/knowledge/validate-causal-evidence.mjs && node scripts/knowledge/validate-prediction-evidence.mjs && node scripts/knowledge/validate-legal-evidence.mjs",
+  "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs && node scripts/knowledge/validate-causal-evidence.mjs && node scripts/knowledge/validate-prediction-evidence.mjs && node scripts/knowledge/validate-legal-evidence.mjs && node scripts/knowledge/validate-numeric-evidence.mjs",
     "knowledge:answer-plan": "node scripts/knowledge/validate-answer-plan.mjs",
     "knowledge:evidence-packet": "node scripts/knowledge/validate-evidence-packet.mjs",
     "knowledge:fallback-compiler": "node scripts/knowledge/validate-fallback-compiler.mjs",

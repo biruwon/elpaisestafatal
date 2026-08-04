@@ -22,6 +22,7 @@ import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
 import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
+import { unitCompatible } from './knowledge/numeric-evidence.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -539,27 +540,12 @@ const claimedNumericValue = (text, compiler) => {
 };
 
 const observationIsPercentage = (item) => includesAny(normalise(`${item.unit || ''} ${item.metric || ''} ${item.datasetId || ''}`), ['%', 'percent', 'porcentaje', 'rate', 'tasa', 'share', 'proporcion']);
-const claimUnitClass = (text) => {
-  const value = normalise(text);
-  if (includesAny(value, ['euros', 'euro', 'millones de euros', 'millones de €', 'por habitante', 'por persona'])) return includesAny(value, ['por habitante', 'por persona']) ? 'per_capita' : 'currency';
-  if (includesAny(value, ['personas', 'habitantes', 'residentes', 'hogares', 'trabajadores'])) return 'people';
-  if (includesAny(value, ['indice', 'índice', 'base 100'])) return 'index';
-  return null;
-};
-const observationUnitClass = (item) => {
-  const value = normalise(`${item.unit || ''} ${item.metric || ''} ${item.datasetId || ''}`);
-  if (includesAny(value, ['euro', 'eur', 'currency'])) return includesAny(value, ['habitante', 'capita', 'persona']) ? 'per_capita' : 'currency';
-  if (includesAny(value, ['personas', 'inhabitants', 'population', 'habitantes', 'households', 'hogares'])) return 'people';
-  if (includesAny(value, ['index', 'indice'])) return 'index';
-  return null;
-};
 
 const quantityAssessment = (text, compiler, observations) => {
   const claim = claimedNumericValue(text, compiler);
   const numeric = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   if (!claim || !numeric.length) return null;
-  const requestedUnit = claimUnitClass(text);
-  const compatible = numeric.filter((item) => observationIsPercentage(item) === claim.percentage && (!requestedUnit || !observationUnitClass(item) || observationUnitClass(item) === requestedUnit));
+  const compatible = numeric.filter((item) => observationIsPercentage(item) === claim.percentage && unitCompatible(text, item));
   if (!compatible.length) return null;
   const ordered = compatible.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
   const latest = ordered.at(-1);
