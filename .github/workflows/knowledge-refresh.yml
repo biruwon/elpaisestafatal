@@ -16,6 +16,8 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      WAREHOUSE_DATABASE_URL: ${{ secrets.WAREHOUSE_DATABASE_URL }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -46,5 +48,21 @@ jobs:
         with:
           name: evidence-warehouse-${{ github.run_id }}
           path: .local/source-warehouse
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Benchmark optional PostgreSQL warehouse
+        if: env.WAREHOUSE_DATABASE_URL != ''
+        run: |
+          npm run knowledge:warehouse:postgres
+          npm run knowledge:postgres:benchmark
+          npm run knowledge:postgres:benchmark:validate
+
+      - name: Upload PostgreSQL benchmark report
+        if: env.WAREHOUSE_DATABASE_URL != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-warehouse-benchmark-${{ github.run_id }}
+          path: .local/postgres-warehouse-benchmark.json
           if-no-files-found: error
           retention-days: 14
