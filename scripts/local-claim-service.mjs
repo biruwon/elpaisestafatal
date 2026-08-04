@@ -474,7 +474,16 @@ const directGroupObservations = (query, observations) => {
   ];
   const family = measureFamilies.find((candidate) => includesAny(queryText, candidate.query));
   if (!family) return [];
-  return observations.filter((item) => hasNonTotalGroupDimension(item) && includesAny(observationText(item), family.evidence));
+  const grouped = observations.filter((item) => hasNonTotalGroupDimension(item) && includesAny(observationText(item), family.evidence));
+  // One subgroup is context, not a comparison. Requiring two distinct
+  // non-total labels prevents a warehouse row for “foreign nationals” from
+  // being presented as proof that one group receives more, commits more, or
+  // is overrepresented than another.
+  const groupLabels = new Set(grouped.flatMap((item) => Object.entries({ ...(item.dimensions || {}), ...(item.dimensionLabels || {}) })
+    .filter(([key, value]) => hasNonTotalGroupDimension({ dimensions: { [key]: value } }))
+    .map(([, value]) => normalise(value))
+    .filter(Boolean)));
+  return groupLabels.size >= 2 ? grouped : [];
 };
 
 const parseSpanishNumber = (value) => {
