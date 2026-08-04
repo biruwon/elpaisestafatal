@@ -1390,14 +1390,20 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
-  const allowDiscovery = !classified.compiler?.clarificationRequired;
+  // Some claims require clarification in their final interpretation but are
+  // still safe to investigate for an official source. In particular, a new
+  // budget transfer or government decision should not lose discovery merely
+  // because the compiler also flagged an implied impact. Causal, legal,
+  // predictive, group, and normative claims remain gated from generic source
+  // discovery and use their dedicated evidence paths instead.
+  const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
+  const allowDiscovery = !classified.compiler?.clarificationRequired || discoveryEligible.has(handlerId);
   const indexedSource = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride ? await findWarehouseSource(retrievalText) : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
   // typed record or explain what is missing instead of attaching a topical
   // publication.
-  const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
   const discovered = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
