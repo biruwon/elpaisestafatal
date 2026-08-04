@@ -159,6 +159,7 @@ export const propositionShapeFor = (value) => {
     };
   }
   const causedByClause = text.match(/^(.*?)\s+(?:esta|estan)\s+provocando\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:porque|ya que|debido a que|por culpa de|por culpa del|por culpa de la)\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:hace|hacen)\s+(?:crecer|aumentar|subir|bajar|disminuir)\s+(.+)$/)
     || text.match(/^(.*?)\s+tiene\s+la\s+culpa\s+de\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:hace|hacen|ha hecho|han hecho)\s+que\s+(.+)$/)
@@ -271,7 +272,7 @@ const claimTypeFor = (value) => {
   const text = normalise(value);
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir', 'primero los espanoles', 'espanoles primero', 'los espanoles antes', 'prioridad para los espanoles'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'provoca', 'provocando', 'por culpa', 'tiene la culpa', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
+  if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a que', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'van a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
@@ -306,6 +307,7 @@ const splitExplicitClauses = (value) => {
   let clauses = original
     .replace(/\s*;\s*/g, ' | ')
     .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras que|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
+    .replace(/\s+(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\s+/gi, ' | ')
     .split('|')
     .map(cleanClause)
     .filter((clause) => clause.length >= 8);
@@ -345,7 +347,8 @@ export const deterministicFallbackCompiler = (text) => {
   const explicitTexts = splitExplicitClauses(original);
   const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true, ...propositionShapeFor(clause) }));
   const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
-  const claimType = explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original));
+  const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\b/.test(normalized);
+  const claimType = causalConnector ? 'causal' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original)));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
   const geography = normalized.includes('espana') || normalized.includes('nacional')
     ? 'España'
@@ -367,6 +370,9 @@ export const deterministicFallbackCompiler = (text) => {
     ...explicitPropositions,
     ...impliedPropositions,
   ];
+  const signaturePropositions = causalConnector
+    ? [...propositions, { text: original, type: 'causal', explicit: true }]
+    : propositions;
   return {
     normalized: original || 'Afirmación vacía',
     claimType,
@@ -379,7 +385,7 @@ export const deterministicFallbackCompiler = (text) => {
     explicitPropositions,
     impliedPropositions,
     retrievalHints,
-    semanticSignature: semanticSignatureFor({ claimType, propositions, entities, geography, period, population, numbers, negated: hasNegation(original) }),
+    semanticSignature: semanticSignatureFor({ claimType, propositions: signaturePropositions, entities, geography, period, population, numbers, negated: hasNegation(original) }),
     clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !original,
   };
 };

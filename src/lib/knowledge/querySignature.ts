@@ -42,7 +42,7 @@ const containsAlias = (text: string, alias: string): boolean => {
 const claimType = (text: string): string => {
   if (/(deberia|deberian|justo|prioridad|merecen|primero los espanoles|espanoles primero|los espanoles antes|prioridad para los espanoles)/.test(text)) return 'normative';
   if (/(que significa|que se entiende por|significado de|(?:^|\s)que es(?:\s|$)|definicion|parados ocultos|fijos discontinuos)/.test(text)) return 'definition';
-  if (/(causa|causan|causal|provoca|provocando|por culpa|tiene la culpa|genera|crece la|hace crecer|hace aumentar|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|desde que llegaron mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
+  if (/(causa|causan|causal|porque|ya que|debido a que|por culpa|tiene la culpa|provoca|provocando|genera|crece la|hace crecer|hace aumentar|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|desde que llegaron mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
@@ -111,6 +111,7 @@ const directionalRelation = (text: string): string | null => {
     || text.match(/^desde\s+que\s+(?:hay|existe|llegaron|llego)\s+mas\s+(.+?),?\s+(?:hay|existe|aumenta|sube)\s+mas\s+(.+)$/);
   if (comparativeCausal) return `causal:causes:${relationShape(comparativeCausal[1])}:${relationShape(comparativeCausal[2])}`;
   const causedByClause = text.match(/^(.*?)\s+(?:esta|estan)\s+provocando\s+(.+)$/)
+    || text.match(/^(.*?)\s+(?:porque|ya que|debido a que|por culpa de|por culpa del|por culpa de la)\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:hace|hacen)\s+(?:crecer|aumentar|subir|bajar|disminuir)\s+(.+)$/)
     || text.match(/^(.*?)\s+tiene\s+la\s+culpa\s+de\s+(.+)$/)
     || text.match(/^(.*?)\s+(?:hace|hacen|ha hecho|han hecho)\s+que\s+(.+)$/)

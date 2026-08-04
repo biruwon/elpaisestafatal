@@ -99,6 +99,10 @@ assert(deterministicFallbackCompiler('El empleo va a peor en España').claimType
 const pluralWorseningTrend = deterministicFallbackCompiler('La economía y el empleo van a peor');
 assert(pluralWorseningTrend.claimType === 'trend', 'Plural worsening trend was not detected');
 assert(pluralWorseningTrend.semanticSignature.includes('trend:worsening'), 'Plural worsening trend did not preserve its direction');
+const causalConnector = deterministicFallbackCompiler('Los alquileres suben porque faltan viviendas');
+assert(causalConnector.claimType === 'causal', 'Porque connector was not detected as causal');
+assert(causalConnector.explicitPropositions.length === 2, 'Porque connector did not preserve both explicit clauses');
+assert(causalConnector.semanticSignature.includes('causes'), 'Porque connector did not preserve its causal relation');
 const encarecimiento = deterministicFallbackCompiler('La vivienda sigue encareciéndose');
 const persistentRise = deterministicFallbackCompiler('Los precios no dejan de subir');
 assert(encarecimiento.semanticSignature === deterministicFallbackCompiler('La vivienda sube').semanticSignature, 'Inflected rising-price wording did not receive the same semantic signature');
