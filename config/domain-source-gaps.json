@@ -1,0 +1,22 @@
+{
+  "gaps": [
+    {
+      "id": "public-housing-allocation-by-nationality",
+      "domain": "public_housing_allocation",
+      "missingFields": ["applicants_by_group", "allocations_by_group", "period"],
+      "status": "not_published_in_extractable_source",
+      "officialSourcesChecked": [
+        "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP007_01.csv",
+        "https://www.comunidad.madrid/docs/2026-06/avs-informe-gestion-2025.pdf",
+        "https://www.comunidad.madrid/transparencia/sites/default/files/servicios/documentos/resoluciones/10-open-00039.7-2022.pdf"
+      ],
+      "availableEvidence": [
+        "protected-housing actions by province, month, typology, and status",
+        "total Madrid Social Housing Agency deliveries and second allocations",
+        "official statement that the requested nationality allocation breakdown is not held in directly extractable records"
+      ],
+      "permittedConclusion": "No public source currently establishes whether a specific public-housing programme prioritises or allocates homes by nationality.",
+      "nextEvidence": "A programme-level applicant and allocation extract from the responsible regional or municipal housing authority."
+    }
+  ]
+}
