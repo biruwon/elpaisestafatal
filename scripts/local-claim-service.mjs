@@ -23,6 +23,7 @@ import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-e
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
 import { unitCompatible } from './knowledge/numeric-evidence.mjs';
+import { domainProfileFor } from './knowledge/domain-handlers.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
@@ -956,6 +957,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
+  const domainProfile = isGroupComparison ? domainProfileFor(text) : null;
   const isPrediction = handlerId === 'prediction';
   const isLegal = handlerId === 'legal_rule';
   const isDefinition = handlerId === 'definition';
@@ -1133,12 +1135,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       ] },
     ] : []),
     ...(isGroupComparison ? [
-      { type: 'strongest_valid_concern', text: 'Puede haber diferencias reales entre grupos, pero solo una comparación equivalente permite saber su tamaño y significado.' },
+      { type: 'strongest_valid_concern', text: domainProfile ? `Puede haber diferencias reales, pero esta afirmación necesita datos específicos de ${domainProfile.id.replaceAll('_', ' ')} antes de extraer una conclusión.` : 'Puede haber diferencias reales entre grupos, pero solo una comparación equivalente permite saber su tamaño y significado.' },
       { type: 'group_comparison_requirements', items: [
-        { label: 'Grupos equivalentes', status: groupObservations.length ? 'check' : 'missing', detail: 'Definir exactamente quién pertenece a cada grupo.' },
-        { label: 'Mismo denominador', status: groupObservations.length ? 'check' : 'missing', detail: 'Comparar tasas sobre poblaciones equivalentes, no solo totales.' },
-        { label: 'Mismo periodo y territorio', status: groupObservations.length ? 'check' : 'missing', detail: 'Usar la misma fecha y cobertura geográfica.' },
-        { label: 'Ajustes relevantes', status: 'missing', detail: 'Comprobar edad, renta, composición familiar u otras diferencias que afecten al resultado.' },
+        { label: 'Grupos equivalentes', status: groupObservations.length ? 'check' : 'missing', detail: domainProfile?.needs.includes('beneficiarios por grupo') ? 'Comparar personas beneficiarias con el mismo programa y criterio de elegibilidad.' : 'Definir exactamente quién pertenece a cada grupo.' },
+        { label: 'Mismo denominador', status: groupObservations.length ? 'check' : 'missing', detail: domainProfile?.needs.includes('tasa por población') ? 'Usar tasas por población comparable, no el número bruto de detenidos o condenados.' : 'Comparar tasas sobre poblaciones equivalentes, no solo totales.' },
+        { label: 'Mismo periodo y territorio', status: groupObservations.length ? 'check' : 'missing', detail: domainProfile?.needs.includes('programa y territorio') ? 'Identificar el programa de vivienda y el territorio exacto.' : 'Usar la misma fecha y cobertura geográfica.' },
+        { label: 'Ajustes relevantes', status: 'missing', detail: domainProfile?.needs.includes('estructura de edad y sexo') ? 'Ajustar o separar edad, sexo, renta y territorio antes de hablar de causalidad.' : 'Comprobar edad, renta, composición familiar u otras diferencias que afecten al resultado.' },
+        ...(domainProfile ? [{ label: 'Fuentes necesarias', status: 'missing', detail: domainProfile.sources.join(' · ') }] : []),
       ] },
     ] : []),
     ...(isDefinition ? [
