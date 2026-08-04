@@ -39,7 +39,10 @@ const resolveMultipart = async (inputType, mimeType, text = '') => {
 };
 
 const cases = [
-  { text: 'España cobra demasiados impuestos', status: 'uncovered' },
+  // A local model may produce a safe provisional draft from a warehouse
+  // metric, but it must never promote this vague wording to the precise
+  // published European tax-ranking claim.
+  { text: 'España cobra demasiados impuestos', statuses: ['uncovered', 'draft'], forbiddenSlug: 'espana-impuestos-europa' },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
   { text: 'España gasta menos por habitante en pensiones que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-pensiones-europa' },
@@ -100,12 +103,14 @@ for (const item of cases) {
   try {
     const result = await resolve(item.text);
     if (result.status === 'processing') failures.push(`${item.text}: request remained processing after polling`);
-    if (result.status !== item.status) failures.push(`${item.text}: expected ${item.status}, received ${result.status}`);
+    const expectedStatuses = item.statuses || [item.status];
+    if (!expectedStatuses.includes(result.status)) failures.push(`${item.text}: expected ${expectedStatuses.join(' or ')}, received ${result.status}`);
     if (item.slug && result.relatedClaims?.[0]?.slug !== item.slug) failures.push(`${item.text}: expected primary ${item.slug}`);
     const guidanceTypes = new Set(['strongest_valid_concern', 'evidence_ladder', 'legal_decision_tree', 'prediction_conditions', 'trade_offs', 'group_comparison_requirements']);
     const guidanceBlockTypes = (result.result?.blocks || []).map((block) => block.type).filter((type) => guidanceTypes.has(type));
     if (new Set(guidanceBlockTypes).size !== guidanceBlockTypes.length) failures.push(`${item.text}: result repeated a guidance block type (${guidanceBlockTypes.join(', ')})`);
     if (item.slug && item.status === 'complete' && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
+    if (item.forbiddenSlug && (result.primary?.slug === item.forbiddenSlug || result.relatedClaims?.some((claim) => claim.slug === item.forbiddenSlug))) failures.push(`${item.text}: vague wording was routed to forbidden precise claim ${item.forbiddenSlug}`);
     if (item.slug === 'precios-hoteles-sube-junio-2026' && !result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === item.slug)) failures.push(`${item.text}: published tourism result did not retain its signed comparison visual`);
     if (['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'la-amnistia-rompe-la-igualdad-ante-la-ley', 'desalojar-a-un-ocupante-ilegal-tarda-anos'].includes(item.slug) && !result.result?.blocks?.some((block) => block.type === 'legal_decision_tree' && block.items?.some((entry) => entry.status === 'known'))) failures.push(`${item.text}: published legal result did not retain its decision path`);
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder' && block.steps?.some((step) => step.status === 'missing'))) failures.push(`${item.text}: population-replacement result did not retain its evidence ladder`);
