@@ -68,8 +68,11 @@ const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
 const cacheTtlMs = 15 * 60 * 1000;
 const maxCacheEntries = 1000;
+const maxCompilerCacheEntries = 512;
 const maxResolveJobs = 500;
 const answerCache = new Map();
+const compilerCache = new Map();
+const compilerInflight = new Map();
 const resolveJobs = new Map();
 const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, latencies: [], statusCounts: {} };
 const inferenceBackoffMs = 30 * 1000;
@@ -207,8 +210,10 @@ const localSpecificClaim = (value) => ['mi calle', 'mi barrio', 'mi portal', 'mi
 const pruneRuntimeState = () => {
   const now = Date.now();
   for (const [key, item] of answerCache) if (!item || item.expiresAt <= now) answerCache.delete(key);
+  for (const [key, item] of compilerCache) if (!item || item.expiresAt <= now) compilerCache.delete(key);
   for (const [key, item] of resolveJobs) if (!item || (item.completedAt && item.completedAt + cacheTtlMs <= now) || (!item.completedAt && item.createdAt + cacheTtlMs <= now)) resolveJobs.delete(key);
   while (answerCache.size > maxCacheEntries) answerCache.delete(answerCache.keys().next().value);
+  while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
   while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
 };
 setInterval(pruneRuntimeState, 60 * 1000).unref();
@@ -295,23 +300,37 @@ const normalizeAnswerPlan = (plan) => {
 const fallbackCompiler = (text) => normalizeCompilerOutput(null, text);
 
 const compileClaim = async (text, candidates = []) => {
-  const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
-  const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
-  try {
-    // This is background enrichment: the deterministic result is already
-    // available to the user. Allow one bounded cold-start model load, while
-    // keeping failures finite and configurable for slower local hardware.
-    const response = await inference.chat({ model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
-    const value = parseModelJson(response.message?.content);
-    if (!value || !Array.isArray(value.propositions)) {
-      if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] Model response did not satisfy the compiler schema: ${boundedExcerpt(response.message?.content, 600)}`);
-      return fallbackCompiler(text);
+  const deterministic = deterministicFallbackCompiler(text);
+  const cacheKey = digest(JSON.stringify({ signature: deterministic.semanticSignature, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
+  const cached = compilerCache.get(cacheKey);
+  if (cached?.expiresAt > Date.now()) return cached.value;
+  if (cached) compilerCache.delete(cacheKey);
+  const existing = compilerInflight.get(cacheKey);
+  if (existing) return existing;
+  const work = (async () => {
+    const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
+    const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
+    let value;
+    try {
+      // This is background enrichment: the deterministic result is already
+      // available to the user. Allow one bounded cold-start model load, while
+      // keeping failures finite and configurable for slower local hardware.
+      const response = await inference.chat({ model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
+      value = parseModelJson(response.message?.content);
+      if (!value || !Array.isArray(value.propositions)) {
+        if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] Model response did not satisfy the compiler schema: ${boundedExcerpt(response.message?.content, 600)}`);
+        value = null;
+      }
+    } catch (error) {
+      if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
     }
-    return normalizeCompilerOutput(value, text);
-  } catch (error) {
-    if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
-    return fallbackCompiler(text);
-  }
+    const result = value ? normalizeCompilerOutput(value, text) : fallbackCompiler(text);
+    compilerCache.set(cacheKey, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
+    return result;
+  })();
+  compilerInflight.set(cacheKey, work);
+  try { return await work; } finally { compilerInflight.delete(cacheKey); }
 };
 
 const extractImageText = async (media) => {
