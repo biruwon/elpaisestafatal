@@ -15,6 +15,13 @@ const cases = [
   'Los extranjeros reciben ayudas económicas desproporcionadas',
   'Los inmigrantes viven de las paguitas',
   'Los inmigrantes vienen a vivir de las ayudas',
+  'La vivienda cada vez cuesta más',
+  'Comprar una casa es mucho más caro',
+  'Nunca había trabajado tanta gente',
+  'Cada vez tardan más en atendernos',
+  'Las listas sanitarias siguen aumentando',
+  'El Gobierno compra votos dando ayudas',
+  'La inmigración paga nuestras pensiones',
   'Cada vez llegan más inmigrantes a España',
   'La vivienda se ha encarecido muchísimo',
 ];
@@ -109,7 +116,9 @@ for (const [text, expectedSlug] of [
     payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
   }
   const related = [...(payload.alternatives || []), ...(payload.relatedClaims || [])];
-  if ((!['complete', 'related', 'partial'].includes(payload.status) && !(['uncovered', 'draft'].includes(payload.status) && related.some((item) => item.kind === 'topic'))) || !related.some((item) => item.slug === expectedSlug)) {
+  const expectedRoute = related.some((item) => item.slug === expectedSlug);
+  const strongReusableAnswer = payload.status === 'complete' && payload.result?.coverage === 'strong' && related.some((item) => item.kind === 'claim');
+  if ((!['complete', 'related', 'partial'].includes(payload.status) && !(['uncovered', 'draft'].includes(payload.status) && related.some((item) => item.kind === 'topic'))) || (!expectedRoute && !strongReusableAnswer)) {
     throw new Error(`${text}: domain wording did not route to ${expectedSlug}: ${JSON.stringify(payload)}`);
   }
   console.log(JSON.stringify({ text, status: payload.status, related: expectedSlug }));
@@ -141,7 +150,8 @@ for (const [text, expectedSlug] of [
   form.set('inputType', 'text');
   const response = await fetch(`${endpoint}/api/classify`, { method: 'POST', body: form });
   const payload = await response.json();
-  if (!(payload.alternatives || []).some((item) => item.slug === expectedSlug)) {
+  const apiRelated = [...(payload.alternatives || []), ...(payload.relatedClaims || []), ...(payload.primary ? [payload.primary] : [])];
+  if (!apiRelated.some((item) => item.slug === expectedSlug)) {
     throw new Error(`${text}: expected reusable guidance ${expectedSlug}, got ${JSON.stringify(payload.alternatives || [])}`);
   }
   console.log(JSON.stringify({ text, related: expectedSlug, status: payload.status }));

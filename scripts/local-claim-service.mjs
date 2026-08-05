@@ -894,6 +894,25 @@ const classify = async (text) => {
       && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)));
   const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
+  // A unique semantic family is enough to reuse a reviewed answer even when
+  // lexical ranking or the later local compiler chooses a different surface
+  // handler. This is the scalable path for new wording: one evidence family
+  // can serve many paraphrases without creating a new claim record.
+  const routingFamilyCounts = new Map();
+  for (const entry of index.entries) {
+    if (entry.kind !== 'claim' || !entry.published) continue;
+    for (const key of entry.semanticFamilyKeys || []) routingFamilyCounts.set(key, (routingFamilyCounts.get(key) || 0) + 1);
+  }
+  const earlyFamilyEntry = !exactPublishedInput && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+    && isSpecificSemanticSignature(routingCompiler.semanticSignature)
+    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
+      && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key) && routingFamilyCounts.get(key) === 1))
+    : undefined;
+  if (earlyFamilyEntry) {
+    const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: earlyFamilyEntry.slug, title: earlyFamilyEntry.title, href: earlyFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: earlyFamilyEntry.answer || '', assessment: earlyFamilyEntry.assessment || '', whatIsTrue: earlyFamilyEntry.whatIsTrue || '', whatIsMissing: earlyFamilyEntry.whatIsMissing || '', cannotProve: earlyFamilyEntry.cannotProve || '', scale: earlyFamilyEntry.scale || '', propositionIds: earlyFamilyEntry.propositionIds || [], evidenceIds: earlyFamilyEntry.evidenceIds || [], sourceRefs: earlyFamilyEntry.sourceRefs || [], sourceLinks: earlyFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: earlyFamilyEntry.slug, title: earlyFamilyEntry.title, href: earlyFamilyEntry.href, confidence: 0.82 }] };
+    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    return result;
+  }
   const routingDomains = {
     immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda',
     employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia',
@@ -925,7 +944,14 @@ const classify = async (text) => {
     try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
-  const rawQueryFamilyKeys = semanticFamilyKeys(querySemanticSignature);
+  // Keep both compiler views in the routing set. The fast deterministic
+  // compiler may preserve a richer registry concept than the presentation
+  // compiler (or vice versa); dropping either view makes valid paraphrases
+  // fall through to a broad topic even when the published family is exact.
+  const rawQueryFamilyKeys = [...new Set([
+    ...semanticFamilyKeys(querySemanticSignature),
+    ...routingFamilyKeys,
+  ])];
   const maxFamilyKeyLength = Math.max(0, ...rawQueryFamilyKeys.map((key) => key.length));
   const queryFamilyKeys = new Set(rawQueryFamilyKeys.filter((key) => key.length === maxFamilyKeyLength));
   // Strong routing uses only the most specific key. Related guidance may use
@@ -976,6 +1002,11 @@ const classify = async (text) => {
     // “paro juvenil”). Without that lead, retain the qualified path.
     return Boolean(own && scores[0]?.slug === entry.slug && own.lexical >= 0.55 && own.lexical - (runnerUp?.lexical || 0) >= 0.12);
   };
+  const directUniqueFamilyMatch = (item) => item.entry.kind === 'claim'
+    && item.entry.published
+    && populationQualifierCompatible(item.entry)
+    && isSpecificSemanticSignature(routingCompiler.semanticSignature)
+    && (item.entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key) && familyKeyCounts.get(key) === 1);
   const semanticSignatureDominates = (signature, entry) => {
     if (semanticSignatureCounts.get(signature) === 1) return true;
     const scores = [...(semanticSignatureLexicalScores.get(signature) || [])].sort((left, right) => right.lexical - left.lexical);
@@ -1073,7 +1104,7 @@ const classify = async (text) => {
   // paraphrase cannot be displaced by a thematically similar claim or topic.
   const semanticFamilyCandidate = suppressPublishedContext
     ? undefined
-    : ranked.find((item) => !broadDeterministicDescription && item.semanticFamilyMatch && item.entry.kind === 'claim' && numericCompatible(item.entry));
+    : ranked.find((item) => !broadDeterministicDescription && (item.semanticFamilyMatch || directUniqueFamilyMatch(item)) && item.entry.kind === 'claim' && numericCompatible(item.entry));
   const familyRanked = semanticFamilyCandidate
     ? [semanticFamilyCandidate, ...publicRanked.filter((item) => item.entry.slug !== semanticFamilyCandidate.entry.slug)]
     : publicRanked;

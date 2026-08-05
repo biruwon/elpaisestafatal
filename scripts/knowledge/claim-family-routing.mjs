@@ -37,6 +37,15 @@ export const semanticFamilyKeys = (signature) => {
   // direction. Entity-only keys are unsafe: rent, purchase prices, and
   // housing-cost burden can all otherwise collapse into “housing + rising”.
   const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
+  // Comparative wording often changes the compared subject (“nadie”,
+  // “Europa”, “otros países”) while preserving the metric family. Keep a
+  // dimensioned metric key in addition to the full comparison key; uniqueness
+  // and dominance checks still prevent unrelated rankings from becoming a
+  // strong match.
+  for (const part of propositionParts) {
+    const match = part.match(/^comparative:([^:]+)/);
+    if (match) keys.push(`${type}|${polarity}|${entities}|comparative:${match[1]}`);
+  }
   // Preserve a proposition-specific subset for paraphrases that expose one
   // extra concept (for example “housing prices” versus simply “housing”).
   // These keys remain subject to the uniqueness guard in the callers, so a
