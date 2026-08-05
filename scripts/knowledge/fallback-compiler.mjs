@@ -375,7 +375,8 @@ const hasIndependentPredicate = (value) => {
     ' recorta ', ' quita ', ' transfiere ', ' llega ', ' llegan ',
     ' cobra ', ' cobran ', ' representa ', ' representan ', ' demuestra ',
     ' sigue ', ' siguen ', ' mantiene ', ' mantienen ', ' falta ', ' faltan ',
-  ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra)\b/.test(text);
+    ' tarda ', ' tardan ', ' gasta ', ' gastan ', ' dedica ', ' dedican ',
+  ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra|tarda|tardan|gasta|gastan|dedica|dedican)\b/.test(text);
 };
 
 const splitExplicitClauses = (value) => {
@@ -387,7 +388,7 @@ const splitExplicitClauses = (value) => {
   // vivienda y sanidad" are context, not three independent propositions.
   let clauses = original
     .replace(/\s*;\s*/g, ' | ')
-    .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras que|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
+    .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras(?: que)?|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
     .replace(/\s+(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\s+/gi, ' | ')
     .split('|')
     .map(cleanClause)

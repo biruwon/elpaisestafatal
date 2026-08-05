@@ -66,6 +66,12 @@ assert(growthAndCost.explicitPropositions.every((item) => item.type === 'trend')
 const semicolon = deterministicFallbackCompiler('Hay más empleo; el paro sigue alto');
 assert(semicolon.explicitPropositions.length === 2, 'Semicolon clauses were not decomposed');
 
+const whileCompound = deterministicFallbackCompiler('La vivienda sube mientras los salarios se quedan atrás');
+assert(whileCompound.explicitPropositions.length === 2, '“Mientras” compound claims were not decomposed');
+assert(whileCompound.claimType === 'trend', '“Mientras” compound claim did not retain trend structure');
+const spendingCompound = deterministicFallbackCompiler('La sanidad tarda más en atendernos y gasta menos por habitante');
+assert(spendingCompound.explicitPropositions.length === 2, 'Compound claims with “tarda” and “gasta” were not decomposed');
+
 const nounList = deterministicFallbackCompiler('Empleo, vivienda y sanidad');
 assert(nounList.explicitPropositions.length === 1, 'A noun list was incorrectly split into multiple claims');
 
