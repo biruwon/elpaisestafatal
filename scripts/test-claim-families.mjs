@@ -177,3 +177,24 @@ if (causalCompoundPayload.status === 'complete' && causalCompoundPayload.result?
   throw new Error('Causal compound claim was incorrectly promoted from independent published claims');
 }
 console.log('Causal composite safety validation passed.');
+
+for (const [text, forbiddenSlug] of [
+  ['La población extranjera está disminuyendo', 'poblacion-ciudadania-extranjera-sube'],
+  ['La vivienda provoca inflación', 'precio-vivienda-ha-subido'],
+]) {
+  const response = await fetch(`${endpoint}/v1/classify`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text, inputType: 'text' }),
+  });
+  let payload = await response.json();
+  for (let attempt = 0; payload.status === 'processing' && attempt < 160; attempt += 1) {
+    await sleep(250);
+    payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
+  }
+  if (payload.relatedClaims?.some((item) => item.slug === forbiddenSlug && payload.result?.coverage === 'strong')) {
+    throw new Error(`${text}: incompatible family was promoted as strong evidence`);
+  }
+  console.log(JSON.stringify({ text, status: payload.status, incompatibleFamilyGuarded: forbiddenSlug }));
+}
+console.log('Directional and causal family precision validation passed.');
