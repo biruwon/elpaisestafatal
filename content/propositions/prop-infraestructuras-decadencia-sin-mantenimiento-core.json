@@ -1,0 +1,13 @@
+{
+  "id": "prop-infraestructuras-decadencia-sin-mantenimiento-core",
+  "claimSlug": "infraestructuras-decadencia-sin-mantenimiento",
+  "text": "Las infraestructuras españolas están en decadencia y sin mantenimiento.",
+  "type": "mixed",
+  "subject": "spanish_public_infrastructure",
+  "predicate": "is_decaying_without_maintenance",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "qualified",
+  "evidenceIds": ["obras-infraestructuras-transportes-2025"]
+}
