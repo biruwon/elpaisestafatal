@@ -1,0 +1,13 @@
+{
+  "id": "prop-salario-1500-2000-no-ahorro-core",
+  "claimSlug": "salario-1500-2000-no-ahorro",
+  "text": "Cobrar entre 1.500 y 2.000 euros impide llegar a fin de mes y ahorrar.",
+  "type": "mixed",
+  "subject": "monthly_income",
+  "predicate": "prevents_saving",
+  "object": "household_expenses",
+  "geography": "España",
+  "period": "2025",
+  "status": "qualified",
+  "evidenceIds": ["renta-mediana-eurostat", "sobrecarga-vivienda-eurostat"]
+}
