@@ -1930,8 +1930,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // the user has supplied an explicit metric phrase such as “precio de la
   // luz” or “inflación anual”. Keep the topic as a related result instead.
   const preservePublishedClaim = classified.primary?.kind === 'claim' && classified.status === 'published';
-  const retrievalClassified = explicitMetricRoute && classified.primary && !preservePublishedClaim
-    ? { ...classified, primary: undefined, alternatives: [classified.primary, ...(classified.alternatives || [])] }
+  const retrievalClassified = explicitMetricRoute && !preservePublishedClaim
+    // A nearby published claim is not a valid alternative to an explicit
+    // metric request. Keeping it here makes the UI look as if the metric was
+    // answered by that claim, even when the warehouse selected the right
+    // series. The metric result should stand on its own.
+    ? { ...classified, primary: undefined, alternatives: [] }
     : classified;
   const handlerId = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
