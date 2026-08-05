@@ -31,7 +31,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['health_access', ['lista de espera', 'listas de espera', 'lista sanitaria', 'listas sanitarias', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes', 'espera mas', 'tardan mas en atender', 'tardar mas en atender', 'cada vez tardan mas', 'esperar mas', 'esperar para ser atendido']],
   ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada', 'sanidad no da abasto', 'no da abasto', 'no da abasto con la sanidad']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
-  ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
+  ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'joven', 'juvenil', 'juveniles', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
   ['crime_reporting', ['cifras de delincuencia manipuladas', 'estadisticas de delincuencia manipuladas', 'hurtos se registran como extravios', 'hurtos como perdidas', 'esconden los hurtos']],
@@ -78,7 +78,7 @@ const claimType = (text: string): string => {
   if (/(causa|causan|causal|porque|ya que|debido a que|por culpa|tiene la culpa|provoca|provocando|genera|crece la|hace crecer|hace aumentar|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|desde que llegaron mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
-  if (/(cada vez|sube|baja|crece|creciendo|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|mas caro|mas cara|mucho mas caro|mucho mas cara|mas costoso|mas costosa|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|sigue creciendo|siguen creciendo|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
+  if (/(cada vez|sube|baja|crece|creciendo|crecimiento|aumento|aumenta|aumentando|esta aumentando|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|mas caro|mas cara|mucho mas caro|mucho mas cara|mas costoso|mas costosa|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|sigue creciendo|siguen creciendo|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
   if ((/(inmigracion|inmigrantes|extranjeros?|ayudas?|prestaciones?|subsidios?|beneficios?)/.test(text) && /(mas|desproporcionad|mayor)/.test(text)) || /(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|desproporcionad|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
@@ -161,7 +161,7 @@ const directionalRelation = (text: string): string | null => {
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
   }
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no deja de bajar|no dejan de bajar|no para de bajar|no paran de bajar|va en descenso|va a la baja)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|esta aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return `trend:improving:${relationShape(text)}`;
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return `trend:worsening:${relationShape(text)}`;
   return null;
@@ -188,6 +188,9 @@ export const semanticQuerySignature = (value: string): string => {
     .map(([concept]) => concept);
   if (priority) concepts = [];
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
+  if (concepts.includes('taxes') && concepts.includes('public_finance') && !containsAlias(text, 'deuda') && !containsAlias(text, 'deficit')) {
+    concepts = concepts.filter((concept) => concept !== 'public_finance');
+  }
   if (containsAlias(text, 'deuda publica') && containsAlias(text, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
@@ -220,6 +223,19 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   const payload = [...new Set([relation, ...concepts, ...terms, ...dimensions].filter(Boolean))].sort();
   if (!payload.length) return [];
   const keys = [`${type}|${polarity}|${payload.join('|')}`];
+  // Comparative paraphrases often name the same direction and metric but
+  // serialize the compared parties differently (for example “Europa” versus
+  // “la UE”). Preserve a direction-plus-concept key for that case; the
+  // resolver's uniqueness and dominance guards still prevent ambiguous
+  // comparisons from becoming a strong match.
+  const comparisonDirection = relation.match(/^relation:comparison:(more|less|better|worse)/)?.[1];
+  if (comparisonDirection && concepts.length) {
+    keys.push(`${type}|${polarity}|relation:comparison:${comparisonDirection}|${concepts.join('|')}`);
+  }
+  const trendDirection = relation.match(/^relation:trend:(rising|falling|improving|worsening)/)?.[1];
+  if (trendDirection && concepts.length) {
+    for (const concept of concepts.filter((value) => value !== 'concept:housing')) keys.push(`${type}|${polarity}|relation:trend:${trendDirection}|${concept}`);
+  }
   // Also emit proposition-specific subset keys. This lets “la vivienda se
   // encarece” reuse a published “el precio de la vivienda sube” family when
   // one wording exposes an extra concept, while the uniqueness guard prevents

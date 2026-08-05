@@ -69,4 +69,20 @@ for (const [left, right] of localDistinctPairs) {
   }
 }
 
+// Both execution paths must agree on the important decision: equivalent
+// wording may share a family, but different propositions must not. Their
+// serialized signatures are intentionally different, so compare the
+// resulting collision relation rather than implementation details.
+const browserEquivalent = (left, right) => browserFamily(left).some((key) => browserFamily(right).includes(key));
+const localEquivalent = (left, right) => {
+  const leftKeys = semanticFamilyKeys(deterministicFallbackCompiler(left).semanticSignature);
+  const rightKeys = semanticFamilyKeys(deterministicFallbackCompiler(right).semanticSignature);
+  return leftKeys.some((key) => rightKeys.includes(key));
+};
+for (const [left, right] of localEquivalentPairs) {
+  if (browserEquivalent(left, right) !== localEquivalent(left, right)) {
+    throw new Error(`Browser/local family parity failed: ${left} <> ${right}`);
+  }
+}
+
 console.log('Claim-family routing contract passed.');
