@@ -91,6 +91,11 @@ const vagueTaxJudgement = (value) => {
   const concrete = /\b(?:europa|union europea|porcentaje|pib|renta|riqueza|tipo|cuanto|periodo|ano|hogar|sueldo|salario)\b/.test(normalized);
   return /\bimpuestos?\b/.test(normalized) && vague && !concrete;
 };
+const broadComplaintText = (value) => {
+  const normalized = normalise(value);
+  return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(normalized)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(normalized);
+};
 
 // Metric routing is proposition-aware. A compound sentence must preserve the
 // union of registry families found in each explicit clause; checking only the
@@ -998,8 +1003,7 @@ const classify = async (text) => {
   // different decisions for them. Meaning-level caching can be reintroduced
   // only for validated, representation-independent answer plans.
   const key = normalise(text);
-  const broadComplaintInput = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable)\b/.test(key)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(key)
+  const broadComplaintInput = broadComplaintText(text)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
@@ -1013,6 +1017,13 @@ const classify = async (text) => {
   const index = await getIndex();
   const deterministicCompiler = fallbackCompiler(text);
   const routingCompiler = deterministicFallbackCompiler(text);
+  // A forecast or normative consequence must not inherit a present-tense
+  // factual family merely because it shares nouns with it. Exact published
+  // predictions still resolve above; approximate predictions use the
+  // prediction path or remain qualified.
+  const predictionLike = !broadComplaintInput && (routingCompiler.claimType === 'predictive'
+    || routingCompiler.propositions?.some((item) => item.type === 'prediction')
+    || /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(normalise(text)));
   // Exact published titles and aliases are an explicit editorial contract.
   // Resolve them before metric or semantic ambiguity can downgrade the
   // answer; approximate wording continues through the guarded family path.
@@ -1117,7 +1128,7 @@ const classify = async (text) => {
       ? topOwner.entry
       : undefined;
   };
-  const earlyFamilyEntry = !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+  const earlyFamilyEntry = !predictionLike && !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily || (routingCompiler.claimType === 'causal' && hasPublishedSemanticFamily)) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     ? (dominantFamilyEntry(routingFamilyKeys)
@@ -1127,7 +1138,7 @@ const classify = async (text) => {
           && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)))
         : undefined))
     : undefined;
-  const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+  const earlySignatureEntry = !predictionLike && !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
@@ -1351,13 +1362,13 @@ const classify = async (text) => {
   // forced into an ad-hoc record. Route the common “Spain is ruined” shape to
   // the reusable political topic so the user gets an immediate direction,
   // while keeping it explicitly topic guidance rather than a verdict.
-  const broadComplaintText = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintText)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintText)
-    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintText);
-  const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintText)
-    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintText)
-    || /\bdebe\s+mas\s+de\s+lo\s+que\s+produce\b/.test(broadComplaintText);
+  const broadComplaintNormalized = normalise(text);
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintNormalized)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintNormalized)
+    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintNormalized);
+  const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintNormalized)
+    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintNormalized)
+    || /\bdebe\s+mas\s+de\s+lo\s+que\s+produce\b/.test(broadComplaintNormalized);
   const rankedPoliticalTopic = ranked.find(({ entry }) => entry.kind === 'topic' && entry.slug === 'politica')
     || (broadPoliticalComplaint
       ? (() => {
@@ -1734,6 +1745,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
+  const predictionWording = /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(broadTopicText);
   const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0 && !vagueTaxJudgement(text);
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
@@ -1835,7 +1847,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const definitionData = isDefinition && observations.length && explicitMetricRoute;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
-  let status = classified.status === 'published' && (primary || !compoundClaim)
+  // A published classifier status is not enough on its own: approximate
+  // family matches can be deliberately removed at retrieval time when the
+  // input is an explicit metric or prediction. Only a retained primary
+  // answer is allowed to inherit the published/strong status.
+  let status = classified.status === 'published' && primary && !predictionWording
     ? 'complete'
     : compoundClaim
       ? (primary ? 'partial' : usableSource ? 'draft' : 'uncovered')
@@ -1857,6 +1873,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     && !isCausal
     && !isNormative
     && !isLegal
+    && !isPrediction
+    && !predictionWording
     && (ranking?.observations?.length >= 2 || trend?.observations?.length >= 2);
   if (status === 'draft' && directWarehouseAnswer) status = 'complete';
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
@@ -2270,14 +2288,24 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const hintedMetricIds = vagueTaxJudgement(text) ? new Set() : metricIdsForInput(text, classified.compiler || {});
   const explicitMetricRoute = hintedMetricIds.size > 0 && !vagueTaxJudgement(text);
+  const predictionLike = !broadComplaintText(text) && (classified.compiler?.claimType === 'predictive'
+    || classified.compiler?.propositions?.some((item) => item.type === 'prediction')
+    || /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(normalise(text)));
   const compoundInput = (classified.compiler?.explicitPropositions?.length || classified.compiler?.propositions?.length || 0) > 1;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
   // A broad topic suggestion must not block a direct warehouse answer when
   // the user has supplied an explicit metric phrase such as “precio de la
   // luz” or “inflación anual”. Keep the topic as a related result instead.
-  const preservePublishedClaim = classified.primary?.kind === 'claim' && classified.status === 'published';
-  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text)) && !preservePublishedClaim
+  // An explicit metric request outranks an approximate semantic claim-family
+  // match. Exact canonical titles were handled above; keeping an approximate
+  // published primary here would make a salary or debt metric inherit an
+  // adjacent editorial page instead of using its own warehouse family.
+  const preservePublishedClaim = classified.primary?.kind === 'claim'
+    && classified.status === 'published'
+    && (!explicitMetricRoute || classified.compiler?.claimType === 'causal')
+    && !predictionLike;
+  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text) || predictionLike) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right

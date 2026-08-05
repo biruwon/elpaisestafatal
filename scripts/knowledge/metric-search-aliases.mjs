@@ -13,7 +13,7 @@ export const metricSearchAliases = Object.freeze({
   temporary_employment_rate: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'temporalidad', 'duracion determinada', 'empleo', 'ocupacion'],
   temporary_employment_rate_europe: ['empleo temporal', 'trabajo temporal', 'contratos temporales', 'temporalidad', 'europa', 'union europea', 'comparacion europea'],
   median_hourly_earnings: ['salario mediano por hora', 'salario bruto por hora', 'ganancia mediana por hora', 'sueldo por hora', 'lo que se cobra por hora', 'salario', 'sueldo'],
-  median_hourly_earnings_europe: ['salario por hora', 'sueldo por hora', 'salario mediano', 'europa', 'union europea', 'comparacion europea'],
+  median_hourly_earnings_europe: ['salario por hora', 'sueldo por hora', 'salario mediano', 'sueldos españoles frente a europa', 'salarios españoles frente a europa', 'sueldos españoles son peores que europa', 'salarios españoles son peores que europa', 'sueldos españoles son de los peores de europa', 'salarios españoles son de los peores de europa', 'europa', 'union europea', 'comparacion europea'],
   housing_cost_overburden_rate_europe: ['sobrecarga vivienda', 'esfuerzo vivienda', 'coste vivienda', 'europa', 'union europea', 'comparacion europea'],
   house_price_index: ['precio vivienda', 'precios vivienda', 'precio de la vivienda', 'precio de las casas', 'casas', 'comprar vivienda', 'comprar una casa', 'vivienda', 'viviendas', 'cuesta', 'subido', 'sube', 'disparado', 'anos', 'triplica'],
   rental_price_index: ['precio alquiler', 'precios alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'vivienda', 'viviendas', 'cuesta', 'subido', 'sube', 'disparado', 'anos'],

@@ -3,7 +3,7 @@ slug: precios-vivienda-causan-crisis
 claim: "La subida del precio de la vivienda demuestra qué causa la crisis en España."
 assessment: misleading
 topicSlugs: ["vivienda", "economia"]
-aliases: ["los precios de la vivienda causan la crisis", "el precio de la vivienda explica la crisis", "precios vivienda causan crisis España", "la subida de la vivienda demuestra la causa de la crisis", "la vivienda cara es la causa de la crisis"]
+aliases: ["los precios de la vivienda causan la crisis", "los precios de la vivienda causan la crisis en España", "el precio de la vivienda explica la crisis", "precios vivienda causan crisis España", "la subida de la vivienda demuestra la causa de la crisis", "la vivienda cara es la causa de la crisis"]
 claimType: causal
 evidenceStrength: medium
 geography: España

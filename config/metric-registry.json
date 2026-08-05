@@ -257,7 +257,7 @@
   },
   "median_hourly_earnings_europe": {
     "name": "Median gross hourly earnings: Spain and the European Union",
-    "aliases": ["salario por hora frente a Europa", "sueldo por hora frente a la UE", "España cobra más por hora que Europa", "España cobra menos por hora que Europa", "comparación europea del salario por hora"],
+    "aliases": ["salario por hora frente a Europa", "sueldo por hora frente a la UE", "España cobra más por hora que Europa", "España cobra menos por hora que Europa", "comparación europea del salario por hora", "sueldos españoles frente a Europa", "salarios españoles frente a Europa", "sueldos españoles son peores que Europa", "salarios españoles son peores que Europa", "sueldos españoles son de los peores de Europa", "salarios españoles son de los peores de Europa"],
     "unit": "EUR per hour",
     "population": "employees in enterprises with 10 or more employees, all sexes, in Spain and the European Union",
     "notEquivalentTo": ["median_hourly_earnings", "median_equivalised_income_europe", "minimum_wage_monthly", "employment_rate_europe"],

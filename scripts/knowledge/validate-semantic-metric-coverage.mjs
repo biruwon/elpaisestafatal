@@ -28,6 +28,7 @@ const cases = [
   ['¿Quién recibe vivienda protegida?', 'public_housing_actions'],
   ['¿Hay diferencias en los delitos por grupo?', 'crime_rate_by_group'],
   ['¿Cuántas adjudicaciones de vivienda pública hay?', 'public_housing_allocations_by_group'],
+  ['Los sueldos españoles son de los peores de Europa', 'median_hourly_earnings_europe'],
 ];
 
 const intentionallyUnderspecified = [
@@ -41,6 +42,13 @@ for (const query of intentionallyUnderspecified) {
 const concreteComparison = preferredMetricIdsForQuery('España cobra más impuestos que Europa');
 if (!concreteComparison.has('government_current_taxes_income_wealth_europe')) {
   throw new Error('Concrete tax comparison lost its reusable metric family');
+}
+const revenue = preferredMetricIdsForQuery('España recauda una parte mayor de su economía que Europa');
+if (!revenue.has('government_revenue_ratio_europe')) {
+  throw new Error('Revenue comparison was not separated from deficit/debt families');
+}
+if (revenue.has('government_deficit_ratio_europe') || revenue.has('government_debt_ratio_europe')) {
+  throw new Error(`Revenue comparison inherited an adjacent fiscal family: ${[...revenue].join(', ')}`);
 }
 
 const failures = [];
