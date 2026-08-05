@@ -17,6 +17,10 @@ const cases = [
   ['El salario por hora es inferior al europeo', 'median_hourly_earnings_europe'],
   ['Hay más personas en riesgo de pobreza que antes', 'arope_rate'],
   ['La deuda del Estado pesa más sobre la economía', 'government_debt_ratio'],
+  ['La renta de las familias es menor que en Europa', 'median_equivalised_income_europe'],
+  ['El PIB por persona es menor que el europeo', 'gdp_per_capita_europe'],
+  ['Cada vez hay menos nacimientos', 'fertility_rate'],
+  ['La criminalidad está subiendo', 'recorded_offences'],
   // These are intentionally covered by the registry aliases rather than a
   // hand-written conversational rule. Registering a new metric therefore
   // expands the reusable language surface automatically.

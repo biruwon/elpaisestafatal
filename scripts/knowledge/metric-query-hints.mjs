@@ -32,6 +32,49 @@ const registryMetricIdsForQuery = (normalized) => {
     .map((candidate) => candidate.id));
 };
 
+const comparisonStopwords = new Set([
+  'espana', 'espanol', 'espanola', 'pais', 'paises', 'frente', 'comparado',
+  'comparada', 'comparacion', 'tiene', 'mas', 'menos', 'mayor', 'menor', 'que', 'la', 'el',
+  'de', 'del', 'en', 'por', 'con', 'como', 'esta', 'es', 'hay',
+]);
+
+const comparisonToken = (token) => {
+  if (/^europ/.test(token) || token === 'ue') return 'europe';
+  if (/^famil/.test(token)) return 'hogar';
+  if (/^hogar/.test(token)) return 'hogar';
+  if (/^person/.test(token)) return 'habitante';
+  if (/^habit/.test(token)) return 'habitante';
+  return token.replace(/es$/, '').replace(/s$/, '');
+};
+
+// When a user describes a comparison without using the catalogue wording
+// (“la renta de las familias es menor que la europea”), recover the reviewed
+// Europe metric from shared subject tokens. This is deliberately limited to
+// registry metrics whose ID declares the comparison dimension and requires a
+// clear winner, so it cannot turn one generic topic word into a metric.
+const comparisonMetricIdsForQuery = (normalized) => {
+  const queryTokens = new Set(normalized.split(' ').filter((token) => token.length >= 4 && !comparisonStopwords.has(token)).map(comparisonToken));
+  const candidates = Object.entries(registry)
+    .filter(([id]) => id.endsWith('_europe'))
+    .map(([id, definition]) => {
+      const aliases = [...new Set([definition.name, ...(definition.aliases || [])])];
+      const scores = aliases.map((alias) => {
+        const tokens = normalise(alias).split(' ').filter((token) => token.length >= 4 && !comparisonStopwords.has(token)).map(comparisonToken);
+        const overlap = tokens.filter((token) => queryTokens.has(token));
+        const missingDistinctive = tokens.filter((token) => !queryTokens.has(token) && token.length >= 6);
+        return overlap.reduce((score, token) => score + (token.length >= 8 ? 1.4 : 1), 0)
+          - missingDistinctive.length * 0.35;
+      });
+      return { id, score: Math.max(0, ...scores) };
+    })
+    .filter((candidate) => candidate.score >= 2)
+    .sort((left, right) => right.score - left.score);
+  if (!candidates.length) return new Set();
+  const [winner, runnerUp] = candidates;
+  if (runnerUp && winner.score - runnerUp.score < 0.75) return new Set();
+  return new Set([winner.id]);
+};
+
 // Retrieval indexes contain human-language aliases, not internal registry
 // IDs. Keep the fallback query coupled to the registry so a newly added
 // metric is searchable without a second claim-specific mapping.
@@ -97,7 +140,7 @@ const metricHints = [
   { ids: ['unmet_healthcare_waiting_list_rate'], terms: ['lista de espera medica', 'lista de espera sanitaria', 'listas de espera sanitarias', 'listas de espera medicas', 'no recibe atencion por lista de espera', 'personas sin atencion por lista de espera', 'espera medica impide atencion', 'necesidad medica no atendida por espera'] },
   { ids: ['life_expectancy_at_birth'], terms: ['esperanza de vida', 'esperanza vida', 'esperanza de vida al nacer', 'años de vida', 'vida media', 'cuantos años vive', 'cuanto vive', 'longevidad', 'evolucionado esperanza vida'] },
   { ids: ['life_expectancy_at_birth_europe'], terms: ['esperanza de vida frente a europa', 'esperanza de vida frente a la union europea', 'años de vida frente a europa', 'espana vive mas que europa', 'espana vive mas que la union europea', 'comparacion europea de esperanza de vida', 'esperanza de vida europa'] },
-  { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos por mujer'] },
+  { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos', 'nacimientos por mujer'] },
   { ids: ['fertility_rate_europe'], terms: ['fecundidad frente a europa', 'fecundidad frente a la union europea', 'tasa de fecundidad frente a europa', 'espana tiene menos hijos que europa', 'espana tiene mas hijos que europa', 'comparacion europea de fecundidad', 'hijos por mujer europa'] },
   { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida', 'personas mayores por cada 100', 'personas mayores por cada cien', 'edad laboral', 'edad de trabajar', 'dependencia demografica', 'ratio de dependencia'] },
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
@@ -111,7 +154,7 @@ const metricHints = [
   // This source is category-level. Keep the route explicit: generic
   // “inseguridad” and immigration-causality wording must not silently attach
   // one arbitrary offence category to the user's claim.
-  { ids: ['recorded_offences'], terms: ['criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada', 'corrupcion registrada'] },
+  { ids: ['recorded_offences'], terms: ['criminalidad', 'criminalidad registrada', 'delincuencia registrada', 'delitos registrados', 'delitos registra', 'infracciones penales conocidas', 'evolucion de la criminalidad', 'evolucion de la delincuencia', 'criminalidad aumenta', 'criminalidad sube', 'criminalidad baja', 'criminalidad disminuye', 'homicidios registrados', 'asesinatos registrados', 'robos registrados', 'hurtos registrados', 'fraudes registrados', 'estafas registradas', 'agresiones sexuales registradas', 'violencia sexual registrada', 'corrupcion registrada'] },
   { ids: ['gini_coefficient'], terms: ['gini', 'desigualdad de ingresos', 'como se reparte la renta entre los hogares', 'medida de desigualdad de ingresos', 'desigualdad', 'distribucion de la renta'] },
   { ids: ['gini_coefficient_europe'], terms: ['gini frente a europa', 'gini frente a la union europea', 'desigualdad de ingresos frente a europa', 'desigualdad de ingresos frente a la union europea', 'espana es mas desigual que europa', 'espana es menos desigual que europa', 'comparacion europea de la desigualdad', 'desigualdad europa'] },
   { ids: ['government_deficit_ratio'], terms: ['deficit publico', 'deficit del estado', 'superavit publico', 'deficit sobre pib'] },
@@ -120,7 +163,7 @@ const metricHints = [
   { ids: ['median_equivalised_income_europe'], terms: ['renta mediana frente a europa', 'renta mediana frente a la union europea', 'como queda la renta mediana de espana frente a europa', 'hogares españoles tienen menos renta mediana que la ue', 'comparacion europea de los ingresos medianos', 'ingresos de los hogares frente a europa', 'ingresos de los hogares frente a la union europea', 'espana tiene mas renta que europa', 'espana tiene menos renta que europa', 'espana tiene mas renta mediana que europa', 'espana tiene menos renta mediana que europa', 'espana tiene mas renta que la union europea', 'espana tiene menos renta que la union europea', 'espana tiene mas renta mediana que la union europea', 'espana tiene menos renta mediana que la union europea', 'ingresos medianos frente a europa', 'ingresos medianos frente a la union europea', 'ingresos medianos que europa', 'ingresos medianos que la union europea', 'renta de espana frente a europa', 'renta europa'] },
   { ids: ['arope_rate_europe'], terms: ['arope frente a europa', 'arope frente a la union europea', 'riesgo de pobreza frente a europa', 'riesgo de pobreza frente a la union europea', 'riesgo de pobreza o exclusion que la union europea', 'pobreza o exclusion frente a europa', 'pobreza o exclusion frente a la union europea', 'espana tiene mas riesgo de pobreza que europa', 'espana tiene mas riesgo de pobreza que la union europea', 'espana tiene menos riesgo de pobreza que europa', 'espana tiene menos riesgo de pobreza que la union europea', 'comparacion europea de arope', 'arope europa'] },
   { ids: ['arope_rate'], terms: ['arope', 'riesgo de pobreza o exclusion', 'riesgo de pobreza y exclusion', 'pobreza o exclusion social', 'porcentaje en riesgo de pobreza', 'personas en riesgo de pobreza', 'porcentaje residentes arope', 'residentes arope'] },
-  { ids: ['cpi_index'], terms: ['coste de vida', 'cesta de la compra', 'precios de consumo'] },
+  { ids: ['cpi_index'], terms: ['coste de vida', 'cesta', 'cesta de la compra', 'precios de consumo'] },
   { ids: ['house_price_index'], terms: ['casas mas caras', 'casas son mas caras', 'casas mucho mas caras', 'casas son mucho mas caras', 'precio de las casas', 'precios de las casas', 'precio vivienda', 'precios vivienda', 'vivienda precio', 'vivienda precios', 'precio vivienda espana', 'comprar una casa', 'precio de comprar una casa', 'comprar vivienda', 'vivienda que compre', 'vivienda cuesta', 'precio en los ultimos anos', 'precio en los ultimos cinco anos'] },
 ];
 
@@ -137,6 +180,10 @@ export const preferredMetricIdsForQuery = (query) => {
   }
   const hasEuropeReference = /\b(?:europa|europeo|europea|europeos|europeas|ue|union europea)\b/.test(normalized);
   const hasAny = (...terms) => terms.some((term) => normalized.includes(normalise(term)));
+  if (hasEuropeReference) {
+    const comparisonMetric = comparisonMetricIdsForQuery(normalized);
+    for (const id of comparisonMetric) preferred.add(id);
+  }
   // Phrase aliases are deliberately conservative, but users often reorder
   // Spanish comparison wording (“comparación europea del empleo parcial”,
   // “el abandono educativo supera al europeo”). Recover the comparison family
