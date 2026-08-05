@@ -68,6 +68,10 @@ export const claimAliases: Record<string, string[]> = {
     'la ley protege a los okupas durante años',
     'desahuciar a un ocupante ilegal tarda años',
     'desalojar a un ocupante ilegal lleva años',
+    'la ocupación está respaldada por el gobierno',
+    'la ocupación es delito leve',
+    'los juicios de desahucio se retrasan dos o tres años',
+    'los desahucios tardan dos o tres años',
   ],
   'precios-hoteles-sube-junio-2026': [
     'los hoteles son más caros aunque reciben menos turistas',
@@ -241,6 +245,9 @@ export const claimAliases: Record<string, string[]> = {
     'dan las ayudas antes a los inmigrantes',
     'los inmigrantes viven de paguitas',
     'ayudas para extranjeros',
+    'los inmigrantes reciben ayudas económicas desproporcionadas',
+    'los inmigrantes reciben todas las ayudas económicas',
+    'los extranjeros viven de las ayudas',
   ],
   'inmigrantes-patera': [
     'todos los inmigrantes vienen en patera',
@@ -263,12 +270,17 @@ export const claimAliases: Record<string, string[]> = {
     'los inmigrantes crean inseguridad',
     'la inmigración genera inseguridad',
     'la inmigración está destruyendo la seguridad',
+    'los inmigrantes delinquen',
+    'los inmigrantes cometen delitos',
+    'la inmigración aumenta la delincuencia',
   ],
   'viviendas-vacias': [
     'hay millones de casas vacías',
     'sobran pisos vacíos en España',
     'no hace falta construir porque hay casas vacías',
     'las viviendas vacías solucionarían el alquiler',
+    'hay tres millones de viviendas vacías y no hace falta construir',
+    'hay 3 millones de viviendas vacías',
   ],
   'fondos-vivienda': [
     'los fondos buitre tienen la culpa de la vivienda',
@@ -299,6 +311,9 @@ export const claimAliases: Record<string, string[]> = {
     'los fijos discontinuos son parados encubiertos',
     'maquillan el paro con fijos discontinuos',
     'los fijos discontinuos no trabajan',
+    'los fijos discontinuos ocultan más de un millón de parados',
+    'los trabajadores fijos discontinuos son parados ocultos',
+    'los fijos discontinuos trabajan tres meses al año y cuentan como ocupados',
   ],
   'smi-destruye-empleo': [
     'el salario mínimo destruye puestos de trabajo',
@@ -315,6 +330,7 @@ export const claimAliases: Record<string, string[]> = {
     'España tiene el paro más bajo de la historia',
     'el desempleo está en mínimos históricos',
     'el paro registrado nunca fue tan bajo',
+    'España anuncia un récord de ocupados pero también tiene un récord de parados',
   ],
   'demasiados-graduados': [
     'sobran universitarios en España',
@@ -325,12 +341,16 @@ export const claimAliases: Record<string, string[]> = {
     'España es un infierno fiscal',
     'somos el país que más impuestos paga',
     'en España se pagan más impuestos que en toda Europa',
+    'la presión fiscal es la más alta de la historia',
+    'los trabajadores y empresas están asfixiados por los impuestos',
   ],
   'sanidad-colapsada': [
     'La sanidad española está colapsada',
     'la sanidad española está totalmente hundida',
     'la sanidad pública no funciona',
     'los hospitales están colapsados',
+    'la sanidad está desbordada',
+    'los hospitales están en situaciones infrahumanas',
   ],
   'espana-pobreza-cuarta-parte': [
     'uno de cada cuatro españoles es pobre',
@@ -342,6 +362,8 @@ export const claimAliases: Record<string, string[]> = {
     'no hay ningún político honrado',
     'la política española es toda corrupción',
     'la política está llena de corruptos',
+    'el sistema español está corrupto de izquierda a derecha',
+    'todo está corrupto en España',
   ],
   'espana-mas-peligrosa': [
     'cada vez hay más delincuencia',
@@ -349,6 +371,8 @@ export const claimAliases: Record<string, string[]> = {
     'ya no se puede salir a la calle',
     'España está más peligrosa que nunca',
     'en España ya no se puede vivir',
+    'la delincuencia ha aumentado desde 2015',
+    'las cifras de delincuencia son una mentira',
   ],
   'economia-crece-coste-vida': [
     'la economía va bien pero no llego a fin de mes',
@@ -366,6 +390,12 @@ export const claimAliases: Record<string, string[]> = {
     'la vivienda ya está bajando',
     'el precio de las casas cae',
     'el precio del alquiler y de la vivienda cae',
+  ],
+  'precio-vivienda-ha-subido': [
+    'los precios de la vivienda se han disparado',
+    'la vivienda ha subido mucho en los últimos cinco años',
+    'la vivienda que compré hace tres años cuesta casi tres veces más',
+    'los precios de las casas se han disparado',
   ],
   'recaudacion-tributaria-crece': [
     'Hacienda recauda menos',
