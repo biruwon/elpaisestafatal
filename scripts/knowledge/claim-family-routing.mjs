@@ -11,6 +11,7 @@ export const isSpecificSemanticSignature = (signature) => {
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.includes('definition:fixed_discontinuous')
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
+    || parts.some((part) => /^(legal|normative|predictive):/.test(part))
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
 };
 
@@ -20,7 +21,7 @@ export const semanticFamilyKeys = (signature) => {
   const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
   const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
   const definition = parts.find((part) => part === 'definition:fixed_discontinuous');
-  const propositionParts = parts.filter((part) => /^(causal|relation|descriptive|trend|comparative|definition):/.test(part));
+  const propositionParts = parts.filter((part) => /^(causal|relation|descriptive|trend|comparative|definition|legal|normative|predictive):/.test(part));
   const terms = parts.filter((part) => part.startsWith('term:')).sort();
   if (!type || (!entities && !propositionParts.length && !definition && terms.length < 2)) return [];
   // A family key must retain the proposition's normalized concept and
