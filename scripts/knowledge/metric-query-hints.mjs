@@ -73,7 +73,11 @@ const metricHints = [
   { ids: ['tertiary_education_attainment_rate'], terms: ['estudios superiores', 'educacion superior', 'titulacion superior', 'universitarios', 'graduados', 'titulados', 'universitarios de 25 a 34', 'jovenes con estudios universitarios', 'personas con estudios superiores'] },
   { ids: ['neet_rate_europe'], terms: ['ninis frente a europa', 'ninis frente a la union europea', 'ni estudian ni trabajan frente a europa', 'ni estudian ni trabajan frente a la union europea', 'espana tiene mas ninis que europa', 'espana tiene mas ninis que la union europea', 'espana tiene menos ninis que europa', 'espana tiene menos ninis que la union europea', 'tiene espana mas ninis que europa', 'tiene espana mas ninis que la union europea', 'comparacion europea de ninis', 'ninis europa'] },
   { ids: ['neet_rate'], terms: ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera del empleo y de la educacion', 'fuera de estudio y empleo', 'no estudian ni trabajan'] },
-  { ids: ['youth_unemployment_rate'], terms: ['joven', 'juvenil', 'jovenes', 'youth', '15-24'] },
+  // Age alone is not an unemployment request: “los jóvenes no pueden
+  // comprar vivienda” must not retrieve a youth-unemployment series. The
+  // explicit guard below adds this metric only when worklessness language is
+  // present as well.
+  { ids: ['youth_unemployment_rate'], terms: ['paro juvenil', 'desempleo juvenil', 'tasa de paro juvenil', 'tasa de desempleo juvenil', 'youth unemployment', '15-24 paro'] },
   { ids: ['government_debt_ratio'], terms: ['deuda', 'endeudamiento', 'debt', 'cuanto debe españa', 'deuda del pais', 'nivel de deuda española'] },
   { ids: ['government_debt_ratio_europe'], terms: ['deuda publica frente a europa', 'deuda publica frente a la union europea', 'deuda de espana frente a europa', 'espana tiene mas deuda que europa', 'espana esta mas endeudada que europa', 'comparacion europea de la deuda publica'] },
   { ids: ['government_debt_current_prices'], terms: ['deuda publica en euros', 'deuda publica total', 'importe total de la deuda publica', 'importe de la deuda publica', 'importe en millones de euros de la deuda publica', 'deuda publica española expresada en euros', 'deuda publica expresada en euros', 'cuanto dinero debe el sector publico', 'cuanto dinero debe españa', 'cuanto debe españa en euros', 'cuanto debe españa en dinero', 'deuda de españa en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda'] },
@@ -140,6 +144,11 @@ export const preferredMetricIdsForQuery = (query) => {
   // promote a Spain-only neighbour.
   if (hasEuropeReference && hasAny('parcial', 'jornada parcial', 'tiempo parcial') && hasAny('empleo', 'trabajo', 'jornada')) preferred.add('part_time_employment_rate_europe');
   if (hasEuropeReference && hasAny('temporal', 'temporalidad', 'duracion determinada') && hasAny('empleo', 'trabajo', 'contrato')) preferred.add('temporary_employment_rate_europe');
+  if (hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo', 'no encuentra trabajo', 'no encuentran trabajo', 'sin trabajo')) {
+    preferred.add('youth_unemployment_rate');
+    preferred.delete('employment_rate');
+    preferred.delete('unemployment_rate');
+  }
   if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
   if (hasEuropeReference && !hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('unemployment_rate_europe');
   // Conversational Spanish often describes unemployment without naming it:

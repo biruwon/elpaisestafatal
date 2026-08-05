@@ -37,7 +37,11 @@ const bindHost = process.env.LOCAL_CLASSIFIER_BIND_HOST || '127.0.0.1';
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
 const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
-const compilerTimeoutMs = Math.min(15000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 12000)));
+// Ollama can spend materially longer loading a cold local model than it does
+// answering a warm request. This is background enrichment: the browser has
+// deterministic guidance immediately, so allow one bounded cold start rather
+// than silently disabling the model before it can ever contribute.
+const compilerTimeoutMs = Math.min(45000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 30000)));
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 // Local development should use the installed Ollama model automatically for
