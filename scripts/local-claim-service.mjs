@@ -1102,6 +1102,7 @@ const classify = async (text) => {
       : undefined;
   };
   const earlyFamilyEntry = !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+    && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     ? (dominantFamilyEntry(routingFamilyKeys)
       || (routingHasStructuredFamily
@@ -1111,6 +1112,7 @@ const classify = async (text) => {
         : undefined))
     : undefined;
   const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+    && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))

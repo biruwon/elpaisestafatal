@@ -30,6 +30,19 @@ const cases = [
   ['¿Cuántas adjudicaciones de vivienda pública hay?', 'public_housing_allocations_by_group'],
 ];
 
+const intentionallyUnderspecified = [
+  'España cobra demasiados impuestos',
+  'Los impuestos son un infierno',
+];
+for (const query of intentionallyUnderspecified) {
+  const ids = preferredMetricIdsForQuery(query);
+  if (ids.size) throw new Error(`${query}: vague judgement was incorrectly promoted to a metric family: ${[...ids].join(', ')}`);
+}
+const concreteComparison = preferredMetricIdsForQuery('España cobra más impuestos que Europa');
+if (!concreteComparison.has('government_current_taxes_income_wealth_europe')) {
+  throw new Error('Concrete tax comparison lost its reusable metric family');
+}
+
 const failures = [];
 for (const [query, expected] of cases) {
   const ids = preferredMetricIdsForQuery(query);

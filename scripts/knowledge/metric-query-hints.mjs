@@ -425,6 +425,18 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('cpi_index');
     preferred.delete('harmonised_price_index');
   }
+  // A qualitative judgement is not automatically a request for the nearest
+  // numeric series. “Spain charges too many taxes” needs a definition or a
+  // comparison before a tax metric can answer it; otherwise the warehouse
+  // would produce a precise-looking answer to an underspecified claim. This
+  // rule is structural and applies to equivalent wording, not to one claim
+  // alias. Concrete comparison, denominator, period, or amount language keeps
+  // the metric route enabled.
+  const vagueJudgement = /\b(?:demasiad[oa]s?|excesiv[oa]s?|insostenible|infierno fiscal|se come todo el sueldo|asfixia(?:nte)?|por las nubes)\b/.test(normalized);
+  const concreteMetricQualifier = /\b(?:europa|europe|ue|porcentaje|proporcion|pib|habitante|persona|hogar|familia|periodo|ano|anos|desde|entre|frente|comparad|comparar|cuant[oa]s?|millones?|euros?|%|\d)\b/.test(normalized);
+  if (vagueJudgement && !concreteMetricQualifier) {
+    for (const id of ['government_current_taxes_income_wealth_europe', 'government_revenue_ratio', 'government_revenue_ratio_europe', 'government_expenditure_ratio', 'government_expenditure_ratio_europe']) preferred.delete(id);
+  }
   return preferred;
 };
 
