@@ -72,4 +72,8 @@ const root = new URL('../../.local/', import.meta.url).pathname;
 await mkdir(root, { recursive: true });
 await writeFile(join(root, 'evaluation-latest.json'), JSON.stringify(report, null, 2));
 console.log(`Evaluation completed: ${report.cases} cases; known recall ${report.knownRetrievalRecall}/${report.knownCases}; unknown safety ${report.unknownSafety}/${report.unknownCases}; irrelevant matches ${report.irrelevantMatches}; traceability ${report.traceability.passed}/${report.traceability.checked}; p50 ${report.p50LatencyMs}ms; p95 ${report.p95LatencyMs}ms.`);
-if (report.errors === report.cases) process.exit(1);
+if (report.errors > 0) {
+  const sample = outcomes.find((item) => item.status === 'error');
+  console.error(`Evaluation could not resolve ${report.errors}/${report.cases} cases. The resolver may be unavailable; sample error: ${sample?.error || 'unknown'}`);
+  process.exit(1);
+}
