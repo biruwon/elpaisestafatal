@@ -175,6 +175,9 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
   const relation = parts.find((part) => part.startsWith('relation:')) || '';
   const concepts = parts.filter((part) => part.startsWith('concept:')).sort();
-  if (!type || !polarity || (!relation && concepts.length < 2)) return [];
-  return [relation ? `${type}|${polarity}|${relation}` : `${type}|${polarity}|${concepts.join('|')}`];
+  const terms = parts.filter((part) => part.startsWith('term:')).sort();
+  if (!type || !polarity || (!relation && concepts.length < 2 && terms.length < 2)) return [];
+  return [relation
+    ? `${type}|${polarity}|${relation}`
+    : `${type}|${polarity}|${(concepts.length >= 2 ? concepts : terms).join('|')}`];
 };

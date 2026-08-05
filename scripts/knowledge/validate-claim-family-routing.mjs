@@ -15,6 +15,8 @@ if (isSpecificSemanticSignature(unrelated)) throw new Error('broad unrelated sig
 const rent = 'trend|polarity:positive|entity:housing|geo:espana|trend:housing:trend:rising';
 const prices = 'trend|polarity:positive|entity:housing|geo:espana|trend:housing+prices:trend:rising';
 if (semanticFamilyKeys(rent).some((key) => semanticFamilyKeys(prices).includes(key))) throw new Error('Distinct housing metrics shared a family key');
+const descriptiveTerms = 'descriptive|polarity:positive|term:compra|term:votos';
+if (!semanticFamilyKeys(descriptiveTerms).length) throw new Error('Descriptive term family key missing');
 
 // Keep the static-browser compiler and the local-service compiler aligned at
 // the level that matters: equivalent wording must remain equivalent, while
