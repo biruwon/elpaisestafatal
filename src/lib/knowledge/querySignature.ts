@@ -77,7 +77,7 @@ const claimType = (text: string): string => {
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
-  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
+  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|desproporcionad|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
 

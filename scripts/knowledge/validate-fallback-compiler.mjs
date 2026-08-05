@@ -171,6 +171,8 @@ const employmentRecordVariant = deterministicFallbackCompiler('Nunca ha habido t
 assert(employmentRecordVariant.semanticSignature.includes('employment_record'), 'Natural record-employment wording did not enter the reusable employment family');
 const budgetBalance = deterministicFallbackCompiler('El Estado gasta más de lo que ingresa');
 assert(budgetBalance.semanticSignature.includes('public_finance'), 'Budget-balance wording did not enter the reusable public-finance family');
+const disproportionateBenefits = deterministicFallbackCompiler('Los extranjeros reciben ayudas económicas desproporcionadas');
+assert(disproportionateBenefits.claimType === 'comparative', 'Disproportionate-benefits wording was not classified as a comparison');
 
 const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
 const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');

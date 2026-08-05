@@ -1028,7 +1028,7 @@ const classify = async (text) => {
   // it should still reach the reusable domain guidance. Derive the topic from
   // the compiler's normalized entity vocabulary instead of enumerating each
   // wording as another complaint special case.
-  const domainTopicFallback = !broadTopic && ['descriptive', 'trend', 'comparative'].includes(deterministicCompiler.claimType)
+  const domainTopicFallback = !broadTopic && !semanticFamilyCandidate && ['descriptive', 'trend', 'comparative'].includes(deterministicCompiler.claimType)
     && semanticDomainCandidates.length === 1
     ? (() => {
       const domain = semanticDomainCandidates[0];
@@ -1125,8 +1125,18 @@ const classify = async (text) => {
   // warehouse answer the requested metric unless the user entered the
   // published claim's exact wording or alias.
   const nearCanonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
-  const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (top.semanticFamilyMatch || canonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
-  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
+  // A unique semantic-family match is already a validated proposition
+  // contract. Do not require the page's broad presentation label (often
+  // “mixed”) to equal the compiler's narrower input handler; the family key
+  // has already preserved type, polarity, entities, direction, and concepts.
+  const strongMatch = Boolean(top && numericCompatible(top.entry) && (
+    // A unique family key is the strongest deterministic signal. It is
+    // intentionally allowed to work with low lexical overlap: the whole
+    // purpose of the family index is to recognize different surface forms.
+    top.semanticFamilyMatch
+    || (top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (top.semanticFamilyMatch || canonicalPhrase) && (!explicitMetricRoute || canonicalPhrase))
+  ));
+  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82);
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
   // An exact family signature is already a structured proposition match, so
   // an evaluative wrapper such as “está colapsada” must not force the user

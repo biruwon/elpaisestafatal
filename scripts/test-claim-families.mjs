@@ -10,6 +10,8 @@ const cases = [
   'Nunca hubo tanta gente trabajando en España',
   'España nos fríe a impuestos comparada con Europa',
   'Los hospitales están saturados',
+  'Los inmigrantes reciben más ayudas que los españoles',
+  'Los extranjeros reciben ayudas económicas desproporcionadas',
 ];
 const exploratoryCases = [
   'Los alquileres son cada vez más caros en España',
@@ -104,6 +106,21 @@ for (const [text, expectedSlug] of [
   console.log(JSON.stringify({ text, status: payload.status, related: expectedSlug }));
 }
 console.log('Domain broad-wording routing validation passed: new surface forms reuse domain guidance.');
+
+const reversedComparison = await fetch(`${endpoint}/v1/classify`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ text: 'Los españoles reciben más ayudas que los inmigrantes', inputType: 'text' }),
+});
+let reversedPayload = await reversedComparison.json();
+for (let attempt = 0; reversedPayload.status === 'processing' && attempt < 160; attempt += 1) {
+  await sleep(250);
+  reversedPayload = await (await fetch(`${endpoint}/v1/classify/${reversedPayload.requestId}`)).json();
+}
+if (reversedPayload.primary?.slug === 'inmigrantes-ayudas-desproporcionadas' || reversedPayload.status === 'published' && reversedPayload.result?.coverage === 'strong') {
+  throw new Error(`Reversed group comparison incorrectly reused the directional benefits family: ${JSON.stringify(reversedPayload)}`);
+}
+console.log(JSON.stringify({ text: 'Los españoles reciben más ayudas que los inmigrantes', status: reversedPayload.status, related: reversedPayload.relatedClaims?.map((item) => item.slug) || [] }));
 
 for (const [text, expectedSlug] of [
   ['El Gobierno compra votos con ayudas', 'compra-votos-espana'],
