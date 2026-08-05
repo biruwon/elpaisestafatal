@@ -1738,7 +1738,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
   const compoundClaim = (classified.compiler?.explicitPropositions || []).length > 1;
-  const status = classified.status === 'published' && !compoundClaim
+  let status = classified.status === 'published' && !compoundClaim
     ? 'complete'
     : compoundClaim
       ? (primary ? 'partial' : usableSource ? 'draft' : 'uncovered')
@@ -1752,6 +1752,16 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const europeanComparison = !historicalClaim && !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseEuropeanComparison(text, observations) : null;
   const ranking = !historicalClaim && !primary && !regionalComparison && !europeanComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison || europeanComparison;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
+  // A newly worded claim can still receive a strong answer when the requested
+  // metric is explicit and the warehouse contains a complete comparable
+  // series. “Draft” is reserved for partial or indirect retrieval; it must
+  // not become a permanent penalty for claims that were never pre-authored.
+  const directWarehouseAnswer = explicitMetricRoute
+    && !isCausal
+    && !isNormative
+    && !isLegal
+    && (ranking?.observations?.length >= 2 || trend?.observations?.length >= 2);
+  if (status === 'draft' && directWarehouseAnswer) status = 'complete';
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalProfile = isCausal ? causalEvidenceProfile(causalObservations) : null;
   const causalContext = causalObservations.length >= 2 ? {
