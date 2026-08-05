@@ -345,6 +345,7 @@ export const claimAliases: Record<string, string[]> = {
     'la sanidad española está totalmente hundida',
     'la sanidad pública no funciona',
     'los hospitales están colapsados',
+    'los hospitales están saturados',
     'la sanidad está desbordada',
     'los hospitales están en situaciones infrahumanas',
   ],

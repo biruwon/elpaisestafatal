@@ -16,7 +16,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'presion fiscal']],
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
-  ['prices', ['inflacion', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara']],
+  ['prices', ['inflacion', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'precio vivienda']],
   ['benefits', ['ayudas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'partido', 'politica']],
@@ -25,8 +25,8 @@ const conceptAliases: Array<[string, string[]]> = [
   ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
-  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'esperas largas', 'esperas enormes']],
-  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada']],
+  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes']],
+  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
@@ -35,7 +35,8 @@ const conceptAliases: Array<[string, string[]]> = [
   ['minimum_income', ['ingreso minimo vital', 'imv']],
   ['immigration_legal_status', ['debe marcharse', 'tiene que irse', 'debe abandonar espana', 'abandonar espana']],
   ['political_concern', ['preocupacion por la politica', 'politica es la preocupacion', 'preocupacion de la mayoria', 'principal problema politico', 'preocupa la politica']],
-  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo']],
+  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo', 'nunca tanta gente trabajando', 'tanta gente trabajando', 'mas gente trabajando que nunca', 'mas empleo que nunca', 'nunca ha habido tanto empleo']],
+  ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos', 'parados encubiertos', 'esconden el paro', 'cuentan como empleados aunque no trabajen']],
   ['housing_price_ratio', ['cuesta casi tres veces', 'cuesta tres veces', 'vale el triple', 'se ha triplicado', 'triplica en tres anos']],
   ['law', ['ley', 'leyes', 'legal', 'derecho', 'derechos']],
   ['military_service', ['servicio militar', 'mili', 'personal y disciplina']],
@@ -184,7 +185,7 @@ export const semanticQuerySignature = (value: string): string => {
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
   const fallback = priority || concepts.length ? [] : semanticTokens(text);
-  const idiomaticRise = /\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer)\b/.test(text);
+  const idiomaticRise = /\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text);
   const polarity = !idiomaticRise && /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
   const relation = directionalRelation(text);
   const signature = [
@@ -209,6 +210,15 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   if (!type || !polarity || (!relation && concepts.length < 2 && terms.length < 2)) return [];
   // Preserve the complete normalized proposition payload. Direction-only
   // keys collapse unrelated rankings such as tax, health, and education.
-  const payload = [...new Set([relation, ...concepts, ...terms, ...dimensions].filter(Boolean))].sort().join('|');
-  return payload ? [`${type}|${polarity}|${payload}`] : [];
+  const payload = [...new Set([relation, ...concepts, ...terms, ...dimensions].filter(Boolean))].sort();
+  if (!payload.length) return [];
+  const keys = [`${type}|${polarity}|${payload.join('|')}`];
+  // Also emit proposition-specific subset keys. This lets “la vivienda se
+  // encarece” reuse a published “el precio de la vivienda sube” family when
+  // one wording exposes an extra concept, while the uniqueness guard prevents
+  // an ambiguous shared topic from becoming a strong match.
+  if (relation && concepts.length > 1) {
+    for (const concept of concepts) keys.push(`${type}|${polarity}|${[relation, concept, ...dimensions].sort().join('|')}`);
+  }
+  return [...new Set(keys)];
 };

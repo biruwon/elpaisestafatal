@@ -2,12 +2,15 @@
 // contracts; it never determines whether a claim is true.
 export const isSpecificSemanticSignature = (signature) => {
   const parts = String(signature || '').split('|');
+  const propositionParts = parts.filter((part) => /^(causal|relation|descriptive|trend|comparative|definition|legal|normative|predictive):/.test(part));
+  const hasDimension = parts.some((part) => part.startsWith('entity:') || part.startsWith('geo:'));
   return parts.some((part) => part.startsWith('relation:'))
     || (parts.some((part) => part.startsWith('causal:')) && parts.filter((part) => part.startsWith('entity:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:') && part.includes('+')) && parts.some((part) => part.startsWith('entity:')))
     || (parts.some((part) => part.startsWith('comparative:') && /:(more_than|less_than|ranking:(highest|lowest))/.test(part)) && parts.some((part) => part.startsWith('entity:')))
-    || (parts.some((part) => part.startsWith('trend:') && /:trend:(rising|falling|stable)$/.test(part)) && parts.some((part) => part.startsWith('entity:')))
+    || propositionParts.some((part) => part.startsWith('trend:') && (part.includes('+') || hasDimension))
+    || propositionParts.some((part) => part.startsWith('comparative:') && hasDimension)
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.includes('definition:fixed_discontinuous')
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
@@ -29,6 +32,15 @@ export const semanticFamilyKeys = (signature) => {
   // direction. Entity-only keys are unsafe: rent, purchase prices, and
   // housing-cost burden can all otherwise collapse into “housing + rising”.
   const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
+  // Preserve a proposition-specific subset for paraphrases that expose one
+  // extra concept (for example “housing prices” versus simply “housing”).
+  // These keys remain subject to the uniqueness guard in the callers, so a
+  // broad topic cannot silently become a strong claim match.
+  if (entities.includes('+') && propositionParts.length) {
+    for (const entity of entities.split('+')) {
+      for (const part of propositionParts) keys.push(`${type}|${polarity}|${entity}|${part}`);
+    }
+  }
   if (!propositionParts.length && terms.length >= 2) keys.push(`${type}|${polarity}|${terms.join('|')}`);
   if (fixedDiscontinuous) keys.push(`${type}|${polarity}|definition:fixed_discontinuous`);
   if (definition) keys.push(`${type}|${polarity}|${definition}`);

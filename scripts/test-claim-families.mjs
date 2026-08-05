@@ -6,6 +6,10 @@ const cases = [
   'Los fijos discontinuos son parados encubiertos',
   'Los contratos fijos discontinuos son parados ocultos',
   'La sanidad pública está colapsada',
+  'La vivienda no para de encarecerse',
+  'Nunca hubo tanta gente trabajando en España',
+  'España nos fríe a impuestos comparada con Europa',
+  'Los hospitales están saturados',
 ];
 const exploratoryCases = [
   'Los alquileres son cada vez más caros en España',
@@ -58,6 +62,25 @@ for (const text of exploratoryCases) {
 }
 
 console.log(`Exploratory family validation passed: ${exploratoryCases.length} additional variants retained useful guidance.`);
+
+const broadComplaintCases = ['España está destruida', 'Este país es un desastre'];
+for (const text of broadComplaintCases) {
+  const response = await fetch(`${endpoint}/v1/classify`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text, inputType: 'text' }),
+  });
+  let payload = await response.json();
+  for (let attempt = 0; payload.status === 'processing' && attempt < 160; attempt += 1) {
+    await sleep(250);
+    payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
+  }
+  if (!['complete', 'partial'].includes(payload.status) || !payload.relatedClaims?.some((item) => item.slug === 'politica')) {
+    throw new Error(`${text}: broad complaint did not route to reusable political guidance`);
+  }
+  console.log(JSON.stringify({ text, status: payload.status, related: 'politica' }));
+}
+console.log(`Broad complaint routing validation passed: ${broadComplaintCases.length} variants reused topic guidance.`);
 
 const unrelatedProbe = 'La inmigración destruye la productividad de las pymes';
 const unrelatedResponse = await fetch(`${endpoint}/v1/classify`, {

@@ -11,7 +11,7 @@ const topicVocabulary: Record<string, string[]> = {
     'partidos', 'politicos', 'politica', 'corrupcion politica', 'destruye espana', 'destruyendo espana',
     'pedro sanchez esta destruyendo espana', 'sanchez destruye espana', 'espana esta destruida', 'espana destruida',
     'ruina de espana', 'pais esta fatal', 'todo va fatal', 'espana va mal', 'gestion del gobierno',
-    'espana va cuesta abajo', 'el pais se va a la ruina', 'espana es un desastre', 'el gobierno se carga espana',
+    'espana va cuesta abajo', 'el pais se va a la ruina', 'espana es un desastre', 'este pais es un desastre', 'el pais es un desastre', 'el gobierno se carga espana',
     'sanchez se carga espana', 'todo es un desastre politico', 'el pais va cuesta abajo',
   ],
   economia: ['coste de vida', 'precios', 'inflacion', 'salarios', 'economia', 'pobreza', 'crisis economica'],

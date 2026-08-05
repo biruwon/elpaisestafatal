@@ -862,7 +862,9 @@ const classify = async (text) => {
   // different decisions for them. Meaning-level caching can be reintroduced
   // only for validated, representation-independent answer plans.
   const key = normalise(text);
-  if (isLowSignalInput(text)) {
+  const broadComplaintInput = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(key)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(key);
+  if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
     return result;
@@ -896,6 +898,10 @@ const classify = async (text) => {
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
+    semanticFamilyRelated: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
+      entry.semanticSignatures?.includes(querySemanticSignature)
+      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key)))
+    ),
     semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
       (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureCounts.get(querySemanticSignature) === 1)
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyCounts.get(key) === 1))
@@ -958,7 +964,8 @@ const classify = async (text) => {
   // the reusable political topic so the user gets an immediate direction,
   // while keeping it explicitly topic guidance rather than a verdict.
   const broadComplaintText = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais)\b[\s\w]{0,36}\b(?:destruida?|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintText)
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintText)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintText)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintText);
   const rankedPoliticalTopic = ranked.find(({ entry }) => entry.kind === 'topic' && entry.slug === 'politica')
     || (broadPoliticalComplaint
@@ -990,13 +997,13 @@ const classify = async (text) => {
   const decisionRanked = directPhraseCandidate
     ? [directPhraseCandidate, ...topicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
     : topicRanked;
-  const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch }) => {
+  const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch, semanticFamilyRelated }) => {
     if (score < 0.32) return false;
     if (entry.kind === 'topic') return lexical >= 0.24 || (broadPoliticalComplaint && entry.slug === 'politica');
     // Shared entities such as “immigration” are not enough to make an
     // unrelated published claim useful. Require the same semantic family or
     // an unmistakably direct phrase match before showing a claim as guidance.
-    return semanticFamilyMatch;
+    return semanticFamilyMatch || semanticFamilyRelated;
   }).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
@@ -1045,6 +1052,14 @@ const classify = async (text) => {
     // gets a useful direction without being presented as a published verdict.
     if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(decisionRanked) };
     return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [], sourceLinks: top.entry.sourceLinks || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
+  }
+  if (broadPoliticalComplaint && rankedPoliticalTopic) {
+    return {
+      status: 'related',
+      input: { original: text },
+      alternatives: [{ kind: 'topic', slug: rankedPoliticalTopic.entry.slug, title: rankedPoliticalTopic.entry.title, href: rankedPoliticalTopic.entry.href, confidence: rankedPoliticalTopic.score, handlerId: handlerForEntry(rankedPoliticalTopic.entry) }],
+      guidance: { questions: ['¿Qué decisión, indicador o periodo concreto quieres comprobar?'], limitation: 'Es una valoración amplia; la orientación política sirve para concretar la afirmación antes de compararla con datos.' },
+    };
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
   const meaningfulTokens = queryMeaningfulTokens;

@@ -26,7 +26,7 @@ const hasNegation = (value) => {
   const text = normalise(value);
   // In Spanish, “no deja/dejan de subir” describes a persistent rise; the
   // “no” is part of the idiom rather than a negation of the proposition.
-  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer)\b/.test(text)) return false;
+  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text)) return false;
   return /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(text);
 };
 
@@ -53,7 +53,7 @@ const semanticConceptAliases = [
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'recaudación', 'presion fiscal']],
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
-  ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara']],
+  ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'precio vivienda']],
   ['benefits', ['ayudas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política']],
@@ -62,18 +62,18 @@ const semanticConceptAliases = [
   ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
-  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'esperas largas', 'esperas enormes']],
-  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada']],
+  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes']],
+  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
-  ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos']],
+  ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos', 'parados encubiertos', 'esconden el paro', 'cuentan como empleados aunque no trabajen']],
   ['crime_reporting', ['cifras de delincuencia manipuladas', 'estadisticas de delincuencia manipuladas', 'hurtos se registran como extravios', 'hurtos como perdidas', 'esconden los hurtos']],
   ['minimum_income', ['ingreso minimo vital', 'imv']],
   ['immigration_legal_status', ['debe marcharse', 'tiene que irse', 'debe abandonar espana', 'abandonar espana']],
   ['political_concern', ['preocupacion por la politica', 'politica es la preocupacion', 'preocupacion de la mayoria', 'principal problema politico', 'preocupa la politica']],
-  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo']],
+  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo', 'nunca tanta gente trabajando', 'tanta gente trabajando', 'mas gente trabajando que nunca', 'mas empleo que nunca', 'nunca ha habido tanto empleo']],
   ['housing_price_ratio', ['cuesta casi tres veces', 'cuesta tres veces', 'vale el triple', 'se ha triplicado', 'triplica en tres anos']],
   ['law', ['ley', 'leyes', 'legal', 'derecho', 'derechos']],
   ['military_service', ['servicio militar', 'mili', 'personal y disciplina']],
