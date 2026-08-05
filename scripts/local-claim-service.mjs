@@ -1504,6 +1504,14 @@ const classify = async (text) => {
   const selectedHasStructuredFamily = structuredFamily(compiledFamilyKeys);
   const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase || selectedHasStructuredFamily) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (compiledFamilyEntry && !routing.primarySlug ? 'published' : (routing.status === 'published' ? 'published' : 'related')) : 'uncovered';
+  if (!selected && routingTopics.length === 1 && ['descriptive', 'definition'].includes(compiled?.claimType) && !explicitMetricRoute) {
+    const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === routingTopics[0]);
+    if (topic) {
+      const result = { status: 'related', input: { original: text, canonical: compiled?.normalized }, alternatives: [{ kind: 'topic', slug: topic.slug, title: topic.title, href: topic.href, confidence: 0.35, handlerId: handlerForEntry(topic) }], guidance: { questions: ['¿Qué indicador, periodo o hecho concreto quieres comprobar?'], limitation: 'La formulación apunta a un tema, pero todavía no concreta el indicador necesario para verificarla.' } };
+      answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+      return result;
+    }
+  }
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
@@ -2053,7 +2061,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // An unrelated discovered source must not erase deterministic topic
   // guidance. Broad wording should still point to the reusable domain even
   // when discovery happened to return a contextual document.
-  const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : relatedClaims;
+  const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim
+    ? (fallbackTopic && !explicitMetricRoute ? [fallbackTopic] : [])
+    : relatedClaims;
   return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: explicitMetricRoute ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
 };
 
