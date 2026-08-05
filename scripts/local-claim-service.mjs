@@ -2288,7 +2288,17 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           : '';
   const warehouseQueries = [...new Set([warehouseQuery, metricFallbackQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 5);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
-    ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
+    ? await Promise.all(warehouseQueries.map((query, index) => {
+      // Proposition queries must carry only their own metric contract. The
+      // full compound union is useful for the overall request, but passing it
+      // into every clause lets the first metric monopolize the returned
+      // series before the results can be combined.
+      const queryMetricIds = preferredMetricIdsForQuery(query);
+      const queryCompiler = queryMetricIds.size
+        ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds] }
+        : retrievalClassified.compiler;
+      return findWarehouseEvidence(query, queryCompiler, index === 0 ? queryEmbedding : undefined);
+    }))
     : [];
   // A metric hint is a stronger routing signal than the broad semantic topic
   // extracted by the classifier. Retry the canonical metric query directly so
@@ -2299,7 +2309,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     // legitimately find contextual observations (for example crime terms in
     // a housing claim); those must not crowd the direct series out of the
     // bounded evidence packet.
-    warehouseResults.unshift(await findWarehouseEvidence(metricFallbackQuery, retrievalClassified.compiler));
+    const fallbackMetricIds = preferredMetricIdsForQuery(metricFallbackQuery);
+    warehouseResults.unshift(await findWarehouseEvidence(metricFallbackQuery, fallbackMetricIds.size
+      ? { ...retrievalClassified.compiler, metricIds: [...fallbackMetricIds] }
+      : retrievalClassified.compiler));
   }
   const warehouse = {
     observations: [...new Map(warehouseResults.flatMap((item) => item.observations || []).map((item) => [item.id, item])).values()].slice(0, 24),
