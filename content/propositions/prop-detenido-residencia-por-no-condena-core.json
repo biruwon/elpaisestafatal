@@ -1,0 +1,13 @@
+{
+  "id": "prop-detenido-residencia-por-no-condena-core",
+  "claimSlug": "detenido-residencia-por-no-condena",
+  "text": "Una persona extranjera detenida obtiene residencia por no haber sido condenada todavía.",
+  "type": "legal",
+  "subject": "foreign_detainee",
+  "predicate": "automatically_obtains",
+  "object": "residence",
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["lo-4-2000-expulsion-y-residencia"]
+}

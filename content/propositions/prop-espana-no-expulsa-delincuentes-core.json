@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-no-expulsa-delincuentes-core",
+  "claimSlug": "espana-no-expulsa-delincuentes",
+  "text": "España no expulsa nunca a personas extranjeras, incluidos delincuentes reincidentes.",
+  "type": "legal",
+  "subject": "foreign_convicted_person",
+  "predicate": "is_never_expulsed",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["lo-4-2000-expulsion-y-residencia"]
+}
