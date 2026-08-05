@@ -39,6 +39,25 @@ assert(normalized.propositions.length === 1 && normalized.propositions[0].explic
 assert(normalized.evidenceNeeds.includes('metrica') && normalized.evidenceNeeds.includes('periodo'), 'Deterministic evidence requirements were lost when the model returned an incomplete list');
 assert(normalized.metricIds.includes('resident_population'), 'Compiler did not emit the shared metric ID for a population paraphrase');
 
+const conceptRouted = normalizeCompilerOutput({
+  claimType: 'trend',
+  propositions: [{ text: 'La economía española marca un máximo histórico de personas trabajando', type: 'trend', explicit: true, concepts: ['employment_record', 'invented_concept'] }],
+  entities: [],
+  retrievalHints: [],
+  clarificationRequired: false,
+}, 'La economía española marca un máximo histórico de personas trabajando');
+const canonicalEmployment = normalizeCompilerOutput({
+  claimType: 'trend',
+  propositions: [{ text: 'Nunca ha habido tanto empleo en España', type: 'trend', explicit: true }],
+  entities: [],
+  retrievalHints: [],
+  clarificationRequired: false,
+}, 'Nunca ha habido tanto empleo en España');
+assert(conceptRouted.propositions[0].concepts.includes('employment_record'), 'Reviewed concept IDs were not retained from the local compiler');
+assert(!conceptRouted.propositions[0].concepts.includes('invented_concept'), 'Unregistered model concept entered the routing contract');
+assert(conceptRouted.semanticSignature.includes('employment_record'), 'A model-provided reviewed concept did not influence the semantic family');
+assert(canonicalEmployment.semanticSignature.includes('employment_record'), 'Canonical employment record wording did not resolve to its reusable concept');
+
 const bounded = normalizeCompilerOutput({
   ...maliciousModelOutput,
   propositions: Array.from({ length: 20 }, (_, index) => ({ text: `claim ${index}`, type: 'mixed', explicit: true })),
@@ -52,7 +71,7 @@ assert(compilerSchema.properties.propositions.maxItems === 6, 'Compiler schema d
 assert(compilerSchema.properties.retrievalHints.maxItems === 8, 'Compiler schema does not bound retrieval hints');
 assert(compilerSchema.properties.evidenceNeeds.maxItems === 8, 'Compiler schema does not bound evidence needs');
 assert(compilerContractFacts.deterministicOnly.includes('numbers') && compilerContractFacts.deterministicOnly.includes('semanticSignature'), 'Deterministic-only compiler fields are not documented');
-assert(/varias cl[aá]usulas independientes/i.test(compilerInstruction) && /proposici[oó]n expl[ií]cita separada/i.test(compilerInstruction) && /dimensiones de evidencia/i.test(compilerInstruction), 'Local compiler prompt does not require compound decomposition and evidence needs');
+assert(/varias cl[aá]usulas independientes/i.test(compilerInstruction) && /proposici[oó]n expl[ií]cita separada/i.test(compilerInstruction) && /dimensiones de evidencia/i.test(compilerInstruction) && /IDs de este vocabulario revisado/i.test(compilerInstruction), 'Local compiler prompt does not require compound decomposition, evidence needs, and bounded concept routing');
 const candidateContext = formatCompilerCandidates([{ published: true, slug: 'claim-a', title: 'Afirmación de prueba', claimType: 'causal', geography: 'España', period: '2025', aliases: ['otra forma de decirlo'] }]);
 assert(candidateContext.includes('type=causal') && candidateContext.includes('geography=España') && candidateContext.includes('period=2025') && candidateContext.includes('otra forma de decirlo'), 'Local compiler candidate context omitted reviewed routing metadata');
 const candidateWithReviewContext = formatCompilerCandidates([{ published: true, slug: 'claim-b', title: 'Afirmación contextual', claimType: 'trend', whatIsTrue: 'El indicador se ha mantenido estable durante el periodo revisado.', whatIsMissing: 'No permite inferir una causa concreta.' }]);

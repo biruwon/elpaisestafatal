@@ -103,6 +103,12 @@ const semanticConceptAliases = [
   ['justice', ['prision', 'prision preventiva']],
 ];
 
+// These IDs are the stable vocabulary shared by the local compiler and the
+// evidence router. They are deliberately derived from the registry above so
+// Ollama can normalise an unseen Spanish phrase to an existing concept, but
+// it cannot invent a new evidence family or inject arbitrary routing terms.
+export const knownSemanticConceptIds = new Set(semanticConceptAliases.map(([concept]) => concept));
+
 const semanticConcepts = (value) => {
   let concepts = semanticConceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
@@ -270,7 +276,10 @@ export const semanticSignatureFor = ({ claimType, propositions = [], entities = 
   const comparisonLike = claimType === 'comparative' || claimType === 'mixed' || explicit.some((item) => item.type === 'comparative');
   const priorityClaim = claimType === 'normative' && explicit.some((item) => priorityDirectionFor(item.text));
   const propositionKeys = explicit.map((item) => {
-    const concepts = semanticConcepts(item.text);
+    const concepts = [...new Set([
+      ...semanticConcepts(item.text),
+      ...(Array.isArray(item.concepts) ? item.concepts.filter((concept) => knownSemanticConceptIds.has(concept)) : []),
+    ])];
     const terms = concepts.length ? concepts : semanticTermFallback(item.text);
     const shape = item.subject && item.predicate && item.object ? item : propositionShapeFor(item.text);
     const trendRelation = item.type === 'trend' ? trendDirectionFor(item.text) : null;

@@ -1,9 +1,9 @@
-import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './fallback-compiler.mjs';
+import { deterministicFallbackCompiler, knownSemanticConceptIds, propositionShapeFor, semanticSignatureFor } from './fallback-compiler.mjs';
 import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 export const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 
-export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Identifica también qué necesitaríamos medir o comprobar para responder: una lista breve de dimensiones de evidencia como métrica, periodo, territorio, población, denominador, fuente normativa, programa, impacto o comparación. No inventes valores ni fuentes. Para routing, compara la relación completa entre sujeto, acción, resultado, población, métrica, dirección, periodo y territorio: una diferencia de palabras puede ser una paráfrasis (por ejemplo inmigrantes/extranjeros o inseguridad/delincuencia), pero compartir solo un tema no basta. Solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación; si cambia la relación, población, métrica, dirección, periodo o territorio, usa uncovered y primarySlug vacío. Nunca uses un candidato internal como primarySlug. Devuelve únicamente JSON según el esquema proporcionado. Sé compacto: no repitas la afirmación, usa como máximo tres retrievalHints y tres evidenceNeeds, deja questions vacío salvo que falte un dato esencial y omite subject/predicate/object si no son necesarios.';
+export const compilerInstruction = 'Extrae la estructura de esta afirmación en español. No evalúes si es verdadera y no añadas datos. Separa afirmaciones explícitas e implícitas mediante el campo explicit. Si la entrada contiene varias cláusulas independientes unidas por y, pero, porque, aunque o punto y coma, crea una proposición explícita separada para cada afirmación comprobable; no las resumas en una sola. Identifica la población o grupo al que se refiere (por ejemplo residentes, hogares, trabajadores, beneficiarios, inmigrantes, alumnado o pacientes) cuando aparezca. Identifica también qué necesitaríamos medir o comprobar para responder: una lista breve de dimensiones de evidencia como métrica, periodo, territorio, población, denominador, fuente normativa, programa, impacto o comparación. No inventes valores ni fuentes. Para routing, compara la relación completa entre sujeto, acción, resultado, población, métrica, dirección, periodo y territorio: una diferencia de palabras puede ser una paráfrasis (por ejemplo inmigrantes/extranjeros o inseguridad/delincuencia), pero compartir solo un tema no basta. En cada proposición, incluye en concepts únicamente IDs de este vocabulario revisado cuando correspondan: immigration, crime, housing, rental_housing, employment, unemployment, taxes, healthcare, education, prices, hotel_tourism, benefits, budget, politics, cost_of_living, public_finance, public_debt_stock, public_debt_ratio, income, health_access, healthcare_collapse, health_spending, demography, education_outcomes, neet, fixed_discontinuous, crime_reporting, minimum_income, employment_record, law, minimum_wage, pension_system, pension_financing, pension_dependency, environment, justice. No inventes IDs: si ninguno corresponde, devuelve una lista vacía. Solo puedes usar como primarySlug un candidato marcado published que exprese la misma combinación; si cambia la relación, población, métrica, dirección, periodo o territorio, usa uncovered y primarySlug vacío. Nunca uses un candidato internal como primarySlug. Devuelve únicamente JSON según el esquema proporcionado. Sé compacto: no repitas la afirmación, usa como máximo tres retrievalHints y tres evidenceNeeds, deja questions vacío salvo que falte un dato esencial y omite subject/predicate/object si no son necesarios.';
 
 // The local model is a parser, not an evidence source. Keep this schema small
 // and bounded so model latency and the amount of untrusted text entering the
@@ -29,6 +29,9 @@ export const compilerSchema = {
           subject: { type: 'string', maxLength: 120 },
           predicate: { type: 'string', maxLength: 80 },
           object: { type: 'string', maxLength: 120 },
+          // Ollama may map unfamiliar wording to a reviewed concept ID. The
+          // normalizer filters this against the shared registry below.
+          concepts: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 80 } },
         },
       },
     },
@@ -67,6 +70,10 @@ const bounded = (value, maximum) => typeof value === 'string' ? value.trim().sli
 const safeList = (value, maximumItems, maximumLength) => Array.isArray(value)
   ? value.filter((item) => typeof item === 'string' && item.trim()).slice(0, maximumItems).map((item) => item.trim().slice(0, maximumLength))
   : [];
+
+const safeConcepts = (value) => [...new Set(safeList(value, 8, 80)
+  .map((item) => item.toLocaleLowerCase('en').trim())
+  .filter((item) => knownSemanticConceptIds.has(item)))].slice(0, 8);
 
 // Give the local compiler enough reviewed context to distinguish a paraphrase
 // from a merely related topic. This is still a bounded routing hint: the
@@ -140,6 +147,7 @@ export const normalizeCompilerOutput = (value, text) => {
         subject: bounded(item.subject, 120) || shape.subject,
         predicate: bounded(item.predicate, 80) || shape.predicate,
         object: bounded(item.object, 120) || shape.object,
+        concepts: safeConcepts(item.concepts),
       };
     })
     : [];
@@ -219,7 +227,7 @@ export const normalizeCompilerOutput = (value, text) => {
 };
 
 export const compilerContractFacts = {
-  modelMayProvide: ['normalized', 'claimType', 'propositions', 'entities', 'geography', 'period', 'population', 'metricIds', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
+  modelMayProvide: ['normalized', 'claimType', 'propositions', 'proposition concepts', 'entities', 'geography', 'period', 'population', 'metricIds', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   deterministicOnly: ['numbers', 'semanticSignature'],
   maxPropositions: 6,
   maxRetrievalHints: 8,
