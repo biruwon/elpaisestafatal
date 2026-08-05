@@ -895,10 +895,8 @@ const classify = async (text) => {
   const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   const normalizedRoutingInput = normalise(routingCompiler.normalized);
-  const wrapperPublishedEntry = !exactPublishedInput && normalizedRoutingInput !== normalise(text)
-    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
-      && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput))
-    : undefined;
+  const directPublishedEntry = index.entries.find((entry) => entry.kind === 'claim' && entry.published
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput));
   // A unique semantic family is enough to reuse a reviewed answer even when
   // lexical ranking or the later local compiler chooses a different surface
   // handler. This is the scalable path for new wording: one evidence family
@@ -920,7 +918,7 @@ const classify = async (text) => {
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
     : undefined;
-  const reusableFamilyEntry = wrapperPublishedEntry || earlyFamilyEntry || earlySignatureEntry;
+  const reusableFamilyEntry = directPublishedEntry || earlyFamilyEntry || earlySignatureEntry;
   if (reusableFamilyEntry) {
     const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: reusableFamilyEntry.answer || '', assessment: reusableFamilyEntry.assessment || '', whatIsTrue: reusableFamilyEntry.whatIsTrue || '', whatIsMissing: reusableFamilyEntry.whatIsMissing || '', cannotProve: reusableFamilyEntry.cannotProve || '', scale: reusableFamilyEntry.scale || '', propositionIds: reusableFamilyEntry.propositionIds || [], evidenceIds: reusableFamilyEntry.evidenceIds || [], sourceRefs: reusableFamilyEntry.sourceRefs || [], sourceLinks: reusableFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82 }] };
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
