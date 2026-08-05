@@ -1878,6 +1878,28 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
+  // Enrichment must never replace a canonical published answer with a
+  // provisional warehouse composition. Resolve the normalized title/alias
+  // again at this boundary because this is where dynamic retrieval can
+  // otherwise overwrite a valid published classification.
+  const enrichmentIndex = await getIndex();
+  const enrichmentCompiler = deterministicFallbackCompiler(text);
+  const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
+  const canonicalPublished = enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));
+  if (canonicalPublished) {
+    const canonicalPrimary = {
+      kind: 'claim', slug: canonicalPublished.slug, title: canonicalPublished.title, href: canonicalPublished.href,
+      confidence: 1, reason: 'La formulación coincide con una afirmación publicada.',
+      answer: canonicalPublished.answer || '', assessment: canonicalPublished.assessment || '',
+      whatIsTrue: canonicalPublished.whatIsTrue || '', whatIsMissing: canonicalPublished.whatIsMissing || '',
+      cannotProve: canonicalPublished.cannotProve || '', scale: canonicalPublished.scale || '',
+      handlerId: handlerForInput({ retrievalHints: [canonicalPublished.title, ...(canonicalPublished.keywords || [])], entities: canonicalPublished.aliases || [] }, canonicalPublished.claimType),
+      propositionIds: canonicalPublished.propositionIds || [], evidenceIds: canonicalPublished.evidenceIds || [],
+      sourceRefs: canonicalPublished.sourceRefs || [], sourceLinks: canonicalPublished.sourceLinks || [],
+    };
+    return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
+  }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const hintedMetricIds = new Set([
     ...preferredMetricIdsForQuery(retrievalText),
