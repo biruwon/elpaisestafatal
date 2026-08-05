@@ -187,6 +187,25 @@ export const normalizeCompilerOutput = (value, text) => {
   // lets many surface forms reuse the same evidence series without creating
   // another claim record.
   const metricIds = [...preferredMetricIdsForQuery(text)].slice(0, 8);
+  const modelSemanticSignature = semanticSignatureFor({
+    claimType,
+    propositions: normalizedPropositions,
+    entities,
+    geography,
+    period,
+    population,
+    numbers,
+    negated: /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(String(text || '')),
+  });
+  // Once the deterministic compiler has found a meaningful proposition, it
+  // owns the family boundary. A local model can improve decomposition and
+  // retrieval hints, but its paraphrase must not silently move the request
+  // into a neighbouring evidence family. For genuinely unstructured input,
+  // retain the model-enriched signature so the model can still contribute
+  // reviewed concepts.
+  const semanticSignature = deterministic.explicitPropositions.length
+    ? deterministic.semanticSignature
+    : modelSemanticSignature;
   return {
     normalized: bounded(value.normalized, 300) || deterministic.normalized,
     claimType,
@@ -206,16 +225,7 @@ export const normalizeCompilerOutput = (value, text) => {
     ])].slice(0, 8),
     // Never trust the model's signature. The deterministic compiler owns
     // polarity, direction, relation and metric-family boundaries.
-    semanticSignature: semanticSignatureFor({
-      claimType,
-      propositions: normalizedPropositions,
-      entities,
-      geography,
-      period,
-      population,
-      numbers,
-      negated: /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(String(text || '')),
-    }),
+    semanticSignature,
     clarificationRequired: value.clarificationRequired === true,
     routing: value.routing && typeof value.routing === 'object' ? {
       status: ['published', 'related', 'uncovered'].includes(value.routing.status) ? value.routing.status : 'uncovered',
