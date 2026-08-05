@@ -1,0 +1,13 @@
+{
+  "id": "prop-no-trabajo-un-ano-marcha-core",
+  "claimSlug": "no-trabajo-un-ano-marcha",
+  "text": "Toda persona inmigrante que no trabaje durante un año debe abandonar España.",
+  "type": "legal",
+  "subject": "immigrant_without_work",
+  "predicate": "must_leave_after",
+  "object": "one_year",
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["lo-4-2000-residencia-y-trabajo"]
+}

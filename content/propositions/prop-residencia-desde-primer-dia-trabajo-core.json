@@ -1,0 +1,13 @@
+{
+  "id": "prop-residencia-desde-primer-dia-trabajo-core",
+  "claimSlug": "residencia-desde-primer-dia-trabajo",
+  "text": "Cualquier persona que llegue a España para trabajar obtiene residencia desde el primer día.",
+  "type": "legal",
+  "subject": "foreign_worker_arrival",
+  "predicate": "automatically_grants",
+  "object": "residence",
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["lo-4-2000-residencia-y-trabajo"]
+}

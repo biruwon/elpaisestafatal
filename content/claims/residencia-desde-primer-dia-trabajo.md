@@ -1,0 +1,36 @@
+---
+slug: residencia-desde-primer-dia-trabajo
+claim: "Cualquiera que venga a trabajar obtiene residencia desde el primer día."
+assessment: false
+topicSlugs: ["inmigracion", "justicia-leyes-sistema-penal"]
+aliases: ["cualquiera que venga a trabajar obtiene residencia desde el primer día", "si vienes a trabajar tienes residencia desde el primer día", "trabajar en España da residencia automática"]
+claimType: legal
+evidenceStrength: high
+geography: España
+period: vigente
+reviewed: 2026-08-05
+status: published
+sourceRefs: ["lo-4-2000-extranjeria-consolidada"]
+evidenceIds: ["lo-4-2000-residencia-y-trabajo"]
+propositionIds: ["prop-residencia-desde-primer-dia-trabajo-core"]
+---
+
+## Qué es cierto
+
+España contempla autorizaciones de residencia y trabajo para distintos supuestos, pero requieren cumplir las condiciones del régimen aplicable y seguir el procedimiento correspondiente.
+
+## Qué falta
+
+La llegada al país o la intención de trabajar no concede por sí sola residencia desde el primer día. La autorización depende del tipo de entrada, visado, contrato, empleador, situación administrativa y demás requisitos legales.
+
+## Escala
+
+Residencia, estancia y autorización de trabajo son situaciones jurídicas distintas. También existen regímenes específicos para estudiantes, familiares y circunstancias excepcionales.
+
+## Límite
+
+El resultado de un caso concreto requiere conocer la nacionalidad, el visado, el contrato y el procedimiento utilizado.
+
+## Respuesta compartible
+
+No: venir a trabajar no da residencia automática desde el primer día. Hay autorizaciones de residencia y trabajo, pero dependen del régimen aplicable y de cumplir sus requisitos.

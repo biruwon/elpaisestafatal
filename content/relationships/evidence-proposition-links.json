@@ -301,6 +301,8 @@
     {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-respaldo-gobierno-delito-leve-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"ocupacion-limites-procedimiento-penal","propositionId":"prop-ocupacion-respaldo-gobierno-delito-leve-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"seguridad-balance-de-criminalidad-t1-2026","propositionId":"prop-inmigrantes-delinquen-y-piden-ayudas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-inmigrantes-delinquen-y-piden-ayudas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-inmigrantes-delinquen-y-piden-ayudas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"lo-4-2000-residencia-y-trabajo","propositionId":"prop-residencia-desde-primer-dia-trabajo-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"lo-4-2000-residencia-y-trabajo","propositionId":"prop-no-trabajo-un-ano-marcha-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
