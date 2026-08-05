@@ -20,15 +20,17 @@ export const semanticFamilyKeys = (signature) => {
   const type = parts[0] || '';
   const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
   const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
+  const fixedDiscontinuous = parts.some((part) => part.includes('fixed_discontinuous'));
   const definition = parts.find((part) => part === 'definition:fixed_discontinuous');
   const propositionParts = parts.filter((part) => /^(causal|relation|descriptive|trend|comparative|definition|legal|normative|predictive):/.test(part));
   const terms = parts.filter((part) => part.startsWith('term:')).sort();
-  if (!type || (!entities && !propositionParts.length && !definition && terms.length < 2)) return [];
+  if (!type || (!entities && !propositionParts.length && !definition && !fixedDiscontinuous && terms.length < 2)) return [];
   // A family key must retain the proposition's normalized concept and
   // direction. Entity-only keys are unsafe: rent, purchase prices, and
   // housing-cost burden can all otherwise collapse into “housing + rising”.
   const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
   if (!propositionParts.length && terms.length >= 2) keys.push(`${type}|${polarity}|${terms.join('|')}`);
+  if (fixedDiscontinuous) keys.push(`${type}|${polarity}|definition:fixed_discontinuous`);
   if (definition) keys.push(`${type}|${polarity}|${definition}`);
   return [...new Set(keys)];
 };

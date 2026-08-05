@@ -63,6 +63,7 @@ const semanticConceptAliases = [
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
   ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'esperas largas', 'esperas enormes']],
+  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
@@ -90,6 +91,9 @@ const semanticConceptAliases = [
   ['nationality_law', ['ley de nietos', 'nacionalidad']],
   ['gender_equality', ['hombres y mujeres', 'mismos derechos']],
   ['minimum_wage', ['salario minimo', 'smi', '1400 euros']],
+  ['pension_system', ['pensiones', 'pension', 'pagar las pensiones', 'pagar la jubilacion']],
+  ['pension_financing', ['pagan nuestras pensiones', 'pagaran nuestras pensiones', 'pagar nuestras pensiones', 'sirve para pagar las pensiones']],
+  ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones']],
   ['normative', ['deberia', 'deberian', 'deberia recuperar', 'deberia reducir']],
   ['environment', ['emisiones', 'contaminando']],
   ['justice', ['prision', 'prision preventiva']],
@@ -215,7 +219,7 @@ const trendDirectionFor = (value) => {
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return 'improving';
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|va en aumento|va al alza)\b/.test(text)) return 'rising';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
   return null;
 };
 

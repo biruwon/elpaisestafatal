@@ -883,7 +883,9 @@ const classify = async (text) => {
     try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
-  const queryFamilyKeys = new Set(semanticFamilyKeys(querySemanticSignature));
+  const rawQueryFamilyKeys = semanticFamilyKeys(querySemanticSignature);
+  const maxFamilyKeyLength = Math.max(0, ...rawQueryFamilyKeys.map((key) => key.length));
+  const queryFamilyKeys = new Set(rawQueryFamilyKeys.filter((key) => key.length === maxFamilyKeyLength));
   const familyKeyCounts = new Map();
   const semanticSignatureCounts = new Map();
   for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {

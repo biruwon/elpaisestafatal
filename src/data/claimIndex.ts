@@ -139,7 +139,9 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const candidateSemanticSignatures = entry.semanticSignatures?.length
     ? entry.semanticSignatures
     : searchablePhrases.map((phrase) => ({ signature: semanticQuerySignature(phrase), phrase }));
-  const queryFamilyKeys = semanticFamilyKeys(querySemanticSignatureValue);
+  const rawQueryFamilyKeys = semanticFamilyKeys(querySemanticSignatureValue);
+  const maxFamilyKeyLength = Math.max(0, ...rawQueryFamilyKeys.map((key) => key.length));
+  const queryFamilyKeys = rawQueryFamilyKeys.filter((key) => key.length === maxFamilyKeyLength);
   const candidateFamilyKeys = entry.semanticFamilyKeys?.length
     ? entry.semanticFamilyKeys
     : [...new Set(candidateSemanticSignatures.flatMap(({ signature }) => semanticFamilyKeys(signature)))];
