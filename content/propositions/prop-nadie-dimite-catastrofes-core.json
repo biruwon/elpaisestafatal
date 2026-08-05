@@ -1,0 +1,13 @@
+{
+  "id": "prop-nadie-dimite-catastrofes-core",
+  "claimSlug": "nadie-dimite-catastrofes",
+  "text": "Nadie asume responsabilidades ni dimite ante las catástrofes",
+  "type": "mixed",
+  "subject": "political_accountability",
+  "predicate": "never_resigns_after_disasters",
+  "object": "Spain",
+  "geography": "España",
+  "period": "2023-2026",
+  "status": "contradicted",
+  "evidenceIds": ["ceses-y-dimisiones-gobierno-legislatura"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "prop-delincuentes-multiples-detenciones-core",
+  "claimSlug": "delincuentes-multiples-detenciones",
+  "text": "Hay personas con 100, 200 o 300 detenciones que siguen esperando juicio",
+  "type": "mixed",
+  "subject": "repeat_detainees",
+  "predicate": "have_many_detentions_without_trial",
+  "object": "Spain",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "qualified",
+  "evidenceIds": ["registro-detenciones-no-identifica-reincidencia-judicial"]
+}

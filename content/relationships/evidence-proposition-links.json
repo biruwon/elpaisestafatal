@@ -334,6 +334,13 @@
     {"evidenceId":"nombramiento-magistrados-supremo-cgpj","propositionId":"prop-supremo-elegido-quienes-juzga-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"agencia-tributaria-control-grandes-patrimonios-2025","propositionId":"prop-hacienda-100-euros-no-grandes-pagos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"marco-transparencia-control-instituciones","propositionId":"prop-instituciones-secuestradas-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"informe-estado-derecho-ue-espana-2025","propositionId":"prop-sistema-espanol-corrupto-todo-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"informe-estado-derecho-ue-espana-2025","propositionId":"prop-sistema-espanol-corrupto-todo-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"registro-detenciones-no-identifica-reincidencia-judicial","propositionId":"prop-delincuentes-multiples-detenciones-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"ceses-y-dimisiones-gobierno-legislatura","propositionId":"prop-nadie-dimite-catastrofes-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"marco-juridico-fuerzas-seguridad","propositionId":"prop-policia-manipulada-gobierno-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"compra-voto-delito-y-casos-electorales","propositionId":"prop-compra-votos-espana-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"balance-criminalidad-categorias-graves-2015-2025","propositionId":"prop-delitos-graves-doble-triple-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"alquileres-serie-eurostat","propositionId":"prop-alquileres-suben-oferta-inseguridad-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"alquileres-oferta-y-demanda-ine","propositionId":"prop-alquileres-suben-oferta-inseguridad-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
