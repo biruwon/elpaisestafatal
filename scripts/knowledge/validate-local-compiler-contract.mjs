@@ -57,6 +57,8 @@ assert(conceptRouted.propositions[0].concepts.includes('employment_record'), 'Re
 assert(!conceptRouted.propositions[0].concepts.includes('invented_concept'), 'Unregistered model concept entered the routing contract');
 assert(conceptRouted.semanticSignature.includes('employment_record'), 'A model-provided reviewed concept did not influence the semantic family');
 assert(canonicalEmployment.semanticSignature.includes('employment_record'), 'Canonical employment record wording did not resolve to its reusable concept');
+const unfamiliarEmployment = normalizeCompilerOutput(null, 'La economía española marca un máximo histórico de personas trabajando');
+assert(unfamiliarEmployment.semanticSignature.includes('employment_record'), 'Unfamiliar historical-maximum employment wording did not resolve to the reusable family');
 
 const bounded = normalizeCompilerOutput({
   ...maliciousModelOutput,

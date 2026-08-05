@@ -1002,6 +1002,8 @@ const classify = async (text) => {
   // immigration); routing it to the topic first would discard the published
   // family that already answers the paraphrase.
   const routingFamilyKeys = new Set(semanticFamilyKeys(routingCompiler.semanticSignature));
+  const structuredFamily = (keys) => [...keys].some((key) => /(?:employment_record|health_access|healthcare_collapse|public_debt_stock|public_debt_ratio|housing_price_ratio|education_outcomes|fixed_discontinuous|crime_reporting|minimum_income|pension_financing)/.test(key));
+  const routingHasStructuredFamily = structuredFamily(routingFamilyKeys);
   const hasPublishedSemanticFamily = routingFamilyKeys.size > 0
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && index.entries.some((entry) => entry.kind === 'claim' && entry.published
@@ -1020,17 +1022,31 @@ const classify = async (text) => {
   // lexical ranking or the later local compiler chooses a different surface
   // handler. This is the scalable path for new wording: one evidence family
   // can serve many paraphrases without creating a new claim record.
-  const routingFamilyCounts = new Map();
   const routingSignatureCounts = new Map();
   for (const entry of index.entries) {
     if (entry.kind !== 'claim' || !entry.published) continue;
-    for (const key of entry.semanticFamilyKeys || []) routingFamilyCounts.set(key, (routingFamilyCounts.get(key) || 0) + 1);
     for (const signature of entry.semanticSignatures || []) routingSignatureCounts.set(signature, (routingSignatureCounts.get(signature) || 0) + 1);
   }
-  const earlyFamilyEntry = !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+  // A family can have several published pages: a canonical explanation, a
+  // newer statistical update, and a qualification page. Requiring one page
+  // made reusable evidence families look uncovered forever. Choose a family
+  // representative only when lexical wording clearly favours one owner;
+  // genuine ties remain related guidance.
+  const dominantFamilyEntry = (keys, entries = index.entries) => {
+    const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published
+      && (entry.semanticFamilyKeys || []).some((key) => keys.has(key)));
+    if (owners.length <= 1) return owners[0];
+    const rankedOwners = owners.map((entry) => ({ entry, lexical: lexicalScore(text, entry) }))
+      .sort((left, right) => right.lexical - left.lexical);
+    const topOwner = rankedOwners[0];
+    const nextOwner = rankedOwners[1];
+    return topOwner && topOwner.lexical >= 0.2 && topOwner.lexical - (nextOwner?.lexical || 0) >= 0.05
+      ? topOwner.entry
+      : undefined;
+  };
+  const earlyFamilyEntry = !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
-    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
-      && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key) && routingFamilyCounts.get(key) === 1))
+    ? dominantFamilyEntry(routingFamilyKeys)
     : undefined;
   const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
@@ -1414,7 +1430,7 @@ const classify = async (text) => {
   // A recognized metric is already a concrete question. Do not let a broad
   // topic (for example housing) intercept it before the warehouse has had a
   // chance to answer or explicitly report that its evidence is missing.
-  if (effectiveBroadTopic && !explicitMetricRoute) {
+  if (effectiveBroadTopic && !explicitMetricRoute && !hasPublishedSemanticFamily) {
     return {
       status: 'related',
       input: { original: text },
@@ -1455,17 +1471,20 @@ const classify = async (text) => {
   // published claim owns the strongest family key. A broad concept shared by
   // several claims remains related guidance instead of becoming a verdict.
   const compiledFamilyKeys = new Set(semanticFamilyKeys(compiled?.semanticSignature || ''));
-  const compiledFamilyOwners = compiledFamilyKeys.size && isSpecificSemanticSignature(compiled?.semanticSignature || '')
-    ? index.entries.filter((entry) => entry.kind === 'claim' && entry.published
-      && (entry.semanticFamilyKeys || []).some((key) => compiledFamilyKeys.has(key)))
-    : [];
-  const compiledFamilyEntry = compiledFamilyOwners.length === 1 ? compiledFamilyOwners[0] : undefined;
+  const compiledFamilyEntry = compiledFamilyKeys.size && isSpecificSemanticSignature(compiled?.semanticSignature || '')
+    ? (dominantFamilyEntry(compiledFamilyKeys)
+      || (structuredFamily(compiledFamilyKeys)
+        ? ranked.find((item) => item.entry.kind === 'claim' && item.entry.published && (item.semanticFamilyMatch || item.semanticFamilyRelated)
+          && (item.entry.semanticFamilyKeys || []).some((key) => compiledFamilyKeys.has(key)))?.entry
+        : undefined))
+    : undefined;
   const selectedCandidate = routing.primarySlug
     ? ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry))
     : compiledFamilyEntry && numericCompatible(compiledFamilyEntry) && compatibleEntry(compiledFamilyEntry)
       ? { entry: compiledFamilyEntry, score: 0.82, lexical: 0, semantic: 1, semanticFamilyMatch: true }
       : undefined;
-  const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
+  const selectedHasStructuredFamily = structuredFamily(compiledFamilyKeys);
+  const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase || selectedHasStructuredFamily) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (compiledFamilyEntry && !routing.primarySlug ? 'published' : (routing.status === 'published' ? 'published' : 'related')) : 'uncovered';
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });

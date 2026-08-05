@@ -39,7 +39,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['minimum_income', ['ingreso minimo vital', 'imv']],
   ['immigration_legal_status', ['debe marcharse', 'tiene que irse', 'debe abandonar espana', 'abandonar espana']],
   ['political_concern', ['preocupacion por la politica', 'politica es la preocupacion', 'preocupacion de la mayoria', 'principal problema politico', 'preocupa la politica']],
-  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo', 'nunca tanta gente trabajando', 'nunca tantos trabajadores', 'nunca habia trabajado tanta gente', 'tantos trabajadores', 'tanta gente trabajando', 'mas gente trabajando que nunca', 'mas empleo que nunca', 'nunca ha habido tanto empleo']],
+  ['employment_record', ['record de ocupacion', 'record de empleo', 'maximo historico de empleo', 'maximo historico de ocupacion', 'maximo historico de personas trabajando', 'marca un maximo historico', 'marca el maximo historico', 'pleno empleo', 'nunca tanta gente trabajando', 'nunca tantos trabajadores', 'nunca habia trabajado tanta gente', 'tantos trabajadores', 'tanta gente trabajando', 'personas trabajando', 'personas ocupadas', 'mas gente trabajando que nunca', 'mas empleo que nunca', 'nunca ha habido tanto empleo']],
   ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos', 'parados encubiertos', 'esconden el paro', 'cuentan como empleados aunque no trabajen']],
   ['housing_price_ratio', ['cuesta casi tres veces', 'cuesta tres veces', 'vale el triple', 'se ha triplicado', 'triplica en tres anos']],
   ['law', ['ley', 'leyes', 'legal', 'derecho', 'derechos']],
