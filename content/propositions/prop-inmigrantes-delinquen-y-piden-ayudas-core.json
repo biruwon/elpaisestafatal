@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigrantes-delinquen-y-piden-ayudas-core",
+  "claimSlug": "inmigrantes-delinquen-y-piden-ayudas",
+  "text": "Las personas inmigrantes delinquen y reciben ayudas económicas.",
+  "type": "mixed",
+  "subject": "immigrants",
+  "predicate": "commit_crime_and_receive_benefits",
+  "object": null,
+  "geography": "España",
+  "period": "2024-2025",
+  "status": "qualified",
+  "evidenceIds": ["seguridad-balance-de-criminalidad-t1-2026", "imv-titulares-nacionalidad-junio-2025"]
+}
