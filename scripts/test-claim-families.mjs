@@ -13,6 +13,8 @@ const cases = [
   'Los hospitales están saturados',
   'Los inmigrantes reciben más ayudas que los españoles',
   'Los extranjeros reciben ayudas económicas desproporcionadas',
+  'Los inmigrantes viven de las paguitas',
+  'Los inmigrantes vienen a vivir de las ayudas',
   'Cada vez llegan más inmigrantes a España',
   'La vivienda se ha encarecido muchísimo',
 ];
@@ -91,7 +93,7 @@ for (const [text, expectedSlug] of [
   ['Hay una invasión migratoria', 'inmigracion'],
   ['La vivienda está cara', 'vivienda'],
   ['La vivienda es imposible para los jóvenes', 'vivienda'],
-  ['Los inmigrantes vienen a vivir de las ayudas', 'inmigracion'],
+  ['Los inmigrantes vienen a vivir de las ayudas', 'inmigrantes-ayudas'],
   ['España es un país inseguro', 'seguridad'],
   ['El Estado gasta más de lo que ingresa', 'economia'],
   ['Nunca ha habido tantos trabajadores', 'empleo-record'],

@@ -883,6 +883,15 @@ const classify = async (text) => {
   const index = await getIndex();
   const deterministicCompiler = fallbackCompiler(text);
   const routingCompiler = deterministicFallbackCompiler(text);
+  // Resolve a reusable evidence family before the broad-topic shortcut below.
+  // A single proposition can still be specific (for example benefits plus
+  // immigration); routing it to the topic first would discard the published
+  // family that already answers the paraphrase.
+  const routingFamilyKeys = new Set(semanticFamilyKeys(routingCompiler.semanticSignature));
+  const hasPublishedSemanticFamily = routingFamilyKeys.size > 0
+    && isSpecificSemanticSignature(routingCompiler.semanticSignature)
+    && index.entries.some((entry) => entry.kind === 'claim' && entry.published
+      && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)));
   const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   const routingDomains = {
@@ -892,7 +901,7 @@ const classify = async (text) => {
   const routingTopics = [...new Set(Object.entries(routingDomains)
     .filter(([domain]) => routingCompiler.semanticSignature.includes(domain))
     .map(([, slug]) => slug))];
-  if (!exactPublishedInput && routingCompiler.claimType === 'descriptive' && routingCompiler.propositions.length <= 1 && routingTopics.length === 1) {
+  if (!exactPublishedInput && !hasPublishedSemanticFamily && routingCompiler.claimType === 'descriptive' && routingCompiler.propositions.length <= 1 && routingTopics.length === 1) {
     const slug = routingTopics[0];
     const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === slug);
     if (topic) {
