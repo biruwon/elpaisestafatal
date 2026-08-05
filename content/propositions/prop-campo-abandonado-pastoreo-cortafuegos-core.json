@@ -1,0 +1,13 @@
+{
+  "id": "prop-campo-abandonado-pastoreo-cortafuegos-core",
+  "claimSlug": "campo-abandonado-pastoreo-cortafuegos",
+  "text": "El campo está abandonado, se ha prohibido el pastoreo y los cortafuegos están abandonados.",
+  "type": "mixed",
+  "subject": "rural_fire_prevention",
+  "predicate": "is_abandoned_and_prohibited",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["plan-forestal-prevencion-incendios-pastoreo"]
+}
