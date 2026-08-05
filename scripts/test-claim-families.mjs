@@ -4,6 +4,7 @@ const cases = [
   '¿La llegada de inmigrantes ha hecho que España sea menos segura?',
   'Se pagan votos en las elecciones españolas',
   'El desempleo real está oculto por los contratos fijos discontinuos',
+  'Los contratos fijos discontinuos son parados ocultos',
   'El desempleo sigue bajando en España',
 ];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

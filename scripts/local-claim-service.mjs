@@ -866,6 +866,7 @@ const isSpecificSemanticSignature = (signature) => {
     || (parts.some((part) => part.startsWith('causal:')) && parts.filter((part) => part.startsWith('entity:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
+    || parts.includes('definition:fixed_discontinuous')
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
 };
@@ -879,8 +880,10 @@ const semanticFamilyKeys = (signature) => {
   const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
   const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
   const relation = parts.find((part) => /^(causal|relation):/.test(part)) || '';
-  if (!type || (!entities && !relation)) return [];
+  const definition = parts.find((part) => part === 'definition:fixed_discontinuous');
+  if (!type || (!entities && !relation && !definition)) return [];
   const keys = [`${type}|${polarity}|${entities}|${relation.split(':')[0]}`];
+  if (definition) keys.push(`${type}|${polarity}|${definition}`);
   // Structured proposition families can safely drop incidental geography,
   // period, and wording while retaining their semantic concept and direction.
   // This covers repeated formulations of trends, definitions, comparisons,

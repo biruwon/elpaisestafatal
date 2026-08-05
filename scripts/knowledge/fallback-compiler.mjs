@@ -67,6 +67,7 @@ const semanticConceptAliases = [
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
+  ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos']],
 ];
 
 const semanticConcepts = (value) => {
