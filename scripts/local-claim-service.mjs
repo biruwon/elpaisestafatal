@@ -74,7 +74,7 @@ const answerCache = new Map();
 const compilerCache = new Map();
 const compilerInflight = new Map();
 const resolveJobs = new Map();
-const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, latencies: [], statusCounts: {} };
+const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, latencies: [], statusCounts: {} };
 const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
@@ -310,10 +310,11 @@ const compileClaim = async (text, candidates = []) => {
   const cacheStructure = strongestFamilyKey ? `family:${strongestFamilyKey}` : `signature:${deterministic.semanticSignature}`;
   const cacheKey = digest(JSON.stringify({ structure: cacheStructure, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
   const cached = compilerCache.get(cacheKey);
-  if (cached?.expiresAt > Date.now()) return cached.value;
+  if (cached?.expiresAt > Date.now()) { telemetry.compilerCacheHits += 1; return cached.value; }
   if (cached) compilerCache.delete(cacheKey);
   const existing = compilerInflight.get(cacheKey);
-  if (existing) return existing;
+  if (existing) { telemetry.compilerInflightJoins += 1; return existing; }
+  telemetry.compilerCacheMisses += 1;
   const work = (async () => {
     const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
     const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
@@ -2179,7 +2180,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
