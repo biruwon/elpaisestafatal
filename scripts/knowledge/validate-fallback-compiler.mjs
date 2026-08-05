@@ -162,6 +162,9 @@ const publicDebt = deterministicFallbackCompiler('La deuda pública de España c
 const equivalentPublicDebt = deterministicFallbackCompiler('España está cada vez más endeudada');
 assert(publicDebt.semanticSignature === equivalentPublicDebt.semanticSignature, 'Public-finance paraphrases did not share a semantic family');
 
+const taxComparison = deterministicFallbackCompiler('La presión fiscal española es mayor que la europea');
+assert(!taxComparison.semanticSignature.includes('population:personas mayores'), 'Comparative “mayor que” was incorrectly treated as an older-population dimension');
+
 const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
 const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');
 const neet = deterministicFallbackCompiler('La tasa de ninis ha bajado en España');

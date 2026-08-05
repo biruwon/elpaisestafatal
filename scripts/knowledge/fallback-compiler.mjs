@@ -303,7 +303,10 @@ const populationAliases = [
   ['pacientes', ['paciente', 'pacientes', 'personas en lista de espera']],
   ['personas jóvenes', ['joven', 'jovenes', 'jóvenes', 'menor', 'menores']],
   ['mujeres y hombres', ['mujeres', 'hombres', 'sexo']],
-  ['personas mayores', ['mayor', 'mayores', '65 anos', 'jubilado', 'jubilados']],
+  // Keep comparative “mayor que” out of the older-population dimension. A
+  // bare adjective is not enough to identify a population; require the
+  // population phrase or an unambiguous demographic term instead.
+  ['personas mayores', ['personas mayores', 'adultos mayores', 'tercera edad', '65 anos', 'jubilado', 'jubilados']],
 ];
 
 const claimTypeFor = (value) => {
