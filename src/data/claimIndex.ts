@@ -1,4 +1,4 @@
-import { semanticQuerySignature } from '../lib/knowledge/querySignature';
+import { semanticFamilyKeys, semanticQuerySignature } from '../lib/knowledge/querySignature';
 
 export type ClaimIndexKind = 'claim' | 'topic';
 
@@ -10,6 +10,7 @@ export type ClaimIndexEntry = {
   aliases: string[];
   keywords: string[];
   semanticSignatures?: Array<{ signature: string; phrase: string }>;
+  semanticFamilyKeys?: string[];
   assessment?: string;
   answer?: string;
   topic?: string;
@@ -137,9 +138,14 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const candidateSemanticSignatures = entry.semanticSignatures?.length
     ? entry.semanticSignatures
     : searchablePhrases.map((phrase) => ({ signature: semanticQuerySignature(phrase), phrase }));
+  const queryFamilyKeys = semanticFamilyKeys(querySemanticSignatureValue);
+  const candidateFamilyKeys = entry.semanticFamilyKeys?.length
+    ? entry.semanticFamilyKeys
+    : [...new Set(candidateSemanticSignatures.flatMap(({ signature }) => semanticFamilyKeys(signature)))];
   const semanticFamilyMatch = Boolean(querySemanticSignatureValue && isSpecificSemanticSignature(querySemanticSignatureValue) && entry.kind === 'claim' && candidateSemanticSignatures.some(({ signature, phrase }) => (
     compatibleNumericContext(query, phrase)
-    && querySemanticSignatureValue === signature
+    && (querySemanticSignatureValue === signature
+      || (queryFamilyKeys.length > 0 && queryFamilyKeys.some((key) => candidateFamilyKeys.includes(key))))
   )));
   const score = Math.round(Math.max(
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),

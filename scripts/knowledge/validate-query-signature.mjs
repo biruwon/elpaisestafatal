@@ -7,7 +7,7 @@ const module = await import(`data:text/javascript,${encodeURIComponent(output)}`
 
 const claimIndexSource = await readFile(new URL('../../src/data/claimIndex.ts', import.meta.url), 'utf8');
 const claimIndexOutput = ts.transpileModule(
-  `const semanticQuerySignature = (() => {\n${source.replaceAll('export ', '')}\nreturn semanticQuerySignature;\n})();\n${claimIndexSource.replace("import { semanticQuerySignature } from '../lib/knowledge/querySignature';", '')}`,
+  `const querySignatureModule = (() => {\n${source.replaceAll('export ', '')}\nreturn { semanticQuerySignature, semanticFamilyKeys };\n})();\nconst { semanticQuerySignature, semanticFamilyKeys } = querySignatureModule;\n${claimIndexSource.replace("import { semanticFamilyKeys, semanticQuerySignature } from '../lib/knowledge/querySignature';", '')}`,
   { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } },
 ).outputText;
 const claimIndex = await import(`data:text/javascript,${encodeURIComponent(claimIndexOutput)}`);
@@ -83,6 +83,9 @@ if (module.semanticQuerySignature('Cada vez cuesta más llegar a fin de mes en E
 if (module.semanticQuerySignature('La sanidad no da abasto con las listas de espera') === module.semanticQuerySignature('España gasta más por habitante en sanidad')) throw new Error('Health access and health spending families were merged');
 if (module.semanticQuerySignature('La tasa de ninis ha bajado en España') === module.semanticQuerySignature('El paro juvenil ha bajado en España')) throw new Error('NEET and youth unemployment families were merged');
 if (module.semanticQuerySignature('España está destruida') === module.semanticQuerySignature('España cobra demasiados impuestos')) throw new Error('Unrelated semantic families produced the same signature');
+const rentFamily = module.semanticFamilyKeys(module.semanticQuerySignature('Los alquileres suben en España'));
+const priceFamily = module.semanticFamilyKeys(module.semanticQuerySignature('El precio de la vivienda sube en España'));
+if (rentFamily.some((key) => priceFamily.includes(key))) throw new Error('Static routing merged rent and purchase-price families');
 const semanticIndexEntries = [
   { kind: 'claim', slug: 'inmigracion-delincuencia', title: 'La inmigración aumenta la delincuencia', href: '/', aliases: ['Los inmigrantes crean inseguridad'], keywords: [] },
   { kind: 'claim', slug: 'espana-impuestos-europa', title: 'España cobra menos impuestos sobre renta y riqueza que la Unión Europea', href: '/', aliases: [], keywords: [] },

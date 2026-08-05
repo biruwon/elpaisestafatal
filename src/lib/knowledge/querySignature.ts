@@ -167,3 +167,14 @@ export const semanticQuerySignature = (value: string): string => {
   ];
   return signature.join('|').slice(0, 600);
 };
+
+/** Reusable, proposition-specific keys for static claim routing. */
+export const semanticFamilyKeys = (signature: string): string[] => {
+  const parts = String(signature || '').split('|').filter(Boolean);
+  const type = parts.find((part) => part.startsWith('type:')) || '';
+  const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
+  const relation = parts.find((part) => part.startsWith('relation:')) || '';
+  const concepts = parts.filter((part) => part.startsWith('concept:')).sort();
+  if (!type || !polarity || (!relation && concepts.length < 2)) return [];
+  return [relation ? `${type}|${polarity}|${relation}` : `${type}|${polarity}|${concepts.join('|')}`];
+};
