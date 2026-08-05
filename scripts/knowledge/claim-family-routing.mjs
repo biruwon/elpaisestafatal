@@ -50,6 +50,17 @@ export const semanticFamilyKeys = (signature) => {
     if (!match || !match[2].includes('+')) continue;
     for (const concept of match[2].split('+')) keys.push(`${type}|${polarity}||${match[1]}:${concept}`);
   }
+  // A published family may contain one distinctive proposition while the
+  // query adds another concept or omits a geography/period. Emit a
+  // dimension-free key for structured multi-word payloads as well as explicit
+  // compound payloads. The uniqueness guard still decides whether it can
+  // authorize a strong match.
+  for (const part of propositionParts) {
+    const match = part.match(/^(descriptive|trend):([^:]+)$/);
+    if (!match) continue;
+    const payloadParts = match[2].split(/[+_-]/).filter((value) => value.length >= 3);
+    if (payloadParts.length >= 2) keys.push(`${type}|${polarity}||${match[1]}:${match[2]}`);
+  }
   if (!propositionParts.length && terms.length >= 2) keys.push(`${type}|${polarity}|${terms.join('|')}`);
   if (fixedDiscontinuous) keys.push(`${type}|${polarity}|definition:fixed_discontinuous`);
   if (definition) keys.push(`${type}|${polarity}|${definition}`);
