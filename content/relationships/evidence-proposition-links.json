@@ -327,6 +327,7 @@
     {"evidenceId":"indicadores-educacion-espana-2024","propositionId":"prop-escuelas-30-a-80-alumnos-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"plan-forestal-prevencion-incendios-pastoreo","propositionId":"prop-campo-abandonado-pastoreo-cortafuegos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"acuerdo-readmision-espana-marruecos","propositionId":"prop-marruecos-solo-pasaporte-expulsiones-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"regularizacion-requisitos-antecedentes-2026","propositionId":"prop-prision-provisional-regularizacion-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"regularizacion-requisitos-antecedentes-2026","propositionId":"prop-prision-provisional-regularizacion-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-1-2-millones-ayudas-mantienen-familias-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
