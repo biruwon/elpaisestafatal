@@ -865,6 +865,9 @@ const isSpecificSemanticSignature = (signature) => {
     // was already published.
     || (parts.some((part) => part.startsWith('causal:')) && parts.filter((part) => part.startsWith('entity:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
+    || (parts.some((part) => part.startsWith('descriptive:') && part.includes('+')) && parts.some((part) => part.startsWith('entity:')))
+    || (parts.some((part) => part.startsWith('comparative:') && /:(more_than|less_than|ranking:(highest|lowest))/.test(part)) && parts.some((part) => part.startsWith('entity:')))
+    || (parts.some((part) => part.startsWith('trend:') && /:trend:(rising|falling|stable)$/.test(part)) && parts.some((part) => part.startsWith('entity:')))
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.includes('definition:fixed_discontinuous')
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
@@ -1055,7 +1058,11 @@ const classify = async (text) => {
   const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
   const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
-  if (canonicalPhrase || (strongMatch && !broadEvaluative) || (semanticFamilyMatch && !broadEvaluative)) {
+  // An exact family signature is already a structured proposition match, so
+  // an evaluative wrapper such as “está colapsada” must not force the user
+  // into an uncovered dead end. Broad wording without a family match still
+  // follows the cautious clarification path below.
+  if (canonicalPhrase || (strongMatch && !broadEvaluative) || semanticFamilyMatch) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.

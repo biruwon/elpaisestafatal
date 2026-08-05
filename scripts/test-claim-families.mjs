@@ -6,6 +6,7 @@ const cases = [
   'El desempleo real está oculto por los contratos fijos discontinuos',
   'Los contratos fijos discontinuos son parados ocultos',
   'El desempleo sigue bajando en España',
+  'La sanidad pública está colapsada',
 ];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
