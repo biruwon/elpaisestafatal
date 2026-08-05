@@ -229,6 +229,12 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   const payload = [...new Set([relation, ...concepts, ...terms, ...dimensions].filter(Boolean))].sort();
   if (!payload.length) return [];
   const keys = [`${type}|${polarity}|${payload.join('|')}`];
+  // Descriptive and comparative phrasings can refer to the same metric
+  // family. Keep this cross-type key deliberately narrow and rely on the
+  // resolver's uniqueness guard before promoting it to a published answer.
+  if (relation === '' && concepts.length === 1 && (type === 'descriptive' || type === 'comparative')) {
+    keys.push(`metric-family|${polarity}|${concepts[0]}`);
+  }
   // Comparative paraphrases often name the same direction and metric but
   // serialize the compared parties differently (for example “Europa” versus
   // “la UE”). Preserve a direction-plus-concept key for that case; the

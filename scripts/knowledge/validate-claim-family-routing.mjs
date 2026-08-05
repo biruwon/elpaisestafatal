@@ -69,6 +69,17 @@ for (const [left, right] of localDistinctPairs) {
   }
 }
 
+const crossTypeEquivalentPairs = [
+  ['España tiene una presión fiscal elevada', 'Pagamos demasiados impuestos en España'],
+];
+for (const [left, right] of crossTypeEquivalentPairs) {
+  const leftKeys = semanticFamilyKeys(deterministicFallbackCompiler(left).semanticSignature);
+  const rightKeys = semanticFamilyKeys(deterministicFallbackCompiler(right).semanticSignature);
+  if (!leftKeys.some((key) => rightKeys.includes(key))) {
+    throw new Error(`Cross-type metric family routing failed: ${left} <> ${right}`);
+  }
+}
+
 // Both execution paths must agree on the important decision: equivalent
 // wording may share a family, but different propositions must not. Their
 // serialized signatures are intentionally different, so compare the

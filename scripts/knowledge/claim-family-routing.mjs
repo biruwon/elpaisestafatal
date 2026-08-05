@@ -37,6 +37,20 @@ export const semanticFamilyKeys = (signature) => {
   // direction. Entity-only keys are unsafe: rent, purchase prices, and
   // housing-cost burden can all otherwise collapse into “housing + rising”.
   const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
+  // A metric can be expressed as a description or as a comparison without
+  // changing the evidence contract (for example “la presión fiscal es alta”
+  // versus “pagamos más impuestos”). Keep a type-neutral key for that narrow
+  // case. The resolver still requires a unique/dominant published family, so
+  // this cannot turn a broad topic into an arbitrary strong answer.
+  for (const part of propositionParts) {
+    const match = part.match(/^(descriptive|comparative):([^:]+)$/);
+    if (match && ['descriptive', 'comparative'].includes(match[1])) {
+      // Entity extraction is intentionally omitted here: one surface form
+      // may identify the metric as an entity while another only names it in
+      // the proposition. The metric payload remains the required anchor.
+      keys.push(`metric-family|${polarity}|${match[2]}`);
+    }
+  }
   // Comparative wording often changes the compared subject (“nadie”,
   // “Europa”, “otros países”) while preserving the metric family. Keep a
   // dimensioned metric key in addition to the full comparison key; uniqueness
