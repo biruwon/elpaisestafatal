@@ -1402,8 +1402,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       return true;
     });
   };
-  const provisionalOnlySources = provisionalBlocks.length > 0 && provisionalBlocks.every((block) => block.type === 'source_excerpt');
-  const generatedMethod = !primary && (!provisionalBlocks.length || provisionalOnlySources) && !relatedGuidanceBlocks.length && !handlerBlocks.some((block) => block.type === 'evidence_ladder' || block.type === 'legal_decision_tree' || block.type === 'group_comparison_requirements')
+  const provisionalHasUsableData = provisionalBlocks.some((block) => ['key_number', 'data_finding', 'line_chart', 'bar_chart', 'comparison_chart', 'money_flow', 'conversation_reply'].includes(block.type));
+  const generatedMethod = !primary && !provisionalHasUsableData && !handlerBlocks.some((block) => block.type === 'evidence_ladder' || block.type === 'legal_decision_tree' || block.type === 'group_comparison_requirements')
     ? evidenceLadderForCompiler(classified.compiler, source, handlerId)
     : null;
   const result = {
@@ -1446,11 +1446,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const explicitMetricRoute = hintedMetricIds.size > 0;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(retrievalText), ['delincuencia', 'delitos registrados', 'robos', 'hurtos', 'homicidios', 'fraudes', 'violencia sexual', 'criminalidad']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
-  const topicFallback = classified.primary?.kind === 'topic';
   // A broad topic suggestion must not block a direct warehouse answer when
   // the user has supplied an explicit metric phrase such as “precio de la
   // luz” or “inflación anual”. Keep the topic as a related result instead.
-  const retrievalClassified = explicitMetricRoute && topicFallback
+  const preservePublishedClaim = classified.primary?.kind === 'claim' && classified.status === 'published';
+  const retrievalClassified = explicitMetricRoute && classified.primary && !preservePublishedClaim
     ? { ...classified, primary: undefined, alternatives: [classified.primary, ...(classified.alternatives || [])] }
     : classified;
   const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');

@@ -19,7 +19,7 @@ export const handlerForInput = (input, claimType = '') => {
   if (proportionSignal) return 'proportion';
   if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'okupa', 'okupas', 'ocupante', 'ocupacion', 'desalojo', 'desahucio', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
-  if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'provocan', 'por culpa', 'genera', 'dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';
+  if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'provocan', 'por culpa', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'genera', 'dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
   if (includesAny(text, ['densidad de poblacion', 'densidad poblacion', 'personas por kilometro', 'personas por km']) && includesAny(text, ['comunidad', 'region', 'madrid', 'andalucia'])) return 'ranking';
   if (claimType === 'trend') return 'trend';
