@@ -69,12 +69,15 @@ const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
 const cacheTtlMs = 15 * 60 * 1000;
 const maxCacheEntries = 1000;
 const maxCompilerCacheEntries = 512;
+const maxPlannerCacheEntries = 512;
 const maxResolveJobs = 500;
 const answerCache = new Map();
 const compilerCache = new Map();
 const compilerInflight = new Map();
+const plannerCache = new Map();
+const plannerInflight = new Map();
 const resolveJobs = new Map();
-const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, latencies: [], statusCounts: {} };
+const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], statusCounts: {} };
 const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
@@ -211,9 +214,11 @@ const pruneRuntimeState = () => {
   const now = Date.now();
   for (const [key, item] of answerCache) if (!item || item.expiresAt <= now) answerCache.delete(key);
   for (const [key, item] of compilerCache) if (!item || item.expiresAt <= now) compilerCache.delete(key);
+  for (const [key, item] of plannerCache) if (!item || item.expiresAt <= now) plannerCache.delete(key);
   for (const [key, item] of resolveJobs) if (!item || (item.completedAt && item.completedAt + cacheTtlMs <= now) || (!item.completedAt && item.createdAt + cacheTtlMs <= now)) resolveJobs.delete(key);
   while (answerCache.size > maxCacheEntries) answerCache.delete(answerCache.keys().next().value);
   while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
+  while (plannerCache.size > maxPlannerCacheEntries) plannerCache.delete(plannerCache.keys().next().value);
   while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
 };
 setInterval(pruneRuntimeState, 60 * 1000).unref();
@@ -266,15 +271,36 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
   const packet = buildEvidencePacket({ text, compiler: classified.compiler, handlerId, plan: result.result, observations });
   if (!validateEvidencePacket(packet).ok) return result.result;
-  const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
-  try {
-    const response = await inference.chat({ model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
-    const draft = parseModelJson(response.message?.content);
-    const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
-    return validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok ? upgraded : result.result;
-  } catch {
-    return result.result;
-  }
+  const cacheKey = digest(JSON.stringify({
+    schemaVersion: packet.schemaVersion,
+    handlerId: packet.handlerId,
+    claimType: packet.claimType,
+    deterministicPlan: packet.deterministicPlan,
+    evidence: packet.evidence,
+    sourceLinks: packet.sourceLinks,
+    knowledgeVersion: result.result.knowledgeVersion || RUNTIME_VERSIONS.indexKnowledge,
+  }));
+  const cached = plannerCache.get(cacheKey);
+  if (cached?.expiresAt > Date.now()) { telemetry.plannerCacheHits += 1; return cached.value; }
+  if (cached) plannerCache.delete(cacheKey);
+  const existing = plannerInflight.get(cacheKey);
+  if (existing) { telemetry.plannerInflightJoins += 1; return existing; }
+  telemetry.plannerCacheMisses += 1;
+  const work = (async () => {
+    const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
+    let planned = result.result;
+    try {
+      const response = await inference.chat({ model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
+      const draft = parseModelJson(response.message?.content);
+      const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
+      if (validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok) planned = upgraded;
+    } catch { /* The deterministic plan remains the safe presentation fallback. */ }
+    plannerCache.set(cacheKey, { value: planned, expiresAt: Date.now() + cacheTtlMs });
+    while (plannerCache.size > maxPlannerCacheEntries) plannerCache.delete(plannerCache.keys().next().value);
+    return planned;
+  })();
+  plannerInflight.set(cacheKey, work);
+  try { return await work; } finally { plannerInflight.delete(cacheKey); }
 };
 
 const normalizeAnswerPlan = (plan) => {
@@ -2180,7 +2206,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
