@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigrantes-ayudas-desproporcionadas-core",
+  "claimSlug": "inmigrantes-ayudas-desproporcionadas",
+  "text": "Las personas inmigrantes reciben ayudas económicas desproporcionadas en España.",
+  "type": "comparative",
+  "subject": "immigrants",
+  "predicate": "receive_disproportionate_benefits",
+  "object": "public_benefits",
+  "geography": "España",
+  "period": "junio de 2025",
+  "status": "qualified",
+  "evidenceIds": ["imv-titulares-nacionalidad-junio-2025"]
+}

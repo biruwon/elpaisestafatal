@@ -1,0 +1,13 @@
+{
+  "id": "prop-imv-1-2-millones-edad-28-core",
+  "claimSlug": "imv-1-2-millones-edad-28",
+  "text": "Más de 1,2 millones de personas son titulares del IMV y su edad media es 28,5 años.",
+  "type": "mixed",
+  "subject": "imv_title_holders",
+  "predicate": "number_and_average_age_are",
+  "object": "1200000 people and 28.5 years",
+  "geography": "España",
+  "period": "junio de 2025",
+  "status": "contradicted",
+  "evidenceIds": ["imv-titulares-nacionalidad-junio-2025"]
+}
