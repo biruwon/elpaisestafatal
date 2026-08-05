@@ -1488,7 +1488,16 @@ const classify = async (text) => {
   const compiledCandidate = localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
-  const compiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
+  const reconciledCompiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
+  const modelFamilyKeys = new Set(semanticFamilyKeys(reconciledCompiled?.semanticSignature || ''));
+  // The local model may enrich a known family, but it must not replace a
+  // deterministic published-family match with a weaker adjacent concept.
+  // This keeps Ollama latency and variability from downgrading a result that
+  // the reviewed evidence index already knows how to answer.
+  const compiled = hasPublishedSemanticFamily
+    && ![...routingFamilyKeys].some((key) => modelFamilyKeys.has(key))
+    ? deterministicCompiler
+    : reconciledCompiled;
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   // The local compiler may map an unfamiliar phrase to a reviewed concept
