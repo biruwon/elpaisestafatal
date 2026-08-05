@@ -862,8 +862,9 @@ const classify = async (text) => {
   // different decisions for them. Meaning-level caching can be reintroduced
   // only for validated, representation-independent answer plans.
   const key = normalise(text);
-  const broadComplaintInput = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(key)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(key);
+  const broadComplaintInput = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable)\b/.test(key)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(key)
+    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
@@ -895,6 +896,11 @@ const classify = async (text) => {
     for (const signature of candidate.semanticSignatures || []) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
   const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
+  const knownDomainConcepts = ['politics', 'budget', 'public_finance', 'prices', 'cost_of_living', 'income', 'demography', 'housing', 'employment', 'immigration', 'crime', 'healthcare', 'taxes'];
+  const queryDomainConcepts = new Set([
+    ...queryEntityConcepts,
+    ...knownDomainConcepts.filter((concept) => String(querySemanticSignature).includes(concept)).map((concept) => `entity:${concept}`),
+  ]);
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
@@ -976,6 +982,9 @@ const classify = async (text) => {
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintText)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintText)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintText);
+  const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintText)
+    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintText)
+    || /\bdebe\s+mas\s+de\s+lo\s+que\s+produce\b/.test(broadComplaintText);
   const rankedPoliticalTopic = ranked.find(({ entry }) => entry.kind === 'topic' && entry.slug === 'politica')
     || (broadPoliticalComplaint
       ? (() => {
@@ -983,8 +992,16 @@ const classify = async (text) => {
         return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false } : undefined;
       })()
       : undefined);
-  const topicRanked = broadPoliticalComplaint && rankedPoliticalTopic
-    ? [rankedPoliticalTopic, ...familyRanked.filter(({ entry }) => entry.slug !== 'politica')]
+  const rankedEconomicTopic = ranked.find(({ entry }) => entry.kind === 'topic' && entry.slug === 'economia')
+    || (broadEconomicComplaint
+      ? (() => {
+        const entry = index.entries.find((item) => item.kind === 'topic' && item.slug === 'economia');
+        return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
+      })()
+      : undefined);
+  const broadTopic = broadPoliticalComplaint ? rankedPoliticalTopic : (broadEconomicComplaint ? rankedEconomicTopic : undefined);
+  const topicRanked = broadTopic
+    ? [broadTopic, ...familyRanked.filter(({ entry }) => entry.slug !== broadTopic.entry.slug)]
     : familyRanked;
   const conceptRelatedRanked = ranked.filter((item) => item.semanticConceptRelated && item.entry.kind === 'claim');
   const guidanceRanked = [...topicRanked, ...conceptRelatedRanked.filter(({ entry }) => !topicRanked.some((item) => item.entry.slug === entry.slug))];
@@ -1008,9 +1025,26 @@ const classify = async (text) => {
   const decisionRanked = directPhraseCandidate
     ? [directPhraseCandidate, ...guidanceRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
     : guidanceRanked;
+  const topicConcepts = {
+    politica: ['politics', 'budget'],
+    economia: ['public_finance', 'prices', 'cost_of_living', 'income', 'demography'],
+    vivienda: ['housing'],
+    empleo: ['employment', 'income'],
+    inmigracion: ['immigration'],
+    seguridad: ['crime'],
+    sanidad: ['healthcare'],
+    impuestos: ['taxes', 'public_finance'],
+    desigualdad: ['income', 'public_finance'],
+    corrupcion: ['politics', 'public_finance'],
+  };
+  const topicMatchesQueryDomain = (entry) => {
+    if (entry.kind !== 'topic' || queryDomainConcepts.size === 0) return true;
+    const concepts = topicConcepts[entry.slug];
+    return !concepts || [...queryDomainConcepts].some((part) => concepts.includes(part.slice('entity:'.length)));
+  };
   const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch, semanticFamilyRelated, semanticConceptRelated }) => {
     if (score < 0.32) return false;
-    if (entry.kind === 'topic') return lexical >= 0.24 || (broadPoliticalComplaint && entry.slug === 'politica');
+    if (entry.kind === 'topic') return topicMatchesQueryDomain(entry) && (lexical >= 0.24 || (broadPoliticalComplaint && entry.slug === 'politica'));
     // Shared entities such as “immigration” are not enough to make an
     // unrelated published claim useful. Require the same semantic family or
     // an unmistakably direct phrase match before showing a claim as guidance.
@@ -1064,12 +1098,14 @@ const classify = async (text) => {
     if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(decisionRanked) };
     return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [], sourceLinks: top.entry.sourceLinks || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
   }
-  if (broadPoliticalComplaint && rankedPoliticalTopic) {
+  if (broadTopic) {
     return {
       status: 'related',
       input: { original: text },
-      alternatives: [{ kind: 'topic', slug: rankedPoliticalTopic.entry.slug, title: rankedPoliticalTopic.entry.title, href: rankedPoliticalTopic.entry.href, confidence: rankedPoliticalTopic.score, handlerId: handlerForEntry(rankedPoliticalTopic.entry) }],
-      guidance: { questions: ['¿Qué decisión, indicador o periodo concreto quieres comprobar?'], limitation: 'Es una valoración amplia; la orientación política sirve para concretar la afirmación antes de compararla con datos.' },
+      alternatives: [{ kind: 'topic', slug: broadTopic.entry.slug, title: broadTopic.entry.title, href: broadTopic.entry.href, confidence: broadTopic.score, handlerId: handlerForEntry(broadTopic.entry) }],
+      guidance: { questions: ['¿Qué decisión, indicador o periodo concreto quieres comprobar?'], limitation: broadPoliticalComplaint
+        ? 'Es una valoración política amplia; hay que concretar el hecho antes de compararlo con datos.'
+        : 'Es una valoración económica amplia; hay que concretar el indicador, periodo o magnitud antes de compararla con datos.' },
     };
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));
