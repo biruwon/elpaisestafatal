@@ -72,6 +72,7 @@ for (const [left, right] of localDistinctPairs) {
 const crossTypeEquivalentPairs = [
   ['España tiene una presión fiscal elevada', 'Pagamos demasiados impuestos en España'],
   ['La sanidad pública está colapsada', 'Los hospitales no dan abasto'],
+  ['España envejece', 'Cada vez hay más personas mayores'],
 ];
 for (const [left, right] of crossTypeEquivalentPairs) {
   const leftKeys = semanticFamilyKeys(deterministicFallbackCompiler(left).semanticSignature);
