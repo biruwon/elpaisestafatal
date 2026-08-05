@@ -57,6 +57,35 @@ for (const text of cases) {
 
 console.log(`Claim-family paraphrase validation passed: ${cases.length} variants reused published evidence families.`);
 
+// Strong coverage alone is not enough: these probes assert that the answer
+// still belongs to the intended reviewed family rather than an adjacent topic.
+for (const [text, expectedSlug] of [
+  ['Nunca ha habido tantos trabajadores en España', 'empleo-record'],
+  ['La vivienda se ha encarecido mucho', 'precio-vivienda-ha-subido'],
+  ['España nos fríe a impuestos comparada con Europa', 'espana-impuestos-europa'],
+  ['Los inmigrantes reciben más ayudas que los españoles', 'inmigrantes-ayudas-desproporcionadas'],
+  ['La deuda pública es impagable', 'deuda-publica-crece'],
+]) {
+  const response = await fetch(`${endpoint}/v1/classify`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text, inputType: 'text' }),
+  });
+  let payload = await response.json();
+  for (let attempt = 0; payload.status === 'processing' && attempt < 160; attempt += 1) {
+    await sleep(250);
+    payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
+  }
+  if (payload.status !== 'complete' || payload.result?.coverage !== 'strong') {
+    throw new Error(`${text}: expected strong reusable family ${expectedSlug}, got ${JSON.stringify({ status: payload.status, coverage: payload.result?.coverage, related: payload.relatedClaims?.map((item) => item.slug) })}`);
+  }
+  const related = [...(payload.relatedClaims || []), ...(payload.alternatives || []), ...(payload.primary ? [payload.primary] : [])];
+  if (!related.some((item) => item.slug === expectedSlug)) {
+    throw new Error(`${text}: expected family ${expectedSlug}, got ${JSON.stringify(related.map((item) => item.slug))}`);
+  }
+}
+console.log('Family identity validation passed: representative strong answers use the intended reviewed families.');
+
 for (const text of exploratoryCases) {
   const response = await fetch(`${endpoint}/v1/classify`, {
     method: 'POST',
@@ -145,7 +174,7 @@ for (const [text, expectedSlugs] of [
   ['Sánchez paga a la gente para que le vote', ['compra-votos-espana']],
   // A debt-specific family is stronger guidance than the broad economy topic;
   // either is acceptable, but the specific published family should win.
-  ['La deuda pública es impagable', ['deuda-publica-supera-16-billones', 'economia']],
+  ['La deuda pública es impagable', ['deuda-publica-crece', 'economia']],
 ]) {
   const form = new FormData();
   form.set('text', text);
