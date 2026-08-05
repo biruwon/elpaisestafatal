@@ -50,6 +50,7 @@ const semanticConceptAliases = [
   ['crime', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
+  ['unemployment', ['paro', 'desempleo', 'desempleado', 'desempleados', 'tasa de paro', 'tasa de desempleo', 'no encuentra trabajo', 'no encuentran trabajo']],
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'recaudación', 'presion fiscal']],
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
@@ -105,6 +106,7 @@ const semanticConcepts = (value) => {
     .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
     .map(([concept]) => concept);
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
+  if (concepts.includes('unemployment')) concepts = concepts.filter((concept) => concept !== 'employment');
   if (containsPhrase(value, 'deuda publica') && containsPhrase(value, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
@@ -163,7 +165,8 @@ export const propositionShapeFor = (value) => {
       metric: positionalComparison[4] ? relationShapeText(positionalComparison[4]) : null,
     };
   }
-  const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
+  const superiorityComparison = text.match(/^(.*?)\s+(supera)\s+a\s+(.+?)\s+en\s+(.+)$/)
+    || text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
   if (superiorityComparison) {
     return {
       subject: relationShapeText(superiorityComparison[1]),

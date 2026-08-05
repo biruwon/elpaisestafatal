@@ -903,22 +903,46 @@ const classify = async (text) => {
     return payload.includes('+') || semanticParts.length >= 2;
   };
   const familyKeyCounts = new Map();
+  const familyKeyLexicalScores = new Map();
   const semanticSignatureCounts = new Map();
   for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {
     for (const key of candidate.semanticFamilyKeys || []) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
     for (const signature of candidate.semanticSignatures || []) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
+  for (const { entry, lexical } of lexicalRanked) {
+    for (const key of entry.semanticFamilyKeys || []) {
+      const values = familyKeyLexicalScores.get(key) || [];
+      values.push({ slug: entry.slug, lexical });
+      familyKeyLexicalScores.set(key, values);
+    }
+  }
+  const familyKeyDominates = (key, entry) => {
+    if (familyKeyCounts.get(key) === 1) return true;
+    const scores = [...(familyKeyLexicalScores.get(key) || [])].sort((left, right) => right.lexical - left.lexical);
+    const own = scores.find((item) => item.slug === entry.slug);
+    const runnerUp = scores.find((item) => item.slug !== entry.slug);
+    // A clear wording lead can safely resolve an ambiguous broad family
+    // (for example “desempleo” versus a candidate specifically mentioning
+    // “paro juvenil”). Without that lead, retain the qualified path.
+    return Boolean(own && scores[0]?.slug === entry.slug && own.lexical >= 0.55 && own.lexical - (runnerUp?.lexical || 0) >= 0.12);
+  };
   const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
   const knownDomainConcepts = ['politics', 'budget', 'public_finance', 'prices', 'cost_of_living', 'income', 'demography', 'housing', 'employment', 'immigration', 'crime', 'healthcare', 'taxes'];
   const queryDomainConcepts = new Set([
     ...queryEntityConcepts,
     ...knownDomainConcepts.filter((concept) => String(querySemanticSignature).includes(concept)).map((concept) => `entity:${concept}`),
   ]);
+  const queryHasYouthQualifier = /\b(?:joven|jovenes|juvenil|juveniles|menor|menores)\b/.test(normalise(text));
+  const populationQualifierCompatible = (entry) => {
+    if (entry.kind !== 'claim') return true;
+    const entryHasYouthQualifier = /\b(?:joven|jovenes|juvenil|juveniles|menor|menores)\b/.test(normalise(searchText(entry)));
+    return queryHasYouthQualifier === entryHasYouthQualifier;
+  };
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
-    semanticFamilyRelated: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
+    semanticFamilyRelated: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
       entry.semanticSignatures?.includes(querySemanticSignature)
       || (queryGuidanceFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryGuidanceFamilyKeys.has(key)))
     ),
@@ -930,9 +954,9 @@ const classify = async (text) => {
       const candidateEntities = new Set((entry.semanticSignatures || []).flatMap((signature) => String(signature).split('|').filter((part) => part.startsWith('entity:'))));
       return [...queryEntityConcepts].every((concept) => candidateEntities.has(concept));
     })(),
-    semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
+    semanticFamilyMatch: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
       (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureCounts.get(querySemanticSignature) === 1)
-      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyCounts.get(key) === 1))
+      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyDominates(key, entry)))
     ),
   })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
@@ -967,6 +991,11 @@ const classify = async (text) => {
     if (exactCanonicalTitle) return true;
     if (!numericCompatible(entry)) return false;
     if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
+    // Population qualifiers are part of the evidence contract. A national
+    // unemployment claim must not answer a youth-unemployment query (or the
+    // reverse) merely because both contain “paro” or “empleo”.
+    const entryHasYouthQualifier = /\b(?:joven|jovenes|juvenil|juveniles|menor|menores)\b/.test(normalise(searchText(entry)));
+    if (queryHasYouthQualifier !== entryHasYouthQualifier) return false;
     // A published group claim about eligibility or participation must not
     // answer a stronger comparative statement unless the published wording
     // actually contains the comparison. Similar vocabulary is not evidence

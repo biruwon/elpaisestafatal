@@ -173,6 +173,11 @@ const budgetBalance = deterministicFallbackCompiler('El Estado gasta más de lo 
 assert(budgetBalance.semanticSignature.includes('public_finance'), 'Budget-balance wording did not enter the reusable public-finance family');
 const disproportionateBenefits = deterministicFallbackCompiler('Los extranjeros reciben ayudas económicas desproporcionadas');
 assert(disproportionateBenefits.claimType === 'comparative', 'Disproportionate-benefits wording was not classified as a comparison');
+const unemploymentComparison = deterministicFallbackCompiler('España supera a Europa en desempleo');
+const temporaryEmploymentComparison = deterministicFallbackCompiler('España tiene más empleo temporal que Europa');
+const equivalentUnemploymentComparison = deterministicFallbackCompiler('España tiene más paro que Europa');
+assert(unemploymentComparison.semanticSignature !== temporaryEmploymentComparison.semanticSignature, 'Unemployment and temporary-employment comparisons collapsed into one family');
+assert(unemploymentComparison.semanticSignature === equivalentUnemploymentComparison.semanticSignature, '“Supera a Europa en desempleo” did not share the unemployment comparison family');
 
 const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
 const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');

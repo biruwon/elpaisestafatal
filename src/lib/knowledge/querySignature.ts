@@ -13,6 +13,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['crime', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
+  ['unemployment', ['paro', 'desempleo', 'desempleado', 'desempleados', 'tasa de paro', 'tasa de desempleo', 'no encuentra trabajo', 'no encuentran trabajo']],
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'presion fiscal']],
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
@@ -90,6 +91,7 @@ const relationStopWords = new Set(['cobra', 'paga', 'pagan', 'tiene', 'tienen', 
 const relationShape = (value: string): string => {
   let concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
+  if (concepts.includes('unemployment')) concepts = concepts.filter((concept) => concept !== 'employment');
   if (concepts.length) return [...new Set(concepts)].sort().join('+');
   const terms = normalize(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token) && !relationStopWords.has(token) && !['pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
   return terms.length ? terms.sort().join('+') : 'unknown';
