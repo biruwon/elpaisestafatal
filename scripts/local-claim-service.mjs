@@ -809,6 +809,12 @@ const publishedCoverageCandidate = (part, entries) => {
 // otherwise the normal qualified/unresolved path remains in control.
 const buildPublishedCompositeResult = async (text, classified) => {
   if (classified?.primary) return null;
+  // A causal sentence is one proposition with a proposed mechanism, not a
+  // list of independent published claims. Splitting it into clauses can
+  // combine adjacent facts (for example crime and immigration) and falsely
+  // upgrade the causal conclusion. Let the causal handler evaluate it as a
+  // whole instead.
+  if (classified?.compiler?.claimType === 'causal' || classified?.compiler?.propositions?.some((item) => item.type === 'causal')) return null;
   const index = await getIndex();
   const entries = (index.entries || []).filter((entry) => entry.kind === 'claim' && entry.published && entry.evidenceIds?.length && entry.sourceRefs?.length);
   if (!entries.length) return null;

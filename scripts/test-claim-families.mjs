@@ -157,3 +157,19 @@ if (unrelatedPayload.relatedClaims?.some((item) => item.slug === 'inmigracion-de
   throw new Error('An immigration/productivity claim received unrelated immigration/crime guidance');
 }
 console.log('Unrelated-family guard validation passed.');
+
+const causalCompoundProbe = 'Hay más delincuencia porque hay más inmigrantes';
+const causalCompoundResponse = await fetch(`${endpoint}/v1/classify`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ text: causalCompoundProbe, inputType: 'text' }),
+});
+let causalCompoundPayload = await causalCompoundResponse.json();
+for (let attempt = 0; causalCompoundPayload.status === 'processing' && attempt < 160; attempt += 1) {
+  await sleep(250);
+  causalCompoundPayload = await (await fetch(`${endpoint}/v1/classify/${causalCompoundPayload.requestId}`)).json();
+}
+if (causalCompoundPayload.status === 'complete' && causalCompoundPayload.result?.coverage === 'strong') {
+  throw new Error('Causal compound claim was incorrectly promoted from independent published claims');
+}
+console.log('Causal composite safety validation passed.');
