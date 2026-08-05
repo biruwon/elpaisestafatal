@@ -1,0 +1,13 @@
+{
+  "id": "prop-instituciones-secuestradas-core",
+  "claimSlug": "instituciones-espanolas-secuestradas",
+  "text": "Las instituciones españolas están secuestradas.",
+  "type": "normative",
+  "subject": "spanish_public_institutions",
+  "predicate": "are_captured",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "insufficient",
+  "evidenceIds": ["marco-transparencia-control-instituciones"]
+}
