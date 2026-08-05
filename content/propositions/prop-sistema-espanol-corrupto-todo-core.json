@@ -1,0 +1,13 @@
+{
+  "id": "prop-sistema-espanol-corrupto-todo-core",
+  "claimSlug": "sistema-espanol-corrupto-izquierda-derecha",
+  "text": "El sistema español está corrupto de izquierda a derecha y de arriba abajo.",
+  "type": "normative",
+  "subject": "spanish_political_system",
+  "predicate": "is_entirely_corrupt",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "insufficient",
+  "evidenceIds": ["informe-estado-derecho-ue-espana-2025"]
+}

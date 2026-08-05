@@ -333,6 +333,7 @@
     {"evidenceId":"fiscal-general-condena-supremo-2025","propositionId":"prop-fiscalia-gobierno-fiscal-condenado-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"nombramiento-magistrados-supremo-cgpj","propositionId":"prop-supremo-elegido-quienes-juzga-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"agencia-tributaria-control-grandes-patrimonios-2025","propositionId":"prop-hacienda-100-euros-no-grandes-pagos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"marco-transparencia-control-instituciones","propositionId":"prop-instituciones-secuestradas-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"marco-transparencia-control-instituciones","propositionId":"prop-instituciones-secuestradas-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"informe-estado-derecho-ue-espana-2025","propositionId":"prop-sistema-espanol-corrupto-todo-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
