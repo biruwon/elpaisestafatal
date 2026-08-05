@@ -44,6 +44,10 @@ const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
 // deterministic path in isolation. Every planner failure still returns the
 // already-built deterministic result.
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER !== '0';
+// The compiler is enabled by default, but deterministic evaluation and
+// incident diagnosis need a way to isolate the reusable evidence resolver
+// from model latency or an unavailable Ollama process.
+const localCompilerEnabled = process.env.LOCAL_CLAIM_COMPILER !== '0';
 const semanticWarehouseEnabled = process.env.WAREHOUSE_SEMANTIC_SEARCH === '1';
 const speechCommand = process.env.LOCAL_SPEECH_COMMAND || '';
 const speechArgs = (() => {
@@ -53,7 +57,7 @@ const speechTimeoutMs = Math.min(60000, Math.max(10000, Number(process.env.LOCAL
 const allowedInferenceHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
 const execFileAsync = promisify(execFile);
 const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
-const indexPath = join(root, '.local/claim-semantic-index.json');
+const indexPath = join(root, `.local/claim-semantic-index-${RUNTIME_VERSIONS.indexKnowledge}.json`);
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
@@ -707,7 +711,20 @@ const fetchCatalog = async () => {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(350) });
-      if (response.ok) return response.json();
+      if (response.ok) {
+        const remoteEntries = await response.json();
+        // In local development, a dev-server response can briefly lag the
+        // built catalog while Astro rebuilds. Merge the immutable build
+        // artifact when present so published claims are never silently
+        // omitted from the resolver's derived index.
+        try {
+          const builtEntries = JSON.parse(await readFile(join(process.cwd(), 'dist/claim-catalog.json'), 'utf8'));
+          const merged = new Map([...builtEntries, ...remoteEntries].map((entry) => [entry.slug || `${entry.kind}:${entry.title}`, entry]));
+          return [...merged.values()];
+        } catch {
+          return remoteEntries;
+        }
+      }
     } catch { /* The Astro server may still be starting. */ }
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
@@ -1356,7 +1373,7 @@ const classify = async (text) => {
   // from proposition parsing or candidate disambiguation.
   const needsModelCompilation = shouldUseLocalCompiler({ text, deterministic: deterministicCompiler, hasPlausibleCandidate })
     || (!deterministicCompiler.clarificationRequired && compilerNeedsStructure);
-  const compiledCandidate = !evidenceUnavailableSignal(text) && needsModelCompilation
+  const compiledCandidate = localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
   const compiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
@@ -1396,7 +1413,8 @@ const startResolveJob = (text, origin = 'runtime') => {
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed, 'text', classified, origin);
-  }).catch(() => {
+  }).catch((error) => {
+    console.error('Claim resolution failed:', error instanceof Error ? error.stack || error.message : error);
     const completed = { status: 'unavailable', requestId: id, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
@@ -1467,6 +1485,7 @@ const startUrlResolveJob = (url) => {
 };
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
+  const explicitMetricRoute = preferredMetricIdsForQuery(text).size > 0;
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
   const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
@@ -1923,6 +1942,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
   const canonicalPublished = enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));
+  if (process.env.LOCAL_DEBUG_ROUTING === '1' && !canonicalPublished) {
+    console.error('Published canonical miss:', { text, enrichmentCanonical, entries: enrichmentIndex.entries.length, sample: enrichmentIndex.entries.filter((entry) => entry.slug === 'poblacion-residente-supera-49m').map((entry) => ({ kind: entry.kind, published: entry.published, title: entry.title, aliases: entry.aliases })) });
+  }
   if (canonicalPublished) {
     const canonicalPrimary = {
       kind: 'claim', slug: canonicalPublished.slug, title: canonicalPublished.title, href: canonicalPublished.href,

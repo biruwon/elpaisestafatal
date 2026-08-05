@@ -106,6 +106,12 @@ const semanticConcepts = (value) => {
   let concepts = semanticConceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
     .map(([concept]) => concept);
+  // “Millones” expresses magnitude, not a budget event. Do not let a
+  // population, GDP, debt, or any other numeric claim inherit the budget
+  // evidence family unless fiscal/action language is also present.
+  if (concepts.includes('budget') && !containsPhrase(value, 'presupuesto') && !containsPhrase(value, 'transferencia') && !containsPhrase(value, 'gasto') && !containsPhrase(value, 'recorte') && !containsPhrase(value, 'recorta') && !containsPhrase(value, 'quita') && !containsPhrase(value, 'partida') && !containsPhrase(value, 'personal')) {
+    concepts = concepts.filter((concept) => concept !== 'budget');
+  }
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (concepts.includes('unemployment')) concepts = concepts.filter((concept) => concept !== 'employment');
   if (concepts.includes('employment_record')) concepts = concepts.filter((concept) => concept !== 'employment');

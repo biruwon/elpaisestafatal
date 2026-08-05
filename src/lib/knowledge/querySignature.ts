@@ -186,6 +186,11 @@ export const semanticQuerySignature = (value: string): string => {
   let concepts = conceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsAlias(text, alias)))
     .map(([concept]) => concept);
+  // Magnitude words such as “millones” are not budget evidence by
+  // themselves. Require fiscal/action context before selecting that family.
+  if (concepts.includes('budget') && !containsAlias(text, 'presupuesto') && !containsAlias(text, 'transferencia') && !containsAlias(text, 'gasto') && !containsAlias(text, 'recorte') && !containsAlias(text, 'recorta') && !containsAlias(text, 'quita') && !containsAlias(text, 'partida') && !containsAlias(text, 'personal')) {
+    concepts = concepts.filter((concept) => concept !== 'budget');
+  }
   if (priority) concepts = [];
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (concepts.includes('taxes') && concepts.includes('public_finance') && !containsAlias(text, 'deuda') && !containsAlias(text, 'deficit')) {
