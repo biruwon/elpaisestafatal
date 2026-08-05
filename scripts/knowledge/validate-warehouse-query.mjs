@@ -198,4 +198,8 @@ const naturalLanguageTrend = rankWarehouseObservations('España tiene menos paro
   { id: 'obs-4', datasetId: 'Unemployment by sex and age', metric: undefined, value: 10.8, unit: '%', period: '2026', dimensions: { geo: 'ES' }, source: { id: 'source-eurostat', title: 'Tasa de desempleo de España · Eurostat', aliases: ['paro', 'desempleo'], url: 'https://ec.europa.eu/eurostat/' } },
 ]);
 if (naturalLanguageTrend.length !== 1 || naturalLanguageTrend[0].id !== 'obs-4') throw new Error('Warehouse query did not handle natural trend phrasing');
+if (!preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not resolve conversational job-finding difficulty to European unemployment');
+if (preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('employment_rate_europe')) throw new Error('Conversational job-finding difficulty incorrectly retained European employment as the primary metric');
+if (!preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('household_electricity_price')) throw new Error('Metric hints did not resolve family electricity wording to household electricity');
+if (preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('cpi_index')) throw new Error('Family electricity wording incorrectly fell through to generic CPI');
 console.log('Warehouse query validation passed.');

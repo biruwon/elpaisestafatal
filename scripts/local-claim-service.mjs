@@ -816,6 +816,11 @@ const publishedCoverageCandidate = (part, entries) => {
 // otherwise the normal qualified/unresolved path remains in control.
 const buildPublishedCompositeResult = async (text, classified) => {
   if (classified?.primary) return null;
+  // A metric-bearing input must be answered by the metric/evidence path. A
+  // compound published-claim shortcut can otherwise stitch together a nearby
+  // editorial page and present it as the answer to a new measurement request.
+  // Exact canonical claims have already been retained before this function.
+  if (preferredMetricIdsForQuery(text).size > 0) return null;
   // A causal sentence is one proposition with a proposed mechanism, not a
   // list of independent published claims. Splitting it into clauses can
   // combine adjacent facts (for example crime and immigration) and falsely
@@ -902,6 +907,11 @@ const classify = async (text) => {
   const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   const normalizedRoutingInput = normalise(routingCompiler.normalized);
+  // An explicit metric request should go to the metric/evidence path before
+  // a nearby published claim. Otherwise a new phrasing such as “cuesta más
+  // encontrar trabajo que en Europa” can be swallowed by an employment
+  // headline even though it asks for an unemployment comparison.
+  const hasExplicitMetricRoute = preferredMetricIdsForQuery(text).size > 0;
   const directPublishedEntry = index.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput));
   // A unique semantic family is enough to reuse a reviewed answer even when
@@ -915,12 +925,12 @@ const classify = async (text) => {
     for (const key of entry.semanticFamilyKeys || []) routingFamilyCounts.set(key, (routingFamilyCounts.get(key) || 0) + 1);
     for (const signature of entry.semanticSignatures || []) routingSignatureCounts.set(signature, (routingSignatureCounts.get(signature) || 0) + 1);
   }
-  const earlyFamilyEntry = !exactPublishedInput && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+  const earlyFamilyEntry = !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
       && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key) && routingFamilyCounts.get(key) === 1))
     : undefined;
-  const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+  const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
@@ -1283,10 +1293,10 @@ const classify = async (text) => {
     // A unique family key is the strongest deterministic signal. It is
     // intentionally allowed to work with low lexical overlap: the whole
     // purpose of the family index is to recognize different surface forms.
-    top.semanticFamilyMatch
+    ((!explicitMetricRoute || canonicalPhrase) && top.semanticFamilyMatch)
     || (top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (top.semanticFamilyMatch || canonicalPhrase) && (!explicitMetricRoute || canonicalPhrase))
   ));
-  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82);
+  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
   // An exact family signature is already a structured proposition match, so
   // an evaluative wrapper such as “está colapsada” must not force the user

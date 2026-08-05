@@ -7,7 +7,7 @@ const normalise = (value) => String(value || '')
   .trim();
 
 const metricHints = [
-  { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz mas cara'] },
+  { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz para las familias', 'luz mas cara'] },
   { ids: ['rental_price_index'], terms: ['precio del alquiler', 'precios del alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'alquiler mas caro', 'sube el alquiler'] },
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
   { ids: ['inflation_rate'], terms: ['inflacion', 'tasa de inflacion', 'inflacion anual', 'subida de precios', 'ritmo de los precios', 'ritmo suben precios', 'ritmo suben los precios', 'tasa anual de los precios', 'precios aumentan'] },
@@ -107,6 +107,15 @@ export const preferredMetricIdsForQuery = (query) => {
   // shared metric family from the concept plus the comparison dimension.
   if (hasEuropeReference && hasAny('encontrar trabajo', 'encontrar empleo', 'sin trabajo', 'personas trabajando', 'tener trabajo', 'tiene trabajo')) {
     preferred.add('unemployment_rate_europe');
+    preferred.delete('employment_rate_europe');
+    preferred.delete('employment_rate');
+  }
+  // “La luz para las familias” is a household electricity request even when
+  // the sentence compares it with the general cost of living. Keep the
+  // dedicated series ahead of the generic CPI family.
+  if (hasAny('luz para las familias', 'factura de la luz', 'electricidad para las familias') && hasAny('sube', 'subida', 'cara', 'coste', 'precio')) {
+    preferred.add('household_electricity_price');
+    preferred.delete('cpi_index');
   }
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
   if (hasEuropeReference && hasAny('universitari', 'graduad', 'titulad', 'titulacion', 'estudios superiores', 'educacion superior')) preferred.add('tertiary_education_attainment_rate_europe');
