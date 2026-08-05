@@ -97,6 +97,7 @@ const cases = [
   { text: 'España tiene casi 9,5 millones de residentes nacidos en el extranjero.', status: 'complete', slug: 'poblacion-nacida-fuera-casi-10m' },
   { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
   { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
+  { text: 'El precio de la vivienda sube y el paro baja', statuses: ['partial', 'draft', 'complete'], compound: true, familyCount: 2 },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', statuses: ['uncovered', 'partial'], slug: 'politica' },
   { text: 'España va cuesta abajo', statuses: ['uncovered', 'partial'], slug: 'politica' },
@@ -116,6 +117,8 @@ for (const item of cases) {
     if (item.slug && item.status === 'complete' && !result.result?.blocks?.some((block) => block.type === 'confirmed' && block.propositionIds?.length)) failures.push(`${item.text}: published result did not retain proposition traceability`);
     if (item.forbiddenSlug && (result.primary?.slug === item.forbiddenSlug || result.relatedClaims?.some((claim) => claim.slug === item.forbiddenSlug))) failures.push(`${item.text}: vague wording was routed to forbidden precise claim ${item.forbiddenSlug}`);
     if (item.compound && (result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items || []).filter((item) => item.explicit !== false).length < 2) failures.push(`${item.text}: compound input was not decomposed into separate explicit propositions`);
+    if (item.familyCount && (result.result?.blocks || []).filter((block) => block.type === 'data_finding').length < item.familyCount) failures.push(`${item.text}: compound result did not preserve one data finding per evidence family`);
+    if (item.familyCount && !/varias afirmaciones|cada una necesita/i.test(result.result?.headline || '')) failures.push(`${item.text}: compound result did not explain that each evidence family is separate`);
     if (item.slug === 'precios-hoteles-sube-junio-2026' && !result.result?.blocks?.some((block) => block.type === 'comparison_chart' && block.visualId === item.slug)) failures.push(`${item.text}: published tourism result did not retain its signed comparison visual`);
     if (['la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control', 'la-amnistia-rompe-la-igualdad-ante-la-ley', 'desalojar-a-un-ocupante-ilegal-tarda-anos'].includes(item.slug) && !result.result?.blocks?.some((block) => block.type === 'legal_decision_tree' && block.items?.some((entry) => entry.status === 'known'))) failures.push(`${item.text}: published legal result did not retain its decision path`);
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder' && block.steps?.some((step) => step.status === 'missing'))) failures.push(`${item.text}: population-replacement result did not retain its evidence ladder`);

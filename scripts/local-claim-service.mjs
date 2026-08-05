@@ -1744,6 +1744,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     confidence: item.confidence,
   }));
   const primary = classified.primary;
+  const compilerPropositions = classified.compiler?.explicitPropositions?.length
+    ? classified.compiler.explicitPropositions
+    : classified.compiler?.propositions || [];
+  const compoundClaim = compilerPropositions.length > 1;
   const hasValidatedRelatedClaim = classified.alternatives?.some((item) => item.kind === 'claim' && item.validated);
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];
@@ -1817,7 +1821,6 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const definitionData = isDefinition && observations.length && explicitMetricRoute;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
-  const compoundClaim = (classified.compiler?.explicitPropositions || []).length > 1;
   let status = classified.status === 'published' && !compoundClaim
     ? 'complete'
     : compoundClaim
@@ -2112,11 +2115,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // existing data_finding card without inventing a bespoke answer format.
   const compoundFamilyBlocks = compoundClaim
     ? [...observations
-      .filter((item) => item.metricId && typeof item.value === 'number' && Number.isFinite(item.value))
+      .filter((item) => (item.metricId || item.metric) && typeof item.value === 'number' && Number.isFinite(item.value))
       .reduce((families, item) => {
-        const family = families.get(item.metricId) || [];
+        const metricId = item.metricId || item.metric;
+        const family = families.get(metricId) || [];
         family.push(item);
-        families.set(item.metricId, family);
+        families.set(metricId, family);
         return families;
       }, new Map())]
       .filter(([, items]) => items.length > 0)
@@ -2179,8 +2183,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
-    headline: compoundEvidenceCount > 1 ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: compoundSummary || (primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer)),
+    headline: compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || ranking || trend || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: resolvedClaimType,
     blocks: compoundEvidenceCount > 1
@@ -2248,13 +2252,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const hintedMetricIds = metricIdsForInput(text, classified.compiler || {});
   const explicitMetricRoute = hintedMetricIds.size > 0;
+  const compoundInput = (classified.compiler?.explicitPropositions?.length || classified.compiler?.propositions?.length || 0) > 1;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
   // A broad topic suggestion must not block a direct warehouse answer when
   // the user has supplied an explicit metric phrase such as “precio de la
   // luz” or “inflación anual”. Keep the topic as a related result instead.
   const preservePublishedClaim = classified.primary?.kind === 'claim' && classified.status === 'published';
-  const retrievalClassified = explicitMetricRoute && !preservePublishedClaim
+  const retrievalClassified = (explicitMetricRoute || compoundInput) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right
@@ -2289,8 +2294,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // sentence can bury each metric behind unrelated clauses (for example,
   // employment plus housing in one message). Keep this bounded to the full
   // query plus at most three deterministic explicit propositions.
-  const propositionQueries = Array.isArray(retrievalClassified.compiler?.explicitPropositions)
-    ? retrievalClassified.compiler.explicitPropositions.map((item) => item.text).filter(Boolean)
+  const retrievalPropositions = retrievalClassified.compiler?.explicitPropositions?.length
+    ? retrievalClassified.compiler.explicitPropositions
+    : retrievalClassified.compiler?.propositions || [];
+  const propositionQueries = Array.isArray(retrievalPropositions)
+    ? retrievalPropositions.map((item) => item.text).filter(Boolean)
     : [];
   const counterpartTerms = handlerId === 'group_comparison'
     ? (() => {
@@ -2321,7 +2329,21 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           // retrieve its series without another claim-specific branch.
           ? `${metricQueryTextForIds(hintedMetricIds)} España Europa`
           : '';
-  const warehouseQueries = [...new Set([warehouseQuery, metricFallbackQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 5);
+  const clauseQueries = propositionQueries.map((query) => {
+    if (handlerId === 'budget_transfer') return query;
+    const cleanQuery = query.replace(/\b\d[\d.,%]*\b/g, ' ');
+    const clauseMetricIds = preferredMetricIdsForQuery(cleanQuery);
+    return clauseMetricIds.size ? `${cleanQuery} ${metricQueryTextForIds(clauseMetricIds)} España` : cleanQuery;
+  });
+  const warehouseQueries = [...new Set([
+    // Explicit clauses come first so the bounded packet is representative of
+    // the claim, not merely of the full sentence's highest-scoring topic.
+    ...clauseQueries,
+    warehouseQuery,
+    metricFallbackQuery,
+    recordedOffenceQuery,
+    counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '',
+  ])].filter(Boolean).slice(0, 5);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => {
       // Proposition queries must carry only their own metric contract. The
@@ -2349,8 +2371,19 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       ? { ...retrievalClassified.compiler, metricIds: [...fallbackMetricIds] }
       : retrievalClassified.compiler));
   }
+  const warehouseObservationRows = warehouseQueries.length > 1
+    ? (() => {
+      // Keep bounded breadth across explicit clauses. A single broad query
+      // can return a full 24-row series and crowd every later proposition out
+      // before the resolver has a chance to render its evidence family.
+      const rows = [];
+      const perQuery = Math.max(4, Math.floor(24 / warehouseQueries.length));
+      for (const item of warehouseResults) rows.push(...(item.observations || []).slice(0, perQuery));
+      return rows;
+    })()
+    : warehouseResults.flatMap((item) => item.observations || []);
   const warehouse = {
-    observations: [...new Map(warehouseResults.flatMap((item) => item.observations || []).map((item) => [item.id, item])).values()].slice(0, 24),
+    observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 24),
     source: warehouseResults.find((item) => item.source)?.source,
   };
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
