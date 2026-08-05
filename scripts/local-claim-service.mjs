@@ -1983,7 +1983,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           ? 'presion fiscal España evolución'
           : hintedMetricIds.has('unmet_healthcare_waiting_list_rate')
             ? 'lista de espera sanitaria España evolución'
-        : '';
+        : hintedMetricIds.size
+          // Metric IDs are indexed alongside aliases in every warehouse
+          // backend. This generic fallback lets any newly registered metric
+          // retrieve its series without another claim-specific branch.
+          ? `${[...hintedMetricIds].join(' ')} España Europa`
+          : '';
   const warehouseQueries = [...new Set([warehouseQuery, metricFallbackQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 5);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
