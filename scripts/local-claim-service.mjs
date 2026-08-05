@@ -1449,9 +1449,24 @@ const classify = async (text) => {
   const compiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
   const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
-  const selectedCandidate = routing.primarySlug && ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry));
+  // The local compiler may map an unfamiliar phrase to a reviewed concept
+  // family even when lexical ranking did not surface the published claim.
+  // Re-enter that family into candidate selection, but only when exactly one
+  // published claim owns the strongest family key. A broad concept shared by
+  // several claims remains related guidance instead of becoming a verdict.
+  const compiledFamilyKeys = new Set(semanticFamilyKeys(compiled?.semanticSignature || ''));
+  const compiledFamilyOwners = compiledFamilyKeys.size && isSpecificSemanticSignature(compiled?.semanticSignature || '')
+    ? index.entries.filter((entry) => entry.kind === 'claim' && entry.published
+      && (entry.semanticFamilyKeys || []).some((key) => compiledFamilyKeys.has(key)))
+    : [];
+  const compiledFamilyEntry = compiledFamilyOwners.length === 1 ? compiledFamilyOwners[0] : undefined;
+  const selectedCandidate = routing.primarySlug
+    ? ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry))
+    : compiledFamilyEntry && numericCompatible(compiledFamilyEntry) && compatibleEntry(compiledFamilyEntry)
+      ? { entry: compiledFamilyEntry, score: 0.82, lexical: 0, semantic: 1, semanticFamilyMatch: true }
+      : undefined;
   const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
-  const status = selected ? (routing.status === 'published' ? 'published' : 'related') : 'uncovered';
+  const status = selected ? (compiledFamilyEntry && !routing.primarySlug ? 'published' : (routing.status === 'published' ? 'published' : 'related')) : 'uncovered';
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
