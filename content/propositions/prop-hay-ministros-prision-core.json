@@ -1,0 +1,13 @@
+{
+  "id": "prop-hay-ministros-prision-core",
+  "claimSlug": "hay-ministros-en-prision",
+  "text": "Hay ministros en prisión.",
+  "type": "descriptive",
+  "subject": "current_spanish_government",
+  "predicate": "includes_ministers_in_prison",
+  "object": null,
+  "geography": "España",
+  "period": "2026",
+  "status": "insufficient",
+  "evidenceIds": ["composicion-gobierno-xv-legislatura-2026"]
+}
