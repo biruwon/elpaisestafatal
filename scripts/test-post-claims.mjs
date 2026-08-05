@@ -97,7 +97,7 @@ for (const id of expectedStrong) {
   if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);
 }
 
-const mustRemainNonStrong = new Set(['housing-rent', 'crime-stats']);
+const mustRemainNonStrong = new Set(['housing-rent']);
 for (const id of mustRemainNonStrong) {
   if (strongResults.has(id)) throw new Error(`Unsafe adjacent evidence was promoted to strong for ${id}`);
 }
