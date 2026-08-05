@@ -26,13 +26,13 @@ const hasNegation = (value) => {
   const text = normalise(value);
   // In Spanish, “no deja/dejan de subir” describes a persistent rise; the
   // “no” is part of the idiom rather than a negation of the proposition.
-  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text)) return false;
+  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text) || /\bno\s+da\s+abasto\b/.test(text)) return false;
   return /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(text);
 };
 
 const entityAliases = [
   ['gobierno de España', ['gobierno', 'moncloa', 'sanchez', 'presidencia']],
-  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
+  ['inmigración', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjera', 'extranjeros', 'extranjeras', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
   ['vivienda', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas']],
   ['empleo', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados']],
   ['impuestos', ['impuestos', 'tributos', 'fiscalidad', 'hacienda']],
@@ -46,7 +46,7 @@ const entityAliases = [
 // give equivalent long-tail wording one stable family key without pretending
 // that every semantically related sentence is the same published claim.
 const semanticConceptAliases = [
-  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjera', 'extranjeros', 'extranjeras', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
   ['crime', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['rental_housing', ['alquiler', 'alquileres', 'renta de alquiler', 'rentas de alquiler', 'rent']],
@@ -65,8 +65,8 @@ const semanticConceptAliases = [
   ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
-  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes']],
-  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada']],
+  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes', 'espera mas', 'esperar mas', 'esperar para ser atendido']],
+  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada', 'sanidad no da abasto', 'no da abasto', 'no da abasto con la sanidad']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
@@ -96,7 +96,7 @@ const semanticConceptAliases = [
   ['minimum_wage', ['salario minimo', 'smi', '1400 euros']],
   ['pension_system', ['pensiones', 'pension', 'pagar las pensiones', 'pagar la jubilacion']],
   ['pension_financing', ['pagan nuestras pensiones', 'pagaran nuestras pensiones', 'pagar nuestras pensiones', 'sirve para pagar las pensiones']],
-  ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones']],
+  ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones', 'depende de que sigan llegando inmigrantes', 'dependen de que sigan llegando inmigrantes']],
   ['normative', ['deberia', 'deberian', 'deberia recuperar', 'deberia reducir']],
   ['environment', ['emisiones', 'contaminando']],
   ['justice', ['prision', 'prision preventiva']],
@@ -326,7 +326,7 @@ const claimTypeFor = (value) => {
   if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
-  if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'van a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
+  if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'creciendo', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'sigue creciendo', 'siguen creciendo', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'van a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
   if ((includesAny(text, ['inmigracion', 'inmigrantes', 'extranjeros', 'extranjero']) && includesAny(text, ['ayuda', 'ayudas', 'prestacion', 'prestaciones', 'subsidio', 'beneficio']) && includesAny(text, ['mas', 'desproporcionad', 'mayor']))
     || includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'desproporcionad', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'lidera', 'encabeza', 'a la cabeza', 'europa']) || /\b(?:mas|menos|mayor|menor)\b.+\bque\b/.test(text)) return 'comparative';
   return 'descriptive';

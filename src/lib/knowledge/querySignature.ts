@@ -9,7 +9,7 @@ const normalize = (value: string): string => value.toLocaleLowerCase('es').norma
   .replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 
 const conceptAliases: Array<[string, string[]]> = [
-  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
+  ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjera', 'extranjeros', 'extranjeras', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
   ['crime', ['delincuencia', 'delito', 'delitos', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['rental_housing', ['alquiler', 'alquileres', 'renta de alquiler', 'rentas de alquiler', 'rent']],
@@ -28,8 +28,8 @@ const conceptAliases: Array<[string, string[]]> = [
   ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
-  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes']],
-  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada']],
+  ['health_access', ['lista de espera', 'listas de espera', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes', 'espera mas', 'esperar mas', 'esperar para ser atendido']],
+  ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada', 'sanidad no da abasto', 'no da abasto', 'no da abasto con la sanidad']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
@@ -59,7 +59,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['minimum_wage', ['salario minimo', 'smi', '1400 euros']],
   ['pension_system', ['pensiones', 'pension', 'pagar las pensiones', 'pagar la jubilacion']],
   ['pension_financing', ['pagan nuestras pensiones', 'pagaran nuestras pensiones', 'pagar nuestras pensiones', 'sirve para pagar las pensiones']],
-  ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones']],
+  ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones', 'depende de que sigan llegando inmigrantes', 'dependen de que sigan llegando inmigrantes']],
   ['normative', ['deberia', 'deberian', 'deberia recuperar', 'deberia reducir']],
   ['environment', ['emisiones', 'contaminando']],
   ['justice', ['prision', 'prision preventiva']],
@@ -78,7 +78,7 @@ const claimType = (text: string): string => {
   if (/(causa|causan|causal|porque|ya que|debido a que|por culpa|tiene la culpa|provoca|provocando|genera|crece la|hace crecer|hace aumentar|crea inseguridad|crean inseguridad|relacion|relaciona|relacionad|vinculo|vincula|vinculad|asociacion|asocia|asociad|correlacion|van de la mano|hace que|hacen que|ha hecho que|han hecho que|vuelve insegur|trae|lleva|contribuye|influye|incrementa|aumenta la|reduce los|destruye|esta detras de|es responsable de|desde que hay mas|desde que llegaron mas|cuanto mas .+ mas|(?:a|con) mas .+ (?:hay|aumenta|sube) mas)/.test(text)) return 'causal';
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
-  if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
+  if (/(cada vez|sube|baja|crece|creciendo|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|sigue creciendo|siguen creciendo|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
   if ((/(inmigracion|inmigrantes|extranjeros?|ayudas?|prestaciones?|subsidios?|beneficios?)/.test(text) && /(mas|desproporcionad|mayor)/.test(text)) || /(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|desproporcionad|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };

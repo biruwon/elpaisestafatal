@@ -1054,7 +1054,8 @@ const classify = async (text) => {
   const normalizedQuery = normalise(text);
   const deterministicRoutingCompiler = deterministicFallbackCompiler(text);
   const broadDeterministicDescription = deterministicRoutingCompiler.claimType === 'descriptive'
-    && deterministicRoutingCompiler.propositions.length <= 1;
+    && deterministicRoutingCompiler.propositions.length <= 1
+    && !isSpecificSemanticSignature(deterministicRoutingCompiler.semanticSignature);
   const suppressPublishedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
   const nearCanonicalEntry = ({ entry, lexical }) => entry.kind === 'claim' && lexical >= 0.9;
   const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && numericCompatible(item.entry) && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));

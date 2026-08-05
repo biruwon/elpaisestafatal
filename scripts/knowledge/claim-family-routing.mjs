@@ -51,7 +51,7 @@ export const semanticFamilyKeys = (signature) => {
   // proposition key for descriptive/trend payloads; uniqueness still gates
   // whether it can ever become a strong match.
   for (const part of propositionParts) {
-    const match = part.match(/^(descriptive|trend):([^:]+)$/);
+    const match = part.match(/^(descriptive|trend):([^:]+)(?::.*)?$/);
     if (!match || !match[2].includes('+')) continue;
     for (const concept of match[2].split('+')) keys.push(`${type}|${polarity}||${match[1]}:${concept}`);
   }
@@ -61,10 +61,14 @@ export const semanticFamilyKeys = (signature) => {
   // compound payloads. The uniqueness guard still decides whether it can
   // authorize a strong match.
   for (const part of propositionParts) {
-    const match = part.match(/^(descriptive|trend):([^:]+)$/);
+    const match = part.match(/^(descriptive|trend):([^:]+)(?::.*)?$/);
     if (!match) continue;
     const payloadParts = match[2].split(/[+_-]/).filter((value) => value.length >= 3);
-    if (payloadParts.length >= 2) keys.push(`${type}|${polarity}||${match[1]}:${match[2]}`);
+    if (payloadParts.length >= 2 || match[2].includes('_') || part.includes(':trend:')) {
+      // Keep the directional suffix in the dimension-free key. A rising
+      // population family must not collide with its falling counterpart.
+      keys.push(`${type}|${polarity}||${part}`);
+    }
   }
   if (!propositionParts.length && terms.length >= 2) keys.push(`${type}|${polarity}|${terms.join('|')}`);
   if (fixedDiscontinuous) keys.push(`${type}|${polarity}|definition:fixed_discontinuous`);
