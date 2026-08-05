@@ -1,0 +1,13 @@
+{
+  "id": "prop-reagrupacion-familiar-cuatro-millones-core",
+  "claimSlug": "regularizacion-traera-cuatro-millones-familiares",
+  "text": "La regularización de 1,2 millones traerá cuatro o cinco millones de familiares en dos años.",
+  "type": "predictive",
+  "subject": "regularizacion_extraordinaria",
+  "predicate": "will_bring",
+  "object": "four_or_five_million_family_members",
+  "geography": "España",
+  "period": "dos años",
+  "status": "insufficient",
+  "evidenceIds": ["reagrupacion-familiar-requisitos"]
+}
