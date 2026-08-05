@@ -279,7 +279,11 @@ const normalizeAnswerPlan = (plan) => {
   };
 };
 
-const fallbackCompiler = deterministicFallbackCompiler;
+// Keep the fast compiler and the local-model compiler on the same structured
+// contract. In particular, fallback results must carry registry metric IDs as
+// well; otherwise later retrieval can infer metrics from noisy generated
+// hints and select a neighbouring series.
+const fallbackCompiler = (text) => normalizeCompilerOutput(null, text);
 
 const compileClaim = async (text, candidates = []) => {
   const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
@@ -496,9 +500,14 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // retaining the deterministic query lookup as a safety net for fast-path
   // and legacy callers. The answer is therefore based on reusable evidence
   // IDs, not on a claim-specific alias list.
+  const compilerMetricIds = Array.isArray(compiler?.metricIds) ? compiler.metricIds : [];
   const hintedMetricIds = new Set([
-    ...(Array.isArray(compiler?.metricIds) ? compiler.metricIds : []),
-    ...preferredMetricIdsForQuery(normalizedQuery),
+    ...compilerMetricIds,
+    // Only use the query text as a fallback for callers that predate the
+    // compiler metric contract. Generated retrieval prose is deliberately
+    // excluded because it can add a neighbouring metric (“gasto” beside
+    // “recaudación”, for example) and change the question being answered.
+    ...(compilerMetricIds.length ? [] : preferredMetricIdsForQuery(normalizedQuery)),
   ]);
   const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
   // A hinted metric can legitimately have more than 100 observations (for
@@ -535,7 +544,13 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const metricCandidates = hintedMetricIds.size
     ? candidates.filter((item) => hintedMetricIds.has(item.metricId))
     : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
-  const compatibleCandidates = metricCandidates.length >= 2 ? metricCandidates : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
+  // Once a metric contract exists, never fall back to a neighbouring metric
+  // merely because the requested series has fewer than two rows. A shorter
+  // or insufficient result is safer than answering a housing question with
+  // the European variant, or a pay question with household income.
+  const compatibleCandidates = hintedMetricIds.size
+    ? metricCandidates
+    : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
   const preserveGroupSeries = hintedMetricIds.has('imv_title_holders_by_nationality');
   const observations = rankingQuery || compiler?.claimType === 'legal' || preserveGroupSeries
     ? compatibleCandidates
@@ -1918,10 +1933,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
+  const compilerMetricIds = Array.isArray(classified.compiler?.metricIds) ? classified.compiler.metricIds : [];
   const hintedMetricIds = new Set([
-    ...(Array.isArray(classified.compiler?.metricIds) ? classified.compiler.metricIds : []),
-    ...preferredMetricIdsForQuery(retrievalText),
-    ...preferredMetricIdsForQuery(text),
+    ...compilerMetricIds,
+    ...(compilerMetricIds.length ? [] : preferredMetricIdsForQuery(text)),
   ]);
   const explicitMetricRoute = hintedMetricIds.size > 0;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
@@ -1937,6 +1952,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     // series. The metric result should stand on its own.
     ? { ...classified, primary: undefined, alternatives: [] }
     : classified;
+  // Re-assert the metric vocabulary from the user's original wording at the
+  // retrieval boundary. The local model may return useful semantic hints,
+  // but it must not replace a direct registry match with a neighbouring
+  // metric inferred from its paraphrase.
+  const authoritativeMetricIds = preferredMetricIdsForQuery(text);
+  if (authoritativeMetricIds.size) {
+    retrievalClassified.compiler = { ...retrievalClassified.compiler, metricIds: [...authoritativeMetricIds] };
+  }
   const handlerId = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
   const publishedComposite = await buildPublishedCompositeResult(text, retrievalClassified);

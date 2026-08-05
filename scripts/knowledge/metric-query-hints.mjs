@@ -110,6 +110,17 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('employment_rate_europe');
     preferred.delete('employment_rate');
   }
+  // Resolve ordinary descriptions of the same registered concepts even when
+  // the user does not use the catalogue vocabulary.
+  if (hasAny('poblacion', 'personas', 'sociedad') && hasAny('mayor', 'mayores', 'envejec', 'ancian', 'edad')) preferred.add('older_population_share');
+  if (hasAny('recauda', 'recaudacion', 'ingresos') && hasAny('economia', 'pib', 'parte', 'proporcion', 'porcentaje')) preferred.add('government_revenue_ratio');
+  if (hasAny('familias', 'hogares', 'personas') && hasAny('vivienda', 'alquiler', 'casa') && hasAny('dinero', 'gasto', 'coste', 'esfuerzo', 'destinan')) preferred.add('housing_cost_overburden_rate');
+  if (hasAny('sanidad', 'salud') && hasAny('recursos', 'dinero', 'persona', 'habitante', 'dedica', 'gasta')) preferred.add('health_expenditure_per_capita');
+  if (hasEuropeReference && hasAny('economia', 'crece', 'crecimiento', 'pib') && hasAny('despacio', 'rapido', 'ritmo', 'crecimiento')) preferred.add('gdp_real_growth_europe');
+  if (hasEuropeReference && hasAny('salario', 'sueldo', 'cobra', 'paga') && hasAny('hora', 'horas', 'inferior', 'superior', 'menos', 'mas')) {
+    preferred.add('median_hourly_earnings_europe');
+    preferred.delete('median_hourly_earnings');
+  }
   // “La luz para las familias” is a household electricity request even when
   // the sentence compares it with the general cost of living. Keep the
   // dedicated series ahead of the generic CPI family.

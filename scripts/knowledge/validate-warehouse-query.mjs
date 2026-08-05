@@ -202,4 +202,10 @@ if (!preferredMetricIdsForQuery('En España cuesta cada vez más encontrar traba
 if (preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('employment_rate_europe')) throw new Error('Conversational job-finding difficulty incorrectly retained European employment as the primary metric');
 if (!preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('household_electricity_price')) throw new Error('Metric hints did not resolve family electricity wording to household electricity');
 if (preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('cpi_index')) throw new Error('Family electricity wording incorrectly fell through to generic CPI');
+if (!preferredMetricIdsForQuery('La población española se está haciendo mayor').has('older_population_share')) throw new Error('Natural ageing wording did not resolve to the older-population metric');
+if (!preferredMetricIdsForQuery('El país recauda una parte mayor de su economía en impuestos').has('government_revenue_ratio')) throw new Error('Natural revenue wording did not resolve to the public-revenue metric');
+if (!preferredMetricIdsForQuery('Las familias destinan demasiado dinero a la vivienda').has('housing_cost_overburden_rate')) throw new Error('Natural housing-cost wording did not resolve to the housing-burden metric');
+if (!preferredMetricIdsForQuery('La sanidad dedica más recursos por persona').has('health_expenditure_per_capita')) throw new Error('Natural health-resource wording did not resolve to the health-expenditure metric');
+if (!preferredMetricIdsForQuery('La economía crece más despacio que la Unión Europea').has('gdp_real_growth_europe')) throw new Error('Natural GDP-comparison wording did not resolve to the European GDP-growth metric');
+if (!preferredMetricIdsForQuery('El salario por hora es inferior al europeo').has('median_hourly_earnings_europe')) throw new Error('Natural hourly-pay wording did not resolve to the European hourly-earnings metric');
 console.log('Warehouse query validation passed.');
