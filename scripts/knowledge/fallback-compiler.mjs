@@ -26,7 +26,7 @@ const hasNegation = (value) => {
   const text = normalise(value);
   // In Spanish, “no deja/dejan de subir” describes a persistent rise; the
   // “no” is part of the idiom rather than a negation of the proposition.
-  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text) || /\bno\s+da\s+abasto\b/.test(text)) return false;
+  if (/\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text) || /\bno\s+da(?:n)?\s+abasto\b/.test(text)) return false;
   return /\b(?:no|nunca|jamas|nadie|ningun|ninguna)\b/i.test(text);
 };
 
@@ -56,20 +56,20 @@ const semanticConceptAliases = [
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
   ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'la vivienda cada vez cuesta', 'la vivienda cuesta', 'la casa cuesta', 'comprar una casa es mas caro', 'comprar vivienda es mas caro', 'precio vivienda']],
-  ['hotel_tourism', ['hotel', 'hoteles', 'pernoctacion', 'pernoctaciones', 'turismo hotelero', 'turistas']],
+  ['hotel_tourism', ['hotel', 'hoteles', 'hotelero', 'hoteleros', 'pernoctacion', 'pernoctaciones', 'noches de hotel', 'turismo hotelero', 'turistas']],
   ['benefits', ['ayudas', 'ayuditas', 'paguita', 'paguitas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio', 'beneficios sociales', 'ventajas sociales']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política']],
   ['vote_purchase', ['compra votos', 'compra votos dando ayudas', 'compra votos con ayudas', 'compra de votos', 'compran votos', 'pagan votos', 'pagar votos', 'paga a la gente para que le vote', 'pagar a la gente para que vote', 'comprar el voto']],
   ['cost_of_living', ['coste de vida', 'llegar a fin de mes', 'no llega para vivir', 'no alcanza para vivir', 'cesta de la compra', 'poder adquisitivo', 'encarecido', 'encarecida', 'caro', 'cara']],
   ['public_finance', ['deuda publica', 'deuda', 'endeudado', 'endeudada', 'quebrada', 'quiebra', 'bancarrota', 'impagable', 'no puede pagar', 'debe mas de lo que produce', 'deficit publico', 'presupuesto publico', 'recaudacion', 'gasto publico', 'presion fiscal', 'fiscalidad', 'gasta mas de lo que ingresa', 'gasto supera ingresos', 'ingresa menos de lo que gasta']],
-  ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
+  ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda', 'debe demasiado dinero', 'debe mucho dinero', 'endeudamiento publico']],
   ['public_debt_ratio', ['deuda sobre pib', 'deuda publica sobre el pib', 'porcentaje de deuda sobre el pib', 'deuda respecto al pib', 'ratio de deuda', 'deuda como porcentaje del pib']],
   ['income', ['renta', 'ingresos', 'salario', 'salarios', 'sueldo', 'sueldos', 'ingreso familiar', 'ingresos familiares']],
-  ['health_access', ['lista de espera', 'listas de espera', 'lista sanitaria', 'listas sanitarias', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'esperas largas', 'esperas enormes', 'espera mas', 'tardan mas en atender', 'tardar mas en atender', 'cada vez tardan mas', 'esperar mas', 'esperar para ser atendido']],
+  ['health_access', ['lista de espera', 'listas de espera', 'lista sanitaria', 'listas sanitarias', 'cita medica', 'citas medicas', 'atencion primaria', 'colapsada', 'colapsado', 'saturada', 'saturado', 'saturadas', 'saturados', 'no da abasto', 'no dan abasto', 'hospital no da abasto', 'hospitales no dan abasto', 'esperas largas', 'esperas enormes', 'espera mas', 'tardan mas en atender', 'tardar mas en atender', 'cada vez tardan mas', 'esperar mas', 'esperar para ser atendido']],
   ['healthcare_collapse', ['sanidad publica colapsada', 'sanidad publica esta colapsada', 'sanidad esta colapsada', 'sanidad publica española colapsada', 'sanidad colapsada', 'sanidad se ha ido a pique', 'sanidad esta desbordada', 'sanidad no da abasto', 'no da abasto', 'no da abasto con la sanidad']],
   ['health_spending', ['gasto sanitario', 'gasto en sanidad', 'gasto en salud', 'dinero en sanidad', 'presupuesto sanitario']],
-  ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'joven', 'juvenil', 'juveniles', 'mayores']],
+  ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'envejece', 'envejecemos', 'menores', 'jovenes', 'joven', 'juvenil', 'juveniles', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
   ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos', 'parados encubiertos', 'esconden el paro', 'cuentan como empleados aunque no trabajen']],
@@ -242,6 +242,7 @@ const trendDirectionFor = (value) => {
   const text = normalise(value);
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return 'improving';
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
+  if (/\b(?:envejece|envejecemos|envejecimiento)\b/.test(text)) return 'rising';
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|est[aá] aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|mas caro|mas cara|mucho mas caro|mucho mas cara|mas costoso|mas costosa|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
   return null;

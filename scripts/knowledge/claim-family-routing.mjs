@@ -37,6 +37,24 @@ export const semanticFamilyKeys = (signature) => {
   // direction. Entity-only keys are unsafe: rent, purchase prices, and
   // housing-cost burden can all otherwise collapse into “housing + rising”.
   const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
+  // Some propositions carry a broad context concept together with a more
+  // specific reusable evidence contract (for example
+  // “health_access+healthcare+healthcare_collapse”). Allow only explicitly
+  // structured concepts to project an atomic key; generic topic concepts are
+  // intentionally excluded so this does not become a catch-all topic match.
+  const atomicFamilyConcepts = new Set([
+    'health_access', 'healthcare_collapse', 'health_spending',
+    'public_debt_stock', 'public_debt_ratio', 'employment_record',
+    'fixed_discontinuous', 'education_outcomes', 'housing_price_ratio',
+    'crime_reporting', 'minimum_income', 'pension_financing',
+  ]);
+  for (const part of propositionParts) {
+    const match = part.match(/^([^:]+):([^:]+)$/);
+    if (!match || !match[2].includes('+')) continue;
+    for (const concept of match[2].split('+').filter((value) => atomicFamilyConcepts.has(value))) {
+      keys.push(`${type}|${polarity}||${match[1]}:${concept}`);
+    }
+  }
   // A metric can be expressed as a description or as a comparison without
   // changing the evidence contract (for example “la presión fiscal es alta”
   // versus “pagamos más impuestos”). Keep a type-neutral key for that narrow
