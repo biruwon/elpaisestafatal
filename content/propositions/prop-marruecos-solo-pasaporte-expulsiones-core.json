@@ -1,0 +1,13 @@
+{
+  "id": "prop-marruecos-solo-pasaporte-expulsiones-core",
+  "claimSlug": "marruecos-solo-acepta-expulsiones-pasaporte",
+  "text": "Marruecos solo acepta expulsiones con pasaporte físico y en vigor.",
+  "type": "legal",
+  "subject": "spain_morocco_readmission",
+  "predicate": "requires_only_valid_physical_passport",
+  "object": null,
+  "geography": "España-Marruecos",
+  "period": "vigente según acuerdo publicado",
+  "status": "contradicted",
+  "evidenceIds": ["acuerdo-readmision-espana-marruecos"]
+}

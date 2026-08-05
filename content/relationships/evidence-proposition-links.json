@@ -325,6 +325,7 @@
     {"evidenceId":"obras-infraestructuras-transportes-2025","propositionId":"prop-infraestructuras-decadencia-sin-mantenimiento-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-industria-liquidada-precio-saldo-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"indicadores-educacion-espana-2024","propositionId":"prop-escuelas-30-a-80-alumnos-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"plan-forestal-prevencion-incendios-pastoreo","propositionId":"prop-campo-abandonado-pastoreo-cortafuegos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"plan-forestal-prevencion-incendios-pastoreo","propositionId":"prop-campo-abandonado-pastoreo-cortafuegos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"acuerdo-readmision-espana-marruecos","propositionId":"prop-marruecos-solo-pasaporte-expulsiones-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
