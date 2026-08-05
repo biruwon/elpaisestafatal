@@ -196,6 +196,10 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('employment_rate');
     preferred.delete('unemployment_rate');
   }
+  // Bare conversational forms such as “el paro baja” still identify the
+  // unemployment family even when they omit the catalogue phrase “tasa de
+  // desempleo”. Youth-specific wording above narrows this afterwards.
+  if (hasAny('paro', 'desempleo') && !hasAny('juvenil', 'joven', 'jovenes')) preferred.add('unemployment_rate');
   if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
   if (hasEuropeReference && !hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('unemployment_rate_europe');
   // Conversational Spanish often describes unemployment without naming it:

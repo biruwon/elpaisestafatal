@@ -132,9 +132,13 @@ const evidenceNeedsList = (value) => [...new Set(safeList(value, 8, 120)
 
 export const normalizeCompilerOutput = (value, text) => {
   const deterministic = deterministicFallbackCompiler(text);
+  const metricIdsForPropositions = (inputText, propositions = []) => [...new Set([
+    inputText,
+    ...propositions.map((item) => item?.text).filter(Boolean),
+  ].flatMap((query) => [...preferredMetricIdsForQuery(query)]))].slice(0, 8);
   const withRegistryMetrics = (result) => ({
     ...result,
-    metricIds: [...preferredMetricIdsForQuery(text)].slice(0, 8),
+    metricIds: metricIdsForPropositions(text, deterministic.explicitPropositions),
   });
   if (!value || typeof value !== 'object') return withRegistryMetrics(deterministic);
   const propositions = Array.isArray(value.propositions)
@@ -186,7 +190,11 @@ export const normalizeCompilerOutput = (value, text) => {
   // Resolve metrics from the shared registry, never from model prose. This
   // lets many surface forms reuse the same evidence series without creating
   // another claim record.
-  const metricIds = [...preferredMetricIdsForQuery(text)].slice(0, 8);
+  // Resolve each explicit proposition independently before combining the
+  // result. A compound sentence can mention two unrelated measurable claims;
+  // resolving only the full sentence lets one clause hide the other from the
+  // warehouse. The resulting IDs are still bounded and registry-controlled.
+  const metricIds = metricIdsForPropositions(text, explicitPropositions);
   const modelSemanticSignature = semanticSignatureFor({
     claimType,
     propositions: normalizedPropositions,

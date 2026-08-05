@@ -39,6 +39,10 @@ assert(normalized.propositions.length === 1 && normalized.propositions[0].explic
 assert(normalized.evidenceNeeds.includes('metrica') && normalized.evidenceNeeds.includes('periodo'), 'Deterministic evidence requirements were lost when the model returned an incomplete list');
 assert(normalized.metricIds.includes('resident_population'), 'Compiler did not emit the shared metric ID for a population paraphrase');
 
+const compoundMetric = normalizeCompilerOutput(null, 'El precio de la vivienda sube y el paro baja');
+assert(compoundMetric.metricIds.includes('house_price_index'), 'Compound metric extraction lost the housing family');
+assert(compoundMetric.metricIds.includes('unemployment_rate'), 'Compound metric extraction lost the unemployment family');
+
 const conceptRouted = normalizeCompilerOutput({
   claimType: 'trend',
   propositions: [{ text: 'La economía española marca un máximo histórico de personas trabajando', type: 'trend', explicit: true, concepts: ['employment_record', 'invented_concept'] }],
