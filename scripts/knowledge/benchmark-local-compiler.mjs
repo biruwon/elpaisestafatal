@@ -63,7 +63,10 @@ const runCase = async (model, testCase) => {
   const startedAt = Date.now();
   const prompt = `${compilerInstruction} Identifica también entidades, periodo y números.\n\nAfirmación:\n${testCase.input}`;
   try {
-    const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 240, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
+    // Match the production compiler budget. A 240-token benchmark budget
+    // routinely truncates the required routing object and measures JSON
+    // truncation rather than extraction quality.
+    const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
     const raw = parseJson(payload.message?.content);
     const deterministic = deterministicFallbackCompiler(testCase.input);
     const normalized = normalizeCompilerOutput(raw, testCase.input);
