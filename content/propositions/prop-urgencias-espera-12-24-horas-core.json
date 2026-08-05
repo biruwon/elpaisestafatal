@@ -1,0 +1,13 @@
+{
+  "id": "prop-urgencias-espera-12-24-horas-core",
+  "claimSlug": "urgencias-esperas-12-15-24-horas",
+  "text": "Las urgencias tienen esperas de 12, 15 o 24 horas.",
+  "type": "descriptive",
+  "subject": "hospital_emergency_waiting_time",
+  "predicate": "has_waits_of",
+  "object": "12_15_24_hours",
+  "geography": "España",
+  "period": "2025",
+  "status": "qualified",
+  "evidenceIds": ["barometro-sanitario-2025-urgencias"]
+}
