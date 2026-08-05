@@ -247,7 +247,11 @@ export const isBroadComplaint = (deterministic) => Boolean(
 export const reconcileCompilerSafety = (deterministic, candidate) => {
   if (!candidate || isBroadComplaint(deterministic)) return deterministic || candidate;
   const safetySensitive = ['causal', 'legal', 'normative', 'predictive'].includes(deterministic.claimType);
-  if (!safetySensitive) return candidate;
+  // Semantic signatures are deterministic-only contract data for every
+  // claim type. A descriptive model response must not invent a new concept
+  // (for example crime) and use it to promote an adjacent published family.
+  // The model can still enrich wording, entities, and retrieval hints.
+  if (!safetySensitive) return { ...candidate, semanticSignature: deterministic.semanticSignature, numbers: deterministic.numbers };
   return {
     ...candidate,
     claimType: deterministic.claimType,
@@ -255,6 +259,7 @@ export const reconcileCompilerSafety = (deterministic, candidate) => {
     explicitPropositions: deterministic.explicitPropositions,
     impliedPropositions: deterministic.impliedPropositions,
     semanticSignature: deterministic.semanticSignature,
+    numbers: deterministic.numbers,
     clarificationRequired: deterministic.clarificationRequired || candidate.clarificationRequired === true,
   };
 };

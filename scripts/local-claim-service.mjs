@@ -1007,6 +1007,25 @@ const classify = async (text) => {
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
     return result;
   }
+  // A single broad concept is topic context, not a claim-family contract.
+  // Route it to the domain topic unless a metric handler or a structured
+  // family is present; this prevents “immigration + public services” from
+  // inheriting an unrelated immigration/crime answer.
+  const earlyFamilyKeys = semanticFamilyKeys(routingCompiler.semanticSignature);
+  const earlyStructuredFamily = earlyFamilyKeys.some(isReusableSemanticFamilyKey);
+  const earlyEntityCount = String(routingCompiler.semanticSignature || '').split('|').filter((part) => part.startsWith('entity:')).length;
+  const earlyMetricRoute = preferredMetricIdsForQuery(text).size > 0;
+  if (!earlyStructuredFamily && !earlyMetricRoute && earlyEntityCount <= 1 && ['descriptive', 'trend'].includes(routingCompiler.claimType)) {
+    const topicSlug = earlyFamilyKeys.some((key) => key.includes('immigration')) ? 'inmigracion'
+      : earlyFamilyKeys.some((key) => key.includes('housing')) ? 'vivienda'
+        : earlyFamilyKeys.some((key) => key.includes('employment')) ? 'empleo'
+          : earlyFamilyKeys.some((key) => key.includes('crime')) ? 'seguridad'
+            : earlyFamilyKeys.some((key) => key.includes('healthcare')) ? 'sanidad'
+              : earlyFamilyKeys.some((key) => key.includes('taxes') || key.includes('public_finance')) ? 'economia'
+                : undefined;
+    const topic = topicSlug && index.entries.find((entry) => entry.kind === 'topic' && entry.slug === topicSlug);
+    if (topic) return { status: 'related', input: { original: text, canonical: routingCompiler.normalized }, alternatives: [{ kind: 'topic', slug: topic.slug, title: topic.title, href: topic.href, confidence: 0.35 }], guidance: { questions: ['¿Qué indicador, periodo o hecho concreto quieres comprobar?'], limitation: 'La formulación apunta a un tema, pero todavía no concreta el indicador necesario para verificarla.' } };
+  }
   // Resolve a reusable evidence family before the broad-topic shortcut below.
   // A single proposition can still be specific (for example benefits plus
   // immigration); routing it to the topic first would discard the published
@@ -1136,6 +1155,8 @@ const classify = async (text) => {
     const semanticParts = semanticPayload.split(/[+_\-]/).filter((part) => part.length >= 3);
     return payload.includes('+') || semanticParts.length >= 2;
   };
+  const hasDistinctiveQueryFamily = [...queryGuidanceFamilyKeys].some(distinctiveFamilyKey);
+  const broadSingleConcept = !hasDistinctiveQueryFamily && queryEntityConcepts.size <= 1;
   const familyKeyCounts = new Map();
   const familyKeyLexicalScores = new Map();
   const semanticSignatureCounts = new Map();
@@ -1195,7 +1216,7 @@ const classify = async (text) => {
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
     semanticFamilyRelated: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
-      entry.semanticSignatures?.includes(querySemanticSignature)
+      (hasDistinctiveQueryFamily && entry.semanticSignatures?.includes(querySemanticSignature))
       || (queryGuidanceFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryGuidanceFamilyKeys.has(key)))
     ),
     // A claim can use a different proposition form (trend, description, or
@@ -1207,8 +1228,8 @@ const classify = async (text) => {
       return [...queryEntityConcepts].every((concept) => candidateEntities.has(concept));
     })(),
     semanticFamilyMatch: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
-      (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureDominates(querySemanticSignature, entry))
-      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyDominates(key, entry)))
+      (hasDistinctiveQueryFamily && entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureDominates(querySemanticSignature, entry))
+      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryFamilyKeys.has(key) && familyKeyDominates(key, entry)))
     ),
   })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
@@ -1422,6 +1443,7 @@ const classify = async (text) => {
   // differently from the claim's broad metadata type.
   const exactPublishedPhrase = Boolean(top && top.entry.kind === 'claim' && [top.entry.title, ...(top.entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedQuery) && top.lexical >= 0.9);
   const canonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && (exactCanonicalWording || exactPublishedPhrase || directPhraseCandidate?.entry.slug === top.entry.slug || (phraseTokenExact(top.entry) && (compatibleHandlers || phraseTokenHasTypo(top.entry)))) && top.lexical >= 0.9);
+  const safeCanonicalPhrase = canonicalPhrase && (!broadSingleConcept || exactCanonicalWording || exactPublishedPhrase);
   const explicitMetricRoute = preferredMetricIdsForQuery(normalizedQuery).size > 0;
   // A new measurable question must not be swallowed by a broad published
   // claim just because both use a topic word such as "desigualdad". Let the
@@ -1432,21 +1454,21 @@ const classify = async (text) => {
   // contract. Do not require the page's broad presentation label (often
   // “mixed”) to equal the compiler's narrower input handler; the family key
   // has already preserved type, polarity, entities, direction, and concepts.
-  const strongMatch = Boolean(top && numericCompatible(top.entry) && (
+  const strongMatch = Boolean(!broadSingleConcept && top && numericCompatible(top.entry) && (
     // A unique family key is the strongest deterministic signal. It is
     // intentionally allowed to work with low lexical overlap: the whole
     // purpose of the family index is to recognize different surface forms.
     ((!explicitMetricRoute || canonicalPhrase) && top.semanticFamilyMatch)
     || (top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (top.semanticFamilyMatch || canonicalPhrase) && (!explicitMetricRoute || canonicalPhrase))
   ));
-  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
+  const semanticFamilyMatch = Boolean(!broadSingleConcept && top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
   // An exact family signature is already a structured proposition match, so
   // an evaluative wrapper such as “está colapsada” must not force the user
   // into an uncovered dead end. Broad wording without a family match still
   // follows the cautious clarification path below.
   const broadComplaintNeedsTopic = (broadPoliticalComplaint || broadEconomicComplaint) && !hasPublishedSemanticFamily;
-  if (canonicalPhrase || (!broadComplaintNeedsTopic && strongMatch && !broadEvaluative) || (!broadComplaintNeedsTopic && semanticFamilyMatch)) {
+  if (safeCanonicalPhrase || (!broadComplaintNeedsTopic && strongMatch && !broadEvaluative) || (!broadComplaintNeedsTopic && semanticFamilyMatch)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.
@@ -1498,7 +1520,14 @@ const classify = async (text) => {
     && ![...routingFamilyKeys].some((key) => modelFamilyKeys.has(key))
     ? deterministicCompiler
     : reconciledCompiled;
-  const routing = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
+  const modelRouting = compiled?.routing || { status: 'uncovered', primarySlug: '', reason: '', questions: [] };
+  // A model-provided slug is not an evidence decision. Only deterministic
+  // routing may select a published primary; model routing remains useful for
+  // questions and explanations but cannot turn an inferred concept into a
+  // claim-family match.
+  const routing = deterministicCompiler.routing?.primarySlug
+    ? { ...modelRouting, primarySlug: deterministicCompiler.routing.primarySlug, status: deterministicCompiler.routing.status }
+    : { ...modelRouting, primarySlug: '' };
   const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
   // The local compiler may map an unfamiliar phrase to a reviewed concept
   // family even when lexical ranking did not surface the published claim.

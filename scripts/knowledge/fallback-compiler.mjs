@@ -47,7 +47,7 @@ const entityAliases = [
 // that every semantically related sentence is the same published claim.
 const semanticConceptAliases = [
   ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'migratoria', 'migratorio', 'extranjero', 'extranjera', 'extranjeros', 'extranjeras', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo', 'invasion', 'invasión']],
-  ['crime', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
+  ['crime', ['delincuencia', 'delito', 'delitos', 'delinquir', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['rental_housing', ['alquiler', 'alquileres', 'renta de alquiler', 'rentas de alquiler', 'rent']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],

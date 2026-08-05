@@ -114,7 +114,14 @@ export const semanticFamilyKeys = (signature) => {
 // a new reviewed family is added to the compiler registry.
 export const isReusableSemanticFamilyKey = (key) => {
   const value = String(key || '');
-  if (value.includes('||')) return true;
+  if (value.includes('||')) {
+    const payload = value.split('|').at(-1) || '';
+    // Dimension-free keys are reusable only when the proposition carries a
+    // compound or explicitly structured payload. “trend:housing” is topic
+    // context, not evidence for a housing-price claim.
+    if (/^(?:descriptive|trend):[^:]+(?::trend:[^:]+)?$/.test(payload) && !payload.includes('+') && !payload.includes('_')) return false;
+    return payload.includes('+') || payload.includes('_') || /^(?:causal|comparative|relation|legal|normative|predictive):/.test(payload);
+  }
   if (!value.startsWith('metric-family|')) return false;
   // A metric-family key is reusable only when its payload names a compound
   // or explicitly structured concept. Generic one-word keys such as
