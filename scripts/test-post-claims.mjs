@@ -91,7 +91,7 @@ const counts = results.reduce((summary, item) => {
   return summary;
 }, {});
 
-const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'fiscal', 'housing-price', 'imv', 'benefits']);
+const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'fiscal', 'housing-price', 'imv', 'benefits', 'occupation-law']);
 const strongResults = new Set(results.filter((item) => item.status === 'complete' && item.coverage === 'strong').map((item) => item.id));
 for (const id of expectedStrong) {
   if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);

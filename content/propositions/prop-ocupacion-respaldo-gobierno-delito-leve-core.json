@@ -1,0 +1,13 @@
+{
+  "id": "prop-ocupacion-respaldo-gobierno-delito-leve-core",
+  "claimSlug": "ocupacion-respaldo-gobierno-delito-leve",
+  "text": "La ocupación está respaldada por el Gobierno y siempre constituye un delito leve.",
+  "type": "legal",
+  "subject": "occupation_of_property",
+  "predicate": "is_government_backed_and_always_minor_offence",
+  "object": null,
+  "geography": "España",
+  "period": "vigente desde 2025",
+  "status": "contradicted",
+  "evidenceIds": ["ocupacion-vias-procesales-2025", "ocupacion-recuperacion-civil-2018", "ocupacion-limites-procedimiento-penal"]
+}
