@@ -1,0 +1,13 @@
+{
+  "id": "prop-ela-abandonados-falta-recursos-core",
+  "claimSlug": "enfermos-ela-abandonados-falta-recursos",
+  "text": "Los enfermos de ELA están abandonados por falta de recursos.",
+  "type": "mixed",
+  "subject": "people_with_ela",
+  "predicate": "are_abandoned",
+  "object": "lack_of_resources",
+  "geography": "España",
+  "period": "2025",
+  "status": "qualified",
+  "evidenceIds": ["ela-atencion-integral-500-millones-2025"]
+}
