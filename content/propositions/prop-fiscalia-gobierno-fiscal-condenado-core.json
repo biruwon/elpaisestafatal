@@ -1,0 +1,13 @@
+{
+  "id": "prop-fiscalia-gobierno-fiscal-condenado-core",
+  "claimSlug": "fiscalia-depende-gobierno-fiscal-condenado",
+  "text": "La Fiscalía depende del Gobierno y hay un fiscal general condenado.",
+  "type": "mixed",
+  "subject": "spanish_public_prosecution_service",
+  "predicate": "is_government_dependent_and_has_convicted_attorney_general",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "qualified",
+  "evidenceIds": ["fiscal-general-condena-supremo-2025"]
+}
