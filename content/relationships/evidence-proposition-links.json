@@ -330,6 +330,7 @@
     {"evidenceId":"regularizacion-requisitos-antecedentes-2026","propositionId":"prop-prision-provisional-regularizacion-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-1-2-millones-ayudas-mantienen-familias-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"composicion-gobierno-xv-legislatura-2026","propositionId":"prop-hay-ministros-prision-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"fiscal-general-condena-supremo-2025","propositionId":"prop-fiscalia-gobierno-fiscal-condenado-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"fiscal-general-condena-supremo-2025","propositionId":"prop-fiscalia-gobierno-fiscal-condenado-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"nombramiento-magistrados-supremo-cgpj","propositionId":"prop-supremo-elegido-quienes-juzga-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }

@@ -1,0 +1,13 @@
+{
+  "id": "prop-supremo-elegido-quienes-juzga-core",
+  "claimSlug": "supremo-elegido-por-quienes-juzga",
+  "text": "El Tribunal Supremo es elegido por quienes debe juzgar.",
+  "type": "normative",
+  "subject": "spanish_supreme_court",
+  "predicate": "is_selected_by_parties_it_judges",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["nombramiento-magistrados-supremo-cgpj"]
+}
