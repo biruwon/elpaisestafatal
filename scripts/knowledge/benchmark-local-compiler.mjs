@@ -34,6 +34,13 @@ const cases = [
   { id: 'compound-housing', input: 'Los alquileres han subido y los salarios no alcanzan para vivir', claimTypes: ['mixed', 'comparative', 'trend'], mustMention: ['alquileres', 'salarios'], mustNeed: ['métrica', 'comparación'] },
   { id: 'compound-budget-impact', input: 'El Gobierno mueve dinero de Educación para pagar personal y eso recorta las becas', claimTypes: ['mixed', 'descriptive'], mustMention: ['educación', 'becas'], mustNeed: ['partida', 'impacto'] },
   { id: 'novel-local-causality', input: 'En mi municipio la llegada de turistas está expulsando a los vecinos', claimTypes: ['causal', 'descriptive'], mustMention: ['municipio', 'turistas'], mustNeed: ['territorio', 'causa'] },
+  { id: 'salary-europe', input: 'Los sueldos españoles son de los peores de Europa', claimTypes: ['comparative', 'descriptive'], mustMention: ['sueldos', 'europa'] },
+  { id: 'revenue-vs-deficit', input: 'España recauda una parte mayor de su economía que Europa', claimTypes: ['comparative', 'descriptive'], mustMention: ['recauda', 'europa'] },
+  { id: 'benefits-group-comparison', input: 'Los inmigrantes reciben más ayudas que los españoles', claimTypes: ['comparative', 'descriptive'], mustMention: ['inmigrantes', 'ayudas'], mustNeed: ['programa', 'denominador'] },
+  { id: 'healthcare-collapse', input: 'La sanidad española está colapsada', claimTypes: ['definition', 'descriptive'], mustMention: ['sanidad'], mustNeed: ['definición', 'indicador'] },
+  { id: 'energy-causality', input: 'La transición energética está arruinando a las familias españolas', claimTypes: ['causal', 'descriptive'], mustMention: ['energética', 'familias'], mustNeed: ['causa', 'coste'] },
+  { id: 'housing-prediction', input: 'Los alquileres van a bajar a la mitad el año que viene', claimTypes: ['predictive'], mustMention: ['alquileres'], mustNeed: ['fecha', 'indicador'] },
+  { id: 'everything-worse', input: 'España va cada vez peor en todo', claimTypes: ['definition', 'mixed'], mustMention: ['españa'], mustNeed: ['métrica', 'comparación'] },
 ];
 
 const bounded = (value, limit) => String(value || '').slice(0, limit);
