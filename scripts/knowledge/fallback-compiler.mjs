@@ -223,8 +223,8 @@ const trendDirectionFor = (value) => {
   const text = normalise(value);
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return 'improving';
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
   return null;
 };
 

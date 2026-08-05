@@ -928,7 +928,12 @@ const classify = async (text) => {
     // semantic structure to distinguish a proposition family from a broad
     // topic. Derive that from the key rather than maintaining a growing list
     // of manually approved concepts as new claim families are published.
-    const semanticPayload = payload.split(':').at(-1) || payload;
+    const semanticPayload = payload;
+    // A bare descriptive concept list (“housing+rental_housing”,
+    // “benefits+budget”) is useful for retrieval but is not a proposition
+    // family: it has no direction, comparison, trend, or other relation.
+    // Keep it from authorizing a strong answer across unrelated claims.
+    if (/^(?:descriptive|trend):[^:]+$/.test(semanticPayload)) return false;
     const semanticParts = semanticPayload.split(/[+_\-]/).filter((part) => part.length >= 3);
     return payload.includes('+') || semanticParts.length >= 2;
   };
