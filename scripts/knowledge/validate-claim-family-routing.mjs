@@ -1,11 +1,12 @@
 import { isSpecificSemanticSignature, semanticFamilyKeys } from './claim-family-routing.mjs';
+import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 
 const immigration = 'causal|polarity:positive|entity:crime|entity:immigration|causal:crime+immigration:causes:immigration:crime';
 const housingTrend = 'trend|polarity:positive|entity:housing|geo:espana|period:2015|trend:housing:trend:rising';
 const fixed = 'definition|polarity:positive|entity:employment|definition:employment';
-const unrelated = 'descriptive|polarity:positive|entity:taxes|descriptive:taxes';
+const unrelated = 'descriptive|polarity:positive|descriptive:taxes';
 
 if (!isSpecificSemanticSignature(immigration) || !semanticFamilyKeys(immigration).length) throw new Error('causal family key missing');
 if (!isSpecificSemanticSignature(housingTrend) || !semanticFamilyKeys(housingTrend).some((key) => key.includes('|trend:housing:trend:rising'))) throw new Error('trend family key missing');
@@ -36,5 +37,36 @@ for (const [left, right] of browserEquivalentPairs) {
   if (!browserFamily(left).some((key) => browserFamily(right).includes(key))) throw new Error(`Browser family parity failed for equivalent wording: ${left}`);
 }
 if (browserFamily('Los alquileres han subido en España').some((key) => browserFamily('El precio de la vivienda ha subido en España').includes(key))) throw new Error('Browser family parity merged rent and purchase-price metrics');
+
+// These are deliberately different surface forms, not aliases from the
+// published index. They prove that the reusable family is derived from the
+// proposition structure rather than from a page-specific phrase list.
+const localEquivalentPairs = [
+  ['Los inmigrantes crean inseguridad', 'La llegada de extranjeros hace que haya más delincuencia'],
+  ['España tiene más paro juvenil que Europa', 'El desempleo entre los jóvenes españoles supera al de la UE'],
+  ['Los alquileres han subido', 'Vivir de alquiler cuesta cada vez más'],
+  ['España recauda cada vez más impuestos', 'La presión fiscal española está aumentando'],
+  ['El Gobierno transfirió dinero de Educación a Presidencia para personal', 'Se movieron fondos de educación al ministerio de Presidencia para pagar nóminas'],
+];
+for (const [left, right] of localEquivalentPairs) {
+  const leftKeys = semanticFamilyKeys(deterministicFallbackCompiler(left).semanticSignature);
+  const rightKeys = semanticFamilyKeys(deterministicFallbackCompiler(right).semanticSignature);
+  if (!leftKeys.some((key) => rightKeys.includes(key))) {
+    throw new Error(`Local family routing failed for equivalent wording: ${left} <> ${right}`);
+  }
+}
+
+const localDistinctPairs = [
+  ['Los alquileres han subido', 'El precio de compra de la vivienda ha subido'],
+  ['España tiene más paro juvenil que Europa', 'España tiene más paro que Europa'],
+  ['Los inmigrantes crean inseguridad', 'Los inmigrantes reciben más ayudas'],
+];
+for (const [left, right] of localDistinctPairs) {
+  const leftKeys = semanticFamilyKeys(deterministicFallbackCompiler(left).semanticSignature);
+  const rightKeys = semanticFamilyKeys(deterministicFallbackCompiler(right).semanticSignature);
+  if (leftKeys.some((key) => rightKeys.includes(key))) {
+    throw new Error(`Local family routing merged distinct propositions: ${left} <> ${right}`);
+  }
+}
 
 console.log('Claim-family routing contract passed.');

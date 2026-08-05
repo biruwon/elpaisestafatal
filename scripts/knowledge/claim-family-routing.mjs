@@ -55,15 +55,10 @@ export const semanticFamilyKeys = (signature) => {
       for (const part of propositionParts) keys.push(`${type}|${polarity}|${entity}|${part}`);
     }
   }
-  // Compound claims often add a second modifier (“compra votos con ayudas”)
-  // while preserving a recognizable core proposition. Emit a core
-  // proposition key for descriptive/trend payloads; uniqueness still gates
-  // whether it can ever become a strong match.
-  for (const part of propositionParts) {
-    const match = part.match(/^(descriptive|trend):([^:]+)(?::.*)?$/);
-    if (!match || !match[2].includes('+')) continue;
-    for (const concept of match[2].split('+')) keys.push(`${type}|${polarity}||${match[1]}:${concept}`);
-  }
+  // Do not emit one-key-per-concept fallbacks for compound metrics. They
+  // collapse distinct evidence contracts such as rent and purchase prices
+  // into the broad “housing” topic. A compound proposition must either
+  // match its complete payload or remain related guidance.
   // A published family may contain one distinctive proposition while the
   // query adds another concept or omits a geography/period. Emit a
   // dimension-free key for structured multi-word payloads as well as explicit
