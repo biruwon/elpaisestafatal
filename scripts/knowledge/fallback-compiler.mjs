@@ -136,6 +136,7 @@ const semanticConcepts = (value) => {
   if (containsPhrase(value, 'deuda publica') && containsPhrase(value, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
+  if (concepts.includes('health_access') && !concepts.includes('healthcare')) concepts.push('healthcare');
   return concepts;
 };
 
@@ -250,7 +251,7 @@ const trendDirectionFor = (value) => {
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
   if (/\b(?:envejece|envejecemos|envejecimiento)\b/.test(text)) return 'rising';
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|est[aá] aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|mas caro|mas cara|mucho mas caro|mucho mas cara|mas costoso|mas costosa|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|tardan mas|tarda mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|est[aá] aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|mas caro|mas cara|mucho mas caro|mucho mas cara|mas costoso|mas costosa|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
   return null;
 };
 

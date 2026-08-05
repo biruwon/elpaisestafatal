@@ -162,7 +162,7 @@ const directionalRelation = (text: string): string | null => {
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
   }
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no deja de bajar|no dejan de bajar|no para de bajar|no paran de bajar|va en descenso|va a la baja)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|esta aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|tardan mas|tarda mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|aumentando|esta aumentando|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return `trend:improving:${relationShape(text)}`;
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return `trend:worsening:${relationShape(text)}`;
   return null;
@@ -200,6 +200,7 @@ export const semanticQuerySignature = (value: string): string => {
   if (containsAlias(text, 'deuda publica') && containsAlias(text, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
+  if (concepts.includes('health_access') && !concepts.includes('healthcare')) concepts.push('healthcare');
   const fallback = priority || concepts.length ? [] : semanticTokens(text);
   const idiomaticRise = /\bno\s+(?:deja|dejan|para|paran)\s+de\s+(?:subir|aumentar|crecer|encarecer|encarecerse)\b/.test(text);
   const polarity = !idiomaticRise && /\b(no|nunca|jamas|nadie|ningun|ninguna)\b/.test(text) ? 'negative' : 'positive';
@@ -232,8 +233,11 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   // Descriptive and comparative phrasings can refer to the same metric
   // family. Keep this cross-type key deliberately narrow and rely on the
   // resolver's uniqueness guard before promoting it to a published answer.
-  if (relation === '' && concepts.length === 1 && (type === 'descriptive' || type === 'comparative')) {
+  if (relation === '' && concepts.length === 1 && (type === 'descriptive' || type === 'comparative' || type === 'trend')) {
     keys.push(`metric-family|${polarity}|${concepts[0]}`);
+  }
+  if (relation === '' && type === 'trend' && concepts.includes('concept:health_access') && concepts.includes('concept:healthcare')) {
+    keys.push(`metric-family|${polarity}|${concepts.join('|')}`);
   }
   // Comparative paraphrases often name the same direction and metric but
   // serialize the compared parties differently (for example “Europa” versus

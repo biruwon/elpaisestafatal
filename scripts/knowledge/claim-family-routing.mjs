@@ -46,7 +46,7 @@ export const semanticFamilyKeys = (signature) => {
     'health_access', 'healthcare_collapse', 'health_spending',
     'public_debt_stock', 'public_debt_ratio', 'employment_record',
     'fixed_discontinuous', 'education_outcomes', 'housing_price_ratio',
-    'crime_reporting', 'minimum_income', 'pension_financing',
+    'crime_reporting', 'minimum_income', 'pension_financing', 'vote_purchase',
   ]);
   for (const part of propositionParts) {
     const match = part.match(/^([^:]+):([^:]+)$/);
@@ -62,7 +62,7 @@ export const semanticFamilyKeys = (signature) => {
   // this cannot turn a broad topic into an arbitrary strong answer.
   for (const part of propositionParts) {
     const match = part.match(/^(descriptive|comparative):([^:]+)$/);
-    if (match && ['descriptive', 'comparative'].includes(match[1])) {
+    if (match && ['descriptive', 'comparative', 'trend'].includes(match[1])) {
       // Entity extraction is intentionally omitted here: one surface form
       // may identify the metric as an entity while another only names it in
       // the proposition. The metric payload remains the required anchor.
@@ -77,6 +77,10 @@ export const semanticFamilyKeys = (signature) => {
   for (const part of propositionParts) {
     const match = part.match(/^comparative:([^:]+)/);
     if (match) keys.push(`${type}|${polarity}|${entities}|comparative:${match[1]}`);
+    const trendMatch = part.match(/^trend:([^:]+):trend:(rising|falling|improving|worsening)$/);
+    if (trendMatch && ['health_access+healthcare', 'housing+prices', 'employment_record'].includes(trendMatch[1])) {
+      keys.push(`metric-family|${polarity}|${trendMatch[1]}`);
+    }
   }
   // Preserve a proposition-specific subset for paraphrases that expose one
   // extra concept (for example “housing prices” versus simply “housing”).

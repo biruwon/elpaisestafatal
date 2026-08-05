@@ -997,12 +997,22 @@ const classify = async (text) => {
   const index = await getIndex();
   const deterministicCompiler = fallbackCompiler(text);
   const routingCompiler = deterministicFallbackCompiler(text);
+  // Exact published titles and aliases are an explicit editorial contract.
+  // Resolve them before metric or semantic ambiguity can downgrade the
+  // answer; approximate wording continues through the guarded family path.
+  const exactPublishedEntry = index.entries.find((entry) => entry.kind === 'claim' && entry.published
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
+  if (exactPublishedEntry) {
+    const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1, reason: 'La formulación coincide con una afirmación publicada.', answer: exactPublishedEntry.answer || '', assessment: exactPublishedEntry.assessment || '', whatIsTrue: exactPublishedEntry.whatIsTrue || '', whatIsMissing: exactPublishedEntry.whatIsMissing || '', cannotProve: exactPublishedEntry.cannotProve || '', scale: exactPublishedEntry.scale || '', propositionIds: exactPublishedEntry.propositionIds || [], evidenceIds: exactPublishedEntry.evidenceIds || [], sourceRefs: exactPublishedEntry.sourceRefs || [], sourceLinks: exactPublishedEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1 }] };
+    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    return result;
+  }
   // Resolve a reusable evidence family before the broad-topic shortcut below.
   // A single proposition can still be specific (for example benefits plus
   // immigration); routing it to the topic first would discard the published
   // family that already answers the paraphrase.
   const routingFamilyKeys = new Set(semanticFamilyKeys(routingCompiler.semanticSignature));
-  const structuredFamily = (keys) => [...keys].some((key) => /(?:employment_record|health_access|healthcare_collapse|public_debt_stock|public_debt_ratio|housing_price_ratio|education_outcomes|fixed_discontinuous|crime_reporting|minimum_income|pension_financing)/.test(key));
+  const structuredFamily = (keys) => [...keys].some((key) => /(?:vote_purchase|benefits\+immigration|housing\+prices|rental_housing|employment_record|health_access|healthcare_collapse|public_debt_stock|public_debt_ratio|housing_price_ratio|education_outcomes|fixed_discontinuous|crime_reporting|minimum_income|pension_financing)/.test(key));
   const routingHasStructuredFamily = structuredFamily(routingFamilyKeys);
   const hasPublishedSemanticFamily = routingFamilyKeys.size > 0
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
@@ -1046,14 +1056,22 @@ const classify = async (text) => {
   };
   const earlyFamilyEntry = !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
-    ? dominantFamilyEntry(routingFamilyKeys)
+    ? (dominantFamilyEntry(routingFamilyKeys)
+      || (routingHasStructuredFamily
+        ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
+          && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)))
+        : undefined))
     : undefined;
   const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
     : undefined;
-  const reusableFamilyEntry = directPublishedEntry || earlyFamilyEntry || earlySignatureEntry;
+  const exactPublishedAliasEntry = exactPublishedInput
+    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
+      && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput))
+    : undefined;
+  const reusableFamilyEntry = directPublishedEntry || exactPublishedAliasEntry || earlyFamilyEntry || earlySignatureEntry;
   if (reusableFamilyEntry) {
     const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: reusableFamilyEntry.answer || '', assessment: reusableFamilyEntry.assessment || '', whatIsTrue: reusableFamilyEntry.whatIsTrue || '', whatIsMissing: reusableFamilyEntry.whatIsMissing || '', cannotProve: reusableFamilyEntry.cannotProve || '', scale: reusableFamilyEntry.scale || '', propositionIds: reusableFamilyEntry.propositionIds || [], evidenceIds: reusableFamilyEntry.evidenceIds || [], sourceRefs: reusableFamilyEntry.sourceRefs || [], sourceLinks: reusableFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82 }] };
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
