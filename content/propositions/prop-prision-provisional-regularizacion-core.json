@@ -1,0 +1,13 @@
+{
+  "id": "prop-prision-provisional-regularizacion-core",
+  "claimSlug": "prision-provisional-regularizacion",
+  "text": "Personas en prisión provisional han podido regularizarse.",
+  "type": "legal",
+  "subject": "extraordinary_regularisation",
+  "predicate": "allows_people_in_pretrial_detention",
+  "object": null,
+  "geography": "España",
+  "period": "2026",
+  "status": "insufficient",
+  "evidenceIds": ["regularizacion-requisitos-antecedentes-2026"]
+}
