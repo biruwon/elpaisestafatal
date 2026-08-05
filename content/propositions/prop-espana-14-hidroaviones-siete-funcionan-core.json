@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-14-hidroaviones-siete-funcionan-core",
+  "claimSlug": "espana-14-hidroaviones-solo-siete-funcionan",
+  "text": "España tiene 14 hidroaviones y solo 7 funcionan.",
+  "type": "descriptive",
+  "subject": "state_firefighting_aircraft",
+  "predicate": "has_operational_count",
+  "object": "14_total_7_working",
+  "geography": "España",
+  "period": "2025",
+  "status": "insufficient",
+  "evidenceIds": ["medios-aereos-incendios-2025"]
+}

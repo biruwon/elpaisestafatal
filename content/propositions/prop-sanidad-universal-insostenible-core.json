@@ -1,0 +1,13 @@
+{
+  "id": "prop-sanidad-universal-insostenible-core",
+  "claimSlug": "sanidad-universal-insostenible",
+  "text": "La sanidad universal es insostenible porque los recursos no son infinitos.",
+  "type": "normative",
+  "subject": "universal_healthcare",
+  "predicate": "is_unsustainable",
+  "object": "finite_resources",
+  "geography": "España",
+  "period": "vigente",
+  "status": "qualified",
+  "evidenceIds": ["acceso-universal-sns-2026"]
+}
