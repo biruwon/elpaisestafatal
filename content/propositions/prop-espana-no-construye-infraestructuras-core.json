@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-no-construye-infraestructuras-core",
+  "claimSlug": "espana-no-construye-infraestructuras",
+  "text": "España no construye nuevos hospitales, carreteras, presas, desaladoras, centrales, aeropuertos o trenes.",
+  "type": "mixed",
+  "subject": "spanish_public_infrastructure",
+  "predicate": "has_no_new_construction",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["obras-infraestructuras-transportes-2025"]
+}
