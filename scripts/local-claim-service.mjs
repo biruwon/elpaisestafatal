@@ -953,6 +953,23 @@ const classify = async (text) => {
   const familyRanked = semanticFamilyCandidate
     ? [semanticFamilyCandidate, ...publicRanked.filter((item) => item.entry.slug !== semanticFamilyCandidate.entry.slug)]
     : publicRanked;
+  // Broad evaluative complaints are not a published claim and should not be
+  // forced into an ad-hoc record. Route the common “Spain is ruined” shape to
+  // the reusable political topic so the user gets an immediate direction,
+  // while keeping it explicitly topic guidance rather than a verdict.
+  const broadComplaintText = normalise(text);
+  const broadPoliticalComplaint = /\b(?:espana|pais)\b[\s\w]{0,36}\b(?:destruida?|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintText)
+    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintText);
+  const rankedPoliticalTopic = ranked.find(({ entry }) => entry.kind === 'topic' && entry.slug === 'politica')
+    || (broadPoliticalComplaint
+      ? (() => {
+        const entry = index.entries.find((item) => item.kind === 'topic' && item.slug === 'politica');
+        return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false } : undefined;
+      })()
+      : undefined);
+  const topicRanked = broadPoliticalComplaint && rankedPoliticalTopic
+    ? [rankedPoliticalTopic, ...familyRanked.filter(({ entry }) => entry.slug !== 'politica')]
+    : familyRanked;
   const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
     const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
@@ -971,11 +988,11 @@ const classify = async (text) => {
   const openQuestionIntent = /\b(?:como|cuanto|cuanta|cuantos|cuantas|cual|cuales|donde|cuando|por que)\b/.test(normalizedQuery);
   const directPhraseCandidate = exactPublishedCandidate || (suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry) || conversationalWrapper || !openQuestionIntent)));
   const decisionRanked = directPhraseCandidate
-    ? [directPhraseCandidate, ...familyRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
-    : familyRanked;
+    ? [directPhraseCandidate, ...topicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
+    : topicRanked;
   const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch }) => {
     if (score < 0.32) return false;
-    if (entry.kind === 'topic') return lexical >= 0.24;
+    if (entry.kind === 'topic') return lexical >= 0.24 || (broadPoliticalComplaint && entry.slug === 'politica');
     // Shared entities such as “immigration” are not enough to make an
     // unrelated published claim useful. Require the same semantic family or
     // an unmistakably direct phrase match before showing a claim as guidance.
