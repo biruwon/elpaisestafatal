@@ -56,6 +56,7 @@ const semanticConceptAliases = [
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
   ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'la vivienda cada vez cuesta', 'la vivienda cuesta', 'la casa cuesta', 'comprar una casa es mas caro', 'comprar vivienda es mas caro', 'precio vivienda']],
+  ['hotel_tourism', ['hotel', 'hoteles', 'pernoctacion', 'pernoctaciones', 'turismo hotelero', 'turistas']],
   ['benefits', ['ayudas', 'ayuditas', 'paguita', 'paguitas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio', 'beneficios sociales', 'ventajas sociales']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política']],
@@ -475,7 +476,10 @@ export const deterministicFallbackCompiler = (text) => {
   const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true, ...propositionShapeFor(clause) }));
   const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
   const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\b/.test(normalized);
-  const claimType = causalConnector ? 'causal' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(routingText)));
+  const trendCompound = explicitTypes.length > 1
+    && explicitTypes.includes('trend')
+    && explicitTypes.every((type) => type === 'trend' || type === 'descriptive');
+  const claimType = causalConnector ? 'causal' : (trendCompound ? 'trend' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(routingText))));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
   const geography = normalized.includes('espana') || normalized.includes('espanol') || normalized.includes('espanola') || normalized.includes('nacional')
     ? 'España'

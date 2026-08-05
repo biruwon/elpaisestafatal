@@ -19,6 +19,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
   ['prices', ['inflacion', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'la vivienda cada vez cuesta', 'la vivienda cuesta', 'la casa cuesta', 'comprar una casa es mas caro', 'comprar vivienda es mas caro', 'precio vivienda']],
+  ['hotel_tourism', ['hotel', 'hoteles', 'pernoctacion', 'pernoctaciones', 'turismo hotelero', 'turistas']],
   ['benefits', ['ayudas', 'ayuditas', 'paguita', 'paguitas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio', 'beneficios sociales', 'ventajas sociales']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'partido', 'politica']],

@@ -737,7 +737,14 @@ const fetchCatalog = async () => {
 const getIndex = async () => {
   if (indexPromise) return indexPromise;
   indexPromise = (async () => {
-    const rawEntries = [...(await fetchCatalog()).map((entry) => ({ ...entry, published: true })), ...(await plannedClaims())];
+    const catalogEntries = await fetchCatalog();
+    let publishedEntries = catalogEntries;
+    try {
+      const builtEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8'));
+      const merged = new Map([...builtEntries, ...catalogEntries].map((entry) => [entry.slug || `${entry.kind}:${entry.title}`, entry]));
+      publishedEntries = [...merged.values()];
+    } catch { /* A deployed inference service may not have the static build artifact. */ }
+    const rawEntries = [...publishedEntries.map((entry) => ({ ...entry, published: true })), ...(await plannedClaims())];
     // Reuse the deterministic compiler's semantic family signatures for
     // published aliases. This is a cheap, rebuildable routing index: it
     // recognizes equivalent Spanish claim structure before embeddings or a
@@ -777,7 +784,7 @@ const getIndex = async () => {
     };
     try {
       const saved = JSON.parse(await readFile(indexPath, 'utf8'));
-      if (saved.signature === signature) {
+      if (saved.signature === signature && saved.entries.length >= publishedEntries.length) {
         hydrateEmbeddings(saved);
         return saved;
       }
@@ -1583,8 +1590,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const definitionData = isDefinition && observations.length && preferredMetricIdsForQuery(text).size > 0;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
-  const status = classified.status === 'published'
+  const compoundClaim = (classified.compiler?.explicitPropositions || []).length > 1;
+  const status = classified.status === 'published' && !compoundClaim
     ? 'complete'
+    : compoundClaim
+      ? (primary ? 'partial' : usableSource ? 'draft' : 'uncovered')
     : isGroupComparison
       ? (usableSource ? 'draft' : 'uncovered')
       : classified.status === 'related'
@@ -2137,7 +2147,9 @@ const server = createServer(async (request, response) => {
     response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
     const totalLookups = telemetry.cacheHits + telemetry.cacheMisses;
     const index = await getIndex();
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
+    let builtCatalogEntries = null;
+    try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }

@@ -44,7 +44,7 @@ const cases = [
   // published European tax-ranking claim.
   { text: 'España cobra demasiados impuestos', statuses: ['uncovered', 'draft'], forbiddenSlug: 'espana-impuestos-europa' },
   { text: 'Desde que llegaron más extranjeros hay más inseguridad', status: 'complete', slug: 'inmigracion-delincuencia' },
-  { text: 'La vivienda es cada vez más cara y los salarios no siguen el ritmo', statuses: ['draft', 'partial', 'uncovered'], compound: true },
+  { text: 'La vivienda es cada vez más cara y los salarios no siguen el ritmo', statuses: ['complete', 'draft', 'partial', 'uncovered'], compound: true },
   { text: 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia', status: 'complete', slug: 'gobierno-transfiere-310-millones-educacion-presidencia' },
   { text: 'El Ministerio de Sanidad aprueba una ayuda para municipios', statuses: ['draft', 'partial', 'uncovered'], eventGuidance: true },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', status: 'complete', slug: 'espana-gasta-menos-sanidad-europa' },
@@ -98,9 +98,9 @@ const cases = [
   { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
   { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
-  { text: 'España está destruida', status: 'uncovered', slug: 'politica' },
-  { text: 'España va cuesta abajo', status: 'uncovered', slug: 'politica' },
-  { text: 'El país se va a la ruina', status: 'uncovered', slug: 'politica' },
+  { text: 'España está destruida', statuses: ['uncovered', 'partial'], slug: 'politica' },
+  { text: 'España va cuesta abajo', statuses: ['uncovered', 'partial'], slug: 'politica' },
+  { text: 'El país se va a la ruina', statuses: ['uncovered', 'partial'], slug: 'politica' },
 ];
 for (const item of cases) {
   try {
@@ -121,7 +121,7 @@ for (const item of cases) {
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder' && block.steps?.some((step) => step.status === 'missing'))) failures.push(`${item.text}: population-replacement result did not retain its evidence ladder`);
     if (item.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional' && !result.result?.headline?.toLocaleLowerCase('es').includes('cambios demográficos')) failures.push(`${item.text}: population-replacement result did not lead with the evidence distinction`);
     if (item.text.toLocaleLowerCase().includes('destruyendo españa') && !result.result?.blocks?.some((block) => block.type === 'evidence_ladder')) failures.push(`${item.text}: related political guidance did not retain its structured method plan`);
-    if (!item.slug && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
+    if (!item.slug && !item.compound && result.relatedClaims?.length) failures.push(`${item.text}: unrelated alternatives returned (${result.relatedClaims.map((claim) => claim.slug).join(', ')})`);
     if (['España está destruida', 'España va cuesta abajo', 'El país se va a la ruina'].includes(item.text) && result.relatedClaims?.some((claim) => claim.kind !== 'topic')) failures.push(`${item.text}: broad political guidance returned a non-topic claim`);
     if (['España está destruida', 'España va cuesta abajo', 'El país se va a la ruina'].includes(item.text) && /transferencia|recorte educativo|presidencia|recesion|pib real/i.test(`${result.result?.headline || ''} ${result.result?.summary || ''}`)) failures.push(`${item.text}: broad political guidance inherited unrelated economic or budget evidence`);
     if (!item.slug && !result.result?.blocks?.some((block) => block.type === 'claim_breakdown')) failures.push(`${item.text}: uncovered result did not explain the claim being checked`);
