@@ -88,6 +88,8 @@ console.log(`Broad complaint routing validation passed: ${broadComplaintCases.le
 for (const [text, expectedSlug] of [
   ['Hay una invasión migratoria', 'inmigracion'],
   ['La vivienda está cara', 'vivienda'],
+  ['La vivienda es imposible para los jóvenes', 'vivienda'],
+  ['Los inmigrantes vienen a vivir de las ayudas', 'inmigracion'],
   ['España es un país inseguro', 'seguridad'],
   ['El Estado gasta más de lo que ingresa', 'economia'],
   ['Nunca ha habido tantos trabajadores', 'empleo-record'],
@@ -103,7 +105,7 @@ for (const [text, expectedSlug] of [
     payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
   }
   const related = [...(payload.alternatives || []), ...(payload.relatedClaims || [])];
-  if (!['complete', 'related', 'partial'].includes(payload.status) || !related.some((item) => item.slug === expectedSlug)) {
+  if ((!['complete', 'related', 'partial'].includes(payload.status) && !(['uncovered', 'draft'].includes(payload.status) && related.some((item) => item.kind === 'topic'))) || !related.some((item) => item.slug === expectedSlug)) {
     throw new Error(`${text}: domain wording did not route to ${expectedSlug}: ${JSON.stringify(payload)}`);
   }
   console.log(JSON.stringify({ text, status: payload.status, related: expectedSlug }));

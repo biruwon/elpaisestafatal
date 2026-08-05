@@ -1799,7 +1799,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   };
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
