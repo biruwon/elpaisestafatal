@@ -3,7 +3,7 @@ slug: compra-votos-espana
 claim: "En España se compran votos."
 assessment: uncertain
 topicSlugs: ["politica", "elecciones"]
-aliases: ["En España se compran votos", "se compran votos en España", "hay compra de votos en España"]
+aliases: ["En España se compran votos", "se compran votos en España", "hay compra de votos en España", "se pagan votos en las elecciones españolas", "pagan votos en elecciones"]
 claimType: mixed
 evidenceStrength: high
 geography: España

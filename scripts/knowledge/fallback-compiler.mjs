@@ -37,7 +37,7 @@ const entityAliases = [
   ['empleo', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados']],
   ['impuestos', ['impuestos', 'tributos', 'fiscalidad', 'hacienda']],
   ['sanidad', ['sanidad', 'hospital', 'medico', 'salud', 'espera']],
-  ['seguridad y delincuencia', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
+  ['seguridad y delincuencia', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['educación', ['educacion', 'colegio', 'escuela', 'becas', 'universidad']],
   ['Europa', ['europa', 'europeo', 'europea', 'ue']],
 ];
@@ -47,7 +47,7 @@ const entityAliases = [
 // that every semantically related sentence is the same published claim.
 const semanticConceptAliases = [
   ['immigration', ['inmigracion', 'inmigrante', 'inmigrantes', 'migrante', 'migrantes', 'extranjero', 'extranjeros', 'marroqui', 'marroquies', 'rumano', 'rumanos', 'latino', 'latinos', 'senegales', 'colombiano', 'colombianos', 'venezolano', 'venezolanos', 'llegada', 'llegadas', 'flujo', 'flujos', 'patera', 'pateras', 'asilo']],
-  ['crime', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
+  ['crime', ['delincuencia', 'delito', 'delitos', 'delinque', 'delinquen', 'delinquido', 'delictivo', 'delictiva', 'delictivos', 'crimen', 'inseguridad', 'inseguro', 'insegura', 'seguridad', 'seguro', 'segura', 'peligrosa', 'peligro', 'violencia', 'violento', 'agresiones', 'hurtos', 'robos', 'estafas']],
   ['housing', ['vivienda', 'viviendas', 'alquiler', 'alquileres', 'hipoteca', 'hipotecas', 'piso', 'pisos', 'casa', 'casas', 'vacio', 'vacias']],
   ['employment', ['empleo', 'trabajo', 'trabajos', 'paro', 'desempleo', 'salario', 'salarios', 'ocupado', 'ocupados', 'trabajador', 'trabajadores']],
   ['taxes', ['impuestos', 'tributos', 'fiscalidad', 'hacienda', 'recaudacion', 'recaudación', 'presion fiscal']],

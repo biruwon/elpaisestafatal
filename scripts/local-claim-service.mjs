@@ -707,6 +707,10 @@ const getIndex = async () => {
           .map((phrase) => fallbackCompiler(phrase).semanticSignature)
           .filter(Boolean))].slice(0, 32)
         : [],
+      semanticFamilyKeys: entry.published && entry.kind === 'claim'
+        ? [...new Set([entry.title, ...(entry.aliases || [])]
+          .flatMap((phrase) => semanticFamilyKeys(fallbackCompiler(phrase).semanticSignature)))]
+        : [],
     }));
     const signature = digest(JSON.stringify({
       entries,
@@ -853,8 +857,29 @@ const buildPublishedCompositeResult = async (text, classified) => {
 const isSpecificSemanticSignature = (signature) => {
   const parts = String(signature || '').split('|');
   return parts.some((part) => part.startsWith('relation:'))
+    // Entity pairs plus a directional relation are the reusable family key
+    // for causal claims. Previously these signatures were treated as broad
+    // because they use `entity:` fields rather than `concept:` fields, so a
+    // genuine paraphrase such as “desde que llegaron más extranjeros…” could
+    // fall through to the uncovered path even when the same evidence family
+    // was already published.
+    || (parts.some((part) => part.startsWith('causal:')) && parts.filter((part) => part.startsWith('entity:')).length >= 2)
+    || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
+};
+
+// Exact signatures retain too much surface wording for paraphrase routing.
+// Family keys retain only the evidence contract: type, polarity, entities,
+// and whether the relation is causal or associative.
+const semanticFamilyKeys = (signature) => {
+  const parts = String(signature || '').split('|').filter(Boolean);
+  const type = parts[0] || '';
+  const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
+  const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
+  const relation = parts.find((part) => /^(causal|relation):/.test(part)) || '';
+  if (!type || (!entities && !relation)) return [];
+  return [`${type}|${polarity}|${entities}|${relation.split(':')[0]}`];
 };
 
 const classify = async (text) => {
@@ -885,11 +910,15 @@ const classify = async (text) => {
     try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
+  const queryFamilyKeys = new Set(semanticFamilyKeys(querySemanticSignature));
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
-    semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && entry.semanticSignatures?.includes(querySemanticSignature),
+    semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
+      entry.semanticSignatures?.includes(querySemanticSignature)
+      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key)))
+    ),
   })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank
     // distinctive words in a short political claim. Keep lexical evidence
@@ -934,6 +963,15 @@ const classify = async (text) => {
   const suppressPublishedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
   const nearCanonicalEntry = ({ entry, lexical }) => entry.kind === 'claim' && lexical >= 0.9;
   const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && numericCompatible(item.entry) && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));
+  // A family signature is a stronger routing signal than incidental lexical
+  // overlap. Put the compatible published family candidate first so a
+  // paraphrase cannot be displaced by a thematically similar claim or topic.
+  const semanticFamilyCandidate = suppressPublishedContext
+    ? undefined
+    : ranked.find((item) => item.semanticFamilyMatch && item.entry.kind === 'claim' && numericCompatible(item.entry));
+  const familyRanked = semanticFamilyCandidate
+    ? [semanticFamilyCandidate, ...publicRanked.filter((item) => item.entry.slug !== semanticFamilyCandidate.entry.slug)]
+    : publicRanked;
   const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
     const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
@@ -952,8 +990,8 @@ const classify = async (text) => {
   const openQuestionIntent = /\b(?:como|cuanto|cuanta|cuantos|cuantas|cual|cuales|donde|cuando|por que)\b/.test(normalizedQuery);
   const directPhraseCandidate = exactPublishedCandidate || (suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry) || conversationalWrapper || !openQuestionIntent)));
   const decisionRanked = directPhraseCandidate
-    ? [directPhraseCandidate, ...publicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
-    : publicRanked;
+    ? [directPhraseCandidate, ...familyRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
+    : familyRanked;
   const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
@@ -990,7 +1028,7 @@ const classify = async (text) => {
   // published claim's exact wording or alias.
   const nearCanonicalPhrase = Boolean(top && numericCompatible(top.entry) && top.entry.kind === 'claim' && top.lexical >= 0.9 && top.score >= 0.7 && (compatibleHandlers || phraseTokenHasTypo(top.entry)));
   const strongMatch = Boolean(top && numericCompatible(top.entry) && top.score >= 0.5 && margin >= 0.08 && top.lexical >= 0.65 && lexicalMargin >= 0.2 && (compatibleHandlers || nearCanonicalPhrase) && (!explicitMetricRoute || canonicalPhrase));
-  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && compatibleHandlers && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
+  const semanticFamilyMatch = Boolean(top?.semanticFamilyMatch && numericCompatible(top.entry) && top.score >= 0.82 && (!explicitMetricRoute || canonicalPhrase));
   const broadEvaluative = deterministicCompiler.impliedPropositions.some((item) => item.type === 'definition');
   if (canonicalPhrase || (strongMatch && !broadEvaluative) || (semanticFamilyMatch && !broadEvaluative)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
