@@ -108,6 +108,12 @@ const semanticConcepts = (value) => {
     .map(([concept]) => concept);
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (concepts.includes('unemployment')) concepts = concepts.filter((concept) => concept !== 'employment');
+  if (concepts.includes('employment_record')) concepts = concepts.filter((concept) => concept !== 'employment');
+  // “Housing becoming more expensive” is a housing-price proposition, not a
+  // generic cost-of-living proposition. Keep one stable metric family so
+  // paraphrases can reuse the reviewed housing-price evidence.
+  if (concepts.includes('housing') && concepts.includes('cost_of_living') && !concepts.includes('prices')) concepts.push('prices');
+  if (concepts.includes('housing') && concepts.includes('prices')) concepts = concepts.filter((concept) => concept !== 'cost_of_living');
   if (containsPhrase(value, 'deuda publica') && containsPhrase(value, 'pib')) concepts.push('public_debt_ratio');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
@@ -224,7 +230,7 @@ const trendDirectionFor = (value) => {
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return 'improving';
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return 'worsening';
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no para de bajar|va en descenso|va a la baja)\b/.test(text)) return 'falling';
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se ha encarecido|se han encarecido|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return 'rising';
   return null;
 };
 

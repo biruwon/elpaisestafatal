@@ -933,7 +933,7 @@ const classify = async (text) => {
     // “benefits+budget”) is useful for retrieval but is not a proposition
     // family: it has no direction, comparison, trend, or other relation.
     // Keep it from authorizing a strong answer across unrelated claims.
-    if (/^(?:descriptive|trend):[^:]+$/.test(semanticPayload)) return false;
+    if (/^(?:descriptive|trend):[^:]+$/.test(semanticPayload) && !/_[a-z0-9_]+$/.test(semanticPayload)) return false;
     const semanticParts = semanticPayload.split(/[+_\-]/).filter((part) => part.length >= 3);
     return payload.includes('+') || semanticParts.length >= 2;
   };

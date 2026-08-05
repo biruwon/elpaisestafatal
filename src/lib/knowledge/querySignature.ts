@@ -93,6 +93,9 @@ const relationShape = (value: string): string => {
   let concepts = conceptAliases.filter(([, aliases]) => aliases.some((alias) => containsAlias(normalize(value), alias))).map(([concept]) => concept);
   if (concepts.includes('neet')) concepts = concepts.filter((concept) => !['demography', 'employment'].includes(concept));
   if (concepts.includes('unemployment')) concepts = concepts.filter((concept) => concept !== 'employment');
+  if (concepts.includes('employment_record')) concepts = concepts.filter((concept) => concept !== 'employment');
+  if (concepts.includes('housing') && concepts.includes('cost_of_living') && !concepts.includes('prices')) concepts.push('prices');
+  if (concepts.includes('housing') && concepts.includes('prices')) concepts = concepts.filter((concept) => concept !== 'cost_of_living');
   if (concepts.length) return [...new Set(concepts)].sort().join('+');
   const terms = normalize(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token) && !relationStopWords.has(token) && !['pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
   return terms.length ? terms.sort().join('+') : 'unknown';
@@ -158,7 +161,7 @@ const directionalRelation = (text: string): string | null => {
     return `causal:${predicate}:${relationShape(causal[1])}:${relationShape(causal[3])}`;
   }
   if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+menos|\b(?:baja|bajan|bajo|bajando|bajaron|ha bajado|han bajado|cae|caen|cayo|cayeron|disminuye|disminuyen|disminuyendo|ha disminuido|han disminuido|reduce|reducen|abarata|abaratan|sigue bajando|no deja de bajar|no dejan de bajar|no para de bajar|no paran de bajar|va en descenso|va a la baja)\b/.test(text)) return `trend:falling:${relationShape(text)}`;
-  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+mas|\b(?:sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
+  if (/(?:cada vez hay|cada vez existen|cada vez se ven|cada vez|cada vez llegan|cada vez llega)\s+mas|\b(?:llegan mas|llega mas|sube|suben|subio|subieron|ha subido|han subido|crece|crecen|aumenta|aumentan|ha aumentado|han aumentado|incrementa|incrementan|dispara|disparado|disparada|se ha disparado|se han disparado|encarece|encarecerse|encarecido|encarecida|encareciendo|encareciendose|cuesta mas|no alcanza|no llega para|sigue subiendo|no deja de subir|no dejan de subir|no para de subir|no paran de subir|no deja de crecer|no paran de crecer|va en aumento|va al alza)\b/.test(text)) return `trend:rising:${relationShape(text)}`;
   if (/\b(?:mejora|mejoran|va a mejor|van a mejor|va mejor|van mejor|esta mejorando|estan mejorando)\b/.test(text)) return `trend:improving:${relationShape(text)}`;
   if (/\b(?:empeora|empeoran|va a peor|van a peor|va peor|van peor|esta empeorando|estan empeorando)\b/.test(text)) return `trend:worsening:${relationShape(text)}`;
   return null;

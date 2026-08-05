@@ -13,6 +13,8 @@ const cases = [
   'Los hospitales están saturados',
   'Los inmigrantes reciben más ayudas que los españoles',
   'Los extranjeros reciben ayudas económicas desproporcionadas',
+  'Cada vez llegan más inmigrantes a España',
+  'La vivienda se ha encarecido muchísimo',
 ];
 const exploratoryCases = [
   'Los alquileres son cada vez más caros en España',

@@ -9,7 +9,12 @@ export const isSpecificSemanticSignature = (signature) => {
     || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:') && part.includes('+')) && parts.some((part) => part.startsWith('entity:')))
     || (parts.some((part) => part.startsWith('comparative:') && /:(more_than|less_than|ranking:(highest|lowest))/.test(part)) && parts.some((part) => part.startsWith('entity:')))
-    || propositionParts.some((part) => part.startsWith('trend:') && (part.includes('+') || hasDimension))
+    // Registry concepts such as employment_record and health_access are
+    // already structured metric families even when they contain one concept.
+    // The underscore is the compiler's bounded marker for those multi-word
+    // concepts; allow it without treating generic “trend:housing” as a
+    // proposition contract.
+    || propositionParts.some((part) => /^(?:trend|descriptive):/.test(part) && (part.includes('+') || hasDimension || /:[^:]*_[^:]*$/.test(part)))
     || propositionParts.some((part) => part.startsWith('comparative:') && hasDimension)
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.includes('definition:fixed_discontinuous')

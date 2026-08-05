@@ -145,11 +145,23 @@ export const normalizeCompilerOutput = (value, text) => {
   // retain every independently testable explicit clause it found and only
   // keep model-implied context around it. This does not add evidence or a
   // conclusion; it prevents information loss before retrieval and rendering.
+  const deterministicStructuralTypes = new Set(['trend', 'comparative', 'causal', 'legal', 'normative', 'predictive', 'definition']);
+  // The local model can enrich a proposition, but it must not change the
+  // structural contract already identified deterministically. In particular,
+  // “cada vez llegan más inmigrantes” is a trend; a model may mistake “más”
+  // for a group comparison and route it away from the reusable population
+  // trend family. Preserve the deterministic proposition whenever it carries
+  // a structural type and the model supplied only a competing single shape.
+  const modelConflictsWithDeterministicStructure = deterministic.explicitPropositions.length === 1
+    && modelExplicitPropositions.length === 1
+    && deterministicStructuralTypes.has(deterministic.claimType)
+    && modelExplicitPropositions[0]?.type !== deterministic.claimType;
   const explicitPropositions = deterministic.explicitPropositions.length > modelExplicitPropositions.length
+    || modelConflictsWithDeterministicStructure
     ? deterministic.explicitPropositions
     : modelExplicitPropositions;
   const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 6);
-  const claimType = deterministic.explicitPropositions.length > 1
+  const claimType = deterministicStructuralTypes.has(deterministic.claimType)
     ? deterministic.claimType
     : (compilerTypes.has(value.claimType) ? value.claimType : deterministic.claimType);
   const entities = safeRelatedList(value.entities, deterministic.entities, text, 12, 120);

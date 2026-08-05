@@ -67,6 +67,17 @@ const reconciledCausal = reconcileCompilerSafety(causal, normalizeCompilerOutput
 assert(reconciledCausal.claimType === 'causal' && reconciledCausal.semanticSignature === causal.semanticSignature, 'Local model was allowed to weaken deterministic causal safety');
 assert(reconciledCausal.propositions[0]?.text === causal.propositions[0]?.text, 'Local model replaced deterministic causal propositions');
 
+const immigrationTrend = deterministicFallbackCompiler('Cada vez llegan más inmigrantes a España');
+const normalizedImmigrationTrend = normalizeCompilerOutput({
+  claimType: 'comparative',
+  propositions: [{ text: 'Cada vez llegan más inmigrantes a España', type: 'comparative', explicit: true }],
+  entities: ['inmigración'],
+  retrievalHints: [],
+  clarificationRequired: false,
+}, 'Cada vez llegan más inmigrantes a España');
+assert(immigrationTrend.claimType === 'trend', 'Immigration growth wording was not classified as a trend');
+assert(normalizedImmigrationTrend.claimType === 'trend' && normalizedImmigrationTrend.semanticSignature === immigrationTrend.semanticSignature, 'Model comparative misclassification changed a reusable trend family');
+
 const compoundInput = 'Hay más empleo y el paro sigue alto';
 const deterministicCompound = deterministicFallbackCompiler(compoundInput);
 const normalizedCompound = normalizeCompilerOutput({
