@@ -1618,6 +1618,13 @@ const startUrlResolveJob = (url) => {
 };
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
+  // Keep broad-domain routing available while rendering the final answer.
+  // These flags are intentionally derived here as well as in classify(): the
+  // renderer must not depend on variables local to the classifier.
+  const broadTopicText = normalise(text);
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadTopicText);
+  const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
+    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
   const explicitMetricRoute = preferredMetricIdsForQuery(text).size > 0;
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
