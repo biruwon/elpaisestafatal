@@ -1,0 +1,13 @@
+{
+  "id": "prop-escuelas-30-a-80-alumnos-core",
+  "claimSlug": "escuelas-30-a-80-alumnos-sin-nuevos-centros",
+  "text": "Donde antes había 30 alumnos ahora hay 80 y no se construyen escuelas nuevas.",
+  "type": "mixed",
+  "subject": "school_class_size_and_capacity",
+  "predicate": "has_doubled_without_new_schools",
+  "object": null,
+  "geography": "España",
+  "period": "actual",
+  "status": "insufficient",
+  "evidenceIds": ["indicadores-educacion-espana-2024"]
+}
