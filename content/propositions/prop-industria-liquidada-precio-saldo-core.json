@@ -1,0 +1,13 @@
+{
+  "id": "prop-industria-liquidada-precio-saldo-core",
+  "claimSlug": "industria-espanola-liquidada-precio-saldo",
+  "text": "Se ha liquidado la industria española a precio de saldo.",
+  "type": "mixed",
+  "subject": "spanish_industry",
+  "predicate": "has_been_liquidated",
+  "object": "at_bargain_price",
+  "geography": "España",
+  "period": "2025",
+  "status": "insufficient",
+  "evidenceIds": ["exportaciones-espanolas-sectores-2025"]
+}

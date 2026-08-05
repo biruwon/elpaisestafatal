@@ -322,6 +322,7 @@
     {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-espana-depende-todo-exterior-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"indicadores-educacion-espana-2024","propositionId":"prop-profesores-alumnos-no-aprenden-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"obras-infraestructuras-transportes-2025","propositionId":"prop-espana-no-construye-infraestructuras-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"obras-infraestructuras-transportes-2025","propositionId":"prop-infraestructuras-decadencia-sin-mantenimiento-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"obras-infraestructuras-transportes-2025","propositionId":"prop-infraestructuras-decadencia-sin-mantenimiento-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-industria-liquidada-precio-saldo-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
