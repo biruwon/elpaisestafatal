@@ -376,7 +376,13 @@ const hasIndependentPredicate = (value) => {
     ' cobra ', ' cobran ', ' representa ', ' representan ', ' demuestra ',
     ' sigue ', ' siguen ', ' mantiene ', ' mantienen ', ' falta ', ' faltan ',
     ' tarda ', ' tardan ', ' gasta ', ' gastan ', ' dedica ', ' dedican ',
-  ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra|tarda|tardan|gasta|gastan|dedica|dedican)\b/.test(text);
+    ' encarece ', ' encarecen ', ' sube ', ' suben ', ' pierde ', ' pierden ',
+    ' empeora ', ' empeoran ', ' construye ', ' construyen ', ' anuncia ', ' anuncian ',
+    ' recibe ', ' reciben ', ' gana ', ' ganan ', ' corrige ', ' corrigen ',
+    ' queda ', ' quedan ', ' encuentra ', ' encuentran ', ' paga ', ' pagan ',
+    ' cuesta ',
+  ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra|tarda|tardan|gasta|gastan|dedica|dedican)\b/.test(text)
+    || /\b(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|suben|baja|bajan|crece|crecen|aumenta|aumentan|disminuye|disminuyen|reduce|reducen|recorta|recortan|quita|quitan|transfiere|transfieren|llega|llegan|cobra|cobran|representa|representan|demuestra|demuestran|sigue|siguen|mantiene|mantienen|falta|faltan|tarda|tardan|gasta|gastan|dedica|dedican|encarece|encarecen|pierde|pierden|empeora|empeoran|construye|construyen|anuncia|anuncian|gana|ganan|corrige|corrigen|queda|quedan|encuentra|encuentran|paga|pagan|cuesta)\b/.test(text);
 };
 
 const splitExplicitClauses = (value) => {
@@ -398,7 +404,7 @@ const splitExplicitClauses = (value) => {
   // when both sides look like clauses. This prevents ordinary noun lists
   // from becoming noisy claim breakdowns.
   if (clauses.length === 1) {
-    const match = clauses[0].match(/^(.*?)\s+y\s+(.*)$/i);
+    const match = clauses[0].match(/^(.*?)\s+(?:y|ni)\s+(.*)$/i);
     if (match && match[1].length >= 8 && match[2].length >= 8 && hasIndependentPredicate(match[1]) && hasIndependentPredicate(match[2])) {
       clauses = [cleanClause(match[1]), cleanClause(match[2])].filter((clause) => clause.length >= 8);
     }

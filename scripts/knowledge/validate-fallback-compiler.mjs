@@ -71,6 +71,16 @@ assert(whileCompound.explicitPropositions.length === 2, '“Mientras” compound
 assert(whileCompound.claimType === 'trend', '“Mientras” compound claim did not retain trend structure');
 const spendingCompound = deterministicFallbackCompiler('La sanidad tarda más en atendernos y gasta menos por habitante');
 assert(spendingCompound.explicitPropositions.length === 2, 'Compound claims with “tarda” and “gasta” were not decomposed');
+for (const wording of [
+  'La vivienda se encarece y los sueldos no suben',
+  'La economía crece y la gente pierde poder adquisitivo',
+  'La deuda crece y el déficit no se corrige',
+  'Los inmigrantes cobran ayudas y los españoles se quedan fuera',
+]) {
+  assert(deterministicFallbackCompiler(wording).explicitPropositions.length === 2, `Coordinated claims were not decomposed: ${wording}`);
+}
+assert(deterministicFallbackCompiler('Cada vez cuesta más alquilar y comprar una casa').explicitPropositions.length === 1, 'A noun list was incorrectly split after adding coordinated predicates');
+assert(deterministicFallbackCompiler('Los jóvenes no encuentran trabajo ni casa').explicitPropositions.length === 1, 'A coordinated object list was incorrectly split');
 
 const nounList = deterministicFallbackCompiler('Empleo, vivienda y sanidad');
 assert(nounList.explicitPropositions.length === 1, 'A noun list was incorrectly split into multiple claims');
