@@ -1051,18 +1051,29 @@ const classify = async (text) => {
     taxes: 'impuestos',
     public_finance: 'economia',
   };
-  const semanticDomainCandidates = Object.keys(domainTopicSlugs).filter((domain) => String(querySemanticSignature).includes(domain));
+  // The local model may return a deliberately broad or mixed compiler type for
+  // short wording. Keep the deterministic compiler as a routing backstop so a
+  // phrase such as “La vivienda está cara” still reaches the reusable housing
+  // topic instead of falling into the generic political explanation.
+  const routingSemanticSignature = `${querySemanticSignature}|${deterministicFallbackCompiler(text).semanticSignature}`;
+  const semanticDomainCandidates = Object.keys(domainTopicSlugs).filter((domain) => routingSemanticSignature.includes(domain));
+  const semanticTopicCandidates = [...new Set(semanticDomainCandidates.map((domain) => domainTopicSlugs[domain]))];
   // A single-domain broad statement (“invasión migratoria”, “España es
   // insegura”, “el alquiler está imposible”) is not a new claim family, but
   // it should still reach the reusable domain guidance. Derive the topic from
   // the compiler's normalized entity vocabulary instead of enumerating each
   // wording as another complaint special case.
-  const domainTopicFallback = !broadTopic && !semanticFamilyCandidate && ['descriptive', 'trend', 'comparative'].includes(deterministicCompiler.claimType)
-    && semanticDomainCandidates.length === 1
+  const domainTopicFallback = !broadTopic && !semanticFamilyCandidate
+    && semanticTopicCandidates.length === 1
     ? (() => {
-      const domain = semanticDomainCandidates[0];
-      const slug = domainTopicSlugs[domain];
-      const entry = slug ? index.entries.find((item) => item.kind === 'topic' && item.slug === slug) : undefined;
+      const slug = semanticTopicCandidates[0];
+      const entry = slug ? (index.entries.find((item) => item.kind === 'topic' && item.slug === slug) || {
+        kind: 'topic',
+        slug,
+        title: slug,
+        href: `/temas/${slug}`,
+        published: true,
+      }) : undefined;
       return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
     })()
     : undefined;
