@@ -1,4 +1,4 @@
-const counterKeys = ['received', 'completed', 'unavailable'];
+const counterKeys = ['received', 'completed', 'unavailable', 'compilerCacheHits', 'compilerCacheMisses', 'compilerInflightJoins'];
 const statusKeys = new Set(['processing', 'complete', 'published', 'related', 'partial', 'draft', 'uncovered', 'unavailable']);
 
 const boundedCounter = (value) => {
