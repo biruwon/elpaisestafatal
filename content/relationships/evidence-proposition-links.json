@@ -313,6 +313,7 @@
     {"evidenceId":"reagrupacion-familiar-requisitos","propositionId":"prop-reagrupacion-familiar-cuatro-millones-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"acceso-universal-sns-2026","propositionId":"prop-sanidad-universal-insostenible-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"medios-aereos-incendios-2025","propositionId":"prop-espana-14-hidroaviones-siete-funcionan-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"politica-inmigracion-regulada","propositionId":"prop-inmigracion-puertas-abiertas-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"politica-inmigracion-regulada","propositionId":"prop-inmigracion-puertas-abiertas-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"estadistica-incendios-forestales-miteco","propositionId":"prop-incendios-cada-vez-peores-record-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }

@@ -1,0 +1,13 @@
+{
+  "id": "prop-incendios-cada-vez-peores-record-core",
+  "claimSlug": "incendios-cada-vez-peores-records",
+  "text": "España sufre incendios cada vez peores y récords históricos de superficie devastada.",
+  "type": "trend",
+  "subject": "forest_fires_spain",
+  "predicate": "has_record_worsening_trend",
+  "object": "burned_area",
+  "geography": "España",
+  "period": "serie histórica",
+  "status": "insufficient",
+  "evidenceIds": ["estadistica-incendios-forestales-miteco"]
+}
