@@ -85,6 +85,16 @@ let warehousePromise;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
+
+// Metric routing is proposition-aware. A compound sentence must preserve the
+// union of registry families found in each explicit clause; checking only the
+// original sentence can hide one metric behind another clause.
+const metricIdsForInput = (text, compiler = {}) => new Set([
+  ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
+  ...preferredMetricIdsForQuery(text),
+  ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
+    .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
+]);
 const boundedExcerpt = (value, limit = 900) => {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
@@ -1712,7 +1722,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
-  const explicitMetricRoute = preferredMetricIdsForQuery(text).size > 0;
+  const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0;
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
   const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
@@ -1804,7 +1814,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   } : null;
   const quantityClaim = isQuantityLike ? claimedNumericValue(text, classified.compiler) : null;
   const quantity = isQuantityLike ? quantityAssessment(text, classified.compiler, observations) : null;
-  const definitionData = isDefinition && observations.length && preferredMetricIdsForQuery(text).size > 0;
+  const definitionData = isDefinition && observations.length && explicitMetricRoute;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
   const compoundClaim = (classified.compiler?.explicitPropositions || []).length > 1;
@@ -1883,7 +1893,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: 'Esta afirmación necesita datos locales, no una media nacional',
     summary: 'El cambio en un barrio puede ser real, pero para comprobarlo hacen falta el municipio, el periodo y una medida concreta.',
   } : null;
-  const recordedOffenceContext = (preferredMetricIdsForQuery(text).has('recorded_offences') || includesAny(normalise(text), ['delincuencia', 'delitos registrados', 'criminalidad'])) && !recordedOffenceCategoryForQuery(text) ? {
+  const recordedOffenceContext = (metricIdsForInput(text, classified.compiler || {}).has('recorded_offences') || includesAny(normalise(text), ['delincuencia', 'delitos registrados', 'criminalidad'])) && !recordedOffenceCategoryForQuery(text) ? {
     headline: 'La criminalidad registrada debe concretarse por categoría',
     summary: 'La fuente disponible separa homicidios, robos, fraudes y otras categorías. No hemos localizado un total nacional único que permita responder a “la criminalidad” en general sin mezclar medidas distintas.',
   } : null;
@@ -2201,11 +2211,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
-  const compilerMetricIds = Array.isArray(classified.compiler?.metricIds) ? classified.compiler.metricIds : [];
-  const hintedMetricIds = new Set([
-    ...compilerMetricIds,
-    ...(compilerMetricIds.length ? [] : preferredMetricIdsForQuery(text)),
-  ]);
+  const hintedMetricIds = metricIdsForInput(text, classified.compiler || {});
   const explicitMetricRoute = hintedMetricIds.size > 0;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
@@ -2224,7 +2230,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // retrieval boundary. The local model may return useful semantic hints,
   // but it must not replace a direct registry match with a neighbouring
   // metric inferred from its paraphrase.
-  const authoritativeMetricIds = preferredMetricIdsForQuery(text);
+  const authoritativeMetricIds = metricIdsForInput(text, retrievalClassified.compiler || {});
   if (authoritativeMetricIds.size) {
     retrievalClassified.compiler = { ...retrievalClassified.compiler, metricIds: [...authoritativeMetricIds] };
   }
