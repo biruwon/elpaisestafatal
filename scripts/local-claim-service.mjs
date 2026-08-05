@@ -865,6 +865,7 @@ const isSpecificSemanticSignature = (signature) => {
     // was already published.
     || (parts.some((part) => part.startsWith('causal:')) && parts.filter((part) => part.startsWith('entity:')).length >= 2)
     || (parts.some((part) => part.startsWith('descriptive:')) && parts.filter((part) => part.startsWith('term:')).length >= 2)
+    || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.filter((part) => part.startsWith('concept:')).length >= 2
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
 };
@@ -879,7 +880,28 @@ const semanticFamilyKeys = (signature) => {
   const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
   const relation = parts.find((part) => /^(causal|relation):/.test(part)) || '';
   if (!type || (!entities && !relation)) return [];
-  return [`${type}|${polarity}|${entities}|${relation.split(':')[0]}`];
+  const keys = [`${type}|${polarity}|${entities}|${relation.split(':')[0]}`];
+  // Structured proposition families can safely drop incidental geography,
+  // period, and wording while retaining their semantic concept and direction.
+  // This covers repeated formulations of trends, definitions, comparisons,
+  // and descriptive evidence families without collapsing opposite claims.
+  for (const part of parts.filter((item) => /^(descriptive|trend|comparative|definition):/.test(item))) {
+    const [kind, ...rest] = part.split(':');
+    const value = rest.join(':');
+    if (kind === 'trend') {
+      const direction = value.match(/trend:(rising|falling|stable)$/)?.[1];
+      if (direction) keys.push(`${type}|${polarity}|${entities}|trend:${direction}`);
+    } else if (kind === 'definition') {
+      keys.push(`${type}|${polarity}|${entities}|definition:${value}`);
+    } else if (kind === 'comparative') {
+      const direction = value.match(/ranking:(highest|lowest|more|less)|:(more_than|less_than):/)?.[1] || value.match(/:(more_than|less_than):/)?.[1];
+      const concept = value.split(':')[0];
+      if (concept && direction) keys.push(`${type}|${polarity}|${entities}|${kind}:${concept}:${direction}`);
+    } else if (kind === 'descriptive' && value.length >= 5) {
+      keys.push(`${type}|${polarity}|${entities}|descriptive:${value.split(':')[0]}`);
+    }
+  }
+  return [...new Set(keys)];
 };
 
 const classify = async (text) => {
