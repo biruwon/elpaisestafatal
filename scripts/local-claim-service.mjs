@@ -1040,6 +1040,34 @@ const classify = async (text) => {
   const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   const normalizedRoutingInput = normalise(routingCompiler.normalized);
+  const routingEntityConcepts = new Set(String(routingCompiler.semanticSignature || '').split('|').filter((part) => part.startsWith('entity:')));
+  const routingConcepts = new Set([
+    ...routingEntityConcepts,
+    ...String(routingCompiler.semanticSignature || '').split('|')
+      .filter((part) => /^(?:descriptive|trend|comparative|causal|relation|definition|legal|normative|predictive):/.test(part))
+      .flatMap((part) => part.split(/[:+]/).filter((value) => value && !['descriptive', 'trend', 'comparative', 'causal', 'relation', 'definition', 'legal', 'normative', 'predictive', 'rising', 'falling', 'improving', 'worsening'].includes(value)))
+      .map((value) => `entity:${value}`),
+  ]);
+  const familyEntityCompatible = (entry, candidateKeys = null) => {
+    if (entry.kind !== 'claim') return true;
+    const allKeys = entry.semanticFamilyKeys || [];
+    const relevantKeys = candidateKeys
+      ? allKeys.filter((key) => candidateKeys.has(key))
+      : allKeys;
+    const allEntityKeys = allKeys.filter((key) => String(key).split('|').some((part) => part.startsWith('entity:')));
+    // The family index may expose a dimension-free equivalent of a key while
+    // retaining the entity on another variant. If the query's proposition
+    // itself contains that entity concept (healthcare, immigration, etc.),
+    // the omitted entity is still satisfied safely.
+    if (allEntityKeys.some((key) => String(key).split('|').filter((part) => part.startsWith('entity:')).every((entity) => routingConcepts.has(entity)))) return true;
+    const entityKeys = relevantKeys.filter((key) => String(key).split('|').some((part) => part.startsWith('entity:')));
+    if (entityKeys.some((key) => String(key).split('|').filter((part) => part.startsWith('entity:')).every((entity) => routingConcepts.has(entity)))) return true;
+    // A dimension-free key belonging to an entity-specific family is not
+    // enough on its own: it would let “pensions” inherit an immigration
+    // answer merely because both records mention the pension system.
+    if (allKeys.some((key) => String(key).split('|').some((part) => part.startsWith('entity:')))) return false;
+    return true;
+  };
   // An explicit metric request should go to the metric/evidence path before
   // a nearby published claim. Otherwise a new phrasing such as “cuesta más
   // encontrar trabajo que en Europa” can be swallowed by an employment
@@ -1062,7 +1090,7 @@ const classify = async (text) => {
   // representative only when lexical wording clearly favours one owner;
   // genuine ties remain related guidance.
   const dominantFamilyEntry = (keys, entries = index.entries) => {
-    const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published
+    const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published && familyEntityCompatible(entry, keys)
       && (entry.semanticFamilyKeys || []).some((key) => keys.has(key)));
     if (owners.length <= 1) return owners[0];
     const rankedOwners = owners.map((entry) => ({ entry, lexical: lexicalScore(text, entry) }))
@@ -1078,6 +1106,7 @@ const classify = async (text) => {
     ? (dominantFamilyEntry(routingFamilyKeys)
       || (routingHasStructuredFamily
         ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
+          && familyEntityCompatible(entry, routingFamilyKeys)
           && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)))
         : undefined))
     : undefined;
@@ -1211,11 +1240,18 @@ const classify = async (text) => {
     const entryHasYouthQualifier = /\b(?:joven|jovenes|juvenil|juveniles|menor|menores)\b/.test(normalise(searchText(entry)));
     return queryHasYouthQualifier === entryHasYouthQualifier;
   };
+  const entityQualifierCompatible = (entry) => {
+    // Keep the same entity contract for early and late family selection. A
+    // published family that explicitly requires an entity (for example
+    // immigration + pensions) must not answer a query that only mentions
+    // pensions.
+    return familyEntityCompatible(entry, queryGuidanceFamilyKeys);
+  };
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
-    semanticFamilyRelated: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
+    semanticFamilyRelated: entry.kind === 'claim' && populationQualifierCompatible(entry) && entityQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
       (hasDistinctiveQueryFamily && entry.semanticSignatures?.includes(querySemanticSignature))
       || (queryGuidanceFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryGuidanceFamilyKeys.has(key)))
     ),
@@ -1227,7 +1263,7 @@ const classify = async (text) => {
       const candidateEntities = new Set((entry.semanticSignatures || []).flatMap((signature) => String(signature).split('|').filter((part) => part.startsWith('entity:'))));
       return [...queryEntityConcepts].every((concept) => candidateEntities.has(concept));
     })(),
-    semanticFamilyMatch: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
+    semanticFamilyMatch: entry.kind === 'claim' && populationQualifierCompatible(entry) && entityQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
       (hasDistinctiveQueryFamily && entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureDominates(querySemanticSignature, entry))
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryFamilyKeys.has(key) && familyKeyDominates(key, entry)))
     ),
@@ -1535,12 +1571,15 @@ const classify = async (text) => {
   // published claim owns the strongest family key. A broad concept shared by
   // several claims remains related guidance instead of becoming a verdict.
   const compiledFamilyKeys = new Set(semanticFamilyKeys(compiled?.semanticSignature || ''));
-  const compiledFamilyEntry = compiledFamilyKeys.size && isSpecificSemanticSignature(compiled?.semanticSignature || '')
+  const compiledFamilyEntryCandidate = compiledFamilyKeys.size && isSpecificSemanticSignature(compiled?.semanticSignature || '')
     ? (dominantFamilyEntry(compiledFamilyKeys)
       || (structuredFamily(compiledFamilyKeys)
         ? ranked.find((item) => item.entry.kind === 'claim' && item.entry.published && (item.semanticFamilyMatch || item.semanticFamilyRelated)
           && (item.entry.semanticFamilyKeys || []).some((key) => compiledFamilyKeys.has(key)))?.entry
         : undefined))
+    : undefined;
+  const compiledFamilyEntry = compiledFamilyEntryCandidate && entityQualifierCompatible(compiledFamilyEntryCandidate)
+    ? compiledFamilyEntryCandidate
     : undefined;
   const selectedCandidate = routing.primarySlug
     ? ranked.find(({ entry }) => entry.slug === routing.primarySlug && entry.published && numericCompatible(entry) && compatibleEntry(entry))
