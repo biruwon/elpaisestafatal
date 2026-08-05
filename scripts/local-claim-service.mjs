@@ -973,7 +973,14 @@ const classify = async (text) => {
   const decisionRanked = directPhraseCandidate
     ? [directPhraseCandidate, ...familyRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
     : familyRanked;
-  const usefulAlternatives = (items) => items.filter(({ score, lexical }) => score >= 0.32 && lexical >= 0.24).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
+  const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch }) => {
+    if (score < 0.32) return false;
+    if (entry.kind === 'topic') return lexical >= 0.24;
+    // Shared entities such as “immigration” are not enough to make an
+    // unrelated published claim useful. Require the same semantic family or
+    // an unmistakably direct phrase match before showing a claim as guidance.
+    return semanticFamilyMatch;
+  }).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
   // fallback guidance, but it must not force an exact claim paraphrase through

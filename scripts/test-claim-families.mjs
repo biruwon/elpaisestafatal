@@ -58,3 +58,19 @@ for (const text of exploratoryCases) {
 }
 
 console.log(`Exploratory family validation passed: ${exploratoryCases.length} additional variants retained useful guidance.`);
+
+const unrelatedProbe = 'La inmigración destruye la productividad de las pymes';
+const unrelatedResponse = await fetch(`${endpoint}/v1/classify`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ text: unrelatedProbe, inputType: 'text' }),
+});
+let unrelatedPayload = await unrelatedResponse.json();
+for (let attempt = 0; unrelatedPayload.status === 'processing' && attempt < 160; attempt += 1) {
+  await sleep(250);
+  unrelatedPayload = await (await fetch(`${endpoint}/v1/classify/${unrelatedPayload.requestId}`)).json();
+}
+if (unrelatedPayload.relatedClaims?.some((item) => item.slug === 'inmigracion-delincuencia')) {
+  throw new Error('An immigration/productivity claim received unrelated immigration/crime guidance');
+}
+console.log('Unrelated-family guard validation passed.');
