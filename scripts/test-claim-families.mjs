@@ -7,6 +7,7 @@ const cases = [
   'Los contratos fijos discontinuos son parados ocultos',
   'La sanidad pública está colapsada',
   'La vivienda no para de encarecerse',
+  'Los alquileres son cada vez más caros en España',
   'Nunca hubo tanta gente trabajando en España',
   'España nos fríe a impuestos comparada con Europa',
   'Los hospitales están saturados',
