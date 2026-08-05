@@ -451,12 +451,19 @@ export const evidenceNeedsFor = (value, claimType, propositions = []) => {
 
 export const deterministicFallbackCompiler = (text) => {
   const original = String(text || '').trim().slice(0, 300);
-  const normalized = normalise(original);
-  const explicitTexts = splitExplicitClauses(original);
+  // Conversation wrappers are presentation, not claim semantics. Strip a
+  // bounded set before extracting entities, propositions, and family keys so
+  // “¿Es verdad que X?” reuses exactly the same evidence as “X”.
+  const routingText = original
+    .replace(/^[¿?\s]*(?:es verdad que|de verdad que|segun los datos|en el grupo dicen que|mi cunado insiste en que|no me creo que|que hay de cierto en que)\s+/i, '')
+    .replace(/[?¿!¡]+$/g, '')
+    .trim();
+  const normalized = normalise(routingText);
+  const explicitTexts = splitExplicitClauses(routingText);
   const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true, ...propositionShapeFor(clause) }));
   const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
   const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\b/.test(normalized);
-  const claimType = causalConnector ? 'causal' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original)));
+  const claimType = causalConnector ? 'causal' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(routingText)));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
   const geography = normalized.includes('espana') || normalized.includes('espanol') || normalized.includes('espanola') || normalized.includes('nacional')
     ? 'España'
@@ -465,25 +472,25 @@ export const deterministicFallbackCompiler = (text) => {
   const years = [...normalized.matchAll(/\b(19\d{2}|20\d{2})\b/g)].map((match) => match[1]);
   const period = periodFor(normalized, years);
   const numbers = [...new Set([
-    ...[...original.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)),
-    ...textualNumberMatches(original),
+    ...[...routingText.matchAll(/\b\d[\d.,%]*\b/g)].map((match) => match[0]).filter((value) => !/^(19|20)\d{2}$/.test(value)),
+    ...textualNumberMatches(routingText),
   ])].slice(0, 12);
-  const retrievalHints = [...new Set([...tokens(original).slice(0, 10), ...entities, ...(geography ? [geography] : [])])].slice(0, 12);
+  const retrievalHints = [...new Set([...tokens(routingText).slice(0, 10), ...entities, ...(geography ? [geography] : [])])].slice(0, 12);
   const impliedPropositions = [...new Map(
     explicitTypes
-      .flatMap((type) => impliedFor(type, original))
+    .flatMap((type) => impliedFor(type, routingText))
       .map((item) => [item.text, item]),
   ).values()];
   const propositions = [
     ...explicitPropositions,
     ...impliedPropositions,
   ];
-  const evidenceNeeds = evidenceNeedsFor(original, claimType, propositions);
+  const evidenceNeeds = evidenceNeedsFor(routingText, claimType, propositions);
   const signaturePropositions = causalConnector
-    ? [...propositions, { text: original, type: 'causal', explicit: true }]
+    ? [...propositions, { text: routingText, type: 'causal', explicit: true }]
     : propositions;
   return {
-    normalized: original || 'Afirmación vacía',
+    normalized: routingText || 'Afirmación vacía',
     claimType,
     propositions,
     entities,
@@ -495,7 +502,7 @@ export const deterministicFallbackCompiler = (text) => {
     impliedPropositions,
     retrievalHints,
     evidenceNeeds,
-    semanticSignature: semanticSignatureFor({ claimType, propositions: signaturePropositions, entities, geography, period, population, numbers, negated: hasNegation(original) }),
-    clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !original,
+    semanticSignature: semanticSignatureFor({ claimType, propositions: signaturePropositions, entities, geography, period, population, numbers, negated: hasNegation(routingText) }),
+    clarificationRequired: claimType === 'normative' || claimType === 'causal' || impliedPropositions.length > 0 || !routingText,
   };
 };
