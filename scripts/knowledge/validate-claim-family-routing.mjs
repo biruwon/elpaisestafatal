@@ -20,6 +20,8 @@ const descriptiveTerms = 'descriptive|polarity:positive|term:compra|term:votos';
 if (!semanticFamilyKeys(descriptiveTerms).length) throw new Error('Descriptive term family key missing');
 const structuredTrend = 'trend|polarity:negative|trend:employment_record';
 if (!isSpecificSemanticSignature(structuredTrend) || !semanticFamilyKeys(structuredTrend).length) throw new Error('Structured single-concept trend family was rejected');
+const futureStructuredTrend = 'trend|polarity:positive|trend:regional_health_index:trend:rising';
+if (!isSpecificSemanticSignature(futureStructuredTrend) || !semanticFamilyKeys(futureStructuredTrend).some((key) => isReusableSemanticFamilyKey(key))) throw new Error('New structured trend concepts still require a code allowlist');
 if (isReusableSemanticFamilyKey('metric-family|polarity:positive|crime')) throw new Error('Generic topic metric was treated as a reusable evidence family');
 if (!isReusableSemanticFamilyKey('metric-family|polarity:positive|housing+prices')) throw new Error('Compound metric family was not treated as reusable');
 if (!isReusableSemanticFamilyKey('descriptive|polarity:positive||descriptive:public_debt_stock')) throw new Error('Dimension-free structured family was not treated as reusable');

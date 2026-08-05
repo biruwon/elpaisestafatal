@@ -14,7 +14,7 @@ export const isSpecificSemanticSignature = (signature) => {
     // The underscore is the compiler's bounded marker for those multi-word
     // concepts; allow it without treating generic “trend:housing” as a
     // proposition contract.
-    || propositionParts.some((part) => /^(?:trend|descriptive):/.test(part) && (part.includes('+') || hasDimension || /:[^:]*_[^:]*$/.test(part)))
+    || propositionParts.some((part) => /^(?:trend|descriptive):/.test(part) && (part.includes('+') || hasDimension || /:[^:]*_[^:]*(?::trend:[^:]+)?$/.test(part)))
     || propositionParts.some((part) => part.startsWith('comparative:') && hasDimension)
     || (parts.some((part) => part.startsWith('definition:')) && parts.some((part) => part.startsWith('entity:')))
     || parts.includes('definition:fixed_discontinuous')
@@ -70,7 +70,7 @@ export const semanticFamilyKeys = (signature) => {
     const match = part.match(/^comparative:([^:]+)/);
     if (match) keys.push(`${type}|${polarity}|${entities}|comparative:${match[1]}`);
     const trendMatch = part.match(/^trend:([^:]+):trend:(rising|falling|improving|worsening)$/);
-    if (trendMatch && ['health_access+healthcare', 'housing+prices', 'employment_record'].includes(trendMatch[1])) {
+    if (trendMatch && (trendMatch[1].includes('+') || trendMatch[1].includes('_'))) {
       keys.push(`metric-family|${polarity}|${trendMatch[1]}`);
     }
   }
