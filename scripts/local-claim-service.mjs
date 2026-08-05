@@ -894,6 +894,7 @@ const classify = async (text) => {
     for (const key of candidate.semanticFamilyKeys || []) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
     for (const signature of candidate.semanticSignatures || []) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
+  const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
@@ -902,6 +903,14 @@ const classify = async (text) => {
       entry.semanticSignatures?.includes(querySemanticSignature)
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key)))
     ),
+    // A claim can use a different proposition form (trend, description, or
+    // causal wording) while still addressing the same two-domain question.
+    // Keep this as related guidance only; it never upgrades a result to a
+    // strong published answer.
+    semanticConceptRelated: entry.kind === 'claim' && queryEntityConcepts.size >= 2 && (() => {
+      const candidateEntities = new Set((entry.semanticSignatures || []).flatMap((signature) => String(signature).split('|').filter((part) => part.startsWith('entity:'))));
+      return [...queryEntityConcepts].every((concept) => candidateEntities.has(concept));
+    })(),
     semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
       (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureCounts.get(querySemanticSignature) === 1)
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyCounts.get(key) === 1))
@@ -912,7 +921,7 @@ const classify = async (text) => {
     // dominant whenever the user supplied a meaningful direct match.
     const lexicalWeight = item.lexical >= 0.55 ? 0.75 : 0.55;
     const score = vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical;
-    return { ...item, score: item.semanticFamilyMatch ? Math.max(score, 0.82) : score };
+    return { ...item, score: item.semanticFamilyMatch ? Math.max(score, 0.82) : (item.semanticConceptRelated ? Math.max(score, 0.36) : score) };
   }).sort((a, b) => b.score - a.score);
   // Derive compatibility from each canonical claim wording as well as its
   // metadata. Keywords often describe a broad topic and can incorrectly make
@@ -977,6 +986,8 @@ const classify = async (text) => {
   const topicRanked = broadPoliticalComplaint && rankedPoliticalTopic
     ? [rankedPoliticalTopic, ...familyRanked.filter(({ entry }) => entry.slug !== 'politica')]
     : familyRanked;
+  const conceptRelatedRanked = ranked.filter((item) => item.semanticConceptRelated && item.entry.kind === 'claim');
+  const guidanceRanked = [...topicRanked, ...conceptRelatedRanked.filter(({ entry }) => !topicRanked.some((item) => item.entry.slug === entry.slug))];
   const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
     const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
@@ -995,15 +1006,15 @@ const classify = async (text) => {
   const openQuestionIntent = /\b(?:como|cuanto|cuanta|cuantos|cuantas|cual|cuales|donde|cuando|por que)\b/.test(normalizedQuery);
   const directPhraseCandidate = exactPublishedCandidate || (suppressPublishedContext ? undefined : ranked.find((item) => item.entry.published && phraseTokenExact(item.entry) && (compatibleEntry(item.entry) || phraseTokenHasTypo(item.entry) || conversationalWrapper || !openQuestionIntent)));
   const decisionRanked = directPhraseCandidate
-    ? [directPhraseCandidate, ...topicRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
-    : topicRanked;
-  const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch, semanticFamilyRelated }) => {
+    ? [directPhraseCandidate, ...guidanceRanked.filter((item) => item.entry.slug !== directPhraseCandidate.entry.slug)]
+    : guidanceRanked;
+  const usefulAlternatives = (items) => items.filter(({ entry, score, lexical, semanticFamilyMatch, semanticFamilyRelated, semanticConceptRelated }) => {
     if (score < 0.32) return false;
     if (entry.kind === 'topic') return lexical >= 0.24 || (broadPoliticalComplaint && entry.slug === 'politica');
     // Shared entities such as “immigration” are not enough to make an
     // unrelated published claim useful. Require the same semantic family or
     // an unmistakably direct phrase match before showing a claim as guidance.
-    return semanticFamilyMatch || semanticFamilyRelated;
+    return semanticFamilyMatch || semanticFamilyRelated || semanticConceptRelated;
   }).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
