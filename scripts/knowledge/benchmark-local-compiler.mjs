@@ -94,8 +94,13 @@ if (!models.length) throw new Error(`None of the requested local models is avail
 
 const reports = [];
 for (const model of models) {
+  console.log(`Benchmarking local model ${model} (${cases.length} cases; timeout ${timeoutMs}ms each)...`);
   const results = [];
-  for (const testCase of cases) results.push(await runCase(model, testCase));
+  for (const [index, testCase] of cases.entries()) {
+    const result = await runCase(model, testCase);
+    results.push(result);
+    console.log(`  [${index + 1}/${cases.length}] ${testCase.id}: quality=${result.quality} latency=${result.latencyMs}ms${result.error ? ` error=${result.error}` : ''}`);
+  }
   const quality = average(results.map((result) => result.quality));
   const validRate = average(results.map((result) => Number(result.validJson)));
   const safetyRate = average(results.map((result) => Number(result.safetyPreserved)));
