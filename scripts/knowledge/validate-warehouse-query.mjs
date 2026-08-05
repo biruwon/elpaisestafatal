@@ -80,6 +80,7 @@ if (!preferredMetricIdsForQuery('Cuántos habitantes viven normalmente en Españ
 if (!preferredMetricIdsForQuery('Cuántos residentes nacieron fuera de España').has('foreign_born_population')) throw new Error('Metric hints did not prefer foreign-born population');
 if (!preferredMetricIdsForQuery('Población inmigrante según su país de nacimiento').has('foreign_born_population')) throw new Error('Metric hints did not prefer foreign-born population for origin wording');
 if (!preferredMetricIdsForQuery('Cuántas personas inmigraron a España durante el último año').has('immigration_flows')) throw new Error('Metric hints did not prefer immigration flows');
+if (!preferredMetricIdsForQuery('Cada vez llegan más inmigrantes a España').has('immigration_flows')) throw new Error('Metric hints did not prefer immigration flows for conversational trend wording');
 if (!preferredMetricIdsForQuery('Cuántos residentes tienen ciudadanía extranjera en España').has('foreign_citizenship_population')) throw new Error('Metric hints did not prefer foreign citizenship population');
 if (preferredMetricIdsForQuery('Cuántos residentes tienen ciudadanía extranjera en España').has('foreign_born_population')) throw new Error('Foreign citizenship wording fell through to country-of-birth population');
 if (!preferredMetricIdsForQuery('Qué comunidad tiene mayor densidad de población').has('regional_population_density')) throw new Error('Metric hints did not prefer regional density for community wording');

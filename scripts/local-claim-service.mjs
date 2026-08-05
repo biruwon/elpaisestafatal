@@ -1156,6 +1156,7 @@ const classify = async (text) => {
     return payload.includes('+') || semanticParts.length >= 2;
   };
   const hasDistinctiveQueryFamily = [...queryGuidanceFamilyKeys].some(distinctiveFamilyKey);
+  const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
   const broadSingleConcept = !hasDistinctiveQueryFamily && queryEntityConcepts.size <= 1;
   const familyKeyCounts = new Map();
   const familyKeyLexicalScores = new Map();
@@ -1199,7 +1200,6 @@ const classify = async (text) => {
     const runnerUp = scores.find((item) => item.slug !== entry.slug);
     return Boolean(own && scores[0]?.slug === entry.slug && own.lexical >= 0.55 && own.lexical - (runnerUp?.lexical || 0) >= 0.12);
   };
-  const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
   const knownDomainConcepts = ['politics', 'budget', 'public_finance', 'prices', 'cost_of_living', 'income', 'demography', 'housing', 'employment', 'immigration', 'crime', 'healthcare', 'taxes'];
   const queryDomainConcepts = new Set([
     ...queryEntityConcepts,
