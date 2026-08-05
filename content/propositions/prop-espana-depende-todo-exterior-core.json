@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-depende-todo-exterior-core",
+  "claimSlug": "espana-depende-todo-del-exterior",
+  "text": "España depende de todo del exterior y ya no produce lo que producía.",
+  "type": "mixed",
+  "subject": "spanish_external_economy",
+  "predicate": "depends_entirely_on_imports",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["exportaciones-espanolas-sectores-2025"]
+}
