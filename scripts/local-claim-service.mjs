@@ -301,7 +301,14 @@ const fallbackCompiler = (text) => normalizeCompilerOutput(null, text);
 
 const compileClaim = async (text, candidates = []) => {
   const deterministic = deterministicFallbackCompiler(text);
-  const cacheKey = digest(JSON.stringify({ signature: deterministic.semanticSignature, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
+  const familyKeys = semanticFamilyKeys(deterministic.semanticSignature).sort();
+  // Prefer the normalized evidence-family contract over surface proposition
+  // serialization. Equivalent Spanish wording can produce slightly different
+  // deterministic signatures while still belonging to the same safe family.
+  // Ambiguous inputs retain their full signature instead.
+  const strongestFamilyKey = familyKeys[0];
+  const cacheStructure = strongestFamilyKey ? `family:${strongestFamilyKey}` : `signature:${deterministic.semanticSignature}`;
+  const cacheKey = digest(JSON.stringify({ structure: cacheStructure, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
   const cached = compilerCache.get(cacheKey);
   if (cached?.expiresAt > Date.now()) return cached.value;
   if (cached) compilerCache.delete(cacheKey);
