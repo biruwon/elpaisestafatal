@@ -86,6 +86,9 @@ if (module.semanticQuerySignature('España está destruida') === module.semantic
 const rentFamily = module.semanticFamilyKeys(module.semanticQuerySignature('Los alquileres suben en España'));
 const priceFamily = module.semanticFamilyKeys(module.semanticQuerySignature('El precio de la vivienda sube en España'));
 if (rentFamily.some((key) => priceFamily.includes(key))) throw new Error('Static routing merged rent and purchase-price families');
+const taxFamily = module.semanticFamilyKeys(module.semanticQuerySignature('España cobra más impuestos que Europa'));
+const healthFamily = module.semanticFamilyKeys(module.semanticQuerySignature('España gasta más en sanidad que Europa'));
+if (taxFamily.some((key) => healthFamily.includes(key))) throw new Error('Static routing merged tax and healthcare comparisons');
 const semanticIndexEntries = [
   { kind: 'claim', slug: 'inmigracion-delincuencia', title: 'La inmigración aumenta la delincuencia', href: '/', aliases: ['Los inmigrantes crean inseguridad'], keywords: [] },
   { kind: 'claim', slug: 'espana-impuestos-europa', title: 'España cobra menos impuestos sobre renta y riqueza que la Unión Europea', href: '/', aliases: [], keywords: [] },
@@ -96,4 +99,10 @@ const vagueTaxMatch = claimIndex.rankClaimIndex('España cobra demasiados impues
 if (vagueTaxMatch?.slug === 'espana-impuestos-europa' && claimIndex.isStrongClaimMatch(vagueTaxMatch)) throw new Error('Claim index over-routed a vague tax complaint to a comparative tax claim');
 const vagueEmploymentMatch = claimIndex.rankClaimIndex('La economía y el empleo van a peor', semanticIndexEntries, 2)[0];
 if (vagueEmploymentMatch && claimIndex.isStrongClaimMatch(vagueEmploymentMatch)) throw new Error('Claim index over-routed a broad employment complaint to a specific claim');
+const ambiguousFamilyEntries = [
+  { kind: 'claim', slug: 'paro-europa', title: 'España tiene más paro que Europa', href: '/', aliases: [], keywords: [] },
+  { kind: 'claim', slug: 'empleo-temporal-europa', title: 'España tiene más empleo temporal que Europa', href: '/', aliases: [], keywords: [] },
+];
+const ambiguousFamilyMatch = claimIndex.rankClaimIndex('España supera a Europa en trabajo', ambiguousFamilyEntries, 2)[0];
+if (ambiguousFamilyMatch && claimIndex.isStrongClaimMatch(ambiguousFamilyMatch)) throw new Error('Ambiguous family collision was promoted to a strong match');
 console.log('Query signature validation passed.');

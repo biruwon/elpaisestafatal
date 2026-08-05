@@ -884,13 +884,17 @@ const classify = async (text) => {
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
   const queryFamilyKeys = new Set(semanticFamilyKeys(querySemanticSignature));
+  const familyKeyCounts = new Map();
+  for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {
+    for (const key of candidate.semanticFamilyKeys || []) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
+  }
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
     semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
       entry.semanticSignatures?.includes(querySemanticSignature)
-      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key)))
+      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyCounts.get(key) === 1))
     ),
   })).map((item) => {
     // Semantic similarity is useful for paraphrases, but it must not outrank

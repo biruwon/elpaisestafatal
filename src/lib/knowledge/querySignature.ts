@@ -202,7 +202,8 @@ export const semanticFamilyKeys = (signature: string): string[] => {
   const concepts = parts.filter((part) => part.startsWith('concept:')).sort();
   const terms = parts.filter((part) => part.startsWith('term:')).sort();
   if (!type || !polarity || (!relation && concepts.length < 2 && terms.length < 2)) return [];
-  return [relation
-    ? `${type}|${polarity}|${relation}`
-    : `${type}|${polarity}|${(concepts.length >= 2 ? concepts : terms).join('|')}`];
+  // Preserve the complete normalized proposition payload. Direction-only
+  // keys collapse unrelated rankings such as tax, health, and education.
+  const payload = [...new Set([relation, ...concepts, ...terms].filter(Boolean))].sort().join('|');
+  return payload ? [`${type}|${polarity}|${payload}`] : [];
 };

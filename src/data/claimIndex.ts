@@ -123,7 +123,7 @@ const isSpecificSemanticSignature = (signature: string): boolean => {
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
 };
 
-export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value)): RankedClaimIndexEntry => {
+export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value), familyKeyCounts?: Map<string, number>): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
   const searchablePhrases = [entry.title, ...entry.aliases].map(normaliseClaimText);
@@ -142,11 +142,21 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const candidateFamilyKeys = entry.semanticFamilyKeys?.length
     ? entry.semanticFamilyKeys
     : [...new Set(candidateSemanticSignatures.flatMap(({ signature }) => semanticFamilyKeys(signature)))];
-  const semanticFamilyMatch = Boolean(querySemanticSignatureValue && isSpecificSemanticSignature(querySemanticSignatureValue) && entry.kind === 'claim' && candidateSemanticSignatures.some(({ signature, phrase }) => (
-    compatibleNumericContext(query, phrase)
-    && (querySemanticSignatureValue === signature
-      || (queryFamilyKeys.length > 0 && queryFamilyKeys.some((key) => candidateFamilyKeys.includes(key))))
-  )));
+  const semanticFamilyMatch = Boolean(
+    querySemanticSignatureValue
+    && isSpecificSemanticSignature(querySemanticSignatureValue)
+    && entry.kind === 'claim'
+    && candidateSemanticSignatures.some(({ signature, phrase }) => (
+      compatibleNumericContext(query, phrase)
+      && (
+        querySemanticSignatureValue === signature
+        || (
+          queryFamilyKeys.length > 0
+          && queryFamilyKeys.some((key) => candidateFamilyKeys.includes(key) && (familyKeyCounts?.get(key) ?? 1) === 1)
+        )
+      )
+    ))
+  );
   const score = Math.round(Math.max(
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
     semanticFamilyMatch ? 82 : 0,
@@ -157,8 +167,18 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
 export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit = 6): RankedClaimIndexEntry[] => {
   if (!normaliseClaimText(value)) return [];
   const querySemanticSignatureValue = semanticQuerySignature(value);
+  const familyKeyCounts = new Map<string, number>();
+  for (const entry of entries.filter((item) => item.kind === 'claim')) {
+    const signatures = entry.semanticSignatures?.length
+      ? entry.semanticSignatures.map(({ signature }) => signature)
+      : [entry.title, ...entry.aliases].map((phrase) => semanticQuerySignature(phrase));
+    const keys = entry.semanticFamilyKeys?.length
+      ? entry.semanticFamilyKeys
+      : [...new Set(signatures.flatMap((signature) => semanticFamilyKeys(signature)))];
+    for (const key of keys) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
+  }
   return entries
-    .map((entry) => scoreClaimIndexEntry(value, entry, querySemanticSignatureValue))
+    .map((entry) => scoreClaimIndexEntry(value, entry, querySemanticSignatureValue, familyKeyCounts))
     // A shared word such as “España” or “país” is context, not a claim match.
     // Keep weak candidates out of the UI so an unrelated published claim cannot
     // be presented as guidance for an uncovered statement.
