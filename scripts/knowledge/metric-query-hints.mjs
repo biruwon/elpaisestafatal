@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
   .normalize('NFD')
@@ -5,6 +8,29 @@ const normalise = (value) => String(value || '')
   .replace(/ñ/g, 'n')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
+
+// The hand-tuned hints below protect high-risk ambiguities (for example
+// employment versus unemployment). The registry is the scalable fallback:
+// every metric can contribute its reviewed aliases without requiring a new
+// if/else branch here. Only distinctive aliases are promoted, so generic
+// words such as “economía” cannot silently route a claim to a metric.
+const registry = JSON.parse(readFileSync(fileURLToPath(new URL('../../config/metric-registry.json', import.meta.url)), 'utf8'));
+const registryAliases = Object.entries(registry).flatMap(([id, definition]) =>
+  [...new Set([definition.name, ...(definition.aliases || [])])]
+    .map((alias) => ({ id, alias, normalized: normalise(alias), tokens: normalise(alias).split(' ').filter(Boolean) }))
+    .filter(({ tokens, normalized }) => normalized && (tokens.length >= 2 || normalized.length >= 14)),
+);
+
+const registryMetricIdsForQuery = (normalized) => {
+  const candidates = registryAliases
+    .filter(({ normalized: alias }) => normalized.includes(alias))
+    .sort((left, right) => right.tokens.length - left.tokens.length || right.normalized.length - left.normalized.length);
+  if (!candidates.length) return new Set();
+  const strongest = candidates[0].tokens.length;
+  return new Set(candidates
+    .filter((candidate) => candidate.tokens.length === strongest)
+    .map((candidate) => candidate.id));
+};
 
 const metricHints = [
   { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz para las familias', 'luz mas cara'] },
@@ -91,6 +117,12 @@ export const preferredMetricIdsForQuery = (query) => {
   const preferred = new Set(metricHints
     .filter((hint) => hint.terms.some((term) => normalized.includes(normalise(term))))
     .flatMap((hint) => hint.ids));
+  // Registry aliases are deliberately a fallback. Explicit conversational
+  // rules above win whenever they recognise the query; otherwise a newly
+  // registered metric can answer paraphrases immediately.
+  if (!preferred.size) {
+    for (const id of registryMetricIdsForQuery(normalized)) preferred.add(id);
+  }
   const hasEuropeReference = /\b(?:europa|europeo|europea|europeos|europeas|ue|union europea)\b/.test(normalized);
   const hasAny = (...terms) => terms.some((term) => normalized.includes(normalise(term)));
   // Phrase aliases are deliberately conservative, but users often reorder

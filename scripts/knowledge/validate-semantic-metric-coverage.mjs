@@ -17,6 +17,13 @@ const cases = [
   ['El salario por hora es inferior al europeo', 'median_hourly_earnings_europe'],
   ['Hay más personas en riesgo de pobreza que antes', 'arope_rate'],
   ['La deuda del Estado pesa más sobre la economía', 'government_debt_ratio'],
+  // These are intentionally covered by the registry aliases rather than a
+  // hand-written conversational rule. Registering a new metric therefore
+  // expands the reusable language surface automatically.
+  ['¿Cómo se reparten los beneficiarios por grupo?', 'benefit_recipients_by_group'],
+  ['¿Quién recibe vivienda protegida?', 'public_housing_actions'],
+  ['¿Hay diferencias en los delitos por grupo?', 'crime_rate_by_group'],
+  ['¿Cuántas adjudicaciones de vivienda pública hay?', 'public_housing_allocations_by_group'],
 ];
 
 const failures = [];
