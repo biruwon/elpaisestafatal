@@ -1835,7 +1835,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const definitionData = isDefinition && observations.length && explicitMetricRoute;
   const suppressGenericSource = (isGroupComparison && !groupObservations.length) || (isQuantityLike && quantityClaim && !quantity) || (isLegal && !legalObservations.length) || (isDefinition && !definitionData);
   const usableSource = suppressGenericSource ? undefined : source;
-  let status = classified.status === 'published' && !compoundClaim
+  let status = classified.status === 'published' && (primary || !compoundClaim)
     ? 'complete'
     : compoundClaim
       ? (primary ? 'partial' : usableSource ? 'draft' : 'uncovered')
