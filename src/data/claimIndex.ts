@@ -35,6 +35,7 @@ export type RankedClaimIndexEntry = ClaimIndexEntry & {
   score: number;
   confidence: number;
   matchedTerms: string[];
+  semanticFamilyMatch: boolean;
 };
 
 const stopWords = new Set([
@@ -161,7 +162,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
     semanticFamilyMatch ? 82 : 0,
   ));
-  return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms };
+  return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms, semanticFamilyMatch };
 };
 
 export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit = 6): RankedClaimIndexEntry[] => {
@@ -190,5 +191,5 @@ export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit 
 };
 
 export const isStrongClaimMatch = (entry: RankedClaimIndexEntry | undefined): boolean => Boolean(
-  entry && entry.kind === 'claim' && entry.score >= 68,
+  entry && entry.kind === 'claim' && entry.score >= 68 && entry.semanticFamilyMatch,
 );
