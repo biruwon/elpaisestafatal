@@ -899,17 +899,25 @@ const classify = async (text) => {
   // handler. This is the scalable path for new wording: one evidence family
   // can serve many paraphrases without creating a new claim record.
   const routingFamilyCounts = new Map();
+  const routingSignatureCounts = new Map();
   for (const entry of index.entries) {
     if (entry.kind !== 'claim' || !entry.published) continue;
     for (const key of entry.semanticFamilyKeys || []) routingFamilyCounts.set(key, (routingFamilyCounts.get(key) || 0) + 1);
+    for (const signature of entry.semanticSignatures || []) routingSignatureCounts.set(signature, (routingSignatureCounts.get(signature) || 0) + 1);
   }
   const earlyFamilyEntry = !exactPublishedInput && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
       && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key) && routingFamilyCounts.get(key) === 1))
     : undefined;
-  if (earlyFamilyEntry) {
-    const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: earlyFamilyEntry.slug, title: earlyFamilyEntry.title, href: earlyFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: earlyFamilyEntry.answer || '', assessment: earlyFamilyEntry.assessment || '', whatIsTrue: earlyFamilyEntry.whatIsTrue || '', whatIsMissing: earlyFamilyEntry.whatIsMissing || '', cannotProve: earlyFamilyEntry.cannotProve || '', scale: earlyFamilyEntry.scale || '', propositionIds: earlyFamilyEntry.propositionIds || [], evidenceIds: earlyFamilyEntry.evidenceIds || [], sourceRefs: earlyFamilyEntry.sourceRefs || [], sourceLinks: earlyFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: earlyFamilyEntry.slug, title: earlyFamilyEntry.title, href: earlyFamilyEntry.href, confidence: 0.82 }] };
+  const earlySignatureEntry = !earlyFamilyEntry && !exactPublishedInput && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
+    && isSpecificSemanticSignature(routingCompiler.semanticSignature)
+    && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
+    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
+    : undefined;
+  const reusableFamilyEntry = earlyFamilyEntry || earlySignatureEntry;
+  if (reusableFamilyEntry) {
+    const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: reusableFamilyEntry.answer || '', assessment: reusableFamilyEntry.assessment || '', whatIsTrue: reusableFamilyEntry.whatIsTrue || '', whatIsMissing: reusableFamilyEntry.whatIsMissing || '', cannotProve: reusableFamilyEntry.cannotProve || '', scale: reusableFamilyEntry.scale || '', propositionIds: reusableFamilyEntry.propositionIds || [], evidenceIds: reusableFamilyEntry.evidenceIds || [], sourceRefs: reusableFamilyEntry.sourceRefs || [], sourceLinks: reusableFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82 }] };
     answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
     return result;
   }
