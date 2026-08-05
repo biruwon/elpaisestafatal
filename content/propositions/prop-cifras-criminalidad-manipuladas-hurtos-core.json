@@ -1,0 +1,13 @@
+{
+  "id": "prop-cifras-criminalidad-manipuladas-hurtos-core",
+  "claimSlug": "cifras-criminalidad-manipuladas-hurtos-extravios",
+  "text": "Las cifras de delincuencia están manipuladas y los hurtos se registran como extravíos.",
+  "type": "mixed",
+  "subject": "official_crime_statistics",
+  "predicate": "are_manipulated",
+  "object": "thefts_recorded_as_losses",
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["balance-criminalidad-categorias-hurtos-2025"]
+}
