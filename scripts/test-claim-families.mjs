@@ -55,7 +55,7 @@ for (const text of exploratoryCases) {
     payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
   }
   const coverage = payload.result?.coverage;
-  if (payload.status === 'uncovered' || coverage === 'insufficient') {
+  if (payload.status === 'uncovered' || (coverage === 'insufficient' && !payload.relatedClaims?.length)) {
     throw new Error(`${text}: exploratory paraphrase became a dead end: ${JSON.stringify({ status: payload.status, coverage })}`);
   }
   console.log(JSON.stringify({ text, status: payload.status, coverage, headline: payload.result?.headline }));
@@ -81,6 +81,23 @@ for (const text of broadComplaintCases) {
   console.log(JSON.stringify({ text, status: payload.status, related: 'politica' }));
 }
 console.log(`Broad complaint routing validation passed: ${broadComplaintCases.length} variants reused topic guidance.`);
+
+for (const [text, expectedSlug] of [
+  ['El Gobierno compra votos con ayudas', 'compra-votos-espana'],
+  ['Sánchez paga a la gente para que le vote', 'compra-votos-espana'],
+  ['La deuda pública es impagable', 'economia'],
+]) {
+  const form = new FormData();
+  form.set('text', text);
+  form.set('inputType', 'text');
+  const response = await fetch(`${endpoint}/api/classify`, { method: 'POST', body: form });
+  const payload = await response.json();
+  if (!(payload.alternatives || []).some((item) => item.slug === expectedSlug)) {
+    throw new Error(`${text}: expected reusable guidance ${expectedSlug}, got ${JSON.stringify(payload.alternatives || [])}`);
+  }
+  console.log(JSON.stringify({ text, related: expectedSlug, status: payload.status }));
+}
+console.log('Compound-family guidance validation passed: political and economic variants reuse existing domains.');
 
 const unrelatedProbe = 'La inmigración destruye la productividad de las pymes';
 const unrelatedResponse = await fetch(`${endpoint}/v1/classify`, {

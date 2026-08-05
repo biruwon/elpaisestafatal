@@ -889,6 +889,13 @@ const classify = async (text) => {
   const rawQueryFamilyKeys = semanticFamilyKeys(querySemanticSignature);
   const maxFamilyKeyLength = Math.max(0, ...rawQueryFamilyKeys.map((key) => key.length));
   const queryFamilyKeys = new Set(rawQueryFamilyKeys.filter((key) => key.length === maxFamilyKeyLength));
+  // Strong routing uses only the most specific key. Related guidance may use
+  // a shorter core key when the user added an extra modifier or domain.
+  const queryGuidanceFamilyKeys = new Set(rawQueryFamilyKeys);
+  const distinctiveFamilyKey = (key) => {
+    const payload = String(key).split('|').at(-1) || '';
+    return payload.includes('+') || ['vote_purchase', 'fixed_discontinuous', 'healthcare_collapse', 'employment_record', 'housing_price_ratio'].some((value) => payload.endsWith(`:${value}`) || payload === value);
+  };
   const familyKeyCounts = new Map();
   const semanticSignatureCounts = new Map();
   for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {
@@ -907,7 +914,7 @@ const classify = async (text) => {
     semantic: cosine(vector, index.embeddings[position]),
     semanticFamilyRelated: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
       entry.semanticSignatures?.includes(querySemanticSignature)
-      || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key)))
+      || (queryGuidanceFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => distinctiveFamilyKey(key) && queryGuidanceFamilyKeys.has(key)))
     ),
     // A claim can use a different proposition form (trend, description, or
     // causal wording) while still addressing the same two-domain question.
@@ -927,7 +934,7 @@ const classify = async (text) => {
     // dominant whenever the user supplied a meaningful direct match.
     const lexicalWeight = item.lexical >= 0.55 ? 0.75 : 0.55;
     const score = vector ? item.lexical * lexicalWeight + item.semantic * (1 - lexicalWeight) : item.lexical;
-    return { ...item, score: item.semanticFamilyMatch ? Math.max(score, 0.82) : (item.semanticConceptRelated ? Math.max(score, 0.36) : score) };
+    return { ...item, score: item.semanticFamilyMatch ? Math.max(score, 0.82) : ((item.semanticFamilyRelated || item.semanticConceptRelated) ? Math.max(score, 0.36) : score) };
   }).sort((a, b) => b.score - a.score);
   // Derive compatibility from each canonical claim wording as well as its
   // metadata. Keywords often describe a broad topic and can incorrectly make
@@ -1004,7 +1011,10 @@ const classify = async (text) => {
     ? [broadTopic, ...familyRanked.filter(({ entry }) => entry.slug !== broadTopic.entry.slug)]
     : familyRanked;
   const conceptRelatedRanked = ranked.filter((item) => item.semanticConceptRelated && item.entry.kind === 'claim');
-  const guidanceRanked = [...topicRanked, ...conceptRelatedRanked.filter(({ entry }) => !topicRanked.some((item) => item.entry.slug === entry.slug))];
+  const familyGuidanceRanked = ranked.filter((item) => item.semanticFamilyRelated && item.entry.kind === 'claim');
+  const guidanceRanked = [...topicRanked,
+    ...familyGuidanceRanked.filter(({ entry }) => !topicRanked.some((item) => item.entry.slug === entry.slug)),
+    ...conceptRelatedRanked.filter(({ entry }) => !topicRanked.some((item) => item.entry.slug === entry.slug) && !familyGuidanceRanked.some((item) => item.entry.slug === entry.slug))];
   const queryMeaningfulTokens = tokens(text).filter((token) => !lowSignalTokens.has(token));
   const phraseTokenExact = (entry) => entry.kind === 'claim' && [entry.title, ...(entry.aliases || [])].some((phrase) => {
     const phraseTokens = tokens(phrase).filter((token) => !lowSignalTokens.has(token));

@@ -20,6 +20,7 @@ const conceptAliases: Array<[string, string[]]> = [
   ['benefits', ['ayudas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
   ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'partido', 'politica']],
+  ['vote_purchase', ['compra votos', 'compra de votos', 'compran votos', 'pagan votos', 'pagar votos', 'compra votos con ayudas', 'paga a la gente para que le vote', 'pagar a la gente para que vote', 'comprar el voto']],
   ['cost_of_living', ['coste de vida', 'llegar a fin de mes', 'no llega para vivir', 'no alcanza para vivir', 'cesta de la compra', 'poder adquisitivo', 'encarecido', 'encarecida', 'caro', 'cara']],
   ['public_finance', ['deuda publica', 'deuda', 'endeudado', 'endeudada', 'quebrada', 'quiebra', 'bancarrota', 'impagable', 'no puede pagar', 'debe mas de lo que produce', 'deficit publico', 'presupuesto publico', 'recaudacion', 'gasto publico', 'presion fiscal', 'fiscalidad']],
   ['public_debt_stock', ['deuda publica en euros', 'deuda publica total', 'importe de la deuda publica', 'cuanto dinero debe espana', 'cuanto debe espana en euros', 'cuanto debe espana en dinero', 'deuda de espana en euros', 'deuda publica en millones', 'deuda nominal', 'billones de deuda']],
