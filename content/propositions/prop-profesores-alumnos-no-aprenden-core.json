@@ -1,0 +1,13 @@
+{
+  "id": "prop-profesores-alumnos-no-aprenden-core",
+  "claimSlug": "profesores-desbordados-alumnos-no-aprenden",
+  "text": "Los profesores están desbordados y los alumnos terminan sin aprender.",
+  "type": "mixed",
+  "subject": "spanish_education_system",
+  "predicate": "has_overwhelmed_teachers_and_no_learning",
+  "object": null,
+  "geography": "España",
+  "period": "2023-2024",
+  "status": "qualified",
+  "evidenceIds": ["indicadores-educacion-espana-2024"]
+}

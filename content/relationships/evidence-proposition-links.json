@@ -319,6 +319,7 @@
     {"evidenceId":"barometro-sanitario-2025-urgencias","propositionId":"prop-urgencias-espera-12-24-horas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"ela-atencion-integral-500-millones-2025","propositionId":"prop-ela-abandonados-falta-recursos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-espana-solo-sector-primario-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-espana-depende-todo-exterior-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"exportaciones-espanolas-sectores-2025","propositionId":"prop-espana-depende-todo-exterior-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"indicadores-educacion-espana-2024","propositionId":"prop-profesores-alumnos-no-aprenden-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }
