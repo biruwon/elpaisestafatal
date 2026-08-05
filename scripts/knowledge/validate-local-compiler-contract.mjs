@@ -37,6 +37,7 @@ assert(!normalized.evidenceNeeds.includes('fuente inventada'), 'Unbounded model 
 assert(!Object.hasOwn(normalized, 'answer') && !Object.hasOwn(normalized, 'evidenceIds') && !Object.hasOwn(normalized, 'assessment'), 'Model answer/evidence fields leaked into the compiler contract');
 assert(normalized.propositions.length === 1 && normalized.propositions[0].explicit === true, 'Valid model propositions were not preserved');
 assert(normalized.evidenceNeeds.includes('metrica') && normalized.evidenceNeeds.includes('periodo'), 'Deterministic evidence requirements were lost when the model returned an incomplete list');
+assert(normalized.metricIds.includes('resident_population'), 'Compiler did not emit the shared metric ID for a population paraphrase');
 
 const bounded = normalizeCompilerOutput({
   ...maliciousModelOutput,
@@ -97,6 +98,10 @@ assert(novelBudget.evidenceNeeds.includes('importe') && novelBudget.evidenceNeed
 
 const novelCausal = deterministicFallbackCompiler('La llegada de turistas está expulsando a los vecinos de mi municipio');
 assert(novelCausal.evidenceNeeds.includes('causa') && novelCausal.evidenceNeeds.includes('territorio'), 'Novel local causal claims do not expose causal and geographic evidence requirements');
+const metricParaphrase = normalizeCompilerOutput({ propositions: [{ text: 'La vivienda cuesta mucho más', type: 'trend', explicit: true }] }, 'Comprar una casa es cada vez más caro en España');
+assert(metricParaphrase.metricIds.includes('house_price_index'), 'Equivalent housing-price wording did not resolve to the reusable metric family');
+const comparisonParaphrase = normalizeCompilerOutput({ propositions: [{ text: 'España tiene más paro que Europa', type: 'comparative', explicit: true }] }, 'En España cuesta más encontrar trabajo que en la Unión Europea');
+assert(comparisonParaphrase.metricIds.includes('unemployment_rate_europe'), 'Equivalent unemployment-comparison wording did not resolve to the reusable metric family');
 const fraction = deterministicFallbackCompiler('Uno de cada tres jóvenes está en paro');
 assert(fraction.evidenceNeeds.includes('tasa') && fraction.evidenceNeeds.includes('denominador'), 'Natural fraction claims do not expose rate and denominator requirements');
 

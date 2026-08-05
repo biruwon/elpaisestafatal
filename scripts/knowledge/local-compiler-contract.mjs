@@ -1,4 +1,5 @@
 import { deterministicFallbackCompiler, propositionShapeFor, semanticSignatureFor } from './fallback-compiler.mjs';
+import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 export const compilerTypes = new Set(['descriptive', 'comparative', 'definition', 'trend', 'causal', 'predictive', 'legal', 'normative', 'mixed']);
 
@@ -10,7 +11,7 @@ export const compilerInstruction = 'Extrae la estructura de esta afirmación en 
 export const compilerSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
+  required: ['normalized', 'claimType', 'propositions', 'entities', 'numbers', 'geography', 'period', 'population', 'metricIds', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   properties: {
     normalized: { type: 'string', maxLength: 300 },
     claimType: { type: 'string', enum: [...compilerTypes] },
@@ -39,6 +40,7 @@ export const compilerSchema = {
     geography: { type: ['string', 'null'], maxLength: 120 },
     period: { type: ['string', 'null'], maxLength: 120 },
     population: { type: ['string', 'null'], maxLength: 120 },
+    metricIds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     retrievalHints: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     evidenceNeeds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     // The model may return this for inspection, but signatures are always
@@ -123,7 +125,11 @@ const evidenceNeedsList = (value) => [...new Set(safeList(value, 8, 120)
 
 export const normalizeCompilerOutput = (value, text) => {
   const deterministic = deterministicFallbackCompiler(text);
-  if (!value || typeof value !== 'object') return deterministic;
+  const withRegistryMetrics = (result) => ({
+    ...result,
+    metricIds: [...preferredMetricIdsForQuery(text)].slice(0, 8),
+  });
+  if (!value || typeof value !== 'object') return withRegistryMetrics(deterministic);
   const propositions = Array.isArray(value.propositions)
     ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => {
       const shape = propositionShapeFor(item.text);
@@ -137,7 +143,7 @@ export const normalizeCompilerOutput = (value, text) => {
       };
     })
     : [];
-  if (!propositions.length) return deterministic;
+  if (!propositions.length) return withRegistryMetrics(deterministic);
   const modelExplicitPropositions = propositions.filter((item) => item.explicit);
   const impliedPropositions = propositions.filter((item) => !item.explicit);
   // A model may collapse a compound sentence into one broad proposition.
@@ -169,6 +175,10 @@ export const normalizeCompilerOutput = (value, text) => {
   const period = safeContextField(value.period, deterministic.period, text, 120);
   const population = safeContextField(value.population, deterministic.population, text, 120);
   const numbers = deterministic.numbers.slice(0, 12);
+  // Resolve metrics from the shared registry, never from model prose. This
+  // lets many surface forms reuse the same evidence series without creating
+  // another claim record.
+  const metricIds = [...preferredMetricIdsForQuery(text)].slice(0, 8);
   return {
     normalized: bounded(value.normalized, 300) || deterministic.normalized,
     claimType,
@@ -178,6 +188,7 @@ export const normalizeCompilerOutput = (value, text) => {
     geography,
     period,
     population,
+    metricIds,
     explicitPropositions,
     impliedPropositions,
     retrievalHints: safeRelatedList(value.retrievalHints, deterministic.retrievalHints, text, 8, 120),
@@ -208,7 +219,7 @@ export const normalizeCompilerOutput = (value, text) => {
 };
 
 export const compilerContractFacts = {
-  modelMayProvide: ['normalized', 'claimType', 'propositions', 'entities', 'geography', 'period', 'population', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
+  modelMayProvide: ['normalized', 'claimType', 'propositions', 'entities', 'geography', 'period', 'population', 'metricIds', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   deterministicOnly: ['numbers', 'semanticSignature'],
   maxPropositions: 6,
   maxRetrievalHints: 8,

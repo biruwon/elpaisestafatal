@@ -492,7 +492,14 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
-  const hintedMetricIds = preferredMetricIdsForQuery(normalizedQuery);
+  // Prefer the metric contract produced by the shared compiler, while
+  // retaining the deterministic query lookup as a safety net for fast-path
+  // and legacy callers. The answer is therefore based on reusable evidence
+  // IDs, not on a claim-specific alias list.
+  const hintedMetricIds = new Set([
+    ...(Array.isArray(compiler?.metricIds) ? compiler.metricIds : []),
+    ...preferredMetricIdsForQuery(normalizedQuery),
+  ]);
   const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
   // A hinted metric can legitimately have more than 100 observations (for
   // example monthly inflation). Keep the broad path small, but let an
@@ -1902,6 +1909,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const hintedMetricIds = new Set([
+    ...(Array.isArray(classified.compiler?.metricIds) ? classified.compiler.metricIds : []),
     ...preferredMetricIdsForQuery(retrievalText),
     ...preferredMetricIdsForQuery(text),
   ]);
