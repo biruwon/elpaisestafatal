@@ -894,7 +894,13 @@ const classify = async (text) => {
   const queryGuidanceFamilyKeys = new Set(rawQueryFamilyKeys);
   const distinctiveFamilyKey = (key) => {
     const payload = String(key).split('|').at(-1) || '';
-    return payload.includes('+') || ['vote_purchase', 'fixed_discontinuous', 'healthcare_collapse', 'employment_record', 'housing_price_ratio'].some((value) => payload.endsWith(`:${value}`) || payload === value);
+    // Core keys are useful for related guidance only when they carry enough
+    // semantic structure to distinguish a proposition family from a broad
+    // topic. Derive that from the key rather than maintaining a growing list
+    // of manually approved concepts as new claim families are published.
+    const semanticPayload = payload.split(':').at(-1) || payload;
+    const semanticParts = semanticPayload.split(/[+_\-]/).filter((part) => part.length >= 3);
+    return payload.includes('+') || semanticParts.length >= 2;
   };
   const familyKeyCounts = new Map();
   const semanticSignatureCounts = new Map();
