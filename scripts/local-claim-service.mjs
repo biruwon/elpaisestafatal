@@ -27,7 +27,7 @@ import { isSpecificSemanticSignature, semanticFamilyKeys } from './knowledge/cla
 import { domainProfileFor } from './knowledge/domain-handlers.mjs';
 import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
-import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
+import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -2010,7 +2010,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           // Metric IDs are indexed alongside aliases in every warehouse
           // backend. This generic fallback lets any newly registered metric
           // retrieve its series without another claim-specific branch.
-          ? `${[...hintedMetricIds].join(' ')} España Europa`
+          ? `${metricQueryTextForIds(hintedMetricIds)} España Europa`
           : '';
   const warehouseQueries = [...new Set([warehouseQuery, metricFallbackQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 5);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext

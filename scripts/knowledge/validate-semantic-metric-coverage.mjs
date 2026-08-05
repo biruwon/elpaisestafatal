@@ -1,4 +1,4 @@
-import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { metricQueryTextForIds, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 // These are deliberately new conversational formulations rather than
 // published claim titles or aliases. Each should resolve to a reusable metric
@@ -36,6 +36,11 @@ for (const [query, expected] of cases) {
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
+}
+
+const fallbackText = metricQueryTextForIds(new Set(['household_electricity_price', 'public_housing_actions']));
+if (!fallbackText.includes('precio de la luz') || !fallbackText.includes('vivienda protegida')) {
+  throw new Error(`Registry metric fallback omitted human-language aliases: ${fallbackText}`);
 }
 
 console.log(`Semantic metric coverage passed: ${cases.length} unseen formulations resolve to reusable metric families.`);

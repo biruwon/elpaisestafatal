@@ -32,6 +32,14 @@ const registryMetricIdsForQuery = (normalized) => {
     .map((candidate) => candidate.id));
 };
 
+// Retrieval indexes contain human-language aliases, not internal registry
+// IDs. Keep the fallback query coupled to the registry so a newly added
+// metric is searchable without a second claim-specific mapping.
+export const metricQueryTextForIds = (ids) => [...new Set([...ids].flatMap((id) => {
+  const definition = registry[id];
+  return definition ? [definition.name, ...(definition.aliases || []).slice(0, 2)] : [id];
+}))].join(' ');
+
 const metricHints = [
   { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz para las familias', 'luz mas cara'] },
   { ids: ['rental_price_index'], terms: ['precio del alquiler', 'precios del alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'alquiler mas caro', 'sube el alquiler'] },
