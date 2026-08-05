@@ -101,6 +101,7 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasEuropeReference && hasAny('parcial', 'jornada parcial', 'tiempo parcial') && hasAny('empleo', 'trabajo', 'jornada')) preferred.add('part_time_employment_rate_europe');
   if (hasEuropeReference && hasAny('temporal', 'temporalidad', 'duracion determinada') && hasAny('empleo', 'trabajo', 'contrato')) preferred.add('temporary_employment_rate_europe');
   if (hasEuropeReference && hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('youth_unemployment_rate_europe');
+  if (hasEuropeReference && !hasAny('juvenil', 'joven', 'jovenes') && hasAny('paro', 'desempleo')) preferred.add('unemployment_rate_europe');
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
   if (hasEuropeReference && hasAny('universitari', 'graduad', 'titulad', 'titulacion', 'estudios superiores', 'educacion superior')) preferred.add('tertiary_education_attainment_rate_europe');
   if (hasAny('educacion', 'educativo', 'educativa') && hasAny('gasto', 'gasta', 'presupuesto', 'inversion', 'invierte', 'porcentaje del pib')) {

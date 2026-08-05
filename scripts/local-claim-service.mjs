@@ -929,11 +929,17 @@ const classify = async (text) => {
   const familyKeyCounts = new Map();
   const familyKeyLexicalScores = new Map();
   const semanticSignatureCounts = new Map();
+  const semanticSignatureLexicalScores = new Map();
   for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {
     for (const key of candidate.semanticFamilyKeys || []) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
     for (const signature of candidate.semanticSignatures || []) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
   for (const { entry, lexical } of lexicalRanked) {
+    for (const signature of entry.semanticSignatures || []) {
+      const values = semanticSignatureLexicalScores.get(signature) || [];
+      values.push({ slug: entry.slug, lexical });
+      semanticSignatureLexicalScores.set(signature, values);
+    }
     for (const key of entry.semanticFamilyKeys || []) {
       const values = familyKeyLexicalScores.get(key) || [];
       values.push({ slug: entry.slug, lexical });
@@ -948,6 +954,13 @@ const classify = async (text) => {
     // A clear wording lead can safely resolve an ambiguous broad family
     // (for example “desempleo” versus a candidate specifically mentioning
     // “paro juvenil”). Without that lead, retain the qualified path.
+    return Boolean(own && scores[0]?.slug === entry.slug && own.lexical >= 0.55 && own.lexical - (runnerUp?.lexical || 0) >= 0.12);
+  };
+  const semanticSignatureDominates = (signature, entry) => {
+    if (semanticSignatureCounts.get(signature) === 1) return true;
+    const scores = [...(semanticSignatureLexicalScores.get(signature) || [])].sort((left, right) => right.lexical - left.lexical);
+    const own = scores.find((item) => item.slug === entry.slug);
+    const runnerUp = scores.find((item) => item.slug !== entry.slug);
     return Boolean(own && scores[0]?.slug === entry.slug && own.lexical >= 0.55 && own.lexical - (runnerUp?.lexical || 0) >= 0.12);
   };
   const queryEntityConcepts = new Set(String(querySemanticSignature).split('|').filter((part) => part.startsWith('entity:')));
@@ -979,7 +992,7 @@ const classify = async (text) => {
       return [...queryEntityConcepts].every((concept) => candidateEntities.has(concept));
     })(),
     semanticFamilyMatch: entry.kind === 'claim' && populationQualifierCompatible(entry) && isSpecificSemanticSignature(querySemanticSignature) && (
-      (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureCounts.get(querySemanticSignature) === 1)
+      (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureDominates(querySemanticSignature, entry))
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyDominates(key, entry)))
     ),
   })).map((item) => {
