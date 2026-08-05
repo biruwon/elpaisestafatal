@@ -1117,7 +1117,7 @@ const classify = async (text) => {
         kind: 'topic',
         slug,
         title: slug,
-        href: `/temas/${slug}`,
+        href: `/preocupaciones/${slug}`,
         published: true,
       }) : undefined;
       return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
@@ -1379,7 +1379,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
   const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
   const fallbackTopic = fallbackTopicSlug && !classified.primary
-    ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/temas/${fallbackTopicSlug}`, confidence: 0.3 }
+    ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/preocupaciones/${fallbackTopicSlug}`, confidence: 0.3 }
     : undefined;
   const broadTopicGuidance = classified.status === 'related' && !classified.primary && (classified.alternatives?.some((item) => item.kind === 'topic') || fallbackTopic);
   const requestedHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
