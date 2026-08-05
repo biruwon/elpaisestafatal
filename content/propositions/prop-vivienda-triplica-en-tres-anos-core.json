@@ -1,0 +1,13 @@
+{
+  "id": "prop-vivienda-triplica-en-tres-anos-core",
+  "claimSlug": "vivienda-triplica-en-tres-anos",
+  "text": "La vivienda comprada por una persona se ha revalorizado casi un 200% en tres años.",
+  "type": "comparative",
+  "subject": "house_price_index",
+  "predicate": "increased_by",
+  "object": "approximately 200 percent in three years",
+  "geography": "España",
+  "period": "2024-2026",
+  "status": "qualified",
+  "evidenceIds": ["vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "prop-presion-fiscal-mas-alta-historia-core",
+  "claimSlug": "presion-fiscal-mas-alta-historia",
+  "text": "La presión fiscal total de España es la más alta de toda su historia.",
+  "type": "trend",
+  "subject": "tax_burden",
+  "predicate": "is_highest_in",
+  "object": "Spanish_history",
+  "geography": "España",
+  "period": "2015-2025",
+  "status": "qualified",
+  "evidenceIds": ["impuestos-corrientes-renta-riqueza-europa-eurostat"]
+}
