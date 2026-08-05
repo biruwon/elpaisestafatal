@@ -1,0 +1,13 @@
+{
+  "id": "prop-inmigracion-puertas-abiertas-core",
+  "claimSlug": "espana-politica-inmigracion-puertas-abiertas",
+  "text": "España tiene una política de inmigración de puertas abiertas.",
+  "type": "normative",
+  "subject": "spanish_immigration_policy",
+  "predicate": "has_open_borders",
+  "object": null,
+  "geography": "España",
+  "period": "vigente",
+  "status": "contradicted",
+  "evidenceIds": ["politica-inmigracion-regulada"]
+}
