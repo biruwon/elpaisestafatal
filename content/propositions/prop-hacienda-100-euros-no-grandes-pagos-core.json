@@ -1,0 +1,13 @@
+{
+  "id": "prop-hacienda-100-euros-no-grandes-pagos-core",
+  "claimSlug": "hacienda-detecta-100-euros-no-grandes-pagos",
+  "text": "Hacienda detecta los 100 euros no declarados pero no detecta grandes pagos no declarados.",
+  "type": "mixed",
+  "subject": "spanish_tax_agency",
+  "predicate": "detects_small_omissions_but_not_large_hidden_payments",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["agencia-tributaria-control-grandes-patrimonios-2025"]
+}
