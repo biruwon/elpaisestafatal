@@ -78,7 +78,7 @@ const claimType = (text: string): string => {
   if (/(pasara|caera|destruira|preve|pronostico)/.test(text) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (/(ley|legal|puede desalojar|obligatorio|prohibido|derecho)/.test(text)) return 'legal';
   if (/(cada vez|sube|baja|crece|crecimiento|aumento|aumenta|ha aumentado|han aumentado|ha subido|han subido|ha bajado|han bajado|disminuye|dispara|disparado|se ha disparado|encarece|encarecido|encareciendo|encareciendose|cuesta mas|cuesta menos|no alcanza|no llega para|empeora|mejora|no deja de|no dejan de|no para de|no paran de|sigue subiendo|sigue bajando|va en aumento|va en descenso|va al alza|va a la baja|va a peor|va peor|va mejor|record|historico)/.test(text)) return 'trend';
-  if (/(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|desproporcionad|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
+  if ((/(inmigracion|inmigrantes|extranjeros?|ayudas?|prestaciones?|subsidios?|beneficios?)/.test(text) && /(mas|desproporcionad|mayor)/.test(text)) || /(mas que|menos que|mejor que|peor que|igual que|distinto de|mayor|menor|desproporcionad|por encima de|por debajo de|supera|inferior a|superior a|el que mas|el que menos|pais con mas|pais con menos|primer puesto|ultimo puesto|ranking|puesto|lidera|encabeza|a la cabeza|europa)/.test(text)) return 'comparative';
   return 'descriptive';
 };
 
@@ -134,7 +134,7 @@ const directionalRelation = (text: string): string | null => {
   if (relativeComparison) return `comparison:${({ mejor: 'better', peor: 'worse', igual: 'equal', distinto: 'different' } as Record<string, string>)[relativeComparison[2]]}:${relationShape(relativeComparison[1])}:${relationShape(relativeComparison[3])}`;
   const positionalComparison = text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+?)\s+en\s+(.+)$/) || text.match(/^(.*?)\s+(?:esta|se encuentra|queda)\s+por\s+(encima|debajo)\s+de\s+(.+)$/);
   if (positionalComparison) return `comparison:${positionalComparison[2] === 'encima' ? 'more' : 'less'}:${relationShape(positionalComparison[1])}:${relationShape(positionalComparison[3])}`;
-  const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
+  const superiorityComparison = text.match(/^(.*?)\s+(supera|es\s+superior\s+(?:a|al)|es\s+inferior\s+(?:a|al))\s+(.+)$/);
   if (superiorityComparison) return `comparison:${/inferior/.test(superiorityComparison[2]) ? 'less' : 'more'}:${relationShape(superiorityComparison[1])}:${relationShape(superiorityComparison[3])}`;
   const trendLead = /^(?:cada vez hay|cada vez existen|cada vez se ven|cada vez)\s+(?:mas|menos)\b/.test(text);
   const comparison = trendLead ? null : text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);

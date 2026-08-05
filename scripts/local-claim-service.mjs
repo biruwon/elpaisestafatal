@@ -1157,7 +1157,7 @@ const classify = async (text) => {
     // unrelated published claim useful. Require the same semantic family or
     // an unmistakably direct phrase match before showing a claim as guidance.
     return semanticFamilyMatch || semanticFamilyRelated || semanticConceptRelated;
-  }).slice(0, 3).map(({ entry, score }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry) }));
+  }).slice(0, 3).map(({ entry, score, semanticFamilyMatch, semanticFamilyRelated, semanticConceptRelated }) => ({ kind: entry.kind, slug: entry.slug, title: entry.title, href: entry.href, confidence: score, handlerId: handlerForEntry(entry), validated: Boolean(semanticFamilyMatch || semanticFamilyRelated || semanticConceptRelated) }));
   const top = decisionRanked[0];
   // A topic can be almost identical to the claim it contains. It is useful as
   // fallback guidance, but it must not force an exact claim paraphrase through
@@ -1377,6 +1377,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     confidence: item.confidence,
   }));
   const primary = classified.primary;
+  const hasValidatedRelatedClaim = classified.alternatives?.some((item) => item.kind === 'claim' && item.validated);
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];
   const sourceIds = primary?.sourceRefs || [];
@@ -1779,7 +1780,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   };
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary && !broadTopicGuidance ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -1796,7 +1797,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // An unrelated discovered source must not erase deterministic topic
   // guidance. Broad wording should still point to the reusable domain even
   // when discovery happened to return a contextual document.
-  const finalRelatedClaims = source && !primary && !broadTopicGuidance ? [] : relatedClaims;
+  const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : relatedClaims;
   return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: finalRelatedClaims };
 };
 

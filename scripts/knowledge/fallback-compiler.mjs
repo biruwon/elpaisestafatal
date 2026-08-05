@@ -166,20 +166,20 @@ export const propositionShapeFor = (value) => {
     };
   }
   const superiorityComparison = text.match(/^(.*?)\s+(supera)\s+a\s+(.+?)\s+en\s+(.+)$/)
-    || text.match(/^(.*?)\s+(supera|es\s+superior\s+a|es\s+inferior\s+a)\s+(.+)$/);
+    || text.match(/^(.*?)\s+(supera|es\s+superior\s+(?:a|al)|es\s+inferior\s+(?:a|al))\s+(.+)$/);
   if (superiorityComparison) {
     return {
-      subject: relationShapeText(superiorityComparison[1]),
+      subject: /\b(?:espana|espanol|espanola)\b/.test(text) ? 'espana' : relationShapeText(superiorityComparison[1]),
       predicate: /inferior/.test(superiorityComparison[2]) ? 'less_than' : 'more_than',
-      object: relationShapeText(superiorityComparison[3]),
+      object: /\b(?:europa|europeo|europea|ue)\b/.test(text) ? 'europa' : relationShapeText(superiorityComparison[3]),
     };
   }
   const comparison = text.match(/^(.*?)\s+(mas|menos)\s+(.+?)\s+que\s+(.+)$/);
   if (comparison) {
     return {
-      subject: relationShapeText(comparison[1]),
+      subject: /\b(?:espana|espanol|espanola)\b/.test(text) ? 'espana' : relationShapeText(comparison[1]),
       predicate: comparison[2] === 'mas' ? 'more_than' : 'less_than',
-      object: relationShapeText(comparison[4]),
+      object: /\b(?:europa|europeo|europea|ue)\b/.test(text) ? 'europa' : relationShapeText(comparison[4]),
     };
   }
   const comparativeCausal = text.match(/^(?:a|con)\s+mas\s+(.+?)\s+(?:hay|aparece|aumenta|sube)\s+mas\s+(.+)$/)
@@ -320,7 +320,8 @@ const claimTypeFor = (value) => {
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'aumenta', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'van a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
-  if (includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'desproporcionad', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'lidera', 'encabeza', 'a la cabeza', 'europa']) || /\b(?:mas|menos|mayor|menor)\b.+\bque\b/.test(text)) return 'comparative';
+  if ((includesAny(text, ['inmigracion', 'inmigrantes', 'extranjeros', 'extranjero']) && includesAny(text, ['ayuda', 'ayudas', 'prestacion', 'prestaciones', 'subsidio', 'beneficio']) && includesAny(text, ['mas', 'desproporcionad', 'mayor']))
+    || includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'desproporcionad', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'lidera', 'encabeza', 'a la cabeza', 'europa']) || /\b(?:mas|menos|mayor|menor)\b.+\bque\b/.test(text)) return 'comparative';
   return 'descriptive';
 };
 
@@ -450,7 +451,7 @@ export const deterministicFallbackCompiler = (text) => {
   const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\b/.test(normalized);
   const claimType = causalConnector ? 'causal' : (explicitTypes.length > 1 ? 'mixed' : (explicitTypes[0] || claimTypeFor(original)));
   const entities = entityAliases.filter(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias))).map(([entity]) => entity);
-  const geography = normalized.includes('espana') || normalized.includes('nacional')
+  const geography = normalized.includes('espana') || normalized.includes('espanol') || normalized.includes('espanola') || normalized.includes('nacional')
     ? 'España'
     : regions.find((region) => normalized.includes(region)) || null;
   const population = populationAliases.find(([, aliases]) => aliases.some((alias) => containsPhrase(normalized, alias)))?.[0] || null;
