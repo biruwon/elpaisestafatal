@@ -1,0 +1,13 @@
+{
+  "id": "prop-espana-solo-sector-primario-core",
+  "claimSlug": "espana-solo-vende-sector-primario",
+  "text": "España solo vende productos del sector primario.",
+  "type": "descriptive",
+  "subject": "spanish_exports",
+  "predicate": "are_only_primary_sector",
+  "object": null,
+  "geography": "España",
+  "period": "2025",
+  "status": "contradicted",
+  "evidenceIds": ["exportaciones-espanolas-sectores-2025"]
+}
