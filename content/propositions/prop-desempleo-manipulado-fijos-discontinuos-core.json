@@ -1,0 +1,13 @@
+{
+  "id": "prop-desempleo-manipulado-fijos-discontinuos-core",
+  "claimSlug": "desempleo-manipulado-fijos-discontinuos",
+  "text": "Que los fijos discontinuos se contabilicen como ocupados demuestra que el desempleo está manipulado.",
+  "type": "mixed",
+  "subject": "fijo_discontinuo",
+  "predicate": "demonstrates_manipulation_of",
+  "object": "unemployment_statistics",
+  "geography": "España",
+  "period": "2025-2026",
+  "status": "contradicted",
+  "evidenceIds": ["empleo-encuesta-de-poblacion-activa-t1-2026", "empleo-microdatos-del-barometro-de-abril-de-2026-md3557", "empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par"]
+}

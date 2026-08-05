@@ -743,6 +743,113 @@ const getIndex = async () => {
   return indexPromise;
 };
 
+const semanticEntitiesFor = (value) => String(fallbackCompiler(value)?.semanticSignature || '')
+  .split('|')
+  .filter((part) => part.startsWith('entity:'))
+  .map((part) => part.slice('entity:'.length))
+  .filter(Boolean);
+
+const claimableCompoundParts = (text, compiler) => {
+  const explicit = Array.isArray(compiler?.explicitPropositions) && compiler.explicitPropositions.length
+    ? compiler.explicitPropositions.map((item) => String(item.text || '').trim()).filter(Boolean)
+    : [];
+  if (explicit.length > 1) return explicit.slice(0, 4);
+
+  const match = String(text || '').trim().match(/^(.{8,}?)\s+y\s+(.{5,})$/i);
+  if (!match) return [String(text || '').trim()].filter(Boolean);
+  const left = match[1].trim();
+  const right = match[2].trim();
+  const leftSubject = left.match(/\b(inmigrantes?|extranjeros?|espanoles?|migrantes?|fijos? discontinuos?|trabajadores?)\b/i)?.[0] || '';
+  const rightHasSubject = /\b(inmigrantes?|extranjeros?|espanoles?|migrantes?|fijos? discontinuos?|trabajadores?)\b/i.test(right);
+  const rightWithSubject = leftSubject && !rightHasSubject ? `${leftSubject} ${right}` : right;
+  const normalized = normalise(text);
+  const looksLikeTwoClaims = /\b(inmigr|extranj|delinqu|delit|ayud|prestacion|fijo|desemple|ocupad|alquil|impuest|pension)\w*/.test(normalized);
+  return looksLikeTwoClaims ? [left, rightWithSubject] : [String(text || '').trim()].filter(Boolean);
+};
+
+const publishedCoverageCandidate = (part, entries) => {
+  const normalizedPart = normalise(part);
+  const causalPart = /\b(?:porque|debido|a causa|por culpa|por la falta|por la poca|provoca|provocan|causa|causan|genera|generan|dispara|disparado)\b/.test(normalizedPart);
+  const unsupportedModifier = /\b(?:manipulad|camuflad|ocult|inseguridad juridica|respaldad[oa] por el gobierno)\w*/.test(normalizedPart);
+  const partTokens = new Set(tokens(part).filter((token) => token.length > 3));
+  const partEntities = semanticEntitiesFor(part);
+  return entries.map((entry) => {
+    const entryText = searchText(entry);
+    const entryTokens = new Set(tokens(entryText).filter((token) => token.length > 3));
+    const sharedTokens = [...partTokens].filter((token) => entryTokens.has(token)).length;
+    const tokenCoverage = partTokens.size ? sharedTokens / partTokens.size : 0;
+    const entryEntities = semanticEntitiesFor(entryText);
+    const entityCoverage = partEntities.length > 0 && partEntities.every((entity) => entryEntities.includes(entity));
+    const lexical = lexicalScore(part, entry);
+    const candidateCompiler = fallbackCompiler(entryText);
+    const candidateCausal = candidateCompiler.claimType === 'causal' || candidateCompiler.propositions?.some((item) => item.type === 'causal');
+    const candidateHasModifier = [...tokens(entryText)].some((token) => normalizedPart.includes(token) && ['manipulad', 'camuflad', 'ocult', 'juridic'].some((stem) => token.startsWith(stem)));
+    // A related trend cannot cover a causal clause, and a generic topic
+    // cannot cover a proposition whose decisive wording is “manipulated”,
+    // “hidden”, or “legal insecurity”. These gates prevent the composite
+    // path from turning adjacent claims into a false direct answer.
+    if (causalPart && !candidateCausal) return { entry, score: 0, lexical, entityCoverage: false, tokenCoverage };
+    if (unsupportedModifier && !candidateHasModifier) return { entry, score: 0, lexical, entityCoverage: false, tokenCoverage };
+    if (!causalPart && candidateCausal && !/\b(?:causa|causan|provoca|provocan|genera|generan|por culpa|debido|a causa|inseguridad)\b/.test(normalizedPart)) return { entry, score: 0, lexical, entityCoverage: false, tokenCoverage };
+    const score = Math.max(lexical, entityCoverage ? Math.min(0.84, 0.62 + tokenCoverage * 0.22) : tokenCoverage * 0.72);
+    return { entry, score, lexical, entityCoverage, tokenCoverage };
+  }).filter((candidate) => candidate.entityCoverage || candidate.lexical >= 0.62)
+    .sort((left, right) => right.score - left.score || right.lexical - left.lexical)[0];
+};
+
+// A compound user message can contain several already-published claim
+// families. Reusing those reviewed answers is a scalable way to turn a new
+// wording into a strong clarification without inventing a new claim record.
+// Every component must map to a published claim with evidence and sources;
+// otherwise the normal qualified/unresolved path remains in control.
+const buildPublishedCompositeResult = async (text, classified) => {
+  if (classified?.primary) return null;
+  const index = await getIndex();
+  const entries = (index.entries || []).filter((entry) => entry.kind === 'claim' && entry.published && entry.evidenceIds?.length && entry.sourceRefs?.length);
+  if (!entries.length) return null;
+  const parts = claimableCompoundParts(text, classified?.compiler);
+  if (parts.length < 2) return null;
+  const matches = parts.map((part) => ({ part, candidate: publishedCoverageCandidate(part, entries) }));
+  if (matches.some(({ candidate }) => !candidate || candidate.score < 0.62)) return null;
+  const distinctSlugs = new Set(matches.map(({ candidate }) => candidate.entry.slug));
+  if (distinctSlugs.size < 2 && !matches.every(({ candidate }) => candidate.entityCoverage)) return null;
+  const covered = matches.map(({ part, candidate }) => ({ part, entry: candidate.entry }));
+  const evidenceIds = [...new Set(covered.flatMap(({ entry }) => entry.evidenceIds || []))];
+  const sourceIds = [...new Set(covered.flatMap(({ entry }) => entry.sourceRefs || []))];
+  const sourceLinks = [...new Map(covered.flatMap(({ entry }) => entry.sourceLinks || []).map((source) => [source.url, source])).values()].slice(0, 6);
+  const truePoints = covered.map(({ entry }) => entry.whatIsTrue || entry.answer || entry.title).filter(Boolean);
+  const limits = covered.map(({ entry }) => entry.whatIsMissing || entry.cannotProve).filter(Boolean);
+  const replies = covered.map(({ entry }) => entry.answer || entry.shareable || entry.whatIsTrue).filter(Boolean);
+  const plan = normalizeAnswerPlan({
+    schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
+    headline: 'La frase mezcla afirmaciones que ya tienen aclaraciones publicadas',
+    summary: 'Podemos comprobar las partes principales por separado. La respuesta no convierte una afirmación compuesta en un único dato: conserva qué está documentado y qué límite tiene cada parte.',
+    coverage: 'strong',
+    claimType: 'mixed',
+    blocks: [
+      { type: 'claim_breakdown', propositionIds: [], items: covered.map(({ part, entry }) => ({ text: part, type: entry.claimType || 'mixed', explicit: true, coveredBy: entry.slug })) },
+      { type: 'confirmed', propositionIds: covered.flatMap(({ entry }) => entry.propositionIds || []), evidenceIds, points: truePoints.slice(0, 6) },
+      ...(limits.length ? [{ type: 'cannot_conclude', evidenceIds, points: limits.slice(0, 6) }] : []),
+      { type: 'conversation_reply', evidenceIds, text: replies.join(' ') },
+    ],
+    clarificationQuestion: '¿Quieres abrir cada parte por separado y revisar sus fuentes?',
+    limitation: limits.join(' ') || 'Cada parte conserva el alcance y las limitaciones de su aclaración publicada.',
+    evidenceIds,
+    sourceIds,
+    sourceLinks,
+    knowledgeVersion: RUNTIME_VERSIONS.indexKnowledge,
+  });
+  const validation = validateAnswerPlan(plan);
+  if (!validation.ok) return null;
+  return {
+    status: 'complete',
+    requestId: requestId(text),
+    canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text),
+    result: plan,
+    relatedClaims: covered.map(({ entry }) => ({ kind: 'claim', slug: entry.slug, title: entry.title, href: entry.href, confidence: 1 })),
+  };
+};
+
 const isSpecificSemanticSignature = (signature) => {
   const parts = String(signature || '').split('|');
   return parts.some((part) => part.startsWith('relation:'))
@@ -1472,6 +1579,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     : classified;
   const handlerId = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
+  const publishedComposite = await buildPublishedCompositeResult(text, retrievalClassified);
+  if (publishedComposite) return publishedComposite;
   // A bare number is often a dimension label in statistical indexes (for
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.

@@ -287,6 +287,11 @@
     {"evidenceId":"deficit-publico-espana-europa-eurostat","propositionId":"prop-deficit-publico-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"desigualdad-ingresos-espana-europa-eurostat","propositionId":"prop-gini-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
     {"evidenceId":"deuda-publica-espana-europa-eurostat","propositionId":"prop-deuda-publica-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
-    {"evidenceId":"fecundidad-espana-europa-eurostat","propositionId":"prop-fecundidad-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"}
+    {"evidenceId":"fecundidad-espana-europa-eurostat","propositionId":"prop-fecundidad-espana-europa-core","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-03"},
+    {"evidenceId":"empleo-encuesta-de-poblacion-activa-t1-2026","propositionId":"prop-desempleo-manipulado-fijos-discontinuos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"empleo-microdatos-del-barometro-de-abril-de-2026-md3557","propositionId":"prop-desempleo-manipulado-fijos-discontinuos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"empleo-categorias-individuales-cualquier-posicion-labels-calidad-del-empleo-par","propositionId":"prop-desempleo-manipulado-fijos-discontinuos-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"sanidad-listas-de-espera-diciembre-2025","propositionId":"prop-listas-espera-uno-dos-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119","propositionId":"prop-listas-espera-uno-dos-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
 ]
 }

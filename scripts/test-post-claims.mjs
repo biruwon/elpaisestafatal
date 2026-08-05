@@ -90,4 +90,16 @@ const counts = results.reduce((summary, item) => {
   summary[item.status] = (summary[item.status] || 0) + 1;
   return summary;
 }, {});
+
+const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats']);
+const strongResults = new Set(results.filter((item) => item.status === 'complete' && item.coverage === 'strong').map((item) => item.id));
+for (const id of expectedStrong) {
+  if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);
+}
+
+const mustRemainNonStrong = new Set(['fiscal', 'housing-rent', 'imv', 'benefits', 'immigration-crime', 'crime-stats', 'middle-class']);
+for (const id of mustRemainNonStrong) {
+  if (strongResults.has(id)) throw new Error(`Unsafe adjacent evidence was promoted to strong for ${id}`);
+}
+
 console.error(JSON.stringify({ total: results.length, counts }));
