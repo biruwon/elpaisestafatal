@@ -68,6 +68,12 @@ const semanticConceptAliases = [
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
   ['fixed_discontinuous', ['fijo discontinuo', 'fijos discontinuos', 'contrato fijo discontinuo', 'contratos fijos discontinuos', 'parado oculto', 'parados ocultos']],
+  ['crime_reporting', ['cifras de delincuencia manipuladas', 'estadisticas de delincuencia manipuladas', 'hurtos se registran como extravios', 'hurtos como perdidas', 'esconden los hurtos']],
+  ['minimum_income', ['ingreso minimo vital', 'imv']],
+  ['immigration_legal_status', ['debe marcharse', 'tiene que irse', 'debe abandonar espana', 'abandonar espana']],
+  ['political_concern', ['preocupacion por la politica', 'politica es la preocupacion', 'preocupacion de la mayoria', 'principal problema politico', 'preocupa la politica']],
+  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo']],
+  ['housing_price_ratio', ['cuesta casi tres veces', 'cuesta tres veces', 'vale el triple', 'se ha triplicado', 'triplica en tres anos']],
 ];
 
 const semanticConcepts = (value) => {

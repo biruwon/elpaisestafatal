@@ -30,6 +30,12 @@ const conceptAliases: Array<[string, string[]]> = [
   ['demography', ['poblacion', 'habitantes', 'demografia', 'fecundidad', 'natalidad', 'envejecimiento', 'menores', 'jovenes', 'mayores']],
   ['education_outcomes', ['abandono escolar', 'resultados educativos', 'alumnado', 'colegios', 'escuelas', 'becas']],
   ['neet', ['ni estudian ni trabajan', 'ni estudia ni trabaja', 'ninis', 'jovenes ninis', 'fuera de estudio y empleo']],
+  ['crime_reporting', ['cifras de delincuencia manipuladas', 'estadisticas de delincuencia manipuladas', 'hurtos se registran como extravios', 'hurtos como perdidas', 'esconden los hurtos']],
+  ['minimum_income', ['ingreso minimo vital', 'imv']],
+  ['immigration_legal_status', ['debe marcharse', 'tiene que irse', 'debe abandonar espana', 'abandonar espana']],
+  ['political_concern', ['preocupacion por la politica', 'politica es la preocupacion', 'preocupacion de la mayoria', 'principal problema politico', 'preocupa la politica']],
+  ['employment_record', ['record de ocupacion', 'record de empleo', 'pleno empleo']],
+  ['housing_price_ratio', ['cuesta casi tres veces', 'cuesta tres veces', 'vale el triple', 'se ha triplicado', 'triplica en tres anos']],
 ];
 
 const containsAlias = (text: string, alias: string): boolean => {
