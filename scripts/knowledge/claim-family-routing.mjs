@@ -19,26 +19,13 @@ export const semanticFamilyKeys = (signature) => {
   const type = parts[0] || '';
   const polarity = parts.find((part) => part.startsWith('polarity:')) || '';
   const entities = parts.filter((part) => part.startsWith('entity:')).sort().join('+');
-  const relation = parts.find((part) => /^(causal|relation):/.test(part)) || '';
   const definition = parts.find((part) => part === 'definition:fixed_discontinuous');
-  if (!type || (!entities && !relation && !definition)) return [];
-  const keys = [`${type}|${polarity}|${entities}|${relation.split(':')[0]}`];
+  const propositionParts = parts.filter((part) => /^(causal|relation|descriptive|trend|comparative|definition):/.test(part));
+  if (!type || (!entities && !propositionParts.length && !definition)) return [];
+  // A family key must retain the proposition's normalized concept and
+  // direction. Entity-only keys are unsafe: rent, purchase prices, and
+  // housing-cost burden can all otherwise collapse into “housing + rising”.
+  const keys = propositionParts.map((part) => `${type}|${polarity}|${entities}|${part}`);
   if (definition) keys.push(`${type}|${polarity}|${definition}`);
-  for (const part of parts.filter((item) => /^(descriptive|trend|comparative|definition):/.test(item))) {
-    const [kind, ...rest] = part.split(':');
-    const value = rest.join(':');
-    if (kind === 'trend') {
-      const direction = value.match(/trend:(rising|falling|stable)$/)?.[1];
-      if (direction) keys.push(`${type}|${polarity}|${entities}|trend:${direction}`);
-    } else if (kind === 'definition') {
-      keys.push(`${type}|${polarity}|${entities}|definition:${value}`);
-    } else if (kind === 'comparative') {
-      const direction = value.match(/ranking:(highest|lowest|more|less)|:(more_than|less_than):/)?.[1] || value.match(/:(more_than|less_than):/)?.[1];
-      const concept = value.split(':')[0];
-      if (concept && direction) keys.push(`${type}|${polarity}|${entities}|${kind}:${concept}:${direction}`);
-    } else if (kind === 'descriptive' && value.length >= 5) {
-      keys.push(`${type}|${polarity}|${entities}|descriptive:${value.split(':')[0]}`);
-    }
-  }
   return [...new Set(keys)];
 };
