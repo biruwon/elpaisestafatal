@@ -85,6 +85,12 @@ let warehousePromise;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
+const vagueTaxJudgement = (value) => {
+  const normalized = normalise(value);
+  const vague = /\b(?:demasiad[oa]s?|excesiv[oa]s?|infierno fiscal|asfixia(?:nte)?|se come todo el sueldo)\b/.test(normalized);
+  const concrete = /\b(?:europa|union europea|porcentaje|pib|renta|riqueza|tipo|cuanto|periodo|ano|hogar|sueldo|salario)\b/.test(normalized);
+  return /\bimpuestos?\b/.test(normalized) && vague && !concrete;
+};
 
 // Metric routing is proposition-aware. A compound sentence must preserve the
 // union of registry families found in each explicit clause; checking only the
@@ -1010,7 +1016,7 @@ const classify = async (text) => {
   // Exact published titles and aliases are an explicit editorial contract.
   // Resolve them before metric or semantic ambiguity can downgrade the
   // answer; approximate wording continues through the guarded family path.
-  const exactPublishedEntry = index.entries.find((entry) => entry.kind === 'claim' && entry.published
+  const exactPublishedEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   if (exactPublishedEntry) {
     const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1, reason: 'La formulación coincide con una afirmación publicada.', answer: exactPublishedEntry.answer || '', assessment: exactPublishedEntry.assessment || '', whatIsTrue: exactPublishedEntry.whatIsTrue || '', whatIsMissing: exactPublishedEntry.whatIsMissing || '', cannotProve: exactPublishedEntry.cannotProve || '', scale: exactPublishedEntry.scale || '', propositionIds: exactPublishedEntry.propositionIds || [], evidenceIds: exactPublishedEntry.evidenceIds || [], sourceRefs: exactPublishedEntry.sourceRefs || [], sourceLinks: exactPublishedEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1 }] };
@@ -1599,7 +1605,7 @@ const classify = async (text) => {
       ? { entry: compiledFamilyEntry, score: 0.82, lexical: 0, semantic: 1, semanticFamilyMatch: true }
       : undefined;
   const selectedHasStructuredFamily = structuredFamily(compiledFamilyKeys);
-  const selected = selectedCandidate && (!explicitMetricRoute || exactPublishedPhrase || selectedHasStructuredFamily) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
+  const selected = selectedCandidate && !vagueTaxJudgement(text) && (!explicitMetricRoute || exactPublishedPhrase || selectedHasStructuredFamily) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
   const status = selected ? (compiledFamilyEntry && !routing.primarySlug ? 'published' : (routing.status === 'published' ? 'published' : 'related')) : 'uncovered';
   if (!selected && routingTopics.length === 1 && ['descriptive', 'definition'].includes(compiled?.claimType) && !explicitMetricRoute) {
     const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === routingTopics[0]);
@@ -1639,7 +1645,13 @@ const startResolveJob = (text, origin = 'runtime') => {
   const job = { status: 'processing', requestId: id, canonicalSignature: signature, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
-    const completed = { ...await enrichResolve(text, classified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
+    // A broad tax judgement must never inherit a precise published tax
+    // verdict from an approximate alias match. It needs a definition or
+    // comparison before any tax metric can be presented as the answer.
+    const safeClassified = vagueTaxJudgement(text)
+      ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
+      : classified;
+    const completed = { ...await enrichResolve(text, safeClassified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed, 'text', classified, origin);
@@ -1722,11 +1734,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
-  const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0;
+  const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0 && !vagueTaxJudgement(text);
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
   const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
-  const fallbackTopic = fallbackTopicSlug && !classified.primary
+  const fallbackTopic = fallbackTopicSlug && !classified.primary && !vagueTaxJudgement(text)
     ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/preocupaciones/${fallbackTopicSlug}`, confidence: 0.3 }
     : undefined;
   const broadTopicGuidance = classified.status === 'related' && !classified.primary && (classified.alternatives?.some((item) => item.kind === 'topic') || fallbackTopic);
@@ -1734,6 +1746,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
   const relatedClaims = [...(classified.alternatives || []), ...(fallbackTopic ? [fallbackTopic] : [])].filter((item, index, items) => items.findIndex((candidate) => candidate.slug === item.slug) === index).filter((item) => {
     if (broadTopicGuidance && item.kind !== 'topic') return false;
+    if (vagueTaxJudgement(text) && item.kind === 'claim') return false;
+    if (requestedHandler === 'government_event' && item.kind !== 'claim') return false;
     if (domainSpecific.has(requestedHandler) && item.kind === 'claim' && item.handlerId && item.handlerId !== requestedHandler) return false;
     return true;
   }).map((item) => ({
@@ -1904,6 +1918,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     type: 'claim_breakdown',
     propositionIds: [],
     items: classified.compiler.propositions.slice(0, 6).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
+  } : requestedHandler === 'government_event' || vagueTaxJudgement(text) ? {
+    type: 'claim_breakdown',
+    propositionIds: [],
+    items: [{ text, type: requestedHandler === 'government_event' ? 'event' : 'value', explicit: true }],
   } : null;
   // A broad topic route is useful only when no more specific claim structure
   // can explain the disagreement. Otherwise it duplicates the causal/legal/
@@ -2231,7 +2249,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const enrichmentIndex = await getIndex();
   const enrichmentCompiler = deterministicFallbackCompiler(text);
   const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
-  const canonicalPublished = enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
+  const canonicalPublished = !vagueTaxJudgement(text) && enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));
   if (process.env.LOCAL_DEBUG_ROUTING === '1' && !canonicalPublished) {
     console.error('Published canonical miss:', { text, enrichmentCanonical, entries: enrichmentIndex.entries.length, sample: enrichmentIndex.entries.filter((entry) => entry.slug === 'poblacion-residente-supera-49m').map((entry) => ({ kind: entry.kind, published: entry.published, title: entry.title, aliases: entry.aliases })) });
@@ -2250,8 +2268,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
-  const hintedMetricIds = metricIdsForInput(text, classified.compiler || {});
-  const explicitMetricRoute = hintedMetricIds.size > 0;
+  const hintedMetricIds = vagueTaxJudgement(text) ? new Set() : metricIdsForInput(text, classified.compiler || {});
+  const explicitMetricRoute = hintedMetricIds.size > 0 && !vagueTaxJudgement(text);
   const compoundInput = (classified.compiler?.explicitPropositions?.length || classified.compiler?.propositions?.length || 0) > 1;
   const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
@@ -2259,7 +2277,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // the user has supplied an explicit metric phrase such as “precio de la
   // luz” or “inflación anual”. Keep the topic as a related result instead.
   const preservePublishedClaim = classified.primary?.kind === 'claim' && classified.status === 'published';
-  const retrievalClassified = (explicitMetricRoute || compoundInput) && !preservePublishedClaim
+  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text)) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right
@@ -2282,7 +2300,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.
   const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
-  const suppressUnrelatedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text) || (recordedOffenceRoute && !recordedOffenceCategory);
+  const suppressUnrelatedContext = vagueTaxJudgement(text) || localSpecificClaim(text) || evidenceUnavailableSignal(text) || (recordedOffenceRoute && !recordedOffenceCategory);
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
     try {

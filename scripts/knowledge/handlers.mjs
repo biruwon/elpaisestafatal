@@ -44,6 +44,7 @@ export const handlerForInput = (input, claimType = '') => {
 
 export const visualBlockForHandler = (handler, visualId, evidenceIds = []) => {
   if (!visualId || !evidenceIds.length) return null;
+  if (visualId === 'precios-hoteles-sube-junio-2026') return { type: 'comparison_chart', visualId, evidenceIds };
   if (visualId === 'espana-esta-sufriendo-un-reemplazo-poblacional') return {
     type: 'evidence_ladder',
     evidenceIds,
