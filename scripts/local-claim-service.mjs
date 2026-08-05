@@ -885,15 +885,17 @@ const classify = async (text) => {
   const querySemanticSignature = deterministicCompiler.semanticSignature;
   const queryFamilyKeys = new Set(semanticFamilyKeys(querySemanticSignature));
   const familyKeyCounts = new Map();
+  const semanticSignatureCounts = new Map();
   for (const candidate of index.entries.filter((item) => item.kind === 'claim')) {
     for (const key of candidate.semanticFamilyKeys || []) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
+    for (const signature of candidate.semanticSignatures || []) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
   const ranked = lexicalRanked.map(({ entry, position, lexical }) => ({
     entry,
     lexical,
     semantic: cosine(vector, index.embeddings[position]),
     semanticFamilyMatch: entry.kind === 'claim' && isSpecificSemanticSignature(querySemanticSignature) && (
-      entry.semanticSignatures?.includes(querySemanticSignature)
+      (entry.semanticSignatures?.includes(querySemanticSignature) && semanticSignatureCounts.get(querySemanticSignature) === 1)
       || (queryFamilyKeys.size > 0 && (entry.semanticFamilyKeys || []).some((key) => queryFamilyKeys.has(key) && familyKeyCounts.get(key) === 1))
     ),
   })).map((item) => {

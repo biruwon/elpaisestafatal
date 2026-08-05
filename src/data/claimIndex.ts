@@ -123,7 +123,7 @@ const isSpecificSemanticSignature = (signature: string): boolean => {
     || parts.filter((part) => part.startsWith('term:')).length >= 2;
 };
 
-export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value), familyKeyCounts?: Map<string, number>): RankedClaimIndexEntry => {
+export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, querySemanticSignatureValue = semanticQuerySignature(value), familyKeyCounts?: Map<string, number>, semanticSignatureCounts?: Map<string, number>): RankedClaimIndexEntry => {
   const query = normaliseClaimText(value);
   const queryTokens = claimTokens(query);
   const searchablePhrases = [entry.title, ...entry.aliases].map(normaliseClaimText);
@@ -149,7 +149,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
     && candidateSemanticSignatures.some(({ signature, phrase }) => (
       compatibleNumericContext(query, phrase)
       && (
-        querySemanticSignatureValue === signature
+        (querySemanticSignatureValue === signature && (semanticSignatureCounts?.get(signature) ?? 1) === 1)
         || (
           queryFamilyKeys.length > 0
           && queryFamilyKeys.some((key) => candidateFamilyKeys.includes(key) && (familyKeyCounts?.get(key) ?? 1) === 1)
@@ -168,6 +168,7 @@ export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit 
   if (!normaliseClaimText(value)) return [];
   const querySemanticSignatureValue = semanticQuerySignature(value);
   const familyKeyCounts = new Map<string, number>();
+  const semanticSignatureCounts = new Map<string, number>();
   for (const entry of entries.filter((item) => item.kind === 'claim')) {
     const signatures = entry.semanticSignatures?.length
       ? entry.semanticSignatures.map(({ signature }) => signature)
@@ -176,9 +177,10 @@ export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit 
       ? entry.semanticFamilyKeys
       : [...new Set(signatures.flatMap((signature) => semanticFamilyKeys(signature)))];
     for (const key of keys) familyKeyCounts.set(key, (familyKeyCounts.get(key) || 0) + 1);
+    for (const signature of new Set(signatures)) semanticSignatureCounts.set(signature, (semanticSignatureCounts.get(signature) || 0) + 1);
   }
   return entries
-    .map((entry) => scoreClaimIndexEntry(value, entry, querySemanticSignatureValue, familyKeyCounts))
+    .map((entry) => scoreClaimIndexEntry(value, entry, querySemanticSignatureValue, familyKeyCounts, semanticSignatureCounts))
     // A shared word such as “España” or “país” is context, not a claim match.
     // Keep weak candidates out of the UI so an unrelated published claim cannot
     // be presented as guidance for an uncovered statement.

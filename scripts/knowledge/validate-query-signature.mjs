@@ -105,4 +105,10 @@ const ambiguousFamilyEntries = [
 ];
 const ambiguousFamilyMatch = claimIndex.rankClaimIndex('España supera a Europa en trabajo', ambiguousFamilyEntries, 2)[0];
 if (ambiguousFamilyMatch && claimIndex.isStrongClaimMatch(ambiguousFamilyMatch)) throw new Error('Ambiguous family collision was promoted to a strong match');
+const duplicateSignatureEntries = [
+  { kind: 'claim', slug: 'duplicate-a', title: 'España tiene más paro que Europa', href: '/', aliases: [], keywords: [] },
+  { kind: 'claim', slug: 'duplicate-b', title: 'España tiene más paro que Europa', href: '/', aliases: [], keywords: [] },
+];
+const duplicateSignatureMatch = claimIndex.rankClaimIndex('España supera a Europa en desempleo', duplicateSignatureEntries, 2)[0];
+if (duplicateSignatureMatch && claimIndex.isStrongClaimMatch(duplicateSignatureMatch)) throw new Error('Duplicate semantic signature was promoted to a strong match');
 console.log('Query signature validation passed.');
