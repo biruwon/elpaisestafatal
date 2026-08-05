@@ -275,6 +275,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
     schemaVersion: packet.schemaVersion,
     handlerId: packet.handlerId,
     claimType: packet.claimType,
+    resultStatus: result.status,
     deterministicPlan: packet.deterministicPlan,
     evidence: packet.evidence,
     sourceLinks: packet.sourceLinks,
