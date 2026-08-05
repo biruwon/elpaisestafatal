@@ -268,6 +268,9 @@ const normalizeAnswerPlan = (plan) => {
   return {
     ...plan,
     blocks: plan.blocks.map((block) => {
+      if (block?.type && ['line_chart', 'bar_chart', 'comparison_chart'].includes(block.type) && !block.visualId) {
+        return { ...block, visualId: 'warehouse-observation' };
+      }
       if (block?.type !== 'evidence_ladder' || !Array.isArray(block.steps)) return block;
       const steps = block.steps.map((step) => ({ ...step, status: statusMap[step?.status] || step?.status, label: String(step?.label || '').trim(), detail: String(step?.detail || step?.label || '').trim() })).filter((step) => step.label && ['available', 'context', 'missing'].includes(step.status));
       return steps.length ? { ...block, steps } : null;
@@ -466,12 +469,15 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
     grouped.set(key, group);
   }
   const groups = [...grouped.values()];
+  const normalizedQuery = normalise(query);
+  const wantsSpain = includesAny(normalizedQuery, ['espana', 'nacional', 'pais']) && !includesAny(normalizedQuery, ['europa', 'union europea']);
   const ranked = groups.map((group) => {
     const units = normalise(group[0]?.unit);
     const unitPreference = wantsChange
       ? (includesAny(units, ['rate', 'change', 'variacion', 'growth', 'percent', 'porcentaje']) ? 0.3 : 0)
       : (includesAny(units, ['index', 'indice', 'level', 'nivel']) ? 0.3 : 0);
-    return { group, score: unitPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000 };
+    const geographyPreference = wantsSpain && group.some((item) => includesAny(normalise(`${item.dimensionLabels?.geo || ''} ${item.dimensions?.geo || ''}`), ['espana', 'spain', 'es'])) ? 0.35 : 0;
+    return { group, score: unitPreference + geographyPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000 };
   }).sort((left, right) => right.score - left.score);
   const selected = ranked[0]?.group || observations;
   return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-12);
@@ -501,7 +507,11 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     // A location or comparison word alone is not evidence of subject fit.
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
     if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
-    const populationFit = populationEvidenceFit(compiler?.population, item);
+    // An explicit metric phrase is a stronger population contract than an
+    // uncertain small-model label. For example, “alquileres” should retrieve
+    // the rental series even if the compiler guessed a generic resident
+    // population from the surrounding political wording.
+    const populationFit = hintedMetricIds.size ? 'not_requested' : populationEvidenceFit(compiler?.population, item);
     // A direct regional-density hint is more specific than a small model's
     // inferred population label. Do not let an accidental age/group label
     // discard the requested territory series and fall through to an unrelated
@@ -518,7 +528,10 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
     ? candidates.filter((item) => hintedMetricIds.has(item.metricId))
     : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
   const compatibleCandidates = metricCandidates.length >= 2 ? metricCandidates : candidates.filter((item) => !excludedMetricIds.has(item.metricId));
-  const observations = rankingQuery ? compatibleCandidates : compiler?.claimType === 'legal' ? compatibleCandidates : selectCompatibleWarehouseSeries(query, compatibleCandidates);
+  const preserveGroupSeries = hintedMetricIds.has('imv_title_holders_by_nationality');
+  const observations = rankingQuery || compiler?.claimType === 'legal' || preserveGroupSeries
+    ? compatibleCandidates
+    : selectCompatibleWarehouseSeries(query, compatibleCandidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
   return { observations, source };
 };
@@ -544,7 +557,7 @@ const directGroupObservations = (query, observations) => {
   const requestedGroup = includesAny(queryText, ['inmigr', 'extranj', 'nacionalidad', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'foreign', 'espanol', 'espanola', 'hombre', 'mujer', 'edad', 'joven', 'mayor', 'benefici', 'ayudas']);
   if (!requestedGroup) return [];
   const measureFamilies = [
-    { query: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'], evidence: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension'] },
+    { query: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension', 'imv', 'ingreso minimo'], evidence: ['ayud', 'prestacion', 'benefici', 'subsid', 'pension', 'imv', 'ingreso minimo', 'minimum'] },
     { query: ['delinc', 'crimen', 'delito', 'seguridad', 'insegur'], evidence: ['delinc', 'crimen', 'delito', 'seguridad', 'insegur', 'offence', 'crime'] },
     { query: ['empleo', 'trabaj', 'paro', 'desemple', 'ocup'], evidence: ['empleo', 'trabaj', 'paro', 'desemple', 'ocup', 'employment', 'unemployment'] },
     { query: ['viviend', 'alquiler', 'casa', 'precio'], evidence: ['viviend', 'alquiler', 'casa', 'precio', 'housing', 'rent'] },
@@ -1008,7 +1021,7 @@ const startUrlResolveJob = (url) => {
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
   const broadTopicGuidance = classified.status === 'related' && !classified.primary && classified.alternatives?.some((item) => item.kind === 'topic');
-  const requestedHandler = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const requestedHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
   const relatedClaims = (classified.alternatives || []).filter((item) => {
     if (broadTopicGuidance && item.kind !== 'topic') return false;
@@ -1027,7 +1040,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const sourceIds = primary?.sourceRefs || [];
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
-  const handlerId = primary?.handlerId || handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const handlerId = primary?.handlerId || handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
@@ -1102,8 +1115,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         ? 'partial'
         : usableSource ? 'draft' : 'uncovered';
   const regionalComparison = !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRegionalComparison(text, observations) : null;
-  const europeanComparison = !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseEuropeanComparison(text, observations) : null;
-  const ranking = !primary && !regionalComparison && !europeanComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison || europeanComparison;
+  const historicalClaim = includesAny(normalise(text), ['historia', 'historico', 'historica', 'evolucion', 'desde 2015', 'desde 2010', 'desde 2008']);
+  const europeanComparison = !historicalClaim && !primary && !regionalComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseEuropeanComparison(text, observations) : null;
+  const ranking = !historicalClaim && !primary && !regionalComparison && !europeanComparison && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : regionalComparison || europeanComparison;
   const trend = !primary && !ranking && !isNormative && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseTrend(text, observations) : null;
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalProfile = isCausal ? causalEvidenceProfile(causalObservations) : null;
@@ -1442,9 +1456,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
-  const hintedMetricIds = preferredMetricIdsForQuery(retrievalText);
+  const hintedMetricIds = new Set([
+    ...preferredMetricIdsForQuery(retrievalText),
+    ...preferredMetricIdsForQuery(text),
+  ]);
   const explicitMetricRoute = hintedMetricIds.size > 0;
-  const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(retrievalText), ['delincuencia', 'delitos registrados', 'robos', 'hurtos', 'homicidios', 'fraudes', 'violencia sexual', 'criminalidad']);
+  const recordedOffenceRoute = hintedMetricIds.has('recorded_offences') || includesAny(normalise(text), ['delincuencia registrada', 'delitos registrados', 'robos registrados', 'hurtos registrados', 'homicidios registrados', 'fraudes registrados', 'violencia sexual registrada', 'criminalidad registrada']);
   const recordedOffenceCategory = recordedOffenceRoute ? recordedOffenceCategoryForQuery(retrievalText) : undefined;
   // A broad topic suggestion must not block a direct warehouse answer when
   // the user has supplied an explicit metric phrase such as “precio de la
@@ -1453,7 +1470,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const retrievalClassified = explicitMetricRoute && classified.primary && !preservePublishedClaim
     ? { ...classified, primary: undefined, alternatives: [classified.primary, ...(classified.alternatives || [])] }
     : classified;
-  const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const handlerId = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
   // A bare number is often a dimension label in statistical indexes (for
   // example, an index with base year 100). Keep exact amounts for budget
@@ -1493,11 +1510,26 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       ? 'precio alquiler España evolución'
       : hintedMetricIds.has('imv_title_holders_by_nationality')
         ? 'ingreso minimo vital titulares nacionalidad'
+        : hintedMetricIds.has('government_current_taxes_income_wealth_europe')
+          ? 'presion fiscal España evolución'
+          : hintedMetricIds.has('unmet_healthcare_waiting_list_rate')
+            ? 'lista de espera sanitaria España evolución'
         : '';
   const warehouseQueries = [...new Set([warehouseQuery, metricFallbackQuery, recordedOffenceQuery, counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '', ...propositionQueries.map((query) => handlerId === 'budget_transfer' ? query : query.replace(/\b\d[\d.,%]*\b/g, ' '))])].filter(Boolean).slice(0, 5);
   const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => findWarehouseEvidence(query, retrievalClassified.compiler, index === 0 ? queryEmbedding : undefined)))
     : [];
+  // A metric hint is a stronger routing signal than the broad semantic topic
+  // extracted by the classifier. Retry the canonical metric query directly so
+  // a new claim such as “the rent has exploded” can use the existing series
+  // even when its conversational wording mentions several unrelated causes.
+  if (!retrievalClassified.primary && !suppressUnrelatedContext && metricFallbackQuery) {
+    // Put the explicitly requested metric first. A broad first query can
+    // legitimately find contextual observations (for example crime terms in
+    // a housing claim); those must not crowd the direct series out of the
+    // bounded evidence packet.
+    warehouseResults.unshift(await findWarehouseEvidence(metricFallbackQuery, retrievalClassified.compiler));
+  }
   const warehouse = {
     observations: [...new Map(warehouseResults.flatMap((item) => item.observations || []).map((item) => [item.id, item])).values()].slice(0, 24),
     source: warehouseResults.find((item) => item.source)?.source,
@@ -1513,9 +1545,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // discovery and use their dedicated evidence paths instead.
   const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
   const allowDiscovery = !classified.compiler?.clarificationRequired || discoveryEligible.has(handlerId);
-  const indexedSource = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride
+  const indexedSourceCandidate = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride
     ? await findBestWarehouseSource([retrievalText, ...propositionQueries])
     : null;
+  // A loose keyword overlap is not enough to put an official excerpt in the
+  // answer. This prevents a claim such as “there are ministers in prison”
+  // from receiving an unrelated tax or broad politics publication merely
+  // because both documents mention government institutions.
+  const indexedSource = indexedSourceCandidate?.score >= 0.5 ? indexedSourceCandidate : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a

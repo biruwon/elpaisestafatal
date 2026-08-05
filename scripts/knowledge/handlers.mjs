@@ -3,7 +3,11 @@ const normalized = (value) => String(value || '').toLocaleLowerCase('es').normal
 const includesAny = (value, words) => words.some((word) => value.includes(word));
 
 export const handlerForInput = (input, claimType = '') => {
-  const text = normalized([input, ...(input?.retrievalHints || []), ...(input?.entities || [])].join(' '));
+  const text = normalized([
+    typeof input === 'string' ? input : input?.original || '',
+    ...(input?.retrievalHints || []),
+    ...(input?.entities || []),
+  ].join(' '));
   const propositions = Array.isArray(input?.impliedPropositions)
     ? input.impliedPropositions
     : Array.isArray(input?.propositions) ? input.propositions : [];
@@ -15,9 +19,11 @@ export const handlerForInput = (input, claimType = '') => {
   const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])
     && includesAny(text, ['aprueba', 'aprobo', 'autoriza', 'autorizo', 'acuerda', 'acordo', 'nombra', 'designa', 'cesa', 'concede', 'conceder', 'subvencion', 'ayuda', 'decreto', 'resolucion', 'adjudica', 'adjudico']);
   if (governmentEventSignal) return 'government_event';
+  const groupLanguageSignal = includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'ayudas', 'beneficiarios', 'nacionalidad']);
+  if (groupLanguageSignal && includesAny(text, ['desproporcion', 'más ayudas', 'mas ayudas', 'menos ayudas', 'reciben más', 'reciben mas', 'delinquen', 'cometen delitos'])) return 'group_comparison';
   const proportionSignal = includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', 'por cada', 'uno de cada', 'mitad', 'tercio', 'cuarto', '%']);
   if (proportionSignal) return 'proportion';
-  if (claimType === 'normative' || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
+  if ((claimType === 'normative' && includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'debe tener', 'deben tener'])) || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'okupa', 'okupas', 'ocupante', 'ocupacion', 'desalojo', 'desahucio', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'provocan', 'por culpa', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'genera', 'dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
