@@ -177,7 +177,7 @@ const evidenceLadderForCompiler = (compiler, source, handlerId = '') => {
   };
 };
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
-const meaningfulBroadTerms = new Set(['destruida', 'destruido', 'ruina', 'arruinada', 'arruinado', 'colapsada', 'colapsado', 'inseguridad', 'delincuencia', 'crisis', 'impuestos', 'vivienda', 'sanidad', 'empleo', 'paro', 'inmigracion', 'inmigrantes', 'gobierno', 'educacion', 'politica', 'futuro']);
+const meaningfulBroadTerms = new Set(['destruida', 'destruido', 'ruina', 'arruinada', 'arruinado', 'colapsada', 'colapsado', 'inseguridad', 'inseguro', 'insegura', 'peligro', 'peligrosa', 'delincuencia', 'crisis', 'decadencia', 'impuestos', 'vivienda', 'sanidad', 'empleo', 'paro', 'inmigracion', 'inmigrantes', 'gobierno', 'educacion', 'politica', 'futuro']);
 const isLowSignalInput = (value) => {
   const normalized = normalise(value);
   if (!normalized) return true;
@@ -1013,8 +1013,33 @@ const classify = async (text) => {
       })()
       : undefined);
   const broadTopic = broadPoliticalComplaint ? rankedPoliticalTopic : (broadEconomicComplaint ? rankedEconomicTopic : undefined);
-  const topicRanked = broadTopic
-    ? [broadTopic, ...familyRanked.filter(({ entry }) => entry.slug !== broadTopic.entry.slug)]
+  const domainTopicSlugs = {
+    immigration: 'inmigracion',
+    crime: 'seguridad',
+    housing: 'vivienda',
+    employment: 'empleo',
+    healthcare: 'sanidad',
+    taxes: 'impuestos',
+    public_finance: 'economia',
+  };
+  const semanticDomainCandidates = Object.keys(domainTopicSlugs).filter((domain) => String(querySemanticSignature).includes(domain));
+  // A single-domain broad statement (“invasión migratoria”, “España es
+  // insegura”, “el alquiler está imposible”) is not a new claim family, but
+  // it should still reach the reusable domain guidance. Derive the topic from
+  // the compiler's normalized entity vocabulary instead of enumerating each
+  // wording as another complaint special case.
+  const domainTopicFallback = !broadTopic && ['descriptive', 'trend', 'comparative'].includes(deterministicCompiler.claimType)
+    && semanticDomainCandidates.length === 1
+    ? (() => {
+      const domain = semanticDomainCandidates[0];
+      const slug = domainTopicSlugs[domain];
+      const entry = slug ? index.entries.find((item) => item.kind === 'topic' && item.slug === slug) : undefined;
+      return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
+    })()
+    : undefined;
+  const effectiveBroadTopic = broadTopic || domainTopicFallback;
+  const topicRanked = effectiveBroadTopic
+    ? [effectiveBroadTopic, ...familyRanked.filter(({ entry }) => entry.slug !== effectiveBroadTopic.entry.slug)]
     : familyRanked;
   const conceptRelatedRanked = ranked.filter((item) => item.semanticConceptRelated && item.entry.kind === 'claim');
   const familyGuidanceRanked = ranked.filter((item) => item.semanticFamilyRelated && item.entry.kind === 'claim');
@@ -1114,14 +1139,16 @@ const classify = async (text) => {
     if (top.entry.kind !== 'claim') return { status: 'related', input: { original: text }, alternatives: usefulAlternatives(decisionRanked) };
     return { status: 'published', input: { original: text }, primary: { kind: top.entry.kind, slug: top.entry.slug, title: top.entry.title, href: top.entry.href, confidence: top.score, reason: 'La formulación coincide con una afirmación publicada.', answer: top.entry.answer || '', assessment: top.entry.assessment || '', whatIsTrue: top.entry.whatIsTrue || '', whatIsMissing: top.entry.whatIsMissing || '', cannotProve: top.entry.cannotProve || '', scale: top.entry.scale || '', handlerId: topHandler, propositionIds: top.entry.propositionIds || [], evidenceIds: top.entry.evidenceIds || [], sourceRefs: top.entry.sourceRefs || [], sourceLinks: top.entry.sourceLinks || [] }, alternatives: usefulAlternatives(decisionRanked.slice(1)) };
   }
-  if (broadTopic) {
+  if (effectiveBroadTopic) {
     return {
       status: 'related',
       input: { original: text },
-      alternatives: [{ kind: 'topic', slug: broadTopic.entry.slug, title: broadTopic.entry.title, href: broadTopic.entry.href, confidence: broadTopic.score, handlerId: handlerForEntry(broadTopic.entry) }],
+      alternatives: [{ kind: 'topic', slug: effectiveBroadTopic.entry.slug, title: effectiveBroadTopic.entry.title, href: effectiveBroadTopic.entry.href, confidence: effectiveBroadTopic.score, handlerId: handlerForEntry(effectiveBroadTopic.entry) }],
       guidance: { questions: ['¿Qué decisión, indicador o periodo concreto quieres comprobar?'], limitation: broadPoliticalComplaint
         ? 'Es una valoración política amplia; hay que concretar el hecho antes de compararlo con datos.'
-        : 'Es una valoración económica amplia; hay que concretar el indicador, periodo o magnitud antes de compararla con datos.' },
+        : broadEconomicComplaint
+          ? 'Es una valoración económica amplia; hay que concretar el indicador, periodo o magnitud antes de compararla con datos.'
+          : 'Es una afirmación amplia sobre un ámbito concreto; hay que precisar el indicador, periodo o hecho antes de compararla con datos.' },
     };
   }
   const hasPlausibleCandidate = Boolean(top && top.score >= 0.34 && (top.lexical >= 0.2 || top.semantic >= 0.5));

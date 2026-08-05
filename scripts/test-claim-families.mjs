@@ -83,6 +83,29 @@ for (const text of broadComplaintCases) {
 console.log(`Broad complaint routing validation passed: ${broadComplaintCases.length} variants reused topic guidance.`);
 
 for (const [text, expectedSlug] of [
+  ['Hay una invasión migratoria', 'inmigracion'],
+  ['España es un país inseguro', 'seguridad'],
+  ['El Estado gasta más de lo que ingresa', 'economia'],
+  ['Nunca ha habido tantos trabajadores', 'empleo'],
+]) {
+  const response = await fetch(`${endpoint}/v1/classify`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text, inputType: 'text' }),
+  });
+  let payload = await response.json();
+  for (let attempt = 0; payload.status === 'processing' && attempt < 160; attempt += 1) {
+    await sleep(250);
+    payload = await (await fetch(`${endpoint}/v1/classify/${payload.requestId}`)).json();
+  }
+  if (!['related', 'partial'].includes(payload.status) || !payload.alternatives?.some((item) => item.slug === expectedSlug)) {
+    throw new Error(`${text}: domain wording did not route to ${expectedSlug}: ${JSON.stringify(payload)}`);
+  }
+  console.log(JSON.stringify({ text, status: payload.status, related: expectedSlug }));
+}
+console.log('Domain broad-wording routing validation passed: new surface forms reuse domain guidance.');
+
+for (const [text, expectedSlug] of [
   ['El Gobierno compra votos con ayudas', 'compra-votos-espana'],
   ['Sánchez paga a la gente para que le vote', 'compra-votos-espana'],
   ['La deuda pública es impagable', 'economia'],

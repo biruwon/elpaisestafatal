@@ -165,6 +165,13 @@ assert(publicDebt.semanticSignature === equivalentPublicDebt.semanticSignature, 
 const taxComparison = deterministicFallbackCompiler('La presión fiscal española es mayor que la europea');
 assert(!taxComparison.semanticSignature.includes('population:personas mayores'), 'Comparative “mayor que” was incorrectly treated as an older-population dimension');
 
+const migrationInvasion = deterministicFallbackCompiler('Hay una invasión migratoria');
+assert(migrationInvasion.semanticSignature.includes('entity:immigration'), 'Migration-invasion wording did not enter the reusable immigration family');
+const employmentRecordVariant = deterministicFallbackCompiler('Nunca ha habido tantos trabajadores');
+assert(employmentRecordVariant.semanticSignature.includes('employment_record'), 'Natural record-employment wording did not enter the reusable employment family');
+const budgetBalance = deterministicFallbackCompiler('El Estado gasta más de lo que ingresa');
+assert(budgetBalance.semanticSignature.includes('public_finance'), 'Budget-balance wording did not enter the reusable public-finance family');
+
 const healthAccess = deterministicFallbackCompiler('Las listas de espera sanitarias están colapsadas');
 const healthSpending = deterministicFallbackCompiler('España gasta más por habitante en sanidad');
 const neet = deterministicFallbackCompiler('La tasa de ninis ha bajado en España');
