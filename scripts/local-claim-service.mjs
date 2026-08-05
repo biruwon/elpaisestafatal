@@ -720,8 +720,10 @@ const fetchCatalog = async () => {
         try {
           const builtEntries = JSON.parse(await readFile(join(process.cwd(), 'dist/claim-catalog.json'), 'utf8'));
           const merged = new Map([...builtEntries, ...remoteEntries].map((entry) => [entry.slug || `${entry.kind}:${entry.title}`, entry]));
+          if (process.env.LOCAL_DEBUG_ROUTING === '1') console.error('Catalog merge:', { cwd: process.cwd(), built: builtEntries.length, remote: remoteEntries.length, merged: merged.size, hasTarget: merged.has('poblacion-residente-supera-49m') });
           return [...merged.values()];
-        } catch {
+        } catch (error) {
+          if (process.env.LOCAL_DEBUG_ROUTING === '1') console.error('Built catalog fallback unavailable:', error instanceof Error ? error.message : error);
           return remoteEntries;
         }
       }
