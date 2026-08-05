@@ -23,7 +23,7 @@ import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-e
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
 import { unitCompatible } from './knowledge/numeric-evidence.mjs';
-import { isSpecificSemanticSignature, semanticFamilyKeys } from './knowledge/claim-family-routing.mjs';
+import { isReusableSemanticFamilyKey, isSpecificSemanticSignature, semanticFamilyKeys } from './knowledge/claim-family-routing.mjs';
 import { domainProfileFor } from './knowledge/domain-handlers.mjs';
 import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
@@ -1012,7 +1012,7 @@ const classify = async (text) => {
   // immigration); routing it to the topic first would discard the published
   // family that already answers the paraphrase.
   const routingFamilyKeys = new Set(semanticFamilyKeys(routingCompiler.semanticSignature));
-  const structuredFamily = (keys) => [...keys].some((key) => /(?:vote_purchase|benefits\+immigration|housing\+prices|rental_housing|employment_record|health_access|healthcare_collapse|public_debt_stock|public_debt_ratio|housing_price_ratio|education_outcomes|fixed_discontinuous|crime_reporting|minimum_income|pension_financing)/.test(key));
+  const structuredFamily = (keys) => [...keys].some(isReusableSemanticFamilyKey);
   const routingHasStructuredFamily = structuredFamily(routingFamilyKeys);
   const hasPublishedSemanticFamily = routingFamilyKeys.size > 0
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
@@ -1333,7 +1333,14 @@ const classify = async (text) => {
       return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
     })()
     : undefined;
-  const effectiveBroadTopic = broadTopic || domainTopicFallback;
+  const complaintTopicFallback = !broadTopic && !domainTopicFallback && (broadPoliticalComplaint || broadEconomicComplaint)
+    ? (() => {
+      const slug = broadPoliticalComplaint ? 'politica' : 'economia';
+      const entry = index.entries.find((item) => item.kind === 'topic' && item.slug === slug);
+      return entry ? { entry, lexical: 0.35, semantic: 0, score: 0.35, semanticFamilyMatch: false, semanticFamilyRelated: false, semanticConceptRelated: false } : undefined;
+    })()
+    : undefined;
+  const effectiveBroadTopic = broadTopic || domainTopicFallback || complaintTopicFallback;
   const topicRanked = effectiveBroadTopic
     ? [effectiveBroadTopic, ...familyRanked.filter(({ entry }) => entry.slug !== effectiveBroadTopic.entry.slug)]
     : familyRanked;
@@ -1438,7 +1445,8 @@ const classify = async (text) => {
   // an evaluative wrapper such as “está colapsada” must not force the user
   // into an uncovered dead end. Broad wording without a family match still
   // follows the cautious clarification path below.
-  if (canonicalPhrase || (strongMatch && !broadEvaluative) || semanticFamilyMatch) {
+  const broadComplaintNeedsTopic = (broadPoliticalComplaint || broadEconomicComplaint) && !hasPublishedSemanticFamily;
+  if (canonicalPhrase || (!broadComplaintNeedsTopic && strongMatch && !broadEvaluative) || (!broadComplaintNeedsTopic && semanticFamilyMatch)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
     // gets a useful direction without being presented as a published verdict.

@@ -134,6 +134,11 @@ const semanticConcepts = (value) => {
     concepts = concepts.filter((concept) => concept !== 'public_finance');
   }
   if (containsPhrase(value, 'deuda publica') && containsPhrase(value, 'pib')) concepts.push('public_debt_ratio');
+  // “Impagable” is a qualitative statement about the accumulated debt stock,
+  // not about the annual deficit. Preserve that distinction so a vague debt
+  // complaint cannot inherit a deficit answer merely because both are public
+  // finance concepts.
+  if (containsPhrase(value, 'deuda publica') && containsPhrase(value, 'impagable')) concepts.push('public_debt_stock');
   if (concepts.includes('public_debt_stock')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_ratio'].includes(concept));
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
   if (concepts.includes('health_access') && !concepts.includes('healthcare')) concepts.push('healthcare');

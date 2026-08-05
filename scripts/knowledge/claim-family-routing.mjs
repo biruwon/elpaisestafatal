@@ -101,7 +101,7 @@ export const semanticFamilyKeys = (signature) => {
   // compound payloads. The uniqueness guard still decides whether it can
   // authorize a strong match.
   for (const part of propositionParts) {
-    const match = part.match(/^(descriptive|trend):([^:]+)(?::.*)?$/);
+    const match = part.match(/^(descriptive|trend|comparative):([^:]+)(?::.*)?$/);
     if (!match) continue;
     const payloadParts = match[2].split(/[+_-]/).filter((value) => value.length >= 3);
     if (payloadParts.length >= 2 || match[2].includes('_') || part.includes(':trend:')) {
@@ -114,4 +114,19 @@ export const semanticFamilyKeys = (signature) => {
   if (fixedDiscontinuous) keys.push(`${type}|${polarity}|definition:fixed_discontinuous`);
   if (definition) keys.push(`${type}|${polarity}|${definition}`);
   return [...new Set(keys)];
+};
+
+// Family keys with an explicit dimension-free contract are safe to use as
+// reusable evidence-family anchors. The key shape is deliberately structural:
+// callers do not need to maintain a second list of claim concepts every time
+// a new reviewed family is added to the compiler registry.
+export const isReusableSemanticFamilyKey = (key) => {
+  const value = String(key || '');
+  if (value.includes('||')) return true;
+  if (!value.startsWith('metric-family|')) return false;
+  // A metric-family key is reusable only when its payload names a compound
+  // or explicitly structured concept. Generic one-word keys such as
+  // “crime” and “immigration” are topic context, not evidence contracts.
+  const payload = value.split('|').at(-1) || '';
+  return payload.includes('+') || payload.includes('_');
 };

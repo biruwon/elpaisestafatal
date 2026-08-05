@@ -1,4 +1,4 @@
-import { isSpecificSemanticSignature, semanticFamilyKeys } from './claim-family-routing.mjs';
+import { isReusableSemanticFamilyKey, isSpecificSemanticSignature, semanticFamilyKeys } from './claim-family-routing.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
@@ -20,6 +20,9 @@ const descriptiveTerms = 'descriptive|polarity:positive|term:compra|term:votos';
 if (!semanticFamilyKeys(descriptiveTerms).length) throw new Error('Descriptive term family key missing');
 const structuredTrend = 'trend|polarity:negative|trend:employment_record';
 if (!isSpecificSemanticSignature(structuredTrend) || !semanticFamilyKeys(structuredTrend).length) throw new Error('Structured single-concept trend family was rejected');
+if (isReusableSemanticFamilyKey('metric-family|polarity:positive|crime')) throw new Error('Generic topic metric was treated as a reusable evidence family');
+if (!isReusableSemanticFamilyKey('metric-family|polarity:positive|housing+prices')) throw new Error('Compound metric family was not treated as reusable');
+if (!isReusableSemanticFamilyKey('descriptive|polarity:positive||descriptive:public_debt_stock')) throw new Error('Dimension-free structured family was not treated as reusable');
 
 // Keep the static-browser compiler and the local-service compiler aligned at
 // the level that matters: equivalent wording must remain equivalent, while

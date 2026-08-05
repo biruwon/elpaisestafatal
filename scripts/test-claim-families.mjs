@@ -140,10 +140,12 @@ if (reversedPayload.primary?.slug === 'inmigrantes-ayudas-desproporcionadas' || 
 }
 console.log(JSON.stringify({ text: 'Los españoles reciben más ayudas que los inmigrantes', status: reversedPayload.status, related: reversedPayload.relatedClaims?.map((item) => item.slug) || [] }));
 
-for (const [text, expectedSlug] of [
-  ['El Gobierno compra votos con ayudas', 'compra-votos-espana'],
-  ['Sánchez paga a la gente para que le vote', 'compra-votos-espana'],
-  ['La deuda pública es impagable', 'economia'],
+for (const [text, expectedSlugs] of [
+  ['El Gobierno compra votos con ayudas', ['compra-votos-espana']],
+  ['Sánchez paga a la gente para que le vote', ['compra-votos-espana']],
+  // A debt-specific family is stronger guidance than the broad economy topic;
+  // either is acceptable, but the specific published family should win.
+  ['La deuda pública es impagable', ['deuda-publica-supera-16-billones', 'economia']],
 ]) {
   const form = new FormData();
   form.set('text', text);
@@ -151,10 +153,10 @@ for (const [text, expectedSlug] of [
   const response = await fetch(`${endpoint}/api/classify`, { method: 'POST', body: form });
   const payload = await response.json();
   const apiRelated = [...(payload.alternatives || []), ...(payload.relatedClaims || []), ...(payload.primary ? [payload.primary] : [])];
-  if (!apiRelated.some((item) => item.slug === expectedSlug)) {
-    throw new Error(`${text}: expected reusable guidance ${expectedSlug}, got ${JSON.stringify(payload.alternatives || [])}`);
+  if (!apiRelated.some((item) => expectedSlugs.includes(item.slug))) {
+    throw new Error(`${text}: expected reusable guidance ${expectedSlugs.join(' or ')}, got ${JSON.stringify(payload.alternatives || [])}`);
   }
-  console.log(JSON.stringify({ text, related: expectedSlug, status: payload.status }));
+  console.log(JSON.stringify({ text, related: expectedSlugs.find((slug) => apiRelated.some((item) => item.slug === slug)), status: payload.status }));
 }
 console.log('Compound-family guidance validation passed: political and economic variants reuse existing domains.');
 
