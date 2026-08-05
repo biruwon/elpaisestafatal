@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:domain-refresh:validate && npm run knowledge:domain-gaps:validate && npm run knowledge:connectors && npm run classifier:validate && npm run health:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && npm run knowledge:release:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run audit:public-surface",
+    "build": "npm run validate:content && npm run claim-catalog:validate && npm run knowledge:validate && npm run knowledge:metrics && npm run knowledge:refresh:validate && npm run knowledge:domain-refresh:validate && npm run knowledge:domain-gaps:validate && npm run knowledge:connectors && npm run classifier:validate && npm run health:validate && npm run media:validate && npm run deployment:validate && npm run runtime:validate && npm run rate-limit:validate && npm run knowledge:triage:workflow:validate && npm run learning:validate && npm run knowledge:triage:validate && npm run knowledge:materialize:validate && npm run knowledge:release:validate && astro build && npm run ux:static && npm run knowledge:family-index && npm run knowledge:family-collisions && npm run audit:public-surface",
     "audit:public-surface": "node scripts/audit-public-surface.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -64,6 +64,7 @@
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs",
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:family-index": "node scripts/knowledge/validate-claim-family-index.mjs",
+    "knowledge:family-collisions": "node scripts/knowledge/validate-family-collision-guard.mjs",
     "knowledge:cluster": "node scripts/knowledge/cluster-gaps.mjs",
     "knowledge:cluster:validate": "node scripts/knowledge/validate-query-clusters.mjs",
     "knowledge:backfill-signatures": "node scripts/knowledge/backfill-gap-signatures.mjs",
