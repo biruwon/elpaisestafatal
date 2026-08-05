@@ -876,6 +876,30 @@ const classify = async (text) => {
   telemetry.cacheMisses += 1;
   const index = await getIndex();
   const deterministicCompiler = fallbackCompiler(text);
+  const routingCompiler = deterministicFallbackCompiler(text);
+  const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
+  const routingDomains = {
+    immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda',
+    employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia',
+  };
+  const routingTopics = [...new Set(Object.entries(routingDomains)
+    .filter(([domain]) => routingCompiler.semanticSignature.includes(domain))
+    .map(([, slug]) => slug))];
+  if (!exactPublishedInput && routingCompiler.claimType === 'descriptive' && routingCompiler.propositions.length <= 1 && routingTopics.length === 1) {
+    const slug = routingTopics[0];
+    const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === slug);
+    if (topic) {
+      const result = {
+        status: 'related',
+        input: { original: text, canonical: routingCompiler.normalized },
+        alternatives: [{ kind: 'topic', slug: topic.slug, title: topic.title, href: topic.href, confidence: 0.35, handlerId: handlerForInput({ retrievalHints: [topic.title] }, 'descriptive') }],
+        guidance: { questions: ['¿Qué indicador, periodo o territorio quieres comprobar?'], limitation: 'Es una formulación amplia sobre un tema concreto; hay que precisar el indicador antes de compararla con datos.' },
+      };
+      answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+      return result;
+    }
+  }
   const deterministicHandler = handlerForInput(deterministicCompiler, deterministicCompiler.claimType);
   const lexicalRanked = index.entries.map((entry, position) => ({ entry, position, lexical: lexicalScore(text, entry) })).sort((left, right) => right.lexical - left.lexical);
   let vector = null;
@@ -1004,6 +1028,9 @@ const classify = async (text) => {
     return handlerForEntry(entry) === deterministicHandler;
   };
   const normalizedQuery = normalise(text);
+  const deterministicRoutingCompiler = deterministicFallbackCompiler(text);
+  const broadDeterministicDescription = deterministicRoutingCompiler.claimType === 'descriptive'
+    && deterministicRoutingCompiler.propositions.length <= 1;
   const suppressPublishedContext = localSpecificClaim(text) || evidenceUnavailableSignal(text);
   const nearCanonicalEntry = ({ entry, lexical }) => entry.kind === 'claim' && lexical >= 0.9;
   const publicRanked = suppressPublishedContext ? [] : ranked.filter((item) => item.entry.published && numericCompatible(item.entry) && (compatibleEntry(item.entry) || nearCanonicalEntry(item)));
@@ -1012,7 +1039,7 @@ const classify = async (text) => {
   // paraphrase cannot be displaced by a thematically similar claim or topic.
   const semanticFamilyCandidate = suppressPublishedContext
     ? undefined
-    : ranked.find((item) => item.semanticFamilyMatch && item.entry.kind === 'claim' && numericCompatible(item.entry));
+    : ranked.find((item) => !broadDeterministicDescription && item.semanticFamilyMatch && item.entry.kind === 'claim' && numericCompatible(item.entry));
   const familyRanked = semanticFamilyCandidate
     ? [semanticFamilyCandidate, ...publicRanked.filter((item) => item.entry.slug !== semanticFamilyCandidate.entry.slug)]
     : publicRanked;
@@ -1055,7 +1082,7 @@ const classify = async (text) => {
   // short wording. Keep the deterministic compiler as a routing backstop so a
   // phrase such as “La vivienda está cara” still reaches the reusable housing
   // topic instead of falling into the generic political explanation.
-  const routingSemanticSignature = `${querySemanticSignature}|${deterministicFallbackCompiler(text).semanticSignature}`;
+  const routingSemanticSignature = `${querySemanticSignature}|${deterministicRoutingCompiler.semanticSignature}`;
   const semanticDomainCandidates = Object.keys(domainTopicSlugs).filter((domain) => routingSemanticSignature.includes(domain));
   const semanticTopicCandidates = [...new Set(semanticDomainCandidates.map((domain) => domainTopicSlugs[domain]))];
   // A single-domain broad statement (“invasión migratoria”, “España es
@@ -1329,10 +1356,16 @@ const startUrlResolveJob = (url) => {
 };
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
-  const broadTopicGuidance = classified.status === 'related' && !classified.primary && classified.alternatives?.some((item) => item.kind === 'topic');
+  const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
+  const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
+  const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
+  const fallbackTopic = fallbackTopicSlug && !classified.primary
+    ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/temas/${fallbackTopicSlug}`, confidence: 0.3 }
+    : undefined;
+  const broadTopicGuidance = classified.status === 'related' && !classified.primary && (classified.alternatives?.some((item) => item.kind === 'topic') || fallbackTopic);
   const requestedHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
-  const relatedClaims = (classified.alternatives || []).filter((item) => {
+  const relatedClaims = [...(classified.alternatives || []), ...(fallbackTopic ? [fallbackTopic] : [])].filter((item, index, items) => items.findIndex((candidate) => candidate.slug === item.slug) === index).filter((item) => {
     if (broadTopicGuidance && item.kind !== 'topic') return false;
     if (domainSpecific.has(requestedHandler) && item.kind === 'claim' && item.handlerId && item.handlerId !== requestedHandler) return false;
     return true;
@@ -1746,7 +1779,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   };
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: source && !primary && !broadTopicGuidance ? [] : isGroupComparison ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -1760,7 +1793,11 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     evidenceIds: [],
     sourceIds: [],
   };
-  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: source && !primary ? [] : relatedClaims };
+  // An unrelated discovered source must not erase deterministic topic
+  // guidance. Broad wording should still point to the reusable domain even
+  // when discovery happened to return a contextual document.
+  const finalRelatedClaims = source && !primary && !broadTopicGuidance ? [] : relatedClaims;
+  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: finalRelatedClaims };
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
