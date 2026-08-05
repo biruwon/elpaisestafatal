@@ -1,0 +1,13 @@
+{
+  "id": "prop-ley-nietos-nacionalidad-core",
+  "claimSlug": "ley-nietos-nacionalidad",
+  "text": "La Ley de Nietos dará la nacionalidad española a cientos de miles de personas.",
+  "type": "legal",
+  "subject": "law_20_2022_nationality_option",
+  "predicate": "will_grant_nationality_to",
+  "object": "hundreds_of_thousands",
+  "geography": "España",
+  "period": "vigente según Ley 20/2022",
+  "status": "qualified",
+  "evidenceIds": ["ley-memoria-democratica-nacionalidad-nietos"]
+}

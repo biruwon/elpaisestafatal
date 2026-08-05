@@ -1,0 +1,13 @@
+{
+  "id": "prop-regularizacion-1-2-millones-decreto-core",
+  "claimSlug": "regularizacion-1-2-millones-decreto",
+  "text": "Un decreto extraordinario ya ha regularizado a 1,2 millones de personas.",
+  "type": "mixed",
+  "subject": "extraordinary_regularization_process",
+  "predicate": "has_granted",
+  "object": "1200000 completed_regularizations",
+  "geography": "España",
+  "period": "2026",
+  "status": "contradicted",
+  "evidenceIds": ["regularizacion-extraordinaria-solicitudes-julio-2026"]
+}
