@@ -1512,7 +1512,10 @@ const classify = async (text) => {
       return result;
     }
   }
-  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)), guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
+  const fallbackDomainSlug = !selected && (broadPoliticalComplaint ? 'politica' : broadEconomicComplaint ? 'economia' : undefined);
+  const fallbackDomainEntry = fallbackDomainSlug ? index.entries.find((entry) => entry.kind === 'topic' && entry.slug === fallbackDomainSlug) : undefined;
+  const fallbackDomainAlternative = fallbackDomainEntry ? { kind: 'topic', slug: fallbackDomainEntry.slug, title: fallbackDomainEntry.title, href: fallbackDomainEntry.href, confidence: 0.35, handlerId: handlerForEntry(fallbackDomainEntry), validated: false } : undefined;
+  const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: [...(fallbackDomainAlternative ? [fallbackDomainAlternative] : []), ...usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)).filter((item) => item.slug !== fallbackDomainAlternative?.slug)], guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
   answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
   pruneRuntimeState();
   return result;
@@ -2044,7 +2047,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   };
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: explicitMetricRoute ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -2064,7 +2067,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim
     ? (fallbackTopic && !explicitMetricRoute ? [fallbackTopic] : [])
     : relatedClaims;
-  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: explicitMetricRoute ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
+  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
