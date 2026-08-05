@@ -273,6 +273,8 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   if (!validateEvidencePacket(packet).ok) return result.result;
   const cacheKey = digest(JSON.stringify({
     schemaVersion: packet.schemaVersion,
+    model: routerModel,
+    plannerSchema: RUNTIME_VERSIONS.answerPlanSchema,
     handlerId: packet.handlerId,
     claimType: packet.claimType,
     resultStatus: result.status,
@@ -335,7 +337,7 @@ const compileClaim = async (text, candidates = []) => {
   // Ambiguous inputs retain their full signature instead.
   const strongestFamilyKey = familyKeys[0];
   const cacheStructure = strongestFamilyKey ? `family:${strongestFamilyKey}` : `signature:${deterministic.semanticSignature}`;
-  const cacheKey = digest(JSON.stringify({ structure: cacheStructure, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
+  const cacheKey = digest(JSON.stringify({ structure: cacheStructure, model: routerModel, contract: RUNTIME_VERSIONS.compilerContract, fallbackKnowledge: RUNTIME_VERSIONS.fallbackKnowledge, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
   const cached = compilerCache.get(cacheKey);
   if (cached?.expiresAt > Date.now()) { telemetry.compilerCacheHits += 1; return cached.value; }
   if (cached) compilerCache.delete(cacheKey);
