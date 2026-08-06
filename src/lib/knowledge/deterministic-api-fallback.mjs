@@ -16,6 +16,9 @@ const topicReference = (text) => {
   if (/sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar|politic|destru|ruina|fatal|desastr|cuesta abajo/.test(value)) {
     return { kind: 'topic', slug: 'politica', title: 'Contexto político en España', href: '/preocupaciones/politica', confidence: 0.36 };
   }
+  if (/econom[ií]a/.test(value) && /empleo|trabaj|paro|salario|sueldo/.test(value)) {
+    return { kind: 'topic', slug: 'empleo', title: 'Empleo y condiciones de trabajo', href: '/preocupaciones/empleo', confidence: 0.36 };
+  }
   return undefined;
 };
 

@@ -1749,7 +1749,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0 && !vagueTaxJudgement(text);
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
   const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
-  const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1];
+  const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1]
+    || (/(?:econom[ií]a)/.test(broadTopicText) && /(?:empleo|trabaj|paro|salario|sueldo)/.test(broadTopicText) ? 'empleo' : undefined);
   const fallbackTopic = fallbackTopicSlug && !classified.primary && !vagueTaxJudgement(text)
     ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/preocupaciones/${fallbackTopicSlug}`, confidence: 0.3 }
     : undefined;
