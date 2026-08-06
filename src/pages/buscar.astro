@@ -1,20 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { claimIndexEntries } from '../data/claimIndexData';
-const payload = JSON.stringify(claimIndexEntries).replace(/</g, '\\u003c');
 ---
-<BaseLayout title="Buscar — El país está fatal" description="Busca afirmaciones y temas investigados sobre España.">
-  <article class="prose search-page">
-    <p class="eyebrow">Buscar una afirmación</p>
-    <h1>Busca una pregunta<br /><em>comprobable.</em></h1>
-    <p class="lead">Encontrarás fichas revisadas o el contexto más cercano. Si la frase es nueva, llévala al comprobador: empieza con una orientación rápida y señala qué evidencia falta.</p>
-    <form class="site-search" role="search"><label for="site-query">Afirmación o tema</label><div><input id="site-query" type="search" autocomplete="off" placeholder="“La vivienda va a bajar…”" /><button>Buscar <span>→</span></button></div></form>
-    <div id="search-output" class="search-output" aria-live="polite"><p class="quiet-note">Escribe para ver resultados.</p></div>
-    <noscript><p class="search-noscript">La búsqueda necesita JavaScript. <a href="/#comprobar">Pega la frase directamente en el comprobador.</a></p></noscript>
-  </article>
-  <script is:inline type="application/json" id="search-page-data" set:html={payload}></script>
-  <script src="../scripts/site-search.ts"></script>
+<BaseLayout title="Comprobar — El país está fatal" description="Comprueba una afirmación en El país está fatal.">
+  <meta http-equiv="refresh" content="0; url=/#comprobar" />
+  <script is:inline>window.location.replace('/#comprobar');</script>
+  <p class="prose search-redirect">Redirigiendo al comprobador… <a href="/#comprobar">Continuar</a></p>
 </BaseLayout>
-<style>
-  .search-page{max-width:980px}.site-search{margin:45px 0 28px;max-width:760px}.site-search label{display:block;font:600 .68rem var(--mono);text-transform:uppercase;margin-bottom:8px}.site-search>div{display:grid;grid-template-columns:1fr auto;border:2px solid var(--ink)}.site-search input{min-width:0;border:0;background:transparent;padding:17px;outline:0}.site-search button{border:0;background:var(--ink);color:var(--paper);padding:0 20px;font-weight:700;cursor:pointer}.site-search button span{color:var(--yellow);margin-left:12px}.search-output{border-top:1px solid var(--ink)}.search-output>a{display:grid;grid-template-columns:110px 1fr auto;gap:7px 16px;padding:20px 0;border-bottom:1px solid var(--line);line-height:1.35}.search-output span{font:600 .62rem var(--mono);color:var(--red);text-transform:uppercase}.search-output strong{display:block;font:1.35rem/1.05 var(--serif)}.search-output small{display:block;grid-column:2;color:var(--muted);line-height:1.45;margin-top:2px}.search-result-action{align-self:center;color:var(--ink);font:600 .66rem var(--mono);white-space:nowrap;text-decoration:underline;text-underline-offset:3px}.search-result-action:hover{color:var(--red)}.search-check-bar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 0;border-bottom:1px solid var(--ink)}.search-check-bar p{margin:0;color:var(--muted);font-size:.88rem}.search-check-link,.search-continue{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:12px 14px;font:600 .68rem var(--mono);white-space:nowrap}.search-check-link span,.search-continue span{color:var(--yellow);font-size:1rem}.search-empty{border-top:2px solid var(--ink);padding:24px 0;max-width:760px}.search-empty p{margin:0 0 16px}.search-empty small{display:block;margin-top:16px;color:var(--muted);font:.72rem/1.45 var(--mono)}.search-noscript{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:.85rem}.search-noscript a{text-decoration:underline}@media(max-width:600px){.site-search>div{grid-template-columns:1fr}.site-search button{padding:14px}.search-output>a{grid-template-columns:1fr;gap:6px}.search-output small{grid-column:1}.search-result-action{justify-self:start}.search-check-bar{align-items:flex-start;flex-direction:column;gap:12px}.search-check-link,.search-continue{width:100%;justify-content:space-between}}
-</style>
