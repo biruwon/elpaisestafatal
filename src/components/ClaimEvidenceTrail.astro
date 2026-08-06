@@ -25,6 +25,9 @@ const relationshipLabels: Record<string, string> = {
   context: 'Aporta contexto',
   insufficient: 'No basta para comprobarla',
 };
+const readableEvidenceSummary = (summary: string) => summary.startsWith('Reusable source evidence.')
+  ? 'Este registro aporta datos de contexto relacionados con la afirmación; por sí solo no demuestra la causa.'
+  : summary;
 ---
 
 {evidence.length > 0 && <section id="claim-evidence" class="claim-evidence" aria-labelledby="claim-evidence-title">
@@ -45,7 +48,7 @@ const relationshipLabels: Record<string, string> = {
         <h3>{source?.title || 'Fuente pública vinculada'}</h3>
         <dl><div><dt>Periodo</dt><dd>{item.period || 'No indicado'}</dd></div><div><dt>Ámbito</dt><dd>{item.geography || 'No indicado'}</dd></div><div><dt>Unidad</dt><dd>{item.unit || 'No indicada'}</dd></div>{source?.date && <div><dt>Fuente fechada</dt><dd>{source.date}</dd></div>}{reviewedAt && <div><dt>Vínculo revisado</dt><dd>{reviewedAt}</dd></div>}</dl>
         <p class="evidence-label">Qué establece este registro</p>
-        <p class="evidence-finding">{item.summary}</p>
+        <p class="evidence-finding">{readableEvidenceSummary(item.summary)}</p>
         {item.limitation && <p class="evidence-limit"><strong>Límite:</strong> {item.limitation}</p>}
         {item.relationships.filter((link) => propositionIds.has(link.propositionId)).map((link) => <div class="evidence-relation-wrap"><span class={`evidence-relation evidence-relation-${link.relationship}`}>{relationshipLabels[link.relationship]}</span><details class="evidence-relation-details"><summary>Por qué está vinculado</summary><p><strong>Proposición:</strong> {propositionText.get(link.propositionId) || 'Proposición publicada asociada'}</p><p>{relationshipGuidance[link.relationship]}</p>{link.reviewedAt && <p class="evidence-review-meta"><strong>Revisión del vínculo:</strong> {link.reviewedAt}</p>}</details></div>)}
         {source && <a href={source.url} target="_blank" rel="noreferrer">{sourceTypeLabel(source.type)} · Abrir fuente <span aria-hidden="true">↗</span></a>}

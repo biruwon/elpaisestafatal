@@ -1008,7 +1008,10 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
   const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
   const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
   const inputMarkup = inputKind === 'media' ? submittedClaimMarkup(original, 'media') : submittedClaimMarkup(original);
-  const overview = ['published', 'related', 'uncovered', 'unavailable'].includes(state) ? quickResultOverviewMarkup(state, primary, guidance) : '';
+  // The no-match body already contains the clarification path. Repeating the
+  // same evidence/limitation/next-step summary below it makes the result feel
+  // longer without adding information.
+  const overview = ['published', 'related', 'unavailable'].includes(state) ? quickResultOverviewMarkup(state, primary, guidance) : '';
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${overview}${resultActionsMarkup(primary?.answer ? shareUrlFor(original, primary, state === 'published' ? 'published' : 'related') : undefined)}${alternativesMarkup}</article>`;
   bindResultActions();
 };
@@ -1228,7 +1231,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
         limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
       }, '', 'media');
-      else setDynamicStatus('No hemos podido añadir contexto adicional. La respuesta inicial sigue siendo utilizable.', 'unavailable');
+      else clearDynamicStatus();
       return;
     }
     if (!file && cacheKey) {
@@ -1258,7 +1261,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (version === requestVersion) {
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
       else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' }, '', 'media');
-      else setDynamicStatus('No hemos podido añadir contexto adicional. La respuesta inicial sigue siendo utilizable.', 'unavailable');
+      else clearDynamicStatus();
     }
   }
 };
