@@ -16,6 +16,15 @@ type SearchResponse = {
   relatedClaims?: Array<{ kind: 'claim' | 'topic'; slug: string; title: string; href: string; confidence: number }>;
 };
 
+type CompactResultModel = {
+  status: 'uncovered' | 'related' | 'unavailable' | 'loading' | 'invalid';
+  claim: string;
+  summary: string;
+  refinementQuestion?: string;
+  refinementChoices?: string[];
+  secondaryAction?: string;
+};
+
 let chartSequence = 0;
 
 const readJson = <T>(id: string, fallback: T): T => {
@@ -328,6 +337,41 @@ const recordQuestion = (text: string, record: LearningRecord = {}): void => {
 const findEntry = (slug: string | undefined): ClaimIndexEntry | undefined => slug ? claimIndex.find((entry) => entry.slug === slug) : undefined;
 
 const resultLink = (entry: ClaimIndexEntry): string => `<a class="claim-result-link" href="${escapeHtml(entry.href)}">${entry.kind === 'topic' ? 'Ver contexto del tema' : 'Ver datos y fuentes'} <span aria-hidden="true">→</span></a>`;
+
+const navigateToPublishedClaim = (entry?: ClaimIndexEntry): boolean => {
+  if (!entry || entry.kind !== 'claim') return false;
+  window.location.assign(entry.href);
+  return true;
+};
+
+const defaultRefinementChoices = ['Política', 'Vivienda', 'Empleo', 'Seguridad', 'Economía', 'Sanidad'];
+
+const compactResultMarkup = (model: CompactResultModel): string => {
+  const labels = {
+    uncovered: ['Sin coincidencia directa', 'No hay una comprobación publicada para esta afirmación'],
+    related: ['Necesita concretarse', 'Encontramos contexto relacionado, pero no una comprobación exacta'],
+    unavailable: ['No podemos completar la comprobación', 'La orientación inicial está disponible; puedes intentarlo de nuevo más tarde'],
+    loading: ['Estamos comprobando la frase', 'La respuesta aparecerá aquí en unos segundos'],
+    invalid: ['No podemos leer este archivo', 'Prueba con otro archivo o pega la frase directamente'],
+  }[model.status];
+  const choices = model.refinementChoices?.length ? `<div class="compact-result-choices"><span class="clarification-label">¿Qué parte quieres comprobar?</span><div>${model.refinementChoices.map((choice) => `<button type="button" data-refinement-topic="${escapeHtml(choice)}">${escapeHtml(choice)}</button>`).join('')}</div></div>` : '';
+  const action = model.secondaryAction ? `<button type="button" data-new-check>${escapeHtml(model.secondaryAction)}</button>` : '';
+  return `<article class="claim-result-card compact-result-card" data-state="${model.status}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[0]}</span><span class="claim-result-state">${labels[1]}</span></div></div>${submittedClaimMarkup(model.claim)}<h3 id="claim-result-title">${escapeHtml(model.summary)}</h3>${model.refinementQuestion ? `<div class="compact-result-question"><span class="clarification-label">Una pregunta útil</span><p>${escapeHtml(model.refinementQuestion)}</p></div>` : ''}${choices}<div class="claim-result-actions claim-result-actions-primary">${action}</div></article>`;
+};
+
+const renderCompactResult = (model: CompactResultModel): void => {
+  if (!result) return;
+  result.innerHTML = compactResultMarkup(model);
+  result.querySelectorAll<HTMLButtonElement>('[data-refinement-topic]').forEach((button) => button.addEventListener('click', () => {
+    if (!input || !form) return;
+    const topic = button.dataset.refinementTopic || '';
+    const original = input.value.trim();
+    input.value = `${original}. Quiero concretar la parte de ${topic.toLocaleLowerCase('es')}.`;
+    updateCounter();
+    form.requestSubmit();
+  }));
+  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', resetChecker);
+};
 
 const submittedClaimMarkup = (original: string, inputKind: 'text' | 'media' = 'text'): string => {
   if (!original) return '';
@@ -1018,49 +1062,25 @@ const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | '
 
 const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]): void => {
   const primary = ranked[0];
-  const alternatives = ranked.slice(1).map((entry) => entry);
   const broadGuidance = broadComplaintGuidance(original, primary);
   if (broadGuidance) {
-    renderCard('uncovered', original, undefined, [], broadGuidance);
+    renderCompactResult({ status: 'uncovered', claim: original, summary: broadGuidance.questions?.[0] || 'Esta frase reúne varias afirmaciones y necesita una pregunta más concreta.', refinementQuestion: '¿Qué parte quieres comprobar primero?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   const coverage = classifyDeterministicCoverage(primary);
   if (coverage.status === 'strong' && primary && isStrongClaimMatch(primary)) {
-    renderCard('published', original, primary, alternatives);
+    if (navigateToPublishedClaim(primary)) return;
     return;
   }
   if (coverage.status === 'qualified' && primary) {
-    const followUps = contextualFollowUps(original, primary);
-    renderCard('related', original, primary, alternatives, {
-      questions: ['¿Qué fecha, lugar o decisión concreta quieres comprobar?'],
-      limitation: 'Esta es la orientación más cercana que hemos encontrado; todavía no es una comprobación de esta frase exacta.',
-      suggestions: followUps.items,
-      suggestionsLabel: followUps.label,
-    }, 'Estamos comprobando si esta relación es la más útil.');
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos una conversación relacionada, pero no una comprobación exacta de esta frase.', refinementQuestion: '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (primary?.kind === 'topic' && primary.score >= 36) {
-    const followUps = contextualFollowUps(original, primary);
-    renderCard('related', original, primary, alternatives, {
-      questions: ['¿Qué decisión, dato o consecuencia concreta quieres comprobar dentro de este tema?'],
-      limitation: 'La frase es amplia, pero este es el contexto más cercano que tenemos publicado. Concreta el hecho para comprobarlo mejor.',
-      suggestions: followUps.items,
-      suggestionsLabel: followUps.label,
-    }, primary.answer);
+    renderCompactResult({ status: 'related', claim: original, summary: 'La frase es amplia y todavía no se puede comprobar tal como está escrita.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
-  const suggestions = broadTopicSuggestions(original);
-  const followUps = contextualFollowUps(original);
-  const fallbackPrompts = followUps.items.length ? followUps : suggestions.items.length ? suggestions : generalFollowUps();
-  renderCard('uncovered', original, undefined, [], {
-    questions: [
-      '¿Qué hecho concreto afirma el texto y cuándo habría ocurrido?',
-      '¿Qué fuente o publicación quieres que revisemos?',
-    ],
-    limitation: 'No tenemos una comprobación publicada de esta afirmación. Puedes concretarla para encontrar una orientación más útil.',
-    suggestions: fallbackPrompts.items.slice(0, 4),
-    suggestionsLabel: fallbackPrompts.label,
-  });
+  renderCompactResult({ status: 'uncovered', claim: original, summary: 'No encontramos una comprobación publicada para esta afirmación.', refinementQuestion: '¿Qué hecho, periodo, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
 };
 
 const clearDynamicStatus = (): void => {
@@ -1124,57 +1144,39 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   clearDynamicStatus();
   const structuredPrimary = response.relatedClaims?.[0];
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
-  const alternatives = (response.alternatives || []).map((item) => findEntry(item.slug)).filter((entry): entry is ClaimIndexEntry => Boolean(entry));
   if (response.status === 'complete' && response.result && primary) {
-    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'published');
+    if (navigateToPublishedClaim(primary)) return;
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'complete' && primary) {
-    renderCard('published', original, primary, alternatives, undefined, response.result?.summary || response.primary?.reason);
+    if (navigateToPublishedClaim(primary)) return;
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'draft' && response.result) {
-    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'draft');
+    renderCompactResult({ status: 'related', claim: original, summary: response.result.summary || 'La orientación es provisional y todavía no está publicada.', refinementQuestion: response.result.clarificationQuestion || '¿Qué fecha, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'partial' && response.result) {
-    renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'related');
+    renderCompactResult({ status: 'related', claim: original, summary: response.result.summary || 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: response.result.clarificationQuestion || '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'partial' && primary) {
-    renderCard('related', original, primary, alternatives, undefined, response.result?.summary || response.primary?.reason);
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'published' && primary) {
-    renderCard('published', original, primary, alternatives, undefined, response.primary?.reason);
+    if (navigateToPublishedClaim(primary)) return;
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'related' && primary) {
-    renderCard('related', original, primary, alternatives, undefined, response.primary?.reason);
+    renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'uncovered') {
-    if (response.result?.blocks?.some((block) => block.type === 'claim_breakdown')) {
-      renderStructuredPlan(original, response.result, primary, alternatives, response.requestId, 'uncovered');
-      return;
-    }
-    const broadGuidance = broadComplaintGuidance(original, primary);
-    if (broadGuidance) {
-      renderCard('uncovered', original, undefined, [], broadGuidance);
-      return;
-    }
-    const localSuggestions = broadTopicSuggestions(original);
-    const followUps = contextualFollowUps(original, primary);
-    const fallbackPrompts = followUps.items.length ? followUps : localSuggestions.items.length ? localSuggestions : generalFollowUps();
-    const guidance = {
-      ...(response.guidance || {
-      questions: response.result?.clarificationQuestion ? [response.result.clarificationQuestion] : [],
-      limitation: response.result?.limitation,
-      }),
-      suggestions: response.guidance?.suggestions?.length ? response.guidance.suggestions : fallbackPrompts.items.slice(0, 4),
-      suggestionsLabel: response.guidance?.suggestionsLabel || fallbackPrompts.label,
-    };
-    renderCard('uncovered', original, undefined, [], guidance);
+    renderCompactResult({ status: 'uncovered', claim: original, summary: 'No encontramos una comprobación publicada para esta afirmación.', refinementQuestion: response.result?.clarificationQuestion || response.guidance?.questions?.[0] || '¿Qué hecho, periodo, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   renderDeterministic(original, fallback);
@@ -1203,7 +1205,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
           : inputType === 'url'
             ? 'La orientación visible ya está lista; leemos la página enlazada en segundo plano para comprobar si añade contexto. Puedes continuar sin esperar.'
             : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla. Puedes continuar sin esperar.';
-      setDynamicStatus(processingMessage, 'running', file && !query ? 'media' : 'enrichment');
+      if (file) setDynamicStatus(processingMessage, 'running', 'media');
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 30 : 16;
       const waitMs = file ? 500 : 350;
@@ -1221,16 +1223,13 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     }
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
-      setDynamicStatus(file && !query
-        ? 'No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.'
-        : 'El resultado inicial sigue disponible. No hemos podido añadir más contexto a tiempo y no hace falta esperar.', 'slow', file && !query ? 'media' : 'enrichment');
+      if (file) setDynamicStatus('No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.', 'slow', 'media');
+      else clearDynamicStatus();
       return;
     }
     if (data.status === 'unavailable') {
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
-      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), {
-        limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.',
-      }, '', 'media');
+      else if (file) renderCompactResult({ status: 'unavailable', claim: file.name, summary: 'No pudimos extraer una afirmación utilizable del archivo.', refinementQuestion: 'Pega la frase directamente para comprobarla.', secondaryAction: 'Comprobar otra frase' });
       else clearDynamicStatus();
       return;
     }
@@ -1260,7 +1259,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (error instanceof DOMException && error.name === 'AbortError') return;
     if (version === requestVersion) {
       if (file && query) setDynamicStatus('La orientación visible ya está lista; no hemos podido añadir el contenido del archivo ahora.', 'unavailable', 'media');
-      else if (file) renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' }, '', 'media');
+      else if (file) renderCompactResult({ status: 'unavailable', claim: file.name, summary: 'No pudimos extraer una afirmación utilizable del archivo.', refinementQuestion: 'Pega la frase directamente para comprobarla.', secondaryAction: 'Comprobar otra frase' });
       else clearDynamicStatus();
     }
   }
@@ -1285,13 +1284,13 @@ form?.addEventListener('submit', (event) => {
         : validation.code === 'invalid_audio'
           ? 'El audio debe estar en WAV, MP3, M4A, OGG, WebM o FLAC.'
           : 'La imagen debe estar en PNG, JPEG, WebP o GIF.';
-      renderCard('invalid', file.name, undefined, [], { limitation }, '', 'media');
+      renderCompactResult({ status: 'invalid', claim: file.name, summary: limitation, refinementQuestion: 'Pega la frase directamente para comprobarla.', secondaryAction: 'Comprobar otra frase' });
       return;
     }
   }
   const ranked = query ? rankClaimIndex(query, claimIndex) : [];
   if (query) renderDeterministic(query, ranked);
-  else renderCard('loading', file?.name || 'Archivo enviado', undefined, [], undefined, '', 'media');
+  else renderCompactResult({ status: 'loading', claim: file?.name || 'Archivo enviado', summary: 'Estamos leyendo el archivo.', secondaryAction: 'Comprobar otra frase' });
   if (query && !(ranked[0] && isStrongClaimMatch(ranked[0]))) {
     // Capture the gap before optional background classification. This keeps
     // the learning loop useful when the runtime is slow or unavailable.

@@ -31,7 +31,6 @@ for (const file of pages) {
   }
   const required = [
     ['claim-top', 'missing claim page root'],
-    ['claim-snapshot', 'missing answer-first snapshot'],
     ['claim-answer', 'missing concise answer visual'],
     ['claim-data', 'missing data section'],
     ['claim-evidence', 'missing claim-specific evidence trail'],
@@ -40,6 +39,11 @@ for (const file of pages) {
   ];
   for (const [marker, message] of required) if (!source.includes(`id="${marker}"`)) failures.push(`${route}: ${message}`);
   if (!source.includes('class="claim-next-check"')) failures.push(`${route}: missing contextual checker handoff`);
+  if (!source.includes('class="claim-verdict"')) failures.push(`${route}: missing compact verdict block`);
+  if (!source.includes('Ver explicación y fuentes')) failures.push(`${route}: missing details action`);
+  if (source.includes('claim-reading-nav') || source.includes('claim-action-bar')) failures.push(`${route}: duplicate reading navigation remains`);
+  if (source.includes('<details open')) failures.push(`${route}: claim details should be closed by default`);
+  if (!source.includes('expandClaimHash')) failures.push(`${route}: hash links do not expand their disclosure`);
   if (!/<h1\b[^>]*>/.test(source)) failures.push(`${route}: missing h1`);
   if (!/evidence-trail-card/.test(source)) failures.push(`${route}: evidence trail has no records`);
   if (!/class="evidence-label"/.test(source)) failures.push(`${route}: evidence trail has no explicit finding label`);
@@ -58,10 +62,10 @@ for (const file of pages) {
     if (!bundledStyles.includes('claim-series-draw') || !bundledStyles.includes('prefers-reduced-motion')) failures.push(`${route}: chart animation is missing reduced-motion-safe behavior`);
   } else if (!/Evidencia directa/.test(source)) failures.push(`${route}: direct visual is missing its evidence label`);
   if (!/<details|class="deep-link"/.test(source)) failures.push(`${route}: missing path to deeper context`);
-  const snapshotPosition = source.indexOf('id="claim-snapshot"');
   const responsePosition = source.indexOf('id="response-title"');
   const dataPosition = source.indexOf('id="claim-data"');
-  if (snapshotPosition < 0 || responsePosition < 0 || dataPosition < 0 || snapshotPosition > responsePosition || responsePosition > dataPosition) failures.push(`${route}: answer-first order is incorrect`);
+  const answerPosition = source.indexOf('id="claim-answer"');
+  if (answerPosition < 0 || responsePosition < 0 || dataPosition < 0 || answerPosition > responsePosition || responsePosition > dataPosition) failures.push(`${route}: answer-first order is incorrect`);
 }
 
 if (pages.length < 20) failures.push(`expected at least 20 published claim pages, found ${pages.length}`);

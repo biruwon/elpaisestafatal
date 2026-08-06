@@ -6,26 +6,19 @@ import { getTopicPresentation } from '../../data/topicPresentation';
 
 const publishedClaims = claims.filter((claim) => claim.published);
 const topicSlugs = [...new Set(publishedClaims.flatMap((claim) => claim.topicSlugs))].sort((a, b) => getTopicPresentation(a).label.localeCompare(getTopicPresentation(b).label, 'es'));
-const topicCount = topicSlugs.length;
 const searchable = (claim: typeof publishedClaims[number]): string => [claim.claim, claim.topic, ...claim.topicSlugs, ...claim.aliases, ...claim.keywords].join(' ');
 ---
 
 <BaseLayout title="Afirmaciones — El país está fatal" description="Afirmaciones sobre España comprobadas con contexto y fuentes originales.">
   <article class="prose affirmation-index">
     <p class="eyebrow">Preguntas comprobadas</p>
-    <h1>Afirmaciones,<br /><em>puestas a prueba.</em></h1>
-    <p class="lead">Escribe una frase como te la han enviado. Aquí encontrarás respuestas breves, datos decisivos y los límites de lo que se puede afirmar.</p>
-
-    <div class="affirmation-index-intro">
-      <div><strong>{publishedClaims.length}</strong><span>fichas publicadas</span></div>
-      <div><strong>{topicCount}</strong><span>temas conectados</span></div>
-      <a href="/#comprobar">Comprobar otra frase <span aria-hidden="true">↗</span></a>
-    </div>
+    <h1>Afirmaciones<br /><em>comprobadas.</em></h1>
+    <p class="lead">Busca una frase o un tema. Si no está aquí, puedes comprobarla desde la portada.</p>
 
     <section class="catalogue-tools" aria-labelledby="catalogue-tools-title">
-      <div class="catalogue-tools-heading">
-        <div><p class="eyebrow">Encuentra una conversación</p><h2 id="catalogue-tools-title">Busca por frase<br /><em>o por tema.</em></h2></div>
-        <p>La búsqueda entiende títulos, palabras habituales y formulaciones alternativas. Las fichas publicadas son la base revisada; las preguntas nuevas se comprueban desde la portada.</p>
+        <div class="catalogue-tools-heading">
+        <div><p class="eyebrow">169 fichas publicadas</p><h2 id="catalogue-tools-title">Busca una afirmación.</h2></div>
+        <p>Escribe las palabras que recuerdes o filtra por tema.</p>
       </div>
       <label class="catalogue-search-label" for="claim-catalog-search">Buscar una afirmación</label>
       <div class="catalogue-search-wrap"><input id="claim-catalog-search" type="search" placeholder="Ej.: ayudas, vivienda, paro…" autocomplete="off" /><button id="claim-catalog-clear" type="button" hidden>Limpiar</button></div>
@@ -50,4 +43,6 @@ const searchable = (claim: typeof publishedClaims[number]): string => [claim.cla
   .affirmation-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);margin-top:35px}.affirmation-grid a{background:var(--paper);padding:24px;min-height:190px}.affirmation-grid a:hover{background:var(--paper-deep)}.affirmation-grid h2{font:400 1.7rem/1 var(--serif);letter-spacing:-.04em;margin:28px 0}.affirmation-grid a>span:last-child{font:600 .65rem var(--mono);color:var(--red)}.affirmation-grid a[hidden]{display:none}.catalogue-more-row{display:flex;justify-content:center;margin-top:18px}.catalogue-more-row button{border:1px solid var(--ink);background:var(--paper);padding:11px 15px;font:600 .65rem var(--mono);cursor:pointer}.catalogue-more-row button:hover,.catalogue-more-row button:focus-visible{background:var(--ink);color:var(--paper)}.catalogue-more-row button span{color:var(--red);margin-left:8px}
   @media(max-width:760px){.catalogue-tools-heading{grid-template-columns:1fr;gap:20px}.catalogue-tools{margin-top:45px}}
   @media(max-width:650px){.affirmation-index-intro{grid-template-columns:1fr 1fr}.affirmation-index-intro>a{grid-column:1/-1}.affirmation-grid{grid-template-columns:1fr}.catalogue-filter-row{align-items:flex-start}.catalogue-filter-row>span{width:100%;margin-bottom:2px}}
+  .affirmation-index{padding-top:55px}.catalogue-tools{margin-top:35px}.catalogue-filter-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none}.catalogue-filter-row::-webkit-scrollbar{display:none}.catalogue-filter-row>span{flex:0 0 auto}.catalogue-filter-row button{min-height:44px;flex:0 0 auto}.affirmation-grid a{min-height:150px;padding:18px}.affirmation-grid h2{font-size:1.35rem;margin:18px 0}.affirmation-grid a>span:last-child{display:block;min-height:44px;padding-top:12px}.catalogue-search-wrap{min-height:52px}.catalogue-search-wrap input{font-size:1.05rem}.catalogue-search-wrap button{min-width:72px}
+  @media(max-width:650px){.affirmation-index{padding-top:35px}.catalogue-tools-heading{gap:12px}.catalogue-filter-row{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}.affirmation-grid{margin-top:24px}}
 </style>

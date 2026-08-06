@@ -30,7 +30,7 @@ const readableEvidenceSummary = (summary: string) => summary.startsWith('Reusabl
   : summary;
 ---
 
-{evidence.length > 0 && <section id="claim-evidence" class="claim-evidence" aria-labelledby="claim-evidence-title">
+{evidence.length > 0 && <details id="claim-evidence" class="claim-details"><summary>Evidencia y fuentes <span aria-hidden="true">＋</span></summary><section class="claim-evidence" aria-labelledby="claim-evidence-title">
   <header class="evidence-heading">
     <div><p class="eyebrow">La base de esta ficha</p><h2 id="claim-evidence-title">Qué hemos<br /><em>utilizado.</em></h2></div>
     <div><p>Estos registros son la evidencia enlazada a esta afirmación. Cada uno mantiene su periodo, territorio y definición para que no se confunda una cifra de contexto con una prueba de causalidad.</p><p class="evidence-review-policy"><strong>Revisión:</strong> {relationshipReviewPolicy.scope === 'source-and-proposition-traceability' ? 'trazabilidad de fuente y proposición' : 'protocolo de revisión'} comprobada por {relationshipReviewPolicy.reviewer === 'maintainer' ? 'el mantenedor' : 'un revisor autorizado'}. {relationshipReviewPolicy.independentReview ? 'Incluye revisión independiente.' : 'No es una revisión independiente.'}</p></div>
@@ -56,7 +56,7 @@ const readableEvidenceSummary = (summary: string) => summary.startsWith('Reusabl
     })}
   </div>
   {uniqueSources.length > 0 && <p class="evidence-source-count">{uniqueSources.length} fuente{uniqueSources.length === 1 ? '' : 's'} original{uniqueSources.length === 1 ? '' : 'es'} enlazada{uniqueSources.length === 1 ? '' : 's'} a {evidence.length} registro{evidence.length === 1 ? '' : 's'} de evidencia.</p>}
-</section>}
+</section></details>}
 
 <style>
   .claim-evidence{padding:85px 0 65px;border-bottom:1px solid var(--line)}
