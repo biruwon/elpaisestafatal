@@ -584,7 +584,7 @@ const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string =
 const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][number]): string => {
   if (block.type === 'scorecard') {
     const labels: Record<string, string> = { improved: 'Mejora', worsened: 'Empeora', roughly_unchanged: 'Sin cambio apreciable', unavailable: 'Sin dato compatible' };
-    return `<section class="claim-plan-scorecard claim-plan-card"><span class="clarification-label">Cuadro de indicadores · sin nota global</span><p>Base: ${escapeHtml(block.baseline.period)} · comparación: ${escapeHtml(block.comparison.period)}</p><div class="claim-scorecard-grid">${block.items.map((item) => `<article data-direction="${item.direction}"><strong>${escapeHtml(item.label)}</strong><span>${labels[item.direction]}</span>${item.baseline ? `<small>Base: ${escapeHtml(item.baseline.value)} (${escapeHtml(item.baseline.period)})</small>` : ''}${item.comparison ? `<small>Último: ${escapeHtml(item.comparison.value)} (${escapeHtml(item.comparison.period)})</small>` : ''}${item.caveat ? `<em>${escapeHtml(item.caveat)}</em>` : ''}${blockEvidenceMarkup(plan, item.evidenceIds)}</article>`).join('')}</div></section>`;
+    return `<section class="claim-plan-scorecard claim-plan-card"><span class="clarification-label">Cuadro de indicadores · sin nota global</span><p>Base: ${escapeHtml(block.baseline.period)} · comparación: ${escapeHtml(block.comparison.period)}</p><div class="claim-scorecard-grid">${block.items.map((item) => `<article data-direction="${item.direction}"><strong>${escapeHtml(item.label)}</strong><span>${labels[item.direction]}</span>${item.baseline ? `<small>Base: ${escapeHtml(item.baseline.value)} (${escapeHtml(item.baseline.period)})</small>` : ''}${item.comparison ? `<small>Último: ${escapeHtml(item.comparison.value)} (${escapeHtml(item.comparison.period)})</small>` : ''}${item.change ? `<small class="claim-scorecard-change">Cambio: ${escapeHtml(item.change)}</small>` : ''}${item.caveat ? `<em>${escapeHtml(item.caveat)}</em>` : ''}${blockEvidenceMarkup(plan, item.evidenceIds)}</article>`).join('')}</div></section>`;
   }
   if (block.type === 'event_status') {
     const labels: Record<string, string> = { officially_reported: 'Reportado oficialmente', corroborated_report: 'Corroborado por fuentes independientes', single_report: 'Una sola fuente', unconfirmed: 'Sin confirmación encontrada', disputed: 'Fuentes en conflicto', context_only: 'Solo contexto' };
@@ -1166,6 +1166,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   if (response.status === 'complete' && primary && response.result?.answerMode === 'reviewed_claim') {
     if (navigateToPublishedClaim(primary)) return;
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    return;
+  }
+  if (response.status === 'complete' && response.result && ['scorecard', 'current_event', 'provisional_evidence'].includes(response.result.answerMode || '')) {
+    renderStructuredPlan(original, response.result, primary, [], response.requestId, 'published');
     return;
   }
   if (response.status === 'draft' && response.result) {

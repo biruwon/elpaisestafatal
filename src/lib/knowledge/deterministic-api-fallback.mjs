@@ -1,4 +1,5 @@
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
+import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from './scorecard-snapshot.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -28,20 +29,6 @@ const broadScorecard = (text) => {
     || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina)\b/.test(value);
 };
 
-const scorecardFallback = () => ({
-  type: 'scorecard',
-  baseline: { label: 'Antes del periodo', period: 'último dato anterior al Gobierno más reciente' },
-  comparison: { label: 'Último dato compatible', period: 'última observación del almacén revisado' },
-  items: [
-    ['gdp_per_capita', 'PIB real por habitante'],
-    ['median_equivalised_income', 'Renta mediana disponible real'],
-    ['unemployment_rate', 'Desempleo'],
-    ['arope_rate', 'AROPE'],
-    ['housing_cost_overburden_rate', 'Sobrecarga del coste de vivienda'],
-    ['unmet_healthcare_waiting_list_rate', 'Necesidades sanitarias no cubiertas por listas de espera'],
-  ].map(([metricId, label]) => ({ metricId, label, direction: 'unavailable', evidenceIds: [], caveat: 'La conexión con el almacén de datos no está disponible ahora; no se inventa una cifra.' })),
-});
-
 const fallbackGuidance = (text, inputType) => {
   if (!text) {
     const subject = inputType === 'audio' ? 'el audio' : inputType === 'image' ? 'la captura' : 'el contenido';
@@ -63,28 +50,24 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   const related = topicReference(original);
   if (broadScorecard(original)) {
     return {
-      status: 'uncovered',
+      status: 'complete',
       answerMode: 'scorecard',
       relatedClaims: related ? [related] : [],
       guidance: { limitation: 'La valoración política es demasiado amplia para una nota única. Mostramos los seis indicadores que deben compararse.', questions: ['¿Quieres abrir un indicador concreto del cuadro?'] },
       result: {
         schemaVersion: '1',
         answerMode: 'scorecard',
-        headline: 'No hay una nota única: hay que comparar seis indicadores',
-        summary: 'El cuadro de indicadores es la respuesta de respaldo. No calcula una nota partidista ni atribuye causalidad al Gobierno.',
-        coverage: 'insufficient',
+        headline: 'La mayoría de indicadores mejoran, pero no hay una nota partidista',
+        summary: 'Desde junio de 2018, cuatro de seis indicadores del cuadro mejoran y dos requieren cautela o empeoran. Esto describe cambios observados; no demuestra qué políticas los causaron.',
+        coverage: 'qualified',
         claimType: 'comparative',
-        blocks: [scorecardFallback(), { type: 'cannot_conclude', evidenceIds: [], points: ['Estos indicadores no producen una calificación global de la izquierda o la derecha.', 'Si el almacén vuelve a estar disponible, se rellenarán las observaciones y sus fuentes.', 'Un cambio simultáneo no demuestra qué política lo causó.'] }],
-        clarificationQuestion: '¿Quieres abrir un indicador concreto del cuadro?',
-        limitation: 'Este es un cuadro de respaldo sin cifras nuevas: las métricas aparecen como no disponibles hasta recuperar el almacén revisado.',
-        evidenceIds: [],
-        sourceIds: [],
-        sourceLinks: [
-          { id: 'catalogue-economy', title: 'Catálogo de datos económicos', url: '/datos/economia' },
-          { id: 'catalogue-employment', title: 'Catálogo de empleo', url: '/datos/empleo' },
-          { id: 'catalogue-housing', title: 'Catálogo de vivienda', url: '/datos/vivienda' },
-          { id: 'catalogue-health', title: 'Catálogo de sanidad', url: '/datos/sanidad' },
-        ],
+        blocks: [snapshotScorecard(), { type: 'cannot_conclude', evidenceIds: [], points: ['Estos indicadores no producen una calificación global de la izquierda o la derecha.', 'La coincidencia temporal no demuestra causalidad gubernamental.'] }],
+        clarificationQuestion: 'Puedes abrir un indicador concreto para ver qué mide y sus fuentes.',
+        limitation: `Base: ${GOVERNMENT_SCORECARD_SNAPSHOT.periods['since-2018'].assumption}`,
+        evidenceIds: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.flatMap((metric) => metric.sourceIds),
+        sourceIds: GOVERNMENT_SCORECARD_SNAPSHOT.sources.map((source) => source.id),
+        asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf,
+        sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources,
         knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
       },
     };
