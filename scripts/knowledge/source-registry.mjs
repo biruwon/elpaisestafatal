@@ -12,6 +12,8 @@ export const sourceRegistry = [
   { id: 'congress', publisher: 'Congreso de los Diputados', domains: ['congreso.es'], trustTier: 'primary', connector: 'official-document', schedule: 'daily', formats: ['html', 'pdf'] },
   { id: 'senate', publisher: 'Senado', domains: ['senado.es'], trustTier: 'primary', connector: 'official-document', schedule: 'daily', formats: ['html', 'pdf'] },
   { id: 'judiciary', publisher: 'Consejo General del Poder Judicial', domains: ['poderjudicial.es'], trustTier: 'primary', connector: 'official-document', schedule: 'weekly', formats: ['html', 'pdf'] },
+  { id: 'miteco', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', domains: ['miteco.gob.es'], trustTier: 'primary', connector: 'official-document', schedule: 'weekly', formats: ['html', 'pdf'] },
+  { id: 'health-ministry', publisher: 'Ministerio de Sanidad', domains: ['sanidad.gob.es'], trustTier: 'primary', connector: 'official-document', schedule: 'weekly', formats: ['html', 'pdf'] },
 ];
 
 export const approvedSourceHosts = sourceRegistry.flatMap((source) => source.domains);

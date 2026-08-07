@@ -1,4 +1,18 @@
 {
+  "miteco": [
+    {
+      "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/incendios-forestales/Avance_IIFF_2025_.pdf",
+      "title": "Avance informativo de incendios forestales 2025 · MITECO",
+      "aliases": ["incendios forestales", "superficie quemada", "medios aéreos", "prevención de incendios"]
+    }
+  ],
+  "health-ministry": [
+    {
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2025/Totales/Informe_BS_2025.pdf",
+      "title": "Barómetro Sanitario 2025 · Ministerio de Sanidad",
+      "aliases": ["urgencias", "tiempo de espera", "sanidad pública", "barómetro sanitario"]
+    }
+  ],
   "boe": [
     {
       "url": "https://www.boe.es/datosabiertos/api/boe/sumario/{yesterday}",
