@@ -1078,7 +1078,7 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   const primary = ranked[0];
   const broadGuidance = broadComplaintGuidance(original, primary);
   if (broadGuidance) {
-    renderCompactResult({ status: 'uncovered', claim: original, summary: broadGuidance.questions?.[0] || 'Esta frase reúne varias afirmaciones y necesita una pregunta más concreta.', refinementQuestion: '¿Qué parte quieres comprobar primero?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    renderCompactResult({ status: 'uncovered', claim: original, summary: 'No hay una nota única para decir si España va mejor o peor: hay que comparar empleo, renta, pobreza, vivienda, sanidad y actividad económica.', refinementQuestion: 'Estamos cargando el cuadro de indicadores con periodos y fuentes. ¿Qué parte quieres comprobar primero?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   const coverage = classifyDeterministicCoverage(primary);
