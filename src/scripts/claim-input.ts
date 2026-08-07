@@ -224,6 +224,9 @@ const broadComplaintSignals = [
   'no se puede vivir',
   'pais hundido',
   'pais arruinado',
+  'va peor',
+  'gobernando la izquierda',
+  'gobierno de izquierdas',
 ];
 
 const broadComplaintTopics: Record<string, { label: string; prompts: string[] }> = {
@@ -365,8 +368,10 @@ const renderCompactResult = (model: CompactResultModel): void => {
   result.querySelectorAll<HTMLButtonElement>('[data-refinement-topic]').forEach((button) => button.addEventListener('click', () => {
     if (!input || !form) return;
     const topic = button.dataset.refinementTopic || '';
-    const original = input.value.trim();
-    input.value = `${original}. Quiero concretar la parte de ${topic.toLocaleLowerCase('es')}.`;
+    const topicAliases: Record<string, string> = { política: 'politica', economía: 'economia', vivienda: 'vivienda', empleo: 'empleo', seguridad: 'seguridad', sanidad: 'sanidad' };
+    const topicKey = topicAliases[topic.toLocaleLowerCase('es')] || Object.entries(broadComplaintTopics).find(([, definition]) => definition.label.toLocaleLowerCase('es') === topic.toLocaleLowerCase('es'))?.[0];
+    const replacement = topicKey ? broadComplaintTopics[topicKey]?.prompts[0] : undefined;
+    input.value = replacement || topic;
     updateCounter();
     form.requestSubmit();
   }));
@@ -1189,6 +1194,11 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     return;
   }
   if (response.status === 'uncovered') {
+    const broadGuidance = broadComplaintGuidance(original, primary);
+    if (broadGuidance) {
+      renderCompactResult({ status: 'uncovered', claim: original, summary: broadGuidance.questions?.[0] || 'Esta frase resume varias discusiones.', refinementQuestion: 'Elige un indicador concreto y te llevamos directamente a sus datos.', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+      return;
+    }
     renderCompactResult({ status: 'uncovered', claim: original, summary: 'No encontramos una comprobación publicada para esta afirmación.', refinementQuestion: response.result?.clarificationQuestion || response.guidance?.questions?.[0] || '¿Qué hecho, periodo, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }

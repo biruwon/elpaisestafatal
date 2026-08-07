@@ -1369,9 +1369,10 @@ const classify = async (text) => {
   // the reusable political topic so the user gets an immediate direction,
   // while keeping it explicitly topic guidance rather than a verdict.
   const broadComplaintNormalized = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadComplaintNormalized)
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadComplaintNormalized)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintNormalized)
-    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintNormalized);
+    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintNormalized)
+    || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadComplaintNormalized);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintNormalized)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintNormalized)
     || /\bdebe\s+mas\s+de\s+lo\s+que\s+produce\b/.test(broadComplaintNormalized);
