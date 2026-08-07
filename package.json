@@ -77,6 +77,7 @@
     "knowledge:freshness": "node scripts/knowledge/validate-source-freshness.mjs",
     "knowledge:handlers": "node scripts/knowledge/validate-handlers.mjs && node scripts/knowledge/validate-domain-handlers.mjs && node scripts/knowledge/validate-domain-source-coverage.mjs && node scripts/knowledge/validate-domain-connectors.mjs && node scripts/knowledge/validate-domain-verification.mjs && node scripts/knowledge/validate-causal-evidence.mjs && node scripts/knowledge/validate-prediction-evidence.mjs && node scripts/knowledge/validate-legal-evidence.mjs && node scripts/knowledge/validate-numeric-evidence.mjs",
     "knowledge:answer-plan": "node scripts/knowledge/validate-answer-plan.mjs",
+    "knowledge:resolution-modes": "node scripts/knowledge/validate-resolution-modes.mjs",
     "knowledge:evidence-packet": "node scripts/knowledge/validate-evidence-packet.mjs",
     "knowledge:fallback-compiler": "node scripts/knowledge/validate-fallback-compiler.mjs",
     "knowledge:local-compiler": "node scripts/knowledge/validate-local-compiler-contract.mjs",

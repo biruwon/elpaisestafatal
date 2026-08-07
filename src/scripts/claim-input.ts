@@ -319,13 +319,13 @@ type LearningRecord = {
 
 const recordQuestion = (text: string, record: LearningRecord = {}): void => {
   if (!text.trim()) return;
+  const neutral = (record.canonical || text).replace(/https?:\/\/\S+|www\.\S+/gi, ' url ').replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, ' contacto ').replace(/\b\d[\d\s().+-]{7,}\b/g, ' telefono ').replace(/\b(invasion|invadir)\b/gi, 'entrada fronteriza').replace(/\b(violando|violacion|violar)\b/gi, 'agresion sexual').slice(0, 600);
   void fetch('/api/questions', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      text,
-      canonical: record.canonical || text,
-      semanticSignature: record.semanticSignature || semanticQuerySignature(record.canonical || text),
+      canonical: neutral,
+      semanticSignature: record.semanticSignature || semanticQuerySignature(neutral),
       inputType: record.inputType || 'text',
       status: record.status || 'received',
       requestId: record.requestId,
@@ -577,6 +577,14 @@ const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string =
 };
 
 const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][number]): string => {
+  if (block.type === 'scorecard') {
+    const labels: Record<string, string> = { improved: 'Mejora', worsened: 'Empeora', roughly_unchanged: 'Sin cambio apreciable', unavailable: 'Sin dato compatible' };
+    return `<section class="claim-plan-scorecard claim-plan-card"><span class="clarification-label">Cuadro de indicadores · sin nota global</span><p>Base: ${escapeHtml(block.baseline.period)} · comparación: ${escapeHtml(block.comparison.period)}</p><div class="claim-scorecard-grid">${block.items.map((item) => `<article data-direction="${item.direction}"><strong>${escapeHtml(item.label)}</strong><span>${labels[item.direction]}</span>${item.baseline ? `<small>Base: ${escapeHtml(item.baseline.value)} (${escapeHtml(item.baseline.period)})</small>` : ''}${item.comparison ? `<small>Último: ${escapeHtml(item.comparison.value)} (${escapeHtml(item.comparison.period)})</small>` : ''}${item.caveat ? `<em>${escapeHtml(item.caveat)}</em>` : ''}${blockEvidenceMarkup(plan, item.evidenceIds)}</article>`).join('')}</div></section>`;
+  }
+  if (block.type === 'event_status') {
+    const labels: Record<string, string> = { officially_reported: 'Reportado oficialmente', corroborated_report: 'Corroborado por fuentes independientes', single_report: 'Una sola fuente', unconfirmed: 'Sin confirmación encontrada', disputed: 'Fuentes en conflicto', context_only: 'Solo contexto' };
+    return `<section class="claim-plan-event claim-plan-card"><span class="clarification-label">Estado de cada proposición</span><p>${escapeHtml(block.event.label)}${block.event.period ? ` · ${escapeHtml(block.event.period)}` : ''}</p><ul>${block.propositions.map((item) => `<li data-status="${item.status}"><strong>${escapeHtml(labels[item.status])}</strong><span>${escapeHtml(item.text)}</span>${item.detail ? `<small>${escapeHtml(item.detail)}</small>` : ''}${blockEvidenceMarkup(plan, item.evidenceIds)}</li>`).join('')}</ul></section>`;
+  }
   if (block.type === 'key_number') {
     return `<div class="claim-plan-number claim-plan-card"><span class="clarification-label">${escapeHtml(block.label)}</span><strong>${escapeHtml(block.value)}</strong>${block.caveat ? `<small>${escapeHtml(block.caveat)}</small>` : ''}${blockEvidenceMarkup(plan, [block.evidenceId])}</div>`;
   }
@@ -670,7 +678,7 @@ const structuredBlocksMarkup = (plan: AnswerPlan): string => {
 };
 
 const sourceLinksMarkup = (plan: AnswerPlan): string => plan.sourceLinks?.length
-  ? `<div class="claim-plan-source-links" data-result-target="sources"><span class="clarification-label">Fuente consultada</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
+  ? `<div class="claim-plan-source-links" data-result-target="sources"><span class="clarification-label">Fuentes consultadas${plan.asOf ? ` · ${escapeHtml(new Date(plan.asOf).toLocaleString('es-ES'))}` : ''}</span>${plan.sourceLinks.slice(0, 3).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)}${source.publisher ? ` · ${escapeHtml(source.publisher)}` : ''} <span aria-hidden="true">↗</span></a>`).join('')}</div>`
   : '';
 
 const resultUseActionsMarkup = (plan: AnswerPlan): string => {
@@ -995,8 +1003,9 @@ const bindResultActions = (): void => {
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'related' | 'uncovered' = 'published'): void => {
   if (!result) return;
-  const resultLabel = state === 'published' ? 'Ficha publicada' : state === 'related' ? 'Orientación relacionada' : state === 'uncovered' ? 'Sin coincidencia directa' : 'Resultado automático';
-  const resultState = state === 'published' ? 'Basada en una ficha revisada' : state === 'related' ? 'No es una comprobación exacta; ayuda a concretar la discusión' : state === 'uncovered' ? 'No hay una comprobación publicada de esta afirmación' : 'Orientación automática · provisional, no publicada';
+  const modeLabel = plan.answerMode === 'scorecard' ? 'Cuadro comparativo' : plan.answerMode === 'current_event' ? 'Investigación reciente' : plan.answerMode === 'reviewed_claim' ? 'Ficha revisada' : plan.answerMode === 'provisional_evidence' ? 'Evidencia provisional' : 'Orientación';
+  const resultLabel = state === 'published' ? 'Ficha publicada' : modeLabel;
+  const resultState = state === 'published' ? 'Basada en una ficha revisada' : plan.answerMode === 'current_event' ? 'Live/provisional · no es una publicación de hechos' : plan.answerMode === 'scorecard' ? 'Indicadores comparables · sin veredicto partidista' : state === 'uncovered' ? 'Sin coincidencia publicada; mostramos lo útil que sí sabemos' : 'Resultado automático · provisional, no publicado';
   const resultTitle = plan.headline;
   const displayedAssessment = state === 'published' && primary?.assessment
     ? assessmentLabels[primary.assessment] || primary.assessment
@@ -1144,22 +1153,22 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   clearDynamicStatus();
   const structuredPrimary = response.relatedClaims?.[0];
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
-  if (response.status === 'complete' && response.result && primary) {
+  if (response.status === 'complete' && response.result && primary && response.result.answerMode === 'reviewed_claim') {
     if (navigateToPublishedClaim(primary)) return;
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
-  if (response.status === 'complete' && primary) {
+  if (response.status === 'complete' && primary && response.result?.answerMode === 'reviewed_claim') {
     if (navigateToPublishedClaim(primary)) return;
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   if (response.status === 'draft' && response.result) {
-    renderCompactResult({ status: 'related', claim: original, summary: response.result.summary || 'La orientación es provisional y todavía no está publicada.', refinementQuestion: response.result.clarificationQuestion || '¿Qué fecha, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    renderStructuredPlan(original, response.result, primary, response.relatedClaims?.slice(1).map((item) => findEntry(item.slug)).filter(Boolean) as ClaimIndexEntry[], response.requestId, 'draft');
     return;
   }
   if (response.status === 'partial' && response.result) {
-    renderCompactResult({ status: 'related', claim: original, summary: response.result.summary || 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: response.result.clarificationQuestion || '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    renderStructuredPlan(original, response.result, primary, response.relatedClaims?.slice(1).map((item) => findEntry(item.slug)).filter(Boolean) as ClaimIndexEntry[], response.requestId, 'related');
     return;
   }
   if (response.status === 'partial' && primary) {
@@ -1173,6 +1182,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   }
   if (response.status === 'related' && primary) {
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    return;
+  }
+  if (response.status === 'uncovered' && response.result && ['scorecard', 'current_event', 'provisional_evidence'].includes(response.result.answerMode || '') && (response.result.blocks?.length || response.result.sourceLinks?.length)) {
+    renderStructuredPlan(original, response.result, primary, [], response.requestId, 'uncovered');
     return;
   }
   if (response.status === 'uncovered') {
@@ -1209,7 +1222,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
       const pendingRequestId = data.requestId;
       const maxAttempts = file ? 30 : 16;
       const waitMs = file ? 500 : 350;
-      const pollingDeadline = Date.now() + (file ? 15000 : 6500);
+      const pollingDeadline = Date.now() + (file ? 15000 : 12000);
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         if (Date.now() >= pollingDeadline) break;
         await new Promise((resolve, reject) => {

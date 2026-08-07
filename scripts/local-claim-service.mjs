@@ -29,6 +29,8 @@ import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
+import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
+import { latestGovernmentPeriod, scorecardMetrics, makeScorecard } from './knowledge/scorecard.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const builtCatalogPath = new URL('../dist/claim-catalog.json', import.meta.url).pathname;
@@ -93,7 +95,7 @@ const vagueTaxJudgement = (value) => {
 };
 const broadComplaintText = (value) => {
   const normalized = normalise(value);
-  return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(normalized)
+  return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor)\b/.test(normalized)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(normalized);
 };
 
@@ -335,6 +337,7 @@ const normalizeAnswerPlan = (plan) => {
   const statusMap = { known: 'available', observed: 'available', supported: 'available', strong: 'available', qualified: 'context', partial: 'context', context: 'context', unknown: 'missing', unresolved: 'missing', insufficient: 'missing', missing: 'missing' };
   return {
     ...plan,
+    answerMode: plan.answerMode || (plan.blocks?.some((block) => block?.type === 'scorecard') ? 'scorecard' : plan.blocks?.some((block) => block?.type === 'event_status' ? true : false) ? 'current_event' : plan.sourceLinks?.length ? 'provisional_evidence' : 'guidance'),
     blocks: plan.blocks.map((block) => {
       if (block?.type && ['line_chart', 'bar_chart', 'comparison_chart'].includes(block.type) && !block.visualId) {
         return { ...block, visualId: 'warehouse-observation' };
@@ -1753,7 +1756,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // These flags are intentionally derived here as well as in classify(): the
   // renderer must not depend on variables local to the classifier.
   const broadTopicText = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa])\b/.test(broadTopicText);
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadTopicText)
+    || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
   const predictionWording = /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(broadTopicText);
@@ -1786,6 +1790,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? classified.compiler.explicitPropositions
     : classified.compiler?.propositions || [];
   const compoundClaim = compilerPropositions.length > 1;
+  const currentEvent = detectCurrentEvent(text);
+  const scorecardRequested = broadPoliticalComplaint && /\b(?:gobernando|gobierno|izquierda|derecha|pais|espana|peor)\b/.test(broadTopicText);
   const hasValidatedRelatedClaim = classified.alternatives?.some((item) => item.kind === 'claim' && item.validated);
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];
@@ -1794,6 +1800,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const metricRouteIds = metricIdsForInput(text, classified.compiler || {});
   const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || ''));
+  const requestedYear = broadTopicText.match(/\b(20(?:1[0-9]|2[0-9]))\b/)?.[1];
+  const scorecardPeriod = requestedYear ? { ...latestGovernmentPeriod, start: `${requestedYear}-01`, assumption: 'Se usan las fechas explícitas indicadas en la pregunta.' } : latestGovernmentPeriod;
+  const scorecardBlock = scorecardRequested ? makeScorecard(observations, scorecardPeriod) : null;
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
@@ -2199,7 +2208,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : undefined;
   const sourceLinkMap = new Map();
   for (const item of [usableSource, ...evidenceObservations.map((observation) => observation.source)].filter((candidate) => candidate?.url)) {
-    if (!sourceLinkMap.has(item.url)) sourceLinkMap.set(item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url });
+    if (!sourceLinkMap.has(item.url)) sourceLinkMap.set(item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url, publisher: item.publisher, publishedAt: item.publishedAt, retrievedAt: item.retrievedAt || new Date().toISOString(), role: item.role || (item.sourceType === 'official' ? 'primary' : item.sourceType === 'media' ? 'corroboration' : undefined), originPublisher: item.originPublisher });
   }
   const sourceLinks = [...sourceLinkMap.values()].slice(0, 5);
   const relatedTopic = !primary ? classified.alternatives?.find((item) => item.kind === 'topic') : undefined;
@@ -2238,16 +2247,21 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? evidenceLadderForCompiler(classified.compiler, source, handlerId)
     : null;
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
+  const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, observations.length ? classifyEventSources(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null) : null;
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
-    headline: compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    answerMode: primary ? 'reviewed_claim' : scorecardRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
+    asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,
+    headline: scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: scorecardRequested ? `Comparamos seis indicadores con el último dato anterior al periodo de ${latestGovernmentPeriod.start}. No calculamos una nota global ni atribuimos causalidad al Gobierno.` : currentEvent ? 'Hemos separado el hecho, las posibles agresiones y la atribución de responsabilidad. El estado indica qué está reportado, no qué queda probado.' : compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || ranking || trend || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: resolvedClaimType,
-    blocks: compoundEvidenceCount > 1
+    blocks: scorecardRequested ? [scorecardBlock, { type: 'cannot_conclude', evidenceIds: scorecardBlock.items.flatMap((item) => item.evidenceIds), points: ['El cuadro compara indicadores, no asigna una nota global a un gobierno.', 'Los cambios simultáneos no establecen qué políticas los causaron.'] }]
+      : eventBlock ? [{ type: 'claim_breakdown', propositionIds: currentEvent.propositions.map((item) => item.id), items: currentEvent.propositions.map((item) => ({ text: item.text, type: 'descriptive', explicit: true })) }, eventBlock, { type: 'cannot_conclude', evidenceIds: eventBlock.propositions.flatMap((item) => item.evidenceIds), points: ['Que exista una denuncia o noticia no prueba por sí sola que la agresión ocurriera.', 'La responsabilidad de quienes cruzaron requiere atribución oficial y pruebas independientes.', 'Las estadísticas nacionales de delincuencia no prueban este incidente concreto.'] }]
+      : compoundEvidenceCount > 1
       ? compactGuidanceBlocks([compilerBreakdown, ...compoundFamilyBlocks, ...(visualBlock ? [visualBlock] : []), { type: 'cannot_conclude', evidenceIds: observations.map((item) => item.id), points: ['Cada indicador responde solo a su propia parte de la frase; no deben combinarse para demostrar una relación causal entre ellos.'] }, { type: 'conversation_reply', evidenceIds: observations.map((item) => item.id), text: 'La frase reúne varias cuestiones. Conviene discutir cada indicador por separado antes de extraer una conclusión general.' }].filter(Boolean))
       : primary ? [{ type: 'confirmed', propositionIds: primary.propositionIds || [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(legalPrimaryBlock ? [legalPrimaryBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : compactGuidanceBlocks([ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...relatedGuidanceBlocks, ...(generatedMethod ? [generatedMethod] : []), ...(provisionalBlocks.length ? provisionalBlocks : relatedGuidanceBlocks.length ? [] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ]),
-    clarificationQuestion: valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : localContext ? '¿De qué municipio, periodo y tipo de inseguridad hablas?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : isGovernmentEvent ? '¿Qué parte quieres comprobar: el acto publicado, su ejecución o sus consecuencias?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
+    clarificationQuestion: scorecardRequested ? '¿Quieres abrir un indicador concreto (vivienda, empleo, sanidad, seguridad o ingresos)?' : currentEvent ? '¿Quieres acotar la fecha o consultar el parte oficial del evento?' : valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : localContext ? '¿De qué municipio, periodo y tipo de inseguridad hablas?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : isGovernmentEvent ? '¿Qué parte quieres comprobar: el acto publicado, su ejecución o sus consecuencias?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : budgetContext ? 'La fuente confirma el movimiento de crédito, pero no permite atribuir el dinero a un programa educativo concreto, a asesores o únicamente a Presidencia.' : isGovernmentEvent ? 'La publicación oficial documenta el acto localizado, pero no demuestra por sí sola su ejecución, alcance, intención política ni impacto final.' : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, restricciones de acceso o derechos de terceros adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : localContext ? 'No hay una serie nacional que pueda confirmar una experiencia concreta de un barrio; hacen falta datos locales y una medida definida.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : metricEvidenceGap ? 'El sistema reconoce el indicador, pero no tiene todavía una fuente estructurada con el periodo, población o territorio necesarios para responder.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
@@ -2305,6 +2319,30 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       sourceRefs: canonicalPublished.sourceRefs || [], sourceLinks: canonicalPublished.sourceLinks || [],
     };
     return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
+  }
+  const eventFrame = detectCurrentEvent(text);
+  if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
+    const eventSources = [];
+    const token = process.env.BRAVE_SEARCH_TOKEN || process.env.CURRENT_SEARCH_TOKEN;
+    if (token) {
+      for (const query of buildNeutralQueries(eventFrame).slice(0, 3)) {
+        try {
+          const response = await fetch(`https://api.search.brave.com/res/v1/news/search?q=${encodeURIComponent(query.slice(0, 400))}&country=ES&search_lang=es&freshness=pm&count=6`, { headers: { accept: 'application/json', 'x-subscription-token': token } });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          for (const item of payload.results || []) {
+            const url = item.url || item.link;
+            try { if (!url || !['primary', 'corroboration'].includes(currentEventSourceRole(url))) continue; } catch { continue; }
+            eventSources.push({ id: `event-${digest(url).slice(0, 18)}`, title: boundedExcerpt(item.title || url, 180), url, publisher: item.meta_url?.hostname || new URL(url).hostname, publishedAt: item.age || undefined, retrievedAt: new Date().toISOString() });
+          }
+        } catch { /* live research is provisional and may be unavailable */ }
+      }
+    }
+    const packet = classifyEventSources(eventSources);
+    const observations = packet.sources.map((item) => ({ id: item.id, kind: 'current_event_source', source: item, score: 1, finding: { type: 'current_event', status: packet.status } }));
+    const eventClassified = { ...classified, primary: undefined, status: 'uncovered', compiler: { ...(classified.compiler || {}), clarificationRequired: false, claimType: 'descriptive' } };
+    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations);
+    return eventResult;
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
   const hintedMetricIds = vagueTaxJudgement(text) ? new Set() : metricIdsForInput(text, classified.compiler || {});
@@ -2453,6 +2491,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 24),
     source: warehouseResults.find((item) => item.source)?.source,
   };
+  let scorecardObservations = [];
+  if (broadComplaintText(text) && /\b(?:gobernando|gobierno|izquierda|derecha|peor)\b/.test(normalise(text))) {
+    const packets = await Promise.all(scorecardMetrics.map((metric) => findWarehouseEvidence(`${metric.aliases} España`, { metricIds: [metric.id], claimType: 'trend' })));
+    scorecardObservations = packets.flatMap((packet) => packet.observations || []).slice(0, 48);
+  }
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)
     : [];
@@ -2481,7 +2524,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
-  const observations = warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
+  const observations = scorecardObservations.length ? scorecardObservations : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);

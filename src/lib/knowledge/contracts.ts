@@ -50,6 +50,20 @@ export type EvidenceRecord = {
   reviewedAt?: string;
 };
 
+export type AnswerMode = 'reviewed_claim' | 'scorecard' | 'current_event' | 'provisional_evidence' | 'guidance';
+
+export type ScorecardItem = {
+  metricId: string;
+  label: string;
+  baseline?: { value: string; period: string };
+  comparison?: { value: string; period: string };
+  direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable';
+  evidenceIds: string[];
+  caveat?: string;
+};
+
+export type EventPropositionStatus = 'officially_reported' | 'corroborated_report' | 'single_report' | 'unconfirmed' | 'disputed' | 'context_only';
+
 export type SourceRecord = {
   id: string;
   title: string;
@@ -86,7 +100,10 @@ export type AnswerBlock =
   | { type: 'group_comparison_requirements'; items: Array<{ label: string; status: 'available' | 'check' | 'missing'; detail: string }> }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string; evidenceIds?: string[] }
-  | { type: 'sources'; sourceIds: string[] };
+  | { type: 'sources'; sourceIds: string[] }
+  | { type: 'scorecard'; baseline: { label: string; period: string }; comparison: { label: string; period: string }; items: ScorecardItem[] }
+  | { type: 'event_status'; event: { label: string; geography?: string; period?: string }; propositions: Array<{ text: string; status: EventPropositionStatus; evidenceIds: string[]; detail?: string }> };
+
 
 export type AnswerPlan = {
   schemaVersion: '1';
@@ -94,12 +111,14 @@ export type AnswerPlan = {
   summary: string;
   coverage: CoverageStatus;
   claimType: ClaimType;
+  answerMode?: AnswerMode;
   blocks: AnswerBlock[];
   clarificationQuestion?: string;
   limitation?: string;
   evidenceIds: string[];
   sourceIds: string[];
-  sourceLinks?: Array<{ id: string; title: string; url: string }>;
+  sourceLinks?: Array<{ id: string; title: string; url: string; publisher?: string; publishedAt?: string; retrievedAt?: string; role?: 'primary' | 'corroboration' | 'context'; originPublisher?: string }>;
+  asOf?: string;
   knowledgeVersion: string;
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
 };

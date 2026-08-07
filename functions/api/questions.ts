@@ -21,6 +21,15 @@ const json = (body: unknown, status = 200): Response => Response.json(body, {
 const normalise = (value: string): string => value.toLocaleLowerCase('es').normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim().slice(0, 12000);
 
+const neutralise = (value: string): string => normalise(String(value || '')
+  .replace(/https?\S+|www\.[^\s]+/gi, ' url ')
+  .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, ' contacto ')
+  .replace(/\b\d[\d\s().+-]{7,}\b/g, ' telefono ')
+  .replace(/\b(invasion|invadir)\b/g, 'entrada fronteriza')
+  .replace(/\b(violando|violacion|violar)\b/g, 'agresion sexual')
+  .replace(/\b(?:dice|afirma|acusa)\s+[a-z]+\b/gi, 'alegacion'))
+  .slice(0, 600);
+
 const digest = async (value: string): Promise<string> => {
   const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -35,10 +44,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (!env.DB) return json({ status: 'unavailable' }, 503);
   let body: { text?: unknown; canonical?: unknown; semanticSignature?: unknown; inputType?: unknown; status?: unknown; requestId?: unknown };
   try { body = await request.json() as typeof body; } catch { return json({ status: 'invalid' }, 400); }
-  const text = typeof body.text === 'string' ? body.text.trim().slice(0, 12000) : '';
-  if (!text) return json({ status: 'invalid' }, 400);
-  const normalized = normalise(text);
-  const canonical = typeof body.canonical === 'string' && body.canonical.trim() ? normalise(body.canonical).slice(0, 12000) : normalized;
+  const submitted = typeof body.canonical === 'string' && body.canonical.trim() ? body.canonical : typeof body.text === 'string' ? body.text : '';
+  const normalized = neutralise(submitted);
+  if (!normalized) return json({ status: 'invalid' }, 400);
+  const canonical = normalized;
   const signature = canonicalQuerySignature(canonical) || canonical;
   const semanticSignature = typeof body.semanticSignature === 'string' && body.semanticSignature.trim()
     ? body.semanticSignature.trim().slice(0, 600)

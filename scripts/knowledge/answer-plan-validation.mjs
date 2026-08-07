@@ -23,6 +23,7 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   if (plan.schemaVersion !== RUNTIME_VERSIONS.answerPlanSchema) errors.push('unsupported schema version');
   if (typeof plan.headline !== 'string' || !plan.headline.trim()) errors.push('missing headline');
   if (typeof plan.summary !== 'string' || !plan.summary.trim()) errors.push('missing summary');
+  if (plan.answerMode && !['reviewed_claim', 'scorecard', 'current_event', 'provisional_evidence', 'guidance'].includes(plan.answerMode)) errors.push('invalid answer mode');
   if (!Array.isArray(plan.blocks)) errors.push('missing blocks');
   if (!arrayOfStrings(plan.evidenceIds)) errors.push('evidenceIds must be a string array');
   if (!arrayOfStrings(plan.sourceIds)) errors.push('sourceIds must be a string array');
@@ -53,6 +54,12 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
     if (block.type === 'group_comparison_requirements' && !structuredItems(block.items, new Set(['available', 'check', 'missing']))) errors.push(`block ${index} group comparison is malformed`);
     if (block.type === 'prediction_conditions' && (!Array.isArray(block.items) || !block.items.length || !block.items.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.value) && ['specified', 'missing'].includes(item.status)))) errors.push(`block ${index} prediction conditions are malformed`);
     if (block.type === 'trade_offs' && (!nonEmptyString(block.principle) || !Array.isArray(block.alternatives) || block.alternatives.length < 2 || !block.alternatives.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.consequence)))) errors.push(`block ${index} trade-offs are malformed`);
+    if (block.type === 'scorecard' && (!block.baseline?.period || !block.comparison?.period || !Array.isArray(block.items) || !block.items.length || !block.items.every((item) => item && nonEmptyString(item.metricId) && nonEmptyString(item.label) && ['improved', 'worsened', 'roughly_unchanged', 'unavailable'].includes(item.direction) && arrayOfStrings(item.evidenceIds)))) errors.push(`block ${index} scorecard is malformed`);
+    if (block.type === 'event_status' && (!block.event?.label || !Array.isArray(block.propositions) || !block.propositions.length || !block.propositions.every((item) => item && nonEmptyString(item.text) && ['officially_reported', 'corroborated_report', 'single_report', 'unconfirmed', 'disputed', 'context_only'].includes(item.status) && arrayOfStrings(item.evidenceIds)))) errors.push(`block ${index} event status is malformed`);
+    if (block.type === 'scorecard' || block.type === 'event_status') {
+      const ids = block.type === 'scorecard' ? block.items?.flatMap((item) => item.evidenceIds || []) : block.propositions?.flatMap((item) => item.evidenceIds || []);
+      for (const id of ids || []) if (!evidenceIds.has(id)) errors.push(`block ${index} references evidence outside plan: ${id}`);
+    }
   }
 
   for (const [index, source] of (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).entries()) {
