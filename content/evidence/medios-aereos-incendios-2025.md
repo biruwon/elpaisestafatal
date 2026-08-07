@@ -7,4 +7,4 @@ geography: España
 unit: medios aéreos estatales de apoyo
 ---
 
-La fuente oficial cifra en 56 los medios aéreos del dispositivo estatal de apoyo para la campaña de 2025. No respalda la afirmación de que España tenga exactamente 14 hidroaviones ni que solo siete funcionen, porque usa otra unidad de conteo y no publica ese inventario operativo en el mismo documento.
+La fuente oficial identifica 14 aviones apagafuegos del Grupo 43 para 2025: diez CL-215T y cuatro CL-415. También cifra en 56 el conjunto del dispositivo estatal de medios aéreos de apoyo. El documento no publica una cifra de siete aeronaves operativas, ni permite inferir disponibilidad diaria a partir del inventario.

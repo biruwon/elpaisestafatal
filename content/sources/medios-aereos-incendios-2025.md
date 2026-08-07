@@ -7,4 +7,4 @@ type: official
 date: "2025-04-01"
 ---
 
-El Ministerio informó de un dispositivo estatal para 2025 con 56 medios aéreos y diez brigadas BRIF. La cifra de medios estatales no equivale necesariamente al inventario total de aeronaves disponibles en todas las administraciones ni a las aeronaves operativas cada día.
+El Ministerio informó para la campaña de 2025 de 14 aviones apagafuegos del Grupo 43: diez CL-215T y cuatro CL-415. La misma comunicación describe un dispositivo estatal reforzado de 56 medios aéreos y diez brigadas BRIF. Ninguna de esas cifras demuestra que solo siete aeronaves estuvieran operativas.

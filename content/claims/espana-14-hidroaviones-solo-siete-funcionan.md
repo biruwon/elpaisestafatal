@@ -21,8 +21,8 @@ España cuenta con un dispositivo estatal de medios aéreos para apoyar la extin
 
 ## Qué no está demostrado
 
-La fuente oficial consultada habla de 56 medios aéreos estatales de apoyo, no de un inventario de 14 hidroaviones con siete operativos. Para comprobar esa cifra concreta haría falta el inventario por tipo, administración y disponibilidad.
+La fuente oficial sí identifica 14 aviones apagafuegos del Grupo 43 para 2025 —diez CL-215T y cuatro CL-415—, pero no publica que solo siete estuvieran operativos. El inventario y la disponibilidad diaria son medidas distintas.
 
 ## Respuesta compartible
 
-La cifra de 14 hidroaviones y siete operativos no queda demostrada por la fuente oficial disponible. El dispositivo estatal de 2025 se describe con 56 medios aéreos de apoyo, una categoría distinta.
+La mitad de la frase es correcta: MITECO identifica 14 aviones apagafuegos para 2025, diez CL-215T y cuatro CL-415. Lo de que solo siete funcionen no queda demostrado por esa fuente; haría falta un parte de disponibilidad fechado.
