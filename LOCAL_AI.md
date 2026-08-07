@@ -23,13 +23,13 @@ For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TO
 
 ### Durable local origin
 
-For a later production iteration, create a named tunnel with an API token that has `Account → Cloudflare Tunnel → Edit`, copy `config/cloudflared.example.yml` to the machine's `~/.cloudflared/config.yml`, replace its placeholders locally, and point the Pages secret `LOCAL_CLASSIFIER_ENDPOINT` at the HTTPS hostname. Keep the resolver bound to `127.0.0.1:8789`; the tunnel template has a deny-by-default fallback. Run `npm run origin:validate` before deployment. Temporary account-less tunnels are suitable only for connectivity tests, not production uptime.
+For the persistent production origin, use a named Cloudflare Tunnel with a token managed by Cloudflare, point its hostname at the local resolver, and set the Pages secrets `LOCAL_CLASSIFIER_ENDPOINT` and `LOCAL_CLASSIFIER_TOKEN` to the matching HTTPS origin and shared resolver token. Keep the resolver loopback-only; the tunnel template has a deny-by-default fallback. Run `npm run origin:validate` before deployment. Temporary account-less tunnels are suitable only for connectivity tests, not production uptime.
 
-This tunnel is intentionally deferred. The current production deployment does not require local inference: it serves deterministic claim matching and evidence guidance through the static site and API fallback. A public health response with `dynamic: false` is therefore expected until the persistent origin is configured.
+On macOS, keep the resolver alive with `npm run origin:serve`. The checked-in launchd template is `config/com.elpaisestafatal.local-origin.plist.example`; it supervises the resolver, avoids duplicate processes, waits for `/healthz`, and restarts the child after a crash. The actual machine-specific plist and credentials must remain outside Git. The public `/api/health` endpoint should report `dynamic: true` while the local machine and tunnel are available; if the origin goes offline, deterministic fallback remains available.
 
 The local development proxy keeps the local inference service behind the same-origin `/api/classify` boundary.
 
-The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and does not run inference.
+The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and uses the same bounded local inference path when the configured origin is available.
 
 For local experiments, `LOCAL_ANSWER_PLANNER=1` enables a final presentation pass after deterministic enrichment. The planner receives a bounded evidence packet and may only rewrite the headline, summary, question, limitation, and existing conversation reply. It cannot add evidence IDs, sources, visual blocks, or unsupported numbers; malformed, timed-out, or untraceable output is discarded automatically. Leave it unset for the fastest deterministic path.
 

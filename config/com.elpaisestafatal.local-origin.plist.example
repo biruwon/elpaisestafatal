@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.elpaisestafatal.local-origin</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/&lt;USER&gt;/projects/bulos/elpaisestafatal</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>&lt;NODE_BINARY_PATH&gt;</string>
+    <string>scripts/serve-local-origin.mjs</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>LOCAL_CLASSIFIER_PORT</key>
+    <string>8789</string>
+    <key>LOCAL_CLASSIFIER_BIND_HOST</key>
+    <string>127.0.0.1</string>
+    <key>LOCAL_CLASSIFIER_TOKEN</key>
+    <string>REPLACE_WITH_THE_SAME_TOKEN_USED_BY_PAGES</string>
+    <key>OLLAMA_ENDPOINT</key>
+    <string>http://127.0.0.1:11434</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+  <key>StandardOutPath</key>
+  <string>/tmp/elpaisestafatal-local-origin.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/elpaisestafatal-local-origin.err.log</string>
+</dict>
+</plist>
