@@ -1,10 +1,12 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
+import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
 const fixtures = {
   immigration_benefits: [{ periodo: '2025', territorio: 'España', grupo: 'nacionalidad extranjera', beneficiarios: '1200' }],
   immigration_crime: [{ periodo: '2025', territorio: 'España', grupo: 'nacionalidad', tasa: '42,5' }],
   public_housing_allocation: [{ periodo: '2025', municipio: 'Madrid', grupo: 'solicitantes extranjeros', adjudicaciones: '120' }],
+  wildfire_statistics: [{ periodo: '2025', territorio: 'España', superficie: '354746.67' }],
+  health_emergency_wait: [{ periodo: '2025', territorio: 'España', minutos: '216.69' }],
 };
 for (const domain of domainConnectorIds()) {
   const records = parseDomainPayload(domain, fixtures[domain], source);
@@ -20,6 +22,10 @@ const crimeRows = parseCrimeSeriesText('Serie\n;2024;2023;\nTOTAL NACIONAL;\n1. 
 if (crimeRows.length !== 4 || crimeRows[0].metricId !== 'recorded_offences' || crimeRows[0].category !== 'Homicidios') throw new Error('Crime series parsing failed');
 const housingRows = parsePublicHousingActionsText('Comunidad Autónoma;Provincia;Mes;Año;Número de viviendas;Tipología;Estado\nMadrid;Madrid;9;2024;12;Vivienda;Certificación Definitiva');
 if (housingRows.length !== 1 || housingRows[0].metricId !== 'public_housing_actions' || housingRows[0].value !== 12 || housingRows[0].period !== '2024-09') throw new Error('Public housing action parsing failed');
+const wildfireRows = parseWildfireReportText('Total siniestros 9.171 8.199\nS. Forestal (ha) 105.614 354.746,67', source);
+if (wildfireRows.length !== 4 || wildfireRows[0].metricId !== 'wildfire_incidents' || wildfireRows[2].value !== 354746.67) throw new Error('Wildfire report parsing failed');
+const healthRows = parseHealthEmergencyReportText('Tiempo medio declarado: 216,69 minutos', source);
+if (healthRows.length !== 1 || healthRows[0].metricId !== 'emergency_wait_declared' || healthRows[0].value !== 216.69) throw new Error('Health emergency report parsing failed');
 const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
 if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;

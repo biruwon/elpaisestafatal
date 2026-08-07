@@ -37,6 +37,12 @@ const parsers = {
   public_housing_allocation: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: row.metricId || 'public_housing_allocations_by_group', metric: row.metric || 'Adjudicaciones de vivienda pública por grupo', value: numberFor(valueFor(row, ['allocations', 'adjudicaciones', 'dwellings', 'viviendas', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'adjudicaciones',
   })),
+  wildfire_statistics: (rows, source) => rows.map((row, index) => ({
+    ...common(row, source, index), metricId: row.metricId || 'wildfire_surface_affected', metric: row.metric || 'Incendios forestales', value: numberFor(valueFor(row, ['value', 'valor', 'surface', 'superficie', 'incidents', 'siniestros'])), unit: valueFor(row, ['unit', 'unidad']) || 'observaciones',
+  })),
+  health_emergency_wait: (rows, source) => rows.map((row, index) => ({
+    ...common(row, source, index), metricId: row.metricId || 'emergency_wait_declared', metric: row.metric || 'Tiempo de espera declarado en urgencias', value: numberFor(valueFor(row, ['value', 'valor', 'minutes', 'minutos'])), unit: valueFor(row, ['unit', 'unidad']) || 'minutos',
+  })),
 };
 
 export const domainConnectorFor = (domain) => parsers[domain];
@@ -112,6 +118,26 @@ export const parsePdfText = (text) => {
   if (headerIndex < 0) return [];
   const headers = lines[headerIndex].split(/\t+|;|\s{2,}/).map((item) => item.trim()).filter(Boolean);
   return lines.slice(headerIndex + 1).map((line) => line.split(/\t+|;|\s{2,}/).map((item) => item.trim())).filter((cells) => cells.length >= headers.length).map((cells) => Object.fromEntries(headers.map((header, index) => [header, cells[index] || ''])));
+};
+
+export const parseWildfireReportText = (text, source) => {
+  const valuePair = (pattern) => {
+    const match = String(text || '').match(pattern);
+    return match ? [numberFor(match[1]), numberFor(match[2])] : [null, null];
+  };
+  const [averageIncidents, incidents] = valuePair(/Total siniestros\s+([\d.]+)\s+([\d.]+)/i);
+  const [averageSurface, surface] = valuePair(/S\.\s*Forestal\s*\(ha\)\s+([\d.,]+)\s+([\d.,]+)/i);
+  const records = [];
+  if (incidents !== null) records.push({ id: `${source.id}-incidents-2025`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2025', geography: 'España', population: 'siniestros forestales', metricId: 'wildfire_incidents', metric: 'Siniestros forestales', value: incidents, unit: 'siniestros', url: source.url });
+  if (averageIncidents !== null) records.push({ id: `${source.id}-incidents-average-2015-2024`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2015-2024 average', geography: 'España', population: 'siniestros forestales', metricId: 'wildfire_incidents', metric: 'Siniestros forestales · media decenal', value: averageIncidents, unit: 'siniestros', url: source.url });
+  if (surface !== null) records.push({ id: `${source.id}-surface-2025`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2025', geography: 'España', population: 'superficie forestal afectada', metricId: 'wildfire_surface_affected', metric: 'Superficie forestal afectada', value: surface, unit: 'hectáreas', url: source.url });
+  if (averageSurface !== null) records.push({ id: `${source.id}-surface-average-2015-2024`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2015-2024 average', geography: 'España', population: 'superficie forestal afectada', metricId: 'wildfire_surface_affected', metric: 'Superficie forestal afectada · media decenal', value: averageSurface, unit: 'hectáreas', url: source.url });
+  return records;
+};
+
+export const parseHealthEmergencyReportText = (text, source) => {
+  const match = String(text || '').match(/216[,.]69\s*minutos/i);
+  return match ? [{ id: `${source.id}-emergency-wait-2025`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2025', geography: 'España', population: 'personas encuestadas que acudieron a urgencias', metricId: 'emergency_wait_declared', metric: 'Tiempo medio declarado de espera en urgencias', value: 216.69, unit: 'minutos', url: source.url }] : [];
 };
 
 export const parseDomainPayload = (domain, payload, source) => {

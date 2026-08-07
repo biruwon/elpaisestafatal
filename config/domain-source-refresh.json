@@ -47,6 +47,22 @@
       "schedule": "monthly",
       "mode": "discovery",
       "title": "Madrid Social Housing Agency statistics and downloadable assets"
+    },
+    {
+      "id": "miteco-wildfire-advance-2025",
+      "domain": "wildfire_statistics",
+      "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/incendios-forestales/Avance_IIFF_2025_.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "MITECO annual wildfire advance"
+    },
+    {
+      "id": "sanidad-emergency-wait-2025",
+      "domain": "health_emergency_wait",
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2025/Totales/Informe_BS_2025.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Ministry of Health Barometer emergency waiting time"
     }
   ]
 }

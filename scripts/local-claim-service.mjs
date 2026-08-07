@@ -118,6 +118,9 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
+  if (metricId === 'wildfire_incidents') return 'siniestros';
+  if (metricId === 'wildfire_surface_affected') return 'hectáreas';
+  if (metricId === 'emergency_wait_declared') return 'minutos';
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_per_capita_current_prices') return '€ por habitante';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
@@ -1789,7 +1792,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const sourceIds = primary?.sourceRefs || [];
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
-  const handlerId = primary?.handlerId || handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const metricRouteIds = metricIdsForInput(text, classified.compiler || {});
+  const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || ''));
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
@@ -1884,7 +1888,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     && !isLegal
     && !isPrediction
     && !predictionWording
-    && (ranking?.observations?.length >= 2 || trend?.observations?.length >= 2);
+    && (ranking?.observations?.length >= 2 || trend?.observations?.length >= 2 || observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)));
   if (status === 'draft' && directWarehouseAnswer) status = 'complete';
   const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
   const causalProfile = isCausal ? causalEvidenceProfile(causalObservations) : null;
@@ -1914,6 +1918,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const quantityContext = isQuantityLike && !primary && quantity ? {
     headline: quantity.headline,
     summary: quantity.summary,
+  } : null;
+  const metricContext = explicitMetricRoute && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) && !primary ? {
+    headline: 'Hemos encontrado el indicador solicitado',
+    summary: 'La serie oficial localizada responde al indicador y periodo expresados. La ficha muestra exactamente qué mide y qué no permite concluir.'
   } : null;
   const budgetContext = isBudgetTransfer && !primary && budgetObservations.length ? {
     headline: 'La transferencia está documentada, pero el recorte educativo no está demostrado',
@@ -2231,8 +2239,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
-    headline: compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
-    summary: compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
+    headline: compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    summary: compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || ranking || trend || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: resolvedClaimType,
     blocks: compoundEvidenceCount > 1

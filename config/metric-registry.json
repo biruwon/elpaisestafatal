@@ -638,5 +638,29 @@
     "population": "protected-housing actions recorded by the official source, classified by territory, typology, and administrative status",
     "notEquivalentTo": ["public_housing_allocations_by_group", "foreign_citizenship_population"],
     "dimensions": ["period", "geography", "typology", "status"]
+  },
+  "wildfire_incidents": {
+    "name": "Wildfire incidents in Spain",
+    "aliases": ["siniestros forestales", "incendios forestales registrados", "numero de incendios forestales"],
+    "unit": "incidents",
+    "population": "forest-fire incidents",
+    "notEquivalentTo": ["wildfire_surface_affected"],
+    "dimensions": ["period", "geography"]
+  },
+  "wildfire_surface_affected": {
+    "name": "Forest area affected by wildfire in Spain",
+    "aliases": ["superficie forestal afectada", "superficie quemada", "hectareas quemadas"],
+    "unit": "hectares",
+    "population": "forest area affected by wildfire",
+    "notEquivalentTo": ["wildfire_incidents"],
+    "dimensions": ["period", "geography"]
+  },
+  "emergency_wait_declared": {
+    "name": "Declared emergency-department waiting time",
+    "aliases": ["espera en urgencias", "tiempo de espera en urgencias", "espera media en urgencias"],
+    "unit": "minutes",
+    "population": "survey respondents who attended emergency care",
+    "notEquivalentTo": ["unmet_healthcare_waiting_list_rate"],
+    "dimensions": ["period", "geography"]
   }
 }

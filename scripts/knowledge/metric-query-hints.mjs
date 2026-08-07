@@ -84,6 +84,9 @@ export const metricQueryTextForIds = (ids) => [...new Set([...ids].flatMap((id) 
 }))].join(' ');
 
 const metricHints = [
+  { ids: ['wildfire_incidents'], terms: ['siniestros forestales', 'incendios forestales', 'numero de incendios forestales'] },
+  { ids: ['wildfire_surface_affected'], terms: ['superficie forestal afectada', 'superficie forestal', 'superficie quemada', 'hectareas quemadas'] },
+  { ids: ['emergency_wait_declared'], terms: ['espera en urgencias', 'tiempo de espera en urgencias', 'espera media en urgencias', 'espera urgencias', 'urgencias'] },
   { ids: ['household_electricity_price'], terms: ['precio de la luz', 'factura de la luz', 'precio de la electricidad', 'coste de la electricidad', 'tarifa electrica', 'electricidad', 'electricidad para las familias', 'luz para las familias', 'luz mas cara'] },
   { ids: ['rental_price_index'], terms: ['precio del alquiler', 'precios del alquiler', 'alquiler', 'alquileres', 'rentas de alquiler', 'alquiler mas caro', 'sube el alquiler'] },
   { ids: ['harmonised_price_index'], terms: ['comparable con europa', 'metodologia europea', 'indice armonizado', 'hicp', 'inflacion comparable'] },
@@ -216,6 +219,11 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasAny('recauda', 'recaudacion', 'ingresos') && hasAny('economia', 'pib', 'parte', 'proporcion', 'porcentaje')) preferred.add('government_revenue_ratio');
   if (hasAny('familias', 'hogares', 'personas') && hasAny('vivienda', 'alquiler', 'casa') && hasAny('dinero', 'gasto', 'coste', 'esfuerzo', 'destinan')) preferred.add('housing_cost_overburden_rate');
   if (hasAny('sanidad', 'salud') && hasAny('recursos', 'dinero', 'persona', 'habitante', 'dedica', 'gasta')) preferred.add('health_expenditure_per_capita');
+  if (hasAny('urgencias', 'urgencia') && hasAny('espera', 'esperar', 'tarda', 'tiempo')) {
+    preferred.add('emergency_wait_declared');
+    preferred.delete('unmet_healthcare_waiting_list_rate');
+    preferred.delete('unmet_healthcare_waiting_list_rate_europe');
+  }
   if (hasEuropeReference && hasAny('economia', 'crece', 'crecimiento', 'pib') && hasAny('despacio', 'rapido', 'ritmo', 'crecimiento')) preferred.add('gdp_real_growth_europe');
   if (hasEuropeReference && hasAny('salario', 'sueldo', 'cobra', 'paga') && hasAny('hora', 'horas', 'inferior', 'superior', 'menos', 'mas')) {
     preferred.add('median_hourly_earnings_europe');

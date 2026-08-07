@@ -8,8 +8,8 @@ const errors = [];
 
 if (!Array.isArray(feeds) || feeds.length === 0) errors.push('feeds must be a non-empty array');
 const ids = new Set();
-const domains = new Set(['immigration_benefits', 'immigration_crime', 'public_housing_allocation']);
-const schedules = new Set(['daily', 'weekly', 'monthly']);
+const domains = new Set(['immigration_benefits', 'immigration_crime', 'public_housing_allocation', 'wildfire_statistics', 'health_emergency_wait']);
+const schedules = new Set(['daily', 'weekly', 'monthly', 'yearly']);
 const modes = new Set(['active', 'discovery']);
 
 for (const feed of feeds ?? []) {

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer } from './domain-connectors.mjs';
+import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseHealthEmergencyReportText, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -53,14 +53,18 @@ try {
     const parser = new PDFParse({ data: bytes });
     const extracted = await parser.getText();
     await parser.destroy();
-    payload = parsePdfText(extracted.text);
+    if (domain === 'wildfire_statistics') payload = { __records: parseWildfireReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'health_emergency_wait') payload = { __records: parseHealthEmergencyReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else payload = parsePdfText(extracted.text);
 } else if (domain === 'immigration_crime' && /Series anuales|Hechos conocidos por comunidades/i.test(text)) payload = parseCrimeSeriesText(text);
   else if (domain === 'public_housing_allocation' && /Número de viviendas|Numero de viviendas/i.test(text)) payload = parsePublicHousingActionsText(text);
   else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
 const source = { id: `domain-${hash.slice(0, 16)}`, title, url: response.url.toString(), landingUrl: sourceUrl.toString() };
-const records = parseDomainPayload(domain, payload, source);
+const records = payload?.__records
+  ? payload.__records.map((record) => ({ ...record, sourceId: source.id, id: record.id.replace('pending', source.id) }))
+  : parseDomainPayload(domain, payload, source);
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 await mkdir(join(root, 'records'), { recursive: true });
 const outputPath = join(root, 'records', `${source.id}.json`);
