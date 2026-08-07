@@ -2126,13 +2126,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ];
     const series = ranking?.observations || trend?.observations || causalContext?.observations || quantity?.observations || (isGroupComparison ? groupObservations : numeric);
     const periods = series.filter((item) => item.period).map((item) => item.period);
+    const requestedPeriod = String(text || '').match(/\b20\d{2}\b/)?.[0];
     const keyObservation = ranking
       ? series.find((item) => {
         const label = normalise(item.dimensionLabels?.geo || '');
         const code = normalise(item.dimensions?.geo || '');
         return code === 'es' || label.includes('espana') || label.includes('spain');
       }) || series[0]
-      : series.at(-1);
+      : (requestedPeriod ? series.find((item) => String(item.period || '').includes(requestedPeriod)) || series.at(-1) : series.at(-1));
     return [
       { type: 'key_number', evidenceId: keyObservation.id, label: ranking ? `${ranking.regional ? 'Comparación regional' : 'España'} · ${displayMetric(keyObservation)}` : displayMetric(keyObservation), value: String(keyObservation.value), caveat: 'Dato localizado automáticamente en una fuente oficial; todavía no se ha revisado como respuesta a esta afirmación.' },
       ...((ranking || trend || causalContext) ? [{ type: 'data_finding', evidenceIds: series.map((item) => item.id), points: (ranking || trend || causalContext).points }, { type: 'conversation_reply', evidenceIds: (ranking || trend || causalContext).replyEvidenceIds || series.map((item) => item.id), text: (ranking || trend || causalContext).reply }] : []),
