@@ -3,7 +3,7 @@ import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 import { semanticQuerySignature } from '../lib/knowledge/querySignature';
-import { snapshotScorecard } from '../lib/knowledge/scorecard-snapshot.mjs';
+import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../lib/knowledge/scorecard-snapshot.mjs';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
@@ -785,8 +785,24 @@ const resetChecker = (): void => {
   resetMediaSelection();
   updateCounter();
   if (result) result.innerHTML = '';
+  document.querySelector('.hero-checker')?.classList.remove('has-result');
   window.history.replaceState({}, '', '/#comprobar');
   input?.focus();
+};
+
+const renderScorecardPlan = (original: string, plan: AnswerPlan): void => {
+  if (!result) return;
+  const scorecard = plan.blocks.find((block) => block.type === 'scorecard');
+  if (!scorecard || scorecard.type !== 'scorecard') return;
+  const improved = scorecard.items.filter((item) => item.direction === 'improved').length;
+  const worsened = scorecard.items.filter((item) => item.direction === 'worsened').length;
+  const labels: Record<string, string> = { improved: 'Mejora', worsened: 'Empeora', roughly_unchanged: 'Sin cambio', unavailable: 'Sin dato' };
+  const sources = new Map((plan.sourceLinks || []).map((source) => [source.id, source]));
+  const rows = scorecard.items.map((item) => `<details class="scorecard-row" data-direction="${item.direction}"><summary><span class="scorecard-row-label"><strong>${escapeHtml(item.label)}</strong><b class="scorecard-badge scorecard-${item.direction}">${labels[item.direction]}</b></span><span class="scorecard-row-values">${item.baseline ? `${escapeHtml(item.baseline.value)} → ` : ''}${item.comparison ? escapeHtml(item.comparison.value) : '—'}${item.change ? ` <small>${escapeHtml(item.change)}</small>` : ''}</span></summary><div class="scorecard-row-detail"><p>${item.baseline ? `Base ${escapeHtml(item.baseline.period)}: ${escapeHtml(item.baseline.value)} · ` : ''}${item.comparison ? `Último dato ${escapeHtml(item.comparison.period)}: ${escapeHtml(item.comparison.value)}.` : 'No hay dos observaciones compatibles.'}</p>${item.caveat ? `<p>${escapeHtml(item.caveat)}</p>` : ''}${item.evidenceIds?.length ? `<div class="scorecard-row-sources">${item.evidenceIds.map((id) => sources.get(id)).filter((source): source is NonNullable<typeof source> => Boolean(source)).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</div>` : ''}</div></details>`).join('');
+  result.innerHTML = `<article class="scorecard-result" aria-labelledby="scorecard-title"><div class="scorecard-submitted"><span>Comprobando</span><strong>${escapeHtml(original)}</strong><button type="button" data-scorecard-edit>Editar</button></div><p class="eyebrow">Cuadro de indicadores</p><h3 id="scorecard-title">Los datos no apoyan que “todo vaya peor”</h3><p class="scorecard-answer">En este cuadro, <strong>${improved} de ${scorecard.items.length}</strong> indicadores mejoran y <strong>${worsened}</strong> empeora entre ${escapeHtml(scorecard.baseline.period)} y ${escapeHtml(scorecard.comparison.period)}.</p><p class="scorecard-caveat">Esto describe cambios observados; no demuestra qué políticas los causaron ni produce una nota partidista.</p><div class="scorecard-meta">España · ${escapeHtml(scorecard.baseline.period)} → ${escapeHtml(scorecard.comparison.period)} · Datos revisados</div><section class="scorecard-list" aria-label="Indicadores comparados">${rows}</section><details class="scorecard-sources"><summary>Fuentes y método <small>${plan.sourceLinks?.length || 0} fuentes · ${plan.asOf ? escapeHtml(new Date(plan.asOf).toLocaleDateString('es-ES')) : ''}</small></summary><p>${escapeHtml((scorecard as typeof scorecard & { assumption?: string }).assumption || plan.limitation || 'Se compara el último año completo anterior con el último dato compatible.')}</p>${(plan.sourceLinks || []).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} · ${escapeHtml(source.publisher || '')} ↗</a>`).join('')}</details><div class="scorecard-actions"><button type="button" data-scorecard-edit>Editar afirmación</button><button type="button" data-new-check>Nueva comprobación</button></div></article>`;
+  document.querySelector('.hero-checker')?.classList.add('has-result');
+  result.querySelectorAll<HTMLButtonElement>('[data-scorecard-edit]').forEach((button) => button.addEventListener('click', resetChecker));
+  result.querySelectorAll<HTMLDetailsElement>('.scorecard-row').forEach((row) => row.addEventListener('toggle', () => { if (!row.open) return; result.querySelectorAll<HTMLDetailsElement>('.scorecard-row[open]').forEach((other) => { if (other !== row) other.open = false; }); }));
 };
 
 recentChecksList?.addEventListener('click', (event) => {
@@ -1090,7 +1106,7 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   const broadGuidance = broadComplaintGuidance(original, primary);
   if (broadGuidance) {
     const scorecard = snapshotScorecard() as unknown as AnswerPlan['blocks'][number];
-    renderStructuredPlan(original, { schemaVersion: '1', answerMode: 'scorecard', headline: 'No hay una nota única: compara los indicadores', summary: 'La frase es una valoración amplia. El cuadro muestra qué indicadores mejoran o empeoran, sin convertirlos en una nota partidista ni atribuir causalidad.', coverage: 'qualified', claimType: 'comparative', blocks: [scorecard, { type: 'cannot_conclude', evidenceIds: [], points: ['Una variación simultánea no demuestra qué políticas la causaron.'] }], evidenceIds: [], sourceIds: [], sourceLinks: [], knowledgeVersion: 'scorecard-snapshot' }, undefined, [], undefined, 'published');
+    renderScorecardPlan(original, { schemaVersion: '1', answerMode: 'scorecard', headline: 'No hay una nota única: compara los indicadores', summary: 'La frase es una valoración amplia.', coverage: 'qualified', claimType: 'comparative', blocks: [scorecard], evidenceIds: [], sourceIds: [], sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources as unknown as AnswerPlan['sourceLinks'], asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf, knowledgeVersion: 'scorecard-snapshot' });
     return;
   }
   const coverage = classifyDeterministicCoverage(primary);
@@ -1170,6 +1186,10 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
   clearDynamicStatus();
   const structuredPrimary = response.relatedClaims?.[0];
   const primary = findEntry(response.primary?.slug || structuredPrimary?.slug);
+  if (response.result?.answerMode === 'scorecard' && response.result.blocks?.some((block) => block.type === 'scorecard')) {
+    renderScorecardPlan(original, response.result);
+    return;
+  }
   if (response.status === 'complete' && response.result && primary && response.result.answerMode === 'reviewed_claim') {
     if (navigateToPublishedClaim(primary)) return;
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
