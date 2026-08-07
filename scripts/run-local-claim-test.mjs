@@ -45,6 +45,16 @@ try {
     stdio: 'inherit',
   });
   const [code] = await once(test, 'exit');
+  const health = await fetch(`${endpoint}/healthz`).then((response) => response.json()).catch(() => undefined);
+  if (health) {
+    console.error(JSON.stringify({
+      localResolver: {
+        dynamic: health.dynamic === true,
+        indexEntries: health.indexEntries,
+        metrics: health.metrics || {},
+      },
+    }));
+  }
   stop();
   await once(resolver, 'exit').catch(() => {});
   process.exit(code || 0);
