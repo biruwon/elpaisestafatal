@@ -5,7 +5,7 @@ assessment: uncertain
 topicSlugs: ["incendios", "medioambiente"]
 aliases: ["los incendios son cada vez peores y baten récords", "España bate récords de superficie quemada", "cada año hay incendios más devastadores"]
 claimType: descriptive
-evidenceStrength: medium
+evidenceStrength: high
 geography: España
 period: serie histórica
 reviewed: 2026-08-05
@@ -17,12 +17,12 @@ propositionIds: ["prop-incendios-cada-vez-peores-record-core"]
 
 ## Qué es cierto
 
-España dispone de una serie oficial para medir incendios forestales y superficie afectada, con avances provisionales y datos definitivos.
+El avance oficial de MITECO para 2025 registra 8.199 siniestros, menos que la media de 9.171 del decenio 2015-2024, pero 354.746,67 hectáreas de superficie forestal afectada, frente a 105.614 hectáreas de media. El informe sitúa 2025 como el año con mayor superficie afectada del último decenio.
 
 ## Qué falta concretar
 
-“Cada vez peores” y “récord histórico” requieren comparar una métrica concreta con un periodo definido. No es válido sustituir la superficie quemada por el número de incendios ni usar un avance provisional como si fuera el dato definitivo.
+“Cada vez peores” y “récord histórico” siguen siendo formulaciones demasiado amplias. El dato disponible es un avance provisional y demuestra un máximo del último decenio para la superficie forestal afectada, no necesariamente un récord de toda la serie histórica ni una tendencia anual ascendente.
 
 ## Respuesta compartible
 
-Los incendios se pueden medir con la serie oficial de MITECO, pero “cada vez peores” no es una cifra única. Hay que indicar qué superficie, qué periodo y si se usan datos definitivos antes de hablar de récord histórico.
+En 2025 hubo menos siniestros que la media del decenio, pero mucha más superficie afectada: 354.746,67 hectáreas frente a 105.614. Es un máximo del último decenio en superficie, con datos provisionales; no demuestra por sí solo que cada año sea peor ni un récord histórico absoluto.
