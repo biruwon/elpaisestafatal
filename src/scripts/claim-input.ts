@@ -1216,7 +1216,9 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   const cached = !file && cacheKey ? responseCache.get(cacheKey) || (() => {
     try { return JSON.parse(sessionStorage.getItem(`claim-classification:${cacheKey}`) || 'null') as SearchResponse | null; } catch { return null; }
   })() : null;
-  if (cached) { applyResponse(cached, query, ranked); return; }
+  // Ignore pre-resolution cache entries from older releases. They contain the
+  // legacy compact "no published check" response and would mask new modes.
+  if (cached && (cached.result?.answerMode || cached.status === 'published')) { applyResponse(cached, query, ranked); return; }
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
