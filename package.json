@@ -40,6 +40,7 @@
     "deploy:pages": "node scripts/deploy-pages.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "claims:post:test": "node scripts/test-post-claims.mjs",
+    "claims:post:test:local": "node scripts/run-local-claim-test.mjs",
     "claims:families:test": "node scripts/test-claim-families.mjs",
     "knowledge:family-routing": "node scripts/knowledge/validate-claim-family-routing.mjs",
     "validate:content": "node scripts/validate-content.mjs",
