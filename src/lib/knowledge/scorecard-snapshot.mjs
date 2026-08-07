@@ -34,7 +34,7 @@ export const snapshotScorecard = (periodId = 'since-2018') => {
     type: 'scorecard',
     baseline: { label: 'Base', period: period.baseline },
     comparison: { label: 'Comparación', period: period.comparison },
-    items: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ ...metric, evidenceIds: metric.sourceIds })),
+    items: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ ...metric, baseline: { ...metric.baseline, value: String(metric.baseline.value) }, comparison: { ...metric.comparison, value: String(metric.comparison.value) }, evidenceIds: metric.sourceIds })),
     assumption: period.assumption,
   };
 };

@@ -60,6 +60,7 @@ export type ScorecardItem = {
   direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable';
   evidenceIds: string[];
   caveat?: string;
+  change?: string;
 };
 
 export type EventPropositionStatus = 'officially_reported' | 'corroborated_report' | 'single_report' | 'unconfirmed' | 'disputed' | 'context_only';

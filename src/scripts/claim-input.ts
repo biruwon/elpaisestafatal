@@ -3,6 +3,7 @@ import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 import { semanticQuerySignature } from '../lib/knowledge/querySignature';
+import { snapshotScorecard } from '../lib/knowledge/scorecard-snapshot.mjs';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
@@ -584,7 +585,7 @@ const blockEvidenceMarkup = (plan: AnswerPlan, evidenceIds?: string[]): string =
 const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][number]): string => {
   if (block.type === 'scorecard') {
     const labels: Record<string, string> = { improved: 'Mejora', worsened: 'Empeora', roughly_unchanged: 'Sin cambio apreciable', unavailable: 'Sin dato compatible' };
-    return `<section class="claim-plan-scorecard claim-plan-card"><span class="clarification-label">Cuadro de indicadores · sin nota global</span><p>Base: ${escapeHtml(block.baseline.period)} · comparación: ${escapeHtml(block.comparison.period)}</p><div class="claim-scorecard-grid">${block.items.map((item) => `<article data-direction="${item.direction}"><strong>${escapeHtml(item.label)}</strong><span>${labels[item.direction]}</span>${item.baseline ? `<small>Base: ${escapeHtml(item.baseline.value)} (${escapeHtml(item.baseline.period)})</small>` : ''}${item.comparison ? `<small>Último: ${escapeHtml(item.comparison.value)} (${escapeHtml(item.comparison.period)})</small>` : ''}${item.change ? `<small class="claim-scorecard-change">Cambio: ${escapeHtml(item.change)}</small>` : ''}${item.caveat ? `<em>${escapeHtml(item.caveat)}</em>` : ''}${blockEvidenceMarkup(plan, item.evidenceIds)}</article>`).join('')}</div></section>`;
+    return `<section class="claim-plan-scorecard claim-plan-card"><span class="clarification-label">Cuadro de indicadores · sin nota global</span><p>Base: ${escapeHtml(block.baseline.period)} · comparación: ${escapeHtml(block.comparison.period)}</p><div class="claim-scorecard-grid">${block.items.map((item) => `<article data-direction="${item.direction}"><strong>${escapeHtml(item.label)}</strong><span>${labels[item.direction]}</span>${item.baseline ? `<small>Base: ${escapeHtml(item.baseline.value)} (${escapeHtml(item.baseline.period)})</small>` : ''}${item.comparison ? `<small>Último: ${escapeHtml(item.comparison.value)} (${escapeHtml(item.comparison.period)})</small>` : ''}${item.change ? `<small class="claim-scorecard-change">Cambio: ${escapeHtml(item.change)}</small>` : ''}${item.caveat ? `<em>${escapeHtml(item.caveat)}</em>` : ''}<button type="button" data-scorecard-metric="${escapeHtml(item.metricId)}">Ver este indicador</button>${blockEvidenceMarkup(plan, item.evidenceIds)}</article>`).join('')}</div></section>`;
   }
   if (block.type === 'event_status') {
     const labels: Record<string, string> = { officially_reported: 'Reportado oficialmente', corroborated_report: 'Corroborado por fuentes independientes', single_report: 'Una sola fuente', unconfirmed: 'Sin confirmación encontrada', disputed: 'Fuentes en conflicto', context_only: 'Solo contexto' };
@@ -1022,6 +1023,16 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
   const storyMarkup = visualStoryMarkup(plan);
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${storyMarkup}${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined, Boolean(storyMarkup))}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
   bindResultActions();
+  result.querySelectorAll<HTMLButtonElement>('[data-scorecard-metric]').forEach((button) => button.addEventListener('click', () => {
+    const item = plan.blocks.find((block) => block.type === 'scorecard')?.type === 'scorecard'
+      ? (plan.blocks.find((block) => block.type === 'scorecard') as Extract<AnswerPlan['blocks'][number], { type: 'scorecard' }>).items.find((candidate) => candidate.metricId === button.dataset.scorecardMetric)
+      : undefined;
+    if (!item) return;
+    const card = result.querySelector<HTMLElement>('.claim-plan-scorecard');
+    card?.querySelector('.claim-scorecard-detail')?.remove();
+    card?.insertAdjacentHTML('beforeend', `<div class="claim-scorecard-detail"><strong>Indicador seleccionado: ${escapeHtml(item.label)}</strong><p>${item.direction === 'improved' ? 'Mejora' : item.direction === 'worsened' ? 'Empeora' : 'Sin cambio apreciable'}: ${escapeHtml(item.change || 'sin cambio cuantificable')}.</p><small>${escapeHtml(item.caveat || 'Este cambio no demuestra por sí solo qué política lo causó.')}</small><button type="button" data-scorecard-back>Volver al cuadro</button></div>`);
+    card?.querySelector<HTMLButtonElement>('[data-scorecard-back]')?.addEventListener('click', () => card?.querySelector('.claim-scorecard-detail')?.remove());
+  }));
   result.querySelectorAll<HTMLButtonElement>('[data-feedback-value]').forEach((button) => button.addEventListener('click', async () => {
     const feedback = button.closest<HTMLElement>('[data-feedback-request]');
     const requestId = feedback?.dataset.feedbackRequest;
@@ -1078,7 +1089,8 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   const primary = ranked[0];
   const broadGuidance = broadComplaintGuidance(original, primary);
   if (broadGuidance) {
-    renderCompactResult({ status: 'uncovered', claim: original, summary: 'No hay una nota única para decir si España va mejor o peor: hay que comparar empleo, renta, pobreza, vivienda, sanidad y actividad económica.', refinementQuestion: 'Estamos cargando el cuadro de indicadores con periodos y fuentes. ¿Qué parte quieres comprobar primero?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    const scorecard = snapshotScorecard() as unknown as AnswerPlan['blocks'][number];
+    renderStructuredPlan(original, { schemaVersion: '1', answerMode: 'scorecard', headline: 'No hay una nota única: compara los indicadores', summary: 'La frase es una valoración amplia. El cuadro muestra qué indicadores mejoran o empeoran, sin convertirlos en una nota partidista ni atribuir causalidad.', coverage: 'qualified', claimType: 'comparative', blocks: [scorecard, { type: 'cannot_conclude', evidenceIds: [], points: ['Una variación simultánea no demuestra qué políticas la causaron.'] }], evidenceIds: [], sourceIds: [], sourceLinks: [], knowledgeVersion: 'scorecard-snapshot' }, undefined, [], undefined, 'published');
     return;
   }
   const coverage = classifyDeterministicCoverage(primary);
