@@ -2193,15 +2193,18 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     uncertain: 'La evidencia disponible todavía no permite decidir',
     'mostly-true': 'La afirmación es básicamente correcta, con una precisión importante',
   }[primary?.assessment];
+  const primaryAnswerHeadline = primary?.answer
+    ? boundedExcerpt(String(primary.answer).split(/(?<=[.!?])\s+/)[0], 150)
+    : undefined;
   const primaryHeadline = primary?.slug === 'la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control'
     ? 'La ley elimina un requisito médico, pero mantiene un procedimiento'
     : primary?.slug === 'la-amnistia-rompe-la-igualdad-ante-la-ley'
       ? 'La amnistía establece una excepción definida, pero el TC no la consideró contraria a la igualdad'
       : primary?.slug === 'desalojar-a-un-ocupante-ilegal-tarda-anos'
         ? 'No hay un plazo único: el tipo de caso determina la vía de desalojo'
-      : primary?.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional'
+    : primary?.slug === 'espana-esta-sufriendo-un-reemplazo-poblacional'
         ? 'Hay cambios demográficos, pero no una métrica de “reemplazo”'
-    : primaryAssessmentHeadline || primary?.title;
+    : primaryAnswerHeadline || primaryAssessmentHeadline || primary?.title;
   const resolvedClaimType = ['budget_transfer', 'government_event'].includes(handlerId) ? 'descriptive' : (classified.compiler?.claimType || 'mixed');
   const uniqueGuidanceTypes = new Set(['strongest_valid_concern', 'evidence_ladder', 'legal_decision_tree', 'prediction_conditions', 'trade_offs', 'group_comparison_requirements']);
   const compactGuidanceBlocks = (blocks) => {

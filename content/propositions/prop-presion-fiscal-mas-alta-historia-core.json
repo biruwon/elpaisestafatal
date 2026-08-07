@@ -9,5 +9,5 @@
   "geography": "España",
   "period": "2015-2025",
   "status": "qualified",
-  "evidenceIds": ["impuestos-corrientes-renta-riqueza-europa-eurostat"]
+  "evidenceIds": ["impuestos-corrientes-renta-riqueza-europa-eurostat", "ingresos-publicos-espana-serie-2015-2025-eurostat"]
 }

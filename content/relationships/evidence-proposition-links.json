@@ -294,6 +294,7 @@
     {"evidenceId":"sanidad-listas-de-espera-diciembre-2025","propositionId":"prop-listas-espera-uno-dos-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"sanidad-espera-media-quirurgica-labels-dic-2024-jun-2025-dic-2025-values-126-119","propositionId":"prop-listas-espera-uno-dos-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"impuestos-corrientes-renta-riqueza-europa-eurostat","propositionId":"prop-presion-fiscal-mas-alta-historia-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"ingresos-publicos-espana-serie-2015-2025-eurostat","propositionId":"prop-presion-fiscal-mas-alta-historia-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-07"},
     {"evidenceId":"vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1","propositionId":"prop-vivienda-triplica-en-tres-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-imv-1-2-millones-edad-28-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-inmigrantes-ayudas-desproporcionadas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
