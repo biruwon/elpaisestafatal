@@ -1544,10 +1544,18 @@ const classify = async (text) => {
   // topic (for example housing) intercept it before the warehouse has had a
   // chance to answer or explicitly report that its evidence is missing.
   if (effectiveBroadTopic && !explicitMetricRoute && !hasPublishedSemanticFamily) {
+    const broadEntryKeywords = broadPoliticalComplaint
+      ? new Set(['politica', 'economia', 'inmigracion', 'seguridad', 'vivienda', 'empleo', 'sanidad'])
+      : new Set(['economia', 'vivienda', 'empleo', 'impuestos', 'sanidad']);
+    const popularBroadClaims = index.entries
+      .filter((entry) => entry.kind === 'claim' && entry.published && (entry.topic === 'Política' || (entry.keywords || []).some((keyword) => broadEntryKeywords.has(normalise(keyword)))))
+      .filter((entry) => entry.evidenceStrength !== 'insufficient' && (entry.evidenceIds?.length || entry.sourceRefs?.length))
+      .slice(0, 4)
+      .map((entry) => ({ kind: 'claim', slug: entry.slug, title: entry.title, href: entry.href, confidence: 0.2, handlerId: handlerForEntry(entry), validated: false }));
     return {
       status: 'related',
       input: { original: text },
-      alternatives: [{ kind: 'topic', slug: effectiveBroadTopic.entry.slug, title: effectiveBroadTopic.entry.title, href: effectiveBroadTopic.entry.href, confidence: effectiveBroadTopic.score, handlerId: handlerForEntry(effectiveBroadTopic.entry) }],
+      alternatives: [{ kind: 'topic', slug: effectiveBroadTopic.entry.slug, title: effectiveBroadTopic.entry.title, href: effectiveBroadTopic.entry.href, confidence: effectiveBroadTopic.score, handlerId: handlerForEntry(effectiveBroadTopic.entry) }, ...popularBroadClaims],
       guidance: { questions: ['¿Qué decisión, indicador o periodo concreto quieres comprobar?'], limitation: broadPoliticalComplaint
         ? 'Es una valoración política amplia; hay que concretar el hecho antes de compararlo con datos.'
         : broadEconomicComplaint
@@ -1758,7 +1766,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const requestedHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
   const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
   const relatedClaims = [...(classified.alternatives || []), ...(fallbackTopic ? [fallbackTopic] : [])].filter((item, index, items) => items.findIndex((candidate) => candidate.slug === item.slug) === index).filter((item) => {
-    if (broadTopicGuidance && item.kind !== 'topic') return false;
+    if (broadTopicGuidance && item.kind !== 'topic' && !(item.kind === 'claim' && item.validated === false && item.confidence <= 0.25)) return false;
     if (vagueTaxJudgement(text) && item.kind === 'claim') return false;
     if (requestedHandler === 'government_event' && item.kind !== 'claim') return false;
     if (domainSpecific.has(requestedHandler) && item.kind === 'claim' && item.handlerId && item.handlerId !== requestedHandler) return false;
