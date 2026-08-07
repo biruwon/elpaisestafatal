@@ -72,6 +72,11 @@ const resolveClaim = async (text) => {
 };
 
 const results = [];
+const genericHeadlines = [
+  'La evidencia disponible todavía no permite decidir',
+  'La afirmación no coincide con los datos disponibles',
+  'La frase mezcla un dato real con una conclusión más amplia',
+];
 for (const [id, text] of claims) {
   const response = await resolveClaim(text);
   const result = response.result || {};
@@ -83,6 +88,8 @@ for (const [id, text] of claims) {
     blocks: (result.blocks || []).map((block) => block.type),
     seriesLength: result.warehouseSeries?.values?.length || 0,
   });
+  if (!result.headline || !result.summary) throw new Error(`Missing user-facing answer fields for ${id}`);
+  if (genericHeadlines.includes(result.headline)) throw new Error(`Generic headline remains for ${id}: ${result.headline}`);
   console.log(JSON.stringify(results.at(-1)));
 }
 
