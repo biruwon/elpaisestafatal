@@ -30,6 +30,8 @@ const card = (candidate, kind) => {
     <div class="stats"><span><b>${escapeHtml(candidate.queryCount)}</b> queries</span><span><b>${escapeHtml(candidate.count7d)}</b> last 7 days</span><span><b>${escapeHtml(candidate.priorityScore)}</b> priority</span></div>
     <p class="reason">${escapeHtml(candidate.reason || 'No additional reason recorded.')}</p>
     <div class="next"><strong>Next action</strong><p>${escapeHtml(candidate.nextAction || 'Review the evidence and define the next step.')}</p></div>
+    <p class="muted">Audit: <strong>${escapeHtml(candidate.auditClass || 'unclassified')}</strong> · ${escapeHtml(candidate.auditAction || 'human_review')} · ${escapeHtml(candidate.evidenceStatus || 'not_ready')}</p>
+    ${candidate.matchedMetricIds?.length ? `<p class="muted">Matched metric: ${escapeHtml(candidate.matchedMetricIds.join(' · '))}</p>` : ''}
     ${candidate.sourceIds?.length ? `<details><summary>Source references (${candidate.sourceIds.length})</summary><code>${escapeHtml(candidate.sourceIds.join(' · '))}</code></details>` : '<p class="muted">No source references attached.</p>'}
     ${ready ? `<details class="promotion"><summary>Promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">Run only after the reviewed claim is present, the build passes, and the original wording has been verified.</p></details>` : ''}
   </article>`;

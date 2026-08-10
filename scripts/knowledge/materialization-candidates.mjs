@@ -154,6 +154,10 @@ export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50
       'Record what the selected evidence does not establish.',
       'Run knowledge validation before publishing the static claim.',
     ],
+    auditClass: String(cluster.auditClass || 'unclassified'),
+    auditAction: String(cluster.auditAction || (cluster.newlyCovered ? 'auto_route' : 'human_review')),
+    matchedMetricIds: Array.isArray(cluster.matchedMetricIds) ? cluster.matchedMetricIds : [],
+    evidenceStatus: String(cluster.evidenceStatus || (cluster.newlyCovered ? 'warehouse_ready' : 'not_ready')),
   }))
   .sort((left, right) => right.priorityScore - left.priorityScore || right.queryCount - left.queryCount)
   .slice(0, max);

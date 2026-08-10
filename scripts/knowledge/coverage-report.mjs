@@ -31,7 +31,7 @@ const records = Object.entries(metricRegistry).map(([id, metric]) => {
     sourceCount: linked.length,
     sourceIds: linked.map((feed) => feed.sourceId),
     schedules: [...new Set(linked.map((feed) => feed.schedule).filter(Boolean))],
-    hasNationalFeed: linked.some((feed) => /(?:geo=ES|geoLevel=nuts|España|Espana)/i.test(feed.url || '') || ['boe', 'ine'].includes(feed.sourceId) || Boolean(feed.domain)),
+    hasNationalFeed: linked.some((feed) => /(?:geo=ES|geoLevel=nuts|España|Espana)/i.test(feed.url || '') || ['boe', 'ine'].includes(feed.sourceId) || Boolean(feed.domain) || (id.endsWith('_europe') && /(?:geo=ES|geo=EU27_2020)/i.test(feed.url || ''))),
     hasEuropeVariant,
     dimensions: metric.dimensions,
     status: linked.length ? 'fed' : 'ontology_only',

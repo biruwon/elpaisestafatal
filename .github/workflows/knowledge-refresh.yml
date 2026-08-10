@@ -46,6 +46,9 @@ jobs:
           npm run knowledge:freshness
           npm run knowledge:warehouse:sql
           npm run knowledge:coverage:validate
+          npm run knowledge:coverage:audit
+          npm run knowledge:coverage:audit:validate
+          npm run knowledge:coverage:promote
 
       - name: Upload refresh snapshot
         uses: actions/upload-artifact@v4
@@ -60,6 +63,14 @@ jobs:
         with:
           name: evidence-coverage-${{ github.run_id }}
           path: .local/coverage-report.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload coverage audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-coverage-audit-${{ github.run_id }}
+          path: .local/coverage-audit.*
           if-no-files-found: error
           retention-days: 14
 

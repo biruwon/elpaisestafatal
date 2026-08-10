@@ -96,6 +96,10 @@ export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {
         sourceAvailability,
         coverageStatus: cluster.coverageStatus,
       }),
+      auditClass: cluster.auditClass || 'unclassified',
+      auditAction: cluster.auditAction || 'human_review',
+      matchedMetricIds: asArray(cluster.matchedMetricIds),
+      evidenceStatus: cluster.evidenceStatus || 'not_ready',
     };
   })
   .sort((left, right) => right.priorityScore - left.priorityScore || right.queryCount - left.queryCount || right.count7d - left.count7d)
@@ -140,6 +144,10 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {
       sourceIds: asArray(candidate.sourceIds).slice(0, 12),
       reason: safeText(candidate.reason),
       nextAction: queueAction(candidate),
+      auditClass: candidate.auditClass || 'unclassified',
+      auditAction: candidate.auditAction || (candidate.newlyCovered ? 'auto_route' : 'human_review'),
+      matchedMetricIds: asArray(candidate.matchedMetricIds),
+      evidenceStatus: candidate.evidenceStatus || (candidate.newlyCovered ? 'warehouse_ready' : 'not_ready'),
     })),
     researchCandidates,
   };
@@ -214,7 +222,7 @@ ${excluded}
 };
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const clusters = await readJson(inputPath);
+  const clusters = args.has('input') ? await readJson(inputPath) : await readJson(join(root, '.local/query-clusters.promoted.json')) || await readJson(inputPath);
   if (!clusters) {
     console.log(`No cluster file found at ${inputPath}. Run npm run knowledge:cluster first.`);
     process.exit(0);

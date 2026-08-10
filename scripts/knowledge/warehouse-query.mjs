@@ -6,7 +6,7 @@ import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
-let recordCache = { expiresAt: 0, records: [] };
+let recordCache = { expiresAt: 0, key: '', records: [] };
 let recordLoadPromise;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
@@ -106,12 +106,27 @@ export const populationEvidenceFit = (requestedPopulation, record) => {
   return requested.terms.some((term) => actual.includes(normalise(term))) ? 'direct' : 'mismatch';
 };
 
-const readRecords = async () => {
-  if (recordCache.expiresAt > Date.now()) return recordCache.records;
+const readRecords = async ({ query = '', metricIds } = {}) => {
+  const cacheKey = `${query}|${metricIds ? [...metricIds].sort().join(',') : ''}`;
+  if (recordCache.key === cacheKey && recordCache.expiresAt > Date.now()) return recordCache.records;
   if (recordLoadPromise) return recordLoadPromise;
   recordLoadPromise = (async () => {
     let files;
     try { files = (await readdir(join(root, 'records'))).filter((file) => file.endsWith('.json')); } catch { return []; }
+    if (!metricIds?.size && query) {
+      const wanted = tokens(query);
+      const candidates = [];
+      for (const file of files) {
+        try {
+          const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
+          const source = payload.source || {};
+          const sourceTokens = new Set(tokens([source.metricId, source.title, ...(source.aliases || [])].join(' ')));
+          const overlap = wanted.filter((token) => sourceTokens.has(token)).length;
+          if (overlap >= Math.min(2, wanted.length)) candidates.push(file);
+        } catch { /* malformed records are reported by warehouse validation */ }
+      }
+      if (candidates.length) files = candidates;
+    }
     const records = [];
     for (const file of files.slice(0, 5000)) {
       try {
@@ -123,13 +138,13 @@ const readRecords = async () => {
         }
       } catch { /* Validation reports malformed records separately. */ }
     }
-    recordCache = { expiresAt: Date.now() + recordCacheTtlMs, records };
+    recordCache = { expiresAt: Date.now() + recordCacheTtlMs, key: cacheKey, records };
     return records;
   })();
   try { return await recordLoadPromise; } finally { recordLoadPromise = undefined; }
 };
 
-export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, records: [] }; recordLoadPromise = undefined; };
+export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordLoadPromise = undefined; };
 
 const recordText = (record) => [
   record.datasetId,
@@ -194,5 +209,5 @@ export const findWarehouseObservations = async (query, limit = 12, { queryEmbedd
     const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
     if (results) return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, results)));
   }
-  return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords(), limit, { metricIds }))));
+  return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords({ query, metricIds }), limit, { metricIds }))));
 };

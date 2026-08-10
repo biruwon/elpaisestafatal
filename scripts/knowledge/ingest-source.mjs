@@ -58,7 +58,12 @@ try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); 
 const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
 const connectorDefinition = connectorForId(connector);
 const schedule = isBoeLegalDiscoveryUrl(sourceUrl) ? 'weekly' : sourceDefinition?.schedule;
-const manifest = { id: `source-${hash.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
+// The same payload can legitimately back multiple metric views (for example,
+// two Eurostat datasets with identical current observations). Include the
+// metric and URL in the manifest identity so one refresh cannot overwrite the
+// other metric's record while still deduplicating the raw object by content hash.
+const manifestId = createHash('sha256').update(`${metricId || ''}|${sourceUrl.toString()}|${hash}`).digest('hex');
+const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
