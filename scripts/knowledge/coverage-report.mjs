@@ -12,6 +12,14 @@ const domainFeeds = (domainRefresh.feeds || []).map((feed) => ({ sourceId: feed.
 const allFeeds = [...feeds, ...domainFeeds];
 const metricFeedMap = new Map();
 for (const feed of feeds) if (feed.metricId) metricFeedMap.set(feed.metricId, [...(metricFeedMap.get(feed.metricId) || []), feed]);
+const domainMetricIds = {
+  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality'],
+  immigration_crime: ['crime_rate_by_group'],
+  public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_actions'],
+  wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
+  health_emergency_wait: ['emergency_wait_declared'],
+};
+for (const feed of domainFeeds) for (const metricId of domainMetricIds[feed.domain] || []) metricFeedMap.set(metricId, [...(metricFeedMap.get(metricId) || []), feed]);
 const aliases = (metric) => new Set([metric.name, ...(metric.aliases || [])].map((value) => String(value).toLocaleLowerCase('es')));
 const records = Object.entries(metricRegistry).map(([id, metric]) => {
   const linked = metricFeedMap.get(id) || [];
@@ -23,7 +31,7 @@ const records = Object.entries(metricRegistry).map(([id, metric]) => {
     sourceCount: linked.length,
     sourceIds: linked.map((feed) => feed.sourceId),
     schedules: [...new Set(linked.map((feed) => feed.schedule).filter(Boolean))],
-    hasNationalFeed: linked.some((feed) => /(?:geo=ES|geoLevel=nuts|España|Espana)/i.test(feed.url || '') || ['boe', 'ine'].includes(feed.sourceId)),
+    hasNationalFeed: linked.some((feed) => /(?:geo=ES|geoLevel=nuts|España|Espana)/i.test(feed.url || '') || ['boe', 'ine'].includes(feed.sourceId) || Boolean(feed.domain)),
     hasEuropeVariant,
     dimensions: metric.dimensions,
     status: linked.length ? 'fed' : 'ontology_only',
