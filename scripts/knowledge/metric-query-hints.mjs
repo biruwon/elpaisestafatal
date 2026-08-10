@@ -84,6 +84,13 @@ export const metricQueryTextForIds = (ids) => [...new Set([...ids].flatMap((id) 
 }))].join(' ');
 
 const metricHints = [
+  { ids: ['education_personnel'], terms: ['personal educativo', 'profesores', 'docentes', 'numero de profesores'] },
+  { ids: ['gross_value_added_by_activity'], terms: ['valor añadido por actividad', 'valor anadido por actividad', 'vab por sector', 'produccion sectorial'] },
+  { ids: ['retail_turnover_index'], terms: ['ventas minoristas', 'comercio minorista', 'facturacion del comercio', 'ventas de tiendas', 'ventas de las tiendas'] },
+  { ids: ['construction_output_index'], terms: ['produccion de la construccion', 'actividad constructora', 'obra nueva', 'construccion esta cayendo', 'construccion cae'] },
+  { ids: ['material_consumption'], terms: ['consumo de materiales', 'materiales usados', 'extraccion de materiales', 'consume demasiados materiales'] },
+  { ids: ['water_resources'], terms: ['recursos de agua dulce', 'agua disponible', 'recursos hidricos', 'agua renovable'] },
+  { ids: ['water_consumption'], terms: ['consumo de agua', 'uso del agua', 'extraccion de agua', 'agua utilizada'] },
   { ids: ['job_vacancy_rate'], terms: ['vacantes de empleo', 'puestos de trabajo sin cubrir', 'puestos sin cubrir', 'ofertas de trabajo sin cubrir', 'tasa de vacantes'] },
   { ids: ['housing_payment_arrears_rate'], terms: ['atrasos en pagos de vivienda', 'impagos de vivienda', 'retrasos en alquiler', 'retrasos en hipoteca', 'se retrasan con el alquiler', 'se retrasan con la hipoteca', 'pagos atrasados de vivienda'] },
   { ids: ['unmet_healthcare_cost_rate'], terms: ['no puede pagar atencion medica', 'no puede pagar atención médica', 'no va al medico porque no puede pagarlo', 'atencion sanitaria por dinero', 'barrera economica sanitaria', 'necesidades medicas no atendidas por coste'] },

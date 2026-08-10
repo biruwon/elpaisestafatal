@@ -587,6 +587,48 @@
       "title": "Necesidades médicas no atendidas por coste en España · Eurostat",
       "aliases": ["necesidades médicas no atendidas por coste", "no puede pagar atención médica", "barrera económica sanitaria"],
       "metricId": "unmet_healthcare_cost_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/educ_uoe_perp01?geo=ES&sinceTimePeriod=2015",
+      "title": "Personal educativo en España · Eurostat",
+      "aliases": ["personal educativo", "profesores", "docentes", "número de profesores"],
+      "metricId": "education_personnel"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10?geo=ES&sinceTimePeriod=2015",
+      "title": "Valor añadido por actividad en España · Eurostat",
+      "aliases": ["valor añadido por actividad", "VAB por sector", "producción sectorial"],
+      "metricId": "gross_value_added_by_activity"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sts_trtu_a?geo=ES&sinceTimePeriod=2015",
+      "title": "Índice de ventas minoristas en España · Eurostat",
+      "aliases": ["ventas minoristas", "comercio minorista", "facturación del comercio"],
+      "metricId": "retail_turnover_index"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sts_copi_m?geo=ES&sinceTimePeriod=2015",
+      "title": "Producción de la construcción en España · Eurostat",
+      "aliases": ["producción de la construcción", "actividad constructora", "construcción"],
+      "metricId": "construction_output_index"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_ac_mfa?geo=ES&sinceTimePeriod=2015",
+      "title": "Consumo doméstico de materiales en España · Eurostat",
+      "aliases": ["consumo de materiales", "materiales usados", "extracción de materiales"],
+      "metricId": "material_consumption"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wat_res?geo=ES&sinceTimePeriod=2015",
+      "title": "Recursos de agua dulce en España · Eurostat",
+      "aliases": ["recursos de agua dulce", "agua disponible", "recursos hídricos"],
+      "metricId": "water_resources"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wat_use?geo=ES&sinceTimePeriod=2015",
+      "title": "Uso y extracción de agua en España · Eurostat",
+      "aliases": ["consumo de agua", "uso del agua", "extracción de agua"],
+      "metricId": "water_consumption"
     }
   ]
 }

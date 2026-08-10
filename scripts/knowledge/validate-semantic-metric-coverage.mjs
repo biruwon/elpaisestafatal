@@ -33,6 +33,11 @@ const cases = [
   ['Hay muchos puestos de trabajo sin cubrir', 'job_vacancy_rate'],
   ['Cada vez más hogares se retrasan con el alquiler o la hipoteca', 'housing_payment_arrears_rate'],
   ['La gente no va al médico porque no puede pagarlo', 'unmet_healthcare_cost_rate'],
+  ['Hay menos profesores por alumno', 'education_personnel'],
+  ['La construcción está cayendo', 'construction_output_index'],
+  ['Las ventas de las tiendas bajan', 'retail_turnover_index'],
+  ['España consume demasiados materiales', 'material_consumption'],
+  ['Hay menos agua disponible', 'water_resources'],
 ];
 
 const intentionallyUnderspecified = [

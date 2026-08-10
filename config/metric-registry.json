@@ -814,5 +814,61 @@
     "population": "people reporting unmet medical needs because of cost",
     "notEquivalentTo": ["unmet_healthcare_waiting_list_rate"],
     "dimensions": ["period", "geography", "age", "sex", "income"]
+  },
+  "education_personnel": {
+    "name": "Education personnel",
+    "aliases": ["personal educativo", "profesores", "docentes", "personal de educación", "número de profesores"],
+    "unit": "persons",
+    "population": "teachers and other education personnel by education level",
+    "notEquivalentTo": ["resident_population"],
+    "dimensions": ["period", "geography", "education_level", "sex"]
+  },
+  "gross_value_added_by_activity": {
+    "name": "Gross value added by detailed activity",
+    "aliases": ["valor añadido por actividad", "VAB por sector", "producción sectorial", "sectores de la economía"],
+    "unit": "million euros",
+    "population": "economic activity branches in national accounts",
+    "notEquivalentTo": ["gross_value_added"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "retail_turnover_index": {
+    "name": "Retail trade turnover index",
+    "aliases": ["ventas minoristas", "comercio minorista", "facturación del comercio", "ventas de tiendas"],
+    "unit": "index",
+    "population": "retail trade turnover",
+    "notEquivalentTo": ["cpi_index"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "construction_output_index": {
+    "name": "Construction production index",
+    "aliases": ["producción de la construcción", "actividad constructora", "construcción", "obra nueva"],
+    "unit": "index",
+    "population": "construction production",
+    "notEquivalentTo": ["gross_value_added"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "material_consumption": {
+    "name": "Domestic material consumption",
+    "aliases": ["consumo de materiales", "materiales usados", "extracción de materiales", "uso de recursos materiales"],
+    "unit": "tonnes",
+    "population": "domestic material consumption by material category",
+    "notEquivalentTo": ["final_energy_consumption"],
+    "dimensions": ["period", "geography", "material"]
+  },
+  "water_resources": {
+    "name": "Freshwater resources",
+    "aliases": ["recursos de agua dulce", "agua disponible", "recursos hídricos", "agua renovable"],
+    "unit": "million cubic metres",
+    "population": "renewable freshwater resources",
+    "notEquivalentTo": ["water_consumption"],
+    "dimensions": ["period", "geography", "water_type"]
+  },
+  "water_consumption": {
+    "name": "Water use and abstraction",
+    "aliases": ["consumo de agua", "uso del agua", "extracción de agua", "agua utilizada"],
+    "unit": "million cubic metres",
+    "population": "water abstraction and use by economic activity",
+    "notEquivalentTo": ["water_resources"],
+    "dimensions": ["period", "geography", "activity", "water_type"]
   }
 }
