@@ -1110,5 +1110,29 @@
     "population": "inland and transitional water bodies meeting ecological quality standards",
     "notEquivalentTo": ["bathing_water_quality", "water_resources"],
     "dimensions": ["period", "geography", "water_body_type", "quality_class"]
+  },
+  "adult_obesity_rate_europe": {
+    "name": "Adult obesity rate: Spain and the European Union",
+    "aliases": ["obesidad de España frente a Europa", "obesidad adulta frente a Europa", "comparación europea de obesidad"],
+    "unit": "percent of adults",
+    "population": "adults with body mass index of 30 or over",
+    "notEquivalentTo": ["adult_obesity_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "gender_pay_gap_europe": {
+    "name": "Unadjusted gender pay gap: Spain and the European Union",
+    "aliases": ["brecha salarial de España frente a Europa", "brecha salarial de género frente a Europa", "comparación europea de brecha salarial"],
+    "unit": "percent",
+    "population": "difference between average gross hourly earnings of men and women",
+    "notEquivalentTo": ["gender_pay_gap"],
+    "dimensions": ["period", "geography", "economic_activity"]
+  },
+  "renewable_energy_share_europe": {
+    "name": "Renewable energy share: Spain and the European Union",
+    "aliases": ["renovables de España frente a Europa", "cuota de renovables frente a Europa", "comparación europea de energías renovables"],
+    "unit": "percent",
+    "population": "gross final energy consumption from renewable sources",
+    "notEquivalentTo": ["renewable_energy_share"],
+    "dimensions": ["period", "geography", "energy_type"]
   }
 }

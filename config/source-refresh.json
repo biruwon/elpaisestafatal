@@ -809,6 +809,24 @@
       "title": "Calidad de las masas de agua en España · Eurostat",
       "aliases": ["calidad de ríos y lagos", "estado de las masas de agua", "ríos contaminados"],
       "metricId": "water_body_quality"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_02_10?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Obesidad adulta: España y Unión Europea · Eurostat",
+      "aliases": ["obesidad de España frente a Europa", "obesidad adulta frente a Europa", "comparación europea de obesidad"],
+      "metricId": "adult_obesity_rate_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_05_20?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Brecha salarial: España y Unión Europea · Eurostat",
+      "aliases": ["brecha salarial de España frente a Europa", "brecha salarial de género frente a Europa", "comparación europea de brecha salarial"],
+      "metricId": "gender_pay_gap_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_07_40?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Energías renovables: España y Unión Europea · Eurostat",
+      "aliases": ["renovables de España frente a Europa", "cuota de renovables frente a Europa", "comparación europea de energías renovables"],
+      "metricId": "renewable_energy_share_europe"
     }
   ]
 }
