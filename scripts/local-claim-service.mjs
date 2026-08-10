@@ -1815,7 +1815,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const populationScorecard = populationKey ? makePopulationScorecard(observations, populationKey, scorecardPeriod) : null;
   const scorecardBlock = broadConditionRequested ? (populationScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion ? populationScorecard : dynamicScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion && !requestedPopulation ? dynamicScorecard : snapshotScorecard('since-2018', { explicitStart: requestedYear, geography: requestedRegion ? requestedRegion : 'España', population: requestedPopulation })) : null;
   const conditionTopics = broadConditionRequested
-    ? [['vivienda', /viviend|alquiler|piso|casa/], ['seguridad', /segur|delincuenc|crime|criminal/], ['empleo', /emple|paro|desemple|salari|trabaj/], ['sanidad', /sanidad|salud|hospital|medic|espera/], ['inmigracion', /inmigr|extranj|frontera/], ['impuestos', /impuest|fiscal|tribut/], ['economia', /econom|precios|renta|deuda|pib/]].filter(([, pattern]) => pattern.test(broadTopicText)).map(([slug]) => ({ slug, label: ({ vivienda: 'Vivienda', seguridad: 'Seguridad', empleo: 'Empleo', sanidad: 'Sanidad', inmigracion: 'Inmigración', impuestos: 'Impuestos', economia: 'Economía' }[slug] || slug), href: `/preocupaciones/${slug}`, prompt: `¿Qué dicen los datos sobre ${slug}?` }))
+    ? [['vivienda', /viviend|alquiler|piso|casa/], ['seguridad', /segur|delincuenc|crime|criminal/], ['empleo', /emple|paro|desemple|salari|trabaj/], ['sanidad', /sanidad|salud|hospital|medic|espera/], ['inmigracion', /inmigr|extranj|frontera/], ['impuestos', /impuest|fiscal|tribut/], ['economia', /econom|precios|renta|deuda|pib/], ['corrupcion', /corrup|soborno|enchufe/], ['educacion', /educa|escuela|univers|abandono escolar/], ['demografia', /poblacion|envejec|natalidad|fecundidad/], ['infraestructuras', /infraestruct|carretera|tren|transporte/], ['servicios', /servicio publico|administracion|justicia|pensiones/]].filter(([, pattern]) => pattern.test(broadTopicText)).map(([slug]) => ({ slug, label: ({ vivienda: 'Vivienda', seguridad: 'Seguridad', empleo: 'Empleo', sanidad: 'Sanidad', inmigracion: 'Inmigración', impuestos: 'Impuestos', economia: 'Economía', corrupcion: 'Corrupción', educacion: 'Educación', demografia: 'Demografía', infraestructuras: 'Infraestructuras', servicios: 'Servicios públicos' }[slug] || slug), href: `/preocupaciones/${slug}`, prompt: `¿Qué dicen los datos sobre ${slug}?` }))
     : [];
   const conditionTopicEvidence = conditionTopics.map((topic) => {
     const rows = observations.filter((item) => {
@@ -1827,7 +1827,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
             : topic.slug === 'sanidad' ? /sanidad|salud|hospital|medic|espera/.test(text)
               : topic.slug === 'inmigracion' ? /inmigr|extranj|migr/.test(text)
                 : topic.slug === 'impuestos' ? /impuest|fiscal|tribut/.test(text)
-                  : /econom|precio|renta|deuda|pib/.test(text);
+                  : topic.slug === 'corrupcion' ? /corrup|soborno|corrupcion/.test(text)
+                    : topic.slug === 'educacion' ? /educa|escuela|univers|abandono/.test(text)
+                      : topic.slug === 'demografia' ? /poblacion|envejec|natalidad|fecundidad/.test(text)
+                        : topic.slug === 'infraestructuras' ? /infraestruct|carretera|tren|transporte/.test(text)
+                          : topic.slug === 'servicios' ? /servicio|administracion|justicia|pension/.test(text)
+                            : /econom|precio|renta|deuda|pib/.test(text);
     }).slice(0, 6);
     return { ...topic, evidenceIds: rows.map((item) => item.id).filter(Boolean), observations: rows.map((item) => ({ metricId: item.metricId, metric: item.metric, value: item.value, unit: item.unit, period: item.period, sourceId: item.source?.id })) };
   });
