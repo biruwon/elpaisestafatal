@@ -1811,8 +1811,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const requestedPopulation = broadTopicText.match(/\b(?:joven(?:es)?|juventud|mujer(?:es)?|hombre(?:s)?|mayor(?:es)?|pensionista(?:s)?|familia(?:s)?|hogar(?:es)?)\b/)?.[0];
   const scorecardPeriod = requestedYear ? { ...latestGovernmentPeriod, start: `${requestedYear}-01`, assumption: 'Se usan las fechas explícitas indicadas en la pregunta.' } : latestGovernmentPeriod;
   const dynamicScorecard = requestedYear && observations.length ? makeScorecard(observations, scorecardPeriod) : null;
-  const youthScorecard = requestedPopulation && /joven|juventud/.test(requestedPopulation) ? makePopulationScorecard(observations, 'youth', scorecardPeriod) : null;
-  const scorecardBlock = broadConditionRequested ? (youthScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion ? youthScorecard : dynamicScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion && !requestedPopulation ? dynamicScorecard : snapshotScorecard('since-2018', { explicitStart: requestedYear, geography: requestedRegion ? requestedRegion : 'España', population: requestedPopulation })) : null;
+  const populationKey = requestedPopulation && /joven|juventud/.test(requestedPopulation) ? 'youth' : requestedPopulation && /mujer/.test(requestedPopulation) ? 'women' : requestedPopulation && /mayor|pensionista/.test(requestedPopulation) ? 'older' : requestedPopulation && /famil|hogar/.test(requestedPopulation) ? 'households' : null;
+  const populationScorecard = populationKey ? makePopulationScorecard(observations, populationKey, scorecardPeriod) : null;
+  const scorecardBlock = broadConditionRequested ? (populationScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion ? populationScorecard : dynamicScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion && !requestedPopulation ? dynamicScorecard : snapshotScorecard('since-2018', { explicitStart: requestedYear, geography: requestedRegion ? requestedRegion : 'España', population: requestedPopulation })) : null;
   const conditionTopics = broadConditionRequested
     ? [['vivienda', /viviend|alquiler|piso|casa/], ['seguridad', /segur|delincuenc|crime|criminal/], ['empleo', /emple|paro|desemple|salari|trabaj/], ['sanidad', /sanidad|salud|hospital|medic|espera/], ['inmigracion', /inmigr|extranj|frontera/], ['impuestos', /impuest|fiscal|tribut/], ['economia', /econom|precios|renta|deuda|pib/]].filter(([, pattern]) => pattern.test(broadTopicText)).map(([slug]) => ({ slug, label: ({ vivienda: 'Vivienda', seguridad: 'Seguridad', empleo: 'Empleo', sanidad: 'Sanidad', inmigracion: 'Inmigración', impuestos: 'Impuestos', economia: 'Economía' }[slug] || slug), href: `/preocupaciones/${slug}`, prompt: `¿Qué dicen los datos sobre ${slug}?` }))
     : [];
@@ -2544,6 +2545,13 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       const youthIds = ['youth_unemployment_rate', 'neet_rate', 'tertiary_education_attainment_rate'];
       const youthPackets = await Promise.all(youthIds.map((id) => findWarehouseEvidence(`${id} jóvenes España`, { metricIds: [id], claimType: 'trend', population: 'jóvenes' })));
       scorecardObservations.push(...youthPackets.flatMap((packet) => packet.observations || []).slice(0, 36));
+    }
+    const populationRoute = /mujer|mujeres|female/.test(normalizedCondition) ? ['women', ['employment_rate', 'unemployment_rate', 'median_equivalised_income'], 'mujeres']
+      : /mayor|pensionista|65/.test(normalizedCondition) ? ['older', ['older_population_share', 'life_expectancy_at_birth', 'resident_population'], 'personas mayores']
+        : /familia|familias|hogar|hogares/.test(normalizedCondition) ? ['households', ['median_equivalised_income', 'housing_cost_overburden_rate', 'unmet_healthcare_waiting_list_rate'], 'hogares'] : null;
+    if (populationRoute) {
+      const packets = await Promise.all(populationRoute[1].map((id) => findWarehouseEvidence(`${id} ${populationRoute[2]} España`, { metricIds: [id], claimType: 'trend', population: populationRoute[2] })));
+      scorecardObservations.push(...packets.flatMap((packet) => packet.observations || []).slice(0, 36));
     }
   }
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)

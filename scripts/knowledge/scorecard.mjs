@@ -12,6 +12,21 @@ export const populationScorecardMetrics = {
     { id: 'neet_rate', label: 'Jóvenes que ni estudian ni trabajan', aliases: 'ninis ni estudian ni trabajan', threshold: 0.02, higher: false },
     { id: 'tertiary_education_attainment_rate', label: 'Estudios superiores entre jóvenes', aliases: 'estudios superiores universitarios jóvenes', threshold: 0.01, higher: true },
   ],
+  women: [
+    { id: 'employment_rate', label: 'Tasa de empleo de mujeres', aliases: 'empleo mujeres', threshold: 0.01, higher: true },
+    { id: 'unemployment_rate', label: 'Desempleo de mujeres', aliases: 'desempleo mujeres paro mujeres', threshold: 0.02, higher: false },
+    { id: 'median_equivalised_income', label: 'Renta mediana de hogares', aliases: 'renta mediana hogares', threshold: 0.01, higher: true },
+  ],
+  older: [
+    { id: 'older_population_share', label: 'Población mayor', aliases: 'población mayor personas mayores', threshold: 0.01, higher: false },
+    { id: 'life_expectancy_at_birth', label: 'Esperanza de vida', aliases: 'esperanza de vida', threshold: 0.01, higher: true },
+    { id: 'resident_population', label: 'Población residente', aliases: 'población residente', threshold: 0.01, higher: true },
+  ],
+  households: [
+    { id: 'median_equivalised_income', label: 'Renta mediana de hogares', aliases: 'renta mediana hogares', threshold: 0.01, higher: true },
+    { id: 'housing_cost_overburden_rate', label: 'Sobrecarga de vivienda', aliases: 'sobrecarga vivienda hogares', threshold: 0.02, higher: false },
+    { id: 'unmet_healthcare_waiting_list_rate', label: 'Necesidades médicas no cubiertas', aliases: 'necesidades médicas hogares', threshold: 0.02, higher: false },
+  ],
 };
 
 export const latestGovernmentPeriod = { label: 'Gobierno nacional más reciente', aliases: ['gobierno actual', 'gobernando la izquierda', 'gobierno de izquierda'], start: '2023-11', end: undefined, geography: 'España', assumption: 'Se usa el periodo nacional más reciente; puedes indicar otras fechas.' };
