@@ -28,13 +28,15 @@ export const GOVERNMENT_SCORECARD_SNAPSHOT = {
   ],
 };
 
-export const snapshotScorecard = (periodId = 'since-2018') => {
+export const snapshotScorecard = (periodId = 'since-2018', options = {}) => {
   const period = GOVERNMENT_SCORECARD_SNAPSHOT.periods[periodId] || GOVERNMENT_SCORECARD_SNAPSHOT.periods['since-2018'];
+  const explicitStart = options.explicitStart;
+  const compatible = !explicitStart || explicitStart === period.baseline || explicitStart === '2018';
   return {
     type: 'scorecard',
     baseline: { label: 'Base', period: period.baseline },
     comparison: { label: 'Comparación', period: period.comparison },
-    items: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ ...metric, baseline: { ...metric.baseline, value: String(metric.baseline.value) }, comparison: { ...metric.comparison, value: String(metric.comparison.value) }, evidenceIds: metric.sourceIds })),
-    assumption: period.assumption,
+    items: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ ...metric, baseline: compatible ? { ...metric.baseline, value: String(metric.baseline.value) } : undefined, comparison: compatible ? { ...metric.comparison, value: String(metric.comparison.value) } : undefined, direction: compatible ? metric.direction : 'unavailable', evidenceIds: compatible ? metric.sourceIds : [] })),
+    assumption: explicitStart ? `Se solicitó un inicio explícito en ${explicitStart}; ${compatible ? period.assumption : 'el almacén revisado no tiene una instantánea compatible para ese inicio, por lo que los indicadores quedan sin evaluar.'}` : period.assumption,
   };
 };

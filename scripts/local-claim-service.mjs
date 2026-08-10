@@ -1806,7 +1806,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || ''));
   const requestedYear = broadTopicText.match(/\b(20(?:1[0-9]|2[0-9]))\b/)?.[1];
   const scorecardPeriod = requestedYear ? { ...latestGovernmentPeriod, start: `${requestedYear}-01`, assumption: 'Se usan las fechas explícitas indicadas en la pregunta.' } : latestGovernmentPeriod;
-  const scorecardBlock = scorecardRequested ? snapshotScorecard() : null;
+  const scorecardBlock = scorecardRequested ? snapshotScorecard('since-2018', { explicitStart: requestedYear }) : null;
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
