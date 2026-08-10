@@ -84,6 +84,10 @@ export const metricQueryTextForIds = (ids) => [...new Set([...ids].flatMap((id) 
 }))].join(' ');
 
 const metricHints = [
+  { ids: ['research_development_expenditure'], terms: ['gasto en i+d', 'inversion en investigacion', 'investigacion y desarrollo', 'esfuerzo investigador'] },
+  { ids: ['employment_rate_by_sex'], terms: ['empleo por sexo', 'tasa de empleo de hombres y mujeres', 'brecha de empleo', 'empleo femenino y masculino'] },
+  { ids: ['net_greenhouse_gas_emissions'], terms: ['emisiones netas de gases de efecto invernadero', 'emisiones netas gei', 'emisiones climaticas netas', 'emisiones netas'] },
+  { ids: ['standardised_homicide_rate'], terms: ['tasa de homicidios', 'homicidios por poblacion', 'muertes por homicidio', 'tasa estandarizada de homicidios'] },
   { ids: ['education_personnel'], terms: ['personal educativo', 'profesores', 'docentes', 'numero de profesores'] },
   { ids: ['gross_value_added_by_activity'], terms: ['valor añadido por actividad', 'valor anadido por actividad', 'vab por sector', 'produccion sectorial'] },
   { ids: ['retail_turnover_index'], terms: ['ventas minoristas', 'comercio minorista', 'facturacion del comercio', 'ventas de tiendas', 'ventas de las tiendas'] },

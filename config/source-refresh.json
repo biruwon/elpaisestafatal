@@ -629,6 +629,30 @@
       "title": "Uso y extracción de agua en España · Eurostat",
       "aliases": ["consumo de agua", "uso del agua", "extracción de agua"],
       "metricId": "water_consumption"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_09_10?geo=ES&sinceTimePeriod=2015",
+      "title": "Gasto nacional en investigación y desarrollo en España · Eurostat",
+      "aliases": ["gasto en I+D", "inversión en investigación", "investigación y desarrollo"],
+      "metricId": "research_development_expenditure"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_08_30?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa de empleo por sexo en España · Eurostat",
+      "aliases": ["empleo por sexo", "tasa de empleo de hombres y mujeres", "brecha de empleo"],
+      "metricId": "employment_rate_by_sex"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_13_10?geo=ES&sinceTimePeriod=2015",
+      "title": "Emisiones netas de gases de efecto invernadero en España · Eurostat",
+      "aliases": ["emisiones netas GEI", "emisiones climáticas netas", "emisiones netas"],
+      "metricId": "net_greenhouse_gas_emissions"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_16_10?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa estandarizada de mortalidad por homicidio en España · Eurostat",
+      "aliases": ["tasa de homicidios", "homicidios por población", "muertes por homicidio"],
+      "metricId": "standardised_homicide_rate"
     }
   ]
 }

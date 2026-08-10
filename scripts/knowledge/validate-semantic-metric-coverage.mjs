@@ -38,6 +38,10 @@ const cases = [
   ['Las ventas de las tiendas bajan', 'retail_turnover_index'],
   ['España consume demasiados materiales', 'material_consumption'],
   ['Hay menos agua disponible', 'water_resources'],
+  ['España invierte poco en investigación y desarrollo', 'research_development_expenditure'],
+  ['La brecha de empleo entre hombres y mujeres baja', 'employment_rate_by_sex'],
+  ['Las emisiones netas siguen siendo altas', 'net_greenhouse_gas_emissions'],
+  ['La tasa de homicidios ha bajado', 'standardised_homicide_rate'],
 ];
 
 const intentionallyUnderspecified = [

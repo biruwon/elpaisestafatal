@@ -870,5 +870,37 @@
     "population": "water abstraction and use by economic activity",
     "notEquivalentTo": ["water_resources"],
     "dimensions": ["period", "geography", "activity", "water_type"]
+  },
+  "research_development_expenditure": {
+    "name": "Gross domestic expenditure on research and development",
+    "aliases": ["gasto en I+D", "inversión en investigación", "investigación y desarrollo", "esfuerzo investigador"],
+    "unit": "percent of GDP",
+    "population": "research and development expenditure by performing sector",
+    "notEquivalentTo": ["government_education_expenditure_ratio"],
+    "dimensions": ["period", "geography", "sector"]
+  },
+  "employment_rate_by_sex": {
+    "name": "Employment rate by sex",
+    "aliases": ["empleo por sexo", "tasa de empleo de hombres y mujeres", "brecha de empleo", "empleo femenino y masculino"],
+    "unit": "percent of population",
+    "population": "people of working age by sex",
+    "notEquivalentTo": ["employment_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "net_greenhouse_gas_emissions": {
+    "name": "Domestic net greenhouse-gas emissions",
+    "aliases": ["emisiones netas de gases de efecto invernadero", "emisiones netas GEI", "emisiones climáticas netas"],
+    "unit": "tonnes CO2 equivalent",
+    "population": "domestic net greenhouse-gas emissions",
+    "notEquivalentTo": ["greenhouse_gas_emissions"],
+    "dimensions": ["period", "geography", "gas"]
+  },
+  "standardised_homicide_rate": {
+    "name": "Standardised homicide death rate",
+    "aliases": ["tasa de homicidios", "homicidios por población", "muertes por homicidio", "tasa estandarizada de homicidios"],
+    "unit": "deaths per 100000 inhabitants",
+    "population": "deaths due to homicide, standardized by population structure",
+    "notEquivalentTo": ["recorded_offences", "crime_rate_by_group"],
+    "dimensions": ["period", "geography", "sex"]
   }
 }
