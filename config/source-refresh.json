@@ -677,6 +677,30 @@
       "title": "Solicitudes de asilo en España · Eurostat",
       "aliases": ["solicitudes de asilo", "peticiones de asilo", "protección internacional"],
       "metricId": "asylum_applications"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_40?geo=ES&sinceTimePeriod=2015",
+      "title": "Muertes en carretera en España · Eurostat",
+      "aliases": ["muertes en carretera", "mortalidad vial", "accidentes de tráfico mortales"],
+      "metricId": "road_fatality_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_60?geo=ES&sinceTimePeriod=2015",
+      "title": "Reciclaje de residuos municipales en España · Eurostat",
+      "aliases": ["reciclaje de residuos", "tasa de reciclaje", "residuos reciclados"],
+      "metricId": "municipal_waste_recycling_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_07_50?geo=ES&sinceTimePeriod=2015",
+      "title": "Dependencia energética exterior de España · Eurostat",
+      "aliases": ["dependencia energética", "energía importada", "dependencia energética exterior"],
+      "metricId": "energy_import_dependency"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_09_40?geo=ES&sinceTimePeriod=2015",
+      "title": "Solicitudes de patentes en España · Eurostat",
+      "aliases": ["solicitudes de patentes", "patentes", "registro de patentes"],
+      "metricId": "patent_applications"
     }
   ]
 }

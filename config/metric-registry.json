@@ -934,5 +934,37 @@
     "population": "first-time asylum applicants by citizenship",
     "notEquivalentTo": ["immigration_flows", "foreign_born_population"],
     "dimensions": ["period", "geography", "citizenship", "age", "sex"]
+  },
+  "road_fatality_rate": {
+    "name": "Road traffic death rate",
+    "aliases": ["muertes en carretera", "mortalidad vial", "accidentes de tráfico mortales", "víctimas mortales de tráfico"],
+    "unit": "deaths per 100000 inhabitants",
+    "population": "people killed in road traffic accidents",
+    "notEquivalentTo": ["standardised_homicide_rate"],
+    "dimensions": ["period", "geography", "road_user"]
+  },
+  "municipal_waste_recycling_rate": {
+    "name": "Municipal waste recycling rate",
+    "aliases": ["reciclaje de residuos", "tasa de reciclaje", "residuos reciclados", "reciclaje municipal"],
+    "unit": "percent of municipal waste",
+    "population": "municipal waste prepared for reuse or recycling",
+    "notEquivalentTo": ["material_consumption"],
+    "dimensions": ["period", "geography", "waste_type"]
+  },
+  "energy_import_dependency": {
+    "name": "Energy import dependency",
+    "aliases": ["dependencia energética", "dependencia de importaciones de energía", "energía importada", "dependencia energética exterior"],
+    "unit": "percent",
+    "population": "net energy imports relative to gross available energy",
+    "notEquivalentTo": ["final_energy_consumption", "renewable_energy_share"],
+    "dimensions": ["period", "geography", "energy_product"]
+  },
+  "patent_applications": {
+    "name": "Patent applications",
+    "aliases": ["solicitudes de patentes", "patentes", "innovación patentada", "registro de patentes"],
+    "unit": "applications per million inhabitants",
+    "population": "patent applications filed by residents",
+    "notEquivalentTo": ["research_development_expenditure"],
+    "dimensions": ["period", "geography", "technology"]
   }
 }

@@ -46,6 +46,10 @@ const cases = [
   ['Hay pocas camas hospitalarias', 'hospital_beds'],
   ['Faltan médicos por habitante', 'physicians_density'],
   ['Han aumentado las solicitudes de asilo', 'asylum_applications'],
+  ['Hay más muertes en carretera', 'road_fatality_rate'],
+  ['España recicla pocos residuos', 'municipal_waste_recycling_rate'],
+  ['España depende demasiado de la energía importada', 'energy_import_dependency'],
+  ['España registra pocas patentes', 'patent_applications'],
 ];
 
 const intentionallyUnderspecified = [
