@@ -767,6 +767,30 @@
       "title": "Necesidades médicas no atendidas por disponibilidad en España · Eurostat",
       "aliases": ["atención médica no disponible", "no encuentra médico", "falta de disponibilidad sanitaria"],
       "metricId": "unmet_healthcare_availability_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_cd_asdr2?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa estandarizada de suicidio en España · Eurostat",
+      "aliases": ["tasa de suicidio", "muertes por suicidio", "mortalidad por suicidio"],
+      "metricId": "suicide_death_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_cd_asdr?geo=ES&sinceTimePeriod=2015",
+      "title": "Mortalidad evitable y tratable en España · Eurostat",
+      "aliases": ["mortalidad evitable", "muertes evitables", "mortalidad tratable"],
+      "metricId": "preventable_treatable_mortality"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_03_30?geo=ES&sinceTimePeriod=2015",
+      "title": "Accidentes laborales mortales en España · Eurostat",
+      "aliases": ["accidentes laborales mortales", "muertes en el trabajo", "siniestralidad laboral mortal"],
+      "metricId": "fatal_work_accident_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_16_20?geo=ES&sinceTimePeriod=2015",
+      "title": "Participación electoral en España · Eurostat",
+      "aliases": ["participación electoral", "participación en elecciones", "abstención"],
+      "metricId": "electoral_turnout"
     }
   ]
 }

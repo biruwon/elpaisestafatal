@@ -61,6 +61,10 @@ const cases = [
   ['Cada vez más hogares viven de alquiler', 'housing_tenure'],
   ['No se llega al médico por la distancia', 'unmet_healthcare_distance_rate'],
   ['No hay médicos disponibles', 'unmet_healthcare_availability_rate'],
+  ['La tasa de suicidio ha aumentado', 'suicide_death_rate'],
+  ['Hay demasiadas muertes evitables', 'preventable_treatable_mortality'],
+  ['Aumentan los accidentes laborales mortales', 'fatal_work_accident_rate'],
+  ['La participación electoral baja', 'electoral_turnout'],
 ];
 
 const intentionallyUnderspecified = [

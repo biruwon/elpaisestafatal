@@ -1054,5 +1054,37 @@
     "population": "people reporting unmet medical needs because services were unavailable",
     "notEquivalentTo": ["unmet_healthcare_waiting_list_rate", "unmet_healthcare_cost_rate"],
     "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "suicide_death_rate": {
+    "name": "Standardised suicide death rate",
+    "aliases": ["tasa de suicidio", "muertes por suicidio", "suicidios por población", "mortalidad por suicidio"],
+    "unit": "deaths per 100000 inhabitants",
+    "population": "deaths due to intentional self-harm, standardized by population",
+    "notEquivalentTo": ["standardised_homicide_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "preventable_treatable_mortality": {
+    "name": "Preventable and treatable mortality",
+    "aliases": ["mortalidad evitable", "muertes evitables", "mortalidad tratable", "muertes prematuras evitables"],
+    "unit": "deaths per 100000 inhabitants",
+    "population": "deaths considered preventable or treatable under current healthcare and public-health knowledge",
+    "notEquivalentTo": ["life_expectancy_at_birth", "standardised_homicide_rate"],
+    "dimensions": ["period", "geography", "sex", "age", "cause"]
+  },
+  "fatal_work_accident_rate": {
+    "name": "Fatal accidents at work",
+    "aliases": ["accidentes laborales mortales", "muertes en el trabajo", "siniestralidad laboral mortal", "accidentes de trabajo"],
+    "unit": "fatal accidents per 100000 workers",
+    "population": "fatal accidents at work among employed persons",
+    "notEquivalentTo": ["road_fatality_rate"],
+    "dimensions": ["period", "geography", "economic_activity"]
+  },
+  "electoral_turnout": {
+    "name": "Electoral turnout",
+    "aliases": ["participación electoral", "participación en elecciones", "abstención", "votantes en elecciones"],
+    "unit": "percent of registered voters",
+    "population": "votes cast relative to registered electorate",
+    "notEquivalentTo": ["adult_learning_rate"],
+    "dimensions": ["election", "geography", "election_type"]
   }
 }
