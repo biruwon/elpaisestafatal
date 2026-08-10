@@ -35,7 +35,10 @@ jobs:
         run: npm run knowledge:refresh:validate
 
       - name: Refresh approved public sources
-        run: npm run knowledge:refresh -- --config config/source-refresh.example.json
+        run: npm run knowledge:refresh -- --config config/source-refresh.json
+
+      - name: Refresh active domain source packs
+        run: npm run knowledge:domain-refresh -- --config config/domain-source-refresh.json
 
       - name: Validate the derived warehouse
         run: |

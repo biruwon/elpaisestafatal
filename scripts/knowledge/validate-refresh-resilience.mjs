@@ -1,4 +1,5 @@
 import { boeSummaryCandidates, isBoeLegalDiscoveryUrl, isBoeSummaryUrl } from './refresh-utils.mjs';
+import { readFile } from 'node:fs/promises';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const source = 'https://www.boe.es/datosabiertos/api/boe/sumario/20260802';
@@ -10,4 +11,8 @@ assert(candidates[1].endsWith('/sumario/20260801') && candidates[3].endsWith('/s
 assert(boeSummaryCandidates('https://ec.europa.eu/eurostat/api/data').length === 1, 'Non-BOE URL unexpectedly received publication-day fallback');
 assert(isBoeLegalDiscoveryUrl('https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2007-19814/metadatos'), 'BOE legal discovery URL was not recognized');
 assert(!isBoeLegalDiscoveryUrl(source), 'BOE daily summary was misclassified as legal discovery');
+const workflow = await readFile(new URL('../../.github/workflows/knowledge-refresh.yml', import.meta.url), 'utf8');
+assert(workflow.includes('--config config/source-refresh.json'), 'production refresh must use the canonical source configuration');
+assert(workflow.includes('knowledge:domain-refresh'), 'production refresh must include active domain source packs');
+assert(!workflow.includes('--config config/source-refresh.example.json'), 'production refresh must not use the example configuration');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

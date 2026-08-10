@@ -52,6 +52,7 @@
     "knowledge:ingest": "node scripts/knowledge/ingest-source.mjs",
     "knowledge:ingest:domain": "node scripts/knowledge/ingest-domain-source.mjs",
     "knowledge:refresh": "node scripts/knowledge/refresh-sources.mjs",
+    "knowledge:domain-refresh": "node scripts/knowledge/refresh-domain-sources.mjs",
     "knowledge:refresh:validate": "node scripts/knowledge/validate-refresh-config.mjs && node scripts/knowledge/validate-refresh-resilience.mjs",
     "knowledge:domain-refresh:validate": "node scripts/knowledge/validate-domain-refresh.mjs",
     "knowledge:domain-gaps:validate": "node scripts/knowledge/validate-domain-source-gaps.mjs",
