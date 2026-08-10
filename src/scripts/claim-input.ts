@@ -1113,8 +1113,7 @@ const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]):
   const primary = ranked[0];
   const broadGuidance = broadComplaintGuidance(original, primary);
   if (broadGuidance) {
-    const scorecard = snapshotScorecard() as unknown as AnswerPlan['blocks'][number];
-    renderScorecardPlan(original, { schemaVersion: '1', answerMode: 'scorecard', headline: 'No hay una nota única: compara los indicadores', summary: 'La frase es una valoración amplia.', coverage: 'qualified', claimType: 'comparative', blocks: [scorecard], evidenceIds: [], sourceIds: [], sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources as unknown as AnswerPlan['sourceLinks'], asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf, knowledgeVersion: 'scorecard-snapshot' });
+    renderCompactResult({ status: 'uncovered', claim: original, summary: broadGuidance.questions?.[0] || 'Esta frase resume varias discusiones.', refinementQuestion: 'Elige un indicador concreto y te llevamos directamente a sus datos.', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
   const coverage = classifyDeterministicCoverage(primary);
