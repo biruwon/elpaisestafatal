@@ -653,6 +653,30 @@
       "title": "Tasa estandarizada de mortalidad por homicidio en España · Eurostat",
       "aliases": ["tasa de homicidios", "homicidios por población", "muertes por homicidio"],
       "metricId": "standardised_homicide_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_07_40?geo=ES&sinceTimePeriod=2015",
+      "title": "Cuota de energías renovables en España · Eurostat",
+      "aliases": ["energías renovables", "cuota de renovables", "energía renovable"],
+      "metricId": "renewable_energy_share"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_bds?geo=ES&sinceTimePeriod=2015",
+      "title": "Camas hospitalarias en España · Eurostat",
+      "aliases": ["camas hospitalarias", "camas de hospital", "plazas hospitalarias"],
+      "metricId": "hospital_beds"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_phys?geo=ES&sinceTimePeriod=2015",
+      "title": "Médicos por población en España · Eurostat",
+      "aliases": ["médicos por habitante", "densidad de médicos", "número de médicos"],
+      "metricId": "physicians_density"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_asyappctza?geo=ES&sinceTimePeriod=2015",
+      "title": "Solicitudes de asilo en España · Eurostat",
+      "aliases": ["solicitudes de asilo", "peticiones de asilo", "protección internacional"],
+      "metricId": "asylum_applications"
     }
   ]
 }

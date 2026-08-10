@@ -902,5 +902,37 @@
     "population": "deaths due to homicide, standardized by population structure",
     "notEquivalentTo": ["recorded_offences", "crime_rate_by_group"],
     "dimensions": ["period", "geography", "sex"]
+  },
+  "renewable_energy_share": {
+    "name": "Renewable energy share in gross final energy consumption",
+    "aliases": ["energías renovables", "cuota de renovables", "energía renovable", "porcentaje de renovables"],
+    "unit": "percent",
+    "population": "gross final energy consumption from renewable sources",
+    "notEquivalentTo": ["final_energy_consumption"],
+    "dimensions": ["period", "geography", "energy_type"]
+  },
+  "hospital_beds": {
+    "name": "Hospital beds",
+    "aliases": ["camas hospitalarias", "camas de hospital", "número de camas sanitarias", "plazas hospitalarias"],
+    "unit": "beds per 100000 inhabitants",
+    "population": "hospital beds available for inpatient care",
+    "notEquivalentTo": ["health_expenditure_per_capita"],
+    "dimensions": ["period", "geography", "care_type"]
+  },
+  "physicians_density": {
+    "name": "Physicians density",
+    "aliases": ["médicos por habitante", "densidad de médicos", "número de médicos", "facultativos por población"],
+    "unit": "physicians per 100000 inhabitants",
+    "population": "practising physicians",
+    "notEquivalentTo": ["education_personnel"],
+    "dimensions": ["period", "geography", "speciality"]
+  },
+  "asylum_applications": {
+    "name": "First-time asylum applications",
+    "aliases": ["solicitudes de asilo", "peticiones de asilo", "solicitantes de protección internacional", "asilo en España"],
+    "unit": "applications",
+    "population": "first-time asylum applicants by citizenship",
+    "notEquivalentTo": ["immigration_flows", "foreign_born_population"],
+    "dimensions": ["period", "geography", "citizenship", "age", "sex"]
   }
 }

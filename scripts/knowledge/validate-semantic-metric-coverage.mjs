@@ -42,6 +42,10 @@ const cases = [
   ['La brecha de empleo entre hombres y mujeres baja', 'employment_rate_by_sex'],
   ['Las emisiones netas siguen siendo altas', 'net_greenhouse_gas_emissions'],
   ['La tasa de homicidios ha bajado', 'standardised_homicide_rate'],
+  ['España genera más energía renovable', 'renewable_energy_share'],
+  ['Hay pocas camas hospitalarias', 'hospital_beds'],
+  ['Faltan médicos por habitante', 'physicians_density'],
+  ['Han aumentado las solicitudes de asilo', 'asylum_applications'],
 ];
 
 const intentionallyUnderspecified = [
