@@ -1086,5 +1086,29 @@
     "population": "votes cast relative to registered electorate",
     "notEquivalentTo": ["adult_learning_rate"],
     "dimensions": ["election", "geography", "election_type"]
+  },
+  "adult_obesity_rate": {
+    "name": "Adult obesity rate",
+    "aliases": ["obesidad adulta", "tasa de obesidad", "personas con obesidad", "sobrepeso y obesidad"],
+    "unit": "percent of adults",
+    "population": "adults with body mass index of 30 or over",
+    "notEquivalentTo": ["life_expectancy_at_birth"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "organic_farming_share": {
+    "name": "Share of agricultural area under organic farming",
+    "aliases": ["agricultura ecológica", "superficie ecológica", "cultivo orgánico", "agricultura orgánica"],
+    "unit": "percent of utilised agricultural area",
+    "population": "utilised agricultural area under organic farming",
+    "notEquivalentTo": ["material_consumption"],
+    "dimensions": ["period", "geography", "crop_or_land_type"]
+  },
+  "water_body_quality": {
+    "name": "Quality of inland and transitional water bodies",
+    "aliases": ["calidad de ríos y lagos", "estado de las masas de agua", "calidad del agua continental", "ríos contaminados"],
+    "unit": "percent of water bodies",
+    "population": "inland and transitional water bodies meeting ecological quality standards",
+    "notEquivalentTo": ["bathing_water_quality", "water_resources"],
+    "dimensions": ["period", "geography", "water_body_type", "quality_class"]
   }
 }

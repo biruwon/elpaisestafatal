@@ -791,6 +791,24 @@
       "title": "Participación electoral en España · Eurostat",
       "aliases": ["participación electoral", "participación en elecciones", "abstención"],
       "metricId": "electoral_turnout"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_02_10?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa de obesidad adulta en España · Eurostat",
+      "aliases": ["obesidad adulta", "tasa de obesidad", "personas con obesidad"],
+      "metricId": "adult_obesity_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_02_20?geo=ES&sinceTimePeriod=2015",
+      "title": "Agricultura ecológica en España · Eurostat",
+      "aliases": ["agricultura ecológica", "superficie ecológica", "cultivo orgánico"],
+      "metricId": "organic_farming_share"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_06_20?geo=ES&sinceTimePeriod=2015",
+      "title": "Calidad de las masas de agua en España · Eurostat",
+      "aliases": ["calidad de ríos y lagos", "estado de las masas de agua", "ríos contaminados"],
+      "metricId": "water_body_quality"
     }
   ]
 }

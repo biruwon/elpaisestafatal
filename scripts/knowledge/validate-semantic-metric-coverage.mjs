@@ -65,6 +65,9 @@ const cases = [
   ['Hay demasiadas muertes evitables', 'preventable_treatable_mortality'],
   ['Aumentan los accidentes laborales mortales', 'fatal_work_accident_rate'],
   ['La participación electoral baja', 'electoral_turnout'],
+  ['Hay más obesidad entre adultos', 'adult_obesity_rate'],
+  ['Crece la agricultura ecológica', 'organic_farming_share'],
+  ['Los ríos están más contaminados', 'water_body_quality'],
 ];
 
 const intentionallyUnderspecified = [
