@@ -18,5 +18,8 @@ for (const source of snapshot.sources || []) {
 }
 const rendered = snapshotScorecard();
 if (rendered.items.some((item) => typeof item.baseline?.value !== 'string' || typeof item.comparison?.value !== 'string')) failures.push('rendered scorecard values must be display-safe strings');
+const regional = snapshotScorecard('since-2018', { geography: 'andalucia' });
+const population = snapshotScorecard('since-2018', { population: 'jóvenes' });
+if (regional.items.some((item) => item.direction !== 'unavailable') || population.items.some((item) => item.direction !== 'unavailable')) failures.push('national snapshot must fail closed for regional or population-specific requests');
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Scorecard snapshot validation passed: ${snapshot.metrics.length} metrics and ${snapshot.sources.length} primary sources.`);
