@@ -6,6 +6,13 @@ export const scorecardMetrics = [
   { id: 'housing_cost_overburden_rate', label: 'Sobrecarga del coste de vivienda', aliases: 'sobrecarga coste vivienda', threshold: 0.02, higher: false },
   { id: 'unmet_healthcare_waiting_list_rate', label: 'Necesidades sanitarias no cubiertas por listas de espera', aliases: 'lista de espera sanitaria', threshold: 0.02, higher: false },
 ];
+export const populationScorecardMetrics = {
+  youth: [
+    { id: 'youth_unemployment_rate', label: 'Desempleo juvenil', aliases: 'paro juvenil desempleo juvenil', threshold: 0.02, higher: false },
+    { id: 'neet_rate', label: 'Jóvenes que ni estudian ni trabajan', aliases: 'ninis ni estudian ni trabajan', threshold: 0.02, higher: false },
+    { id: 'tertiary_education_attainment_rate', label: 'Estudios superiores entre jóvenes', aliases: 'estudios superiores universitarios jóvenes', threshold: 0.01, higher: true },
+  ],
+};
 
 export const latestGovernmentPeriod = { label: 'Gobierno nacional más reciente', aliases: ['gobierno actual', 'gobernando la izquierda', 'gobierno de izquierda'], start: '2023-11', end: undefined, geography: 'España', assumption: 'Se usa el periodo nacional más reciente; puedes indicar otras fechas.' };
 export const governmentPeriods = [
@@ -33,3 +40,18 @@ export const makeScorecard = (observations = [], period = latestGovernmentPeriod
     return { metricId: metric.id, label: metric.label, baseline: baseline?.value != null ? { value: String(baseline.value), period: String(baseline.period || 'anterior') } : undefined, comparison: comparison?.value != null ? { value: String(comparison.value), period: String(comparison.period || 'último') } : undefined, direction, evidenceIds: [baseline?.id, comparison?.id].filter(Boolean), caveat: direction === 'unavailable' ? 'No hay dos observaciones compatibles en el almacén.' : 'La variación simultánea no demuestra qué políticas la causaron.' };
   }),
 });
+
+export const makePopulationScorecard = (observations = [], population = 'youth', period = latestGovernmentPeriod) => {
+  const metrics = populationScorecardMetrics[population] || [];
+  return {
+    type: 'scorecard', population,
+    baseline: { label: 'Antes del periodo', period: period.start ? `último dato antes de ${period.start}` : 'último dato anterior' },
+    comparison: { label: 'Último dato compatible', period: 'última observación disponible' },
+    items: metrics.map((metric) => {
+      const rows = observations.filter((item) => String(item.metricId || item.metric || '').includes(metric.id)).sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
+      const baseline = rows.at(-2); const comparison = rows.at(-1);
+      const direction = scorecardDirection(Number(baseline?.value), Number(comparison?.value), metric);
+      return { metricId: metric.id, label: metric.label, unit: comparison?.unit || baseline?.unit, baseline: baseline?.value != null ? { value: String(baseline.value), period: String(baseline.period || 'anterior') } : undefined, comparison: comparison?.value != null ? { value: String(comparison.value), period: String(comparison.period || 'último') } : undefined, direction, evidenceIds: [baseline?.id, comparison?.id].filter(Boolean), caveat: direction === 'unavailable' ? 'No hay dos observaciones compatibles en el almacén.' : 'La variación no demuestra por sí sola qué política la causó.' };
+    }),
+  };
+};

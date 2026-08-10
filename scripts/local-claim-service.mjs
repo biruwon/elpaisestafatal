@@ -30,7 +30,7 @@ import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
-import { latestGovernmentPeriod, scorecardMetrics, makeScorecard } from './knowledge/scorecard.mjs';
+import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -1811,7 +1811,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const requestedPopulation = broadTopicText.match(/\b(?:joven(?:es)?|juventud|mujer(?:es)?|hombre(?:s)?|mayor(?:es)?|pensionista(?:s)?|familia(?:s)?|hogar(?:es)?)\b/)?.[0];
   const scorecardPeriod = requestedYear ? { ...latestGovernmentPeriod, start: `${requestedYear}-01`, assumption: 'Se usan las fechas explícitas indicadas en la pregunta.' } : latestGovernmentPeriod;
   const dynamicScorecard = requestedYear && observations.length ? makeScorecard(observations, scorecardPeriod) : null;
-  const scorecardBlock = broadConditionRequested ? (dynamicScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion && !requestedPopulation ? dynamicScorecard : snapshotScorecard('since-2018', { explicitStart: requestedYear, geography: requestedRegion ? requestedRegion : 'España', population: requestedPopulation })) : null;
+  const youthScorecard = requestedPopulation && /joven|juventud/.test(requestedPopulation) ? makePopulationScorecard(observations, 'youth', scorecardPeriod) : null;
+  const scorecardBlock = broadConditionRequested ? (youthScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion ? youthScorecard : dynamicScorecard?.items?.some((item) => item.direction !== 'unavailable') && !requestedRegion && !requestedPopulation ? dynamicScorecard : snapshotScorecard('since-2018', { explicitStart: requestedYear, geography: requestedRegion ? requestedRegion : 'España', population: requestedPopulation })) : null;
   const conditionTopics = broadConditionRequested
     ? [['vivienda', /viviend|alquiler|piso|casa/], ['seguridad', /segur|delincuenc|crime|criminal/], ['empleo', /emple|paro|desemple|salari|trabaj/], ['sanidad', /sanidad|salud|hospital|medic|espera/], ['inmigracion', /inmigr|extranj|frontera/], ['impuestos', /impuest|fiscal|tribut/], ['economia', /econom|precios|renta|deuda|pib/]].filter(([, pattern]) => pattern.test(broadTopicText)).map(([slug]) => ({ slug, label: ({ vivienda: 'Vivienda', seguridad: 'Seguridad', empleo: 'Empleo', sanidad: 'Sanidad', inmigracion: 'Inmigración', impuestos: 'Impuestos', economia: 'Economía' }[slug] || slug), href: `/preocupaciones/${slug}`, prompt: `¿Qué dicen los datos sobre ${slug}?` }))
     : [];
@@ -2531,6 +2532,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     const geography = region || 'España';
     const packets = await Promise.all(scorecardMetrics.map((metric) => findWarehouseEvidence(`${metric.aliases} ${geography}`, { metricIds: [metric.id], claimType: 'trend', geography })));
     scorecardObservations = packets.flatMap((packet) => packet.observations || []).slice(0, 48);
+    const normalizedCondition = normalise(text);
+    if (/\b(?:joven|jovenes|juventud)\b/.test(normalizedCondition)) {
+      const youthIds = ['youth_unemployment_rate', 'neet_rate', 'tertiary_education_attainment_rate'];
+      const youthPackets = await Promise.all(youthIds.map((id) => findWarehouseEvidence(`${id} jóvenes España`, { metricIds: [id], claimType: 'trend', population: 'jóvenes' })));
+      scorecardObservations.push(...youthPackets.flatMap((packet) => packet.observations || []).slice(0, 36));
+    }
   }
   const liveLegal = !retrievalClassified.primary && !suppressUnrelatedContext && handlerId === 'legal_rule' && !warehouse.observations.length && !evidenceUnavailableSignal(text)
     ? await discoverBoeLegalRules(retrievalText, 6)

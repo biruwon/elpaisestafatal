@@ -1,4 +1,5 @@
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../../src/lib/knowledge/scorecard-snapshot.mjs';
+import { makePopulationScorecard } from './scorecard.mjs';
 
 const failures = [];
 const snapshot = GOVERNMENT_SCORECARD_SNAPSHOT;
@@ -21,5 +22,14 @@ if (rendered.items.some((item) => typeof item.baseline?.value !== 'string' || ty
 const regional = snapshotScorecard('since-2018', { geography: 'andalucia' });
 const population = snapshotScorecard('since-2018', { population: 'jóvenes' });
 if (regional.items.some((item) => item.direction !== 'unavailable') || population.items.some((item) => item.direction !== 'unavailable')) failures.push('national snapshot must fail closed for regional or population-specific requests');
+const youth = makePopulationScorecard([
+  { metricId: 'youth_unemployment_rate', value: 30, period: '2017', id: 'youth-2017' },
+  { metricId: 'youth_unemployment_rate', value: 25, period: '2025', id: 'youth-2025' },
+  { metricId: 'neet_rate', value: 15, period: '2017', id: 'neet-2017' },
+  { metricId: 'neet_rate', value: 10, period: '2025', id: 'neet-2025' },
+  { metricId: 'tertiary_education_attainment_rate', value: 40, period: '2017', id: 'tertiary-2017' },
+  { metricId: 'tertiary_education_attainment_rate', value: 50, period: '2025', id: 'tertiary-2025' },
+], 'youth');
+if (youth.items.length !== 3 || youth.items.some((item) => item.direction === 'unavailable')) failures.push('youth scorecard must compare its three compatible population metrics');
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Scorecard snapshot validation passed: ${snapshot.metrics.length} metrics and ${snapshot.sources.length} primary sources.`);
