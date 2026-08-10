@@ -45,12 +45,21 @@ jobs:
           npm run knowledge:warehouse
           npm run knowledge:freshness
           npm run knowledge:warehouse:sql
+          npm run knowledge:coverage:validate
 
       - name: Upload refresh snapshot
         uses: actions/upload-artifact@v4
         with:
           name: evidence-warehouse-${{ github.run_id }}
           path: .local/source-warehouse
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload coverage matrix
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-coverage-${{ github.run_id }}
+          path: .local/coverage-report.json
           if-no-files-found: error
           retention-days: 14
 
