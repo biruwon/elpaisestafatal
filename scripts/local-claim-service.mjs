@@ -70,11 +70,13 @@ const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
 const cacheTtlMs = 15 * 60 * 1000;
+const currentEventCacheTtlMs = 5 * 60 * 1000;
 const maxCacheEntries = 1000;
 const maxCompilerCacheEntries = 512;
 const maxPlannerCacheEntries = 512;
 const maxResolveJobs = 500;
 const answerCache = new Map();
+const answerCacheExpiry = (text) => Date.now() + (detectCurrentEvent(text) ? currentEventCacheTtlMs : cacheTtlMs);
 const compilerCache = new Map();
 const compilerInflight = new Map();
 const plannerCache = new Map();
@@ -1014,7 +1016,7 @@ const classify = async (text) => {
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
-    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
     return result;
   }
   const cached = answerCache.get(key);
@@ -1038,7 +1040,7 @@ const classify = async (text) => {
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   if (exactPublishedEntry) {
     const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1, reason: 'La formulación coincide con una afirmación publicada.', answer: exactPublishedEntry.answer || '', assessment: exactPublishedEntry.assessment || '', whatIsTrue: exactPublishedEntry.whatIsTrue || '', whatIsMissing: exactPublishedEntry.whatIsMissing || '', cannotProve: exactPublishedEntry.cannotProve || '', scale: exactPublishedEntry.scale || '', propositionIds: exactPublishedEntry.propositionIds || [], evidenceIds: exactPublishedEntry.evidenceIds || [], sourceRefs: exactPublishedEntry.sourceRefs || [], sourceLinks: exactPublishedEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1 }] };
-    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
     return result;
   }
   // A single broad concept is topic context, not a claim-family contract.
@@ -1158,7 +1160,7 @@ const classify = async (text) => {
   const reusableFamilyEntry = directPublishedEntry || exactPublishedAliasEntry || earlyFamilyEntry || earlySignatureEntry;
   if (reusableFamilyEntry) {
     const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: reusableFamilyEntry.answer || '', assessment: reusableFamilyEntry.assessment || '', whatIsTrue: reusableFamilyEntry.whatIsTrue || '', whatIsMissing: reusableFamilyEntry.whatIsMissing || '', cannotProve: reusableFamilyEntry.cannotProve || '', scale: reusableFamilyEntry.scale || '', propositionIds: reusableFamilyEntry.propositionIds || [], evidenceIds: reusableFamilyEntry.evidenceIds || [], sourceRefs: reusableFamilyEntry.sourceRefs || [], sourceLinks: reusableFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82 }] };
-    answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+    answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
     return result;
   }
   const routingDomains = {
@@ -1178,7 +1180,7 @@ const classify = async (text) => {
         alternatives: [{ kind: 'topic', slug: topic.slug, title: topic.title, href: topic.href, confidence: 0.35, handlerId: handlerForInput({ retrievalHints: [topic.title] }, 'descriptive') }],
         guidance: { questions: ['¿Qué indicador, periodo o territorio quieres comprobar?'], limitation: 'Es una formulación amplia sobre un tema concreto; hay que precisar el indicador antes de compararla con datos.' },
       };
-      answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+      answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
       return result;
     }
   }
@@ -1638,7 +1640,7 @@ const classify = async (text) => {
     const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === routingTopics[0]);
     if (topic) {
       const result = { status: 'related', input: { original: text, canonical: compiled?.normalized }, alternatives: [{ kind: 'topic', slug: topic.slug, title: topic.title, href: topic.href, confidence: 0.35, handlerId: handlerForEntry(topic) }], guidance: { questions: ['¿Qué indicador, periodo o hecho concreto quieres comprobar?'], limitation: 'La formulación apunta a un tema, pero todavía no concreta el indicador necesario para verificarla.' } };
-      answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+      answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
       return result;
     }
   }
@@ -1646,7 +1648,7 @@ const classify = async (text) => {
   const fallbackDomainEntry = fallbackDomainSlug ? index.entries.find((entry) => entry.kind === 'topic' && entry.slug === fallbackDomainSlug) : undefined;
   const fallbackDomainAlternative = fallbackDomainEntry ? { kind: 'topic', slug: fallbackDomainEntry.slug, title: fallbackDomainEntry.title, href: fallbackDomainEntry.href, confidence: 0.35, handlerId: handlerForEntry(fallbackDomainEntry), validated: false } : undefined;
   const result = { status, input: { original: text, canonical: compiled?.normalized }, compiler: compiled || undefined, primary: selected ? { kind: selected.kind, slug: selected.slug, title: selected.title, href: selected.href, confidence: top?.score || 0, reason: routing.reason, answer: selected.answer || '', assessment: selected.assessment || '', whatIsTrue: selected.whatIsTrue || '', whatIsMissing: selected.whatIsMissing || '', cannotProve: selected.cannotProve || '', scale: selected.scale || '', handlerId, propositionIds: selected.propositionIds || [], evidenceIds: selected.evidenceIds || [], sourceRefs: selected.sourceRefs || [], sourceLinks: selected.sourceLinks || [] } : undefined, alternatives: [...(fallbackDomainAlternative ? [fallbackDomainAlternative] : []), ...usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected?.slug)).filter((item) => item.slug !== fallbackDomainAlternative?.slug)], guidance: status === 'uncovered' ? { questions: routing.questions.length ? routing.questions : ['¿De qué periodo, lugar o decisión concreta estamos hablando?'], limitation: 'Todavía no tenemos una comprobación publicada de esta afirmación.' } : undefined };
-  answerCache.set(key, { value: result, expiresAt: Date.now() + cacheTtlMs });
+  answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
   pruneRuntimeState();
   return result;
 };
