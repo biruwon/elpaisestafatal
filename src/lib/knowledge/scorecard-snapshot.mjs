@@ -32,13 +32,14 @@ export const snapshotScorecard = (periodId = 'since-2018', options = {}) => {
   const period = GOVERNMENT_SCORECARD_SNAPSHOT.periods[periodId] || GOVERNMENT_SCORECARD_SNAPSHOT.periods['since-2018'];
   const explicitStart = options.explicitStart;
   const geography = options.geography || 'España';
-  const compatible = geography === 'España' && (!explicitStart || explicitStart === period.baseline || explicitStart === '2018');
+  const population = options.population || 'población general';
+  const compatible = geography === 'España' && population === 'población general' && (!explicitStart || explicitStart === period.baseline || explicitStart === '2018');
   return {
     type: 'scorecard',
     baseline: { label: 'Base', period: period.baseline },
     comparison: { label: 'Comparación', period: period.comparison },
     items: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ ...metric, baseline: compatible ? { ...metric.baseline, value: String(metric.baseline.value) } : undefined, comparison: compatible ? { ...metric.comparison, value: String(metric.comparison.value) } : undefined, direction: compatible ? metric.direction : 'unavailable', evidenceIds: compatible ? metric.sourceIds : [] })),
-    assumption: explicitStart ? `Se solicitó un inicio explícito en ${explicitStart}; ${compatible ? period.assumption : 'el almacén revisado no tiene una instantánea compatible para ese inicio, por lo que los indicadores quedan sin evaluar.'}` : period.assumption,
+    assumption: explicitStart || population !== 'población general' ? `Se solicitó ${explicitStart ? `un inicio explícito en ${explicitStart}` : ''}${population !== 'población general' ? ` y la población “${population}”` : ''}; ${compatible ? period.assumption : 'el almacén revisado no tiene una instantánea compatible para esos filtros, por lo que los indicadores quedan sin evaluar.'}` : period.assumption,
     geography,
   };
 };
