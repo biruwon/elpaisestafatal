@@ -29,6 +29,10 @@ const cases = [
   ['¿Hay diferencias en los delitos por grupo?', 'crime_rate_by_group'],
   ['¿Cuántas adjudicaciones de vivienda pública hay?', 'public_housing_allocations_by_group'],
   ['Los sueldos españoles son de los peores de Europa', 'median_hourly_earnings_europe'],
+  ['La industria española está produciendo menos', 'industrial_production_index'],
+  ['Hay muchos puestos de trabajo sin cubrir', 'job_vacancy_rate'],
+  ['Cada vez más hogares se retrasan con el alquiler o la hipoteca', 'housing_payment_arrears_rate'],
+  ['La gente no va al médico porque no puede pagarlo', 'unmet_healthcare_cost_rate'],
 ];
 
 const intentionallyUnderspecified = [

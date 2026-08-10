@@ -782,5 +782,37 @@
     "population": "final energy consumption across economic sectors in Spain and the European Union",
     "notEquivalentTo": ["final_energy_consumption"],
     "dimensions": ["period", "geography", "sector", "energy_product"]
+  },
+  "industrial_production_index": {
+    "name": "Industrial production index",
+    "aliases": ["producción industrial", "índice de producción industrial", "industria española", "actividad industrial"],
+    "unit": "index",
+    "population": "industrial production across manufacturing and other industrial activities",
+    "notEquivalentTo": ["gross_value_added"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "job_vacancy_rate": {
+    "name": "Job vacancy rate",
+    "aliases": ["vacantes de empleo", "puestos sin cubrir", "ofertas de trabajo sin cubrir", "tasa de vacantes"],
+    "unit": "percent of jobs",
+    "population": "employee jobs and vacancies across economic activities",
+    "notEquivalentTo": ["unemployment_rate"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "housing_payment_arrears_rate": {
+    "name": "Housing-payment arrears rate",
+    "aliases": ["atrasos en pagos de vivienda", "impagos de vivienda", "retrasos en alquiler o hipoteca", "hogares con pagos atrasados"],
+    "unit": "percent of population",
+    "population": "people reporting arrears on mortgage, rent, utility, or housing payments",
+    "notEquivalentTo": ["housing_cost_overburden_rate"],
+    "dimensions": ["period", "geography", "payment_type", "age", "sex"]
+  },
+  "unmet_healthcare_cost_rate": {
+    "name": "Unmet healthcare needs due to cost",
+    "aliases": ["necesidades médicas no atendidas por coste", "no puede pagar atención médica", "falta de atención sanitaria por dinero", "barrera económica sanitaria"],
+    "unit": "percent of population",
+    "population": "people reporting unmet medical needs because of cost",
+    "notEquivalentTo": ["unmet_healthcare_waiting_list_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "income"]
   }
 }

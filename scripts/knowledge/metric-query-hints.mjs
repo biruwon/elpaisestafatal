@@ -84,6 +84,10 @@ export const metricQueryTextForIds = (ids) => [...new Set([...ids].flatMap((id) 
 }))].join(' ');
 
 const metricHints = [
+  { ids: ['job_vacancy_rate'], terms: ['vacantes de empleo', 'puestos de trabajo sin cubrir', 'puestos sin cubrir', 'ofertas de trabajo sin cubrir', 'tasa de vacantes'] },
+  { ids: ['housing_payment_arrears_rate'], terms: ['atrasos en pagos de vivienda', 'impagos de vivienda', 'retrasos en alquiler', 'retrasos en hipoteca', 'se retrasan con el alquiler', 'se retrasan con la hipoteca', 'pagos atrasados de vivienda'] },
+  { ids: ['unmet_healthcare_cost_rate'], terms: ['no puede pagar atencion medica', 'no puede pagar atención médica', 'no va al medico porque no puede pagarlo', 'atencion sanitaria por dinero', 'barrera economica sanitaria', 'necesidades medicas no atendidas por coste'] },
+  { ids: ['industrial_production_index'], terms: ['produccion industrial', 'índice de producción industrial', 'actividad industrial', 'industria española'] },
   { ids: ['wildfire_incidents'], terms: ['siniestros forestales', 'incendios forestales', 'numero de incendios forestales'] },
   { ids: ['wildfire_surface_affected'], terms: ['superficie forestal afectada', 'superficie forestal', 'superficie quemada', 'hectareas quemadas'] },
   { ids: ['emergency_wait_declared'], terms: ['espera en urgencias', 'tiempo de espera en urgencias', 'espera media en urgencias', 'espera urgencias', 'urgencias'] },

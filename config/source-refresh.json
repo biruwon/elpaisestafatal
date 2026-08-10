@@ -563,6 +563,30 @@
       "title": "Consumo final de energía: España y Unión Europea · Eurostat",
       "aliases": ["consumo final de energía frente a Europa", "consumo energético frente a la UE"],
       "metricId": "final_energy_consumption_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sts_inpr_a?geo=ES&sinceTimePeriod=2015",
+      "title": "Índice de producción industrial de España · Eurostat",
+      "aliases": ["producción industrial", "índice de producción industrial", "industria española", "actividad industrial"],
+      "metricId": "industrial_production_index"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa de vacantes de empleo en España · Eurostat",
+      "aliases": ["vacantes de empleo", "puestos sin cubrir", "ofertas de trabajo sin cubrir", "tasa de vacantes"],
+      "metricId": "job_vacancy_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes03?geo=ES&sinceTimePeriod=2015",
+      "title": "Atrasos en pagos relacionados con la vivienda en España · Eurostat",
+      "aliases": ["atrasos en pagos de vivienda", "impagos de vivienda", "retrasos en alquiler o hipoteca"],
+      "metricId": "housing_payment_arrears_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_09?geo=ES&sinceTimePeriod=2015",
+      "title": "Necesidades médicas no atendidas por coste en España · Eurostat",
+      "aliases": ["necesidades médicas no atendidas por coste", "no puede pagar atención médica", "barrera económica sanitaria"],
+      "metricId": "unmet_healthcare_cost_rate"
     }
   ]
 }
