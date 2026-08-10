@@ -521,6 +521,48 @@
       "title": "Consumo final de energía en España · Eurostat",
       "aliases": ["consumo final de energía", "consumo energético", "energía consumida", "uso final de energía"],
       "metricId": "final_energy_consumption"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tour_occ_nim?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Pernoctaciones en alojamientos turísticos: España y Unión Europea · Eurostat",
+      "aliases": ["pernoctaciones frente a Europa", "noches de hotel frente a la UE", "turismo frente a Europa"],
+      "metricId": "tourism_nights_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_lvho08a?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Mediana del coste de vivienda: España y Unión Europea · Eurostat",
+      "aliases": ["coste mediano de vivienda frente a Europa", "carga de vivienda frente a la UE"],
+      "metricId": "housing_cost_burden_median_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_urgan?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Desempleo por urbanización: España y Unión Europea · Eurostat",
+      "aliases": ["paro urbano frente a Europa", "desempleo urbano frente a la UE", "paro rural frente a Europa"],
+      "metricId": "urban_unemployment_rate_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_li02?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Riesgo de pobreza por umbral: España y Unión Europea · Eurostat",
+      "aliases": ["riesgo de pobreza frente a Europa", "pobreza monetaria frente a la UE"],
+      "metricId": "at_risk_poverty_rate_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di11?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Ratio de ingresos S80/S20: España y Unión Europea · Eurostat",
+      "aliases": ["ratio S80/S20 frente a Europa", "desigualdad entre quintiles frente a la UE"],
+      "metricId": "income_quintile_share_ratio_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_air_gge?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Emisiones de gases de efecto invernadero: España y Unión Europea · Eurostat",
+      "aliases": ["emisiones GEI frente a Europa", "emisiones contaminantes frente a la UE"],
+      "metricId": "greenhouse_gas_emissions_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_07_20?geo=ES&geo=EU27_2020&sinceTimePeriod=2015",
+      "title": "Consumo final de energía: España y Unión Europea · Eurostat",
+      "aliases": ["consumo final de energía frente a Europa", "consumo energético frente a la UE"],
+      "metricId": "final_energy_consumption_europe"
     }
   ]
 }

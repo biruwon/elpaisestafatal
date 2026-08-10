@@ -726,5 +726,61 @@
     "population": "final energy consumption across economic sectors",
     "notEquivalentTo": ["household_electricity_price"],
     "dimensions": ["period", "geography", "sector", "energy_product"]
+  },
+  "tourism_nights_europe": {
+    "name": "Nights spent in tourist accommodation: Spain and the European Union",
+    "aliases": ["pernoctaciones frente a Europa", "noches de hotel frente a la UE", "turismo frente a Europa", "España recibe más turistas que Europa"],
+    "unit": "nights",
+    "population": "nights spent in tourist accommodation in Spain and the European Union",
+    "notEquivalentTo": ["tourism_nights"],
+    "dimensions": ["period", "geography", "accommodation_type"]
+  },
+  "housing_cost_burden_median_europe": {
+    "name": "Median housing-cost burden: Spain and the European Union",
+    "aliases": ["coste mediano de vivienda frente a Europa", "carga de vivienda frente a la UE", "esfuerzo de vivienda mediano frente a Europa"],
+    "unit": "percent of disposable income",
+    "population": "households with housing costs in Spain and the European Union",
+    "notEquivalentTo": ["housing_cost_burden_median"],
+    "dimensions": ["period", "geography", "population"]
+  },
+  "urban_unemployment_rate_europe": {
+    "name": "Unemployment by degree of urbanisation: Spain and the European Union",
+    "aliases": ["paro urbano frente a Europa", "desempleo urbano frente a la UE", "paro rural frente a Europa"],
+    "unit": "percent of labour force",
+    "population": "labour force classified by degree of urbanisation in Spain and the European Union",
+    "notEquivalentTo": ["urban_unemployment_rate"],
+    "dimensions": ["period", "geography", "urbanisation", "age", "sex"]
+  },
+  "at_risk_poverty_rate_europe": {
+    "name": "At-risk-of-poverty rate: Spain and the European Union",
+    "aliases": ["riesgo de pobreza frente a Europa", "pobreza monetaria frente a la UE", "personas bajo el umbral frente a Europa"],
+    "unit": "percent of population",
+    "population": "people below the specified relative poverty threshold in Spain and the European Union",
+    "notEquivalentTo": ["at_risk_poverty_rate"],
+    "dimensions": ["period", "geography", "threshold", "age", "sex"]
+  },
+  "income_quintile_share_ratio_europe": {
+    "name": "Income quintile share ratio: Spain and the European Union",
+    "aliases": ["ratio S80/S20 frente a Europa", "desigualdad entre quintiles frente a la UE", "brecha de ingresos frente a Europa"],
+    "unit": "ratio",
+    "population": "equivalised disposable income distribution in Spain and the European Union",
+    "notEquivalentTo": ["income_quintile_share_ratio"],
+    "dimensions": ["period", "geography", "population"]
+  },
+  "greenhouse_gas_emissions_europe": {
+    "name": "Greenhouse-gas emissions: Spain and the European Union",
+    "aliases": ["emisiones GEI frente a Europa", "emisiones contaminantes frente a la UE", "emisiones climáticas frente a Europa"],
+    "unit": "tonnes CO2 equivalent",
+    "population": "greenhouse-gas emissions by source and gas in Spain and the European Union",
+    "notEquivalentTo": ["greenhouse_gas_emissions"],
+    "dimensions": ["period", "geography", "gas", "source"]
+  },
+  "final_energy_consumption_europe": {
+    "name": "Final energy consumption: Spain and the European Union",
+    "aliases": ["consumo final de energía frente a Europa", "consumo energético frente a la UE", "uso de energía frente a Europa"],
+    "unit": "tonnes of oil equivalent",
+    "population": "final energy consumption across economic sectors in Spain and the European Union",
+    "notEquivalentTo": ["final_energy_consumption"],
+    "dimensions": ["period", "geography", "sector", "energy_product"]
   }
 }

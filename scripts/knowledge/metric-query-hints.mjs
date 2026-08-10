@@ -187,6 +187,11 @@ export const preferredMetricIdsForQuery = (query) => {
     const comparisonMetric = comparisonMetricIdsForQuery(normalized);
     for (const id of comparisonMetric) preferred.add(id);
   }
+  // Comparative adjectives frequently replace the explicit “frente a
+  // Europa” wording: “el PIB por persona es menor que el europeo”. Keep the
+  // subject requirement strict so a bare “europeo” cannot route arbitrary
+  // claims to a GDP series.
+  if (hasEuropeReference && hasAny('pib', 'producto interior bruto') && hasAny('habitante', 'persona', 'per capita')) preferred.add('gdp_per_capita_europe');
   // Phrase aliases are deliberately conservative, but users often reorder
   // Spanish comparison wording (“comparación europea del empleo parcial”,
   // “el abandono educativo supera al europeo”). Recover the comparison family
