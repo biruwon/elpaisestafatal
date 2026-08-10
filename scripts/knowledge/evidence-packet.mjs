@@ -26,7 +26,8 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
     period: boundedString(item.period, 80),
     dimensions: item.dimensions && typeof item.dimensions === 'object' ? item.dimensions : {},
     dimensionLabels: item.dimensionLabels && typeof item.dimensionLabels === 'object' ? item.dimensionLabels : {},
-    source: item.source?.url ? { title: boundedString(item.source.title, 180), url: item.source.url } : undefined,
+    excerpt: boundedString(item.excerpt, 700),
+    source: item.source?.url ? { title: boundedString(item.source.title, 180), url: item.source.url, publisher: boundedString(item.source.publisher, 160), role: boundedString(item.source.role, 40) } : undefined,
   })).filter((item) => item.id);
   return {
     schemaVersion: RUNTIME_VERSIONS.evidencePacketSchema,
@@ -59,6 +60,7 @@ export const validateEvidencePacket = (packet) => {
   const errors = [];
   for (const item of packet.evidence) {
     if (!item.id || typeof item.metric !== 'string') errors.push('evidence item is missing identity');
+    if (typeof item.excerpt !== 'string' || item.excerpt.length > 700) errors.push(`evidence ${item.id} has an invalid excerpt`);
     if (item.source && !/^https:\/\//i.test(item.source.url || '')) errors.push(`evidence ${item.id} has an unattributable source`);
   }
   for (const block of packet.deterministicPlan?.blocks || []) for (const id of block.evidenceIds || []) if (!ids.has(id)) errors.push(`plan references evidence outside packet: ${id}`);

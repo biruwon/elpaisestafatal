@@ -208,4 +208,20 @@ const unknownInputs = [
 ];
 unknownInputs.forEach((input, index) => cases.push({ id: `unknown-${index + 1}`, input, expected: { status: 'unknown' }, category: index % 2 ? 'impossible' : 'local' }));
 
+// High-value end-to-end acceptance inputs. These are intentionally kept
+// separate from the published-claim accuracy corpus: they assert routing and
+// safe decomposition, not a factual verdict.
+export const acceptanceCases = [
+  {
+    id: 'acceptance-broad-left-country-worse',
+    input: 'gobernando la izquierda el país va peor',
+    expected: { answerMode: 'scorecard', resultState: 'answered', reviewed: false, noOverallVerdict: true },
+  },
+  {
+    id: 'acceptance-ceuta-cross-border-allegation',
+    input: 'con la invasion de Ceuta están violando a las mujeres',
+    expected: { answerMode: 'current_event', resultState: 'provisional', propositionIds: ['event', 'allegation', 'attribution'], noNationalCrimeProof: true },
+  },
+];
+
 export const evaluationCases = cases;

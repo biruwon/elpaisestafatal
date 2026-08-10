@@ -51,6 +51,9 @@ export type EvidenceRecord = {
 };
 
 export type AnswerMode = 'reviewed_claim' | 'scorecard' | 'current_event' | 'provisional_evidence' | 'guidance';
+// Public MVP state. Detailed claim/evidence modes remain internal so the UI
+// can explain the result without exposing resolver implementation details.
+export type ResultState = 'answered' | 'provisional' | 'unresolved';
 
 export type ScorecardItem = {
   metricId: string;
@@ -99,6 +102,7 @@ export type AnswerBlock =
   | { type: 'prediction_conditions'; items: Array<{ label: string; value: string; status: 'specified' | 'missing' }> }
   | { type: 'trade_offs'; principle: string; alternatives: Array<{ label: string; consequence: string }> }
   | { type: 'group_comparison_requirements'; items: Array<{ label: string; status: 'available' | 'check' | 'missing'; detail: string }> }
+  | { type: 'evidence_gap'; missing: string[]; needed: string[]; nextAction: string }
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string; evidenceIds?: string[] }
   | { type: 'sources'; sourceIds: string[] }
@@ -113,6 +117,8 @@ export type AnswerPlan = {
   coverage: CoverageStatus;
   claimType: ClaimType;
   answerMode?: AnswerMode;
+  resultState?: ResultState;
+  reviewed?: boolean;
   blocks: AnswerBlock[];
   clarificationQuestion?: string;
   limitation?: string;

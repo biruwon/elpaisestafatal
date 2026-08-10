@@ -12,6 +12,9 @@ requireText(input, 'const recordQuestion =', 'immediate learning capture helper'
 requireText(input, "recordQuestion(query, { inputType: 'text', status: 'received' })", 'early capture before background analysis');
 requireText(input, 'const capturedText = query || data.input?.canonical ||', 'terminal capture identity');
 requireText(input, 'status: data.status', 'terminal status update');
+requireText(input, 'resultState,', 'sanitized public result state capture');
+requireText(input, 'researchOutcome,', 'sanitized research outcome capture');
+requireText(input, 'sourceTiersChecked,', 'sanitized source tier capture');
 requireText(input, 'requestId: query ? undefined : data.requestId', 'idempotent typed/media request identity');
 requireText(input, 'semanticSignature: query ? semanticQuerySignature(query) : data.canonicalSignature', 'stable typed semantic signature');
 requireText(input, 'data-learning-note', 'uncovered-result learning feedback');
@@ -23,7 +26,9 @@ requireText(questions, 'ON CONFLICT(semantic_signature)', 'semantic cluster pers
 requireText(questions, "const inputTypes = new Set(['text', 'image', 'audio', 'url'])", 'input type allowlist');
 requireText(questions, "const statuses = new Set(['received', 'processing', 'published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial'])", 'status allowlist');
 requireText(questions, 'effectiveSemanticSignature = membership.results[0]?.semanticSignature || semanticSignature', 'retry cluster identity preservation');
-requireText(questions, 'INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status)', 'missing-cluster recovery');
+requireText(questions, 'INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status, result_state', 'missing-cluster recovery');
+requireText(questions, 'result_state', 'aggregate result state persistence');
+requireText(questions, 'research_outcome', 'aggregate research outcome persistence');
 
 if (input.includes('recordUncoveredQuestion')) failures.push('obsolete late-only learning helper remains');
 if (failures.length) {

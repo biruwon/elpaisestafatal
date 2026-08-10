@@ -24,6 +24,7 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   if (typeof plan.headline !== 'string' || !plan.headline.trim()) errors.push('missing headline');
   if (typeof plan.summary !== 'string' || !plan.summary.trim()) errors.push('missing summary');
   if (plan.answerMode && !['reviewed_claim', 'scorecard', 'current_event', 'provisional_evidence', 'guidance'].includes(plan.answerMode)) errors.push('invalid answer mode');
+  if (plan.resultState && !['answered', 'provisional', 'unresolved'].includes(plan.resultState)) errors.push('invalid public result state');
   if (!Array.isArray(plan.blocks)) errors.push('missing blocks');
   if (!arrayOfStrings(plan.evidenceIds)) errors.push('evidenceIds must be a string array');
   if (!arrayOfStrings(plan.sourceIds)) errors.push('sourceIds must be a string array');
@@ -52,6 +53,7 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
     if (block.type === 'evidence_ladder' && !structuredItems(block.steps, new Set(['available', 'context', 'missing']))) errors.push(`block ${index} evidence ladder is malformed`);
     if (block.type === 'legal_decision_tree' && !structuredItems(block.items, new Set(['known', 'missing']))) errors.push(`block ${index} legal decision tree is malformed`);
     if (block.type === 'group_comparison_requirements' && !structuredItems(block.items, new Set(['available', 'check', 'missing']))) errors.push(`block ${index} group comparison is malformed`);
+    if (block.type === 'evidence_gap' && (!arrayOfStrings(block.missing) || !block.missing.length || !arrayOfStrings(block.needed) || !block.needed.length || !nonEmptyString(block.nextAction))) errors.push(`block ${index} evidence gap is malformed`);
     if (block.type === 'prediction_conditions' && (!Array.isArray(block.items) || !block.items.length || !block.items.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.value) && ['specified', 'missing'].includes(item.status)))) errors.push(`block ${index} prediction conditions are malformed`);
     if (block.type === 'trade_offs' && (!nonEmptyString(block.principle) || !Array.isArray(block.alternatives) || block.alternatives.length < 2 || !block.alternatives.every((item) => item && nonEmptyString(item.label) && nonEmptyString(item.consequence)))) errors.push(`block ${index} trade-offs are malformed`);
     if (block.type === 'scorecard' && (!block.baseline?.period || !block.comparison?.period || !Array.isArray(block.items) || !block.items.length || !block.items.every((item) => item && nonEmptyString(item.metricId) && nonEmptyString(item.label) && ['improved', 'worsened', 'roughly_unchanged', 'unavailable'].includes(item.direction) && arrayOfStrings(item.evidenceIds)))) errors.push(`block ${index} scorecard is malformed`);
@@ -64,6 +66,12 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
 
   for (const [index, source] of (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).entries()) {
     if (!source || typeof source !== 'object' || typeof source.url !== 'string' || !/^https:\/\//i.test(source.url) || typeof source.title !== 'string' || !source.title.trim()) errors.push(`source link ${index} is not attributable`);
+    if (source?.role && !['primary', 'corroboration', 'context'].includes(source.role)) errors.push(`source link ${index} has an invalid role`);
+    if (source?.publisher !== undefined && (typeof source.publisher !== 'string' || !source.publisher.trim())) errors.push(`source link ${index} has an invalid publisher`);
+    for (const field of ['publishedAt', 'retrievedAt']) {
+      if (source?.[field] !== undefined && (typeof source[field] !== 'string' || Number.isNaN(Date.parse(source[field])))) errors.push(`source link ${index} has an invalid ${field}`);
+    }
+    if (source?.originPublisher !== undefined && (typeof source.originPublisher !== 'string' || !source.originPublisher.trim())) errors.push(`source link ${index} has an invalid origin publisher`);
   }
   return { ok: errors.length === 0, errors };
 };

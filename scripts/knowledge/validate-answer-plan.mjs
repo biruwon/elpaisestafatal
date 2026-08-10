@@ -6,6 +6,8 @@ const valid = {
   summary: 'A concise summary.',
   coverage: 'qualified',
   claimType: 'descriptive',
+  resultState: 'answered',
+  reviewed: false,
   blocks: [{ type: 'key_number', evidenceId: 'e1', evidenceIds: ['e1'], label: 'Value', value: '10' }, { type: 'conversation_reply', evidenceIds: ['e1'], text: 'The evidence supports this limited statement.' }],
   evidenceIds: ['e1'],
   sourceIds: ['s1'],
@@ -14,6 +16,12 @@ const valid = {
 };
 const provisional = validateAnswerPlan(valid, { provisional: true });
 if (!provisional.ok) throw new Error(`Valid plan rejected: ${provisional.errors.join('; ')}`);
+if (!validateAnswerPlan({ ...valid, resultState: 'provisional' }).ok) throw new Error('Provisional public result state was rejected');
+if (!validateAnswerPlan({ ...valid, resultState: 'unresolved', blocks: [{ type: 'evidence_gap', missing: ['Period'], needed: ['Compatible series'], nextAction: 'Define the period.' }], evidenceIds: [], sourceIds: [] }).ok) throw new Error('Evidence-gap block was rejected');
+if (validateAnswerPlan({ ...valid, resultState: 'unknown' }).ok) throw new Error('Unknown public result state was accepted');
+if (!validateAnswerPlan({ ...valid, sourceLinks: [{ id: 's1', title: 'Live report', url: 'https://efe.com/story', publisher: 'EFE', publishedAt: '2026-08-10T10:00:00Z', retrievedAt: '2026-08-10T10:05:00Z', role: 'corroboration', originPublisher: 'EFE' }] }).ok) throw new Error('Enriched source metadata was rejected');
+const malformedSource = validateAnswerPlan({ ...valid, sourceLinks: [{ id: 's1', title: 'Live report', url: 'https://efe.com/story', role: 'unknown', retrievedAt: 'not-a-date' }] });
+if (malformedSource.ok || !malformedSource.errors.some((error) => error.includes('invalid role')) || !malformedSource.errors.some((error) => error.includes('invalid retrievedAt'))) throw new Error('Malformed source metadata was accepted');
 
 const missingEvidence = validateAnswerPlan({ ...valid, evidenceIds: [], blocks: [{ type: 'conversation_reply', evidenceIds: ['e1'], text: 'Unsupported' }] }, { provisional: true });
 if (missingEvidence.ok || !missingEvidence.errors.some((error) => error.includes('outside plan'))) throw new Error('Untraceable evidence was accepted');

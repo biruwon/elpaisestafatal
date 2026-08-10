@@ -19,6 +19,7 @@ import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvide
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
+import { enrichTrustedWebResults, searchTrustedWeb, trustedWebObservation } from './knowledge/trusted-web-discovery.mjs';
 import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
@@ -220,6 +221,25 @@ const evidenceLadderForCompiler = (compiler, source, handlerId = '') => {
     }),
   };
 };
+const evidenceGapForCompiler = (compiler, handlerId = '') => {
+  const defaults = {
+    descriptive: ['metrica', 'periodo', 'territorio', 'fuente'],
+    trend: ['metrica', 'periodo', 'territorio', 'fuente'],
+    causal: ['causa', 'comparacion', 'impacto', 'fuente'],
+    legal_rule: ['norma', 'fecha', 'fuente'],
+    mixed: ['definicion', 'metrica', 'fuente'],
+  };
+  const requested = Array.isArray(compiler?.evidenceNeeds) ? compiler.evidenceNeeds : [];
+  const needs = [...new Set((requested.length ? requested : (defaults[handlerId] || defaults[compiler?.claimType] || defaults.mixed)).filter((need) => evidenceNeedLabels.has(need)))].slice(0, 5);
+  const missing = needs.map((need) => evidenceNeedLabels.get(need)?.[0]).filter(Boolean);
+  const needed = needs.map((need) => evidenceNeedLabels.get(need)?.[1]).filter(Boolean);
+  return {
+    type: 'evidence_gap',
+    missing: missing.length ? missing : ['Una fuente que mida directamente la afirmación'],
+    needed: needed.length ? needed : ['Un documento o serie pública atribuible y compatible con la frase.'],
+    nextAction: 'La siguiente búsqueda debe fijar el indicador, el periodo, el territorio y la población antes de extraer una conclusión.',
+  };
+};
 const lowSignalTokens = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas']);
 const meaningfulBroadTerms = new Set(['destruida', 'destruido', 'ruina', 'arruinada', 'arruinado', 'colapsada', 'colapsado', 'inseguridad', 'inseguro', 'insegura', 'peligro', 'peligrosa', 'delincuencia', 'crisis', 'decadencia', 'impuestos', 'vivienda', 'sanidad', 'empleo', 'paro', 'inmigracion', 'inmigrantes', 'gobierno', 'educacion', 'politica', 'futuro']);
 const isLowSignalInput = (value) => {
@@ -338,9 +358,12 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
 const normalizeAnswerPlan = (plan) => {
   if (!plan || !Array.isArray(plan.blocks)) return plan;
   const statusMap = { known: 'available', observed: 'available', supported: 'available', strong: 'available', qualified: 'context', partial: 'context', context: 'context', unknown: 'missing', unresolved: 'missing', insufficient: 'missing', missing: 'missing' };
+  const answerMode = plan.answerMode || (plan.blocks?.some((block) => block?.type === 'scorecard') ? 'scorecard' : plan.blocks?.some((block) => block?.type === 'event_status') ? 'current_event' : plan.sourceLinks?.length ? 'provisional_evidence' : 'guidance');
   return {
     ...plan,
-    answerMode: plan.answerMode || (plan.blocks?.some((block) => block?.type === 'scorecard') ? 'scorecard' : plan.blocks?.some((block) => block?.type === 'event_status' ? true : false) ? 'current_event' : plan.sourceLinks?.length ? 'provisional_evidence' : 'guidance'),
+    resultState: plan.resultState || (answerMode === 'guidance' ? 'unresolved' : answerMode === 'current_event' || answerMode === 'provisional_evidence' ? 'provisional' : 'answered'),
+    reviewed: plan.reviewed === true || answerMode === 'reviewed_claim',
+    answerMode,
     blocks: plan.blocks.map((block) => {
       if (block?.type && ['line_chart', 'bar_chart', 'comparison_chart'].includes(block.type) && !block.visualId) {
         return { ...block, visualId: 'warehouse-observation' };
@@ -2135,6 +2158,21 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       ] },
     ];
     const grouped = observations.slice(0, 6);
+    const trustedWebSources = grouped.filter((item) => item.kind === 'trusted_web_source');
+    if (trustedWebSources.length) {
+      const evidenceIds = trustedWebSources.map((item) => item.id);
+      const primarySources = trustedWebSources.filter((item) => item.source?.role === 'primary');
+      const corroborationSources = trustedWebSources.filter((item) => item.source?.role === 'corroboration');
+      return [
+        ...trustedWebSources.filter((item) => item.excerpt).slice(0, 2).map((item) => ({ type: 'source_excerpt', evidenceIds: [item.id], title: `${item.source?.publisher || 'Fuente'} · ${item.metric}`, excerpt: boundedExcerpt(item.excerpt) })),
+        { type: 'conversation_reply', evidenceIds, text: primarySources.length
+          ? 'Hemos localizado una fuente institucional relacionada y mostramos el fragmento disponible. Esto es una investigación provisional: la fuente localizada no constituye por sí sola una ficha revisada para la afirmación completa.'
+          : corroborationSources.length > 1
+            ? 'Hay varios medios que informan sobre el tema, pero este resultado solo establece que existe una cobertura coincidente; no demuestra por sí solo el hecho subyacente.'
+            : 'Hemos localizado una referencia pública relacionada, pero todavía no hay evidencia suficiente para convertirla en una respuesta factual.' },
+        { type: 'cannot_conclude', evidenceIds, points: ['Un resultado de búsqueda o una noticia puede demostrar que algo fue publicado, no necesariamente que la afirmación completa sea cierta.', 'La investigación queda provisional hasta comprobar el documento original, su alcance, fecha y población.'] },
+      ];
+    }
     const numeric = grouped.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value));
     const publications = grouped.filter((item) => item.kind === 'official_publication');
     const budgetPublication = isBudgetTransfer ? publications.find((item) => item.finding?.type === 'budget_transfer') : undefined;
@@ -2291,6 +2329,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
     answerMode: primary ? 'reviewed_claim' : broadConditionRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
+    resultState: primary || broadConditionRequested || warehouseSeries ? 'answered' : currentEvent || observations.length ? 'provisional' : 'unresolved',
+    reviewed: Boolean(primary),
     asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,
     headline: scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: scorecardRequested ? `Comparamos seis indicadores con el último dato anterior al periodo de ${latestGovernmentPeriod.start}. No calculamos una nota global ni atribuimos causalidad al Gobierno.` : currentEvent ? 'Hemos separado el hecho, las posibles agresiones y la atribución de responsabilidad. El estado indica qué está reportado, no qué queda probado.' : compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
@@ -2309,12 +2349,17 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     knowledgeVersion: observations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
+  if (result.resultState === 'unresolved' && !result.blocks.some((block) => block.type === 'evidence_gap')) {
+    result.blocks = [...result.blocks, evidenceGapForCompiler(classified.compiler, handlerId)];
+  }
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
   if (validation.ok) return { status: broadConditionRequested ? 'complete' : status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind === 'topic') : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
+    resultState: 'unresolved',
+    reviewed: false,
     headline: 'Todavía no podemos sostener una respuesta completa.',
     summary: 'Hemos encontrado una pista, pero no ha pasado todos los controles necesarios para presentarla como una respuesta fiable.',
     coverage: 'insufficient',
@@ -2376,7 +2421,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           for (const item of payload.results || []) {
             const url = item.url || item.link;
             try { if (!url || !['primary', 'corroboration'].includes(currentEventSourceRole(url))) continue; } catch { continue; }
-            const source = { id: `event-${digest(url).slice(0, 18)}`, title: boundedExcerpt(item.title || url, 180), url, publisher: item.meta_url?.hostname || new URL(url).hostname, publishedAt: item.age || undefined, retrievedAt: new Date().toISOString() };
+            // Brave's `age` is often human text (for example “2 hours ago”),
+            // not an ISO timestamp. Keep only parseable publication dates so
+            // the public source contract never emits malformed metadata.
+            const candidatePublishedAt = item.page_age || item.publishedAt || item.date || undefined;
+            const publishedAt = candidatePublishedAt && !Number.isNaN(Date.parse(candidatePublishedAt)) ? new Date(candidatePublishedAt).toISOString() : undefined;
+            const source = { id: `event-${digest(url).slice(0, 18)}`, title: boundedExcerpt(item.title || url, 180), url, publisher: item.meta_url?.hostname || new URL(url).hostname, publishedAt, retrievedAt: new Date().toISOString() };
             propositionSources.push(source);
             eventSources.push(source);
             if (eventSources.length >= 6) break;
@@ -2586,10 +2636,16 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const discovered = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
-  const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
+  const trustedWebLeads = process.env.GENERAL_WEB_RESEARCH !== '0' && allowDiscovery && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !discovered.length && !sourceOverride
+    ? await searchTrustedWeb({ queries: [discoveryText || retrievalText, ...propositionQueries], token: process.env.BRAVE_SEARCH_TOKEN || process.env.CURRENT_SEARCH_TOKEN, limit: 6 })
+    : [];
+  const trustedWeb = trustedWebLeads.length
+    ? (await enrichTrustedWebResults(trustedWebLeads, { query: discoveryText || retrievalText, max: 6 })).map(trustedWebObservation)
+    : [];
+  const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source || trustedWeb[0]?.source;
   const observations = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text))
     ? [...new Map([...scorecardObservations, ...warehouse.observations].map((item) => [item.id, item])).values()].slice(0, 72)
-    : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
+    : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);

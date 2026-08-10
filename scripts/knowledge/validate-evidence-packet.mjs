@@ -22,9 +22,10 @@ const packet = buildEvidencePacket({
   compiler: { claimType: 'descriptive', propositions: [{ text: 'España tiene 48 millones de habitantes', type: 'descriptive', explicit: true }] },
   handlerId: 'quantity',
   plan: basePlan,
-  observations: [{ id: 'e1', metric: 'Población', value: 49128297, unit: 'Number', period: '2025', source: { title: 'Fuente oficial', url: 'https://example.test/data' } }],
+  observations: [{ id: 'e1', metric: 'Población', value: 49128297, unit: 'Number', period: '2025', excerpt: 'La población residente se situó en el último periodo publicado.', source: { title: 'Fuente oficial', publisher: 'Instituto oficial', role: 'primary', url: 'https://example.test/data' } }],
 });
 if (!validateEvidencePacket(packet).ok) throw new Error('valid evidence packet was rejected');
+if (packet.evidence[0].excerpt !== 'La población residente se situó en el último periodo publicado.') throw new Error('source excerpt was not preserved in the packet');
 const upgraded = applySafePlanUpgrade(basePlan, {
   headline: 'La cifra es una aproximación',
   summary: 'La serie localizada permite comparar la cifra con el último periodo.',
@@ -43,4 +44,6 @@ const inventedNumber = applySafePlanUpgrade(basePlan, {
 if (inventedNumber !== basePlan) throw new Error('planner accepted an unsupported number');
 const broken = buildEvidencePacket({ text: 'dato', compiler: {}, handlerId: 'quantity', plan: { ...basePlan, evidenceIds: [], blocks: [{ type: 'key_number', evidenceId: 'missing', value: '1', label: 'x' }] }, observations: [] });
 if (validateEvidencePacket(broken).ok) throw new Error('packet accepted an untraceable evidence reference');
+const oversizedExcerpt = buildEvidencePacket({ text: 'dato', compiler: {}, handlerId: 'quantity', plan: basePlan, observations: [{ id: 'e2', metric: 'x', excerpt: 'x'.repeat(701) }] });
+if (oversizedExcerpt.evidence[0].excerpt.length !== 700) throw new Error('source excerpt was not bounded');
 console.log('Evidence packet validation passed: planner upgrades are bounded by evidence and numbers.');

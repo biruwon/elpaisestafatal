@@ -38,7 +38,7 @@ const fallbackGuidance = (text, inputType) => {
     };
   }
   return {
-    limitation: 'Todavía no hay una comprobación publicada para esta frase. Podemos concretarla antes de buscar datos.',
+    limitation: 'No hay evidencia pública suficiente para responderla todavía. El sistema puede investigar una versión más concreta si aportas un periodo, lugar o indicador.',
     questions: [topicQuestion(text)],
   };
 };
@@ -57,6 +57,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       result: {
         schemaVersion: '1',
         answerMode: 'scorecard',
+        resultState: 'answered',
+        reviewed: false,
         headline: 'La mayoría de indicadores mejoran, pero no hay una nota partidista',
         summary: `Desde junio de 2018, ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'improved').length} de ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.length} indicadores mejoran y ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'worsened').length} empeora. Esto describe cambios observados; no demuestra qué políticas los causaron.`,
         coverage: 'qualified',
@@ -78,12 +80,15 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
     guidance,
     result: {
       schemaVersion: '1',
-      headline: 'No hay una coincidencia directa todavía',
-      summary: 'La frase se ha recibido, pero no coincide con una comprobación publicada suficientemente directa.',
+      resultState: 'unresolved',
+      reviewed: false,
+      headline: 'No hay evidencia suficiente todavía',
+      summary: 'No hemos encontrado datos o fuentes compatibles que permitan sostener una respuesta factual para esta frase.',
       coverage: 'insufficient',
       claimType: 'mixed',
       blocks: [
         { type: 'claim_breakdown', propositionIds: [], items: [{ text: original, type: 'mixed', explicit: true }] },
+        { type: 'evidence_gap', missing: ['Un indicador y un periodo compatibles'], needed: ['Una fuente pública que mida directamente la afirmación'], nextAction: 'La siguiente búsqueda debe fijar el indicador, el periodo, el territorio y la población antes de extraer una conclusión.' },
         { type: 'cannot_conclude', evidenceIds: [], points: ['No debemos convertir una coincidencia temática o una frase cercana en un veredicto.', 'Concreta el indicador, el periodo o el lugar para buscar una evidencia comparable.'] },
       ],
       clarificationQuestion: guidance.questions[0],

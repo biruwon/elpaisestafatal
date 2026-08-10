@@ -1,13 +1,10 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-
-const officialHosts = new Set(['interior.gob.es', 'policia.es', 'guardiacivil.es', 'administracion.gob.es', 'ceuta.es', 'melilla.es', 'fiscal.es', 'boe.es', 'poderjudicial.es', 'tribunalconstitucional.es', 'juntaex.es']);
-const corroborationHosts = new Set(['efe.com', 'rtve.es', 'europapress.es']);
+import { liveSourceForHost } from './source-registry.mjs';
 
 export const currentEventSourceRole = (url) => {
   try {
     const host = new URL(url).hostname.replace(/^www\./, '');
-    if ([...officialHosts].some((item) => host === item || host.endsWith(`.${item}`))) return 'primary';
-    if ([...corroborationHosts].some((item) => host === item || host.endsWith(`.${item}`))) return 'corroboration';
+    return liveSourceForHost(host)?.role || null;
   } catch { /* ignore malformed source URLs */ }
   return null;
 };

@@ -138,6 +138,20 @@ const assessmentLabels: Record<string, string> = {
 
 const coverageLabel = (value?: string): string => coverageLabels[value || ''] || 'Aclaración provisional';
 
+const publicResultState = (plan?: AnswerPlan): 'answered' | 'provisional' | 'unresolved' => {
+  if (plan?.resultState) return plan.resultState;
+  if (plan?.answerMode === 'guidance') return 'unresolved';
+  if (plan?.answerMode === 'current_event' || plan?.answerMode === 'provisional_evidence') return 'provisional';
+  return 'answered';
+};
+
+const publicResultLabel = (plan?: AnswerPlan): string => {
+  const state = publicResultState(plan);
+  if (state === 'answered') return plan?.reviewed ? 'Respuesta revisada' : 'Respuesta con evidencia';
+  if (state === 'provisional') return 'Investigación provisional';
+  return 'Sin evidencia suficiente';
+};
+
 const topicFollowUpPrompts: Record<string, string[]> = {
   politica: [
     '¿Está creciendo la economía española?',
@@ -315,6 +329,9 @@ const propositionTypeLabels: Record<string, string> = {
 
 type LearningRecord = {
   status?: string;
+  resultState?: 'answered' | 'provisional' | 'unresolved';
+  researchOutcome?: 'reviewed' | 'warehouse' | 'live_provisional' | 'unresolved' | 'unavailable';
+  sourceTiersChecked?: string;
   inputType?: 'text' | 'image' | 'audio' | 'url';
   requestId?: string;
   canonical?: string;
@@ -332,6 +349,9 @@ const recordQuestion = (text: string, record: LearningRecord = {}): void => {
       semanticSignature: record.semanticSignature || semanticQuerySignature(neutral),
       inputType: record.inputType || 'text',
       status: record.status || 'received',
+      resultState: record.resultState,
+      researchOutcome: record.researchOutcome,
+      sourceTiersChecked: record.sourceTiersChecked,
       requestId: record.requestId,
     }),
     keepalive: true,
@@ -626,6 +646,9 @@ const renderStructuredBlock = (plan: AnswerPlan, block: AnswerPlan['blocks'][num
   }
   if (block.type === 'group_comparison_requirements') {
     return `<div class="claim-plan-method"><span class="clarification-label">Comprobación de comparabilidad</span><ul>${block.items.map((item) => `<li data-status="${escapeHtml(item.status)}"><span>${escapeHtml(item.label)}</span><p>${escapeHtml(item.detail)}</p></li>`).join('')}</ul></div>`;
+  }
+  if (block.type === 'evidence_gap') {
+    return `<section class="claim-plan-gap claim-plan-card"><span class="clarification-label">Qué falta para responder</span><div><strong>Falta comprobar</strong><ul>${block.missing.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div><div><strong>Necesitaríamos</strong><ul>${block.needed.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div><p>${escapeHtml(block.nextAction)}</p></section>`;
   }
   if (block.type === 'cannot_conclude') {
     return `<div class="claim-plan-limit claim-plan-card"><span class="clarification-label">Lo que no se puede concluir todavía</span><ul>${block.points.slice(0, 4).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>${blockEvidenceMarkup(plan, block.evidenceIds)}</div>`;
@@ -1047,19 +1070,22 @@ const bindResultActions = (): void => {
 
 const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], requestId?: string, state: 'published' | 'draft' | 'related' | 'uncovered' = 'published'): void => {
   if (!result) return;
-  const modeLabel = plan.answerMode === 'scorecard' ? 'Cuadro comparativo' : plan.answerMode === 'current_event' ? 'Investigación reciente' : plan.answerMode === 'reviewed_claim' ? 'Ficha revisada' : plan.answerMode === 'provisional_evidence' ? 'Evidencia provisional' : 'Orientación';
-  const resultLabel = state === 'published' ? 'Ficha publicada' : modeLabel;
-  const resultState = state === 'published' ? 'Basada en una ficha revisada' : plan.answerMode === 'current_event' ? 'Live/provisional · no es una publicación de hechos' : plan.answerMode === 'scorecard' ? 'Indicadores comparables · sin veredicto partidista' : state === 'uncovered' ? 'Sin coincidencia publicada; mostramos lo útil que sí sabemos' : 'Resultado automático · provisional, no publicado';
+  const resultLabel = publicResultLabel(plan);
+  const resultState = publicResultLabel(plan);
   const resultTitle = plan.headline;
   const displayedAssessment = state === 'published' && primary?.assessment
     ? assessmentLabels[primary.assessment] || primary.assessment
     : coverageLabel(plan.coverage);
-  const nextStep = plan.clarificationQuestion
-    || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
+  const nextStep = publicResultState(plan) === 'unresolved'
+    ? 'Puedes aportar un periodo, lugar, indicador o fuente concreta para iniciar una búsqueda útil.'
+    : plan.clarificationQuestion
+      || (primary ? primary.kind === 'topic' ? 'Abre el contexto del tema para ver qué preguntas concretas podemos comprobar.' : 'Abre la ficha revisada para ver el detalle y las fuentes.' : 'Concreta la fecha, el lugar o el programa para comprobar mejor la afirmación.');
   const shareUrl = shareUrlFor(original, primary, state);
   const limitation = plan.limitation || 'La evidencia disponible no permite responder a todas las implicaciones de la frase.';
   const storyMarkup = visualStoryMarkup(plan);
   result.innerHTML = `<article class="claim-result-card" data-state="${state}" data-result-mode="understand" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${resultLabel}</span><span class="claim-result-state">${resultState}</span></div><span class="claim-assessment">${escapeHtml(displayedAssessment)}</span></div>${submittedClaimMarkup(original)}<h3 id="claim-result-title">${escapeHtml(resultTitle)}</h3><div class="claim-result-short-answer" data-result-target="answer"><span class="clarification-label">Respuesta breve</span><p class="claim-result-summary">${escapeHtml(plan.summary)}</p><button type="button" data-copy-answer="${escapeHtml(plan.summary)}">Copiar resumen</button></div><div class="claim-result-overview" data-result-overview aria-label="Resumen de la evidencia, el límite y el siguiente paso"><div><span>Estado de la evidencia</span><strong>${escapeHtml(coverageLabel(plan.coverage))}</strong></div><div><span>Qué no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(nextStep)}</strong></div></div>${storyMarkup}${resultUseActionsMarkup(plan)}${resultActionsMarkup(requestId ? shareUrl : undefined, Boolean(storyMarkup))}${definitionChoiceMarkup(original, plan)}<div class="claim-plan-blocks">${structuredBlocksMarkup(plan)}</div>${plan.clarificationQuestion ? `<div class="claim-plan-question" data-result-target="question"><span class="clarification-label">La siguiente pregunta útil</span><p>${escapeHtml(plan.clarificationQuestion)}</p></div>` : ''}${plan.limitation ? `<p class="claim-plan-limitation"><strong>Límite:</strong> ${escapeHtml(plan.limitation)}</p>` : ''}${sourceLinksMarkup(plan)}${primary ? resultLink(primary) : ''}${alternativeMarkup(alternatives)}${requestId ? `<div class="claim-feedback" data-feedback-request="${escapeHtml(requestId)}"><span>¿Te ha servido esta aclaración?</span><button type="button" data-feedback-value="yes">Sí</button><button type="button" data-feedback-value="partly">En parte</button><button type="button" data-feedback-value="no">No</button></div>` : ''}</article>`;
+  result.querySelector('article')?.setAttribute('data-state', publicResultState(plan));
+  if (publicResultState(plan) === 'unresolved') result.querySelector('[data-result-target="question"]')?.remove();
   bindResultActions();
   result.querySelectorAll<HTMLButtonElement>('[data-scorecard-metric]').forEach((button) => button.addEventListener('click', () => {
     const item = plan.blocks.find((block) => block.type === 'scorecard')?.type === 'scorecard'
@@ -1221,7 +1247,7 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos un tema relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué decisión, dato o consecuencia concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
-  if (response.status === 'complete' && response.result && ['scorecard', 'current_event', 'provisional_evidence'].includes(response.result.answerMode || '')) {
+  if (response.status === 'complete' && response.result && response.result.resultState) {
     renderStructuredPlan(original, response.result, primary, [], response.requestId, 'published');
     return;
   }
@@ -1246,17 +1272,12 @@ const applyResponse = (response: SearchResponse, original: string, fallback: Ran
     renderCompactResult({ status: 'related', claim: original, summary: 'Encontramos contexto relacionado, pero no una comprobación exacta.', refinementQuestion: '¿Qué fecha, lugar o decisión concreta quieres comprobar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
     return;
   }
-  if (response.status === 'uncovered' && response.result && ['scorecard', 'current_event', 'provisional_evidence'].includes(response.result.answerMode || '') && (response.result.blocks?.length || response.result.sourceLinks?.length)) {
+  if (response.status === 'uncovered' && response.result && response.result.resultState) {
     renderStructuredPlan(original, response.result, primary, [], response.requestId, 'uncovered');
     return;
   }
   if (response.status === 'uncovered') {
-    const broadGuidance = broadComplaintGuidance(original, primary);
-    if (broadGuidance) {
-      renderCompactResult({ status: 'uncovered', claim: original, summary: broadGuidance.questions?.[0] || 'Esta frase resume varias discusiones.', refinementQuestion: 'Elige un indicador concreto y te llevamos directamente a sus datos.', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
-      return;
-    }
-    renderCompactResult({ status: 'uncovered', claim: original, summary: 'No encontramos una comprobación publicada para esta afirmación.', refinementQuestion: response.result?.clarificationQuestion || response.guidance?.questions?.[0] || '¿Qué hecho, periodo, lugar o indicador quieres concretar?', refinementChoices: defaultRefinementChoices, secondaryAction: 'Comprobar otra frase' });
+    renderCompactResult({ status: 'uncovered', claim: original, summary: 'No hay evidencia suficiente para responder esta frase todavía.', refinementQuestion: 'Puedes aportar un periodo, lugar, indicador o fuente concreta para iniciar una búsqueda útil.', secondaryAction: 'Comprobar otra frase' });
     return;
   }
   renderDeterministic(original, fallback);
@@ -1271,7 +1292,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
   })() : null;
   // Ignore pre-resolution cache entries from older releases. They contain the
   // legacy compact "no published check" response and would mask new modes.
-  if (cached && (cached.result?.answerMode || cached.status === 'published')) { applyResponse(cached, query, ranked); return; }
+  if (cached && (cached.result?.resultState || cached.result?.answerMode || cached.status === 'published')) { applyResponse(cached, query, ranked); return; }
   activeRequest?.abort();
   activeRequest = new AbortController();
   try {
@@ -1287,13 +1308,13 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
           : inputType === 'url'
             ? 'La orientación visible ya está lista; leemos la página enlazada en segundo plano para comprobar si añade contexto. Puedes continuar sin esperar.'
             : 'La orientación visible ya está lista; buscamos una ficha publicada o datos directos en segundo plano para mejorarla. Puedes continuar sin esperar.';
-      if (file) setDynamicStatus(processingMessage, 'running', 'media');
+      setDynamicStatus(processingMessage, 'running', file ? 'media' : 'enrichment');
       const pendingRequestId = data.requestId;
-      const maxAttempts = file ? 30 : 16;
-      const waitMs = file ? 500 : 350;
-      const pollingDeadline = Date.now() + (file ? 15000 : 12000);
+      const maxAttempts = file ? 30 : 120;
+      const pollingDeadline = Date.now() + (file ? 15000 : 90000);
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         if (Date.now() >= pollingDeadline) break;
+        const waitMs = file ? 500 : Math.min(1500, 350 + Math.floor(attempt / 8) * 150);
         await new Promise((resolve, reject) => {
           const timeout = window.setTimeout(resolve, waitMs);
           activeRequest?.signal.addEventListener('abort', () => { window.clearTimeout(timeout); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
@@ -1306,7 +1327,7 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     if (version !== requestVersion) return;
     if (data.status === 'processing') {
       if (file) setDynamicStatus('No hemos podido leer el archivo a tiempo. Puedes escribir o pegar la frase para comprobarla directamente.', 'slow', 'media');
-      else clearDynamicStatus();
+      else setDynamicStatus('La investigación sigue en curso. El resultado inicial permanece disponible y puedes continuar sin esperar.', 'slow', 'enrichment');
       return;
     }
     if (data.status === 'unavailable') {
@@ -1321,9 +1342,23 @@ const classify = async (query: string, ranked: RankedClaimIndexEntry[], file?: F
     const capturedText = query || data.input?.canonical || '';
     if (capturedText) {
       if (file) rememberRecentCheck(data.input?.canonical || capturedText);
+      const resultState = data.result?.resultState;
+      const researchOutcome = resultState === 'unresolved'
+        ? 'unresolved'
+        : resultState === 'provisional'
+          ? 'live_provisional'
+          : data.result?.reviewed
+            ? 'reviewed'
+            : resultState === 'answered'
+              ? 'warehouse'
+              : undefined;
+      const sourceTiersChecked = [...new Set((data.result?.sourceLinks || []).map((source) => source.role === 'primary' ? 'primary' : source.role === 'corroboration' ? 'corroboration' : source.role === 'context' ? 'discovery' : '').filter(Boolean))].join(',') || undefined;
       recordQuestion(capturedText, {
         inputType,
         status: data.status,
+        resultState,
+        researchOutcome,
+        sourceTiersChecked,
         // Typed submissions were captured before classification using the
         // digest of their original wording. Reuse that identity when writing
         // the terminal status so the learning cluster is updated, not counted

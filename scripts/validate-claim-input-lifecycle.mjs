@@ -18,6 +18,8 @@ const required = [
   'status.dataset.statusMode',
   'dynamicStatusTimer',
   'pollingDeadline',
+  'Date.now() + (file ? 15000 : 90000)',
+  'Math.min(1500, 350 + Math.floor(attempt / 8) * 150)',
   'fetchWithTimeout(`/api/classify/${encodeURIComponent(pendingRequestId)}`',
   'window.setTimeout',
   'data-stop-enrichment',

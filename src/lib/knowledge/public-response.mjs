@@ -46,7 +46,9 @@ const cleanPlan = (value) => {
   if (!value || typeof value !== 'object' || value.schemaVersion !== RUNTIME_VERSIONS.answerPlanSchema
     || typeof value.headline !== 'string' || typeof value.summary !== 'string'
     || !Array.isArray(value.blocks) || !Array.isArray(value.evidenceIds)
-    || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string') return undefined;
+    || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string'
+    || (value.resultState !== undefined && !['answered', 'provisional', 'unresolved'].includes(value.resultState))
+    || (value.reviewed !== undefined && typeof value.reviewed !== 'boolean')) return undefined;
   return value;
 };
 

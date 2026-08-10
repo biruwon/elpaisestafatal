@@ -1,6 +1,10 @@
 import { buildNeutralQueries, classifyEventSources, detectCurrentEvent, eventStatusFor } from './current-events.mjs';
+import { readFile } from 'node:fs/promises';
 
 const failures = [];
+const resolverSource = await readFile(new URL('../local-claim-service.mjs', import.meta.url), 'utf8');
+if (!resolverSource.includes('/res/v1/news/search') || !resolverSource.includes('freshness=pm')) failures.push('live current-event research must use Brave News Search with a freshness filter');
+if (!resolverSource.includes('item.page_age || item.publishedAt || item.date')) failures.push('event source dates must prefer parseable publication metadata');
 const frame = detectCurrentEvent('con la invasion de Ceuta están violando a las mujeres');
 if (!frame || frame.geography !== 'ceuta' || frame.propositions.length !== 3 || buildNeutralQueries(frame).length !== 3) failures.push('Ceuta allegation must decompose into event, allegation and attribution propositions');
 if (buildNeutralQueries(frame).some((query) => /invasion|violando|violacion/i.test(query))) failures.push('neutral queries must not contain loaded allegation wording');
