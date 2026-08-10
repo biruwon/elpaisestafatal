@@ -6,7 +6,7 @@ const page = await readFile(new URL('../src/pages/index.astro', import.meta.url)
 const requiredInput = [
   'renderScorecardPlan', 'answerMode === \'scorecard\'', 'data-scorecard-edit',
   'data-new-check', 'scorecard-row', 'scorecard-sources', 'Intl.NumberFormat(\'es-ES\'',
-  'improved', 'worsened', 'roughly_unchanged', 'unavailable', 'condition_topic_evidence',
+  'improved', 'worsened', 'roughly_unchanged', 'unavailable', 'condition_topic_evidence', 'population_context',
 ];
 const requiredPage = [
   '.scorecard-result', '.scorecard-row', '.scorecard-sources',
