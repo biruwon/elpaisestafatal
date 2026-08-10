@@ -1816,6 +1816,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : [];
   const conditionTopicEvidence = conditionTopics.map((topic) => {
     const rows = observations.filter((item) => {
+      if (requestedRegion && !normalise(item.geography || '').includes(requestedRegion)) return false;
       const text = normalise([item.metricId, item.metric, item.datasetId, item.excerpt].filter(Boolean).join(' '));
       return topic.slug === 'vivienda' ? /viviend|alquiler/.test(text)
         : topic.slug === 'seguridad' ? /delincuenc|criminal|delito|seguridad/.test(text)
