@@ -31,6 +31,7 @@ import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsFor
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard } from './knowledge/scorecard.mjs';
+import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const builtCatalogPath = new URL('../dist/claim-catalog.json', import.meta.url).pathname;
@@ -1752,7 +1753,7 @@ const startUrlResolveJob = (url) => {
   return job;
 };
 
-const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = []) => {
+const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
   // Keep broad-domain routing available while rendering the final answer.
   // These flags are intentionally derived here as well as in classify(): the
   // renderer must not depend on variables local to the classifier.
@@ -1803,7 +1804,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || ''));
   const requestedYear = broadTopicText.match(/\b(20(?:1[0-9]|2[0-9]))\b/)?.[1];
   const scorecardPeriod = requestedYear ? { ...latestGovernmentPeriod, start: `${requestedYear}-01`, assumption: 'Se usan las fechas explícitas indicadas en la pregunta.' } : latestGovernmentPeriod;
-  const scorecardBlock = scorecardRequested ? makeScorecard(observations, scorecardPeriod) : null;
+  const scorecardBlock = scorecardRequested ? snapshotScorecard() : null;
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
@@ -2248,7 +2249,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? evidenceLadderForCompiler(classified.compiler, source, handlerId)
     : null;
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
-  const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, observations.length ? classifyEventSources(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null) : null;
+  const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, eventPackets || (observations.length ? classifyEventSources(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null)) : null;
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
     answerMode: primary ? 'reviewed_claim' : scorecardRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
@@ -2264,15 +2265,15 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       : primary ? [{ type: 'confirmed', propositionIds: primary.propositionIds || [], evidenceIds: primary.evidenceIds || [], points: [primary.whatIsTrue, primary.scale].filter(Boolean) }, ...(visualBlock ? [visualBlock] : []), ...(legalPrimaryBlock ? [legalPrimaryBlock] : []), ...(primary.whatIsMissing || primary.cannotProve ? [{ type: 'cannot_conclude', evidenceIds: primary.evidenceIds || [], points: [primary.whatIsMissing, primary.cannotProve].filter(Boolean) }] : []), { type: 'conversation_reply', evidenceIds: primary.evidenceIds || [], text: answer }] : compactGuidanceBlocks([ ...(compilerBreakdown ? [compilerBreakdown] : []), ...handlerBlocks, ...relatedGuidanceBlocks, ...(generatedMethod ? [generatedMethod] : []), ...(provisionalBlocks.length ? provisionalBlocks : relatedGuidanceBlocks.length ? [] : [{ type: 'cannot_conclude', evidenceIds: [], points: source ? ['La fuente está localizada, pero aún no tenemos una afirmación revisada que mida exactamente lo que se pregunta.', 'La coincidencia temática por sí sola no demuestra la conclusión de la publicación.'] : (classified.guidance?.questions || ['¿De qué periodo, lugar o decisión concreta estamos hablando?']) }]) ]),
     clarificationQuestion: scorecardRequested ? '¿Quieres abrir un indicador concreto (vivienda, empleo, sanidad, seguridad o ingresos)?' : currentEvent ? '¿Quieres acotar la fecha o consultar el parte oficial del evento?' : valuesContext ? '¿Qué regla concreta o criterio de reparto quieres comparar?' : groupContext ? '¿Qué dos grupos, prestación o población quieres comparar y en qué periodo?' : quantityContext || (isQuantityLike && quantityClaim) ? '¿Qué población, unidad y periodo deben usarse para validar la cifra?' : predictionContext ? '¿Qué fecha, indicador y resultado concreto permitirían comprobar la predicción?' : publicReuseClaim ? '¿Qué documento concreto quieres reutilizar y qué licencia o condiciones indica el organismo responsable?' : legalContext ? '¿Qué país, procedimiento y situación concreta quieres comprobar?' : definitionContext ? '¿Qué definición o indicador quieres utilizar para comparar la afirmación?' : localContext ? '¿De qué municipio, periodo y tipo de inseguridad hablas?' : recordedOffenceContext ? '¿Qué categoría quieres comprobar: homicidios, robos, fraudes u otra?' : isGovernmentEvent ? '¿Qué parte quieres comprobar: el acto publicado, su ejecución o sus consecuencias?' : ranking ? '¿Quieres cambiar el año, la definición o el conjunto de países?' : trend ? '¿Quieres comparar esta serie con otro periodo o territorio?' : observations.length ? '¿Quieres comprobar qué mide exactamente este dato?' : source ? '¿Qué afirmación concreta quieres comprobar de esta fuente?' : classified.guidance?.questions?.[0],
     limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : budgetContext ? 'La fuente confirma el movimiento de crédito, pero no permite atribuir el dinero a un programa educativo concreto, a asesores o únicamente a Presidencia.' : isGovernmentEvent ? 'La publicación oficial documenta el acto localizado, pero no demuestra por sí sola su ejecución, alcance, intención política ni impacto final.' : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, restricciones de acceso o derechos de terceros adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : localContext ? 'No hay una serie nacional que pueda confirmar una experiencia concreta de un barrio; hacen falta datos locales y una medida definida.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : metricEvidenceGap ? 'El sistema reconoce el indicador, pero no tiene todavía una fuente estructurada con el periodo, población o territorio necesarios para responder.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
-    evidenceIds: primary ? evidenceIds : evidenceObservations.map((item) => item.id),
-    sourceIds: primary ? sourceIds : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
-    ...(primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),
+    evidenceIds: primary ? evidenceIds : scorecardRequested ? GOVERNMENT_SCORECARD_SNAPSHOT.metrics.flatMap((metric) => metric.sourceIds) : evidenceObservations.map((item) => item.id),
+    sourceIds: primary ? sourceIds : scorecardRequested ? GOVERNMENT_SCORECARD_SNAPSHOT.sources.map((source) => source.id) : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
+    ...(scorecardRequested ? { sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources, asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf } : primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),
     knowledgeVersion: observations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind === 'topic') : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -2324,9 +2325,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const eventFrame = detectCurrentEvent(text);
   if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
     const eventSources = [];
+    const eventPackets = {};
     const token = process.env.BRAVE_SEARCH_TOKEN || process.env.CURRENT_SEARCH_TOKEN;
     if (token) {
-      for (const query of buildNeutralQueries(eventFrame).slice(0, 3)) {
+      for (const [index, query] of buildNeutralQueries(eventFrame).slice(0, 3).entries()) {
+        const proposition = eventFrame.propositions[index];
+        const propositionSources = [];
         try {
           const response = await fetch(`https://api.search.brave.com/res/v1/news/search?q=${encodeURIComponent(query.slice(0, 400))}&country=ES&search_lang=es&freshness=pm&count=6`, { headers: { accept: 'application/json', 'x-subscription-token': token } });
           if (!response.ok) continue;
@@ -2334,15 +2338,20 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
           for (const item of payload.results || []) {
             const url = item.url || item.link;
             try { if (!url || !['primary', 'corroboration'].includes(currentEventSourceRole(url))) continue; } catch { continue; }
-            eventSources.push({ id: `event-${digest(url).slice(0, 18)}`, title: boundedExcerpt(item.title || url, 180), url, publisher: item.meta_url?.hostname || new URL(url).hostname, publishedAt: item.age || undefined, retrievedAt: new Date().toISOString() });
+            const source = { id: `event-${digest(url).slice(0, 18)}`, title: boundedExcerpt(item.title || url, 180), url, publisher: item.meta_url?.hostname || new URL(url).hostname, publishedAt: item.age || undefined, retrievedAt: new Date().toISOString() };
+            propositionSources.push(source);
+            eventSources.push(source);
+            if (eventSources.length >= 6) break;
           }
         } catch { /* live research is provisional and may be unavailable */ }
+        eventPackets[proposition?.id || `proposition-${index}`] = classifyEventSources(propositionSources);
+        if (eventSources.length >= 6) break;
       }
     }
     const packet = classifyEventSources(eventSources);
     const observations = packet.sources.map((item) => ({ id: item.id, kind: 'current_event_source', source: item, score: 1, finding: { type: 'current_event', status: packet.status } }));
     const eventClassified = { ...classified, primary: undefined, status: 'uncovered', compiler: { ...(classified.compiler || {}), clarificationRequired: false, claimType: 'descriptive' } };
-    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations);
+    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations, eventPackets);
     return eventResult;
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);

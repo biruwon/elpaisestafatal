@@ -46,5 +46,8 @@ export const classifyEventSources = (sources = []) => {
 export const eventStatusFor = (frame, sourcePacket) => ({
   type: 'event_status',
   event: { label: `Evento en ${frame.geography}`, geography: frame.geography, period: frame.period },
-  propositions: frame.propositions.map((proposition) => ({ text: proposition.text, status: sourcePacket?.status || 'unconfirmed', evidenceIds: sourcePacket?.sources?.map((source) => source.id).filter(Boolean) || [], detail: sourcePacket?.detail })),
+  propositions: frame.propositions.map((proposition) => {
+    const packet = sourcePacket?.[proposition.id] || sourcePacket;
+    return { text: proposition.text, status: packet?.status || 'unconfirmed', evidenceIds: packet?.sources?.map((source) => source.id).filter(Boolean) || [], detail: packet?.detail };
+  }),
 });
