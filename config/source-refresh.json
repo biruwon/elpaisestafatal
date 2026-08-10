@@ -725,6 +725,24 @@
       "title": "Competencias digitales básicas en España · Eurostat",
       "aliases": ["competencias digitales", "habilidades digitales", "alfabetización digital"],
       "metricId": "individuals_basic_digital_skills"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tran_r_avpa_nm?geo=ES&sinceTimePeriod=2015",
+      "title": "Transporte de pasajeros por modo en España · Eurostat",
+      "aliases": ["transporte de pasajeros", "uso del transporte público", "movilidad por modo"],
+      "metricId": "passenger_transport_by_mode"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_cicce_use?geo=ES&sinceTimePeriod=2015",
+      "title": "Uso de internet en España · Eurostat",
+      "aliases": ["uso de internet", "personas que usan internet", "acceso a internet", "conectividad digital"],
+      "metricId": "internet_use_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_06_10?geo=ES&sinceTimePeriod=2015",
+      "title": "Calidad de las aguas de baño en España · Eurostat",
+      "aliases": ["calidad de las aguas de baño", "calidad de playas", "aguas de baño", "playas contaminadas"],
+      "metricId": "bathing_water_quality"
     }
   ]
 }

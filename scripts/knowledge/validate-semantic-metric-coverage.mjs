@@ -54,6 +54,9 @@ const cases = [
   ['La brecha salarial entre hombres y mujeres baja', 'gender_pay_gap'],
   ['Hay pocas mujeres directivas', 'women_in_management_rate'],
   ['La población tiene pocas competencias digitales', 'individuals_basic_digital_skills'],
+  ['Se usa poco el transporte público', 'passenger_transport_by_mode'],
+  ['Cada vez más personas usan internet', 'internet_use_rate'],
+  ['Las playas tienen peor calidad de agua', 'bathing_water_quality'],
 ];
 
 const intentionallyUnderspecified = [

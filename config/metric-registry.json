@@ -998,5 +998,29 @@
     "population": "individuals with basic or above basic digital skills",
     "notEquivalentTo": ["adult_learning_rate"],
     "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "passenger_transport_by_mode": {
+    "name": "Passenger transport by mode",
+    "aliases": ["transporte de pasajeros", "uso del transporte público", "viajes en transporte público", "movilidad por modo"],
+    "unit": "passenger-kilometres",
+    "population": "passenger transport performance by transport mode",
+    "notEquivalentTo": ["road_fatality_rate"],
+    "dimensions": ["period", "geography", "transport_mode"]
+  },
+  "internet_use_rate": {
+    "name": "Individuals using the internet",
+    "aliases": ["uso de internet", "personas que usan internet", "acceso a internet", "conectividad digital"],
+    "unit": "percent of individuals",
+    "population": "individuals using the internet",
+    "notEquivalentTo": ["individuals_basic_digital_skills"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "bathing_water_quality": {
+    "name": "Bathing water quality",
+    "aliases": ["calidad de las aguas de baño", "calidad de playas", "aguas de baño", "playas contaminadas"],
+    "unit": "percent of bathing waters",
+    "population": "coastal and inland bathing waters meeting quality standards",
+    "notEquivalentTo": ["water_resources", "water_consumption"],
+    "dimensions": ["period", "geography", "water_type", "quality_class"]
   }
 }
