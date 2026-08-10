@@ -743,6 +743,30 @@
       "title": "Calidad de las aguas de baño en España · Eurostat",
       "aliases": ["calidad de las aguas de baño", "calidad de playas", "aguas de baño", "playas contaminadas"],
       "metricId": "bathing_water_quality"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_lvho05a?geo=ES&sinceTimePeriod=2015",
+      "title": "Hacinamiento en viviendas en España · Eurostat",
+      "aliases": ["hacinamiento", "viviendas hacinadas", "tasa de hacinamiento"],
+      "metricId": "housing_overcrowding_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_lvho02?geo=ES&sinceTimePeriod=2015",
+      "title": "Régimen de tenencia de vivienda en España · Eurostat",
+      "aliases": ["régimen de tenencia de vivienda", "vivienda en propiedad o alquiler", "hogares de alquiler"],
+      "metricId": "housing_tenure"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_08?geo=ES&sinceTimePeriod=2015",
+      "title": "Necesidades médicas no atendidas por distancia en España · Eurostat",
+      "aliases": ["atención médica por distancia", "barrera geográfica sanitaria", "distancia al centro de salud"],
+      "metricId": "unmet_healthcare_distance_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_07?geo=ES&sinceTimePeriod=2015",
+      "title": "Necesidades médicas no atendidas por disponibilidad en España · Eurostat",
+      "aliases": ["atención médica no disponible", "no encuentra médico", "falta de disponibilidad sanitaria"],
+      "metricId": "unmet_healthcare_availability_rate"
     }
   ]
 }

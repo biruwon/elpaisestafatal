@@ -1022,5 +1022,37 @@
     "population": "coastal and inland bathing waters meeting quality standards",
     "notEquivalentTo": ["water_resources", "water_consumption"],
     "dimensions": ["period", "geography", "water_type", "quality_class"]
+  },
+  "housing_overcrowding_rate": {
+    "name": "Housing overcrowding rate",
+    "aliases": ["hacinamiento", "viviendas hacinadas", "tasa de hacinamiento", "personas en viviendas sobreocupadas"],
+    "unit": "percent of population",
+    "population": "people living in overcrowded dwellings",
+    "notEquivalentTo": ["housing_cost_overburden_rate", "housing_cost_burden_median"],
+    "dimensions": ["period", "geography", "tenure", "age"]
+  },
+  "housing_tenure": {
+    "name": "Housing tenure status",
+    "aliases": ["régimen de tenencia de vivienda", "vivienda en propiedad o alquiler", "hogares de alquiler", "hogares propietarios"],
+    "unit": "percent of households",
+    "population": "households by owner, tenant, or other tenure status",
+    "notEquivalentTo": ["housing_cost_overburden_rate"],
+    "dimensions": ["period", "geography", "tenure", "income_group"]
+  },
+  "unmet_healthcare_distance_rate": {
+    "name": "Unmet medical needs due to distance",
+    "aliases": ["atención médica por distancia", "no puede acceder al médico por distancia", "barrera geográfica sanitaria", "distancia al centro de salud"],
+    "unit": "percent of population",
+    "population": "people reporting unmet medical needs because of distance or transport",
+    "notEquivalentTo": ["unmet_healthcare_waiting_list_rate", "unmet_healthcare_cost_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "unmet_healthcare_availability_rate": {
+    "name": "Unmet medical needs due to availability",
+    "aliases": ["atención médica no disponible", "no encuentra médico", "falta de disponibilidad sanitaria", "barrera de acceso sanitario"],
+    "unit": "percent of population",
+    "population": "people reporting unmet medical needs because services were unavailable",
+    "notEquivalentTo": ["unmet_healthcare_waiting_list_rate", "unmet_healthcare_cost_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
   }
 }

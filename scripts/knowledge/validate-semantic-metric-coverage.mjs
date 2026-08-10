@@ -57,6 +57,10 @@ const cases = [
   ['Se usa poco el transporte público', 'passenger_transport_by_mode'],
   ['Cada vez más personas usan internet', 'internet_use_rate'],
   ['Las playas tienen peor calidad de agua', 'bathing_water_quality'],
+  ['Hay más hacinamiento en las viviendas', 'housing_overcrowding_rate'],
+  ['Cada vez más hogares viven de alquiler', 'housing_tenure'],
+  ['No se llega al médico por la distancia', 'unmet_healthcare_distance_rate'],
+  ['No hay médicos disponibles', 'unmet_healthcare_availability_rate'],
 ];
 
 const intentionallyUnderspecified = [
