@@ -1795,7 +1795,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : classified.compiler?.propositions || [];
   const compoundClaim = compilerPropositions.length > 1;
   const currentEvent = detectCurrentEvent(text);
-  const scorecardRequested = broadPoliticalComplaint && /\b(?:gobernando|gobierno|izquierda|derecha|pais|espana|peor)\b/.test(broadTopicText);
+  const scorecardRequested = process.env.BROAD_SCORECARD !== '0' && broadPoliticalComplaint && /\b(?:gobernando|gobierno|izquierda|derecha|pais|espana|peor)\b/.test(broadTopicText);
   const hasValidatedRelatedClaim = classified.alternatives?.some((item) => item.kind === 'claim' && item.validated);
   if (primary) relatedClaims.unshift({ ...primary, confidence: primary.confidence });
   const evidenceIds = primary?.evidenceIds || [];

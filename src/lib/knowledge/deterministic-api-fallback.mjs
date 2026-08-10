@@ -48,7 +48,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   const guidance = fallbackGuidance(original, inputType);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
   const related = topicReference(original);
-  if (broadScorecard(original)) {
+  if (broadScorecard(original) && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
       answerMode: 'scorecard',
