@@ -1,6 +1,6 @@
 export const scorecardMetrics = [
-  { id: 'gdp_per_capita', label: 'PIB real por habitante', aliases: 'PIB real por habitante', threshold: 0.01, higher: true },
-  { id: 'median_equivalised_income', label: 'Renta mediana disponible real', aliases: 'renta mediana ingresos hogares', threshold: 0.01, higher: true },
+  { id: 'gdp_per_capita_real', label: 'PIB real por habitante', aliases: 'PIB real por habitante', threshold: 0.01, higher: true },
+  { id: 'median_equivalised_income_real', label: 'Renta mediana disponible real', aliases: 'renta mediana ingresos hogares', threshold: 0.01, higher: true },
   { id: 'unemployment_rate', label: 'Desempleo', aliases: 'tasa de paro desempleo', threshold: 0.02, higher: false },
   { id: 'arope_rate', label: 'AROPE', aliases: 'riesgo pobreza exclusion AROPE', threshold: 0.02, higher: false },
   { id: 'housing_cost_overburden_rate', label: 'Sobrecarga del coste de vivienda', aliases: 'sobrecarga coste vivienda', threshold: 0.02, higher: false },
