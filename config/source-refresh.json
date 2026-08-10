@@ -701,6 +701,30 @@
       "title": "Solicitudes de patentes en España · Eurostat",
       "aliases": ["solicitudes de patentes", "patentes", "registro de patentes"],
       "metricId": "patent_applications"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_04_60?geo=ES&sinceTimePeriod=2015",
+      "title": "Participación de adultos en formación en España · Eurostat",
+      "aliases": ["aprendizaje de adultos", "formación de adultos", "educación permanente"],
+      "metricId": "adult_learning_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_05_20?geo=ES&sinceTimePeriod=2015",
+      "title": "Brecha salarial de género en España · Eurostat",
+      "aliases": ["brecha salarial de género", "diferencia salarial entre hombres y mujeres", "brecha salarial"],
+      "metricId": "gender_pay_gap"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_05_30?geo=ES&sinceTimePeriod=2015",
+      "title": "Mujeres en puestos de dirección en España · Eurostat",
+      "aliases": ["mujeres directivas", "mujeres en puestos de dirección", "liderazgo femenino"],
+      "metricId": "women_in_management_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_sk_dskl_i?geo=ES&sinceTimePeriod=2015",
+      "title": "Competencias digitales básicas en España · Eurostat",
+      "aliases": ["competencias digitales", "habilidades digitales", "alfabetización digital"],
+      "metricId": "individuals_basic_digital_skills"
     }
   ]
 }

@@ -966,5 +966,37 @@
     "population": "patent applications filed by residents",
     "notEquivalentTo": ["research_development_expenditure"],
     "dimensions": ["period", "geography", "technology"]
+  },
+  "adult_learning_rate": {
+    "name": "Adult participation in learning",
+    "aliases": ["aprendizaje de adultos", "formación de adultos", "participación en formación", "educación permanente"],
+    "unit": "percent of adults",
+    "population": "adults participating in education or training",
+    "notEquivalentTo": ["tertiary_education_attainment_rate", "education_personnel"],
+    "dimensions": ["period", "geography", "sex", "age"]
+  },
+  "gender_pay_gap": {
+    "name": "Unadjusted gender pay gap",
+    "aliases": ["brecha salarial de género", "diferencia salarial entre hombres y mujeres", "brecha salarial", "salarios de hombres y mujeres"],
+    "unit": "percent",
+    "population": "difference between average gross hourly earnings of men and women",
+    "notEquivalentTo": ["employment_rate_by_sex", "median_hourly_earnings"],
+    "dimensions": ["period", "geography", "economic_activity"]
+  },
+  "women_in_management_rate": {
+    "name": "Women in management positions",
+    "aliases": ["mujeres directivas", "mujeres en puestos de dirección", "mujeres en cargos de gestión", "liderazgo femenino"],
+    "unit": "percent of managers",
+    "population": "women among managers and leadership occupations",
+    "notEquivalentTo": ["employment_rate_by_sex"],
+    "dimensions": ["period", "geography", "occupation"]
+  },
+  "individuals_basic_digital_skills": {
+    "name": "Individuals with at least basic digital skills",
+    "aliases": ["competencias digitales", "habilidades digitales", "alfabetización digital", "capacidades digitales básicas"],
+    "unit": "percent of individuals",
+    "population": "individuals with basic or above basic digital skills",
+    "notEquivalentTo": ["adult_learning_rate"],
+    "dimensions": ["period", "geography", "sex", "age"]
   }
 }

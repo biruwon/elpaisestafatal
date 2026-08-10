@@ -50,6 +50,10 @@ const cases = [
   ['España recicla pocos residuos', 'municipal_waste_recycling_rate'],
   ['España depende demasiado de la energía importada', 'energy_import_dependency'],
   ['España registra pocas patentes', 'patent_applications'],
+  ['Los adultos hacen poca formación', 'adult_learning_rate'],
+  ['La brecha salarial entre hombres y mujeres baja', 'gender_pay_gap'],
+  ['Hay pocas mujeres directivas', 'women_in_management_rate'],
+  ['La población tiene pocas competencias digitales', 'individuals_basic_digital_skills'],
 ];
 
 const intentionallyUnderspecified = [
