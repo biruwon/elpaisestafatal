@@ -93,7 +93,7 @@ const metricHints = [
   { ids: ['physicians_density'], terms: ['medicos por habitante', 'densidad de medicos', 'numero de medicos', 'facultativos por poblacion'] },
   { ids: ['asylum_applications'], terms: ['solicitudes de asilo', 'peticiones de asilo', 'solicitantes de proteccion internacional', 'asilo en espana'] },
   { ids: ['road_fatality_rate'], terms: ['muertes en carretera', 'mortalidad vial', 'accidentes de trafico mortales', 'victimas mortales de trafico'] },
-  { ids: ['municipal_waste_recycling_rate'], terms: ['reciclaje de residuos', 'tasa de reciclaje', 'residuos reciclados', 'reciclaje municipal', 'recicla residuos', 'recicla'] },
+  { ids: ['municipal_waste_recycling_rate'], terms: ['reciclaje de residuos', 'tasa de reciclaje', 'residuos reciclados', 'reciclaje municipal', 'recicla residuos', 'recicla pocos residuos'] },
   { ids: ['energy_import_dependency'], terms: ['dependencia energetica', 'dependencia de importaciones de energia', 'energia importada', 'dependencia energetica exterior'] },
   { ids: ['patent_applications'], terms: ['solicitudes de patentes', 'patentes', 'innovacion patentada', 'registro de patentes'] },
   { ids: ['adult_learning_rate'], terms: ['aprendizaje de adultos', 'formacion de adultos', 'participacion en formacion', 'educacion permanente', 'hacen formacion', 'poca formacion'] },
