@@ -6,11 +6,11 @@ const page = await readFile(new URL('../src/pages/index.astro', import.meta.url)
 const requiredInput = [
   'renderScorecardPlan', 'answerMode === \'scorecard\'', 'data-scorecard-edit',
   'data-new-check', 'scorecard-row', 'scorecard-sources', 'Intl.NumberFormat(\'es-ES\'',
-  'improved', 'worsened', 'roughly_unchanged', 'unavailable',
+  'improved', 'worsened', 'roughly_unchanged', 'unavailable', 'condition_topic_evidence',
 ];
 const requiredPage = [
   '.scorecard-result', '.scorecard-row', '.scorecard-sources',
-  '.hero-checker.has-result', '.scorecard-result h3',
+  '.hero-checker.has-result', '.scorecard-result h3', '.scorecard-topics', '.scorecard-topic',
 ];
 for (const marker of requiredInput) if (!input.includes(marker)) throw new Error(`Scorecard UX contract missing input marker: ${marker}`);
 for (const marker of requiredPage) if (!page.includes(marker)) throw new Error(`Scorecard UX contract missing page marker: ${marker}`);

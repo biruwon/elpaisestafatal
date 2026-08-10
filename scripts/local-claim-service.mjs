@@ -1813,6 +1813,19 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const conditionTopics = broadConditionRequested
     ? [['vivienda', /viviend|alquiler|piso|casa/], ['seguridad', /segur|delincuenc|crime|criminal/], ['empleo', /emple|paro|desemple|salari|trabaj/], ['sanidad', /sanidad|salud|hospital|medic|espera/], ['inmigracion', /inmigr|extranj|frontera/], ['impuestos', /impuest|fiscal|tribut/], ['economia', /econom|precios|renta|deuda|pib/]].filter(([, pattern]) => pattern.test(broadTopicText)).map(([slug]) => ({ slug, label: ({ vivienda: 'Vivienda', seguridad: 'Seguridad', empleo: 'Empleo', sanidad: 'Sanidad', inmigracion: 'Inmigración', impuestos: 'Impuestos', economia: 'Economía' }[slug] || slug), href: `/preocupaciones/${slug}`, prompt: `¿Qué dicen los datos sobre ${slug}?` }))
     : [];
+  const conditionTopicEvidence = conditionTopics.map((topic) => {
+    const rows = observations.filter((item) => {
+      const text = normalise([item.metricId, item.metric, item.datasetId, item.excerpt].filter(Boolean).join(' '));
+      return topic.slug === 'vivienda' ? /viviend|alquiler/.test(text)
+        : topic.slug === 'seguridad' ? /delincuenc|criminal|delito|seguridad/.test(text)
+          : topic.slug === 'empleo' ? /emple|paro|desemple|salari|trabaj/.test(text)
+            : topic.slug === 'sanidad' ? /sanidad|salud|hospital|medic|espera/.test(text)
+              : topic.slug === 'inmigracion' ? /inmigr|extranj|migr/.test(text)
+                : topic.slug === 'impuestos' ? /impuest|fiscal|tribut/.test(text)
+                  : /econom|precio|renta|deuda|pib/.test(text);
+    }).slice(0, 6);
+    return { ...topic, evidenceIds: rows.map((item) => item.id).filter(Boolean), observations: rows.map((item) => ({ metricId: item.metricId, metric: item.metric, value: item.value, unit: item.unit, period: item.period, sourceId: item.source?.id })) };
+  });
   const isNormative = handlerId === 'normative';
   const isCausal = handlerId === 'causal';
   const isGroupComparison = handlerId === 'group_comparison';
@@ -2266,7 +2279,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     summary: scorecardRequested ? `Comparamos seis indicadores con el último dato anterior al periodo de ${latestGovernmentPeriod.start}. No calculamos una nota global ni atribuimos causalidad al Gobierno.` : currentEvent ? 'Hemos separado el hecho, las posibles agresiones y la atribución de responsabilidad. El estado indica qué está reportado, no qué queda probado.' : compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
     coverage: status === 'complete' ? 'strong' : status === 'partial' || causalContext || ranking || trend || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
     claimType: resolvedClaimType,
-    blocks: broadConditionRequested ? [scorecardBlock, ...(conditionTopics.length ? [{ type: 'condition_topics', topics: conditionTopics }] : []), { type: 'cannot_conclude', evidenceIds: scorecardBlock.items.flatMap((item) => item.evidenceIds), points: ['El cuadro compara indicadores, no asigna una nota global a un gobierno.', 'Los cambios simultáneos no establecen qué políticas los causaron.'] }]
+    blocks: broadConditionRequested ? [scorecardBlock, ...(conditionTopics.length ? [{ type: 'condition_topics', topics: conditionTopics }] : []), ...(conditionTopicEvidence.some((topic) => topic.evidenceIds.length) ? [{ type: 'condition_topic_evidence', topics: conditionTopicEvidence }] : []), { type: 'cannot_conclude', evidenceIds: scorecardBlock.items.flatMap((item) => item.evidenceIds), points: ['El cuadro compara indicadores, no asigna una nota global a un gobierno.', 'Los cambios simultáneos no establecen qué políticas los causaron.'] }]
       : eventBlock ? [{ type: 'claim_breakdown', propositionIds: currentEvent.propositions.map((item) => item.id), items: currentEvent.propositions.map((item) => ({ text: item.text, type: 'descriptive', explicit: true })) }, eventBlock, { type: 'cannot_conclude', evidenceIds: eventBlock.propositions.flatMap((item) => item.evidenceIds), points: ['Que exista una denuncia o noticia no prueba por sí sola que la agresión ocurriera.', 'La responsabilidad de quienes cruzaron requiere atribución oficial y pruebas independientes.', 'Las estadísticas nacionales de delincuencia no prueban este incidente concreto.'] }]
       : compoundEvidenceCount > 1
       ? compactGuidanceBlocks([compilerBreakdown, ...compoundFamilyBlocks, ...(visualBlock ? [visualBlock] : []), { type: 'cannot_conclude', evidenceIds: observations.map((item) => item.id), points: ['Cada indicador responde solo a su propia parte de la frase; no deben combinarse para demostrar una relación causal entre ellos.'] }, { type: 'conversation_reply', evidenceIds: observations.map((item) => item.id), text: 'La frase reúne varias cuestiones. Conviene discutir cada indicador por separado antes de extraer una conclusión general.' }].filter(Boolean))
@@ -2542,7 +2555,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source;
-  const observations = scorecardObservations.length ? scorecardObservations : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
+  const observations = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text))
+    ? [...new Map([...scorecardObservations, ...warehouse.observations].map((item) => [item.id, item])).values()].slice(0, 72)
+    : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);
