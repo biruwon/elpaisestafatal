@@ -1,6 +1,6 @@
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
-const officialHosts = new Set(['interior.gob.es', 'policia.es', 'guardiacivil.es', 'administracion.gob.es', 'ceuta.es', 'fiscal.es', 'boe.es']);
+const officialHosts = new Set(['interior.gob.es', 'policia.es', 'guardiacivil.es', 'administracion.gob.es', 'ceuta.es', 'melilla.es', 'fiscal.es', 'boe.es', 'poderjudicial.es', 'tribunalconstitucional.es', 'juntaex.es']);
 const corroborationHosts = new Set(['efe.com', 'rtve.es', 'europapress.es']);
 
 export const currentEventSourceRole = (url) => {

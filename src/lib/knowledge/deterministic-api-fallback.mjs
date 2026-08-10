@@ -58,7 +58,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
         schemaVersion: '1',
         answerMode: 'scorecard',
         headline: 'La mayoría de indicadores mejoran, pero no hay una nota partidista',
-        summary: 'Desde junio de 2018, cuatro de seis indicadores del cuadro mejoran y dos requieren cautela o empeoran. Esto describe cambios observados; no demuestra qué políticas los causaron.',
+        summary: `Desde junio de 2018, ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'improved').length} de ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.length} indicadores mejoran y ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'worsened').length} empeora. Esto describe cambios observados; no demuestra qué políticas los causaron.`,
         coverage: 'qualified',
         claimType: 'comparative',
         blocks: [snapshotScorecard(), { type: 'cannot_conclude', evidenceIds: [], points: ['Estos indicadores no producen una calificación global de la izquierda o la derecha.', 'La coincidencia temporal no demuestra causalidad gubernamental.'] }],
