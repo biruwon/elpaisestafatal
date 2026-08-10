@@ -662,5 +662,69 @@
     "population": "survey respondents who attended emergency care",
     "notEquivalentTo": ["unmet_healthcare_waiting_list_rate"],
     "dimensions": ["period", "geography"]
+  },
+  "tourism_nights": {
+    "name": "Nights spent in tourist accommodation in Spain",
+    "aliases": ["pernoctaciones", "noches de hotel", "estancias turísticas", "turismo", "turistas pasan la noche"],
+    "unit": "nights",
+    "population": "nights spent in hotels and other tourist accommodation",
+    "notEquivalentTo": ["resident_population"],
+    "dimensions": ["period", "geography", "accommodation_type"]
+  },
+  "housing_cost_burden_median": {
+    "name": "Median housing-cost burden in Spain",
+    "aliases": ["mediana del coste de vivienda", "carga de vivienda", "esfuerzo mediano de vivienda", "coste de vivienda mediano"],
+    "unit": "percent of disposable income",
+    "population": "households with housing costs",
+    "notEquivalentTo": ["housing_cost_overburden_rate"],
+    "dimensions": ["period", "geography", "population"]
+  },
+  "gross_value_added": {
+    "name": "Gross value added by economic activity",
+    "aliases": ["valor añadido bruto", "VAB", "valor agregado", "producción por sector", "actividad económica por sector"],
+    "unit": "million euros",
+    "population": "economic activities measured in national accounts",
+    "notEquivalentTo": ["gdp_current_prices"],
+    "dimensions": ["period", "geography", "activity"]
+  },
+  "urban_unemployment_rate": {
+    "name": "Unemployment rate by degree of urbanisation",
+    "aliases": ["paro por tamaño de municipio", "desempleo urbano", "paro urbano y rural", "paro en ciudades"],
+    "unit": "percent of labour force",
+    "population": "labour force classified by degree of urbanisation",
+    "notEquivalentTo": ["unemployment_rate"],
+    "dimensions": ["period", "geography", "urbanisation", "age", "sex"]
+  },
+  "at_risk_poverty_rate": {
+    "name": "At-risk-of-poverty rate by poverty threshold",
+    "aliases": ["tasa de riesgo de pobreza", "umbral de pobreza", "personas bajo el umbral de pobreza", "pobreza monetaria"],
+    "unit": "percent of population",
+    "population": "people below the specified relative poverty threshold",
+    "notEquivalentTo": ["arope_rate"],
+    "dimensions": ["period", "geography", "threshold", "age", "sex"]
+  },
+  "income_quintile_share_ratio": {
+    "name": "Income quintile share ratio",
+    "aliases": ["ratio S80/S20", "desigualdad entre quintiles", "ingresos del 20 por ciento más rico y más pobre", "brecha entre quintiles"],
+    "unit": "ratio",
+    "population": "equivalised disposable income distribution",
+    "notEquivalentTo": ["gini_coefficient"],
+    "dimensions": ["period", "geography", "population"]
+  },
+  "greenhouse_gas_emissions": {
+    "name": "Greenhouse-gas emissions by source",
+    "aliases": ["emisiones de gases de efecto invernadero", "emisiones GEI", "emisiones contaminantes", "cambio climático emisiones"],
+    "unit": "tonnes CO2 equivalent",
+    "population": "greenhouse-gas emissions by source and gas",
+    "notEquivalentTo": [],
+    "dimensions": ["period", "geography", "gas", "source"]
+  },
+  "final_energy_consumption": {
+    "name": "Final energy consumption",
+    "aliases": ["consumo final de energía", "consumo energético", "energía consumida", "uso final de energía"],
+    "unit": "tonnes of oil equivalent",
+    "population": "final energy consumption across economic sectors",
+    "notEquivalentTo": ["household_electricity_price"],
+    "dimensions": ["period", "geography", "sector", "energy_product"]
   }
 }

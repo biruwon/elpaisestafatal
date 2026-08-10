@@ -473,6 +473,54 @@
       "title": "Necesidades médicas no atendidas por lista de espera: España y Unión Europea · Eurostat",
       "aliases": ["lista de espera médica frente a Europa", "necesidades médicas no atendidas frente a Europa", "España tiene más espera sanitaria que Europa", "comparación europea de listas de espera"],
       "metricId": "unmet_healthcare_waiting_list_rate_europe"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tour_occ_nim?geo=ES&sinceTimePeriod=2015",
+      "title": "Pernoctaciones en alojamientos turísticos de España · Eurostat",
+      "aliases": ["pernoctaciones", "noches de hotel", "turismo", "estancias turísticas"],
+      "metricId": "tourism_nights"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_lvho08a?geo=ES&sinceTimePeriod=2015",
+      "title": "Mediana del coste de vivienda en España · Eurostat",
+      "aliases": ["mediana del coste de vivienda", "carga de vivienda", "esfuerzo mediano de vivienda"],
+      "metricId": "housing_cost_burden_median"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64?geo=ES&sinceTimePeriod=2015",
+      "title": "Valor añadido bruto por actividad en España · Eurostat",
+      "aliases": ["valor añadido bruto", "VAB", "producción por sector", "actividad económica por sector"],
+      "metricId": "gross_value_added"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_urgan?geo=ES&sinceTimePeriod=2015",
+      "title": "Desempleo por grado de urbanización en España · Eurostat",
+      "aliases": ["paro por tamaño de municipio", "desempleo urbano", "paro urbano y rural", "paro en ciudades"],
+      "metricId": "urban_unemployment_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_li02?geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa de riesgo de pobreza por umbral en España · Eurostat",
+      "aliases": ["tasa de riesgo de pobreza", "umbral de pobreza", "personas bajo el umbral de pobreza", "pobreza monetaria"],
+      "metricId": "at_risk_poverty_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di11?geo=ES&sinceTimePeriod=2015",
+      "title": "Ratio de ingresos S80/S20 en España · Eurostat",
+      "aliases": ["ratio S80/S20", "desigualdad entre quintiles", "brecha entre quintiles"],
+      "metricId": "income_quintile_share_ratio"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_air_gge?geo=ES&sinceTimePeriod=2015",
+      "title": "Emisiones de gases de efecto invernadero en España · Eurostat",
+      "aliases": ["emisiones de gases de efecto invernadero", "emisiones GEI", "emisiones contaminantes", "cambio climático"],
+      "metricId": "greenhouse_gas_emissions"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_07_20?geo=ES&sinceTimePeriod=2015",
+      "title": "Consumo final de energía en España · Eurostat",
+      "aliases": ["consumo final de energía", "consumo energético", "energía consumida", "uso final de energía"],
+      "metricId": "final_energy_consumption"
     }
   ]
 }
