@@ -30,7 +30,7 @@ export const detectCurrentEvent = (text) => {
 
 export const buildNeutralQueries = (frame) => frame?.propositions?.slice(0, 3).map((item) => item.query).filter(Boolean) || [];
 
-export const classifyEventSources = (sources = []) => {
+export const classifyEventSources = (sources = [], { now = Date.now(), maxAgeDays = 14 } = {}) => {
   const unique = new Map();
   for (const source of sources) {
     const role = source.role || currentEventSourceRole(source.url);
@@ -39,8 +39,12 @@ export const classifyEventSources = (sources = []) => {
     if (!unique.has(key)) unique.set(key, { ...source, role });
   }
   const values = [...unique.values()];
+  const stale = values.length > 0 && values.every((item) => item.publishedAt && Number.isFinite(Date.parse(item.publishedAt)) && now - Date.parse(item.publishedAt) > maxAgeDays * 86400000);
+  const stages = new Set(values.map((item) => item.stage).filter(Boolean));
+  const conflicting = values.some((item) => item.status === 'disputed' || item.conflict === true);
   const primary = values.some((item) => item.role === 'primary');
-  return { sources: values, status: primary ? 'officially_reported' : values.length >= 2 ? 'corroborated_report' : values.length === 1 ? 'single_report' : 'unconfirmed' };
+  const status = conflicting ? 'disputed' : stale ? 'context_only' : primary ? 'officially_reported' : values.length >= 2 ? 'corroborated_report' : values.length === 1 ? 'single_report' : 'unconfirmed';
+  return { sources: values, status, stages: [...stages] };
 };
 
 export const eventStatusFor = (frame, sourcePacket) => ({
@@ -48,6 +52,6 @@ export const eventStatusFor = (frame, sourcePacket) => ({
   event: { label: `Evento en ${frame.geography}`, geography: frame.geography, period: frame.period },
   propositions: frame.propositions.map((proposition) => {
     const packet = sourcePacket?.[proposition.id] || sourcePacket;
-    return { text: proposition.text, status: packet?.status || 'unconfirmed', evidenceIds: packet?.sources?.map((source) => source.id).filter(Boolean) || [], detail: packet?.detail };
+    return { text: proposition.text, status: packet?.status || 'unconfirmed', evidenceIds: packet?.sources?.map((source) => source.id).filter(Boolean) || [], detail: packet?.detail, stages: packet?.stages || [] };
   }),
 });

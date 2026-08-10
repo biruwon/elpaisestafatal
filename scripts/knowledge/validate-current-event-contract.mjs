@@ -15,6 +15,20 @@ const syndicated = classifyEventSources([
 if (syndicated.sources.length !== 1) failures.push('syndicated reports must deduplicate by origin publisher');
 const official = classifyEventSources([{ id: 'interior-1', url: 'https://interior.gob.es/noticias/ceuta', publisher: 'Interior' }]);
 if (official.status !== 'officially_reported') failures.push('official source must classify as officially reported');
+const independent = classifyEventSources([
+  { id: 'efe-2', url: 'https://efe.com/ceuta/story-2', publisher: 'EFE' },
+  { id: 'rtve-2', url: 'https://rtve.es/noticias/ceuta/story-2', publisher: 'RTVE' },
+]);
+if (independent.status !== 'corroborated_report' || independent.sources.length !== 2) failures.push('two independent media sources must be corroborated');
+const stale = classifyEventSources([{ id: 'efe-old', url: 'https://efe.com/ceuta/old', publisher: 'EFE', publishedAt: '2020-01-01T00:00:00Z' }], { now: Date.parse('2026-08-01T00:00:00Z') });
+if (stale.status !== 'context_only') failures.push('stale reports must be context only');
+const disputed = classifyEventSources([
+  { id: 'efe-3', url: 'https://efe.com/ceuta/story-3', publisher: 'EFE', status: 'disputed' },
+  { id: 'rtve-3', url: 'https://rtve.es/noticias/ceuta/story-3', publisher: 'RTVE' },
+]);
+if (disputed.status !== 'disputed') failures.push('conflicting reports must remain disputed');
+const stages = classifyEventSources([{ id: 'fiscal-1', url: 'https://fiscal.es/ceuta/case', publisher: 'Fiscalía', stage: 'complaint' }]);
+if (!stages.stages.includes('complaint') || stages.status !== 'officially_reported') failures.push('complaint stage must remain distinct from a conviction');
 const status = eventStatusFor(frame, { status: 'unconfirmed', sources: [], detail: 'No confirmation found as of retrieval.' });
 if (status.propositions.some((item) => item.status !== 'unconfirmed')) failures.push('unconfirmed packet must not become a false verdict');
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
