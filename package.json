@@ -32,7 +32,7 @@
     "rate-limit:validate": "node scripts/validate-rate-limit.mjs",
     "knowledge:triage:workflow:validate": "node scripts/validate-knowledge-triage-workflow.mjs",
     "deployment:validate": "node scripts/validate-deployment-config.mjs",
-    "classifier:validate": "node scripts/validate-classifier-boundary.mjs && node scripts/validate-deterministic-api-fallback.mjs && node scripts/validate-public-response.mjs && node scripts/validate-local-inference-provider.mjs && node scripts/validate-model-provider.mjs && node scripts/validate-model-task-contracts.mjs && node scripts/knowledge/validate-local-compiler-contract.mjs && node scripts/knowledge/validate-local-compiler-benchmark.mjs",
+    "classifier:validate": "node scripts/validate-classifier-boundary.mjs && node scripts/validate-deterministic-api-fallback.mjs && node scripts/validate-public-response.mjs && node scripts/validate-local-inference-provider.mjs && node scripts/validate-model-provider.mjs && node scripts/validate-model-task-contracts.mjs && node scripts/validate-research-plan-fallback.mjs && node scripts/knowledge/validate-local-compiler-contract.mjs && node scripts/knowledge/validate-local-compiler-benchmark.mjs",
     "health:validate": "node scripts/validate-health-boundary.mjs",
     "d1:migrate": "npx wrangler d1 migrations apply elpaisestafatal-ops --remote",
     "backup:operations": "node scripts/backup-operations.mjs",
