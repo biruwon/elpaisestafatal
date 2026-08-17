@@ -16,6 +16,9 @@ if (!queue.researchCandidates[0].nextAction.includes('missing proposition') || !
 const markdown = renderReviewQueueMarkdown(queue);
 if (!markdown.includes('Local review queue') || !markdown.includes('operational_failure: 1') || !markdown.includes('Una afirmación nueva con fuentes') || !markdown.includes('Research gaps requiring source work')) throw new Error('review queue markdown omitted maintainer context');
 if (markdown.includes('source-direct') === false) throw new Error('review queue markdown should remain inspectable through the JSON source IDs');
+const audited = buildReviewQueue(document, { minCount: 3, max: 10, audit: { sourceWorkItems: [{ clusterId: 'new', auditClass: 'true_research_gap', action: 'find_source', requiredDimensions: ['geography', 'period'], reason: 'Needs a direct source.' }] } });
+if (audited.researchCandidates[0].auditClass !== 'true_research_gap' || audited.sourceWork[0].requiredDimensions.length !== 2) throw new Error('review queue did not attach coverage-audit source work');
+if (!renderReviewQueueMarkdown(audited).includes('Ranked coverage-audit work')) throw new Error('review queue markdown omitted coverage-audit work');
 const localGap = buildResearchCandidates([{ id: 'local', text: 'En mi barrio ha subido la inseguridad', count: 20, priorityScore: 30, coverageStatus: 'uncovered', sourceIds: ['discovery-lead'] }], { minCount: 3, max: 10 })[0];
 if (!localGap || !localGap.localSpecific || localGap.sourceAvailability !== 'discovery_only' || !localGap.researchOnly) throw new Error('research queue did not preserve local and discovery-only guardrails');
 const discoveryGap = buildResearchCandidates([{ id: 'lead', text: 'Una acusación nueva', count: 20, priorityScore: 30, coverageStatus: 'partial', sourceIds: ['example-discovery-lead'] }], { minCount: 3, max: 10 })[0];

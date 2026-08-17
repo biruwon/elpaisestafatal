@@ -106,10 +106,14 @@ export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {
   .slice(0, max)
   .map((candidate, index) => ({ rank: index + 1, ...candidate }));
 
-export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {}) => {
+export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audit = null } = {}) => {
   const clusters = asArray(clusterDocument?.clusters);
   const candidates = rankMaterializationCandidates(clusters, { minCount, max });
-  const researchCandidates = buildResearchCandidates(clusters, { minCount, max });
+  const auditItems = new Map(asArray(audit?.sourceWorkItems).map((item) => [String(item.clusterId), item]));
+  const researchCandidates = buildResearchCandidates(clusters, { minCount, max }).map((candidate) => {
+    const item = auditItems.get(String(candidate.clusterId));
+    return item ? { ...candidate, auditClass: item.auditClass, auditAction: item.action, matchedMetricIds: item.metricIds || [], requiredDimensions: item.requiredDimensions || [], sourceWorkReason: item.reason } : candidate;
+  });
   const newlyCovered = candidates.filter((candidate) => candidate.newlyCovered);
   const unresolved = candidates.filter((candidate) => !candidate.newlyCovered);
   const excludedReasons = clusterDocument?.inputs?.excludedReasons || {};
@@ -150,6 +154,7 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25 } = {
       evidenceStatus: candidate.evidenceStatus || (candidate.newlyCovered ? 'warehouse_ready' : 'not_ready'),
     })),
     researchCandidates,
+    sourceWork: asArray(audit?.sourceWorkItems).slice(0, max).map((item, index) => ({ rank: index + 1, ...item })),
   };
 };
 
@@ -162,6 +167,7 @@ export const renderReviewQueueMarkdown = (queue) => {
   const newlyCovered = candidates.filter((candidate) => candidate.newlyCovered);
   const unresolved = candidates.filter((candidate) => !candidate.newlyCovered);
   const excluded = Object.entries(queue?.inputs?.excludedReasons || {}).map(([reason, count]) => `- ${reason}: ${formatNumber(count)}`).join('\n') || '- None recorded';
+  const sourceWork = asArray(queue?.sourceWork);
   const table = candidates.length
     ? [
       '| Rank | Cluster | Queries | Priority | Coverage | Source IDs | Next action |',
@@ -215,6 +221,14 @@ ${researchCandidates.length ? [
   ...researchCandidates.map(researchMarkdownTableRow),
 ].join('\n') : '_No research gaps in this batch._'}
 
+## Ranked coverage-audit work
+
+${sourceWork.length ? [
+  '| Rank | Cluster | Audit class | Action | Required dimensions |',
+  '| ---: | --- | --- | --- | --- |',
+  ...sourceWork.map((item) => `| ${item.rank} | ${String(item.canonicalText || '').replaceAll('|', '\\|')} | ${item.auditClass || 'unclassified'} | ${item.action || 'human_review'} | ${(item.requiredDimensions || []).join(', ')} |`),
+].join('\n') : '_Run the coverage audit to attach per-cluster source work._'}
+
 ## Excluded operational records
 
 ${excluded}
@@ -227,7 +241,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     console.log(`No cluster file found at ${inputPath}. Run npm run knowledge:cluster first.`);
     process.exit(0);
   }
-  const queue = buildReviewQueue(clusters, { minCount: minimumCount, max: limit });
+  const audit = await readJson(join(root, '.local/coverage-audit.json'));
+  const queue = buildReviewQueue(clusters, { minCount: minimumCount, max: limit, audit });
   await writeFile(outputPath, JSON.stringify(queue, null, 2));
   await writeFile(markdownPath, renderReviewQueueMarkdown(queue));
   console.log(`Solo-maintainer review queue written: ${queue.summary.candidates} candidate(s) to ${markdownPath}.`);
