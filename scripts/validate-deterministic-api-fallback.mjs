@@ -17,6 +17,8 @@ if (/impuestos/i.test(JSON.stringify(political))) throw new Error('political fal
 const broadPolitical = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });
 if (broadPolitical.relatedClaims?.[0]?.kind !== 'topic' || broadPolitical.relatedClaims[0].slug !== 'politica') throw new Error('broad political fallback did not preserve topic-only context');
 if (broadPolitical.result?.evidenceIds?.length || broadPolitical.result?.sourceIds?.length) throw new Error('broad political fallback invented evidence');
+const broadPositive = deterministicApiFallback({ text: 'España está mejorando', inputType: 'text' });
+if (broadPositive.result?.answerMode !== 'scorecard' || broadPositive.result?.resultState !== 'answered' || broadPositive.result?.reviewed !== false) throw new Error('positive broad political fallback did not produce an answered scorecard');
 
 const media = deterministicApiFallback({ inputType: 'audio' });
 if (media.status !== 'uncovered' || media.result || !/audio/i.test(media.guidance.limitation)) throw new Error('file-only fallback did not provide a generic retry path');
