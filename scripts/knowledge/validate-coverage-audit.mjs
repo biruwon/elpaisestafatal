@@ -20,7 +20,7 @@ for (const item of report.clusters || []) {
   if (!item.clusterId) errors.push('cluster is missing an id');
   if (!allowed.has(item.auditClass)) errors.push(`${item.clusterId}: invalid audit class ${item.auditClass}`);
   if (!item.action) errors.push(`${item.clusterId}: missing recommended action`);
-  if (item.auditClass === 'covered_existing_evidence' && (!item.metricIds?.length || item.action !== 'auto_route')) errors.push(`${item.clusterId}: covered item lacks metric routing`);
+  if (item.auditClass === 'covered_existing_evidence' && (!item.metricIds?.length && !item.linkedClaimSlug || item.action !== 'auto_route')) errors.push(`${item.clusterId}: covered item lacks metric or published-claim routing`);
   if (item.auditClass === 'unsupported_scope' && item.action !== 'find_local_source') errors.push(`${item.clusterId}: unsupported scope was not kept local`);
 }
 for (const item of report.metrics || []) {
