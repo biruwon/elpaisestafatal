@@ -23,7 +23,9 @@ process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
 
 let ready = false;
-for (let attempt = 0; attempt < 40; attempt += 1) {
+// A clean GitHub runner may need to download Wrangler before workerd binds.
+// Keep the smoke test bounded, but allow a cold tool bootstrap to finish.
+for (let attempt = 0; attempt < 120; attempt += 1) {
   try {
     const response = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(1000) });
     if (response.ok) { ready = true; break; }
