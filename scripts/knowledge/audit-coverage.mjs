@@ -60,7 +60,8 @@ const metricAudit = Object.entries(registry).map(([id, metric]) => {
   const feeds = configByMetric.get(id) || [];
   const materialized = recordByMetric.get(id) || [];
   const invalid = materialized.filter((record) => !record.recordCount || !record.retrievedAt || !record.publisher || !record.metricId);
-  const stale = materialized.filter((record) => sourceFreshness(record, now) === 'stale' || sourceFreshness(record, now) === 'unknown');
+  const freshMaterialized = materialized.filter((record) => sourceFreshness(record, now) === 'fresh');
+  const stale = freshMaterialized.length ? [] : materialized.filter((record) => sourceFreshness(record, now) === 'stale' || sourceFreshness(record, now) === 'unknown');
   const hasSpain = feeds.some((feed) => /(?:geo=ES|geoLevel=nuts|España|Espana)/i.test(`${feed.url || ''} ${feed.title || ''}`) || ['boe', 'ine'].includes(feed.sourceId) || feed.domain || id.endsWith('_europe') && /(?:EU27_2020|Europa)/i.test(`${feed.url || ''} ${feed.title || ''}`));
   const hasEurope = id.endsWith('_europe') || Object.hasOwn(registry, `${id}_europe`);
   const hasSpainAndEurope = !id.endsWith('_europe') || feeds.some((feed) => /(?:geo=ES|España|Espana)/i.test(`${feed.url || ''} ${feed.title || ''}`) && /(?:EU27_2020|geo=EU|Europa)/i.test(`${feed.url || ''} ${feed.title || ''}`));
