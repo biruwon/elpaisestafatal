@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const failures = [];
 const ingestSource = await readFile(new URL('./ingest-source.mjs', import.meta.url), 'utf8');
-if (!ingestSource.includes('parseDelimited') || !ingestSource.includes("contentType.includes('csv')")) failures.push('CSV connector inputs must materialize bounded records');
+if (!ingestSource.includes('parseDelimited') || !ingestSource.includes('const delimiter') || !ingestSource.includes("contentType.includes('csv')")) failures.push('CSV connector inputs must materialize bounded records and detect delimiters');
 for (const source of sourceRegistry) {
   const connector = connectorForId(source.connector);
   if (!connector) failures.push(`${source.id}: connector is missing`);

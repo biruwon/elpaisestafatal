@@ -67,13 +67,15 @@ const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: so
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 const parseDelimited = (text) => {
+  const sample = text.split(/\r?\n/, 1)[0] || '';
+  const delimiter = [';', '\t', ','].sort((left, right) => (sample.split(right).length - 1) - (sample.split(left).length - 1))[0];
   const rows = [];
   let row = [], field = '', quoted = false;
   for (let index = 0; index < text.length; index += 1) {
     const char = text[index];
     if (char === '"' && text[index + 1] === '"' && quoted) { field += '"'; index += 1; continue; }
     if (char === '"') { quoted = !quoted; continue; }
-    if (char === ',' && !quoted) { row.push(field.trim()); field = ''; continue; }
+    if (char === delimiter && !quoted) { row.push(field.trim()); field = ''; continue; }
     if ((char === '\n' || char === '\r') && !quoted) {
       if (char === '\r' && text[index + 1] === '\n') index += 1;
       row.push(field.trim()); field = '';
