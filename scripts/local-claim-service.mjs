@@ -1998,7 +1998,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isDefinition = handlerId === 'definition';
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const localClaim = localSpecificClaim(text);
-  const privateAllegation = /(?:persona particular|persona concreta|nadie lo denuncio|reunion privada|concejal recibio dinero)/i.test(normalise(text));
+  const privateAllegation = /(?:persona particular|persona concreta|nadie lo denuncio|reunion privada|concejal recibio dinero|\bmi (?:vecino|vecina|jefe|jefa|cuñado|cuñada|companero|compañero|amigo|amiga|familiar)\b|empresa de mi vecino)/i.test(normalise(text));
   const safetyUnresolved = !primary && (localClaim || privateAllegation || evidenceUnavailableSignal(text) || isPrediction);
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
   const groupComparison = isGroupComparison ? compareGroupObservations(groupObservations) : null;
@@ -2548,6 +2548,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     };
     return toResolveResult(text, { ...classified, status: 'published', primary: canonicalPrimary, alternatives: [] }, sourceOverride, resultRequestId);
   }
+  // Personal allegations never enter warehouse, official-discovery, or live
+  // search. Return the structured local safety response before any provider
+  // or source work can see the submission.
+  const privateInput = /(?:persona particular|persona concreta|nadie lo denuncio|reunion privada|concejal recibio dinero|\bmi (?:vecino|vecina|jefe|jefa|cunado|cunada|companero|amigo|amiga|familiar)\b|empresa de mi vecino)/i.test(normalise(text));
+  if (privateInput) return toResolveResult(text, { ...classified, primary: undefined, status: 'uncovered' }, undefined, resultRequestId, []);
   const eventFrame = detectCurrentEvent(text);
   if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
     const eventSources = [];
