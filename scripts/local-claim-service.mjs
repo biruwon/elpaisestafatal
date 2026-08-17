@@ -1241,9 +1241,9 @@ const classify = async (text) => {
       const entryText = searchText(entry);
       const queryText = normalise(text);
       const queryGeo = /\b(?:portugal|portuguesa?|lisboa)\b/.test(queryText) ? 'portugal' : /\b(?:francia|francesa?|paris)\b/.test(queryText) ? 'france' : /\b(?:espana|espanola?|madrid)\b/.test(queryText) ? 'spain' : '';
-      const queryPolarity = /\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(queryText) ? 'negative' : /\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(queryText) ? 'positive' : '';
+      const queryPolarity = /\b(?:nunca|no|baja|bajan|bajado|bajaron|disminuy|menos|cae|caido|falso|imposible)\b/.test(queryText) ? 'negative' : /\b(?:sube|suben|subido|subida|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(queryText) ? 'positive' : '';
       const entryGeo = /\b(?:portugal|portuguesa?|lisboa)\b/.test(normalise(entryText)) ? 'portugal' : /\b(?:francia|francesa?|paris)\b/.test(normalise(entryText)) ? 'france' : /\b(?:espana|espanola?|madrid)\b/.test(normalise(entryText)) ? 'spain' : '';
-      const entryPolarity = /\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalise(entryText)) ? 'negative' : /\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalise(entryText)) ? 'positive' : '';
+      const entryPolarity = /\b(?:nunca|no|baja|bajan|bajado|bajaron|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalise(entryText)) ? 'negative' : /\b(?:sube|suben|subido|subida|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalise(entryText)) ? 'positive' : '';
       return !(queryGeo && entryGeo && queryGeo !== entryGeo) && !(queryPolarity && entryPolarity && queryPolarity !== entryPolarity);
     };
     const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published && familyEntityCompatible(entry, keys) && surfaceCompatible(entry)
@@ -1273,7 +1273,17 @@ const classify = async (text) => {
       && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput))
     : undefined;
   const reusableFamilyEntry = directPublishedEntry || exactPublishedAliasEntry || earlyFamilyEntry || earlySignatureEntry;
-  if (reusableFamilyEntry) {
+  // The family index is deliberately broad, but a reversed trend is not a
+  // paraphrase. Apply the polarity gate at this early fast path too; without
+  // it “los alquileres han bajado” could reuse the reviewed “han subido” page
+  // before the later compatibility checks run.
+  const queryNegative = /\b(?:nunca|no|baja|bajan|bajado|bajaron|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalizedRoutingInput);
+  const queryPositive = /\b(?:sube|suben|subido|subida|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalizedRoutingInput);
+  const reusableText = reusableFamilyEntry ? normalise(searchText(reusableFamilyEntry)) : '';
+  const reusableNegative = /\b(?:nunca|no|baja|bajan|bajado|bajaron|disminuy|menos|cae|caido|falso|imposible)\b/.test(reusableText);
+  const reusablePositive = /\b(?:sube|suben|subido|subida|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(reusableText);
+  const reusablePolarityMismatch = reusableFamilyEntry && ((queryNegative && reusablePositive) || (queryPositive && reusableNegative));
+  if (reusableFamilyEntry && !reusablePolarityMismatch) {
     const result = { status: 'published', input: { original: text, canonical: routingCompiler.normalized }, primary: { kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82, reason: 'La formulación pertenece a una familia de evidencia publicada.', answer: reusableFamilyEntry.answer || '', assessment: reusableFamilyEntry.assessment || '', whatIsTrue: reusableFamilyEntry.whatIsTrue || '', whatIsMissing: reusableFamilyEntry.whatIsMissing || '', cannotProve: reusableFamilyEntry.cannotProve || '', scale: reusableFamilyEntry.scale || '', propositionIds: reusableFamilyEntry.propositionIds || [], evidenceIds: reusableFamilyEntry.evidenceIds || [], sourceRefs: reusableFamilyEntry.sourceRefs || [], sourceLinks: reusableFamilyEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: reusableFamilyEntry.slug, title: reusableFamilyEntry.title, href: reusableFamilyEntry.href, confidence: 0.82 }] };
     answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
     return result;
@@ -1445,8 +1455,8 @@ const classify = async (text) => {
   const requestedGroupContrast = explicitGroupContrast(text);
   const polarityFor = (value) => {
     const normalized = normalise(value);
-    if (/\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalized)) return 'negative';
-    if (/\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalized)) return 'positive';
+    if (/\b(?:nunca|no|baja|bajan|bajado|bajaron|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalized)) return 'negative';
+    if (/\b(?:sube|suben|subido|subida|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalized)) return 'positive';
     return '';
   };
   const requestedPolarity = polarityFor(text);
@@ -1779,6 +1789,10 @@ const classify = async (text) => {
       : undefined;
   const selectedHasStructuredFamily = structuredFamily(compiledFamilyKeys);
   const selected = selectedCandidate && !vagueTaxJudgement(text) && (!explicitMetricRoute || exactPublishedPhrase || selectedHasStructuredFamily) && selectedCandidate.score >= 0.5 && (selectedCandidate.lexical >= 0.2 || selectedCandidate.semantic >= 0.7) ? selectedCandidate.entry : undefined;
+  const selectedPolarity = selected ? polarityFor(searchText(selected)) : '';
+  if (selected && requestedPolarity && selectedPolarity && requestedPolarity !== selectedPolarity) {
+    return { status: 'uncovered', input: { original: text, canonical: compiled?.normalized }, primary: undefined, alternatives: usefulAlternatives(decisionRanked.filter(({ entry }) => entry.slug !== selected.slug)), guidance: { questions: ['¿Quieres comprobar la bajada o la subida, y en qué periodo?'], limitation: 'La dirección de la afirmación no coincide con la comprobación publicada más cercana; no reutilizamos una respuesta sobre una subida para afirmar una bajada.' } };
+  }
   const status = selected ? (compiledFamilyEntry && !routing.primarySlug ? 'published' : (routing.status === 'published' ? 'published' : 'related')) : 'uncovered';
   if (!selected && routingTopics.length === 1 && ['descriptive', 'definition'].includes(compiled?.claimType) && !explicitMetricRoute) {
     const topic = index.entries.find((entry) => entry.kind === 'topic' && entry.slug === routingTopics[0]);
