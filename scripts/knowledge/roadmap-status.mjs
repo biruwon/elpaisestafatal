@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
@@ -7,7 +7,18 @@ const audit = await read('.local/coverage-audit.json');
 const refresh = await read('.local/domain-refresh-report.json');
 const benchmark = await read('.local/compiler-benchmark.json');
 const catalog = await read('dist/claim-catalog.json', []);
-const reviewedLanguageExamples = Array.isArray(catalog) ? catalog.filter((item) => item.kind === 'claim').reduce((total, item) => total + new Set([item.title, ...(item.aliases || [])].filter(Boolean)).size, 0) : 0;
+let reviewedLanguageExamples = 0;
+try {
+  const claimFiles = (await readdir(join(root, 'content/claims'))).filter((file) => file.endsWith('.md'));
+  for (const file of claimFiles) {
+    const source = await readFile(join(root, 'content/claims', file), 'utf8');
+    const aliasLine = source.match(/^aliases:\s*(\[[^\n]*\])/m)?.[1];
+    if (aliasLine) {
+      try { reviewedLanguageExamples += new Set(JSON.parse(aliasLine).filter(Boolean)).size; } catch { /* catalog fallback below */ }
+    }
+  }
+} catch { /* use built catalog when source files are unavailable */ }
+if (!reviewedLanguageExamples && Array.isArray(catalog)) reviewedLanguageExamples = catalog.filter((item) => item.kind === 'claim').reduce((total, item) => total + new Set([item.title, ...(item.aliases || [])].filter(Boolean)).size, 0);
 const partialMetricIds = (audit.metrics || []).filter((item) => item.status === 'partial_domain_evidence').map((item) => item.id);
 const gapClasses = Object.fromEntries(Object.entries(audit.summary?.clusterClasses || {}).sort(([left], [right]) => left.localeCompare(right)));
 const status = {
