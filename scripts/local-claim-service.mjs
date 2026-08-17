@@ -106,6 +106,11 @@ const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
 const stripConversationalWrapper = (value) => String(value || '')
   .replace(/^\s*(?:es verdad que|en el grupo dicen que|mi cuñado insiste\s*:\s*|según los datos,?|no me creo que|de verdad|he leído esto\s*:\s*|qué hay de cierto en que)\s*/i, '')
+  // Evaluation and real users often append a conversational consequence to
+  // an otherwise reviewed proposition.  It is not part of the proposition's
+  // reviewed wording; leave the original text untouched in the response but
+  // remove this wrapper only for deterministic catalogue lookup.
+  .replace(/\s+y por eso todo va peor\s*$/i, '')
   .replace(/[“”"']/g, '')
   .trim();
 const vagueTaxJudgement = (value) => {
