@@ -1947,6 +1947,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // renderer must not depend on variables local to the classifier.
   const broadTopicText = normalise(text);
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadTopicText)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadTopicText)
+    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadTopicText)
     || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
