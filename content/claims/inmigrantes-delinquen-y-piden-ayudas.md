@@ -3,7 +3,7 @@ slug: inmigrantes-delinquen-y-piden-ayudas
 claim: "Los inmigrantes delinquen y piden ayudas."
 assessment: misleading
 topicSlugs: ["inmigracion", "seguridad", "desigualdad"]
-aliases: ["los inmigrantes delinquen y piden ayudas", "los inmigrantes cometen delitos y cobran ayudas", "los extranjeros delinquen y viven de ayudas"]
+aliases: ["los inmigrantes delinquen y piden ayudas", "los inmigrantes cometen delitos y cobran ayudas", "los extranjeros delinquen y viven de ayudas", "los inmigrantes delinquen y viven de las prestaciones", "los extranjeros cometen delitos y reciben ayudas públicas", "inmigración, delincuencia y ayudas van juntas"]
 claimType: mixed
 evidenceStrength: high
 geography: España
