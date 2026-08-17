@@ -140,9 +140,36 @@ export const parseHealthEmergencyReportText = (text, source) => {
   return match ? [{ id: `${source.id}-emergency-wait-2025`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2025', geography: 'España', population: 'personas encuestadas que acudieron a urgencias', metricId: 'emergency_wait_declared', metric: 'Tiempo medio declarado de espera en urgencias', value: 216.69, unit: 'minutos', url: source.url }] : [];
 };
 
+export const parseIneTempusSnapshot = (rows, source) => rows.map((row, index) => {
+  const value = numberFor(row?.Data?.[0]?.Valor);
+  const metadata = Object.fromEntries((row?.MetaData || []).map((item) => [item.T3_Variable, item.Nombre]));
+  if (value === null) return null;
+  return {
+    id: `${source.id}-ine-snapshot-${index}`,
+    kind: 'observation',
+    sourceId: source.id,
+    datasetId: source.title,
+    period: 'latest available snapshot',
+    periodType: 'retrieval_snapshot',
+    geography: 'España',
+    population: metadata['País de nacimiento'] || 'población general',
+    group: metadata['Nacionalidad (española/extranjera)'] || null,
+    dimensions: { sex: metadata.Sexo || null, unit: metadata['Unidades de medida'] || null, birthplace: metadata['País de nacimiento'] || null },
+    metricId: 'population_by_nationality',
+    metric: 'Población por nacionalidad y país de nacimiento',
+    value,
+    unit: metadata['Unidades de medida'] || 'personas',
+    url: source.url,
+  };
+}).filter(Boolean);
+
 export const parseDomainPayload = (domain, payload, source) => {
   const parser = domainConnectorFor(domain);
   if (!parser) throw new Error(`Unknown domain connector: ${domain}`);
+  if (domain === 'immigration_crime' && Array.isArray(payload) && payload.some((item) => Array.isArray(item?.Data) && Array.isArray(item?.MetaData))) {
+    const snapshot = parseIneTempusSnapshot(payload, source);
+    if (snapshot.length) return snapshot;
+  }
   const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : Array.isArray(payload?.rows) ? payload.rows : [];
   const records = parser(rows, source).filter((record) => record.value !== null && record.period && record.geography);
   if (!records.length) throw new Error(`${domain} source did not provide value, period, and geography dimensions`);
