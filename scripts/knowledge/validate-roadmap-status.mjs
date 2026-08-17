@@ -8,7 +8,7 @@ if (report.schemaVersion !== '1' || !report.generatedAt) errors.push('status hea
 for (const section of ['coverage', 'refresh', 'model']) if (!report[section] || typeof report[section] !== 'object') errors.push(`status section missing: ${section}`);
 if (!report.gapDetail || !Array.isArray(report.gapDetail.partialMetricIds) || !report.gapDetail.clusterClasses || !Array.isArray(report.gapDetail.domainContracts)) errors.push('gap detail is missing');
 for (const contract of report.gapDetail?.domainContracts || []) if (!contract.id || !contract.domain || !Array.isArray(contract.missingFields) || !contract.nextEvidence) errors.push('domain contract detail is malformed');
-const coverageFields = ['metrics', 'configuredFeeds', 'configuredMetrics', 'ready', 'partial', 'clusters', 'newlyCovered', 'trueGaps', 'sourceWorkItems'];
+const coverageFields = ['metrics', 'configuredFeeds', 'configuredMetrics', 'reviewedLanguageExamples', 'ready', 'partial', 'clusters', 'newlyCovered', 'trueGaps', 'sourceWorkItems'];
 if (!coverageFields.every((field) => Number.isInteger(Number(report.coverage?.[field])) && Number(report.coverage[field]) >= 0)) errors.push('coverage status fields are invalid');
 if (Number(report.coverage?.metrics) === 0) errors.push('coverage audit did not load the metric registry');
 if (Number(report.coverage?.configuredMetrics) > Number(report.coverage?.metrics)) errors.push('configured metric count exceeds registry metric count');
