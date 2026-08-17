@@ -51,7 +51,7 @@ for (const record of records) if (record.metricId) recordByMetric.set(record.met
 const configByMetric = new Map();
 for (const feed of configured) if (feed.metricId) configByMetric.set(feed.metricId, [...(configByMetric.get(feed.metricId) || []), feed]);
 const domainMetricIds = {
-  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality'],
+  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_beneficiary_average_age'],
   immigration_crime: ['crime_rate_by_group'],
   public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_actions'],
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],

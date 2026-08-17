@@ -117,6 +117,7 @@ export const parseImvWorkbookBuffer = async (buffer, source) => {
       for (const [group, index] of [['Española', 5], ['Extranjera', 6]]) records.push({ id: `${source.id}-imv-title-${index}`, kind: 'observation', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: 'titulares del IMV', dimensions: { group, programme: 'IMV', eligibility: 'titular' }, metricId: 'imv_title_holders_by_nationality', metric: 'Titulares del IMV por nacionalidad', value: numberFor(total[index]), unit: 'personas', url: source.url });
     } else {
       records.push({ id: `${source.id}-imv-beneficiaries`, kind: 'observation', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: 'beneficiarios del IMV', dimensions: { group: 'total', programme: 'IMV', eligibility: 'beneficiario', averageAge: numberFor(total[7]) }, metricId: 'benefit_recipients_by_group', metric: 'Beneficiarios del IMV', value: numberFor(total[2]), unit: 'personas', url: source.url });
+      records.push({ id: `${source.id}-imv-average-age`, kind: 'observation', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: 'beneficiarios del IMV', dimensions: { group: 'total', programme: 'IMV', eligibility: 'beneficiario' }, metricId: 'imv_beneficiary_average_age', metric: 'Edad media de beneficiarios del IMV', value: numberFor(total[7]), unit: 'años', url: source.url });
     }
   }
   if (!records.length) throw new Error('IMV workbook did not provide period and total rows');
