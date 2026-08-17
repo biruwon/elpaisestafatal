@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { compilerInstruction, compilerSchema, normalizeCompilerOutput } from './local-compiler-contract.mjs';
+import { compilerInstruction, compilerSchema, normalizeCompilerOutput, reconcileCompilerSafety } from './local-compiler-contract.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { createLocalInferenceProvider } from '../local-inference-provider.mjs';
 
@@ -83,7 +83,11 @@ const runCase = async (model, testCase) => {
     const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: 600, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
     const raw = parseJson(payload.message?.content);
     const deterministic = deterministicFallbackCompiler(testCase.input);
-    const normalized = normalizeCompilerOutput(raw, testCase.input);
+    // Qualification must exercise the same safety boundary as production:
+    // model output is normalized, then deterministic semantics are reconciled
+    // before scoring.  Scoring the raw model-shaped normalization would count
+    // fields that production intentionally overwrites as model failures.
+    const normalized = reconcileCompilerSafety(deterministic, normalizeCompilerOutput(raw, testCase.input));
     const validJson = Boolean(raw && Array.isArray(raw.propositions));
     const typeMatch = testCase.claimTypes.includes(normalized.claimType);
     const conceptMatch = hasRequiredConcepts(normalized, testCase.mustMention);
