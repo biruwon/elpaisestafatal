@@ -83,7 +83,17 @@ jobs:
           if-no-files-found: warn
 
       - name: Build public site and audit public surface
-        run: npm run build
+        run: |
+          # Claim/knowledge contracts and release validation already ran
+          # above. Keep this step focused on the static build and its
+          # post-build public-surface checks so CI does not repeat the entire
+          # release chain a second time.
+          npx astro build
+          npm run claims:routing:validate
+          npm run ux:static
+          npm run knowledge:family-index
+          npm run knowledge:family-collisions
+          npm run audit:public-surface
 
       - name: Smoke-test the built Pages Functions boundary
         run: npm run smoke:pages
