@@ -1441,6 +1441,14 @@ const classify = async (text) => {
     return '';
   };
   const requestedPolarity = polarityFor(text);
+  const geographyFor = (value) => {
+    const normalized = normalise(value);
+    if (/\b(?:portugal|portuguesa?|lisboa)\b/.test(normalized)) return 'portugal';
+    if (/\b(?:francia|francesa?|paris)\b/.test(normalized)) return 'france';
+    if (/\b(?:espana|espanola?|madrid)\b/.test(normalized)) return 'spain';
+    return '';
+  };
+  const requestedGeography = geographyFor(text);
   const numericTokens = (value) => [...normalise(value).matchAll(/\b\d+(?:[.,]\d+)?\b/g)].map((match) => match[0].replace(',', '.'));
   const numericCompatible = (entry) => {
     if (entry.kind !== 'claim') return true;
@@ -1455,6 +1463,8 @@ const classify = async (text) => {
     if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
     const entryPolarity = polarityFor(searchText(entry));
     if (requestedPolarity && entryPolarity && requestedPolarity !== entryPolarity) return false;
+    const entryGeography = geographyFor(searchText(entry));
+    if (requestedGeography && entryGeography && requestedGeography !== entryGeography) return false;
     // Population qualifiers are part of the evidence contract. A national
     // unemployment claim must not answer a youth-unemployment query (or the
     // reverse) merely because both contain “paro” or “empleo”.
