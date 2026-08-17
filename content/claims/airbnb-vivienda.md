@@ -3,7 +3,7 @@ slug: airbnb-vivienda
 claim: "“Airbnb es la causa de toda la crisis de vivienda.”"
 assessment: misleading
 topicSlugs: ["vivienda"]
-aliases: ["'airbnb'","'turistico'","'alquiler vacacional'"]
+aliases: ["'airbnb'","'turistico'","'alquiler vacacional'", "los pisos turísticos han causado la crisis de vivienda", "los pisos turisticos causan la crisis de vivienda"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

@@ -104,6 +104,10 @@ let modelLastProbeError = null;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
+const stripConversationalWrapper = (value) => String(value || '')
+  .replace(/^\s*(?:es verdad que|en el grupo dicen que|mi cuñado insiste\s*:\s*|según los datos,?|no me creo que|de verdad|he leído esto\s*:\s*|qué hay de cierto en que)\s*/i, '')
+  .replace(/[“”"']/g, '')
+  .trim();
 const vagueTaxJudgement = (value) => {
   const normalized = normalise(value);
   const vague = /\b(?:demasiad[oa]s?|excesiv[oa]s?|infierno fiscal|asfixia(?:nte)?|se come todo el sueldo)\b/.test(normalized);
@@ -1120,8 +1124,9 @@ const classify = async (text) => {
   // Exact published titles and aliases are an explicit editorial contract.
   // Resolve them before metric or semantic ambiguity can downgrade the
   // answer; approximate wording continues through the guarded family path.
+  const wrapperFreeText = stripConversationalWrapper(text);
   const exactPublishedEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
-    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(wrapperFreeText)));
   if (exactPublishedEntry) {
     const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1, reason: 'La formulación coincide con una afirmación publicada.', answer: exactPublishedEntry.answer || '', assessment: exactPublishedEntry.assessment || '', whatIsTrue: exactPublishedEntry.whatIsTrue || '', whatIsMissing: exactPublishedEntry.whatIsMissing || '', cannotProve: exactPublishedEntry.cannotProve || '', scale: exactPublishedEntry.scale || '', propositionIds: exactPublishedEntry.propositionIds || [], evidenceIds: exactPublishedEntry.evidenceIds || [], sourceRefs: exactPublishedEntry.sourceRefs || [], sourceLinks: exactPublishedEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1 }] };
     answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
@@ -1134,7 +1139,7 @@ const classify = async (text) => {
   const typoPhraseEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => {
       const expected = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
-      const actual = tokens(text).filter((token) => !lowSignalTokens.has(token));
+      const actual = tokens(wrapperFreeText).filter((token) => !lowSignalTokens.has(token));
       return expected.length >= 3 && expected.length === actual.length
         && expected.every((token) => actual.some((candidate) => oneEditAway(candidate, token)))
         && actual.some((token) => !expected.includes(token));
