@@ -92,6 +92,7 @@ let inferenceDisabledUntil = 0;
 let indexPromise;
 let warehousePromise;
 let modelReady = false;
+let modelProbeInFlight = false;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
@@ -2791,10 +2792,25 @@ const server = createServer(async (request, response) => {
   } catch { response.writeHead(200, { 'content-type': 'application/json' }); response.end(JSON.stringify({ status: 'unavailable' })); }
 });
 
+const probeLocalModel = async () => {
+  if (modelProbeInFlight || (!localCompilerEnabled && !answerPlannerEnabled)) return;
+  modelProbeInFlight = true;
+  try {
+    const value = await modelTasks.understandClaim({ schema: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'], additionalProperties: false }, options: { temperature: 0, num_predict: 24, num_ctx: 1024 }, messages: [{ role: 'user', content: 'Devuelve exactamente JSON con ok=true.' }], timeoutMs: 60000 });
+    modelReady = value?.ok === true;
+  } catch {
+    modelReady = false;
+  } finally {
+    modelProbeInFlight = false;
+  }
+};
+
 server.listen(port, bindHost, () => {
   console.log(`Local claim service listening on ${bindHost}:${port}`);
   if (!localCompilerEnabled && !answerPlannerEnabled) return;
-  void modelTasks.understandClaim({ schema: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'], additionalProperties: false }, options: { temperature: 0, num_predict: 24, num_ctx: 1024 }, messages: [{ role: 'user', content: 'Devuelve exactamente JSON con ok=true.' }], timeoutMs: 60000 })
-    .then((value) => { modelReady = value?.ok === true; })
-    .catch(() => { modelReady = false; });
+  // Ollama may still be starting when the resolver binds its port. Retry the
+  // bounded probe so a transient startup race does not leave readiness false
+  // for the lifetime of the process.
+  void probeLocalModel();
+  setInterval(() => { if (!modelReady) void probeLocalModel(); }, 30_000).unref();
 });
