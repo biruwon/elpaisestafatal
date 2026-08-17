@@ -23,6 +23,8 @@ const negatives = [
   ['vivienda-triplica-en-tres-anos', 'La vivienda ha bajado de precio'],
   ['ocupacion-respaldo-gobierno-delito-leve', 'La ocupación está prohibida en todos los casos'],
   ['espana-politica-inmigracion-puertas-abiertas', 'La inmigración está completamente controlada'],
+  ['inmigrantes-delinquen-y-piden-ayudas', 'Los inmigrantes reciben ayudas'],
+  ['inmigrantes-delinquen-y-piden-ayudas', 'Los inmigrantes cometen delitos'],
 ];
 for (const [forbidden, text] of negatives) {
   const primary = index.rankClaimIndex(text, entries, 4)[0];
