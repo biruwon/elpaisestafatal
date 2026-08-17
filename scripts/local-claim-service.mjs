@@ -1962,6 +1962,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const isDefinition = handlerId === 'definition';
   const isQuantityLike = handlerId === 'quantity' || handlerId === 'proportion';
   const localClaim = localSpecificClaim(text);
+  const privateAllegation = /(?:persona particular|persona concreta|nadie lo denuncio|reunion privada|concejal recibio dinero)/i.test(normalise(text));
   const groupObservations = isGroupComparison ? directGroupObservations(text, observations) : observations;
   const groupComparison = isGroupComparison ? compareGroupObservations(groupObservations) : null;
   const isBudgetTransfer = handlerId === 'budget_transfer';
@@ -2448,7 +2449,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status: broadConditionRequested ? 'complete' : status, requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind === 'topic') : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status: broadConditionRequested ? 'complete' : (localClaim || privateAllegation ? 'uncovered' : status), requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: localClaim || privateAllegation ? [] : broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind === 'topic') : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -2470,7 +2471,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim
     ? (fallbackTopic && !explicitMetricRoute ? [fallbackTopic] : [])
     : relatedClaims;
-  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
+  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: localClaim || privateAllegation ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
