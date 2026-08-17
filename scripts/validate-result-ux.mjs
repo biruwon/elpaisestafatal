@@ -23,7 +23,7 @@ if (!page.includes('id="conversation-result" role="region" aria-label="Resultado
 if (source.includes('La frase que comprobamos:')) {
   failures.push('structured result headings should not repeat the user-facing phrase prefix');
 }
-for (const snippet of ['const submittedClaimMarkup', 'class="claim-result-submission"', 'const researchPlanMarkup', 'claim-plan-research', 'resetMediaSelection()', 'navigateToPublishedClaim', 'response.status === \'complete\'']) {
+for (const snippet of ['const submittedClaimMarkup', 'class="claim-result-submission"', 'const researchPlanMarkup', 'const research = plan.researchPlan', 'Cómo se puede comprobar', 'Qué evidencia falta', 'Consultas neutrales previstas', 'claim-plan-research', 'resetMediaSelection()', 'navigateToPublishedClaim', 'response.status === \'complete\'']) {
   if (!source.includes(snippet)) failures.push(`result hierarchy is missing ${snippet}`);
 }
 
