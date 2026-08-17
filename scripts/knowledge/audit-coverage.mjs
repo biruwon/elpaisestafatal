@@ -160,6 +160,10 @@ const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({
   priorityScore: 0,
   metricIds: [],
   sourceIds: gap.officialSourcesChecked || [],
+  availableEvidence: gap.availableEvidence || [],
+  missingFields: gap.missingFields || [],
+  nextEvidence: gap.nextEvidence || null,
+  permittedConclusion: gap.permittedConclusion || null,
   requiredDimensions: gap.missingFields || [],
   reason: gap.nextEvidence || 'A source contract is incomplete and requires additional official evidence.',
 }));

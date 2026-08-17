@@ -15,6 +15,7 @@ if (report.sourceWorkItems?.length !== expectedSourceWorkItems) errors.push('sou
 for (const item of report.sourceWorkItems || []) {
   if (!item.id || (!item.clusterId && !item.id.startsWith('gap:')) || !item.canonicalText || !item.action || !Array.isArray(item.requiredDimensions)) errors.push(`${item.id || 'source-work item'}: incomplete source-work record`);
   if (![item.harmScore, item.urgencyScore, item.evidenceReadiness, item.rankScore].every((value) => Number.isFinite(Number(value)))) errors.push(`${item.id || 'source-work item'}: ranking dimensions are incomplete`);
+  if (item.id?.startsWith('gap:') && (!Array.isArray(item.availableEvidence) || !Array.isArray(item.missingFields) || !item.nextEvidence)) errors.push(`${item.id}: contract gap lacks evidence summary or next-evidence task`);
 }
 for (const item of report.clusters || []) {
   if (!item.clusterId) errors.push('cluster is missing an id');
