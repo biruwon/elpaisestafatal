@@ -17,7 +17,7 @@ requireText(input, 'researchOutcome,', 'sanitized research outcome capture');
 requireText(input, 'sourceTiersChecked,', 'sanitized source tier capture');
 requireText(input, 'requestId: query ? undefined : data.requestId', 'idempotent typed/media request identity');
 requireText(input, 'semanticSignature: query ? semanticQuerySignature(query) : data.canonicalSignature', 'stable typed semantic signature');
-requireText(input, 'data-learning-note', 'uncovered-result learning feedback');
+requireText(input, 'recordQuestion(capturedText,', 'terminal learning capture for all resolver outcomes');
 requireText(input, 'if (file) rememberRecentCheck(data.input?.canonical || capturedText)', 'media-derived learning capture');
 requireText(input, 'canonical: data.input?.canonical || capturedText', 'media-derived canonical claim capture');
 requireText(questions, 'const isNewRequest =', 'idempotent request detection');
