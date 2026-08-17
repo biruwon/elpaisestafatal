@@ -3,7 +3,6 @@ import { classifyDeterministicCoverage } from '../lib/knowledge/coverage';
 import type { AnswerPlan } from '../lib/knowledge/contracts';
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 import { semanticQuerySignature } from '../lib/knowledge/querySignature';
-import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../lib/knowledge/scorecard-snapshot.mjs';
 
 type SearchResponse = {
   status?: 'published' | 'related' | 'draft' | 'uncovered' | 'unavailable' | 'complete' | 'partial' | 'processing';
@@ -151,79 +150,6 @@ const publicResultLabel = (plan?: AnswerPlan): string => {
   if (state === 'provisional') return 'Investigación provisional';
   return 'Sin evidencia suficiente';
 };
-
-const topicFollowUpPrompts: Record<string, string[]> = {
-  politica: [
-    '¿Está creciendo la economía española?',
-    '¿Cómo ha evolucionado el empleo en España?',
-    '¿Cómo ha cambiado el gasto público sobre el PIB?',
-    '¿Qué porcentaje del PIB representa la deuda pública?',
-  ],
-  economia: [
-    '¿Está creciendo la economía española?',
-    '¿Cómo ha cambiado la inflación anual en España?',
-    '¿Cómo ha evolucionado la renta mediana de los hogares?',
-    '¿Cómo ha cambiado la desigualdad de ingresos en España?',
-  ],
-  vivienda: [
-    '¿Cómo han cambiado los alquileres en España?',
-    '¿Han subido los precios de la vivienda en España?',
-    '¿Qué porcentaje de hogares sufre sobrecarga de vivienda?',
-    '¿Ha empeorado el acceso a la vivienda en España?',
-  ],
-  empleo: [
-    '¿Cómo ha evolucionado el desempleo en España?',
-    '¿Tiene España una tasa de empleo mayor que la Unión Europea?',
-    '¿Cómo ha cambiado el salario mínimo en España?',
-    '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
-  ],
-  inmigracion: [
-    '¿Cuántos residentes nacieron fuera de España?',
-    '¿Cuántos residentes tienen ciudadanía extranjera en España?',
-    '¿Cuántas personas inmigraron a España durante el último año?',
-    '¿La inmigración aumenta la inseguridad?',
-  ],
-  seguridad: [
-    '¿Cómo han evolucionado los homicidios registrados en España?',
-    '¿Cómo han evolucionado las estafas registradas en España?',
-    '¿Cómo han evolucionado los robos registrados en España?',
-    '¿La inmigración aumenta la inseguridad?',
-  ],
-  sanidad: [
-    '¿Cuánto gasta España en sanidad por habitante?',
-    '¿Ha aumentado la falta de atención médica por listas de espera?',
-    '¿Cómo ha evolucionado la esperanza de vida en España?',
-    '¿España gasta más por habitante en sanidad que la Unión Europea?',
-  ],
-  impuestos: [
-    '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
-    '¿España recauda más o menos que la Unión Europea?',
-    '¿Cuánto debe España en euros?',
-    '¿Qué porcentaje del PIB representa la deuda pública de España?',
-  ],
-  desigualdad: [
-    '¿Cómo ha evolucionado la desigualdad de ingresos en España?',
-    '¿Qué porcentaje de personas está en riesgo de pobreza o exclusión?',
-    '¿Cómo ha evolucionado la renta mediana de los hogares?',
-    '¿Qué porcentaje de hogares sufre sobrecarga de vivienda?',
-  ],
-  juventud: [
-    '¿Qué porcentaje de jóvenes activos no encuentra trabajo?',
-    '¿Tiene España más paro juvenil que la Unión Europea?',
-    '¿Tiene España más abandono escolar temprano que la Unión Europea?',
-    '¿España tiene más ninis que la Unión Europea?',
-    '¿Qué porcentaje de jóvenes ni estudia ni trabaja en España?',
-    '¿Cómo ha evolucionado el abandono escolar temprano en España?',
-    '¿Cómo ha evolucionado el envejecimiento de la población española?',
-  ],
-};
-
-const generalFallbackPrompts = [
-  '¿Cómo ha cambiado el coste de la vivienda en España?',
-  '¿Está creciendo el empleo en España?',
-  '¿La inmigración aumenta la inseguridad?',
-  '¿España cobra más impuestos sobre renta y riqueza que la Unión Europea?',
-];
 
 const broadComplaintSignals = [
   'esta destruida',
@@ -418,81 +344,6 @@ const shareUrlFor = (original: string, primary?: ClaimIndexEntry, state: 'publis
 const alternativeMarkup = (entries: ClaimIndexEntry[]): string => entries.length
   ? `<div class="claim-alternatives"><span class="clarification-label">También puede estar relacionado</span>${entries.slice(0, 2).map((entry) => `<a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a>`).join('')}</div>`
   : '';
-
-const quickResultOverviewMarkup = (
-  state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid',
-  primary?: ClaimIndexEntry,
-  guidance?: SearchResponse['guidance'],
-): string => {
-  if (state === 'loading' || state === 'invalid') return '';
-  const found = primary?.answer
-    || (state === 'published' ? 'Hemos encontrado una ficha publicada que coincide con la frase.' : state === 'related' ? 'Hemos encontrado contexto cercano, pero no una coincidencia exacta.' : 'Todavía no hay una ficha publicada que responda directamente a esta frase.');
-  const limitation = primary?.cannotProve
-    || guidance?.limitation
-    || (state === 'unavailable' ? 'El análisis adicional no está disponible ahora; esta orientación no debe interpretarse como una comprobación exacta.' : 'La frase necesita un hecho, fecha, lugar o programa concreto para poder comprobarse.');
-  const next = guidance?.questions?.[0]
-    || (primary?.kind === 'topic' ? 'Elige una pregunta concreta dentro de este tema.' : state === 'published' ? 'Abre la ficha para revisar el dato y sus fuentes.' : '¿Qué hecho concreto, fecha o lugar quieres comprobar?');
-  return `<div class="claim-result-overview claim-result-overview-quick" aria-label="Resumen rápido de la orientación"><div><span>Lo que encontramos</span><strong>${escapeHtml(found)}</strong></div><div><span>Lo que no demuestra</span><strong>${escapeHtml(limitation)}</strong></div><div><span>Siguiente paso</span><strong>${escapeHtml(next)}</strong></div></div>`;
-};
-
-const broadTopicSuggestions = (original: string): { items: Array<{ title: string; href: string }>; label: string } => {
-  const query = normaliseClaimText(original);
-  if (query.length < 12) return { items: [], label: '' };
-  const topics = claimIndex.filter((entry) => entry.kind === 'topic');
-  const matchedTopics = topics
-    .filter((entry) => [...entry.aliases, ...entry.keywords].some((alias) => {
-      const normalizedAlias = normaliseClaimText(alias);
-      return normalizedAlias.length > 3 && (query.includes(normalizedAlias) || normalizedAlias.includes(query));
-    }))
-    .slice(0, 4)
-    .map((entry) => ({ title: entry.title, href: entry.href }));
-  if (matchedTopics.length) return { items: matchedTopics, label: 'Puedes concretarla por un tema' };
-
-  // Keep an uncovered result honest. Popular checks are already discoverable
-  // in the homepage examples; attaching one here to a misspelled or unrelated
-  // input makes the result look like a recommendation and was the source of
-  // misleading “closest” answers for genuinely unknown text.
-  return { items: [], label: '' };
-};
-
-const contextualFollowUps = (original: string, primary?: ClaimIndexEntry): { items: Array<{ title: string; prompt: string }>; label: string } => {
-  const query = normaliseClaimText(original);
-  if (query.length < 12) return { items: [], label: '' };
-  const topics = claimIndex.filter((entry) => entry.kind === 'topic');
-  const matchedTopic = primary?.kind === 'topic'
-    ? primary.slug
-    : topics.find((entry) => [...entry.aliases, ...entry.keywords].some((alias) => {
-      const normalizedAlias = normaliseClaimText(alias);
-      return normalizedAlias.length > 3 && (query.includes(normalizedAlias) || normalizedAlias.includes(query));
-    }))?.slug;
-  const prompts = matchedTopic ? topicFollowUpPrompts[matchedTopic] || [] : [];
-  return { items: prompts.slice(0, 4).map((prompt) => ({ title: prompt, prompt })), label: 'Para concretar esta discusión' };
-};
-
-const generalFollowUps = (): { items: Array<{ title: string; prompt: string }>; label: string } => ({
-  items: generalFallbackPrompts.map((prompt) => ({ title: prompt, prompt })),
-  label: 'Si no sabes por dónde empezar',
-});
-
-const fallbackPublishedClaims = (): ClaimIndexEntry[] => claimIndex
-  .filter((entry) => entry.kind === 'claim')
-  .slice(0, 2);
-
-const visualMarkup = (entry?: ClaimIndexEntry): string => {
-  if (!entry) return '';
-  const visual = entry.visual;
-  if (!visual?.key) return '';
-  const comparison = visual.comparison;
-  const signedComparison = Boolean(comparison?.values.some((value) => value < 0));
-  const max = comparison ? Math.max(...comparison.values.map((value) => Math.abs(value)), 1) : 1;
-  const comparisonRows = comparison?.labels.slice(0, 3).map((label, index) => {
-    const value = Number(comparison.values[index] || 0);
-    const width = signedComparison ? Math.max(5, Math.round((Math.abs(value) / max) * 50)) : Math.max(6, Math.round((value / max) * 100));
-    const left = signedComparison ? (value < 0 ? 50 - width : 50) : 0;
-    return `<div><span>${escapeHtml(label)}</span><i${signedComparison ? ' class="is-signed"' : ''}><b style="width:${width}%;${signedComparison ? `left:${left}%;` : ''}"></b></i><em>${escapeHtml(String(comparison.values[index]))}</em></div>`;
-  }).join('');
-  return `<div class="claim-visual-summary"><div class="claim-key-number"><span class="clarification-label">Dato clave · ${escapeHtml(visual.key.period)}</span><strong>${escapeHtml(visual.key.value)}</strong><small>${escapeHtml(visual.key.label)}</small></div>${comparison ? `<div class="claim-comparison${signedComparison ? ' is-signed' : ''}"><span class="clarification-label">${escapeHtml(comparison.label)}</span>${comparisonRows}<small>${escapeHtml(comparison.unit)}</small></div>` : ''}</div>`;
-};
 
 const formatChartValue = (value: number): string => Number(value).toLocaleString('es-ES', { maximumFractionDigits: 2 });
 
@@ -1116,45 +967,6 @@ const renderStructuredPlan = (original: string, plan: AnswerPlan, primary?: Clai
       if (label) label.textContent = 'Gracias por tu respuesta.';
     } catch { /* Feedback must never interrupt the answer. */ }
   }));
-};
-
-const renderCard = (state: 'loading' | 'published' | 'related' | 'uncovered' | 'unavailable' | 'invalid', original: string, primary?: ClaimIndexEntry, alternatives: ClaimIndexEntry[] = [], guidance?: SearchResponse['guidance'], reason = '', inputKind: 'text' | 'media' = 'text'): void => {
-  if (!result) return;
-  const labels = {
-    loading: 'Procesando el archivo',
-    published: 'Coincidencia publicada',
-    related: 'Orientación más cercana',
-    uncovered: 'Aún no hay una ficha exacta',
-    unavailable: 'Orientación rápida disponible',
-    invalid: 'Archivo no compatible',
-  };
-  const title = primary ? primary.title : (state === 'uncovered' ? guidance?.heading || 'No encontramos una ficha exacta todavía' : state === 'invalid' ? 'Prueba con otro archivo' : state === 'loading' ? 'Estamos leyendo el archivo' : state === 'unavailable' && inputKind === 'media' ? 'No pudimos extraer una afirmación del archivo' : guidance?.questions?.[0] || 'Estamos preparando una orientación');
-  const stateDescription: Record<typeof state, string> = {
-    loading: 'El archivo se está leyendo',
-    published: 'Coincidencia con una ficha revisada',
-    related: 'Contexto cercano, no una coincidencia exacta',
-    uncovered: 'Todavía no hay una ficha publicada para esta frase',
-    unavailable: 'La orientación rápida se conserva',
-    invalid: 'El archivo necesita otro formato',
-  };
-  const body = state === 'loading'
-      ? `<p>Estamos leyendo el contenido del archivo para buscar una orientación útil.</p>`
-    : state === 'uncovered'
-      ? `<p><strong>${escapeHtml(guidance?.limitation || 'No tenemos una comprobación publicada de esta afirmación.')}</strong></p><p class="claim-guidance-learning" data-learning-note>Las preguntas sin coincidencia nos ayudan a decidir qué comprobar después.</p>${guidance?.questions?.length ? `<div class="claim-guidance"><span class="clarification-label">${escapeHtml(guidance.questionsLabel || 'Para comprobarla haría falta concretar')}</span><ul>${guidance.questions.slice(0, 2).map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul></div>` : ''}${guidance?.suggestions?.length ? `<div class="claim-guidance claim-guidance-suggestions"><span class="clarification-label">${escapeHtml(guidance.suggestionsLabel || 'Puedes concretarla por un tema')}</span><p class="claim-guidance-note">No es una respuesta a tu frase; son ejemplos de comprobaciones disponibles.</p><div>${guidance.suggestions.slice(0, 6).map((suggestion) => suggestion.prompt ? `<button type="button" data-guidance-example="${escapeHtml(suggestion.prompt)}">${escapeHtml(suggestion.title)} <span aria-hidden="true">→</span></button>` : `<a href="${escapeHtml(suggestion.href || '#')}">${escapeHtml(suggestion.title)} <span aria-hidden="true">↗</span></a>`).join('')}</div></div>` : ''}`
-    : state === 'unavailable'
-        ? `<p><strong>${escapeHtml(guidance?.limitation || 'La comprobación automática está tardando más de lo previsto.')}</strong></p>${alternatives.length ? `<div class="claim-guidance"><span class="clarification-label">Mientras tanto, puedes consultar</span><ul>${alternatives.slice(0, 2).map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></li>`).join('')}</ul></div>` : ''}`
-      : state === 'invalid'
-        ? `<p><strong>${escapeHtml(guidance?.limitation || 'Este archivo no tiene un formato compatible.')}</strong></p><div class="claim-guidance"><span class="clarification-label">Formatos aceptados</span><ul><li>Capturas: PNG, JPEG, WebP o GIF</li><li>Audio: WAV, MP3, M4A, OGG, WebM o FLAC</li><li>Máximo: ${Math.round(INPUT_LIMITS.maxFileBytes / 1024 / 1024)} MB</li></ul></div>`
-      : `${visualMarkup(primary)}<div class="claim-result-short-answer"><span class="clarification-label">Orientación en una frase</span><p>${escapeHtml(primary?.answer || reason || 'Hemos encontrado una orientación útil para seguir comprobando la afirmación.')}</p>${primary?.answer ? `<button type="button" data-copy-answer="${escapeHtml(primary.answer)}">Copiar respuesta</button>` : ''}</div>${primary ? resultLink(primary) : ''}`;
-  const assessment = state === 'published' && primary?.assessment ? `<span class="claim-assessment">${escapeHtml(assessmentLabels[primary.assessment] || primary.assessment)}</span>` : '';
-  const alternativesMarkup = ['published', 'related', 'unavailable'].includes(state) ? alternativeMarkup(alternatives) : '';
-  const inputMarkup = inputKind === 'media' ? submittedClaimMarkup(original, 'media') : submittedClaimMarkup(original);
-  // The no-match body already contains the clarification path. Repeating the
-  // same evidence/limitation/next-step summary below it makes the result feel
-  // longer without adding information.
-  const overview = ['published', 'related', 'unavailable'].includes(state) ? quickResultOverviewMarkup(state, primary, guidance) : '';
-  result.innerHTML = `<article class="claim-result-card" data-state="${state}" aria-busy="${state === 'loading'}" aria-labelledby="claim-result-title"><div class="claim-result-top"><div><span class="eyebrow">${labels[state]}</span><span class="claim-result-state">${stateDescription[state]}</span></div>${assessment}</div>${inputMarkup}<h3 id="claim-result-title">${escapeHtml(title)}</h3>${body}${overview}${resultActionsMarkup(primary?.answer ? shareUrlFor(original, primary, state === 'published' ? 'published' : 'related') : undefined)}${alternativesMarkup}</article>`;
-  bindResultActions();
 };
 
 const renderDeterministic = (original: string, ranked: RankedClaimIndexEntry[]): void => {
