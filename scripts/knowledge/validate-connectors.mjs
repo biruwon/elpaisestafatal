@@ -13,8 +13,11 @@ const probes = [
   ['boe-summary', 'application/json'],
   ['catalogue', 'text/html'],
   ['official-document', 'application/pdf'],
+  ['regional-open-data', 'text/csv'],
+  ['judicial-records', 'application/xml'],
+  ['procurement', 'application/json'],
 ];
 for (const [id, contentType] of probes) if (!connectorSupports(id, contentType)) failures.push(`${id}: expected content type probe to be supported`);
-if (Object.keys(connectorRegistry).length < 5) failures.push('expected the initial connector set to cover structured, catalogue, and document sources');
+if (Object.keys(connectorRegistry).length < 8) failures.push('expected connector contracts for regional data, judicial records, and procurement');
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
 console.log(`Connector registry valid: ${Object.keys(connectorRegistry).length} connector types cover ${sourceRegistry.length} sources.`);
