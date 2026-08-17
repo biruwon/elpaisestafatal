@@ -105,11 +105,38 @@ const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidenc
 }, new Map()).values()];
 for (const gap of gapContracts.gaps || []) sourceWork.push({ id: `gap:${gap.id}`, auditClass: 'partial_domain_evidence', domain: gap.domain, action: 'find_source', recurrence: 0, recentVelocity: 0, priorityScore: 0, examples: [gap.permittedConclusion || gap.nextEvidence || gap.id] });
 sourceWork.sort((a, b) => b.recurrence - a.recurrence || b.priorityScore - a.priorityScore);
-const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: configured.length, warehouseRecords: records.length, clusters: clusterAudit.length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, domainGaps: gapContracts.gaps || [], feeds: allFeeds.map(({ sourceId, metricId, url, schedule, mode, domain }) => ({ sourceId, metricId, url, schedule, mode, domain })) };
+const requiredDimensionsFor = (item) => {
+  const dimensions = new Set(['geography', 'period', 'source_role']);
+  if (item.domain === 'immigration_benefits') ['programme', 'eligibility_rule', 'beneficiary_group', 'denominator'].forEach((value) => dimensions.add(value));
+  if (item.domain === 'immigration_crime') ['offence_definition', 'legal_stage', 'group_denominator', 'territory', 'age_sex_adjustment'].forEach((value) => dimensions.add(value));
+  if (item.domain === 'public_housing_allocation') ['programme', 'eligible_applicants', 'allocation_rule', 'group_field', 'territory'].forEach((value) => dimensions.add(value));
+  if (!item.domain && item.metricIds?.length) dimensions.add('metric_compatible_observation');
+  if (item.auditClass === 'unsupported_scope') dimensions.add('local_territory');
+  return [...dimensions];
+};
+const sourceWorkItems = clusterAudit
+  .filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass))
+  .map((item) => ({
+    id: `cluster:${item.clusterId}`,
+    clusterId: item.clusterId,
+    auditClass: item.auditClass,
+    action: item.action,
+    domain: item.domain || null,
+    canonicalText: item.canonicalText,
+    recurrence: item.count,
+    recentVelocity: item.count7d,
+    priorityScore: item.priorityScore,
+    metricIds: item.metricIds,
+    sourceIds: item.sourceIds,
+    requiredDimensions: requiredDimensionsFor(item),
+    reason: item.auditClass === 'unsupported_scope' ? 'The claim requires territory-specific evidence and must not be generalized nationally.' : item.auditClass === 'partial_domain_evidence' ? 'The domain has only partial evidence; collect the missing definitions, denominators, and legal or programme stages.' : item.auditClass === 'covered_but_not_materialized' || item.auditClass === 'source_configured_not_refreshed' ? 'A compatible metric or feed exists, but the warehouse is not ready or is stale.' : 'No compatible reviewed evidence was found; identify a primary source before considering publication.',
+  }))
+  .sort((a, b) => b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
+const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: configured.length, warehouseRecords: records.length, clusters: clusterAudit.length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], feeds: allFeeds.map(({ sourceId, metricId, url, schedule, mode, domain }) => ({ sourceId, metricId, url, schedule, mode, domain })) };
 const output = pathArg('output', '.local/coverage-audit.json');
 await mkdir(join(output, '..'), { recursive: true });
 await writeFile(output, JSON.stringify(report, null, 2));
-const markdown = [`# Coverage audit`, `Generated: ${report.generatedAt}`, '', `## Summary`, '', `- Registry metrics: ${metricAudit.length}`, `- Configured feeds: ${configured.length}`, `- Warehouse records: ${records.length}`, `- Clusters replayed: ${clusterAudit.length}`, `- Source-work candidates: ${sourceWork.length}`, '', '## Cluster classes', '', ...Object.entries(report.summary.clusterClasses).map(([key, value]) => `- ${key}: ${value}`), '', '## Metric readiness', '', ...Object.entries(report.summary.metricStatuses).map(([key, value]) => `- ${key}: ${value}`), '', '## Ranked source work', '', ...sourceWork.slice(0, 30).map((item) => `- **${item.id}** — recurrence ${item.recurrence}, last 7 days ${item.recentVelocity}; ${item.action}. ${item.examples.join(' | ')}`), ''].join('\n');
+const markdown = [`# Coverage audit`, `Generated: ${report.generatedAt}`, '', `## Summary`, '', `- Registry metrics: ${metricAudit.length}`, `- Configured feeds: ${configured.length}`, `- Warehouse records: ${records.length}`, `- Clusters replayed: ${clusterAudit.length}`, `- Aggregate source-work candidates: ${sourceWork.length}`, `- Ranked cluster source-work items: ${sourceWorkItems.length}`, '', '## Cluster classes', '', ...Object.entries(report.summary.clusterClasses).map(([key, value]) => `- ${key}: ${value}`), '', '## Metric readiness', '', ...Object.entries(report.summary.metricStatuses).map(([key, value]) => `- ${key}: ${value}`), '', '## Ranked source work', '', ...sourceWorkItems.slice(0, 50).map((item) => `- **${item.id}** — ${item.canonicalText}; recurrence ${item.recurrence}, last 7 days ${item.recentVelocity}; ${item.action}; requires ${item.requiredDimensions.join(', ')}.`), ''].join('\n');
 await writeFile(output.replace(/\.json$/, '.md'), markdown);
 console.log(`Coverage audit written: ${output}`);
 console.log(`Clusters: ${clusterAudit.length}; existing evidence: ${report.summary.clusterClasses.covered_existing_evidence || 0}; true gaps: ${report.summary.clusterClasses.true_research_gap || 0}`);
