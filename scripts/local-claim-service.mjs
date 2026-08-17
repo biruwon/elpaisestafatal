@@ -1547,6 +1547,7 @@ const classify = async (text) => {
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadComplaintNormalized)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintNormalized)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintNormalized)
+    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga)\w*[\s\w]{0,12}\bespana\b/.test(broadComplaintNormalized)
     || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadComplaintNormalized);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintNormalized)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintNormalized)
@@ -1949,6 +1950,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadTopicText)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadTopicText)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadTopicText)
+    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga)\w*[\s\w]{0,12}\bespana\b/.test(broadTopicText)
     || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadTopicText);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
