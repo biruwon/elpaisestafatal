@@ -17,7 +17,7 @@ propositionIds: ["prop-ocupacion-respaldo-gobierno-delito-leve-core"]
 
 ## Qué es cierto
 
-La ocupación de un inmueble puede constituir allanamiento de morada o usurpación según el inmueble, la relación con quien entra y las circunstancias del caso. La Fiscalía distingue los supuestos y la Ley 5/2018 permite una vía civil de recuperación para determinados titulares.
+Hay dos preguntas distintas. En derecho penal, entrar o permanecer en una morada ajena puede ser allanamiento; ocupar un inmueble que no constituye morada puede encajar en usurpación si se cumplen sus elementos. Además, la Ley 5/2018 permite una vía civil de recuperación para determinados titulares. Ninguna de esas reglas equivale por sí sola a “respaldo del Gobierno”.
 
 ## Qué falta
 
@@ -29,7 +29,7 @@ La Ley Orgánica 1/2025 incluye determinados allanamientos y usurpaciones en el 
 
 ## Límite
 
-La calificación depende de si es morada, de la posesión previa, de la violencia o intimidación, de la prueba y de la vía elegida. Una afirmación sobre apoyo político requiere además pruebas de una política concreta, no solo la existencia de una norma procesal.
+La calificación depende de si es morada, de la posesión previa, de la violencia o intimidación, de la prueba y de la vía elegida. “Delito leve” no significa “no pasa nada”: puede implicar investigación, juicio y responsabilidad. La afirmación sobre apoyo político requiere una política concreta, no solo la existencia de una norma procesal.
 
 ## Respuesta compartible
 

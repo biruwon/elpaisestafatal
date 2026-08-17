@@ -17,11 +17,11 @@ propositionIds: ["prop-vivienda-triplica-en-tres-anos-core"]
 
 ## Qué es cierto
 
-El INE registró subidas interanuales del precio de la vivienda libre, del 7,8% en el segundo trimestre de 2024 al 12,9% en el primer trimestre de 2026.
+El INE registró una subida interanual del precio de la vivienda libre del 12,9% en el primer trimestre de 2026. Esa tasa anual no implica que el precio se haya multiplicado por tres desde 2023: triplicar exige aproximadamente un aumento acumulado del 200%.
 
 ## Qué falta
 
-La media nacional no demuestra que una vivienda concreta se haya multiplicado por tres en tres años. Esa afirmación necesita dirección, tipo de inmueble, precio de compra, precio actual y una valoración comparable.
+La media nacional no demuestra que una vivienda concreta se haya multiplicado por tres en tres años. Para comprobar esa experiencia hacen falta municipio, tipo de inmueble, precio y fecha de compra, y una tasación o índice comparable para la misma zona.
 
 ## Escala
 

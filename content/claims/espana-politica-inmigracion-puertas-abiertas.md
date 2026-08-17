@@ -17,12 +17,20 @@ propositionIds: ["prop-inmigracion-puertas-abiertas-core"]
 
 ## Qué es cierto
 
-España recibe entradas regulares e irregulares y la política migratoria puede ser objeto de debate político.
+“Puertas abiertas” puede significar cosas distintas. En España hay entradas regulares, entradas irregulares, solicitudes de protección internacional y permisos de residencia que requieren procedimientos diferentes; que existan entradas irregulares no demuestra que la ley permita entrar o quedarse sin requisitos.
 
-## Qué no encaja
+## Qué falta
 
-La normativa no describe una entrada sin requisitos: distingue visados, autorizaciones, residencia, trabajo, protección internacional y expulsión, con procedimientos y condiciones diferentes.
+La afirmación no fija qué se quiere medir: facilidad de entrada, concesión de residencia, aceptación de asilo o expulsiones. La normativa distingue visados, autorizaciones, residencia, trabajo, protección internacional y expulsión, con procedimientos y condiciones diferentes.
+
+## Escala
+
+La etiqueta política no es un indicador único. Hay que comparar cada vía—entrada, permiso, protección y expulsión—con su propio denominador y periodo.
+
+## Límite
+
+La existencia de entradas irregulares no demuestra una política de entrada libre, y la existencia de requisitos legales no demuestra por sí sola que todos se cumplan en la práctica.
 
 ## Respuesta compartible
 
-Decir “puertas abiertas” simplifica demasiado: España tiene entradas regulares e irregulares, pero la ley establece requisitos y procedimientos para residir, trabajar, pedir protección o ser expulsado.
+La comprobación útil es separar entradas, permisos, protección internacional y expulsiones. La normativa establece requisitos y procedimientos para cada vía; por eso “entra cualquiera” no describe correctamente el sistema jurídico completo.

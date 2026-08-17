@@ -17,13 +17,19 @@ propositionIds: ["prop-alquileres-suben-oferta-inseguridad-core"]
 
 ## Qué es cierto
 
-## Qué sí muestran los datos
+Los alquileres efectivos aumentaron aproximadamente un 14,6% entre 2015 y diciembre de 2025 en la serie armonizada de Eurostat. La oferta de vivienda disponible y la demanda no evolucionan igual en todos los territorios, por lo que el resultado nacional oculta diferencias importantes entre municipios.
 
-Los alquileres efectivos han aumentado en España y la oferta disponible no responde igual en todos los territorios. La evolución nacional no permite atribuir un porcentaje único a una sola causa.
+## Qué falta
 
-## Qué no está demostrado
+La poca oferta es una explicación plausible en mercados tensionados, pero las fuentes disponibles no estiman cuánto explica por sí sola. Tampoco existe una medida nacional que convierta “inseguridad jurídica” en una causa cuantificada del aumento. Para responder esa parte haría falta un estudio causal territorial que mida cambios normativos, oferta, contratos y precios.
 
-La poca oferta es una explicación plausible en mercados tensionados, pero la fuente no permite medir cuánto explica por sí sola. Tampoco existe una medida nacional que convierta “inseguridad jurídica” en una causa cuantificada del aumento.
+## Escala
+
+El 14,6% es una media nacional de alquileres efectivos entre 2015 y diciembre de 2025; no es la subida de cada contrato, anuncio o municipio.
+
+## Límite
+
+La serie de precios describe el resultado, pero no identifica por sí sola qué parte se debe a oferta, demanda, costes o cambios normativos.
 
 ## Respuesta compartible
 

@@ -17,11 +17,11 @@ propositionIds: ["prop-residencia-desde-primer-dia-trabajo-core"]
 
 ## Qué es cierto
 
-España contempla autorizaciones de residencia y trabajo para distintos supuestos, pero requieren cumplir las condiciones del régimen aplicable y seguir el procedimiento correspondiente.
+Trabajar legalmente en España suele requerir una autorización previa de residencia y trabajo: se presenta una solicitud, se comprueban el contrato y los demás requisitos, y después se tramita el visado o la tarjeta cuando corresponde. Entrar como turista, tener una oferta o firmar un contrato no convierte por sí solo la entrada en residencia.
 
 ## Qué falta
 
-La llegada al país o la intención de trabajar no concede por sí sola residencia desde el primer día. La autorización depende del tipo de entrada, visado, contrato, empleador, situación administrativa y demás requisitos legales.
+La llegada al país o la intención de trabajar no concede por sí sola residencia desde el primer día. Hay vías distintas para trabajadores ya residentes, contratación desde el extranjero, estudiantes, familiares y circunstancias excepcionales; cada una tiene requisitos y plazos propios.
 
 ## Escala
 

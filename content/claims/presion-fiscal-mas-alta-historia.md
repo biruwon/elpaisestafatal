@@ -17,11 +17,11 @@ propositionIds: ["prop-presion-fiscal-mas-alta-historia-core"]
 
 ## Qué es cierto
 
-La serie homogénea de ingresos totales de las administraciones públicas permite comprobar que 2025 fue el máximo del tramo comparable 2015-2025: 42,9% del PIB, frente al 38,4% en 2015. Es una respuesta más precisa que usar solo los impuestos corrientes sobre renta y riqueza, que en 2025 representaron el 12,5% del PIB en España frente al 13,2% en la Unión Europea.
+“Presión fiscal” puede referirse a ingresos públicos sobre PIB, impuestos concretos o lo que paga un hogar. En la serie homogénea disponible, los ingresos totales de las administraciones públicas alcanzaron el 42,9% del PIB en 2025, frente al 38,4% en 2015. Es una medida agregada; no equivale a la factura fiscal de una familia.
 
 ## Qué falta
 
-La serie no demuestra que la presión fiscal total sea la más alta de toda la historia. Sí permite afirmar que los ingresos públicos alcanzaron el máximo de la serie comparable disponible desde 2015. Para extender la afirmación a toda la historia habría que fijar una definición y recuperar una serie histórica completa y homogénea.
+La serie permite decir “máximo desde 2015”, no “máximo de toda la historia”. Para sostener la segunda formulación habría que fijar una definición y recuperar una serie histórica completa y homogénea con la misma cobertura institucional.
 
 ## Escala
 
