@@ -12,7 +12,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "audit:roadmap": "node scripts/audit-roadmap.mjs",
-    "knowledge:roadmap:status": "node scripts/knowledge/roadmap-status.mjs",
+    "knowledge:roadmap:status": "node scripts/knowledge/roadmap-status.mjs && node scripts/knowledge/validate-roadmap-status.mjs",
     "smoke:production": "node scripts/smoke-production.mjs",
     "smoke:pages": "node scripts/smoke-pages-functions.mjs",
     "claim-input:lifecycle": "node scripts/validate-claim-input-lifecycle.mjs",
