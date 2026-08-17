@@ -13,7 +13,7 @@ const allFeeds = [...feeds, ...domainFeeds];
 const metricFeedMap = new Map();
 for (const feed of feeds) if (feed.metricId) metricFeedMap.set(feed.metricId, [...(metricFeedMap.get(feed.metricId) || []), feed]);
 const domainMetricIds = {
-  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality'],
+  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_beneficiary_average_age'],
   immigration_crime: ['crime_rate_by_group'],
   public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_actions'],
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],

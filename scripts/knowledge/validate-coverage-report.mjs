@@ -24,9 +24,12 @@ try {
     try {
       const value = JSON.parse(await readFile(join(warehouseDir, file), 'utf8'));
       const source = value?.source;
-      if (!source?.metricId) continue;
-      materialized.add(source.metricId);
-      if (!Number(source.recordCount) || !source.retrievedAt || !source.publisher) errors.push(`${source.metricId}: warehouse record is empty or missing provenance`);
+      const recordMetricIds = new Set((Array.isArray(value?.records) ? value.records : []).map((item) => item?.metricId || source?.metricId).filter(Boolean));
+      if (!recordMetricIds.size && source?.metricId) recordMetricIds.add(source.metricId);
+      for (const metricId of recordMetricIds) materialized.add(metricId);
+      if (!Number(source?.recordCount || value?.records?.length) || !source?.retrievedAt || !source?.publisher) {
+        for (const metricId of recordMetricIds) errors.push(`${metricId}: warehouse record is empty or missing provenance`);
+      }
     } catch { errors.push(`${file}: warehouse record is not valid JSON`); }
   }
   for (const metric of report.metrics || []) {
