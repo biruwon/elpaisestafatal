@@ -107,3 +107,14 @@ jobs:
 
       - name: Check whitespace and repository state
         run: git diff --check
+
+      - name: Upload roadmap evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roadmap-evidence-${{ github.sha }}
+          path: |
+            .local/roadmap-status.json
+            .local/coverage-audit.json
+            .local/coverage-audit.md
+          if-no-files-found: warn
