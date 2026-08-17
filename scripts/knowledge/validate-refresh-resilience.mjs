@@ -16,5 +16,5 @@ const domainRefresh = await readFile(new URL('./refresh-domain-sources.mjs', imp
 assert(workflow.includes('--config config/source-refresh.json'), 'production refresh must use the canonical source configuration');
 assert(workflow.includes('knowledge:domain-refresh'), 'production refresh must include active domain source packs');
 assert(!workflow.includes('--config config/source-refresh.example.json'), 'production refresh must not use the example configuration');
-assert(domainRefresh.includes('failures.push') && domainRefresh.includes('continuing with remaining feeds'), 'domain refresh must separate one-feed failures and continue the batch');
+assert(domainRefresh.includes('failures.push') && domainRefresh.includes('continuing with remaining feeds') && domainRefresh.includes('domain-refresh-report.json'), 'domain refresh must separate one-feed failures and persist a batch report');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

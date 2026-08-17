@@ -1,4 +1,5 @@
-import { access, readFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 
 const configPath = process.argv.includes('--config')
@@ -33,10 +34,12 @@ const run = (feed) => new Promise((resolve, reject) => {
 });
 
 const failures = [];
+const successes = [];
 for (const feed of feeds) {
   console.log(`Refreshing domain feed ${feed.id}: ${feed.url}`);
   try {
     const output = await run(feed);
+    successes.push({ id: feed.id, domain: feed.domain, url: feed.url });
     if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -46,6 +49,10 @@ for (const feed of feeds) {
   }
 }
 console.log(`Refreshed ${feeds.length - failures.length}/${feeds.length} domain feed(s) in mode ${mode}.`);
+const reportPath = process.env.DOMAIN_REFRESH_REPORT || '.local/domain-refresh-report.json';
+await mkdir(join(reportPath, '..'), { recursive: true });
+await writeFile(reportPath, JSON.stringify({ schemaVersion: '1', generatedAt: new Date().toISOString(), mode, attempted: feeds.length, succeeded: successes.length, failed: failures.length, successes, failures }, null, 2));
+console.log(`Domain refresh report written to ${reportPath}.`);
 if (failures.length) {
   console.error(JSON.stringify({ operationalFailures: failures }, null, 2));
   process.exitCode = 1;
