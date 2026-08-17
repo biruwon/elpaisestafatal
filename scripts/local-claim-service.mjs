@@ -75,6 +75,7 @@ const indexPath = join(root, `.local/claim-semantic-index-${RUNTIME_VERSIONS.ind
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
+let gapWritesInFlight = 0;
 const cacheTtlMs = 15 * 60 * 1000;
 const currentEventCacheTtlMs = 5 * 60 * 1000;
 // Keep the local process bounded under long evaluation/replay runs. Results
@@ -301,6 +302,11 @@ const percentile = (values, fraction) => {
 
 const recordKnowledgeGap = async (text, result, inputType = 'text', classified, origin = 'runtime') => {
   if (!['uncovered', 'draft', 'partial'].includes(result.status)) return;
+  // A replay can finish hundreds of requests at once. Do not queue an
+  // unbounded set of appendFile buffers; gap telemetry is best-effort and the
+  // answer must never be held hostage by its persistence path.
+  if (gapWritesInFlight >= 32) return;
+  gapWritesInFlight += 1;
   await appendFile(knowledgeGapPath, `${JSON.stringify({
     createdAt: new Date().toISOString(),
     origin,
@@ -311,7 +317,7 @@ const recordKnowledgeGap = async (text, result, inputType = 'text', classified, 
     status: result.status,
     requestId: result.requestId,
     sourceIds: result.result?.sourceIds || [],
-  })}\n`).catch(() => { /* Learning must never block the user response. */ });
+  })}\n`).catch(() => { /* Learning must never block the user response. */ }).finally(() => { gapWritesInFlight -= 1; });
 };
 
 const inference = createLocalInferenceProvider({
