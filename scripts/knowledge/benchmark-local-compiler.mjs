@@ -44,6 +44,11 @@ const cases = [
   { id: 'housing-prediction', input: 'Los alquileres van a bajar a la mitad el año que viene', claimTypes: ['predictive'], mustMention: ['alquileres'], mustNeed: ['fecha', 'indicador'] },
   { id: 'everything-worse', input: 'España va cada vez peor en todo', claimTypes: ['definition', 'mixed'], mustMention: ['españa'], mustNeed: ['métrica', 'comparación'] },
 ];
+// Exploratory samples must not replace the canonical full-corpus qualification
+// report consumed by roadmap status and release checks.
+const benchmarkOutputPath = caseLimit < cases.length && !args.get('output')
+  ? join(root, '.local/compiler-benchmark-sample.json')
+  : outputPath;
 
 const bounded = (value, limit) => String(value || '').slice(0, limit);
 const parseJson = (value) => {
@@ -129,5 +134,5 @@ const report = {
   minimumQuality, maxWarmP95Ms, cases: caseLimit, requestedModels, unavailableModels, reports, recommendedModel: recommended,
   recommendation: recommended ? 'The first passing model in the configured order is the smallest tested candidate meeting the safety and quality threshold.' : 'No tested model met the threshold; keep deterministic fallback as the release path and review the failing cases before changing the default.',
 };
-await writeFile(outputPath, JSON.stringify(report, null, 2));
+await writeFile(benchmarkOutputPath, JSON.stringify(report, null, 2));
 console.log(`Local compiler benchmark written: ${reports.length} model(s), ${cases.length} cases, recommended=${recommended || 'none'}.`);
