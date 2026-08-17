@@ -1705,7 +1705,10 @@ const startResolveJob = (text, origin = 'runtime') => {
     const safeClassified = vagueTaxJudgement(text)
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
-    const completed = { ...await enrichResolve(text, safeClassified, undefined, id), canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
+    const resolved = process.env.LOCAL_FAST_DETERMINISTIC === '1'
+      ? toResolveResult(text, safeClassified, undefined, id)
+      : await enrichResolve(text, safeClassified, undefined, id);
+    const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed, 'text', classified, origin);
@@ -1744,7 +1747,10 @@ const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
     if (text) {
       try {
         const classified = await classify(text);
-        const completed = { ...await enrichResolve(text, classified, undefined, id), inputType, createdAt: job.createdAt, completedAt: Date.now() };
+        const resolved = process.env.LOCAL_FAST_DETERMINISTIC === '1'
+          ? toResolveResult(text, classified, undefined, id)
+          : await enrichResolve(text, classified, undefined, id);
+        const completed = { ...resolved, inputType, createdAt: job.createdAt, completedAt: Date.now() };
         resolveJobs.set(id, completed);
         recordCompletion(job.createdAt, completed.status);
         void recordKnowledgeGap(text, completed, inputType, classified, origin);
