@@ -1213,7 +1213,9 @@ const classify = async (text) => {
   // Do not pay for an embedding request for obvious long-tail text. Exact and
   // alias matches are already covered lexically; semantic retrieval is only
   // useful when the input has a plausible relation to the published index.
-  if ((lexicalRanked[0]?.lexical || 0) >= 0.1) {
+  // Deterministic CI and degraded deployments must not probe the embedding
+  // provider after compiler/planner inference has been explicitly disabled.
+  if ((localCompilerEnabled || answerPlannerEnabled) && (lexicalRanked[0]?.lexical || 0) >= 0.1) {
     try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
