@@ -2473,7 +2473,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status: broadConditionRequested ? 'complete' : (safetyUnresolved ? 'uncovered' : status), requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: safetyUnresolved ? [] : broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind === 'topic') : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status: broadConditionRequested ? 'complete' : (safetyUnresolved ? 'uncovered' : status), requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: safetyUnresolved || broadPoliticalComplaint ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
@@ -2495,7 +2495,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const finalRelatedClaims = source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim
     ? (fallbackTopic && !explicitMetricRoute ? [fallbackTopic] : [])
     : relatedClaims;
-  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: safetyUnresolved ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
+  return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: safetyUnresolved || broadPoliticalComplaint ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
