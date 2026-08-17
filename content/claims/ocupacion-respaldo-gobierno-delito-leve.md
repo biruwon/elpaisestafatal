@@ -3,7 +3,7 @@ slug: ocupacion-respaldo-gobierno-delito-leve
 claim: "La ocupación está respaldada por el Gobierno y es delito leve."
 assessment: misleading
 topicSlugs: ["vivienda", "politica", "justicia-leyes-sistema-penal"]
-aliases: ["la ocupación está respaldada por el gobierno y es delito leve", "el gobierno protege a los okupas y ocupar es delito leve", "la okupación está respaldada por el gobierno"]
+aliases: ["la ocupación está respaldada por el gobierno y es delito leve", "el gobierno protege a los okupas y ocupar es delito leve", "la okupación está respaldada por el gobierno", "el Gobierno ampara la okupación y la considera un delito leve", "ocupar una vivienda es solo un delito leve porque lo permite el Gobierno", "el Ejecutivo protege a los okupas y la usurpación es leve"]
 claimType: legal
 evidenceStrength: high
 geography: España
