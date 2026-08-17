@@ -3,7 +3,7 @@ slug: hay-ministros-en-prision
 claim: "Hay ministros en prisión."
 assessment: unsupported
 topicSlugs: ["politica", "justicia"]
-aliases: ["hay ministros del Gobierno en la cárcel", "ministros en prisión", "un ministro está preso"]
+aliases: ["hay ministros del Gobierno en la cárcel", "ministros en prisión", "un ministro está preso", "algún ministro se encuentra encarcelado"]
 claimType: descriptive
 evidenceStrength: medium
 geography: España

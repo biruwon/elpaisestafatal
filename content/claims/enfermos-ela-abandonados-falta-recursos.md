@@ -3,7 +3,7 @@ slug: enfermos-ela-abandonados-falta-recursos
 claim: "Los enfermos de ELA están abandonados por falta de recursos."
 assessment: misleading
 topicSlugs: ["sanidad", "politica"]
-aliases: ["los enfermos de ELA están abandonados", "ELA sin recursos", "el Gobierno abandona a los enfermos de ELA"]
+aliases: ["los enfermos de ELA están abandonados", "ELA sin recursos", "el Gobierno abandona a los enfermos de ELA", "las personas con ELA carecen de ayudas suficientes"]
 claimType: mixed
 evidenceStrength: high
 geography: España

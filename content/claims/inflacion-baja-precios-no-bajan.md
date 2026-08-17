@@ -3,7 +3,7 @@ slug: inflacion-baja-precios-no-bajan
 claim: "Si baja la inflación, los precios están bajando."
 assessment: false
 topicSlugs: ["economia", "desigualdad"]
-aliases: ["baja la inflación bajan los precios", "inflación negativa", "los precios bajan porque baja el IPC", "desinflación es deflación"]
+aliases: ["baja la inflación bajan los precios", "inflación negativa", "los precios bajan porque baja el IPC", "desinflación es deflación", "si el IPC baja los productos cuestan menos"]
 claimType: mixed
 evidenceStrength: high
 geography: España
