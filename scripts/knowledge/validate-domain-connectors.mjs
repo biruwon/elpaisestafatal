@@ -1,8 +1,10 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseIneTempusSnapshot, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
+import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseIneTempusSnapshot, parseIneConvictionTable, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
 const ineSnapshot = parseIneTempusSnapshot([{ MetaData: [{ T3_Variable: 'Nacionalidad (española/extranjera)', Nombre: 'Extranjera' }], Data: [{ Valor: 1234 }] }], source);
 if (ineSnapshot.length !== 1 || ineSnapshot[0].periodType !== 'retrieval_snapshot' || ineSnapshot[0].value !== 1234 || ineSnapshot[0].group !== 'Extranjera') throw new Error('INE Tempus snapshot parser did not preserve latest-snapshot semantics');
+const convictionRows = parseIneConvictionTable([{ Nombre: 'Total Nacional. Total. Dato base. Total. Extranjera.', Data: [{ Anyo: 2025, Valor: 9123 }] }], { ...source, title: 'INE adult convictions by nationality and offence stage' });
+if (convictionRows.length !== 1 || convictionRows[0].metricId !== 'crime_rate_by_group' || convictionRows[0].dimensions.legalStage !== 'conviction' || convictionRows[0].dimensions.group !== 'Extranjera') throw new Error('INE conviction nationality parser did not preserve legal stage and group');
 const fixtures = {
   immigration_benefits: [{ periodo: '2025', territorio: 'España', grupo: 'nacionalidad extranjera', beneficiarios: '1200' }],
   immigration_crime: [{ periodo: '2025', territorio: 'España', grupo: 'nacionalidad', tasa: '42,5' }],

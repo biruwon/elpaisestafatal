@@ -9,6 +9,14 @@
       "title": "INE population by nationality and country of birth"
     },
     {
+      "id": "ine-convictions-by-nationality",
+      "domain": "immigration_crime",
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/25698?nult=1",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE adult convictions by nationality and offence stage"
+    },
+    {
       "id": "interior-crime-downloads",
       "domain": "immigration_crime",
       "url": "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",

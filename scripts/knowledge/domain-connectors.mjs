@@ -163,10 +163,33 @@ export const parseIneTempusSnapshot = (rows, source) => rows.map((row, index) =>
   };
 }).filter(Boolean);
 
+// INE table 25698/25704 exposes final convictions by nationality as one
+// series per row. Keep this distinct from arrests and recorded offences: the
+// legal stage is conviction, and nationality is a descriptive group field.
+export const parseIneConvictionTable = (rows, source) => rows.flatMap((row, index) => {
+  if (!Array.isArray(row?.Data)) return [];
+  const label = String(row.Nombre || '').trim();
+  const nationality = label.match(/\b(Española|Extranjera|Español|Extranjero)\b/i)?.[1] || null;
+  if (!nationality) return [];
+  return row.Data.filter((point) => point && typeof point.Valor === 'number' && Number.isFinite(point.Valor)).map((point, pointIndex) => ({
+    id: `${source.id}-conviction-${index}-${pointIndex}`,
+    kind: 'observation', sourceId: source.id, datasetId: source.title,
+    period: Number.isFinite(point.Anyo) ? String(point.Anyo) : undefined,
+    geography: 'España', population: 'personas condenadas adultas',
+    dimensions: { group: nationality, measure: 'convictions', legalStage: 'conviction', category: 'all offences', series: label },
+    metricId: 'crime_rate_by_group', metric: 'Personas condenadas por nacionalidad', value: point.Valor,
+    unit: 'personas condenadas', url: source.url,
+  }));
+}).filter((record) => record.period);
+
 export const parseDomainPayload = (domain, payload, source) => {
   const parser = domainConnectorFor(domain);
   if (!parser) throw new Error(`Unknown domain connector: ${domain}`);
-  if (domain === 'immigration_crime' && Array.isArray(payload) && payload.some((item) => Array.isArray(item?.Data) && Array.isArray(item?.MetaData))) {
+  if (domain === 'immigration_crime' && Array.isArray(payload) && payload.some((item) => Array.isArray(item?.Data))) {
+    if (/condenad|conviction|delitos seg[uú]n nacionalidad/i.test(source.title || '')) {
+      const convictions = parseIneConvictionTable(payload, source);
+      if (convictions.length) return convictions;
+    }
     const snapshot = parseIneTempusSnapshot(payload, source);
     if (snapshot.length) return snapshot;
   }
