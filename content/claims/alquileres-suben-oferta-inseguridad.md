@@ -3,7 +3,7 @@ slug: alquileres-suben-oferta-inseguridad
 claim: "Los alquileres se han disparado por la poca oferta y la inseguridad jurídica."
 assessment: misleading
 topicSlugs: ["vivienda", "economia"]
-aliases: ["Los alquileres se han disparado por la poca oferta y la inseguridad jurídica", "los alquileres suben por falta de oferta", "la inseguridad jurídica dispara los alquileres"]
+aliases: ["Los alquileres se han disparado por la poca oferta y la inseguridad jurídica", "los alquileres suben por falta de oferta", "la inseguridad jurídica dispara los alquileres", "la falta de pisos disponibles hace subir los alquileres", "los alquileres se encarecen porque no hay oferta", "la inseguridad legal provoca alquileres más caros"]
 claimType: causal
 evidenceStrength: high
 geography: España
