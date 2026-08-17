@@ -90,7 +90,10 @@ jobs:
 
       - name: Smoke-test local text and media boundary without inference
         run: |
-          OLLAMA_ENDPOINT=http://127.0.0.1:1 LOCAL_CLASSIFIER_PORT=8906 node scripts/local-claim-service.mjs > /tmp/local-claim-service.log 2>&1 &
+          # CI intentionally exercises the deterministic resolver contract. A
+          # deliberately unreachable Ollama endpoint must not add model
+          # timeout latency or make the smoke test depend on inference.
+          OLLAMA_ENDPOINT=http://127.0.0.1:1 LOCAL_CLAIM_COMPILER=0 LOCAL_ANSWER_PLANNER=0 LOCAL_CLASSIFIER_PORT=8906 node scripts/local-claim-service.mjs > /tmp/local-claim-service.log 2>&1 &
           service_pid=$!
           trap 'kill "$service_pid" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 20); do
