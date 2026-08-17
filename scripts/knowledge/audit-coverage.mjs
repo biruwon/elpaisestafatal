@@ -92,6 +92,13 @@ const classifyCluster = (cluster) => {
   const sourceIds = directSources(cluster.sourceIds);
   if (operationalPattern.test(text) || cluster.reviewable === false) return { auditClass: 'operational_failure', action: 'repair_infrastructure', metricIds: ids, domain };
   if (localPattern.test(text)) return { auditClass: 'unsupported_scope', action: 'find_local_source', metricIds: ids, domain };
+  // The promoted cluster file is the authoritative replay output for
+  // catalogue-backed language. Published links may have no metric or source
+  // IDs (legal, normative, and mixed claims), so do not downgrade them to a
+  // research gap merely because they are not warehouse-routable.
+  if (cluster.coverageStatus === 'covered' && cluster.reviewStatus === 'published' && cluster.linkedClaimSlug) {
+    return { auditClass: 'covered_existing_evidence', action: 'auto_route', metricIds: ids, domain, sourceIds };
+  }
   if (domain && (domain === 'public_housing_allocation' || domain === 'immigration_benefits' || domain === 'immigration_crime')) return { auditClass: 'partial_domain_evidence', action: 'human_review', metricIds: ids, domain };
   if (ids.length) {
     const readiness = ids.map((id) => metricById.get(id));
