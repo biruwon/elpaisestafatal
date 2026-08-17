@@ -12,7 +12,9 @@ assert(boeSummaryCandidates('https://ec.europa.eu/eurostat/api/data').length ===
 assert(isBoeLegalDiscoveryUrl('https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2007-19814/metadatos'), 'BOE legal discovery URL was not recognized');
 assert(!isBoeLegalDiscoveryUrl(source), 'BOE daily summary was misclassified as legal discovery');
 const workflow = await readFile(new URL('../../.github/workflows/knowledge-refresh.yml', import.meta.url), 'utf8');
+const domainRefresh = await readFile(new URL('./refresh-domain-sources.mjs', import.meta.url), 'utf8');
 assert(workflow.includes('--config config/source-refresh.json'), 'production refresh must use the canonical source configuration');
 assert(workflow.includes('knowledge:domain-refresh'), 'production refresh must include active domain source packs');
 assert(!workflow.includes('--config config/source-refresh.example.json'), 'production refresh must not use the example configuration');
+assert(domainRefresh.includes('failures.push') && domainRefresh.includes('continuing with remaining feeds'), 'domain refresh must separate one-feed failures and continue the batch');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

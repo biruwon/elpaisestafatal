@@ -32,9 +32,21 @@ const run = (feed) => new Promise((resolve, reject) => {
     : reject(new Error(`Domain feed ${feed.id} failed (${code})\n${output}`)));
 });
 
+const failures = [];
 for (const feed of feeds) {
   console.log(`Refreshing domain feed ${feed.id}: ${feed.url}`);
-  const output = await run(feed);
-  if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
+  try {
+    const output = await run(feed);
+    if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    failures.push({ id: feed.id, domain: feed.domain, url: feed.url, error: message.slice(0, 1000) });
+    console.error(`Domain feed ${feed.id} failed; continuing with remaining feeds.`);
+    console.error(message);
+  }
 }
-console.log(`Refreshed ${feeds.length} domain feed(s) in mode ${mode}.`);
+console.log(`Refreshed ${feeds.length - failures.length}/${feeds.length} domain feed(s) in mode ${mode}.`);
+if (failures.length) {
+  console.error(JSON.stringify({ operationalFailures: failures }, null, 2));
+  process.exitCode = 1;
+}
