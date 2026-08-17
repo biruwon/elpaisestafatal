@@ -7,6 +7,10 @@ for (const source of sourceRegistry) {
   if (!connector) failures.push(`${source.id}: connector is missing`);
   if (connector && source.formats.some((format) => !connector.formats.includes(format))) failures.push(`${source.id}: source format is not supported by connector`);
 }
+for (const id of ['regional-open-data', 'judicial-records', 'procurement']) {
+  const connector = connectorForId(id);
+  if (!Array.isArray(connector?.requiredDimensions) || connector.requiredDimensions.length < 3) failures.push(`${id}: evidence dimensions are not declared`);
+}
 const probes = [
   ['ine-table', 'application/json'],
   ['json-stat', 'application/json'],

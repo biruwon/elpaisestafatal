@@ -28,16 +28,19 @@ export const connectorRegistry = {
     formats: ['json', 'csv', 'xml', 'html'],
     parserVersion: 'regional-open-data-v1',
     description: 'Regional and municipal open-data portals with explicit geography and period dimensions',
+    requiredDimensions: ['geography', 'period', 'unit', 'source_role'],
   },
   'judicial-records': {
     formats: ['json', 'xml', 'html', 'pdf', 'text'],
     parserVersion: 'judicial-records-v1',
     description: 'Official court, Fiscalía, and judicial-statistics records preserving legal stage and jurisdiction',
+    requiredDimensions: ['jurisdiction', 'legal_stage', 'period', 'source_role'],
   },
   procurement: {
     formats: ['json', 'xml', 'html', 'csv'],
     parserVersion: 'procurement-v1',
     description: 'Public procurement and infrastructure records preserving contracting authority, amount, status, and dates',
+    requiredDimensions: ['contracting_authority', 'amount', 'status', 'period', 'source_role'],
   },
 };
 
