@@ -15,7 +15,8 @@ try {
     const aliasLine = source.match(/^aliases:\s*(\[[^\n]*\])/m)?.[1];
     const title = source.match(/^claim:\s*["'](.+?)["']\s*$/m)?.[1];
     if (aliasLine) {
-      try { reviewedLanguageExamples += new Set([title, ...JSON.parse(aliasLine)].filter(Boolean)).size; } catch { /* catalog fallback below */ }
+      const quoted = [...aliasLine.matchAll(/(?:"([^"]+)"|'([^']+)'|`([^`]+)`)/g)].map((match) => match[1] || match[2] || match[3]).filter(Boolean);
+      reviewedLanguageExamples += new Set([title, ...quoted].filter(Boolean)).size;
     }
   }
 } catch { /* use built catalog when source files are unavailable */ }
