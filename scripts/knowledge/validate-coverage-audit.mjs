@@ -12,6 +12,10 @@ if (!Number.isInteger(report.summary.configuredMetricCount) || report.summary.co
 if (!Array.isArray(report.feeds)) errors.push('feed inventory is missing');
 if (Array.isArray(report.feeds) && report.summary.configuredFeeds !== report.feeds.length) errors.push('configured feed total does not match feed inventory');
 if (Array.isArray(report.metrics) && report.summary.configuredMetricCount !== report.metrics.filter((item) => item.configuredFeedCount > 0).length) errors.push('configured metric total does not match metric readiness');
+if (Array.isArray(report.feeds)) {
+  const keys = report.feeds.map((feed) => `${feed.sourceId || ''}|${feed.metricId || ''}|${feed.url || ''}`);
+  if (new Set(keys).size !== keys.length) errors.push('feed inventory contains duplicate source/metric/URL entries');
+}
 if (![report.summary.refreshAttempted, report.summary.refreshSucceeded, report.summary.refreshFailed].every((value) => Number.isInteger(Number(value)) && Number(value) >= 0)) errors.push('refresh summary is malformed');
 if (!Array.isArray(report.operationalFailures)) errors.push('operational failure collection is missing');
 if (!Array.isArray(report.metrics) || !Array.isArray(report.clusters) || !Array.isArray(report.sourceWorkCandidates) || !Array.isArray(report.sourceWorkItems)) errors.push('audit collections are missing');
