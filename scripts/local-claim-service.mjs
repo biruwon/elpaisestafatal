@@ -1678,7 +1678,14 @@ const classify = async (text) => {
   // an evaluative wrapper such as “está colapsada” must not force the user
   // into an uncovered dead end. Broad wording without a family match still
   // follows the cautious clarification path below.
-  const broadComplaintNeedsTopic = (broadPoliticalComplaint || broadEconomicComplaint) && !hasPublishedSemanticFamily;
+  // When scorecards are enabled, broad political/economic judgements must
+  // continue into the six-indicator resolver.  Returning a topic card here
+  // creates the old dead end (“¿qué hecho concreto?”) instead of answering
+  // “gobernando la izquierda el país va peor”. Keep the topic-only fallback
+  // solely for an explicitly disabled scorecard feature.
+  const broadComplaintNeedsTopic = (broadPoliticalComplaint || broadEconomicComplaint)
+    && !hasPublishedSemanticFamily
+    && process.env.BROAD_SCORECARD === '0';
   if (safeCanonicalPhrase || (!broadComplaintNeedsTopic && strongMatch && !broadEvaluative) || (!broadComplaintNeedsTopic && semanticFamilyMatch)) {
     // A topic is useful guidance, but it is not a claim-specific answer. Keep
     // it as the first related result so a broad political or social complaint
@@ -1689,7 +1696,8 @@ const classify = async (text) => {
   // A recognized metric is already a concrete question. Do not let a broad
   // topic (for example housing) intercept it before the warehouse has had a
   // chance to answer or explicitly report that its evidence is missing.
-  if (effectiveBroadTopic && !explicitMetricRoute && !hasPublishedSemanticFamily) {
+  if (effectiveBroadTopic && !explicitMetricRoute && !hasPublishedSemanticFamily
+    && (!(broadPoliticalComplaint || broadEconomicComplaint) || process.env.BROAD_SCORECARD === '0')) {
     const broadEntryKeywords = broadPoliticalComplaint
       ? new Set(['politica', 'economia', 'inmigracion', 'seguridad', 'vivienda', 'empleo', 'sanidad'])
       : new Set(['economia', 'vivienda', 'empleo', 'impuestos', 'sanidad']);
