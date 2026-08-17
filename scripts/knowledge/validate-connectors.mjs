@@ -9,7 +9,9 @@ const csvCases = [
   ['a;b\n1;2\n', 'b'],
   ['a\tb\n1\t2\n', 'b'],
 ];
-for (const [input, key] of csvCases) if (parseDelimitedRows(input).length !== 1 || parseDelimitedRows(input)[0].dimensions[key] !== '2') failures.push('CSV delimiter fixture did not preserve columns');
+for (const [input, key] of csvCases) if (parseDelimitedRows(input).length !== 1 || parseDelimitedRows(input)[0].dimensions[key] !== 2) failures.push('CSV delimiter fixture did not preserve columns');
+const typed = parseDelimitedRows('amount,code,active\n12.5,001,true\n')[0]?.dimensions;
+if (typed?.amount !== 12.5 || typed?.code !== '001' || typed?.active !== true) failures.push('CSV scalar coercion changed numeric codes or failed to type values');
 const ingestSource = await readFile(new URL('./ingest-source.mjs', import.meta.url), 'utf8');
 if (!ingestSource.includes('parseDelimitedRows') || !ingestSource.includes("contentType.includes('csv')")) failures.push('CSV connector inputs must materialize bounded records and detect delimiters');
 for (const source of sourceRegistry) {

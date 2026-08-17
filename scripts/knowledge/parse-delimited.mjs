@@ -1,3 +1,11 @@
+const scalar = (value) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return '';
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(trimmed)) return Number(trimmed);
+  if (/^(?:true|false)$/i.test(trimmed)) return trimmed.toLowerCase() === 'true';
+  return trimmed;
+};
+
 export const parseDelimitedRows = (text, { rowId = (index) => `row-${index + 1}`, sourceId = '', metricId, retrievedAt = '' } = {}) => {
   const sample = String(text || '').split(/\r?\n/, 1)[0] || '';
   const delimiter = [';', '\t', ','].sort((left, right) => (sample.split(right).length - 1) - (sample.split(left).length - 1))[0];
@@ -21,5 +29,5 @@ export const parseDelimitedRows = (text, { rowId = (index) => `row-${index + 1}`
   if (field || row.length) { row.push(field.trim()); if (row.some((item) => item !== '')) rows.push(row); }
   const [header, ...data] = rows;
   if (!header?.length) return [];
-  return data.slice(0, 100000).map((values, index) => ({ id: rowId(index), sourceId, metricId, dimensions: Object.fromEntries(header.map((key, column) => [key || `column_${column + 1}`, values[column] ?? ''])), retrievedAt }));
+  return data.slice(0, 100000).map((values, index) => ({ id: rowId(index), sourceId, metricId, dimensions: Object.fromEntries(header.map((key, column) => [key || `column_${column + 1}`, scalar(values[column] ?? '')])), retrievedAt }));
 };
