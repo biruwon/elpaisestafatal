@@ -269,7 +269,17 @@ export const reconcileCompilerSafety = (deterministic, candidate) => {
   // claim type. A descriptive model response must not invent a new concept
   // (for example crime) and use it to promote an adjacent published family.
   // The model can still enrich wording, entities, and retrieval hints.
-  if (!safetySensitive) return { ...candidate, semanticSignature: deterministic.semanticSignature, numbers: deterministic.numbers };
+  // Context gates are safety-sensitive for every claim type: a model must not
+  // move a Spain-wide claim to a municipality, change its period, or alter
+  // the population being measured merely while enriching wording.
+  if (!safetySensitive) return {
+    ...candidate,
+    semanticSignature: deterministic.semanticSignature,
+    numbers: deterministic.numbers,
+    geography: deterministic.geography,
+    period: deterministic.period,
+    population: deterministic.population,
+  };
   return {
     ...candidate,
     claimType: deterministic.claimType,
@@ -278,6 +288,9 @@ export const reconcileCompilerSafety = (deterministic, candidate) => {
     impliedPropositions: deterministic.impliedPropositions,
     semanticSignature: deterministic.semanticSignature,
     numbers: deterministic.numbers,
+    geography: deterministic.geography,
+    period: deterministic.period,
+    population: deterministic.population,
     clarificationRequired: deterministic.clarificationRequired || candidate.clarificationRequired === true,
   };
 };
