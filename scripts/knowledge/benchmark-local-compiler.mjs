@@ -14,6 +14,7 @@ const endpointUrl = new URL(endpoint);
 const outputPath = args.get('output') || join(root, '.local/compiler-benchmark.json');
 const timeoutMs = Math.min(30000, Math.max(1500, Number(args.get('timeout-ms') || process.env.COMPILER_BENCHMARK_TIMEOUT_MS || 10000)));
 const minimumQuality = Math.min(1, Math.max(0, Number(args.get('min-quality') || process.env.COMPILER_BENCHMARK_MIN_QUALITY || 0.8)));
+const maxWarmP95Ms = Math.max(1000, Number(args.get('max-p95-ms') || process.env.COMPILER_BENCHMARK_MAX_P95_MS || 15000));
 const requestedModels = String(args.get('models') || process.env.COMPILER_BENCHMARK_MODELS || 'gemma4:26b,qwen3.6:27b')
   .split(',').map((model) => model.trim()).filter(Boolean);
 
@@ -115,14 +116,15 @@ for (const model of models) {
   const validRate = average(results.map((result) => Number(result.validJson)));
   const safetyRate = average(results.map((result) => Number(result.safetyPreserved)));
   const latencies = results.map((result) => result.latencyMs);
-  reports.push({ model, cases: results.length, quality, validRate, safetyRate, p50Ms: percentile(latencies, 0.5), p95Ms: percentile(latencies, 0.95), passed: quality >= minimumQuality && safetyRate === 1, results });
+  const p95Ms = percentile(latencies, 0.95);
+  reports.push({ model, cases: results.length, quality, validRate, safetyRate, p50Ms: percentile(latencies, 0.5), p95Ms, passed: quality >= minimumQuality && safetyRate === 1 && p95Ms <= maxWarmP95Ms, results });
 }
 
 const recommended = reports.find((report) => report.passed)?.model || null;
 const report = {
   generatedAt: new Date().toISOString(),
   endpoint: `${endpointUrl.protocol}//${endpointUrl.hostname}:${endpointUrl.port || (endpointUrl.protocol === 'https:' ? 443 : 80)}`,
-  minimumQuality, cases: cases.length, requestedModels, reports, recommendedModel: recommended,
+  minimumQuality, maxWarmP95Ms, cases: cases.length, requestedModels, reports, recommendedModel: recommended,
   recommendation: recommended ? 'The first passing model in the configured order is the smallest tested candidate meeting the safety and quality threshold.' : 'No tested model met the threshold; keep deterministic fallback as the release path and review the failing cases before changing the default.',
 };
 await writeFile(outputPath, JSON.stringify(report, null, 2));
