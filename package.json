@@ -46,7 +46,7 @@
     "claims:post:test": "node scripts/test-post-claims.mjs",
     "claims:post:test:local": "node scripts/run-local-claim-test.mjs",
     "claims:families:test": "node scripts/test-claim-families.mjs",
-    "claims:quality:validate": "node scripts/validate-published-claim-quality.mjs",
+    "claims:quality:validate": "node scripts/validate-published-claim-quality.mjs && node scripts/validate-priority-claim-quality.mjs",
     "claims:routing:validate": "node scripts/validate-claim-routing-corpus.mjs",
     "knowledge:family-routing": "node scripts/knowledge/validate-claim-family-routing.mjs",
     "validate:content": "node scripts/validate-content.mjs",

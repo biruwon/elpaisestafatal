@@ -33,4 +33,4 @@ La existencia de entradas irregulares no demuestra una política de entrada libr
 
 ## Respuesta compartible
 
-La comprobación útil es separar entradas, permisos, protección internacional y expulsiones. La normativa establece requisitos y procedimientos para cada vía; por eso “entra cualquiera” no describe correctamente el sistema jurídico completo.
+La comprobación útil es separar entradas, permisos de residencia y trabajo, protección internacional y expulsiones. La normativa establece requisitos y procedimientos para cada vía; por eso “entra cualquiera” o “obtiene residencia” no describe correctamente el sistema jurídico completo.
