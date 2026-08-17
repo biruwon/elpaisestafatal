@@ -59,8 +59,8 @@
       ],
       "permittedConclusion": "No public source currently establishes whether a specific public-housing programme prioritises or allocates homes by nationality.",
       "nextEvidence": "A programme-level applicant and allocation extract from the responsible regional or municipal housing authority.",
-      "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data"],
-      "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions"]
+      "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data", "Excel nº 3 attached to Madrid AVS transparency resolution 10-OPEN-00039.7/2022"],
+      "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions", "the attached Excel is checked for years, missing fields, and whether adjudications are directly extractable"]
     }
   ]
 }
