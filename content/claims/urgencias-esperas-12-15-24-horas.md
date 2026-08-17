@@ -23,6 +23,19 @@ Hay experiencias de espera largas en urgencias y la encuesta oficial permite med
 
 La media nacional no significa que todos los pacientes esperen lo mismo. Puede haber casos de 12, 15 o 24 horas, pero la cifra viral no demuestra que sean el tiempo habitual ni que se aplique a todas las urgencias.
 
+
+## Qué falta
+
+Para comprobar “Las urgencias tienen esperas de 12, 15 o 24 horas.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Las esperas muy largas pueden ocurrir, pero el Barómetro Sanitario 2025 sitúa la media declarada en algo más de tres horas y media. Para afirmar que las urgencias tardan habitualmente 12, 15 o 24 horas harían falta datos de distribución y del hospital concreto.

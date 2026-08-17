@@ -36,6 +36,11 @@ El Gini no muestra qué grupos explican la diferencia, cuánto gana cada hogar n
 
 Que España tenga un Gini más alto no significa que todos los hogares españoles estén peor ni que la cifra mida pobreza absoluta. Para entender la desigualdad hacen falta también renta por grupos, pobreza, empleo, vivienda y riqueza.
 
+
+## Escala
+
+La ficha se refiere a España y Unión Europea y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 Sí, en la medida comparable de Eurostat España tuvo un Gini mayor en 2025: 30,8 frente a 29,2 en la UE. Eso indica más desigualdad relativa de renta disponible equivalente, pero no mide por sí solo pobreza ni riqueza acumulada.

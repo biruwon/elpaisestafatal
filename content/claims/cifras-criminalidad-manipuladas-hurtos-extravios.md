@@ -23,6 +23,19 @@ Las estadísticas policiales tienen límites: recogen hechos conocidos, pueden s
 
 El balance oficial distingue hurtos de robos y otras categorías. Esas limitaciones no prueban una manipulación deliberada ni que los hurtos se registren como extravíos.
 
+
+## Qué falta
+
+Para comprobar “Las cifras de delincuencia están manipuladas y los hurtos se registran como extravíos.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Las estadísticas policiales no miden todos los delitos porque dependen de denuncias y registros, pero el balance distingue la categoría de hurtos. No hay evidencia en esa fuente de que se oculten deliberadamente como extravíos.

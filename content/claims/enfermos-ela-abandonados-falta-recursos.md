@@ -27,6 +27,19 @@ El Gobierno anunció 500 millones de euros para reforzar la atención integral y
 
 La existencia de problemas de acceso o de recursos insuficientes en algunos casos no demuestra que todas las personas con ELA estén abandonadas ni que no exista ninguna respuesta pública.
 
+
+## Qué falta
+
+Para comprobar “Los enfermos de ELA están abandonados por falta de recursos.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Las familias de personas con ELA pueden afrontar carencias reales, pero no es correcto decir que no existe respuesta pública: en 2025 se anunciaron 500 millones y nuevas medidas de dependencia. Hay que comprobar su aplicación y cobertura caso por caso.

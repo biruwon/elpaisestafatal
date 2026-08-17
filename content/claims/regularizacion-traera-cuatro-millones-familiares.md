@@ -23,6 +23,19 @@ La reagrupación familiar existe, pero no es automática: depende del vínculo, 
 
 La guía oficial no proyecta que el proceso extraordinario vaya a producir cuatro o cinco millones de familiares en dos años. Para sostener esa predicción harían falta datos sobre personas elegibles, solicitudes, resoluciones, tamaños familiares y plazos.
 
+
+## Qué falta
+
+Para comprobar “Regularizar a 1,2 millones traerá cuatro o cinco millones de familiares en dos años.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y dos años. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 La reagrupación familiar está prevista, pero requiere cumplir condiciones y no implica que cada persona regularizada traiga varios familiares. No hay una proyección oficial que permita afirmar cuatro o cinco millones en dos años.

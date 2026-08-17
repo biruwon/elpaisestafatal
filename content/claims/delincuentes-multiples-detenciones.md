@@ -25,6 +25,19 @@ Las estadísticas públicas separan detenciones, personas detenidas, investigaci
 
 No existe en la fuente pública un registro nacional que confirme, para personas identificables, los casos de 100, 200 o 300 detenciones y su situación procesal. Para comprobar un caso concreto hacen falta el juzgado, el expediente y la persona o causa concreta.
 
+
+## Qué falta
+
+Para comprobar “Hay delincuentes con 100, 200 y 300 detenciones que siguen esperando juicio.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025-2026. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Puede haber casos individuales, pero la frase no aporta una fuente verificable. Detenciones, denuncias y juicios no son la misma medida; para confirmar esos números hay que identificar los expedientes concretos.

@@ -32,6 +32,15 @@ El resultado no fue igual durante toda la serie: en 2022 España registró un 9,
 
 La sobrecarga significa que los costes totales de vivienda superan el 40% de la renta disponible equivalente. No mide directamente precios, alquileres, calidad, hacinamiento, falta de oferta, desahucios ni diferencias entre ciudades, hogares o niveles de renta.
 
+
+## Qué falta
+
+Para comprobar “En España la vivienda pesa más que en Europa.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y Unión Europea y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 Depende de la medida y del año. En 2025, el indicador comparable de sobrecarga de vivienda fue del 7,2% en España frente al 7,7% en la UE; en 2022 España estaba ligeramente por encima. Eso no resume por sí solo la crisis de vivienda ni la situación de cada ciudad u hogar.

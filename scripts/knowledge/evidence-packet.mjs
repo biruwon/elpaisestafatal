@@ -93,24 +93,27 @@ const safeCopy = (value, maximum, packet) => {
 export const plannerSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['headline', 'summary', 'clarificationQuestion', 'limitation', 'replyText'],
+  required: ['headline', 'directAnswer', 'factualClaims', 'limitations', 'followUps'],
   properties: {
     headline: { type: 'string' },
-    summary: { type: 'string' },
-    clarificationQuestion: { type: 'string' },
-    limitation: { type: 'string' },
-    replyText: { type: 'string' },
+    directAnswer: { type: 'string' },
+    factualClaims: { type: 'array', maxItems: 8, items: { type: 'object', additionalProperties: false, required: ['text', 'evidenceIds'], properties: { text: { type: 'string' }, evidenceIds: { type: 'array', maxItems: 8, items: { type: 'string' } } } } },
+    limitations: { type: 'array', maxItems: 6, items: { type: 'string' } },
+    followUps: { type: 'array', maxItems: 4, items: { type: 'string' } },
   },
 };
 
 export const applySafePlanUpgrade = (plan, draft, packet) => {
   if (validateEvidencePacket(packet).ok !== true || !draft || typeof draft !== 'object') return plan;
   const headline = safeCopy(draft.headline, 300, packet);
-  const summary = safeCopy(draft.summary, 700, packet);
-  const clarificationQuestion = safeCopy(draft.clarificationQuestion, 300, packet);
-  const limitation = safeCopy(draft.limitation, 500, packet);
-  const replyText = safeCopy(draft.replyText, 700, packet);
-  if (!headline || !summary || !clarificationQuestion || !limitation || !replyText) return plan;
-  const blocks = plan.blocks.map((block) => block.type === 'conversation_reply' ? { ...block, text: replyText } : block);
-  return { ...plan, headline, summary, clarificationQuestion, limitation, blocks };
+  const directAnswer = safeCopy(draft.directAnswer, 700, packet);
+  const limitations = Array.isArray(draft.limitations) ? draft.limitations.map((item) => safeCopy(item, 300, packet)).filter(Boolean).slice(0, 6) : [];
+  const followUps = Array.isArray(draft.followUps) ? draft.followUps.map((item) => safeCopy(item, 300, packet)).filter(Boolean).slice(0, 4) : [];
+  const packetIds = new Set(packet.evidence.map((item) => item.id));
+  const factualClaims = Array.isArray(draft.factualClaims) ? draft.factualClaims.map((item) => ({ text: safeCopy(item?.text, 500, packet), evidenceIds: Array.isArray(item?.evidenceIds) ? item.evidenceIds.filter((id) => packetIds.has(id)).slice(0, 8) : [] })).filter((item) => item.text && item.evidenceIds.length).slice(0, 8) : [];
+  if (!headline || !directAnswer || !factualClaims.length || !limitations.length || !followUps.length) return plan;
+  const clarificationQuestion = followUps[0];
+  const limitation = limitations.join(' ');
+  const blocks = plan.blocks.map((block) => block.type === 'conversation_reply' ? { ...block, text: directAnswer, evidenceIds: factualClaims.flatMap((item) => item.evidenceIds) } : block);
+  return { ...plan, headline, clarificationQuestion, limitation, blocks };
 };

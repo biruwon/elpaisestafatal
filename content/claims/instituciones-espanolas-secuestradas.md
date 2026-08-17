@@ -23,6 +23,19 @@ La independencia, transparencia y eficacia de las instituciones pueden ser objet
 
 “Secuestradas” no identifica qué institución, qué decisión ni qué control habría sido eliminado. La legislación mantiene obligaciones de transparencia, acceso a información y órganos de control, aunque su cumplimiento debe evaluarse con casos concretos.
 
+
+## Qué falta
+
+Para comprobar “Las instituciones españolas están secuestradas.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y vigente. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Decir que todas las instituciones están secuestradas no es una afirmación comprobable sin especificar cuál, por quién y mediante qué actuación. España sí tiene obligaciones de transparencia y órganos de control; sus fallos deben documentarse caso por caso.

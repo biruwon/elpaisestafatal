@@ -31,6 +31,15 @@ La Ley 5/2018 habilitó una acción civil de recuperación inmediata de la poses
 
 La Fiscalía recuerda que el delito leve de usurpación continúa tramitándose por el juicio sobre delitos leves, mientras que otros supuestos pueden tener una tramitación distinta. Por eso no es correcto convertir una experiencia larga —real en algunos casos— en una regla nacional de “años”.
 
+
+## Qué falta
+
+Hace falta identificar la vía jurídica, el supuesto concreto y la fase del procedimiento antes de convertir esta afirmación en una regla general.
+
+## Escala
+
+La ficha se refiere a España y vigente desde 2025 · vías civiles y penales. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 No hay un plazo universal para desalojar a un ocupante. Desde 2025 algunos delitos de allanamiento y usurpación pueden ir por un procedimiento rápido, y existe una vía civil específica para ciertos titulares, pero el resultado depende del tipo de inmueble, la relación con quien lo ocupa, la prueba, la vulnerabilidad y el juzgado. “Siempre tarda años” es demasiado general.

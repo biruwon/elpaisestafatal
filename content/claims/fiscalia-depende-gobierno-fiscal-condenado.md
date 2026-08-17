@@ -23,6 +23,19 @@ El fiscal general del Estado fue condenado por el Tribunal Supremo por revelaci�
 
 La intervención del Gobierno en la propuesta de nombramiento no demuestra automáticamente que toda la Fiscalía reciba órdenes del Gobierno o que cada actuación esté políticamente controlada. La autonomía funcional, las instrucciones y los controles jurídicos son cuestiones distintas.
 
+
+## Qué falta
+
+Para comprobar “La Fiscalía depende del Gobierno y hay un fiscal general condenado.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 La parte de la condena es cierta: el Supremo condenó al fiscal general Álvaro García Ortiz. También es cierto que el Gobierno propone su nombramiento, pero “la Fiscalía depende del Gobierno” es una conclusión más amplia que no se demuestra solo con ese procedimiento.

@@ -31,6 +31,11 @@ Son 7,2 personas de cada 100 en la población de referencia de la serie, no el 7
 
 No es una medida completa de asequibilidad: no cuenta por sí sola la renuncia a una vivienda, la calidad, las diferencias territoriales o el esfuerzo de cada hogar.
 
+
+## Qué falta
+
+Para comprobar “El 7,2% de la población soporta una sobrecarga del coste de la vivienda en España.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
 ## Respuesta compartible
 
 En 2025, el 7,2% de la población de referencia vivía en hogares cuyos costes de vivienda superaban el 40% de la renta disponible equivalente, según Eurostat. Es una media nacional y no resume toda la dificultad de acceso.

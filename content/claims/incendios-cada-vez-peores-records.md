@@ -23,6 +23,19 @@ El avance oficial de MITECO para 2025 registra 8.199 siniestros, menos que la me
 
 “Cada vez peores” y “récord histórico” siguen siendo formulaciones demasiado amplias. El dato disponible es un avance provisional y demuestra un máximo del último decenio para la superficie forestal afectada, no necesariamente un récord de toda la serie histórica ni una tendencia anual ascendente.
 
+
+## Qué falta
+
+Para comprobar “España sufre incendios cada vez peores y récords históricos de superficie devastada.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y serie histórica. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 En 2025 hubo menos siniestros que la media del decenio, pero mucha más superficie afectada: 354.746,67 hectáreas frente a 105.614. Es un máximo del último decenio en superficie, con datos provisionales; no demuestra por sí solo que cada año sea peor ni un récord histórico absoluto.

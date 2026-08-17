@@ -51,6 +51,29 @@ export type EvidenceRecord = {
 };
 
 export type AnswerMode = 'reviewed_claim' | 'scorecard' | 'current_event' | 'provisional_evidence' | 'guidance';
+
+export type ModelHealth = { available: boolean; provider: string; model?: string; detail?: string };
+export type StructuredModelRequest<T> = { task: string; input: unknown; schema: unknown; model?: string; signal?: AbortSignal; resultType?: T };
+export type EmbeddingRequest = { input: string | string[]; model?: string; signal?: AbortSignal };
+export type EmbeddingResult = { vectors: number[][]; model?: string };
+export type MediaInspectionRequest = { media: string; mimeType: string; context?: string };
+export type MediaInspectionResult = { transcript?: string; description?: string; text?: string; language?: string };
+export interface ModelProvider {
+  generateStructured<T>(request: StructuredModelRequest<T>): Promise<T>;
+  embed(request: EmbeddingRequest): Promise<EmbeddingResult>;
+  inspectMedia?(request: MediaInspectionRequest): Promise<MediaInspectionResult>;
+  health(): Promise<ModelHealth>;
+}
+
+export type ExtractedEntity = { text: string; type: 'person' | 'organization' | 'place' | 'date' | 'quantity' | 'other'; sensitive?: boolean };
+export type ClaimProposition = { id: string; text: string; subject?: string; relation?: string; polarity?: 'positive' | 'negative' | 'uncertain'; modality?: string; population?: string; geography?: string; period?: string; quantity?: string; claimType: ClaimType };
+export type ClarificationNeed = { question: string; reason: string; required: boolean };
+export type ClaimUnderstanding = { normalized: string; propositions: ClaimProposition[]; entities: ExtractedEntity[]; clarificationNeeds: ClarificationNeed[] };
+export type ResearchProposition = { id: string; evidenceNeeded: string[]; metricCandidates?: string[]; queries?: string[] };
+export type ResearchPlan = { propositions: ResearchProposition[]; metricCandidates: string[]; neutralQueries: string[]; requiredDimensions: string[] };
+export type EvidenceQuantity = { value: string; unit?: string; period?: string; population?: string };
+export type ExtractedEvidence = { propositionId: string; sourceId: string; finding: string; quantities: EvidenceQuantity[]; stage?: 'report' | 'complaint' | 'investigation' | 'charge' | 'conviction'; support: 'supports' | 'contradicts' | 'context' | 'insufficient' };
+export type GroundedAnswerDraft = { headline: string; directAnswer: string; blocks: AnswerBlock[]; factualClaims: Array<{ text: string; evidenceIds: string[] }>; limitations: string[]; followUps: string[] };
 // Public MVP state. Detailed claim/evidence modes remain internal so the UI
 // can explain the result without exposing resolver implementation details.
 export type ResultState = 'answered' | 'provisional' | 'unresolved';
@@ -128,6 +151,7 @@ export type AnswerPlan = {
   asOf?: string;
   knowledgeVersion: string;
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
+  researchPlan?: ResearchPlan;
 };
 
 export type ResolveResult = {

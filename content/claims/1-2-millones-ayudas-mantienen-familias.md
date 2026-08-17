@@ -23,6 +23,19 @@ El IMV y otras prestaciones alcanzan a hogares y pueden beneficiar indirectament
 
 El dato oficial de titulares del IMV de junio de 2025 distingue titulares españoles y extranjeros. No equivale a 1,2 millones de personas viviendo de todas las ayudas, ni permite multiplicar automáticamente titulares por cuatro o cinco personas mantenidas.
 
+
+## Qué falta
+
+Para comprobar “Más de 1,2 millones de personas viven de ayudas y mantienen a cuatro o cinco millones.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 La cifra mezcla prestaciones y personas distintas: los titulares del IMV no son lo mismo que todos los beneficiarios de ayudas, y no se puede multiplicar el número de titulares por cuatro o cinco sin datos de hogares y composición familiar.

@@ -16,6 +16,7 @@ import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
+import { neutralWebQuery } from './knowledge/trusted-web-discovery.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
@@ -30,6 +31,7 @@ import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
 import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
+import { createModelTasks } from './model-tasks.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
@@ -308,12 +310,10 @@ const inference = createLocalInferenceProvider({
   isDisabled: () => Date.now() < inferenceDisabledUntil,
   disable: () => { inferenceDisabledUntil = Date.now() + inferenceBackoffMs; },
 });
-
-const parseModelJson = (value) => {
-  const text = typeof value === 'string' ? value : JSON.stringify(value || '');
-  const object = text.match(/\{[\s\S]*\}/)?.[0];
-  try { return object ? JSON.parse(object) : null; } catch { return null; }
-};
+const modelTasks = createModelTasks({
+  provider: inference,
+  models: { router: routerModel, embedding: embedModel, vision: visionModel },
+});
 
 const planAnswerWithLocalModel = async (text, classified, result, observations) => {
   if (!answerPlannerEnabled || !result?.result) return result?.result;
@@ -342,8 +342,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
     const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
     let planned = result.result;
     try {
-      const response = await inference.chat({ model: routerModel, stream: false, think: false, format: plannerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, 2200);
-      const draft = parseModelJson(response.message?.content);
+      const draft = await modelTasks.composeGroundedAnswer({ schema: plannerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 2200 });
       const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
       if (validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok) planned = upgraded;
     } catch { /* The deterministic plan remains the safe presentation fallback. */ }
@@ -353,6 +352,24 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   })();
   plannerInflight.set(cacheKey, work);
   try { return await work; } finally { plannerInflight.delete(cacheKey); }
+};
+
+const planResearchWithModel = async (text, classified) => {
+  if (!answerPlannerEnabled || !classified?.compiler || classified.primary) return null;
+  const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most three neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 1200), propositions: classified.compiler.propositions?.slice(0, 6), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 8) })}`;
+  try {
+    const plan = await modelTasks.planResearch({ schema: undefined, options: { temperature: 0, num_predict: 280, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 1800 });
+    if (!plan || !Array.isArray(plan.propositions) || !Array.isArray(plan.neutralQueries) || !Array.isArray(plan.requiredDimensions)) return null;
+    const neutralQueries = [...new Set(plan.neutralQueries.map((query) => neutralWebQuery(String(query)).slice(0, 240)).filter((query) => query.length >= 8))].slice(0, 3);
+    const requiredDimensions = [...new Set(plan.requiredDimensions.map((item) => String(item).trim().slice(0, 80)).filter(Boolean))].slice(0, 8);
+    if (!neutralQueries.length || !requiredDimensions.length) return null;
+    let clarificationQuestion = '';
+    try {
+      const clarification = await modelTasks.chooseClarification({ options: { temperature: 0, num_predict: 120, num_ctx: 2048 }, messages: [{ role: 'user', content: `Elige una sola pregunta de aclaración de alto valor para esta afirmación. Solo pregunta por una dimensión necesaria: ${requiredDimensions.join(', ')}. No respondas la afirmación ni inventes datos.\n${text.slice(0, 800)}` }], timeoutMs: 1400 });
+      clarificationQuestion = typeof clarification?.question === 'string' ? clarification.question.trim().slice(0, 300) : '';
+    } catch { /* Clarification is optional; deterministic guidance remains available. */ }
+    return { propositions: plan.propositions.slice(0, 6), metricCandidates: plan.metricCandidates?.slice(0, 8) || [], neutralQueries, requiredDimensions, clarificationQuestion };
+  } catch { return null; }
 };
 
 const normalizeAnswerPlan = (plan) => {
@@ -405,8 +422,7 @@ const compileClaim = async (text, candidates = []) => {
       // This is background enrichment: the deterministic result is already
       // available to the user. Allow one bounded cold-start model load, while
       // keeping failures finite and configurable for slower local hardware.
-      const response = await inference.chat({ model: routerModel, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, compilerTimeoutMs);
-      value = parseModelJson(response.message?.content);
+      value = await modelTasks.understandClaim({ schema: compilerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }], timeoutMs: compilerTimeoutMs });
       if (!value || !Array.isArray(value.propositions)) {
         if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] Model response did not satisfy the compiler schema: ${boundedExcerpt(response.message?.content, 600)}`);
         value = null;
@@ -425,8 +441,8 @@ const compileClaim = async (text, candidates = []) => {
 
 const extractImageText = async (media) => {
   if (!media?.base64) return '';
-  const response = await inference.chat({ model: visionModel, stream: false, think: false, keep_alive: -1, options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }] }, 30000);
-  return String(response.message?.content || '').trim().slice(0, 8000);
+  const response = await modelTasks.inspectMedia({ options: { temperature: 0, num_predict: 700, num_ctx: 4096 }, messages: [{ role: 'user', content: 'Extrae el texto visible y describe brevemente las afirmaciones, cifras, fechas y entidades que aparecen. No evalúes si son verdaderas. Devuelve texto plano conciso.', images: [media.base64] }], timeoutMs: 30000 });
+  return String(response?.message?.content || response?.content || '').trim().slice(0, 8000);
 };
 
 const transcribeAudio = async (media) => {
@@ -886,7 +902,7 @@ const getIndex = async () => {
       // Semantic hydration is an optimisation. Never make the first claim
       // wait for a batch embedding request; lexical matching is immediately
       // usable and the in-memory index is upgraded for later requests.
-      void inference.embed({ model: embedModel, input: entries.map(searchText), keep_alive: -1 }, 30000)
+      void modelTasks.embed({ input: entries.map(searchText), timeoutMs: 30000 })
         .then((response) => {
           const embeddings = Array.isArray(response.embeddings) ? response.embeddings : [];
           if (embeddings.length !== entries.length) return;
@@ -1216,7 +1232,7 @@ const classify = async (text) => {
   // Deterministic CI and degraded deployments must not probe the embedding
   // provider after compiler/planner inference has been explicitly disabled.
   if ((localCompilerEnabled || answerPlannerEnabled) && (lexicalRanked[0]?.lexical || 0) >= 0.1) {
-    try { vector = (await inference.embed({ model: embedModel, input: text.slice(0, 4000), keep_alive: -1 }, 3000)).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
+    try { vector = (await modelTasks.embed({ input: text.slice(0, 4000), timeoutMs: 3000 })).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
   // Keep both compiler views in the routing set. The fast deterministic
@@ -1705,11 +1721,7 @@ const startResolveJob = (text, origin = 'runtime') => {
     const safeClassified = vagueTaxJudgement(text)
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
-    const resolved = process.env.LOCAL_FAST_DETERMINISTIC === '1'
-      ? safeClassified.primary
-        ? await enrichResolve(text, safeClassified, undefined, id)
-        : (await buildPublishedCompositeResult(text, safeClassified)) || toResolveResult(text, safeClassified, undefined, id)
-      : await enrichResolve(text, safeClassified, undefined, id);
+    const resolved = await enrichResolve(text, safeClassified, undefined, id);
     const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
@@ -1749,9 +1761,7 @@ const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
     if (text) {
       try {
         const classified = await classify(text);
-        const resolved = process.env.LOCAL_FAST_DETERMINISTIC === '1'
-          ? toResolveResult(text, classified, undefined, id)
-          : await enrichResolve(text, classified, undefined, id);
+        const resolved = await enrichResolve(text, classified, undefined, id);
         const completed = { ...resolved, inputType, createdAt: job.createdAt, completedAt: Date.now() };
         resolveJobs.set(id, completed);
         recordCompletion(job.createdAt, completed.status);
@@ -2499,7 +2509,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
     try {
-      const embedded = await inference.embed({ model: embedModel, input: warehouseQuery.slice(0, 4000), keep_alive: -1 }, 1800);
+      const embedded = await modelTasks.embed({ input: warehouseQuery.slice(0, 4000), timeoutMs: 1800 });
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
   }
@@ -2657,6 +2667,13 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? [...new Map([...scorecardObservations, ...warehouse.observations].map((item) => [item.id, item])).values()].slice(0, 72)
     : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
+  if (deterministic.result && !retrievalClassified.primary) {
+    const researchPlan = await planResearchWithModel(text, classified);
+    if (researchPlan) {
+      deterministic.result.researchPlan = researchPlan;
+      if (researchPlan.clarificationQuestion && !deterministic.result.clarificationQuestion) deterministic.result.clarificationQuestion = researchPlan.clarificationQuestion;
+    }
+  }
   if (!answerPlannerEnabled || !deterministic.result) return deterministic;
   const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);
   return upgraded === deterministic.result ? deterministic : { ...deterministic, result: upgraded };

@@ -25,6 +25,15 @@ Las dimisiones y ceses existen y están documentados en los registros oficiales 
 
 Que una persona dimita o sea cesada no resuelve por sí solo si la respuesta institucional fue suficiente. Esa valoración requiere analizar el caso, las competencias y el momento de la decisión.
 
+
+## Qué falta
+
+Para comprobar “Nadie asume responsabilidades ni dimite ante las catástrofes.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2023-2026. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 “Nadie dimite” es demasiado absoluto: hay ceses y dimisiones documentados. Otra discusión distinta es si, en una catástrofe concreta, la responsabilidad política se asumió de forma suficiente.

@@ -27,6 +27,19 @@ La cifra de 30 a 80 exige identificar el centro, etapa, tamaño del grupo, año 
 
 La ratio media de alumnado por profesor fue de 11,1 en 2023-24, pero esa media no equivale al tamaño de cada aula ni permite saber si se construyó un colegio concreto.
 
+
+## Qué falta
+
+Para comprobar “Donde antes había 30 alumnos ahora hay 80 y no se construyen escuelas nuevas.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y actual. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Puede haber colegios concretos saturados, pero “de 30 a 80 en España” no es una estadística nacional. Para comprobarlo hacen falta el centro, la etapa y la serie de matrícula; la ratio media nacional no mide el tamaño de cada aula.

@@ -27,6 +27,19 @@ Que existan problemas no demuestra que todas las personas, partidos e institucio
 
 Hay que identificar el contrato, decisión, partido, persona o procedimiento concreto y consultar auditorías, resoluciones, expedientes y sentencias.
 
+
+## Qué falta
+
+Para comprobar “El sistema español está corrupto de izquierda a derecha y de arriba abajo.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y vigente. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Hay casos y riesgos de corrupción que deben investigarse, pero “todo el sistema está corrupto de izquierda a derecha” es una generalización. Para comprobar una acusación hace falta un caso, una conducta y una fuente verificable.

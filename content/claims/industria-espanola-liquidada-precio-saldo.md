@@ -27,6 +27,19 @@ España sigue exportando bienes de equipo, productos químicos y manufacturas, y
 
 “Liquidar la industria a precio de saldo” es una valoración que no puede comprobarse con una cifra agregada de exportaciones. Harían falta series de empleo, valor añadido, capacidad productiva, cierres y propiedad por sector.
 
+
+## Qué falta
+
+Para comprobar “Se ha liquidado la industria española a precio de saldo.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Hay sectores industriales que han perdido empleo o capacidad, pero no se puede afirmar que toda la industria española haya sido liquidada. España sigue produciendo y exportando bienes de equipo, químicos y manufacturas; la situación debe medirse por sector y región.

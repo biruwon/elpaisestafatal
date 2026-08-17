@@ -27,6 +27,19 @@ La Agencia informó de 547 millones liquidados en 1.329 inspecciones sobre grand
 
 Estos resultados no permiten saber si el control es suficiente, equitativo o igual de eficaz para todos los tamaños de contribuyente.
 
+
+## Qué falta
+
+Para comprobar “Hacienda detecta los 100 euros no declarados pero no detecta grandes pagos no declarados.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Hacienda no detecta todo el fraude, pero sí realiza inspecciones sobre grandes patrimonios y empresas: en 2025 liquidó 547 millones en 1.329 inspecciones de grandes patrimonios. La discusión real es la eficacia y la equidad del control, no si nunca investiga a los grandes.

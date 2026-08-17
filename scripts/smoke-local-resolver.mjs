@@ -106,10 +106,7 @@ const cases = [
   { text: 'España va cuesta abajo', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
   { text: 'El país se va a la ruina', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
 ];
-const selectedCases = process.env.SMOKE_FAST === '1'
-  ? cases.filter((item) => ['España cobra demasiados impuestos', 'Desde que llegaron más extranjeros hay más inseguridad', 'España gasta menos por habitante en sanidad que la Unión Europea'].includes(item.text))
-  : cases;
-for (const item of selectedCases) {
+for (const item of cases) {
   try {
     const result = await resolve(item.text);
     if (result.status === 'processing') failures.push(`${item.text}: request remained processing after polling`);

@@ -23,6 +23,19 @@ El sector agroalimentario es importante en las exportaciones españolas.
 
 La balanza comercial de 2025 también registra exportaciones de bienes de equipo, productos químicos, manufacturas y otros bienes industriales. Por tanto, no es correcto decir que España solo vende productos del sector primario.
 
+
+## Qué falta
+
+Para comprobar “España solo vende productos del sector primario.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 La alimentación y el campo pesan mucho, pero España no exporta solo productos primarios: en 2025 también exportó bienes de equipo, químicos y otras manufacturas por cientos de miles de millones de euros.

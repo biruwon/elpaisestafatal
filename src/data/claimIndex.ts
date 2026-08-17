@@ -103,56 +103,6 @@ export const claimTokens = (value: string): string[] => [...new Set(
   normaliseClaimText(value).split(' ').filter((word) => word.length > 2 && !stopWords.has(word)),
 )];
 
-const variantReplacements: Array<[RegExp, string]> = [
-  [/\b(?:que ha existido nunca|nunca antes|jamas antes|maximos? historicos?|record(?: historico)?|de la historia|nunca hemos tenido tanta|nunca habiamos tenido tanta)\b/g, 'historico'],
-  [/\b(?:papeles|documentacion|permiso de residencia|permiso para residir|al llegar|desde el primer dia|automaticamente)\b/g, 'residencia_automatica'],
-  [/\b(?:trabajo|trabajar|trabaja|contrato)\b/g, 'trabajar'],
-  [/\b(?:entra cualquiera|deja pasar a todos|no pone limites|puertas abiertas)\b/g, 'puertas_abiertas'],
-  [/\b(?:okupas?|okupacion|ocupar|ocupada|ocupado)\b/g, 'ocupacion'],
-  [/\b(?:protege|protegen|respalda|respaldada|respaldado|permite)\b/g, 'respaldo'],
-  [/\b(?:alquileres?|rentas?)\b/g, 'alquiler'],
-  [/\b(?:se han disparado|dispara|disparan|por las nubes|sube|suben|subido|aumenta|aumentan)\b/g, 'subida'],
-  [/\b(?:poca oferta|falta de oferta|falta vivienda|escasez de vivienda)\b/g, 'poca_oferta'],
-  [/\b(?:inseguridad juridica|seguridad juridica|leyes anti casero)\b/g, 'inseguridad_juridica'],
-  [/\b(?:delito leve|delitos leves)\b/g, 'delito_leve'],
-  [/\b(?:presion fiscal|carga fiscal|fiscalidad)\b/g, 'fiscal'],
-  [/\b(?:viviendas?|casas?|pisos?)\b/g, 'vivienda'],
-  [/\b(?:triplica|triplicado|triple|tres veces|tres veces mas|3 veces|3 veces mas)\b/g, 'triple'],
-];
-
-const variantMarkers = new Set(['historico', 'puertas_abiertas', 'residencia_automatica', 'ocupacion', 'respaldo', 'delito_leve', 'subida', 'poca_oferta', 'inseguridad_juridica', 'fiscal', 'triple']);
-
-const compatibleVariantKey = (left: string, right: string): boolean => {
-  const leftParts = new Set(left.split('|'));
-  const rightParts = new Set(right.split('|'));
-  const leftMarkers = [...leftParts].filter((part) => variantMarkers.has(part)).sort().join('|');
-  const rightMarkers = [...rightParts].filter((part) => variantMarkers.has(part)).sort().join('|');
-  if (!leftMarkers || !rightMarkers) return false;
-  const leftMarkerSet = new Set(leftMarkers.split('|'));
-  const rightMarkerSet = new Set(rightMarkers.split('|'));
-  if (![...leftMarkerSet].some((part) => rightMarkerSet.has(part)) || ![...leftMarkerSet].every((part) => rightMarkerSet.has(part))) return false;
-  const sharedMarker = true;
-  const leftDomains = [...leftParts].filter((part) => !variantMarkers.has(part));
-  const rightDomains = [...rightParts].filter((part) => !variantMarkers.has(part));
-  if (leftDomains.length && rightDomains.length && !leftDomains.some((part) => rightParts.has(part))) return false;
-  return sharedMarker;
-};
-
-/**
- * A bounded, explainable equivalence key for common Spanish surface variants.
- * This is intentionally narrower than general semantic similarity: a match
- * needs a distinctive relation marker and compatible numeric context.
- */
-export const claimVariantKeys = (value: string): string[] => {
-  let text = normaliseClaimText(value);
-  for (const [pattern, replacement] of variantReplacements) text = text.replace(pattern, replacement);
-  const tokens = [...new Set(text.split(' ').filter((token) => token.length > 2 && !stopWords.has(token) && !lowSignalWords.has(token)))];
-  const markers = tokens.filter((token) => variantMarkers.has(token));
-  if (!markers.length) return [];
-  const domain = tokens.filter((token) => ['residencia', 'trabajar', 'inmigracion', 'ocupacion', 'alquiler', 'fiscal', 'vivienda', 'delito'].includes(token));
-  return [[...new Set([...markers, ...domain])].sort().join('|')];
-};
-
 const phraseMatches = (query: string, text: string): number => {
   if (!query || !text) return 0;
   if (text === query) return 100;
@@ -193,11 +143,6 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const weightedMatches = matchedTokens.reduce((total, token) => total + (lowSignalWords.has(token) ? 0.25 : 1), 0);
   const phraseScore = Math.max(...searchablePhrases.map((text) => phraseMatches(query, text)), 0);
   const exactPhraseMatch = searchablePhrases.some((text) => text === query);
-  const queryVariantKeys = claimVariantKeys(value);
-  const candidateVariantKeys = [...new Set([entry.title, ...entry.aliases].flatMap((phrase) => claimVariantKeys(phrase)))];
-  const canonicalVariantMatch = entry.kind === 'claim'
-    && queryVariantKeys.length > 0
-    && candidateVariantKeys.some((candidateKey) => queryVariantKeys.some((queryKey) => compatibleVariantKey(queryKey, candidateKey)));
   const overlapScore = queryTokens.length ? (weightedMatches / queryTokens.length) * 55 : 0;
   const candidateSemanticSignatures = entry.semanticSignatures?.length
     ? entry.semanticSignatures
@@ -227,7 +172,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
     semanticFamilyMatch ? 82 : 0,
   ));
-  return { ...entry, score: canonicalVariantMatch ? Math.max(score, 110) : score, confidence: Math.min(1, score / 100), matchedTerms, semanticFamilyMatch, exactPhraseMatch: exactPhraseMatch || canonicalVariantMatch };
+  return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms, semanticFamilyMatch, exactPhraseMatch };
 };
 
 export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit = 6): RankedClaimIndexEntry[] => {

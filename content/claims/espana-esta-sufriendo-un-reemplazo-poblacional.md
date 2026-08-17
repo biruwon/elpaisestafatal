@@ -31,6 +31,15 @@ La expresión “reemplazo poblacional” no tiene una definición estadística 
 
 País de nacimiento, nacionalidad, migración, nacimientos y población residente son variables distintas. La media nacional tampoco describe igual a cada comunidad, municipio o barrio.
 
+
+## Qué falta
+
+Para comprobar “España está sufriendo un reemplazo poblacional.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2015–2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 España está cambiando demográficamente y ha aumentado la población residente nacida fuera, pero “reemplazo poblacional” no es una medida estadística única. Los datos no demuestran por sí solos una sustitución coordinada de españoles; hay que separar país de nacimiento, nacionalidad, edades, nacimientos y territorio.

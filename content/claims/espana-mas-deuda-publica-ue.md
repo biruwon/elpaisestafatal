@@ -36,6 +36,11 @@ La ratio no dice por sí sola cuánto paga cada hogar, quién posee la deuda, cu
 
 Una deuda más alta no basta para concluir que sea insostenible. Para valorar la sostenibilidad también hacen falta crecimiento, tipos de interés, vencimientos, saldo presupuestario, ingresos y composición del gasto.
 
+
+## Escala
+
+La ficha se refiere a España y Unión Europea y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
 ## Respuesta compartible
 
 Sí: en 2025 la deuda pública bruta de España equivalía al 100,7% del PIB, frente al 81,7% de la UE. Es una ratio de deuda acumulada, no el déficit de un año ni una factura idéntica para cada hogar.

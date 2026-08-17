@@ -27,6 +27,19 @@ Hay obras viarias y ferroviarias en ejecución o licitación, con proyectos de c
 
 La existencia de obras no demuestra que el volumen sea suficiente ni que todos los sectores o territorios reciban la inversión que necesitan.
 
+
+## Qué falta
+
+Para comprobar “España no construye nuevos hospitales, carreteras, presas, desaladoras, centrales, aeropuertos o trenes.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2025. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 Sí hay problemas de inversión y mantenimiento, pero no es cierto que España no construya nada: existen obras viarias y ferroviarias en ejecución y más de 3.000 millones en licitaciones del Corredor Atlántico en 2025.

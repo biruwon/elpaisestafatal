@@ -27,6 +27,19 @@ El proceso exige carecer de antecedentes penales y no suponer una amenaza para e
 
 La documentación consultada no demuestra cuántas personas en prisión provisional solicitaron o recibieron una autorización, ni establece automáticamente que todas estén incluidas o excluidas.
 
+
+## Qué falta
+
+Hace falta identificar la vía jurídica, el supuesto concreto y la fase del procedimiento antes de convertir esta afirmación en una regla general.
+
+## Escala
+
+La ficha se refiere a España y 2026. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+La evidencia describe reglas y procedimientos generales; no determina por sí sola el resultado de un caso concreto ni sus plazos.
+
 ## Respuesta compartible
 
 Estar en prisión provisional no equivale a tener una condena, pero tampoco demuestra que se pueda regularizar automáticamente. El proceso exige requisitos de antecedentes y orden público; para afirmar que alguien fue regularizado hace falta su expediente y la resolución concreta.

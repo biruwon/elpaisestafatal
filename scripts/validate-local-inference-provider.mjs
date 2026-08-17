@@ -2,12 +2,12 @@ import { readFile } from 'node:fs/promises';
 import { createLocalInferenceProvider, createUnavailableInferenceProvider } from './local-inference-provider.mjs';
 
 const unavailable = createUnavailableInferenceProvider();
-if (unavailable.kind !== 'unavailable' || typeof unavailable.chat !== 'function' || typeof unavailable.embed !== 'function' || typeof unavailable.listModels !== 'function') {
+if (unavailable.kind !== 'unavailable' || !['chat', 'embed', 'generateStructured', 'inspectMedia', 'health', 'listModels'].every((method) => typeof unavailable[method] === 'function')) {
   throw new Error('Unavailable inference adapter does not implement the shared contract');
 }
 
 const local = createLocalInferenceProvider({ endpoint: 'http://127.0.0.1:11434' });
-if (local.kind !== 'local' || typeof local.chat !== 'function' || typeof local.embed !== 'function' || typeof local.listModels !== 'function') {
+if (local.kind !== 'local' || !['chat', 'embed', 'generateStructured', 'inspectMedia', 'health', 'listModels'].every((method) => typeof local[method] === 'function')) {
   throw new Error('Local inference adapter does not implement the shared contract');
 }
 

@@ -32,6 +32,19 @@ La referencia oficial del Consejo de Ministros documenta una transferencia de 30
 
 La fuente no identifica las aplicaciones presupuestarias concretas de origen. Por tanto, no demuestra que el dinero proceda de becas, salarios docentes o centros educativos, ni que se destine específicamente a asesores del presidente.
 
+
+## Qué falta
+
+Para comprobar “El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia.” hace falta definir la métrica, la población, el periodo y el territorio, y comprobar que la fuente mide exactamente esa proposición.
+
+## Escala
+
+La ficha se refiere a España y 2026-07-14. No debe extrapolarse automáticamente a cada persona, hogar, municipio, institución o caso individual.
+
+## Límite
+
+El dato disponible puede sostener una parte acotada de la afirmación, pero no permite convertirla en una afirmación absoluta, universal o causal.
+
 ## Respuesta compartible
 
 La transferencia de 309,84 millones sí está documentada, pero el destino exacto es el Ministerio de la Presidencia, Justicia y Relaciones con las Cortes para gastos de personal. La referencia no identifica qué programa educativo pierde crédito ni demuestra que sea para asesores.
