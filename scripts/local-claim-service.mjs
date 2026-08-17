@@ -77,10 +77,13 @@ const warehouseIndexPath = join(warehousePath, 'search-index.json');
 const knowledgeGapPath = join(root, '.local/knowledge-gaps.jsonl');
 const cacheTtlMs = 15 * 60 * 1000;
 const currentEventCacheTtlMs = 5 * 60 * 1000;
-const maxCacheEntries = 1000;
-const maxCompilerCacheEntries = 512;
-const maxPlannerCacheEntries = 512;
-const maxResolveJobs = 500;
+// Keep the local process bounded under long evaluation/replay runs. Results
+// are cheap to recompute and the browser polls only briefly, so retaining
+// hundreds of full answer plans is worse than evicting old entries.
+const maxCacheEntries = 256;
+const maxCompilerCacheEntries = 256;
+const maxPlannerCacheEntries = 256;
+const maxResolveJobs = 128;
 const answerCache = new Map();
 const answerCacheExpiry = (text) => Date.now() + (detectCurrentEvent(text) ? currentEventCacheTtlMs : cacheTtlMs);
 const compilerCache = new Map();
