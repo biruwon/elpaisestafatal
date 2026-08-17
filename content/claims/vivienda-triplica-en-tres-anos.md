@@ -3,7 +3,7 @@ slug: vivienda-triplica-en-tres-anos
 claim: "La vivienda que compré hace tres años hoy cuesta casi tres veces más."
 assessment: uncertain
 topicSlugs: ["vivienda", "economia"]
-aliases: ["la vivienda que compré hace tres años hoy cuesta casi tres veces más", "mi casa vale el triple que hace tres años", "la vivienda se ha triplicado en tres años"]
+aliases: ["la vivienda que compré hace tres años hoy cuesta casi tres veces más", "mi casa vale el triple que hace tres años", "la vivienda se ha triplicado en tres años", "compré un piso hace tres años y ahora vale tres veces más", "los pisos cuestan el triple que hace tres años", "el precio de la vivienda se ha multiplicado por tres en tres años"]
 claimType: comparative
 evidenceStrength: high
 geography: España
