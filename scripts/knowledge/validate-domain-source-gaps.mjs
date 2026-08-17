@@ -15,6 +15,8 @@ for (const gap of gaps ?? []) {
   if (!Array.isArray(gap.missingFields) || !gap.missingFields.length) errors.push(`${gap.id}: missingFields required`);
   if (!Array.isArray(gap.officialSourcesChecked) || !gap.officialSourcesChecked.length) errors.push(`${gap.id}: officialSourcesChecked required`);
   if (!Array.isArray(gap.availableEvidence) || !gap.availableEvidence.length) errors.push(`${gap.id}: availableEvidence required`);
+  if (!Array.isArray(gap.sourceTargets) || !gap.sourceTargets.length) errors.push(`${gap.id}: sourceTargets required`);
+  if (!Array.isArray(gap.acceptanceCriteria) || !gap.acceptanceCriteria.length) errors.push(`${gap.id}: acceptanceCriteria required`);
   for (const url of gap.officialSourcesChecked ?? []) {
     try { if (new URL(url).protocol !== 'https:') errors.push(`${gap.id}: source must use HTTPS`); } catch { errors.push(`${gap.id}: invalid source URL`); }
   }
