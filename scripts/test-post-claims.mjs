@@ -5,6 +5,7 @@ const endpoint = process.env.CLAIM_RESOLVER_URL || 'http://127.0.0.1:8790';
 // canonical questions.
 const claims = [
   ['fiscal', 'La presión fiscal es la más alta de la historia'],
+  ['fiscal-paraphrase', 'La presión fiscal es la más alta que ha existido nunca'],
   ['housing-price', 'La vivienda que compré hace tres años hoy cuesta casi tres veces más'],
   ['housing-rent', 'Los alquileres se han disparado por la poca oferta y la inseguridad jurídica'],
   ['occupation-law', 'La ocupación está respaldada por el Gobierno y es delito leve'],
@@ -99,7 +100,7 @@ const counts = results.reduce((summary, item) => {
   return summary;
 }, {});
 
-const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'unemployment-stats-typo', 'fiscal', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
+const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'unemployment-stats-typo', 'fiscal', 'fiscal-paraphrase', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
 const strongResults = new Set(results.filter((item) => item.status === 'complete' && item.coverage === 'strong').map((item) => item.id));
 for (const id of expectedStrong) {
   if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);
