@@ -67,6 +67,8 @@ jobs:
           npm run knowledge:hybrid
           npm run knowledge:hybrid:corpus
           npm run knowledge:semantic-clustering
+          npm run knowledge:coverage:audit
+          npm run knowledge:coverage:audit:validate
           npm run knowledge:roadmap:status
 
       - name: Build public site and audit public surface
