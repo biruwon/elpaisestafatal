@@ -114,7 +114,7 @@ const requiredDimensionsFor = (item) => {
   if (item.auditClass === 'unsupported_scope') dimensions.add('local_territory');
   return [...dimensions];
 };
-const sourceWorkItems = clusterAudit
+const clusterSourceWorkItems = clusterAudit
   .filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass))
   .map((item) => ({
     id: `cluster:${item.clusterId}`,
@@ -132,6 +132,22 @@ const sourceWorkItems = clusterAudit
     reason: item.auditClass === 'unsupported_scope' ? 'The claim requires territory-specific evidence and must not be generalized nationally.' : item.auditClass === 'partial_domain_evidence' ? 'The domain has only partial evidence; collect the missing definitions, denominators, and legal or programme stages.' : item.auditClass === 'covered_but_not_materialized' || item.auditClass === 'source_configured_not_refreshed' ? 'A compatible metric or feed exists, but the warehouse is not ready or is stale.' : 'No compatible reviewed evidence was found; identify a primary source before considering publication.',
   }))
   .sort((a, b) => b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
+const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({
+  id: `gap:${gap.id}`,
+  clusterId: null,
+  auditClass: 'partial_domain_evidence',
+  action: 'find_source',
+  domain: gap.domain || null,
+  canonicalText: gap.permittedConclusion || gap.id,
+  recurrence: 0,
+  recentVelocity: 0,
+  priorityScore: 0,
+  metricIds: [],
+  sourceIds: gap.officialSourcesChecked || [],
+  requiredDimensions: gap.missingFields || [],
+  reason: gap.nextEvidence || 'A source contract is incomplete and requires additional official evidence.',
+}));
+const sourceWorkItems = [...clusterSourceWorkItems, ...contractSourceWorkItems];
 const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: configured.length, warehouseRecords: records.length, clusters: clusterAudit.length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], feeds: allFeeds.map(({ sourceId, metricId, url, schedule, mode, domain }) => ({ sourceId, metricId, url, schedule, mode, domain })) };
 const output = pathArg('output', '.local/coverage-audit.json');
 await mkdir(join(output, '..'), { recursive: true });

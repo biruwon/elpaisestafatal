@@ -8,9 +8,10 @@ const allowed = new Set(['covered_existing_evidence', 'covered_but_not_materiali
 const errors = [];
 if (report.schemaVersion !== '1' || !report.generatedAt || !report.summary) errors.push('audit header is malformed');
 if (!Array.isArray(report.metrics) || !Array.isArray(report.clusters) || !Array.isArray(report.sourceWorkCandidates) || !Array.isArray(report.sourceWorkItems)) errors.push('audit collections are missing');
-if (report.sourceWorkItems?.length !== report.clusters.filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass)).length) errors.push('source-work queue does not cover every actionable gap cluster');
+const expectedSourceWorkItems = report.clusters.filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass)).length + (report.domainGaps || []).length;
+if (report.sourceWorkItems?.length !== expectedSourceWorkItems) errors.push('source-work queue does not cover every actionable gap cluster and domain contract');
 for (const item of report.sourceWorkItems || []) {
-  if (!item.id || !item.clusterId || !item.canonicalText || !item.action || !Array.isArray(item.requiredDimensions)) errors.push(`${item.id || 'source-work item'}: incomplete source-work record`);
+  if (!item.id || (!item.clusterId && !item.id.startsWith('gap:')) || !item.canonicalText || !item.action || !Array.isArray(item.requiredDimensions)) errors.push(`${item.id || 'source-work item'}: incomplete source-work record`);
 }
 for (const item of report.clusters || []) {
   if (!item.clusterId) errors.push('cluster is missing an id');
