@@ -45,8 +45,8 @@ export const createLocalInferenceProvider = ({ endpoint, allowedHosts = defaultL
     embed: (body, timeout = 5000) => requestJson({ endpoint: parsedEndpoint.toString().replace(/\/$/, ''), path: '/api/embed', body, timeout, allowedHosts, isDisabled, disable }),
     listModels: (timeout = 5000) => requestJson({ endpoint: parsedEndpoint.toString().replace(/\/$/, ''), path: '/api/tags', method: 'GET', timeout, allowedHosts, isDisabled, disable }),
   };
-  local.generateStructured = async (request) => parseStructured(await local.chat({ model: request.model, stream: false, think: false, format: request.schema, keep_alive: request.keepAlive ?? -1, options: request.options, messages: request.messages }, request.timeoutMs));
-  local.inspectMedia = (request) => local.chat({ model: request.model, stream: false, think: false, keep_alive: request.keepAlive ?? -1, options: request.options, messages: request.messages }, request.timeoutMs);
+  local.generateStructured = async (request) => parseStructured(await local.chat({ model: request.model, stream: false, think: false, format: request.schema, keep_alive: request.keepAlive ?? 600, options: request.options, messages: request.messages }, request.timeoutMs));
+  local.inspectMedia = (request) => local.chat({ model: request.model, stream: false, think: false, keep_alive: request.keepAlive ?? 600, options: request.options, messages: request.messages }, request.timeoutMs);
   local.health = async () => {
     try { return { status: 'ready', provider: 'local', models: (await local.listModels(3000)).models || [] }; }
     catch (error) { return { status: 'unavailable', provider: 'local', error: error instanceof Error ? error.message : String(error) }; }

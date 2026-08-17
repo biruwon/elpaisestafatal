@@ -367,7 +367,7 @@ const embedForClustering = async (clusters, endpoint, model, timeoutMs) => {
   const vectors = [];
   for (let offset = 0; offset < clusters.length; offset += 32) {
     const batch = clusters.slice(offset, offset + 32).map((cluster) => String(cluster.text || '').slice(0, 1200));
-    const payload = await inference.embed({ model, input: batch, keep_alive: -1 }, timeoutMs);
+    const payload = await inference.embed({ model, input: batch, keep_alive: 600 }, timeoutMs);
     if (!Array.isArray(payload.embeddings) || payload.embeddings.length !== batch.length) throw new Error('Embedding response length is invalid');
     if (payload.embeddings.some((vector) => !Array.isArray(vector) || !vector.length || vector.some((value) => !Number.isFinite(Number(value))))) throw new Error('Embedding response contains invalid vectors');
     vectors.push(...payload.embeddings);

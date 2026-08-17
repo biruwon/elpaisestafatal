@@ -1,9 +1,9 @@
 import { execFileSync } from 'node:child_process';
 
 const models = [
-  process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b',
+  process.env.OLLAMA_ROUTER_MODEL || 'gemma4:26b',
   process.env.OLLAMA_EMBED_MODEL || 'bge-m3',
-  process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b',
+  process.env.OLLAMA_VISION_MODEL || process.env.OLLAMA_ROUTER_MODEL || 'gemma4:26b',
 ];
 
 try {

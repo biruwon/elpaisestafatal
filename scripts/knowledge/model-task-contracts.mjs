@@ -11,11 +11,16 @@ export const researchPlanSchema = {
   },
 };
 
+export const rerankSchema = {
+  type: 'object', additionalProperties: false, required: ['selectedSlug', 'confidence', 'reason'],
+  properties: { selectedSlug: { type: 'string', maxLength: 120 }, confidence: { type: 'number', minimum: 0, maximum: 1 }, reason: { type: 'string', maxLength: 300 } },
+};
+
 export const sourceEvidenceSchema = {
   type: 'object', additionalProperties: false,
   required: ['findings'],
   properties: {
-    findings: { type: 'array', maxItems: 12, items: { type: 'object', additionalProperties: false, required: ['propositionId', 'finding', 'support'], properties: { propositionId: { type: 'string', maxLength: 120 }, finding: { type: 'string', maxLength: 700 }, support: { type: 'string', enum: ['supports', 'contradicts', 'context', 'insufficient'] }, stage: { type: 'string', enum: ['report', 'complaint', 'investigation', 'charge', 'conviction'] }, quantities: { type: 'array', maxItems: 8, items: { type: 'object', additionalProperties: false, required: ['value', 'unit'], properties: { value: { type: 'string', maxLength: 80 }, unit: { type: 'string', maxLength: 80 } } } } } } },
+    findings: { type: 'array', maxItems: 12, items: { type: 'object', additionalProperties: false, required: ['propositionId', 'sourceId', 'finding', 'support'], properties: { propositionId: { type: 'string', maxLength: 120 }, sourceId: { type: 'string', maxLength: 120 }, finding: { type: 'string', maxLength: 700 }, support: { type: 'string', enum: ['supports', 'contradicts', 'context', 'insufficient'] }, stage: { type: 'string', enum: ['report', 'complaint', 'investigation', 'charge', 'conviction'] }, quantities: { type: 'array', maxItems: 8, items: { type: 'object', additionalProperties: false, required: ['value', 'unit'], properties: { value: { type: 'string', maxLength: 80 }, unit: { type: 'string', maxLength: 80 } } } } } } },
   },
 };
 
@@ -43,4 +48,4 @@ export const gapClusterSchema = {
   properties: { canonicalProposition: { type: 'string', maxLength: 300 }, semanticSignature: { type: 'string', maxLength: 600 }, topicIds: stringArray(8, 100) },
 };
 
-export const modelTaskSchemas = { researchPlanSchema, sourceEvidenceSchema, evidenceComparisonSchema, clarificationSchema, evaluationCandidatesSchema, gapClusterSchema };
+export const modelTaskSchemas = { researchPlanSchema, rerankSchema, sourceEvidenceSchema, evidenceComparisonSchema, clarificationSchema, evaluationCandidatesSchema, gapClusterSchema };

@@ -42,7 +42,7 @@ const embed = async (input) => {
   const embeddings = [];
   for (let offset = 0; offset < input.length; offset += batchSize) {
     const batch = input.slice(offset, offset + batchSize);
-    const batchEmbeddings = (await inference.embed({ model, input: batch, keep_alive: -1 }, 120_000)).embeddings;
+    const batchEmbeddings = (await inference.embed({ model, input: batch, keep_alive: 600 }, 120_000)).embeddings;
     if (!Array.isArray(batchEmbeddings) || batchEmbeddings.length !== batch.length || batchEmbeddings.some((item) => !validateEmbedding(item))) throw new Error('Benchmark received malformed embeddings');
     embeddings.push(...batchEmbeddings);
   }

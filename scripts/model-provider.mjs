@@ -16,7 +16,7 @@ export const createModelProvider = ({ localProvider, unavailableProvider = undef
         stream: false,
         think: false,
         format: request.schema,
-        keep_alive: request.keepAlive ?? -1,
+        keep_alive: request.keepAlive ?? 600,
         options: request.options,
         messages: request.messages,
       }, request.timeoutMs);
@@ -24,7 +24,7 @@ export const createModelProvider = ({ localProvider, unavailableProvider = undef
     },
     embed: async (request) => {
       if (typeof provider.embed !== 'function') throw new Error('Provider does not support embeddings');
-      return provider.embed({ model: request.model, input: request.input, keep_alive: request.keepAlive ?? -1 }, request.timeoutMs);
+      return provider.embed({ model: request.model, input: request.input, keep_alive: request.keepAlive ?? 600 }, request.timeoutMs);
     },
     inspectMedia: async (request) => {
       if (typeof provider.inspectMedia === 'function') return provider.inspectMedia(request);
@@ -33,7 +33,7 @@ export const createModelProvider = ({ localProvider, unavailableProvider = undef
         model: request.model,
         stream: false,
         think: false,
-        keep_alive: request.keepAlive ?? -1,
+        keep_alive: request.keepAlive ?? 600,
         options: request.options,
         messages: request.messages,
       }, request.timeoutMs);

@@ -32,8 +32,8 @@ if (!packageJson.dependencies?.pg) errors.push('package.json: PostgreSQL runtime
 const localService = await readFile('scripts/local-claim-service.mjs', 'utf8');
 const provider = await readFile('scripts/local-inference-provider.mjs', 'utf8');
 const modelAdapter = await readFile('scripts/model-provider.mjs', 'utf8');
-if (/keep_alive:\s*['"]-1['"]/.test(`${provider}\n${modelAdapter}`)) errors.push('Local resolver: keep_alive must use numeric -1, not an invalid duration string');
-if (!/keep_alive:\s*request\.keepAlive\s*\?\?\s*-1/.test(`${provider}\n${modelAdapter}`)) errors.push('Model provider: chat, structured-generation, and embedding paths must use the numeric keep_alive contract');
+if (/keep_alive:\s*['"]-1['"]/.test(`${provider}\n${modelAdapter}`)) errors.push('Local resolver: keep_alive must use bounded residency, not indefinite retention');
+if (!/keep_alive:\s*request\.keepAlive\s*\?\?\s*600/.test(`${provider}\n${modelAdapter}`)) errors.push('Model provider: chat, structured-generation, and embedding paths must use bounded numeric keep_alive residency');
 if (!/createModelTasks/.test(localService)) errors.push('Local resolver: provider-neutral model tasks are not wired into the resolver');
 const localDevAi = await readFile('scripts/dev-local-ai.mjs', 'utf8');
 for (const fragment of ['isPortInUse', 'LOCAL_GATEWAY_PORT', 'LOCAL_ASTRO_PORT', 'LOCAL_CLASSIFIER_PORT']) {

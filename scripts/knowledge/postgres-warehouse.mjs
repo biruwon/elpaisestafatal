@@ -186,7 +186,7 @@ export const populateWarehouseEmbeddings = async ({ endpoint, model, batchSize =
     let written = 0;
     for (let offset = 0; offset < pending.rows.length; offset += batchSize) {
       const batch = pending.rows.slice(offset, offset + batchSize);
-      const embeddings = (await inference.embed({ model, input: batch.map((row) => row.search_text), keep_alive: -1 }, 60_000)).embeddings;
+      const embeddings = (await inference.embed({ model, input: batch.map((row) => row.search_text), keep_alive: 600 }, 60_000)).embeddings;
       if (!Array.isArray(embeddings) || embeddings.length !== batch.length || embeddings.some((embedding) => !validateEmbedding(embedding, embeddingDimensions))) throw new Error(`Embedding response must contain ${embeddingDimensions}-dimension vectors`);
       for (let index = 0; index < batch.length; index += 1) {
         await database.query('UPDATE observations SET search_embedding = $1::vector, embedding_model = $2 WHERE id = $3', [JSON.stringify(embeddings[index]), model, batch[index].id]);

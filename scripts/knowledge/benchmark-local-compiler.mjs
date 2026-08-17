@@ -14,7 +14,7 @@ const endpointUrl = new URL(endpoint);
 const outputPath = args.get('output') || join(root, '.local/compiler-benchmark.json');
 const timeoutMs = Math.min(30000, Math.max(1500, Number(args.get('timeout-ms') || process.env.COMPILER_BENCHMARK_TIMEOUT_MS || 10000)));
 const minimumQuality = Math.min(1, Math.max(0, Number(args.get('min-quality') || process.env.COMPILER_BENCHMARK_MIN_QUALITY || 0.8)));
-const requestedModels = String(args.get('models') || process.env.COMPILER_BENCHMARK_MODELS || 'gemma3:4b,qwen3.6:latest')
+const requestedModels = String(args.get('models') || process.env.COMPILER_BENCHMARK_MODELS || 'gemma4:26b,qwen3.6:27b')
   .split(',').map((model) => model.trim()).filter(Boolean);
 
 const inference = createLocalInferenceProvider({ endpoint });
@@ -73,7 +73,7 @@ const runCase = async (model, testCase) => {
     // Match the production compiler budget. A 240-token benchmark budget
     // routinely truncates the required routing object and measures JSON
     // truncation rather than extraction quality.
-    const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: -1, options: { temperature: 0, num_predict: 420, num_ctx: 3072 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
+    const payload = await inference.chat({ model, stream: false, think: false, format: compilerSchema, keep_alive: 600, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }] }, timeoutMs);
     const raw = parseJson(payload.message?.content);
     const deterministic = deterministicFallbackCompiler(testCase.input);
     const normalized = normalizeCompilerOutput(raw, testCase.input);

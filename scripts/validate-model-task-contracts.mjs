@@ -2,6 +2,7 @@ import { modelTaskSchemas } from './knowledge/model-task-contracts.mjs';
 
 const required = {
   researchPlanSchema: ['propositions', 'metricCandidates', 'neutralQueries', 'requiredDimensions'],
+  rerankSchema: ['selectedSlug', 'confidence', 'reason'],
   sourceEvidenceSchema: ['findings'],
   evidenceComparisonSchema: ['status', 'reason'],
   clarificationSchema: ['question', 'reason'],

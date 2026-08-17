@@ -42,14 +42,15 @@ const port = Number(process.env.LOCAL_CLASSIFIER_PORT || 8789);
 const bindHost = process.env.LOCAL_CLASSIFIER_BIND_HOST || '127.0.0.1';
 const endpoint = process.env.OLLAMA_ENDPOINT || 'http://127.0.0.1:11434';
 const classifierToken = process.env.LOCAL_CLASSIFIER_TOKEN || '';
-const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma3:4b';
+const routerModel = process.env.OLLAMA_ROUTER_MODEL || 'gemma4:26b';
 // Ollama can spend materially longer loading a cold local model than it does
 // answering a warm request. This is background enrichment: the browser has
 // deterministic guidance immediately, so allow one bounded cold start rather
 // than silently disabling the model before it can ever contribute.
-const compilerTimeoutMs = Math.min(45000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 30000)));
+const compilerTimeoutMs = Math.min(60000, Math.max(1800, Number(process.env.LOCAL_COMPILER_TIMEOUT_MS || 15000)));
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
-const visionModel = process.env.OLLAMA_VISION_MODEL || 'qwen3-vl:8b';
+const visionModel = process.env.OLLAMA_VISION_MODEL || routerModel;
+const ollamaKeepAliveSeconds = Math.min(3600, Math.max(60, Number(process.env.OLLAMA_KEEP_ALIVE_SECONDS || 600)));
 // Local development should use the installed Ollama model automatically for
 // structured answer enrichment. Set LOCAL_ANSWER_PLANNER=0 to benchmark the
 // deterministic path in isolation. Every planner failure still returns the
@@ -90,6 +91,7 @@ const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
 let warehousePromise;
+let modelReady = false;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
@@ -313,6 +315,7 @@ const inference = createLocalInferenceProvider({
 const modelTasks = createModelTasks({
   provider: inference,
   models: { router: routerModel, embedding: embedModel, vision: visionModel },
+  keepAlive: ollamaKeepAliveSeconds,
 });
 
 const planAnswerWithLocalModel = async (text, classified, result, observations) => {
@@ -342,7 +345,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
     const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
     let planned = result.result;
     try {
-      const draft = await modelTasks.composeGroundedAnswer({ schema: plannerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 2200 });
+      const draft = await modelTasks.composeGroundedAnswer({ schema: plannerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 15000 });
       const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
       if (validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok) planned = upgraded;
     } catch { /* The deterministic plan remains the safe presentation fallback. */ }
@@ -358,17 +361,31 @@ const planResearchWithModel = async (text, classified) => {
   if (!answerPlannerEnabled || !classified?.compiler || classified.primary) return null;
   const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most three neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 1200), propositions: classified.compiler.propositions?.slice(0, 6), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 8) })}`;
   try {
-    const plan = await modelTasks.planResearch({ schema: undefined, options: { temperature: 0, num_predict: 280, num_ctx: 4096 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 1800 });
+    const plan = await modelTasks.planResearch({ schema: undefined, options: { temperature: 0, num_predict: 280, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 12000 });
     if (!plan || !Array.isArray(plan.propositions) || !Array.isArray(plan.neutralQueries) || !Array.isArray(plan.requiredDimensions)) return null;
     const neutralQueries = [...new Set(plan.neutralQueries.map((query) => neutralWebQuery(String(query)).slice(0, 240)).filter((query) => query.length >= 8))].slice(0, 3);
     const requiredDimensions = [...new Set(plan.requiredDimensions.map((item) => String(item).trim().slice(0, 80)).filter(Boolean))].slice(0, 8);
     if (!neutralQueries.length || !requiredDimensions.length) return null;
     let clarificationQuestion = '';
     try {
-      const clarification = await modelTasks.chooseClarification({ options: { temperature: 0, num_predict: 120, num_ctx: 2048 }, messages: [{ role: 'user', content: `Elige una sola pregunta de aclaración de alto valor para esta afirmación. Solo pregunta por una dimensión necesaria: ${requiredDimensions.join(', ')}. No respondas la afirmación ni inventes datos.\n${text.slice(0, 800)}` }], timeoutMs: 1400 });
+      const clarification = await modelTasks.chooseClarification({ options: { temperature: 0, num_predict: 120, num_ctx: 4096 }, messages: [{ role: 'user', content: `Elige una sola pregunta de aclaración de alto valor para esta afirmación. Solo pregunta por una dimensión necesaria: ${requiredDimensions.join(', ')}. No respondas la afirmación ni inventes datos.\n${text.slice(0, 800)}` }], timeoutMs: 8000 });
       clarificationQuestion = typeof clarification?.question === 'string' ? clarification.question.trim().slice(0, 300) : '';
     } catch { /* Clarification is optional; deterministic guidance remains available. */ }
     return { propositions: plan.propositions.slice(0, 6), metricCandidates: plan.metricCandidates?.slice(0, 8) || [], neutralQueries, requiredDimensions, clarificationQuestion };
+  } catch { return null; }
+};
+
+const extractCurrentEventEvidence = async (frame, sources) => {
+  if (!sources?.length || !answerPlannerEnabled) return null;
+  const sourceText = sources.slice(0, 6).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url })).filter((item) => item.title || item.url);
+  try {
+    const extracted = await modelTasks.extractSourceEvidence({ options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: `Extrae únicamente hallazgos explícitos de estas fuentes sobre el evento. No determines que una acusación es cierta. Usa solo JSON según el esquema y asigna cada hallazgo a event, allegation o attribution.\n\nPROPOSICIONES:\n${JSON.stringify(frame.propositions)}\n\nFUENTES:\n${JSON.stringify(sourceText)}` }], timeoutMs: 15000 });
+    const findings = Array.isArray(extracted?.findings) ? extracted.findings.slice(0, 12).map((item) => ({ propositionId: String(item.propositionId || ''), finding: String(item.finding || '').slice(0, 700), support: item.support, stage: item.stage, sourceId: sourceText.find((source) => source.id === item.sourceId)?.id })).filter((item) => item.propositionId && item.finding) : [];
+    let comparison;
+    if (sources.length > 1) {
+      try { comparison = await modelTasks.compareEvidence({ options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: `Compara estas fuentes solo para detectar acuerdo, conflicto, sindicación o insuficiencia. No resuelvas la verdad de la acusación. Devuelve JSON según el esquema.\n${JSON.stringify(sourceText)}` }], timeoutMs: 10000 }); } catch { /* deterministic source classification remains authoritative */ }
+    }
+    return { findings, comparison: comparison && typeof comparison.status === 'string' ? { status: comparison.status, reason: String(comparison.reason || '').slice(0, 500) } : undefined };
   } catch { return null; }
 };
 
@@ -1798,7 +1815,7 @@ const startUrlResolveJob = (url) => {
   return job;
 };
 
-const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
+const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined, eventEvidence = undefined) => {
   // Keep broad-domain routing available while rendering the final answer.
   // These flags are intentionally derived here as well as in classify(): the
   // renderer must not depend on variables local to the classifier.
@@ -2346,6 +2363,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : null;
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
   const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, eventPackets || (observations.length ? classifyEventSources(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null)) : null;
+  if (eventBlock && eventEvidence?.findings?.length) {
+    eventBlock.propositions = eventBlock.propositions.map((item) => {
+      const propositionId = currentEvent.propositions.find((proposition) => proposition.text === item.text)?.id;
+      const detail = eventEvidence.findings.filter((finding) => finding.propositionId === propositionId).map((finding) => finding.finding).join(' ');
+      return detail ? { ...item, detail: detail.slice(0, 700) } : item;
+    });
+  }
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
     answerMode: primary ? 'reviewed_claim' : broadConditionRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
@@ -2405,6 +2429,17 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // again at this boundary because this is where dynamic retrieval can
   // otherwise overwrite a valid published classification.
   const enrichmentIndex = await getIndex();
+  if (!classified.primary && answerPlannerEnabled) {
+    const candidates = (classified.alternatives || []).filter((item) => item.kind === 'claim' && item.validated === true).slice(0, 4);
+    if (candidates.length > 1) {
+      try {
+        const reranked = await modelTasks.rerankClaimCandidates({ options: { temperature: 0, num_predict: 120, num_ctx: 4096 }, messages: [{ role: 'user', content: `Selecciona solo entre estas candidatas ya compatibles con la afirmación. No inventes una candidata nueva ni cambies su veredicto. Devuelve JSON según el esquema.\nAFIRMACIÓN: ${text.slice(0, 1200)}\nCANDIDATAS: ${JSON.stringify(candidates.map((item) => ({ slug: item.slug, title: item.title })))}` }], timeoutMs: 10000 });
+        const selected = candidates.find((item) => item.slug === reranked?.selectedSlug && Number(reranked.confidence) >= 0.7);
+        const entry = selected && enrichmentIndex.entries.find((item) => item.slug === selected.slug && item.kind === 'claim' && item.published);
+        if (entry) classified = { ...classified, primary: { kind: 'claim', slug: entry.slug, title: entry.title, href: entry.href, confidence: Number(reranked.confidence), reason: 'La formulación fue reordenada entre candidatas compatibles.', answer: entry.answer || '', assessment: entry.assessment || '', whatIsTrue: entry.whatIsTrue || '', whatIsMissing: entry.whatIsMissing || '', cannotProve: entry.cannotProve || '', scale: entry.scale || '', propositionIds: entry.propositionIds || [], evidenceIds: entry.evidenceIds || [], sourceRefs: entry.sourceRefs || [], sourceLinks: entry.sourceLinks || [] } };
+      } catch { /* deterministic ambiguity remains safer than a model guess */ }
+    }
+  }
   const enrichmentCompiler = deterministicFallbackCompiler(text);
   const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
   const canonicalPublished = !vagueTaxJudgement(text) && enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
@@ -2459,7 +2494,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     const packet = classifyEventSources(eventSources);
     const observations = packet.sources.map((item) => ({ id: item.id, kind: 'current_event_source', source: item, score: 1, finding: { type: 'current_event', status: packet.status } }));
     const eventClassified = { ...classified, primary: undefined, status: 'uncovered', compiler: { ...(classified.compiler || {}), clarificationRequired: false, claimType: 'descriptive' } };
-    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations, eventPackets);
+    const eventEvidence = await extractCurrentEventEvidence(eventFrame, eventSources);
+    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations, eventPackets, eventEvidence);
     return eventResult;
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
@@ -2723,7 +2759,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
@@ -2755,4 +2791,10 @@ const server = createServer(async (request, response) => {
   } catch { response.writeHead(200, { 'content-type': 'application/json' }); response.end(JSON.stringify({ status: 'unavailable' })); }
 });
 
-server.listen(port, bindHost, () => console.log(`Local claim service listening on ${bindHost}:${port}`));
+server.listen(port, bindHost, () => {
+  console.log(`Local claim service listening on ${bindHost}:${port}`);
+  if (!localCompilerEnabled && !answerPlannerEnabled) return;
+  void modelTasks.understandClaim({ schema: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'], additionalProperties: false }, options: { temperature: 0, num_predict: 24, num_ctx: 1024 }, messages: [{ role: 'user', content: 'Devuelve exactamente JSON con ok=true.' }], timeoutMs: 60000 })
+    .then((value) => { modelReady = value?.ok === true; })
+    .catch(() => { modelReady = false; });
+});
