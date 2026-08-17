@@ -24,9 +24,13 @@ export const evaluateOutcome = ({ item, result, latencyMs }) => {
     && result?.status === 'complete'
     && result?.result?.answerMode === 'scorecard'
     && claims.length === 0;
+  const safeRelatedContext = item.expected.status === 'unknown'
+    && result?.status === 'related'
+    && claims.length === 0
+    && !result?.primary?.slug;
   const irrelevantMatch = item.expected.status === 'unknown' && (claims.length > 0 || Boolean(result?.primary?.slug));
   const knownPass = !known || primarySlug === item.expected.slug;
-  const unknownPass = item.expected.status !== 'unknown' || safeScorecard || (['uncovered', 'draft'].includes(result?.status) && !irrelevantMatch);
+  const unknownPass = item.expected.status !== 'unknown' || safeScorecard || safeRelatedContext || (['uncovered', 'draft'].includes(result?.status) && !irrelevantMatch);
   const traceability = traceabilityFor(result);
   const breakdown = Array.isArray(result?.result?.blocks) && result.result.blocks.some((block) => block.type === 'claim_breakdown');
   return {

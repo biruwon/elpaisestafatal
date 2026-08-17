@@ -9,6 +9,9 @@ if (unsafe.unknownPass || !unsafe.irrelevantMatch) throw new Error('Irrelevant u
 const scorecard = evaluateOutcome({ item: { id: 'broad', expected: { status: 'unknown' } }, result: { status: 'complete', relatedClaims: [], result: { answerMode: 'scorecard' } }, latencyMs: 10 });
 if (!scorecard.unknownPass || scorecard.irrelevantMatch) throw new Error('Evidence-backed scorecard was incorrectly treated as an unsafe unknown verdict');
 
+const relatedContext = evaluateOutcome({ item: { id: 'context', expected: { status: 'unknown' } }, result: { status: 'related', relatedClaims: [], result: { answerMode: 'guidance' } }, latencyMs: 10 });
+if (!relatedContext.unknownPass || relatedContext.irrelevantMatch) throw new Error('Related context without a claim verdict was incorrectly treated as unsafe');
+
 const broken = traceabilityFor({ result: { blocks: [{ type: 'conversation_reply', evidenceIds: ['missing'] }], evidenceIds: ['e1'], sourceLinks: [{ url: 'http://insecure.test' }] } });
 if (broken.passed) throw new Error('Broken evidence/source traceability was accepted');
 console.log('Evaluation metrics validation passed: recall, irrelevant matches, coverage, and traceability are measured.');
