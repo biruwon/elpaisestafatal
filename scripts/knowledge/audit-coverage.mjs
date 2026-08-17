@@ -51,6 +51,7 @@ const domainMetricIds = {
   health_emergency_wait: ['emergency_wait_declared'],
 };
 const domainMetricSet = new Set(Object.values(domainMetricIds).flat());
+const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
 for (const feed of domainFeeds) for (const id of domainMetricIds[feed.domain] || []) {
   recordByMetric.set(id, [...(recordByMetric.get(id) || []), feed]);
   configByMetric.set(id, [...(configByMetric.get(id) || []), feed]);
@@ -67,7 +68,7 @@ const metricAudit = Object.entries(registry).map(([id, metric]) => {
   const hasSpainAndEurope = !id.endsWith('_europe') || feeds.some((feed) => /(?:geo=ES|España|Espana)/i.test(`${feed.url || ''} ${feed.title || ''}`) && /(?:EU27_2020|geo=EU|Europa)/i.test(`${feed.url || ''} ${feed.title || ''}`));
   let status = 'ready';
   let action = 'none';
-  if (domainMetricSet.has(id) && feeds.length) { status = 'partial_domain_evidence'; action = 'human_review'; }
+  if (incompleteDomainMetrics.has(id) && feeds.length) { status = 'partial_domain_evidence'; action = 'human_review'; }
   else if (!feeds.length) { status = 'missing_configuration'; action = 'find_source'; }
   else if (!materialized.length) { status = 'source_configured_not_refreshed'; action = 'refresh_source'; }
   else if (invalid.length) { status = 'data_quality_failure'; action = 'repair_source'; }
