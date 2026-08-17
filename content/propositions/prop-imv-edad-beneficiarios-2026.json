@@ -1,0 +1,13 @@
+{
+  "id": "prop-imv-edad-beneficiarios-2026",
+  "claimSlug": "imv-1-2-millones-edad-28",
+  "text": "En marzo de 2026, la edad media registrada de las personas beneficiarias del IMV fue de 28,46 años.",
+  "type": "descriptive",
+  "subject": "imv_beneficiaries",
+  "predicate": "average_age_is",
+  "object": "28.4637 years",
+  "geography": "España",
+  "period": "marzo de 2026",
+  "status": "supported",
+  "evidenceIds": ["imv-beneficiarios-edad-marzo-2026"]
+}

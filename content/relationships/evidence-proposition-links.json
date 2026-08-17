@@ -7,6 +7,13 @@
   },
   "links": [
     {
+      "evidenceId": "imv-beneficiarios-edad-marzo-2026",
+      "propositionId": "prop-imv-edad-beneficiarios-2026",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-08-17"
+    },
+    {
       "evidenceId": "electricidad-hogares-espana-ue-eurostat",
       "propositionId": "prop-electricidad-hogares-espana-ue-core",
       "relationship": "supports",
