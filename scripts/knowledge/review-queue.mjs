@@ -154,7 +154,18 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
       evidenceStatus: candidate.evidenceStatus || (candidate.newlyCovered ? 'warehouse_ready' : 'not_ready'),
     })),
     researchCandidates,
-    sourceWork: asArray(audit?.sourceWorkItems).slice(0, max).map((item, index) => ({ rank: index + 1, ...item })),
+    sourceWork: asArray(audit?.sourceWorkItems).slice(0, max).map((item, index) => ({
+      rank: index + 1,
+      ...item,
+      queryCount: item.recurrence || 0,
+      count7d: item.recentVelocity || 0,
+      priorityScore: item.rankScore ?? item.priorityScore ?? 0,
+      reason: item.reason || 'Requires source work before publication.',
+      nextAction: item.action || 'Review the required evidence dimensions.',
+      coverageStatus: item.auditClass || 'uncovered',
+      researchOnly: true,
+      sourceAvailability: item.sourceIds?.length ? 'direct_candidate' : 'none',
+    })),
   };
 };
 
