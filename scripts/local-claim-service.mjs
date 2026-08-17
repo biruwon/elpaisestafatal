@@ -121,7 +121,7 @@ const vagueTaxJudgement = (value) => {
 };
 const broadComplaintText = (value) => {
   const normalized = normalise(value);
-  return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor)\b/.test(normalized)
+  return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor|mejorando?|progresa?|avanza?)\b/.test(normalized)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(normalized);
 };
 
@@ -1947,7 +1947,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // These flags are intentionally derived here as well as in classify(): the
   // renderer must not depend on variables local to the classifier.
   const broadTopicText = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadTopicText)
+  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor|mejorando?|progresa?|avanza?)\b/.test(broadTopicText)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadTopicText)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadTopicText)
     || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\bespana\b/.test(broadTopicText)

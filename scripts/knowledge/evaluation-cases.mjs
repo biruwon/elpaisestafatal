@@ -250,6 +250,11 @@ export const acceptanceCases = [
     expected: { answerMode: 'scorecard', resultState: 'answered', reviewed: false, noOverallVerdict: true },
   },
   {
+    id: 'acceptance-country-better',
+    input: 'España está mejorando',
+    expected: { answerMode: 'scorecard', resultState: 'answered', reviewed: false, noOverallVerdict: true },
+  },
+  {
     id: 'acceptance-ceuta-cross-border-allegation',
     input: 'con la invasion de Ceuta están violando a las mujeres',
     expected: { answerMode: 'current_event', resultState: 'provisional', propositionIds: ['event', 'allegation', 'attribution'], noNationalCrimeProof: true },
