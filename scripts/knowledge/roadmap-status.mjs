@@ -13,8 +13,9 @@ try {
   for (const file of claimFiles) {
     const source = await readFile(join(root, 'content/claims', file), 'utf8');
     const aliasLine = source.match(/^aliases:\s*(\[[^\n]*\])/m)?.[1];
+    const title = source.match(/^claim:\s*["'](.+?)["']\s*$/m)?.[1];
     if (aliasLine) {
-      try { reviewedLanguageExamples += new Set(JSON.parse(aliasLine).filter(Boolean)).size; } catch { /* catalog fallback below */ }
+      try { reviewedLanguageExamples += new Set([title, ...JSON.parse(aliasLine)].filter(Boolean)).size; } catch { /* catalog fallback below */ }
     }
   }
 } catch { /* use built catalog when source files are unavailable */ }
