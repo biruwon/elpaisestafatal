@@ -1706,7 +1706,9 @@ const startResolveJob = (text, origin = 'runtime') => {
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
     const resolved = process.env.LOCAL_FAST_DETERMINISTIC === '1'
-      ? toResolveResult(text, safeClassified, undefined, id)
+      ? safeClassified.primary
+        ? await enrichResolve(text, safeClassified, undefined, id)
+        : (await buildPublishedCompositeResult(text, safeClassified)) || toResolveResult(text, safeClassified, undefined, id)
       : await enrichResolve(text, safeClassified, undefined, id);
     const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
