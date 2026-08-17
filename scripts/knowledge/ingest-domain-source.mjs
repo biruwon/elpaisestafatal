@@ -61,7 +61,7 @@ try {
   else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
-const source = { id: `domain-${hash.slice(0, 16)}`, title, url: response.url.toString(), landingUrl: sourceUrl.toString() };
+const source = { id: `domain-${hash.slice(0, 16)}`, title, publisher: title, url: response.url.toString(), landingUrl: sourceUrl.toString() };
 const records = payload?.__records
   ? payload.__records.map((record) => ({ ...record, sourceId: source.id, id: record.id.replace('pending', source.id) }))
   : parseDomainPayload(domain, payload, source);

@@ -34,7 +34,12 @@ try { recordFiles = (await readdir(recordsDir)).filter((file) => file.endsWith('
 const records = [];
 for (const file of recordFiles) {
   const record = await readJson(join(recordsDir, file), null);
-  if (record?.source) records.push({ file, ...record.source });
+  if (record?.source) {
+    const observations = Array.isArray(record.records) ? record.records : [];
+    const metricIds = [...new Set(observations.map((item) => item?.metricId).filter(Boolean))];
+    if (metricIds.length) for (const metricId of metricIds) records.push({ file, ...record.source, metricId, recordCount: observations.filter((item) => item?.metricId === metricId).length });
+    else records.push({ file, ...record.source });
+  }
 }
 const configured = Object.entries(refresh).flatMap(([sourceId, list]) => (Array.isArray(list) ? list : []).map((feed) => ({ sourceId, ...(typeof feed === 'string' ? { url: feed } : feed), mode: 'warehouse' })));
 const domainFeeds = (domains.feeds || []).map((feed) => ({ ...feed, sourceId: feed.id, mode: feed.mode || 'active' }));
@@ -53,7 +58,7 @@ const domainMetricIds = {
 const domainMetricSet = new Set(Object.values(domainMetricIds).flat());
 const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
 for (const feed of domainFeeds) for (const id of domainMetricIds[feed.domain] || []) {
-  recordByMetric.set(id, [...(recordByMetric.get(id) || []), feed]);
+  if (!recordByMetric.has(id)) recordByMetric.set(id, [feed]);
   configByMetric.set(id, [...(configByMetric.get(id) || []), feed]);
 }
 const now = Date.now();
