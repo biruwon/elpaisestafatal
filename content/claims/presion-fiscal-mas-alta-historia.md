@@ -3,7 +3,7 @@ slug: presion-fiscal-mas-alta-historia
 claim: "La presión fiscal es la más alta de la historia."
 assessment: uncertain
 topicSlugs: ["impuestos", "economia"]
-aliases: ["la presión fiscal es la más alta de la historia", "la presión fiscal es la más alta que ha existido nunca", "España tiene la presión fiscal más alta de su historia", "nunca se han pagado tantos impuestos en España"]
+aliases: ["la presión fiscal es la más alta de la historia", "la presión fiscal es la más alta que ha existido nunca", "España tiene la presión fiscal más alta de su historia", "nunca se han pagado tantos impuestos en España", "España tiene un récord histórico de presión fiscal", "la presión tributaria nunca fue tan elevada", "la carga fiscal está en máximos históricos"]
 claimType: descriptive
 evidenceStrength: high
 geography: España
