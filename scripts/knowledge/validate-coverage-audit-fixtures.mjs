@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
@@ -9,7 +9,7 @@ const root = new URL('../../', import.meta.url).pathname;
 const dir = await mkdtemp(join(tmpdir(), 'coverage-audit-'));
 try {
   const clusters = { clusters: [
-    { id: 'metric', text: 'la presion fiscal es la mas alta de la historia', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
+    { id: 'metric', text: 'ingresos publicos porcentaje pib', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'local', text: 'en mi barrio ha subido la inseguridad este mes', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'housing', text: 'espanoles deberian tener prioridad ayudas', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'broken', text: 'Audio transcription is not available', count: 8, sourceIds: [], coverageStatus: 'uncovered', reviewable: false },
@@ -18,8 +18,11 @@ try {
   const auditPath = join(dir, 'audit.json');
   const promotedPath = join(dir, 'promoted.json');
   const promotedAgainPath = join(dir, 'promoted-again.json');
+  const recordsDir = join(dir, 'records');
+  await mkdir(recordsDir, { recursive: true });
+  await writeFile(join(recordsDir, 'government-revenue.json'), JSON.stringify({ source: { metricId: 'government_revenue_ratio', recordCount: 1, retrievedAt: new Date().toISOString(), publisher: 'fixture', role: 'primary' } }));
   await writeFile(clustersPath, JSON.stringify(clusters));
-  await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--output', auditPath], { cwd: root });
+  await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--records', recordsDir, '--output', auditPath], { cwd: root });
   const audit = JSON.parse(await readFile(auditPath, 'utf8'));
   const classes = new Map(audit.clusters.map((item) => [item.clusterId, item.auditClass]));
   if (classes.get('metric') !== 'covered_existing_evidence') throw new Error(`existing metric was not promoted: ${classes.get('metric')}`);
