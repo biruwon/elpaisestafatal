@@ -26,7 +26,8 @@ const directSources = (ids) => (Array.isArray(ids) ? ids : []).filter((id) => !/
 const registry = await readJson(pathArg('registry', 'config/metric-registry.json'), {});
 const refresh = await readJson(pathArg('refresh', 'config/source-refresh.json'), {});
 const domains = await readJson(pathArg('domains', 'config/domain-source-refresh.json'), { feeds: [] });
-const clustersDoc = await readJson(pathArg('clusters', '.local/query-clusters.json'), { clusters: [] });
+const clustersPath = args.get('clusters') || (await readJson(join(root, '.local/query-clusters.promoted.json'), null) ? join(root, '.local/query-clusters.promoted.json') : join(root, '.local/query-clusters.json'));
+const clustersDoc = await readJson(clustersPath, { clusters: [] });
 const gapContracts = await readJson(pathArg('gap-contracts', 'config/domain-source-gaps.json'), { gaps: [] });
 const recordsDir = pathArg('records', '.local/source-warehouse/records');
 let recordFiles = [];
