@@ -1232,7 +1232,16 @@ const classify = async (text) => {
   // representative only when lexical wording clearly favours one owner;
   // genuine ties remain related guidance.
   const dominantFamilyEntry = (keys, entries = index.entries) => {
-    const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published && familyEntityCompatible(entry, keys)
+    const surfaceCompatible = (entry) => {
+      const entryText = searchText(entry);
+      const queryText = normalise(text);
+      const queryGeo = /\b(?:portugal|portuguesa?|lisboa)\b/.test(queryText) ? 'portugal' : /\b(?:francia|francesa?|paris)\b/.test(queryText) ? 'france' : /\b(?:espana|espanola?|madrid)\b/.test(queryText) ? 'spain' : '';
+      const queryPolarity = /\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(queryText) ? 'negative' : /\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(queryText) ? 'positive' : '';
+      const entryGeo = /\b(?:portugal|portuguesa?|lisboa)\b/.test(normalise(entryText)) ? 'portugal' : /\b(?:francia|francesa?|paris)\b/.test(normalise(entryText)) ? 'france' : /\b(?:espana|espanola?|madrid)\b/.test(normalise(entryText)) ? 'spain' : '';
+      const entryPolarity = /\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalise(entryText)) ? 'negative' : /\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalise(entryText)) ? 'positive' : '';
+      return !(queryGeo && entryGeo && queryGeo !== entryGeo) && !(queryPolarity && entryPolarity && queryPolarity !== entryPolarity);
+    };
+    const owners = entries.filter((entry) => entry.kind === 'claim' && entry.published && familyEntityCompatible(entry, keys) && surfaceCompatible(entry)
       && (entry.semanticFamilyKeys || []).some((key) => keys.has(key)));
     if (owners.length <= 1) return owners[0];
     const rankedOwners = owners.map((entry) => ({ entry, lexical: lexicalScore(text, entry) }))
@@ -1246,12 +1255,7 @@ const classify = async (text) => {
   const earlyFamilyEntry = !predictionLike && !exactPublishedInput && (!hasExplicitMetricRoute || routingHasStructuredFamily || (routingCompiler.claimType === 'causal' && hasPublishedSemanticFamily)) && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
-    ? (dominantFamilyEntry(routingFamilyKeys)
-      || (routingHasStructuredFamily
-        ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
-          && familyEntityCompatible(entry, routingFamilyKeys)
-          && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)))
-        : undefined))
+    ? dominantFamilyEntry(routingFamilyKeys)
     : undefined;
   const earlySignatureEntry = !predictionLike && !earlyFamilyEntry && !exactPublishedInput && !hasExplicitMetricRoute && !localSpecificClaim(text) && !evidenceUnavailableSignal(text)
     && routingCompiler.explicitPropositions.length <= 1
