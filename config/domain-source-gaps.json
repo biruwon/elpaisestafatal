@@ -57,8 +57,8 @@
         "total Madrid Social Housing Agency deliveries and second allocations",
         "official response identifies an Excel nº 1 with AVS adjudicatarios by sex and nationality, while stating that several application and allocation breakdowns are not directly extractable"
       ],
-      "permittedConclusion": "No public source currently establishes whether a specific public-housing programme prioritises or allocates homes by nationality.",
-      "nextEvidence": "A programme-level applicant and allocation extract from the responsible regional or municipal housing authority.",
+      "permittedConclusion": "The Madrid transparency response indicates that an attachment may contain AVS adjudicatarios by nationality, but the currently accessible record does not establish a nationality-based priority rule or a Spain-wide allocation pattern.",
+      "nextEvidence": "Obtain and validate the referenced Excel nº 1 and nº 3 attachments, then compare programme-level applicants, adjudications, rules, geography, and periods without generalising Madrid to Spain.",
       "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data", "Excel nº 1 and Excel nº 3 attached to Madrid AVS transparency resolution 10-OPEN-00039.7/2022"],
       "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions", "the attached Excel files are checked for years, missing fields, and whether adjudications are directly extractable"]
     }
