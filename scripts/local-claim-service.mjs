@@ -593,7 +593,7 @@ const loadWarehouse = async () => {
     const signature = digest(JSON.stringify({ version: 'warehouse-excerpt-v2', manifests: manifests.map(({ id, sha256, url, publisher, title, aliases }) => ({ id, sha256, url, publisher, title, aliases })) }));
     try {
       const cached = JSON.parse(await readFile(warehouseIndexPath, 'utf8'));
-      if (cached.signature === signature && Array.isArray(cached.entries)) return cached.entries;
+      if (cached.signature === signature && Array.isArray(cached.entries)) return cached.entries.map((entry) => ({ ...entry, tokenSet: new Set(warehouseTokens(entry.text)) }));
     } catch { /* Build the derived index. */ }
     const entries = [];
     for (const manifest of manifests) {
@@ -606,7 +606,7 @@ const loadWarehouse = async () => {
       } catch { /* Ignore malformed source manifests; validation reports them separately. */ }
     }
     await writeFile(warehouseIndexPath, JSON.stringify({ signature, entries }));
-    return entries;
+    return entries.map((entry) => ({ ...entry, tokenSet: new Set(warehouseTokens(entry.text)) }));
   })();
   return warehousePromise;
 };
@@ -619,7 +619,7 @@ const findWarehouseSource = async (query) => {
   if (!subjectWanted.length) return null;
   const entries = await loadWarehouse();
   const ranked = entries.filter((entry) => !normalise(entry.title).includes('sumario diario')).map((entry) => {
-    const available = new Set(warehouseTokens(entry.text));
+    const available = entry.tokenSet || new Set(warehouseTokens(entry.text));
     const matched = wanted.filter((token) => available.has(token)).length;
     const matchedSubject = subjectWanted.filter((token) => available.has(token)).length;
     return { entry, score: matched / wanted.length, matched, matchedSubject };
