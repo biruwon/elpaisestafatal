@@ -166,6 +166,8 @@ const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({
   metricIds: [],
   sourceIds: gap.officialSourcesChecked || [],
   availableEvidence: gap.availableEvidence || [],
+  sourceTargets: gap.sourceTargets || [],
+  acceptanceCriteria: gap.acceptanceCriteria || [],
   missingFields: gap.missingFields || [],
   nextEvidence: gap.nextEvidence || null,
   permittedConclusion: gap.permittedConclusion || null,

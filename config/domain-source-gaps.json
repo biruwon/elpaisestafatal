@@ -17,7 +17,9 @@
         "no single comparable denominator across all benefits and resident groups"
       ],
       "permittedConclusion": "A breakdown for one programme cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens.",
-      "nextEvidence": "A programme-by-programme extract with eligibility, beneficiaries, amounts, comparable population denominators, geography, and period."
+      "nextEvidence": "A programme-by-programme extract with eligibility, beneficiaries, amounts, comparable population denominators, geography, and period.",
+      "sourceTargets": ["Ministerio de Inclusión: IMV and benefit microdata", "INE population by nationality and residence", "regional benefit administrators"],
+      "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date"]
     },
     {
       "id": "crime-by-offence-stage-and-denominator",
@@ -36,7 +38,9 @@
         "no universal national series linking the same group definition to convictions for every offence"
       ],
       "permittedConclusion": "Recorded offences, arrests, suspects, and convictions are different measures; national totals cannot by themselves prove that immigrants are more criminal or cause insecurity.",
-      "nextEvidence": "A matched offence-level dataset with a fixed group definition, legal stage, territory, period, denominator, and appropriate age/sex adjustment."
+      "nextEvidence": "A matched offence-level dataset with a fixed group definition, legal stage, territory, period, denominator, and appropriate age/sex adjustment.",
+      "sourceTargets": ["Interior crime statistics", "INE convictions and population tables", "regional judicial statistics"],
+      "acceptanceCriteria": ["offence definition and legal stage are preserved", "suspects, arrests, and convictions remain separate", "group denominator, territory, period, and age/sex adjustment are aligned"]
     },
     {
       "id": "public-housing-allocation-by-nationality",
@@ -54,7 +58,9 @@
         "official statement that the requested nationality allocation breakdown is not held in directly extractable records"
       ],
       "permittedConclusion": "No public source currently establishes whether a specific public-housing programme prioritises or allocates homes by nationality.",
-      "nextEvidence": "A programme-level applicant and allocation extract from the responsible regional or municipal housing authority."
+      "nextEvidence": "A programme-level applicant and allocation extract from the responsible regional or municipal housing authority.",
+      "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data"],
+      "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions"]
     }
   ]
 }
