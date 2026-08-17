@@ -17,4 +17,5 @@ assert(workflow.includes('--config config/source-refresh.json'), 'production ref
 assert(workflow.includes('knowledge:domain-refresh'), 'production refresh must include active domain source packs');
 assert(!workflow.includes('--config config/source-refresh.example.json'), 'production refresh must not use the example configuration');
 assert(domainRefresh.includes('failures.push') && domainRefresh.includes('continuing with remaining feeds') && domainRefresh.includes('domain-refresh-report.json'), 'domain refresh must separate one-feed failures and persist a batch report');
+assert(workflow.includes('Validate domain refresh report') && workflow.includes('path: .local/domain-refresh-report.json'), 'refresh workflow must validate and upload the operational report');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

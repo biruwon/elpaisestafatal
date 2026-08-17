@@ -40,6 +40,9 @@ jobs:
       - name: Refresh active domain source packs
         run: npm run knowledge:domain-refresh -- --config config/domain-source-refresh.json
 
+      - name: Validate domain refresh report
+        run: npm run knowledge:domain-refresh:validate
+
       - name: Validate the derived warehouse
         run: |
           npm run knowledge:warehouse
@@ -71,6 +74,14 @@ jobs:
         with:
           name: evidence-coverage-audit-${{ github.run_id }}
           path: .local/coverage-audit.*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload domain refresh report
+        uses: actions/upload-artifact@v4
+        with:
+          name: domain-refresh-report-${{ github.run_id }}
+          path: .local/domain-refresh-report.json
           if-no-files-found: error
           retention-days: 14
 
