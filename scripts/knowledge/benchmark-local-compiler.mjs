@@ -102,6 +102,7 @@ const percentile = (values, fraction) => {
 const available = await getAvailableModels();
 const models = requestedModels.filter((model) => available.has(model));
 if (!models.length) throw new Error(`None of the requested local models is available: ${requestedModels.join(', ')}`);
+const unavailableModels = requestedModels.filter((model) => !available.has(model));
 
 const reports = [];
 for (const model of models) {
@@ -124,7 +125,7 @@ const recommended = reports.find((report) => report.passed)?.model || null;
 const report = {
   generatedAt: new Date().toISOString(),
   endpoint: `${endpointUrl.protocol}//${endpointUrl.hostname}:${endpointUrl.port || (endpointUrl.protocol === 'https:' ? 443 : 80)}`,
-  minimumQuality, maxWarmP95Ms, cases: cases.length, requestedModels, reports, recommendedModel: recommended,
+  minimumQuality, maxWarmP95Ms, cases: cases.length, requestedModels, unavailableModels, reports, recommendedModel: recommended,
   recommendation: recommended ? 'The first passing model in the configured order is the smallest tested candidate meeting the safety and quality threshold.' : 'No tested model met the threshold; keep deterministic fallback as the release path and review the failing cases before changing the default.',
 };
 await writeFile(outputPath, JSON.stringify(report, null, 2));
