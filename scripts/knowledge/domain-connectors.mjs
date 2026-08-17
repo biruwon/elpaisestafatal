@@ -155,7 +155,7 @@ export const parseIneTempusSnapshot = (rows, source) => rows.map((row, index) =>
     population: metadata['País de nacimiento'] || 'población general',
     group: metadata['Nacionalidad (española/extranjera)'] || null,
     dimensions: { sex: metadata.Sexo || null, unit: metadata['Unidades de medida'] || null, birthplace: metadata['País de nacimiento'] || null },
-    metricId: 'population_by_nationality',
+    metricId: 'foreign_citizenship_population',
     metric: 'Población por nacionalidad y país de nacimiento',
     value,
     unit: metadata['Unidades de medida'] || 'personas',
