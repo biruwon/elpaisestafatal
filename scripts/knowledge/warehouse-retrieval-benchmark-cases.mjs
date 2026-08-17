@@ -340,6 +340,7 @@ export const warehouseRetrievalBenchmarkCases = [
   ['atencion-sanitaria', 'Ha aumentado la falta de atención médica por listas de espera', 'unmet_healthcare_waiting_list_rate'],
   ['ayudas-grupos', '¿Cuántas personas reciben prestaciones según su grupo?', 'benefit_recipients_by_group'],
   ['imv-nacionalidad', '¿Cómo se distribuyen los titulares del ingreso mínimo por nacionalidad?', 'imv_title_holders_by_nationality'],
+  ['imv-edad-beneficiarios', '¿Cuál es la edad media de quienes reciben el ingreso mínimo vital?', 'imv_beneficiary_average_age'],
   ['delitos-grupos', '¿Cómo se comparan los delitos registrados entre grupos?', 'crime_rate_by_group'],
   ['vivienda-publica-grupos', '¿Cómo se reparten las asignaciones de vivienda pública entre grupos?', 'public_housing_allocations_by_group'],
   ['vivienda-publica-actuaciones', '¿Qué actuaciones de vivienda pública se han registrado?', 'public_housing_actions'],
