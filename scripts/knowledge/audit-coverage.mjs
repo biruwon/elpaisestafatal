@@ -14,6 +14,11 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 const textOf = (cluster) => [cluster?.text, cluster?.canonicalText, cluster?.canonical, cluster?.normalized, cluster?.signature].filter(Boolean).join(' ');
 const localPattern = /(?:mi barrio|mi municipio|en la zona|edificio|portal|municipio|pueblo|barrio|familia concreta|persona concreta)/i;
 const operationalPattern = /(?:ollama|transcri|runtime|provider|fetch failed|no disponible|audio input)/i;
+// Broad evaluative claims are answered by the fixed, reviewed scorecard
+// registry. They are not missing source families just because they do not
+// name one metric explicitly.
+const broadScorecardPattern = /\b(?:espana|pa[ií]s|este pa[ií]s|el pa[ií]s)\b[\s\w]{0,52}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor)\b|\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/i;
+const scorecardMetricIds = ['gdp_per_capita_europe', 'median_equivalised_income', 'unemployment_rate', 'arope_rate', 'housing_cost_overburden_rate', 'unmet_healthcare_waiting_list_rate'];
 const domainPattern = (text) => {
   const value = normalise(text);
   if (/benefici|ayuda|imv|prestacion|subsidio/.test(value)) return 'immigration_benefits';
@@ -91,6 +96,7 @@ const classifyCluster = (cluster) => {
   const sourceIds = directSources(cluster.sourceIds);
   if (operationalPattern.test(text) || cluster.reviewable === false) return { auditClass: 'operational_failure', action: 'repair_infrastructure', metricIds: ids, domain };
   if (localPattern.test(text)) return { auditClass: 'unsupported_scope', action: 'find_local_source', metricIds: ids, domain };
+  if (broadScorecardPattern.test(normalise(text))) return { auditClass: 'covered_existing_evidence', action: 'auto_route', metricIds: scorecardMetricIds, domain, sourceIds };
   // The promoted cluster file is the authoritative replay output for
   // catalogue-backed language. Published links may have no metric or source
   // IDs (legal, normative, and mixed claims), so do not downgrade them to a
