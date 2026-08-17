@@ -9,7 +9,7 @@ const root = new URL('../../', import.meta.url).pathname;
 const dir = await mkdtemp(join(tmpdir(), 'coverage-audit-'));
 try {
   const clusters = { clusters: [
-    { id: 'metric', text: 'cuanto gasta sanidad habitante espana', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
+    { id: 'metric', text: 'la presion fiscal es la mas alta de la historia', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'local', text: 'en mi barrio ha subido la inseguridad este mes', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'housing', text: 'espanoles deberian tener prioridad ayudas', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
     { id: 'broken', text: 'Audio transcription is not available', count: 8, sourceIds: [], coverageStatus: 'uncovered', reviewable: false },
