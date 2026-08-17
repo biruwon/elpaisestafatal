@@ -36,6 +36,7 @@ export type RankedClaimIndexEntry = ClaimIndexEntry & {
   confidence: number;
   matchedTerms: string[];
   semanticFamilyMatch: boolean;
+  exactPhraseMatch: boolean;
 };
 
 const stopWords = new Set([
@@ -135,6 +136,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
   const matchedTerms = matchedTokens.filter((token) => !lowSignalWords.has(token));
   const weightedMatches = matchedTokens.reduce((total, token) => total + (lowSignalWords.has(token) ? 0.25 : 1), 0);
   const phraseScore = Math.max(...searchablePhrases.map((text) => phraseMatches(query, text)), 0);
+  const exactPhraseMatch = searchablePhrases.some((text) => text === query);
   const overlapScore = queryTokens.length ? (weightedMatches / queryTokens.length) * 55 : 0;
   const candidateSemanticSignatures = entry.semanticSignatures?.length
     ? entry.semanticSignatures
@@ -164,7 +166,7 @@ export const scoreClaimIndexEntry = (value: string, entry: ClaimIndexEntry, quer
     phraseScore + overlapScore + (entry.kind === 'topic' && matchedTokens.length >= 2 ? 8 : 0),
     semanticFamilyMatch ? 82 : 0,
   ));
-  return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms, semanticFamilyMatch };
+  return { ...entry, score, confidence: Math.min(1, score / 100), matchedTerms, semanticFamilyMatch, exactPhraseMatch };
 };
 
 export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit = 6): RankedClaimIndexEntry[] => {
@@ -193,5 +195,5 @@ export const rankClaimIndex = (value: string, entries: ClaimIndexEntry[], limit 
 };
 
 export const isStrongClaimMatch = (entry: RankedClaimIndexEntry | undefined): boolean => Boolean(
-  entry && entry.kind === 'claim' && entry.score >= 68 && entry.semanticFamilyMatch,
+  entry && entry.kind === 'claim' && entry.score >= 68 && (entry.semanticFamilyMatch || entry.exactPhraseMatch),
 );
