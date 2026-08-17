@@ -9,7 +9,7 @@ let child;
 let stopping = false;
 
 const request = (path) => new Promise((resolve) => {
-  const socket = createConnection({ host: '127.0.0.1', port }, () => socket.write(`GET ${path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n`));
+  const socket = createConnection({ host, port }, () => socket.write(`GET ${path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n`));
   let body = '';
   socket.setTimeout(2000, () => { socket.destroy(); resolve(null); });
   socket.on('data', (chunk) => { body += chunk.toString(); });

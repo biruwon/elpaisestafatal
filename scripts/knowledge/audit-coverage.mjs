@@ -57,7 +57,6 @@ const domainMetricIds = {
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
   health_emergency_wait: ['emergency_wait_declared'],
 };
-const domainMetricSet = new Set(Object.values(domainMetricIds).flat());
 const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
 for (const feed of domainFeeds) for (const id of domainMetricIds[feed.domain] || []) {
   if (!recordByMetric.has(id)) recordByMetric.set(id, [feed]);
