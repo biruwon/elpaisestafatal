@@ -98,6 +98,14 @@ const knownSeeds = [
   ['espera-media-baja-listas-resueltas', 'definition', 'Si baja la espera media quirúrgica, las listas ya están resueltas'],
   ['politica-no-es-mayoria', 'quantity', 'La política es la preocupación de la mayoría de españoles'],
   ['gobierno-transfiere-310-millones-educacion-presidencia', 'descriptive', 'El Gobierno quita 310 millones de Educación para gastos de personal de Presidencia'],
+  // High-recurrence editorial families: keep natural paraphrases in the
+  // corpus so routing is tested beyond the canonical URL wording.
+  ['presion-fiscal-mas-alta-historia', 'ranking', 'La presión fiscal es la más alta de la historia'],
+  ['vivienda-triplica-en-tres-anos', 'quantity', 'La vivienda que compré hace tres años hoy cuesta casi tres veces más'],
+  ['alquileres-suben-oferta-inseguridad', 'causal', 'Los alquileres se han disparado por la poca oferta y la inseguridad jurídica'],
+  ['ocupacion-respaldo-gobierno-delito-leve', 'legal', 'La ocupación está respaldada por el Gobierno y es delito leve'],
+  ['espana-politica-inmigracion-puertas-abiertas', 'definition', 'España tiene una política de inmigración de puertas abiertas'],
+  ['residencia-desde-primer-dia-trabajo', 'legal', 'Cualquiera que venga a trabajar obtiene residencia desde el primer día'],
 ];
 
 // Keep this list for future planned-only regressions. A planned source file
@@ -205,8 +213,17 @@ const unknownInputs = [
   'La afirmación requiere una resolución judicial concreta',
   'El número redondeado no identifica la partida presupuestaria',
   'No hay evidencia suficiente para atribuir este cambio a una sola causa',
+  // Adjacent-family controls: shared topic words must not promote a reviewed
+  // claim when relation, population, geography, period, or legal stage changes.
+  'La presión fiscal de Portugal es la más alta de la historia',
+  'La presión fiscal es la más baja de la historia',
+  'La vivienda de todo el país triplicó su precio exactamente en tres años',
+  'Los alquileres han bajado por la abundancia de oferta y la seguridad jurídica',
+  'La ocupación nunca constituye un delito',
+  'Cualquier persona obtiene residencia en España aunque no venga a trabajar',
+  'La política de inmigración de Francia es de puertas abiertas',
 ];
-unknownInputs.forEach((input, index) => cases.push({ id: `unknown-${index + 1}`, input, expected: { status: 'unknown' }, category: index % 2 ? 'impossible' : 'local' }));
+unknownInputs.forEach((input, index) => cases.push({ id: `unknown-${index + 1}`, input, expected: { status: 'unknown' }, category: index >= unknownInputs.length - 7 ? 'adjacent' : (index % 2 ? 'impossible' : 'local') }));
 
 // High-value end-to-end acceptance inputs. These are intentionally kept
 // separate from the published-claim accuracy corpus: they assert routing and
