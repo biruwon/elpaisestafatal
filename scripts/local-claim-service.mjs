@@ -1118,6 +1118,23 @@ const classify = async (text) => {
     answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
     return result;
   }
+  // Preserve reviewed routing for a complete published phrase with a small
+  // spelling error (including transposed letters) without waiting for Ollama.
+  // The token-count and one-edit gates prevent a shared topic word from being
+  // treated as a claim match.
+  const typoPhraseEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
+    && [entry.title, ...(entry.aliases || [])].some((phrase) => {
+      const expected = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
+      const actual = tokens(text).filter((token) => !lowSignalTokens.has(token));
+      return expected.length >= 3 && expected.length === actual.length
+        && expected.every((token) => actual.some((candidate) => oneEditAway(candidate, token)))
+        && actual.some((token) => !expected.includes(token));
+    }));
+  if (typoPhraseEntry) {
+    const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: typoPhraseEntry.slug, title: typoPhraseEntry.title, href: typoPhraseEntry.href, confidence: 0.96, reason: 'La formulación coincide con una afirmación publicada con una corrección ortográfica menor.', answer: typoPhraseEntry.answer || '', assessment: typoPhraseEntry.assessment || '', whatIsTrue: typoPhraseEntry.whatIsTrue || '', whatIsMissing: typoPhraseEntry.whatIsMissing || '', cannotProve: typoPhraseEntry.cannotProve || '', scale: typoPhraseEntry.scale || '', propositionIds: typoPhraseEntry.propositionIds || [], evidenceIds: typoPhraseEntry.evidenceIds || [], sourceRefs: typoPhraseEntry.sourceRefs || [], sourceLinks: typoPhraseEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: typoPhraseEntry.slug, title: typoPhraseEntry.title, href: typoPhraseEntry.href, confidence: 0.96 }] };
+    answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
+    return result;
+  }
   // A single broad concept is topic context, not a claim-family contract.
   // Route it to the domain topic unless a metric handler or a structured
   // family is present; this prevents “immigration + public services” from
