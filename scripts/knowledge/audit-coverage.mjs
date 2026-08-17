@@ -103,7 +103,7 @@ const classifyCluster = (cluster) => {
   return { auditClass: 'true_research_gap', action: 'find_source', metricIds: [], domain, sourceIds };
 };
 const clusterAudit = (clustersDoc.clusters || []).map((cluster) => ({
-  clusterId: String(cluster.id || ''), canonicalText: String(cluster.text || cluster.canonicalText || '').slice(0, 400), count: Number(cluster.count || 0), count7d: Number(cluster.count7d || 0), priorityScore: Number(cluster.priorityScore || 0), coverageStatus: cluster.coverageStatus || 'uncovered', sourceIds: cluster.sourceIds || [], ...classifyCluster(cluster),
+  clusterId: String(cluster.id || ''), canonicalText: String(cluster.text || cluster.canonicalText || '').slice(0, 400), count: Number(cluster.count || 0), count7d: Number(cluster.count7d || 0), priorityScore: Number(cluster.priorityScore || 0), coverageStatus: cluster.coverageStatus || 'uncovered', newlyCovered: Boolean(cluster.newlyCovered), sourceIds: cluster.sourceIds || [], ...classifyCluster(cluster),
 }));
 const counts = (items, field) => Object.fromEntries([...new Set(items.map((item) => item[field]))].map((key) => [key, items.filter((item) => item[field] === key).length]));
 const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass)).reduce((map, item) => {
