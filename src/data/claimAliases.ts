@@ -312,6 +312,9 @@ export const claimAliases: Record<string, string[]> = {
     'los trabajadores fijos discontinuos son parados ocultos',
     'los fijos discontinuos trabajan tres meses al año y cuentan como ocupados',
   ],
+  'desempleo-manipulado-fijos-discontinuos': [
+    'el desempleo está manipado porque los fijos discontinuos se cuentan como ocupados',
+  ],
   'smi-destruye-empleo': [
     'el salario mínimo destruye puestos de trabajo',
     'subir el smi provoca paro',

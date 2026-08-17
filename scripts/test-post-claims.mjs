@@ -53,6 +53,7 @@ const claims = [
   ['crime-stats', 'Las cifras de delincuencia están manipuladas y los hurtos se registran como extravíos'],
   ['serious-crime', 'Los delitos graves han aumentado el doble o el triple aunque se camuflen'],
   ['unemployment-stats', 'El desempleo está manipulado porque los fijos discontinuos se cuentan como ocupados'],
+  ['unemployment-stats-typo', 'El desempleo está manipado porque los fijos discontinuos se cuentan como ocupados'],
 ];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -98,7 +99,7 @@ const counts = results.reduce((summary, item) => {
   return summary;
 }, {});
 
-const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'fiscal', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
+const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'unemployment-stats-typo', 'fiscal', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
 const strongResults = new Set(results.filter((item) => item.status === 'complete' && item.coverage === 'strong').map((item) => item.id));
 for (const id of expectedStrong) {
   if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);
