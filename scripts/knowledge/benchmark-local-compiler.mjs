@@ -112,7 +112,7 @@ for (const model of models) {
   for (const [index, testCase] of cases.slice(0, caseLimit).entries()) {
     const result = await runCase(model, testCase);
     results.push(result);
-    console.log(`  [${index + 1}/${cases.length}] ${testCase.id}: quality=${result.quality} latency=${result.latencyMs}ms${result.error ? ` error=${result.error}` : ''}`);
+    console.log(`  [${index + 1}/${caseLimit}] ${testCase.id}: quality=${result.quality} latency=${result.latencyMs}ms${result.error ? ` error=${result.error}` : ''}`);
   }
   const quality = average(results.map((result) => result.quality));
   const validRate = average(results.map((result) => Number(result.validJson)));
