@@ -24,11 +24,13 @@
       "status": "partial_official_statistics",
       "officialSourcesChecked": [
         "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",
-        "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM"
+        "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM",
+        "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/25698?nult=1"
       ],
       "availableEvidence": [
         "recorded-offence totals by category and period",
         "population denominators by nationality and country of birth",
+        "adult conviction counts by nationality for the latest available year, with the legal stage preserved as conviction",
         "no universal national series linking the same group definition to convictions for every offence"
       ],
       "permittedConclusion": "Recorded offences, arrests, suspects, and convictions are different measures; national totals cannot by themselves prove that immigrants are more criminal or cause insecurity.",
