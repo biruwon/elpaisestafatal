@@ -2048,7 +2048,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const eventObservations = isGovernmentEvent ? observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'government_event') : [];
   const eventPublication = eventObservations[0];
   const eventFinding = eventPublication?.finding;
-  const deterministicResearchPlan = !primary && !observations.length ? {
+  const deterministicResearchPlan = !primary ? {
     propositions: compilerPropositions.slice(0, 6).map((item, index) => ({
       id: String(item.id || `prop-${index + 1}`),
       text: String(item.text || text).slice(0, 500),
