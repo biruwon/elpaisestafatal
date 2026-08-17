@@ -1,10 +1,17 @@
 import { connectorForId, connectorRegistry, connectorSupports } from './connector-registry.mjs';
 import { sourceRegistry } from './source-registry.mjs';
 import { readFile } from 'node:fs/promises';
+import { parseDelimitedRows } from './parse-delimited.mjs';
 
 const failures = [];
+const csvCases = [
+  ['a,b\n1,2\n', 'b'],
+  ['a;b\n1;2\n', 'b'],
+  ['a\tb\n1\t2\n', 'b'],
+];
+for (const [input, key] of csvCases) if (parseDelimitedRows(input).length !== 1 || parseDelimitedRows(input)[0].dimensions[key] !== '2') failures.push('CSV delimiter fixture did not preserve columns');
 const ingestSource = await readFile(new URL('./ingest-source.mjs', import.meta.url), 'utf8');
-if (!ingestSource.includes('parseDelimited') || !ingestSource.includes('const delimiter') || !ingestSource.includes("contentType.includes('csv')")) failures.push('CSV connector inputs must materialize bounded records and detect delimiters');
+if (!ingestSource.includes('parseDelimitedRows') || !ingestSource.includes("contentType.includes('csv')")) failures.push('CSV connector inputs must materialize bounded records and detect delimiters');
 for (const source of sourceRegistry) {
   const connector = connectorForId(source.connector);
   if (!connector) failures.push(`${source.id}: connector is missing`);
