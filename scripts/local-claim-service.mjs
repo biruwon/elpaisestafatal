@@ -1434,6 +1434,13 @@ const classify = async (text) => {
       || /\b(?:que|frente a|comparad[oa]s?)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(normalized);
   };
   const requestedGroupContrast = explicitGroupContrast(text);
+  const polarityFor = (value) => {
+    const normalized = normalise(value);
+    if (/\b(?:nunca|no|baja|bajado|disminuy|menos|cae|caido|falso|imposible)\b/.test(normalized)) return 'negative';
+    if (/\b(?:sube|subido|aument|crece|crecido|mas|mayor|triplic|alto|alta|siempre|verdad)\b/.test(normalized)) return 'positive';
+    return '';
+  };
+  const requestedPolarity = polarityFor(text);
   const numericTokens = (value) => [...normalise(value).matchAll(/\b\d+(?:[.,]\d+)?\b/g)].map((match) => match[0].replace(',', '.'));
   const numericCompatible = (entry) => {
     if (entry.kind !== 'claim') return true;
@@ -1446,6 +1453,8 @@ const classify = async (text) => {
     if (exactCanonicalTitle) return true;
     if (!numericCompatible(entry)) return false;
     if (entry.kind !== 'claim' || !deterministicHandler || deterministicHandler === 'mixed') return true;
+    const entryPolarity = polarityFor(searchText(entry));
+    if (requestedPolarity && entryPolarity && requestedPolarity !== entryPolarity) return false;
     // Population qualifiers are part of the evidence contract. A national
     // unemployment claim must not answer a youth-unemployment query (or the
     // reverse) merely because both contain “paro” or “empleo”.
