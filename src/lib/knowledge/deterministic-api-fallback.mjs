@@ -26,7 +26,9 @@ const topicReference = (text) => {
 const broadScorecard = (text) => {
   const value = String(text || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return /\b(?:gobernando|gobierno)\b[\s\w]{0,32}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,32}\b(?:peor|mal|fatal)\b/.test(value)
-    || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina)\b/.test(value);
+    || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina)\b/.test(value)
+    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(value)
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(value);
 };
 
 const fallbackGuidance = (text, inputType) => {

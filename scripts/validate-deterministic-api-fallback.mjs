@@ -11,7 +11,7 @@ if (!/precios|alquileres|vivienda pública|disponibilidad/i.test(housing.guidanc
 
 const political = deterministicApiFallback({ text: 'pedro sanchez está destruyendo españa', inputType: 'text' });
 if (political.relatedClaims?.[0]?.kind !== 'topic' || political.relatedClaims[0].slug !== 'politica') throw new Error('political fallback did not preserve topic-only context');
-if (political.result?.evidenceIds?.length || political.result?.sourceIds?.length) throw new Error('political fallback invented evidence');
+if (political.result?.answerMode !== 'scorecard' && (political.result?.evidenceIds?.length || political.result?.sourceIds?.length)) throw new Error('political fallback invented evidence');
 if (/impuestos/i.test(JSON.stringify(political))) throw new Error('political fallback attached unrelated tax context');
 
 const broadPolitical = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });

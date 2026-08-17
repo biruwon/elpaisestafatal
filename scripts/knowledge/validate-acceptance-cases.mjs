@@ -11,6 +11,11 @@ if (broadResult.result?.answerMode !== 'scorecard' || broadResult.result?.result
 if (broadResult.result?.blocks?.some((block) => block.type === 'verdict' || block.type === 'overall_grade')) {
   errors.push('Broad political acceptance case must not publish an overall partisan verdict.');
 }
+const namedBroad = acceptanceCases.find((item) => item.id === 'acceptance-named-government-country-worse');
+const namedBroadResult = deterministicApiFallback({ text: namedBroad.input });
+if (namedBroadResult.result?.answerMode !== 'scorecard' || namedBroadResult.result?.resultState !== 'answered' || namedBroadResult.result?.reviewed !== false) {
+  errors.push('Named broad political acceptance case must resolve to an answered, non-reviewed scorecard.');
+}
 
 const event = acceptanceCases.find((item) => item.id === 'acceptance-ceuta-cross-border-allegation');
 const frame = detectCurrentEvent(event.input);
