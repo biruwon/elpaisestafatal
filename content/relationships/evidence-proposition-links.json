@@ -304,6 +304,7 @@
     {"evidenceId":"ingresos-publicos-espana-serie-2015-2025-eurostat","propositionId":"prop-presion-fiscal-mas-alta-historia-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-07"},
     {"evidenceId":"vivienda-variacion-anual-del-precio-de-vivienda-libre-labels-t2-24-t3-24-t4-24-t1","propositionId":"prop-vivienda-triplica-en-tres-anos-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-imv-1-2-millones-edad-28-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"imv-titulares-edad-diciembre-2024","propositionId":"prop-imv-titulares-edad-2024","relationship":"supports","reviewStatus":"reviewed","reviewedAt":"2026-08-17"},
     {"evidenceId":"imv-titulares-nacionalidad-junio-2025","propositionId":"prop-inmigrantes-ayudas-desproporcionadas-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"ocupacion-vias-procesales-2025","propositionId":"prop-ocupacion-respaldo-gobierno-delito-leve-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"ocupacion-recuperacion-civil-2018","propositionId":"prop-ocupacion-respaldo-gobierno-delito-leve-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},

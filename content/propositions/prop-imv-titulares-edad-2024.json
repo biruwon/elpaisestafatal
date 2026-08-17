@@ -1,0 +1,13 @@
+{
+  "id": "prop-imv-titulares-edad-2024",
+  "claimSlug": "imv-1-2-millones-edad-28",
+  "text": "En diciembre de 2024, la edad media de los titulares del IMV fue de 45,3 años.",
+  "type": "descriptive",
+  "subject": "imv_titleholders",
+  "predicate": "average_age_is",
+  "object": "45.3 years",
+  "geography": "España",
+  "period": "diciembre de 2024",
+  "status": "supported",
+  "evidenceIds": ["imv-titulares-edad-diciembre-2024"]
+}
