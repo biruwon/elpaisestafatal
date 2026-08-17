@@ -67,6 +67,7 @@ jobs:
           npm run knowledge:hybrid
           npm run knowledge:hybrid:corpus
           npm run knowledge:semantic-clustering
+          npm run knowledge:roadmap:status
 
       - name: Build public site and audit public surface
         run: npm run build
