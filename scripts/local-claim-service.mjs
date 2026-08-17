@@ -80,10 +80,10 @@ const currentEventCacheTtlMs = 5 * 60 * 1000;
 // Keep the local process bounded under long evaluation/replay runs. Results
 // are cheap to recompute and the browser polls only briefly, so retaining
 // hundreds of full answer plans is worse than evicting old entries.
-const maxCacheEntries = 256;
-const maxCompilerCacheEntries = 256;
-const maxPlannerCacheEntries = 256;
-const maxResolveJobs = 128;
+const maxCacheEntries = 128;
+const maxCompilerCacheEntries = 128;
+const maxPlannerCacheEntries = 128;
+const maxResolveJobs = 32;
 const answerCache = new Map();
 const answerCacheExpiry = (text) => Date.now() + (detectCurrentEvent(text) ? currentEventCacheTtlMs : cacheTtlMs);
 const compilerCache = new Map();
