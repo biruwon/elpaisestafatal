@@ -91,7 +91,13 @@ export const normaliseClaimText = (value: string): string => normalizeNumberWord
   .replace(/[\u0300-\u036f]/g, '')
   .replace(/ñ/g, 'n'))
   .replace(/[^a-z0-9]+/g, ' ')
-  .trim();
+  .trim()
+  // Equivalent record-language used in Spanish claims. Keep this limited to
+  // an unambiguous temporal construction; it must not turn ordinary “nunca”
+  // statements into historical records.
+  .replace(/\bque ha existido nunca\b/g, 'de la historia')
+  .replace(/\bnunca antes\b/g, 'de la historia')
+  .replace(/\bjamás antes\b/g, 'de la historia');
 
 export const claimTokens = (value: string): string[] => [...new Set(
   normaliseClaimText(value).split(' ').filter((word) => word.length > 2 && !stopWords.has(word)),
