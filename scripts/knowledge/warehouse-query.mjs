@@ -134,8 +134,10 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
       try {
         const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
         const sourceMetricId = payload.source?.metricId;
-        const sourceMatches = !metricIds?.size || (sourceMetricId && metricIds.has(sourceMetricId));
-        if (!sourceMatches && metricIds?.size) continue;
+        // A domain feed can materialise several metric families in one file;
+        // the payload-level metricId is therefore not sufficient to prune it.
+        // Let the per-record metric gate below decide, otherwise newly added
+        // observations (such as IMV age) disappear from routed answers.
         for (const record of Array.isArray(payload.records) ? payload.records : []) {
           if (metricIds?.size && !metricIds.has(record.metricId || sourceMetricId)) continue;
           const enriched = { ...record, metricId: record.metricId || payload.source?.metricId, source: payload.source };

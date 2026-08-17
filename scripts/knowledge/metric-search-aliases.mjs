@@ -21,6 +21,7 @@ export const metricSearchAliases = Object.freeze({
   social_protection_benefits_per_capita: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'euros por habitante'],
   social_protection_benefits_per_capita_europe: ['proteccion social', 'prestaciones sociales', 'ayudas sociales', 'gasto social', 'europa', 'union europea', 'comparacion europea', 'euros por habitante'],
   imv_title_holders_by_nationality: ['ingreso minimo vital', 'imv', 'titulares del imv', 'beneficiarios del imv', 'renta minima vital', 'titulares', 'nacionalidad', 'española', 'extranjera'],
+  imv_beneficiary_average_age: ['ingreso minimo vital', 'imv', 'beneficiarios del imv', 'beneficiarios imv', 'edad media beneficiarios imv', 'edad media del imv', 'edad media de quienes reciben el imv', 'edad media ingreso minimo vital', 'quienes reciben ingreso', 'reciben ingreso minimo', 'años beneficiarios imv'],
   old_age_survivors_benefits_per_capita: ['pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'euros por habitante'],
   old_age_survivors_benefits_per_capita_europe: ['pensiones', 'gasto en pensiones', 'pensiones frente a europa', 'europa', 'union europea', 'comparacion europea', 'euros por habitante'],
   government_revenue_ratio_europe: ['ingresos', 'recaudacion', 'publicos', 'europa', 'union europea', 'comparacion europea'],

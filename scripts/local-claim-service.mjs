@@ -142,6 +142,7 @@ const displayUnit = (value, metricId = '') => {
   const unit = normalise(value);
   if (metricId === 'gini_coefficient' || metricId === 'gini_coefficient_europe') return 'escala Gini 0–100';
   if (metricId === 'life_expectancy_at_birth' || metricId === 'life_expectancy_at_birth_europe') return 'años';
+  if (metricId === 'imv_beneficiary_average_age') return 'años';
   if (metricId === 'fertility_rate' || metricId === 'fertility_rate_europe') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
