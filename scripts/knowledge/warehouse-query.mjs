@@ -6,6 +6,7 @@ import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
+const maxCachedRecords = 50_000;
 let recordCache = { expiresAt: 0, key: '', records: [] };
 let recordLoadPromise;
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -129,12 +130,18 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
     }
     const records = [];
     for (const file of files.slice(0, 5000)) {
+      if (records.length >= maxCachedRecords) break;
       try {
         const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
+        const sourceMetricId = payload.source?.metricId;
+        const sourceMatches = !metricIds?.size || (sourceMetricId && metricIds.has(sourceMetricId));
+        if (!sourceMatches && metricIds?.size) continue;
         for (const record of Array.isArray(payload.records) ? payload.records : []) {
+          if (metricIds?.size && !metricIds.has(record.metricId || sourceMetricId)) continue;
           const enriched = { ...record, metricId: record.metricId || payload.source?.metricId, source: payload.source };
           enriched.searchTokenSet = new Set(tokens(recordText(enriched)));
           records.push(enriched);
+          if (records.length >= maxCachedRecords) break;
         }
       } catch { /* Validation reports malformed records separately. */ }
     }
