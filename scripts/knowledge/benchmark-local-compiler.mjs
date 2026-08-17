@@ -15,6 +15,7 @@ const outputPath = args.get('output') || join(root, '.local/compiler-benchmark.j
 const timeoutMs = Math.min(30000, Math.max(1500, Number(args.get('timeout-ms') || process.env.COMPILER_BENCHMARK_TIMEOUT_MS || 10000)));
 const minimumQuality = Math.min(1, Math.max(0, Number(args.get('min-quality') || process.env.COMPILER_BENCHMARK_MIN_QUALITY || 0.8)));
 const maxWarmP95Ms = Math.max(1000, Number(args.get('max-p95-ms') || process.env.COMPILER_BENCHMARK_MAX_P95_MS || 15000));
+const caseLimit = Math.max(1, Math.min(20, Number(args.get('case-limit') || process.env.COMPILER_BENCHMARK_CASE_LIMIT || 20)));
 const requestedModels = String(args.get('models') || process.env.COMPILER_BENCHMARK_MODELS || 'gemma4:26b,qwen3.6:27b')
   .split(',').map((model) => model.trim()).filter(Boolean);
 
@@ -106,9 +107,9 @@ const unavailableModels = requestedModels.filter((model) => !available.has(model
 
 const reports = [];
 for (const model of models) {
-  console.log(`Benchmarking local model ${model} (${cases.length} cases; timeout ${timeoutMs}ms each)...`);
+  console.log(`Benchmarking local model ${model} (${caseLimit} cases; timeout ${timeoutMs}ms each)...`);
   const results = [];
-  for (const [index, testCase] of cases.entries()) {
+  for (const [index, testCase] of cases.slice(0, caseLimit).entries()) {
     const result = await runCase(model, testCase);
     results.push(result);
     console.log(`  [${index + 1}/${cases.length}] ${testCase.id}: quality=${result.quality} latency=${result.latencyMs}ms${result.error ? ` error=${result.error}` : ''}`);
@@ -118,14 +119,14 @@ for (const model of models) {
   const safetyRate = average(results.map((result) => Number(result.safetyPreserved)));
   const latencies = results.map((result) => result.latencyMs);
   const p95Ms = percentile(latencies, 0.95);
-  reports.push({ model, cases: results.length, quality, validRate, safetyRate, p50Ms: percentile(latencies, 0.5), p95Ms, passed: quality >= minimumQuality && safetyRate === 1 && p95Ms <= maxWarmP95Ms, results });
+  reports.push({ model, cases: results.length, complete: caseLimit === cases.length, quality, validRate, safetyRate, p50Ms: percentile(latencies, 0.5), p95Ms, passed: caseLimit === cases.length && quality >= minimumQuality && safetyRate === 1 && p95Ms <= maxWarmP95Ms, results });
 }
 
 const recommended = reports.find((report) => report.passed)?.model || null;
 const report = {
   generatedAt: new Date().toISOString(),
   endpoint: `${endpointUrl.protocol}//${endpointUrl.hostname}:${endpointUrl.port || (endpointUrl.protocol === 'https:' ? 443 : 80)}`,
-  minimumQuality, maxWarmP95Ms, cases: cases.length, requestedModels, unavailableModels, reports, recommendedModel: recommended,
+  minimumQuality, maxWarmP95Ms, cases: caseLimit, requestedModels, unavailableModels, reports, recommendedModel: recommended,
   recommendation: recommended ? 'The first passing model in the configured order is the smallest tested candidate meeting the safety and quality threshold.' : 'No tested model met the threshold; keep deterministic fallback as the release path and review the failing cases before changing the default.',
 };
 await writeFile(outputPath, JSON.stringify(report, null, 2));
