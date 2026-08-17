@@ -3,7 +3,7 @@ slug: espana-politica-inmigracion-puertas-abiertas
 claim: "España tiene una política de inmigración de puertas abiertas."
 assessment: misleading
 topicSlugs: ["inmigracion", "politica"]
-aliases: ["España tiene las puertas abiertas a la inmigración", "la inmigración en España es de puertas abiertas", "en España entra cualquiera"]
+aliases: ["España tiene las puertas abiertas a la inmigración", "la inmigración en España es de puertas abiertas", "en España entra cualquiera", "España deja entrar a todo el mundo", "España no pone límites a la inmigración", "la política migratoria española permite entrar a cualquiera"]
 claimType: normative
 evidenceStrength: high
 geography: España
