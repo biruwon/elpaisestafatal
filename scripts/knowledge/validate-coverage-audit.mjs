@@ -12,6 +12,7 @@ const expectedSourceWorkItems = report.clusters.filter((item) => !['covered_exis
 if (report.sourceWorkItems?.length !== expectedSourceWorkItems) errors.push('source-work queue does not cover every actionable gap cluster and domain contract');
 for (const item of report.sourceWorkItems || []) {
   if (!item.id || (!item.clusterId && !item.id.startsWith('gap:')) || !item.canonicalText || !item.action || !Array.isArray(item.requiredDimensions)) errors.push(`${item.id || 'source-work item'}: incomplete source-work record`);
+  if (![item.harmScore, item.urgencyScore, item.evidenceReadiness, item.rankScore].every((value) => Number.isFinite(Number(value)))) errors.push(`${item.id || 'source-work item'}: ranking dimensions are incomplete`);
 }
 for (const item of report.clusters || []) {
   if (!item.clusterId) errors.push('cluster is missing an id');

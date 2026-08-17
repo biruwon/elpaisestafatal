@@ -148,11 +148,20 @@ const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({
   reason: gap.nextEvidence || 'A source contract is incomplete and requires additional official evidence.',
 }));
 const sourceWorkItems = [...clusterSourceWorkItems, ...contractSourceWorkItems];
+const scoreSourceWork = (item) => {
+  const text = normalise(item.canonicalText);
+  const harmScore = item.harmScore ?? (/(inmigr|delinc|viol|acus|corrup|fraude|menor|persona concreta)/.test(text) ? 3 : 1);
+  const urgencyScore = item.urgencyScore ?? (/(hoy|ayer|actual|reciente|este mes|invasion|incendio|catastrofe)/.test(text) ? 3 : 1);
+  const evidenceReadiness = item.evidenceReadiness ?? (item.sourceIds?.length ? (item.auditClass === 'partial_domain_evidence' ? 2 : 3) : 0);
+  return { ...item, harmScore, urgencyScore, evidenceReadiness, rankScore: Math.round((item.priorityScore || 0) + harmScore * 4 + urgencyScore * 3 + evidenceReadiness * 2) };
+};
+for (let index = 0; index < sourceWorkItems.length; index += 1) sourceWorkItems[index] = scoreSourceWork(sourceWorkItems[index]);
+sourceWorkItems.sort((a, b) => b.rankScore - a.rankScore || b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
 const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: configured.length, warehouseRecords: records.length, clusters: clusterAudit.length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], feeds: allFeeds.map(({ sourceId, metricId, url, schedule, mode, domain }) => ({ sourceId, metricId, url, schedule, mode, domain })) };
 const output = pathArg('output', '.local/coverage-audit.json');
 await mkdir(join(output, '..'), { recursive: true });
 await writeFile(output, JSON.stringify(report, null, 2));
-const markdown = [`# Coverage audit`, `Generated: ${report.generatedAt}`, '', `## Summary`, '', `- Registry metrics: ${metricAudit.length}`, `- Configured feeds: ${configured.length}`, `- Warehouse records: ${records.length}`, `- Clusters replayed: ${clusterAudit.length}`, `- Aggregate source-work candidates: ${sourceWork.length}`, `- Ranked cluster source-work items: ${sourceWorkItems.length}`, '', '## Cluster classes', '', ...Object.entries(report.summary.clusterClasses).map(([key, value]) => `- ${key}: ${value}`), '', '## Metric readiness', '', ...Object.entries(report.summary.metricStatuses).map(([key, value]) => `- ${key}: ${value}`), '', '## Ranked source work', '', ...sourceWorkItems.slice(0, 50).map((item) => `- **${item.id}** — ${item.canonicalText}; recurrence ${item.recurrence}, last 7 days ${item.recentVelocity}; ${item.action}; requires ${item.requiredDimensions.join(', ')}.`), ''].join('\n');
+const markdown = [`# Coverage audit`, `Generated: ${report.generatedAt}`, '', `## Summary`, '', `- Registry metrics: ${metricAudit.length}`, `- Configured feeds: ${configured.length}`, `- Warehouse records: ${records.length}`, `- Clusters replayed: ${clusterAudit.length}`, `- Aggregate source-work candidates: ${sourceWork.length}`, `- Ranked source-work items: ${sourceWorkItems.length}`, '', '## Cluster classes', '', ...Object.entries(report.summary.clusterClasses).map(([key, value]) => `- ${key}: ${value}`), '', '## Metric readiness', '', ...Object.entries(report.summary.metricStatuses).map(([key, value]) => `- ${key}: ${value}`), '', '## Ranked source work', '', ...sourceWorkItems.slice(0, 50).map((item) => `- **${item.id}** — ${item.canonicalText}; rank ${item.rankScore} (recurrence ${item.recurrence}, harm ${item.harmScore}, urgency ${item.urgencyScore}, evidence readiness ${item.evidenceReadiness}); ${item.action}; requires ${item.requiredDimensions.join(', ')}.`), ''].join('\n');
 await writeFile(output.replace(/\.json$/, '.md'), markdown);
 console.log(`Coverage audit written: ${output}`);
 console.log(`Clusters: ${clusterAudit.length}; existing evidence: ${report.summary.clusterClasses.covered_existing_evidence || 0}; true gaps: ${report.summary.clusterClasses.true_research_gap || 0}`);
