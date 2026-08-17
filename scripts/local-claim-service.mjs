@@ -396,7 +396,32 @@ const planResearchWithModel = async (text, classified) => {
       clarificationQuestion = typeof clarification?.question === 'string' ? clarification.question.trim().slice(0, 300) : '';
     } catch { /* Clarification is optional; deterministic guidance remains available. */ }
     return { propositions: plan.propositions.slice(0, 6), metricCandidates: plan.metricCandidates?.slice(0, 8) || [], neutralQueries, requiredDimensions, clarificationQuestion };
-  } catch { return null; }
+  } catch {
+    // Research planning must remain useful when Ollama is cold, unavailable,
+    // or times out. Keep this deterministic fallback deliberately modest: it
+    // describes the missing dimensions and a neutral query, but never adds a
+    // fact, source, number, or verdict.
+    const propositions = (classified.compiler.propositions || classified.compiler.explicitPropositions || []).slice(0, 6).map((item, index) => ({
+      id: String(item.id || `prop-${index + 1}`),
+      text: String(item.text || text).slice(0, 500),
+      evidenceNeeded: ['fuente primaria atribuible', 'periodo', 'geografía', 'población y denominador'],
+    }));
+    const neutralQuery = neutralWebQuery(String(text || '').slice(0, 240));
+    const requiredDimensions = [...new Set([
+      'fuente primaria atribuible',
+      'periodo',
+      'geografía',
+      'población y denominador',
+      ...(classified.compiler.evidenceNeeds || []).map((item) => String(item).slice(0, 80)),
+    ])].slice(0, 8);
+    return {
+      propositions,
+      metricCandidates: Array.isArray(classified.compiler.metricIds) ? classified.compiler.metricIds.slice(0, 8) : [],
+      neutralQueries: neutralQuery.length >= 8 ? [neutralQuery] : ['afirmación fuente oficial periodo geografía'],
+      requiredDimensions,
+      clarificationQuestion: '¿Qué periodo y lugar concretos quieres comprobar?',
+    };
+  }
 };
 
 const extractCurrentEventEvidence = async (frame, sources) => {
