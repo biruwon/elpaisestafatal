@@ -1,6 +1,40 @@
 {
   "gaps": [
     {
+      "id": "benefits-by-comparable-population",
+      "domain": "immigration_benefits",
+      "missingFields": ["programme", "eligibility_rule", "beneficiary_group", "comparable_denominator", "period"],
+      "status": "partial_programme_coverage",
+      "officialSourcesChecked": [
+        "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
+        "https://www.inclusion.gob.es/web/guest/estadisticas/observatorio-permanente-de-la-inmigracion"
+      ],
+      "availableEvidence": [
+        "selected programme totals and some title-holder nationality breakdowns",
+        "programme-specific eligibility rules",
+        "no single comparable denominator across all benefits and resident groups"
+      ],
+      "permittedConclusion": "A breakdown for one programme cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens.",
+      "nextEvidence": "A programme-by-programme extract with eligibility, beneficiaries, amounts, comparable population denominators, geography, and period."
+    },
+    {
+      "id": "crime-by-offence-stage-and-denominator",
+      "domain": "immigration_crime",
+      "missingFields": ["offence_definition", "suspects_arrests_convictions_stage", "group_denominator", "territory", "period", "age_sex_adjustment"],
+      "status": "partial_official_statistics",
+      "officialSourcesChecked": [
+        "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",
+        "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM"
+      ],
+      "availableEvidence": [
+        "recorded-offence totals by category and period",
+        "population denominators by nationality and country of birth",
+        "no universal national series linking the same group definition to convictions for every offence"
+      ],
+      "permittedConclusion": "Recorded offences, arrests, suspects, and convictions are different measures; national totals cannot by themselves prove that immigrants are more criminal or cause insecurity.",
+      "nextEvidence": "A matched offence-level dataset with a fixed group definition, legal stage, territory, period, denominator, and appropriate age/sex adjustment."
+    },
+    {
       "id": "public-housing-allocation-by-nationality",
       "domain": "public_housing_allocation",
       "missingFields": ["applicants_by_group", "allocations_by_group", "period"],
