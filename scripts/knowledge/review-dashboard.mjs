@@ -24,6 +24,9 @@ const evidenceLabel = (candidate) => {
 const card = (candidate, kind) => {
   const ready = kind === 'candidate' && !candidate.newlyCovered && ['complete', 'covered'].includes(candidate.coverageStatus) && Boolean(candidate.suggestedSlug);
   const command = commandFor(candidate);
+  const evidenceSummary = candidate.availableEvidence?.length || candidate.missingFields?.length || candidate.nextEvidence
+    ? `<details><summary>Evidence contract</summary>${candidate.availableEvidence?.length ? `<p><strong>Already known:</strong> ${escapeHtml(candidate.availableEvidence.join(' · '))}</p>` : ''}${candidate.missingFields?.length ? `<p><strong>Missing:</strong> ${escapeHtml(candidate.missingFields.join(' · '))}</p>` : ''}${candidate.nextEvidence ? `<p><strong>Next source work:</strong> ${escapeHtml(candidate.nextEvidence)}</p>` : ''}${candidate.permittedConclusion ? `<p><strong>Safe conclusion:</strong> ${escapeHtml(candidate.permittedConclusion)}</p>` : ''}</details>`
+    : '';
   return `<article class="card" data-kind="${kind}" data-search="${escapeHtml([candidate.canonicalText, candidate.nextAction, candidate.reason, evidenceLabel(candidate)].join(' '))}">
     <div class="card-top"><span class="rank">#${escapeHtml(candidate.rank)}</span><span class="status ${ready ? 'ready' : ''}">${escapeHtml(evidenceLabel(candidate))}</span></div>
     <h2>${escapeHtml(candidate.canonicalText)}</h2>
@@ -35,6 +38,7 @@ const card = (candidate, kind) => {
     ${candidate.matchedMetricIds?.length ? `<p class="muted">Matched metric: ${escapeHtml(candidate.matchedMetricIds.join(' · '))}</p>` : ''}
     ${candidate.sourceIds?.length ? `<details><summary>Source references (${candidate.sourceIds.length})</summary><code>${escapeHtml(candidate.sourceIds.join(' · '))}</code></details>` : '<p class="muted">No source references attached.</p>'}
     ${candidate.requiredDimensions?.length ? `<details><summary>Required evidence dimensions</summary><p class="muted">${escapeHtml(candidate.requiredDimensions.join(' · '))}</p></details>` : ''}
+    ${evidenceSummary}
     ${ready ? `<details class="promotion"><summary>Promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">Run only after the reviewed claim is present, the build passes, and the original wording has been verified.</p></details>` : ''}
   </article>`;
 };
