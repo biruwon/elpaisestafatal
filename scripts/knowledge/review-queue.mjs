@@ -132,6 +132,7 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
       unresolved: unresolved.length,
       researchCandidates: researchCandidates.length,
       sourceWorkItems: asArray(audit?.sourceWorkItems).length,
+      newlyCoveredAuditItems: asArray(audit?.clusters).filter((item) => item.newlyCovered).length,
       topPriorityScore: candidates[0]?.priorityScore || 0,
     },
     candidates: candidates.map((candidate, index) => ({
