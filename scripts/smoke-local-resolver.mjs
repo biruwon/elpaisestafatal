@@ -99,9 +99,9 @@ const cases = [
   { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
   { text: 'El precio de la vivienda sube y el paro baja', statuses: ['partial', 'draft', 'complete'], compound: true, familyCount: 2 },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
-  { text: 'España está destruida', statuses: ['uncovered', 'partial'], slug: 'politica' },
-  { text: 'España va cuesta abajo', statuses: ['uncovered', 'partial'], slug: 'politica' },
-  { text: 'El país se va a la ruina', statuses: ['uncovered', 'partial'], slug: 'politica' },
+  { text: 'España está destruida', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
+  { text: 'España va cuesta abajo', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
+  { text: 'El país se va a la ruina', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
 ];
 for (const item of cases) {
   try {

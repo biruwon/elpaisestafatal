@@ -3,7 +3,7 @@ slug: precios-hoteles-sube-junio-2026
 claim: "Los hoteles subieron precios un 5,6% mientras las pernoctaciones bajaron un 0,9% en junio de 2026."
 assessment: true
 topicSlugs: ["economia", "vivienda"]
-aliases: ["los hoteles son más caros aunque reciben menos turistas", "el precio de los hoteles sube y las pernoctaciones bajan", "los hoteles subieron un 5,6% en junio", "el turismo hotelero bajó en junio de 2026", "hoteles más caros menos pernoctaciones"]
+aliases: ["los hoteles son más caros aunque reciben menos turistas", "el precio de los hoteles sube y las pernoctaciones bajan", "los hoteles subieron un 5,6% en junio", "los hoteles subieron precios aunque las pernoctaciones bajaron en junio de 2026", "el turismo hotelero bajó en junio de 2026", "hoteles más caros menos pernoctaciones"]
 claimType: comparative
 evidenceStrength: high
 geography: España
