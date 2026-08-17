@@ -3,7 +3,7 @@ slug: desalojar-a-un-ocupante-ilegal-tarda-anos
 claim: "Desalojar a un ocupante ilegal tarda años."
 assessment: misleading
 topicSlugs: ["justicia-leyes-sistema-penal", "vivienda"]
-aliases: ["Desalojar a un ocupante ilegal tarda años.", "la okupación tarda años en resolverse", "echar a los okupas tarda años", "la ley protege a los okupas durante años", "la ley permite echar a los okupas de una vivienda", "se puede desalojar a los okupas por la vía rápida", "la ley deja echar a los okupas de casa"]
+aliases: ["Desalojar a un ocupante ilegal tarda años.", "la okupación tarda años en resolverse", "echar a los okupas tarda años", "la ley protege a los okupas durante años", "la ley permite echar a los okupas de una vivienda", "se puede desalojar a los okupas por la vía rápida", "la ley deja echar a los okupas de casa", "la ley permite echar a cualquiera de su casa"]
 claimType: legal
 evidenceStrength: high
 geography: España
