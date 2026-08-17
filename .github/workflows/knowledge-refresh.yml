@@ -20,10 +20,10 @@ jobs:
       WAREHOUSE_DATABASE_URL: ${{ secrets.WAREHOUSE_DATABASE_URL }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -54,7 +54,7 @@ jobs:
           npm run knowledge:coverage:promote
 
       - name: Upload refresh snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: evidence-warehouse-${{ github.run_id }}
           path: .local/source-warehouse
@@ -62,7 +62,7 @@ jobs:
           retention-days: 14
 
       - name: Upload coverage matrix
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: evidence-coverage-${{ github.run_id }}
           path: .local/coverage-report.json
@@ -70,7 +70,7 @@ jobs:
           retention-days: 14
 
       - name: Upload coverage audit
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: evidence-coverage-audit-${{ github.run_id }}
           path: .local/coverage-audit.*
@@ -78,7 +78,7 @@ jobs:
           retention-days: 14
 
       - name: Upload domain refresh report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: domain-refresh-report-${{ github.run_id }}
           path: .local/domain-refresh-report.json
@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload PostgreSQL benchmark report
         if: env.WAREHOUSE_DATABASE_URL != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: postgres-warehouse-benchmark-${{ github.run_id }}
           path: .local/postgres-warehouse-benchmark.json
