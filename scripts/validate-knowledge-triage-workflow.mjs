@@ -10,7 +10,7 @@ for (const required of [
   '--sync-d1',
   '.local/review-queue.json',
   '.local/review-queue.md',
-  'actions/upload-artifact@v4',
+  'actions/upload-artifact@v6',
   'CLOUDFLARE_API_TOKEN',
   'CLOUDFLARE_ACCOUNT_ID',
 ]) {
