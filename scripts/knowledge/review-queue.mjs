@@ -201,6 +201,7 @@ This report is for the maintainer only. It is derived from clustered submissions
 - Newly covered clusters: ${formatNumber(queue?.summary?.newlyCovered)}
 - Unresolved clusters: ${formatNumber(queue?.summary?.unresolved)}
 - Research gaps: ${formatNumber(queue?.summary?.researchCandidates)}
+- Coverage-audit work items: ${formatNumber(queue?.summary?.sourceWorkItems)}
 - Reviewable local records: ${formatNumber(queue?.inputs?.reviewableLocalRecords)}
 - Excluded local records: ${formatNumber(queue?.inputs?.excludedLocalRecords)}
 
