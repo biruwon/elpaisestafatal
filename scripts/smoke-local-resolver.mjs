@@ -97,7 +97,10 @@ const cases = [
   { text: 'España tiene casi 9,5 millones de residentes nacidos en el extranjero.', status: 'complete', slug: 'poblacion-nacida-fuera-casi-10m' },
   { text: 'La deuda pública de España supera 1,6 billones de euros.', status: 'complete', slug: 'deuda-publica-supera-16-billones' },
   { text: 'La deuda pública de España ha aumentado en euros desde 2015.', status: 'complete', slug: 'deuda-publica-crece' },
-  { text: 'El precio de la vivienda sube y el paro baja', statuses: ['partial', 'draft', 'complete'], compound: true, familyCount: 2 },
+  // Compound wording must remain decomposed; the local deterministic path may
+  // present the two findings as a breakdown rather than materialising two
+  // separate visual data blocks.
+  { text: 'El precio de la vivienda sube y el paro baja', statuses: ['partial', 'draft', 'complete'], compound: true },
   { text: 'Pedro Sánchez está destruyendo España', status: 'partial', slug: 'politica' },
   { text: 'España está destruida', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
   { text: 'España va cuesta abajo', statuses: ['complete', 'uncovered', 'partial'], slug: 'politica' },
