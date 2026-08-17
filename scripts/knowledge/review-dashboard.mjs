@@ -34,6 +34,7 @@ const card = (candidate, kind) => {
     ${candidate.rankScore != null ? `<p class="muted">Priority: ${escapeHtml(candidate.rankScore)} · harm ${escapeHtml(candidate.harmScore)} · urgency ${escapeHtml(candidate.urgencyScore)} · evidence readiness ${escapeHtml(candidate.evidenceReadiness)}</p>` : ''}
     ${candidate.matchedMetricIds?.length ? `<p class="muted">Matched metric: ${escapeHtml(candidate.matchedMetricIds.join(' · '))}</p>` : ''}
     ${candidate.sourceIds?.length ? `<details><summary>Source references (${candidate.sourceIds.length})</summary><code>${escapeHtml(candidate.sourceIds.join(' · '))}</code></details>` : '<p class="muted">No source references attached.</p>'}
+    ${candidate.requiredDimensions?.length ? `<details><summary>Required evidence dimensions</summary><p class="muted">${escapeHtml(candidate.requiredDimensions.join(' · '))}</p></details>` : ''}
     ${ready ? `<details class="promotion"><summary>Promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">Run only after the reviewed claim is present, the build passes, and the original wording has been verified.</p></details>` : ''}
   </article>`;
 };
