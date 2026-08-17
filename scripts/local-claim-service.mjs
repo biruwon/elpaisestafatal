@@ -93,6 +93,8 @@ let indexPromise;
 let warehousePromise;
 let modelReady = false;
 let modelProbeInFlight = false;
+let modelLastProbeAt = null;
+let modelLastProbeError = null;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
@@ -2760,7 +2762,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
   if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
@@ -2795,11 +2797,14 @@ const server = createServer(async (request, response) => {
 const probeLocalModel = async () => {
   if (modelProbeInFlight || (!localCompilerEnabled && !answerPlannerEnabled)) return;
   modelProbeInFlight = true;
+  modelLastProbeAt = new Date().toISOString();
+  modelLastProbeError = null;
   try {
     const value = await modelTasks.understandClaim({ schema: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'], additionalProperties: false }, options: { temperature: 0, num_predict: 24, num_ctx: 1024 }, messages: [{ role: 'user', content: 'Devuelve exactamente JSON con ok=true.' }], timeoutMs: 60000 });
     modelReady = value?.ok === true;
   } catch {
     modelReady = false;
+    modelLastProbeError = 'probe_failed';
   } finally {
     modelProbeInFlight = false;
   }
