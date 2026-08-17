@@ -21,6 +21,11 @@ const namedVariantResult = deterministicApiFallback({ text: namedVariant.input }
 if (namedVariantResult.result?.answerMode !== 'scorecard' || namedVariantResult.result?.resultState !== 'answered' || namedVariantResult.result?.reviewed !== false) {
   errors.push('Named broad political variant must resolve to an answered, non-reviewed scorecard.');
 }
+const namedPositive = acceptanceCases.find((item) => item.id === 'acceptance-named-government-country-better');
+const namedPositiveResult = deterministicApiFallback({ text: namedPositive.input });
+if (namedPositiveResult.result?.answerMode !== 'scorecard' || namedPositiveResult.result?.resultState !== 'answered' || namedPositiveResult.result?.reviewed !== false) {
+  errors.push('Positive named broad political variant must resolve to an answered, non-reviewed scorecard.');
+}
 
 const event = acceptanceCases.find((item) => item.id === 'acceptance-ceuta-cross-border-allegation');
 const frame = detectCurrentEvent(event.input);
