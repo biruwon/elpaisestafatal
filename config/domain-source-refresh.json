@@ -27,10 +27,10 @@
     {
       "id": "social-security-benefits",
       "domain": "immigration_benefits",
-      "url": "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
+      "url": "https://www.inclusion.gob.es/documents/20121/0/202603+COMPLETO+Dossier+comunidad+aut%C3%B3noma+y+provincia.xlsx/2705108c-6abc-4f48-9a61-e806347838f6?t=1775804649231",
       "schedule": "monthly",
       "mode": "active",
-      "title": "IMV title holders by nationality and province"
+      "title": "IMV beneficiaries, title holders by nationality, and age by province"
     },
     {
       "id": "social-housing-programmes",

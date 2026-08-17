@@ -6,10 +6,12 @@
       "missingFields": ["programme", "eligibility_rule", "beneficiary_group", "comparable_denominator", "period"],
       "status": "partial_programme_coverage",
       "officialSourcesChecked": [
+        "https://www.inclusion.gob.es/documents/20121/0/202603+COMPLETO+Dossier+comunidad+aut%C3%B3noma+y+provincia.xlsx/2705108c-6abc-4f48-9a61-e806347838f6?t=1775804649231",
         "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
         "https://www.inclusion.gob.es/web/guest/estadisticas/observatorio-permanente-de-la-inmigracion"
       ],
       "availableEvidence": [
+        "IMV March 2026 workbook with total beneficiaries, title-holder nationality, and average beneficiary age",
         "selected programme totals and some title-holder nationality breakdowns",
         "programme-specific eligibility rules",
         "no single comparable denominator across all benefits and resident groups"

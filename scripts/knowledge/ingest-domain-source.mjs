@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseHealthEmergencyReportText, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
+import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -47,7 +47,8 @@ const bytes = response.bytes;
 const text = bytes.toString('utf8');
 let payload;
 try {
-  if (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname)) payload = await parseSpreadsheetBuffer(bytes);
+  if (domain === 'immigration_benefits' && (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname))) payload = { __records: await parseImvWorkbookBuffer(bytes, { id: 'pending', title, url: response.url.toString() }) };
+  else if (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname)) payload = await parseSpreadsheetBuffer(bytes);
   else if (contentType.includes('pdf') || /\.pdf(?:$|[?#])/i.test(response.url.pathname)) {
     const { PDFParse } = await import('pdf-parse');
     const parser = new PDFParse({ data: bytes });

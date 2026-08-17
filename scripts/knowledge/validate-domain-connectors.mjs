@@ -1,4 +1,5 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseIneTempusSnapshot, parseIneConvictionTable, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
+import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseIneTempusSnapshot, parseIneConvictionTable, parseImvWorkbookBuffer, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
+import * as XLSX from 'xlsx';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
 const ineSnapshot = parseIneTempusSnapshot([{ MetaData: [{ T3_Variable: 'Nacionalidad (española/extranjera)', Nombre: 'Extranjera' }], Data: [{ Valor: 1234 }] }], source);
@@ -22,6 +23,11 @@ const pdfRows = parsePdfText('Period  Territory  Group  Value\n2025  España  ex
 if (pdfRows.length !== 1 || pdfRows[0]?.['Group'] !== 'extranjeros') throw new Error('PDF table text parsing failed');
 const imvPdfRows = parsePdfText('1.5. IMV. Sexo y nacionalidad de los titulares. Nómina de junio de 2025.\nHombres Mujeres Española Extranjera\nTotal 736.867 237.646 499.221 606.810 129.794');
 if (imvPdfRows.length !== 2 || imvPdfRows[0].metricId !== 'imv_title_holders_by_nationality' || imvPdfRows[1].value !== 129794) throw new Error('IMV nationality PDF parsing failed');
+const imvBook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(imvBook, XLSX.utils.aoa_to_sheet([['1.5. IMV. Sexo y nacionalidad de los titulares. Nómina de marzo de 2026.'], [], [], [], [], [], [], [], [], [], [], ['CCAA', '', 'Número', '', '', 'Nacionalidad', ''], [''], ['Total', '', 100, 0, 0, 80, 20]]), 'IMV. 1.5. Titulares sexo y nac ');
+XLSX.utils.book_append_sheet(imvBook, XLSX.utils.aoa_to_sheet([['1.7. IMV. Beneficiarios de la prestación por sexo y edad. Nómina de marzo de 2026.'], [], [], [], [], [], [], [], [], [], [], ['CCAA', '', 'Número de beneficiarios'], [''], ['Total', '', 250, 0, 0, 0, 0, 28.4]]), 'IMV. 1.7. Beneficiarios');
+const imvRows = await parseImvWorkbookBuffer(XLSX.write(imvBook, { type: 'buffer', bookType: 'xlsx' }), { ...source, title: 'IMV workbook' });
+if (imvRows.length !== 3 || !imvRows.some((row) => row.metricId === 'benefit_recipients_by_group' && row.value === 250) || !imvRows.some((row) => row.group === 'Extranjera' && row.value === 20)) throw new Error('IMV workbook parser did not preserve beneficiaries and nationality');
 const crimeRows = parseCrimeSeriesText('Serie\n;2024;2023;\nTOTAL NACIONAL;\n1. Homicidios;1.000;900;\n2. Robos;2.000;1.800;');
 if (crimeRows.length !== 4 || crimeRows[0].metricId !== 'recorded_offences' || crimeRows[0].category !== 'Homicidios') throw new Error('Crime series parsing failed');
 const housingRows = parsePublicHousingActionsText('Comunidad Autónoma;Provincia;Mes;Año;Número de viviendas;Tipología;Estado\nMadrid;Madrid;9;2024;12;Vivienda;Certificación Definitiva');

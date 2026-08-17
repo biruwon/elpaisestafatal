@@ -98,6 +98,31 @@ export const parseSpreadsheetBuffer = async (buffer) => {
   return sheet ? utils.sheet_to_json(sheet, { defval: '' }) : [];
 };
 
+export const parseImvWorkbookBuffer = async (buffer, source) => {
+  const { read, utils } = await import('xlsx');
+  const workbook = read(buffer, { type: 'buffer', cellDates: false });
+  const records = [];
+  const periodFor = (rows) => String(rows.find((row) => String(row?.[0] || '').match(/Nómina de\s+\w+\s+de\s+(20\d{2})/i))?.[0] || '').match(/Nómina de\s+(\w+)\s+de\s+(20\d{2})/i);
+  const monthNumber = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
+  for (const sheetName of ['IMV. 1.5. Titulares sexo y nac ', 'IMV. 1.7. Beneficiarios']) {
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) continue;
+    const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    const match = periodFor(rows);
+    if (!match) continue;
+    const period = `${match[2]}-${String(monthNumber[match[1].toLocaleLowerCase('es')] || 1).padStart(2, '0')}`;
+    const total = rows.find((row) => String(row?.[0] || '').trim() === 'Total');
+    if (!total) continue;
+    if (sheetName.includes('1.5')) {
+      for (const [group, index] of [['Española', 5], ['Extranjera', 6]]) records.push({ id: `${source.id}-imv-title-${index}`, kind: 'observation', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: 'titulares del IMV', dimensions: { group, programme: 'IMV', eligibility: 'titular' }, metricId: 'imv_title_holders_by_nationality', metric: 'Titulares del IMV por nacionalidad', value: numberFor(total[index]), unit: 'personas', url: source.url });
+    } else {
+      records.push({ id: `${source.id}-imv-beneficiaries`, kind: 'observation', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: 'beneficiarios del IMV', dimensions: { group: 'total', programme: 'IMV', eligibility: 'beneficiario', averageAge: numberFor(total[7]) }, metricId: 'benefit_recipients_by_group', metric: 'Beneficiarios del IMV', value: numberFor(total[2]), unit: 'personas', url: source.url });
+    }
+  }
+  if (!records.length) throw new Error('IMV workbook did not provide period and total rows');
+  return records;
+};
+
 export const parsePdfText = (text) => {
   const lines = String(text || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   const nationalityHeader = lines.findIndex((line) => /hombres\s+mujeres\s+española\s+extranjera/i.test(line));
