@@ -285,6 +285,14 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.add('household_electricity_price');
     preferred.delete('cpi_index');
   }
+  // Word order varies substantially in short Spanish questions (“ha
+  // cambiado precio luz hogares”). Require the same subject and price
+  // signals, but do not require the catalogue phrase to appear contiguously.
+  if (hasAny('luz', 'electricidad') && hasAny('hogar', 'hogares', 'familia', 'familias')
+    && hasAny('precio', 'cambiado', 'cambio', 'subido', 'sube', 'coste', 'factura', 'tarifa')) {
+    preferred.add('household_electricity_price');
+    preferred.delete('cpi_index');
+  }
   if (hasEuropeReference && hasAny('abandono', 'escolar', 'educativo', 'estudios')) preferred.add('early_school_leaving_rate_europe');
   if (hasEuropeReference && hasAny('universitari', 'graduad', 'titulad', 'titulacion', 'estudios superiores', 'educacion superior')) preferred.add('tertiary_education_attainment_rate_europe');
   if (hasAny('educacion', 'educativo', 'educativa') && hasAny('gasto', 'gasta', 'presupuesto', 'inversion', 'invierte', 'porcentaje del pib')) {

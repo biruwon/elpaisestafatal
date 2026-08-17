@@ -33,7 +33,7 @@
   },
   "household_electricity_price": {
     "name": "Household electricity price per kilowatt-hour",
-    "aliases": ["precio de la luz", "factura de la luz", "precio de la electricidad", "coste de la electricidad", "tarifa eléctrica", "electricidad", "electricidad para las familias", "luz más cara"],
+    "aliases": ["precio de la luz", "factura de la luz", "precio de la electricidad", "coste de la electricidad", "tarifa eléctrica", "electricidad", "electricidad para las familias", "luz más cara", "ha cambiado el precio de la luz para los hogares", "ha subido el precio de la luz en los hogares"],
     "unit": "EUR per kWh",
     "population": "household consumers, all electricity consumption bands, taxes included",
     "notEquivalentTo": ["cpi_index", "inflation_rate", "house_price_index"],
