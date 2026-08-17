@@ -2048,6 +2048,17 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const eventObservations = isGovernmentEvent ? observations.filter((item) => item.kind === 'official_publication' && item.finding?.type === 'government_event') : [];
   const eventPublication = eventObservations[0];
   const eventFinding = eventPublication?.finding;
+  const deterministicResearchPlan = !primary && !observations.length ? {
+    propositions: compilerPropositions.slice(0, 6).map((item, index) => ({
+      id: String(item.id || `prop-${index + 1}`),
+      text: String(item.text || text).slice(0, 500),
+      evidenceNeeded: ['fuente primaria atribuible', 'periodo', 'geografía', 'población y denominador'],
+    })),
+    metricCandidates: [...metricRouteIds].slice(0, 8),
+    neutralQueries: [neutralWebQuery(String(text || '').slice(0, 240)) || 'afirmación fuente oficial periodo geografía'],
+    requiredDimensions: ['fuente primaria atribuible', 'periodo', 'geografía', 'población y denominador'],
+    clarificationQuestion: '¿Qué periodo y lugar concretos quieres comprobar?',
+  } : undefined;
   const legalObservations = isLegal ? observations.filter((item) => item.kind === 'legal_document' || item.kind === 'legal_rule') : [];
   const publicReuseClaim = isLegal && isPublicReuseQuery(text);
   const publicReuseRules = publicReuseClaim
@@ -2517,6 +2528,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     limitation: primary ? (primary.cannotProve || primary.whatIsMissing) : budgetContext ? 'La fuente confirma el movimiento de crédito, pero no permite atribuir el dinero a un programa educativo concreto, a asesores o únicamente a Presidencia.' : isGovernmentEvent ? 'La publicación oficial documenta el acto localizado, pero no demuestra por sí sola su ejecución, alcance, intención política ni impacto final.' : publicReuseClaim ? 'La respuesta es sobre el marco general: un documento concreto puede tener una licencia, datos personales, restricciones de acceso o derechos de terceros adicionales.' : valuesContext ? 'Los datos pueden describir las reglas vigentes y sus efectos, pero no resuelven por sí solos la prioridad normativa.' : localContext ? 'No hay una serie nacional que pueda confirmar una experiencia concreta de un barrio; hacen falta datos locales y una medida definida.' : recordedOffenceContext ? 'El feed de delitos disponible está desagregado por categoría. No debe presentarse una de sus categorías como si fuera el total de la criminalidad nacional.' : metricEvidenceGap ? 'El sistema reconoce el indicador, pero no tiene todavía una fuente estructurada con el periodo, población o territorio necesarios para responder.' : observations.some((item) => item.populationFit === 'context' || item.populationFit === 'unknown') ? 'La fuente localizada aporta contexto, pero no desagrega exactamente la población mencionada. No debe usarse para comparar grupos sin el mismo denominador.' : observations.length && observations.every((item) => item.kind === 'official_publication') ? 'Hemos localizado documentos oficiales relacionados, pero todavía no hemos comprobado que su contenido demuestre la afirmación completa.' : observations.length ? 'Los datos son una pista provisional: todavía no se ha validado que midan exactamente la afirmación, su causalidad o el contexto completo.' : usableSource ? 'La fuente ha sido localizada, pero todavía no hay evidencia estructurada revisada que permita evaluar la afirmación.' : classified.guidance?.limitation,
     evidenceIds: primary ? evidenceIds : scorecardRequested ? [...new Set([...GOVERNMENT_SCORECARD_SNAPSHOT.metrics.flatMap((metric) => metric.sourceIds), ...observations.map((item) => item.id)])] : evidenceObservations.map((item) => item.id),
     sourceIds: primary ? sourceIds : scorecardRequested ? GOVERNMENT_SCORECARD_SNAPSHOT.sources.map((source) => source.id) : [...new Set(evidenceObservations.map((item) => item.source?.id).filter(Boolean))],
+    ...(deterministicResearchPlan ? { researchPlan: deterministicResearchPlan } : {}),
     ...(scorecardRequested ? { sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources, asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf } : primary?.sourceLinks?.length ? { sourceLinks: primary.sourceLinks } : sourceLinks.length ? { sourceLinks } : {}),
     knowledgeVersion: observations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
