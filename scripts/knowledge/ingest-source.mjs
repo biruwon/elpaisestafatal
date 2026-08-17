@@ -7,6 +7,7 @@ import { sourceForHost } from './source-registry.mjs';
 import { connectorForId, connectorSupports, formatForContentType } from './connector-registry.mjs';
 import { hasMetric } from './metric-registry.mjs';
 import { isBoeLegalDiscoveryUrl } from './refresh-utils.mjs';
+import { parseDelimitedRows } from './parse-delimited.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (!value.startsWith('--')) return pairs;
@@ -66,34 +67,10 @@ const manifestId = createHash('sha256').update(`${metricId || ''}|${sourceUrl.to
 const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
-const parseDelimited = (text) => {
-  const sample = text.split(/\r?\n/, 1)[0] || '';
-  const delimiter = [';', '\t', ','].sort((left, right) => (sample.split(right).length - 1) - (sample.split(left).length - 1))[0];
-  const rows = [];
-  let row = [], field = '', quoted = false;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (char === '"' && text[index + 1] === '"' && quoted) { field += '"'; index += 1; continue; }
-    if (char === '"') { quoted = !quoted; continue; }
-    if (char === delimiter && !quoted) { row.push(field.trim()); field = ''; continue; }
-    if ((char === '\n' || char === '\r') && !quoted) {
-      if (char === '\r' && text[index + 1] === '\n') index += 1;
-      row.push(field.trim()); field = '';
-      if (row.some((value) => value !== '')) rows.push(row);
-      row = [];
-      continue;
-    }
-    field += char;
-  }
-  if (field || row.length) { row.push(field.trim()); if (row.some((value) => value !== '')) rows.push(row); }
-  const [header, ...data] = rows;
-  if (!header?.length) return [];
-  return data.slice(0, 100000).map((values, index) => ({ id: `${manifest.id}-row-${index + 1}`, sourceId: manifest.id, metricId, dimensions: Object.fromEntries(header.map((key, column) => [key || `column_${column + 1}`, values[column] ?? ''])), retrievedAt: manifest.retrievedAt }));
-};
 if (contentType.includes('json')) {
   try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
 }
-if (contentType.includes('csv') || contentType.includes('tab-separated')) records = parseDelimited(bytes.toString('utf8'));
+if (contentType.includes('csv') || contentType.includes('tab-separated')) records = parseDelimitedRows(bytes.toString('utf8'), { rowId: (index) => `${manifest.id}-row-${index + 1}`, sourceId: manifest.id, metricId, retrievedAt: manifest.retrievedAt });
 if (contentType.includes('xml')) {
   try { records = normalizeXmlPayload(bytes.toString('utf8'), { id: manifest.id, title: manifest.title, url: sourceUrl.toString(), metricId }); } catch { /* Keep unsupported XML as a source snapshot. */ }
 }
