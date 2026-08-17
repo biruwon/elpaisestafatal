@@ -3,7 +3,7 @@ slug: residencia-desde-primer-dia-trabajo
 claim: "Cualquiera que venga a trabajar obtiene residencia desde el primer día."
 assessment: false
 topicSlugs: ["inmigracion", "justicia-leyes-sistema-penal"]
-aliases: ["cualquiera que venga a trabajar obtiene residencia desde el primer día", "si vienes a trabajar tienes residencia desde el primer día", "trabajar en España da residencia automática"]
+aliases: ["cualquiera que venga a trabajar obtiene residencia desde el primer día", "si vienes a trabajar tienes residencia desde el primer día", "trabajar en España da residencia automática", "con un contrato de trabajo te dan la residencia al llegar", "venir a España para trabajar da residencia inmediata", "si encuentras trabajo obtienes residencia automáticamente"]
 claimType: legal
 evidenceStrength: high
 geography: España
