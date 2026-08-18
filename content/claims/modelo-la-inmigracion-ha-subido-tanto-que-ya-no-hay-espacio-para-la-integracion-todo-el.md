@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inmigracion ha subido tanto que ya no hay espacio para la integracion todo el mundo habla en sus idiomas y se niegan a aprender espanol"
-generatedAt: "2026-08-18T19:02:26.943Z"
+generatedAt: "2026-08-18T19:09:51.605Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la contratacion publica siempre se queda en el papel y nunca llega a buen puerto en las ciudades mas grandes"
-generatedAt: "2026-08-18T19:02:26.943Z"
+generatedAt: "2026-08-18T19:09:51.605Z"
 ---
 
 ## Qué es cierto

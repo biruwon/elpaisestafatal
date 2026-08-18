@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la precariedad laboral es tan extrema que la gente trabaja todos los dias del ano incluso en festivos y aun asi no llega a fin de mes"
-generatedAt: "2026-08-18T19:02:26.943Z"
+generatedAt: "2026-08-18T19:09:51.605Z"
 ---
 
 ## Qué es cierto

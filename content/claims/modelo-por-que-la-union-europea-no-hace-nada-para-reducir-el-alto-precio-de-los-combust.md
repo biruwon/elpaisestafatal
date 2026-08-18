@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la union europea no hace nada para reducir el alto precio de los combustibles en espana"
-generatedAt: "2026-08-18T19:02:26.943Z"
+generatedAt: "2026-08-18T19:09:51.605Z"
 ---
 
 ## Qué es cierto

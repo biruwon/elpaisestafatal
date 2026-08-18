@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema de cotizaciones para las pensiones es tan complejo que incluso los trabajadores autonomos tienen dificultades para entender si estan pagando lo correcto"
-generatedAt: "2026-08-18T19:02:26.943Z"
+generatedAt: "2026-08-18T19:09:51.605Z"
 ---
 
 ## Qué es cierto
