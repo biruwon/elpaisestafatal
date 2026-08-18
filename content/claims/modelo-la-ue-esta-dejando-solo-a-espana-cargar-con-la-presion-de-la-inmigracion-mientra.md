@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la ue esta dejando solo a espana cargar con la presion de la inmigracion mientras otros paises se quedarian quietos"
-generatedAt: "2026-08-18T20:22:56.188Z"
+generatedAt: "2026-08-18T20:31:23.187Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana esta llena de inmigrantes que no respetan nuestras costumbres y eso esta cambiando el paisaje cultural de mi barrio me preocupa que se pierdan nuestras tradiciones"
-generatedAt: "2026-08-18T20:22:56.188Z"
+generatedAt: "2026-08-18T20:31:23.187Z"
 ---
 
 ## Qué es cierto

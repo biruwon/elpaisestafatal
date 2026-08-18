@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en muchas zonas urbanas los precios de los alimentos y del alquiler suben mas rapido que los salarios haciendo que sea cada vez mas dificil para las familias con ninos vivir decentemente"
-generatedAt: "2026-08-18T20:22:56.188Z"
+generatedAt: "2026-08-18T20:31:23.187Z"
 ---
 
 ## Qué es cierto

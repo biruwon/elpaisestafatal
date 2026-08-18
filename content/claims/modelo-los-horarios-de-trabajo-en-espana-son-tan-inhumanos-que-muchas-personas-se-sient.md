@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los horarios de trabajo en espana son tan inhumanos que muchas personas se sienten forzadas a pedir dias libres para poder descansar"
-generatedAt: "2026-08-18T20:22:56.188Z"
+generatedAt: "2026-08-18T20:31:23.187Z"
 ---
 
 ## Qué es cierto

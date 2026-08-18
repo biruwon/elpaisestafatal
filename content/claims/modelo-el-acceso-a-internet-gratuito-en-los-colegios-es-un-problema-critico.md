@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el acceso a internet gratuito en los colegios es un problema critico"
-generatedAt: "2026-08-18T20:22:56.188Z"
+generatedAt: "2026-08-18T20:31:23.187Z"
 ---
 
 ## Qué es cierto
