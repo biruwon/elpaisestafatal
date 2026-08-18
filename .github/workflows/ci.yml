@@ -89,6 +89,7 @@ jobs:
           # post-build public-surface checks so CI does not repeat the entire
           # release chain a second time.
           ./node_modules/.bin/astro build
+          npm run knowledge:runtime-catalogue
           npm run claims:routing:validate
           npm run ux:static
           npm run knowledge:family-index
