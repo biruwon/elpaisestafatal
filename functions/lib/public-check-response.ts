@@ -1,5 +1,6 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
+import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const sourceLinks = (plan?: AnswerPlan): PublicCheckResponse['sources'] => (plan?.sourceLinks || []).map((source) => ({
@@ -26,24 +27,37 @@ const visualFromCatalogue = (entry: CatalogueEntry): PublicCheckResponse['visual
   return { type: visual.type, title: visual.title, unit: visual.unit, labels: visual.labels, values: visual.values, evidenceIds: visual.evidenceIds };
 };
 
-export const checkFromCatalogue = (claim: string, entry: CatalogueEntry): PublicCheckResponse => ({
-  id: entry.id,
+export const checkFromCatalogue = (claim: string, entry: CatalogueEntry | RuntimeCatalogueEntry): PublicCheckResponse => ({
+  id: entry.slug,
   status: 'complete',
   claim,
   answer: entry.answer,
   basis: entry.basis,
   explanation: entry.explanation,
-  limitations: entry.limitations,
-  reply: entry.reply,
-  sources: entry.sources.map((source) => ({
+  limitations: 'limitations' in entry ? entry.limitations : ['La respuesta se ha seleccionado por similitud semántica; comprueba el periodo y territorio indicados.'],
+  reply: 'reply' in entry ? entry.reply : entry.answer,
+  sources: 'sources' in entry ? entry.sources.map((source) => ({
     id: source.id,
     title: source.title,
     publisher: source.publisher,
     url: source.url,
     publishedAt: source.date,
-  })),
-  visual: visualFromCatalogue(entry),
+  })) : [],
+  visual: 'visual' in entry ? visualFromCatalogue(entry) : undefined,
   catalogueEntry: { slug: entry.slug, href: `/afirmaciones/${entry.slug}` },
+  generatedAt: new Date().toISOString(),
+});
+
+export const clarificationCheck = (claim: string, missingDimensions: string[] = []): PublicCheckResponse => ({
+  id: `clarify-${Date.now().toString(36)}`,
+  status: 'complete',
+  claim,
+  answer: 'La frase es demasiado amplia para dar un veredicto único con datos.',
+  basis: 'model',
+  explanation: `Para comprobarla hay que concretar ${missingDimensions.length ? missingDimensions.join(', ') : 'qué hecho o indicador'}; una valoración global no demuestra por sí sola una tendencia nacional.`,
+  limitations: ['Respuesta generada por IA · sin fuentes verificadas para la formulación general.'],
+  reply: 'No se puede comprobar en bloque: concreta el indicador, el periodo, el territorio o el caso y lo contrastamos con fuentes.',
+  sources: [],
   generatedAt: new Date().toISOString(),
 });
 

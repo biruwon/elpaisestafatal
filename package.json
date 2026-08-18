@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "catalogue:compile": "node scripts/knowledge/compile-runtime-catalogue.mjs",
+    "precheck": "npm run catalogue:compile",
+    "prebuild": "npm run catalogue:compile",
     "dev": "astro dev",
     "dev:local-ai": "node scripts/dev-local-ai.mjs",
     "origin:serve": "node scripts/serve-local-origin.mjs",
@@ -142,6 +145,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "wrangler": "^4.124.0"
   }
 }

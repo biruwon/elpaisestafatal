@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Compile the Pages runtime catalogue
+        run: npm run catalogue:compile
+
       - name: Type and Astro checks
         run: npm run check
 

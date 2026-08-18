@@ -7,8 +7,8 @@ import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/inp
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
-import { publishedEntryFor } from '../lib/catalogue-resolver';
-import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } from '../lib/public-check-response';
+import { publishedEntryFor, routeCatalogueQuery } from '../lib/catalogue-resolver';
+import { checkFromCatalogue, checkFromPlan, clarificationCheck, processingCheck, unavailableCheck } from '../lib/public-check-response';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
@@ -79,7 +79,13 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (cached) cache.delete(cacheKey);
 
   if (body.inputType === 'text') {
-    const entry = publishedEntryFor(body.text);
+    const route = routeCatalogueQuery(body.text);
+    if (route.route === 'clarify') {
+      const response = clarificationCheck(body.text, route.missingDimensions);
+      cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
+      return json(response);
+    }
+    const entry = route.entry || publishedEntryFor(body.text);
     if (entry) {
       const response = checkFromCatalogue(body.text, entry);
       cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
