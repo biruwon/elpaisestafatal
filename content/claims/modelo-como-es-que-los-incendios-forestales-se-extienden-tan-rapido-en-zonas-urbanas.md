@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "como es que los incendios forestales se extienden tan rapido en zonas urbanas"
-generatedAt: "2026-08-18T19:41:49.336Z"
+generatedAt: "2026-08-18T19:49:52.816Z"
 ---
 
 ## Qué es cierto

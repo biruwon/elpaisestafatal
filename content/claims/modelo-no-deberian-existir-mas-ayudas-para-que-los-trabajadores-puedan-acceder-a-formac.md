@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "no deberian existir mas ayudas para que los trabajadores puedan acceder a formacion para cambiar de sector o de trabajo"
-generatedAt: "2026-08-18T19:41:49.336Z"
+generatedAt: "2026-08-18T19:49:52.816Z"
 ---
 
 ## Qué es cierto

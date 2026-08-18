@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la ue no ha conseguido hacer mas para proteger a los trabajadores de la salud en espana que siguen trabajando en condiciones insuficientes"
-generatedAt: "2026-08-18T19:41:49.336Z"
+generatedAt: "2026-08-18T19:49:52.816Z"
 ---
 
 ## Qué es cierto

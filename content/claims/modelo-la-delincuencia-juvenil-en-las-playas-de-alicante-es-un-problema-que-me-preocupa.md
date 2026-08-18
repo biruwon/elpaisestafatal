@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la delincuencia juvenil en las playas de alicante es un problema que me preocupa mucho ya que siento que la seguridad no esta garantizada"
-generatedAt: "2026-08-18T19:41:49.336Z"
+generatedAt: "2026-08-18T19:49:52.816Z"
 ---
 
 ## Qué es cierto
