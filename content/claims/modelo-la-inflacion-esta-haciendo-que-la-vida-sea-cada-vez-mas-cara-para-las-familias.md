@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inflacion esta haciendo que la vida sea cada vez mas cara para las familias"
-generatedAt: "2026-08-18T19:17:49.398Z"
+generatedAt: "2026-08-18T19:25:47.715Z"
 ---
 
 ## Qué es cierto

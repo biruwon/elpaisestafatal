@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los gastos extras son un disparate no solo el alquiler sino tambien las cuotas de mantenimiento electricidad gas agua seguro y otros impuestos son un abuso"
-generatedAt: "2026-08-18T19:17:49.398Z"
+generatedAt: "2026-08-18T19:25:47.715Z"
 ---
 
 ## Qué es cierto

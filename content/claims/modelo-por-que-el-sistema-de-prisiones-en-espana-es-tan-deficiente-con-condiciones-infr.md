@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que el sistema de prisiones en espana es tan deficiente con condiciones infrahumanas y falta de atencion medica"
-generatedAt: "2026-08-18T19:17:49.398Z"
+generatedAt: "2026-08-18T19:25:47.715Z"
 ---
 
 ## Qué es cierto
