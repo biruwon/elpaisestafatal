@@ -1,0 +1,38 @@
+---
+slug: "modelo-como-se-puede-permitir-que-en-espana-sigan-creciendo-las-listas-de-espera-para-t"
+claim: "¿Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?"
+assessment: uncertain
+topicSlugs: ["sanidad y listas de espera"]
+aliases: ["crecientes listas de espera","atención mental se retrasa","listas de espera para salud mental","mental no se atiende a tiempo","atención mental se alarga","¿Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo","¿Es cierto que Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","¿Qué datos permiten comprobar si Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","Quiero saber si Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo","¿Cómo se puede verificar Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","¿Hay evidencia sobre si Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","¿Es verdad que Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","¿Qué sabemos de Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?","¿Se sostiene la afirmación de que Cómo se puede permitir que en España sigan creciendo las listas de espera para trastornos mentales y no se les preste atención a tiempo?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-18"
+status: published
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "como se puede permitir que en espana sigan creciendo las listas de espera para trastornos mentales y no se les preste atencion a tiempo"
+generatedAt: "2026-08-18T21:03:02.693Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

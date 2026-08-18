@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana el sueldo no alcanza para el alquiler incluso en zonas donde el precio del alquiler se ha estabilizado"
-generatedAt: "2026-08-18T20:40:05.793Z"
+generatedAt: "2026-08-18T21:03:02.693Z"
 ---
 
 ## Qué es cierto

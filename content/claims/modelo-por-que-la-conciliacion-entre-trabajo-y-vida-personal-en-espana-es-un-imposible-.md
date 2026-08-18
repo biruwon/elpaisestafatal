@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la conciliacion entre trabajo y vida personal en espana es un imposible con tantos horarios flexibles y poco tiempo libre"
-generatedAt: "2026-08-18T20:40:05.793Z"
+generatedAt: "2026-08-18T21:03:02.693Z"
 ---
 
 ## Qué es cierto

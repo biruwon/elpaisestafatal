@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el desempleo entre las mujeres en espana es mas elevado que entre los hombres y las que encuentran empleo a menudo tienen que aceptar trabajos por debajo de su formacion"
-generatedAt: "2026-08-18T20:40:05.793Z"
+generatedAt: "2026-08-18T21:03:02.693Z"
 ---
 
 ## Qué es cierto

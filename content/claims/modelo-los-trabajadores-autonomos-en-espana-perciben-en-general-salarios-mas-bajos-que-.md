@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los trabajadores autonomos en espana perciben en general salarios mas bajos que los empleados por cuenta ajena"
-generatedAt: "2026-08-18T20:40:05.793Z"
+generatedAt: "2026-08-18T21:03:02.693Z"
 ---
 
 ## Qué es cierto

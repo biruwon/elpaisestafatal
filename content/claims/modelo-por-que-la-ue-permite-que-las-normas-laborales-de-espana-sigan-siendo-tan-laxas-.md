@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la ue permite que las normas laborales de espana sigan siendo tan laxas mientras que otros paises tienen medidas mas protectoras para los trabajadores"
-generatedAt: "2026-08-18T20:40:05.793Z"
+generatedAt: "2026-08-18T21:03:02.693Z"
 ---
 
 ## Qué es cierto
