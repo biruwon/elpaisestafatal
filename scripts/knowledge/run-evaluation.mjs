@@ -3,8 +3,8 @@ import { join } from 'node:path';
 import { evaluationCases } from './evaluation-cases.mjs';
 import { evaluateOutcome } from './evaluation-metrics.mjs';
 
-const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/classify';
+const base = (process.env.EVALUATION_BASE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
+const resolvePath = process.env.EVALUATION_RESOLVE_PATH || '/api/check';
 const offset = Math.min(evaluationCases.length, Math.max(0, Number(process.env.EVALUATION_OFFSET || 0)));
 const limit = Math.min(evaluationCases.length - offset, Math.max(1, Number(process.env.EVALUATION_LIMIT || evaluationCases.length)));
 const concurrency = Math.max(1, Math.min(8, Number(process.env.EVALUATION_CONCURRENCY || 3)));
@@ -20,7 +20,7 @@ const resolve = async (item) => {
     let result = await response.json();
     for (let attempt = 0; attempt < 40 && result.status === 'processing'; attempt += 1) {
       await new Promise((wait) => setTimeout(wait, 350));
-      result = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) }).then((pending) => pending.json());
+      result = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.id)}`, { signal: AbortSignal.timeout(5000) }).then((pending) => pending.json());
     }
     return evaluateOutcome({ item, result, latencyMs: Math.round(performance.now() - started) });
   } catch (error) {

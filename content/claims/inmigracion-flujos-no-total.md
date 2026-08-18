@@ -3,7 +3,7 @@ slug: inmigracion-flujos-no-total
 claim: "“Las llegadas irregulares representan toda la inmigración que vive en España.”"
 assessment: false
 topicSlugs: ["inmigracion", "seguridad"]
-aliases: ["toda la inmigración llega en patera", "las llegadas irregulares son toda la inmigración", "inmigración por patera y población extranjera", "los inmigrantes llegan en patera"]
+aliases: ["toda la inmigración llega en patera","las llegadas irregulares son toda la inmigración","inmigración por patera y población extranjera","los inmigrantes llegan en patera","las llegadas de inmigrantes son toda la inmigración","todos los inmigrantes llegan ilegalmente","la inmigración irregular es la mayoría","todos los inmigrantes llegan irregularmente"]
 claimType: comparative
 evidenceStrength: medium
 geography: España

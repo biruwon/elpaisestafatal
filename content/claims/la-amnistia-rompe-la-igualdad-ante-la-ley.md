@@ -3,7 +3,7 @@ slug: la-amnistia-rompe-la-igualdad-ante-la-ley
 claim: "La amnistía rompe la igualdad ante la ley."
 assessment: misleading
 topicSlugs: ["politica", "desigualdad"]
-aliases: ["La amnistía rompe la igualdad ante la ley.", "la amnistía da privilegios a los independentistas", "la amnistía trata a unos españoles mejor que a otros", "la amnistía es inconstitucional por desigualdad"]
+aliases: ["La amnistía rompe la igualdad ante la ley.","la amnistía da privilegios a los independentistas","la amnistía trata a unos españoles mejor que a otros","la amnistía es inconstitucional por desigualdad","amnistía y desigualdad ante la ley","la amnistía rompe la igualdad"]
 claimType: legal
 evidenceStrength: high
 geography: España

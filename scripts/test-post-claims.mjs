@@ -60,7 +60,7 @@ const claims = [
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const resolveClaim = async (text) => {
-  const response = await fetch(`${endpoint}/v1/classify`, {
+  const response = await fetch(`${endpoint}/api/check`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ text, inputType: 'text' }),
@@ -68,7 +68,7 @@ const resolveClaim = async (text) => {
   let result = await response.json();
   for (let attempt = 0; result.status === 'processing' && attempt < 160; attempt += 1) {
     await sleep(250);
-    result = await (await fetch(`${endpoint}/v1/classify/${result.requestId}`)).json();
+    result = await (await fetch(`${endpoint}/api/check/${result.id}`)).json();
   }
   return result;
 };

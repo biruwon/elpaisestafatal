@@ -12,7 +12,6 @@ const database = args.get('database') || 'elpaisestafatal-ops';
 const selector = args.get('id') ? { id: args.get('id') } : args.get('signature') ? { signature: args.get('signature') } : null;
 const canonical = String(args.get('canonical') || '').trim();
 const slug = String(args.get('slug') || '').trim();
-const approved = args.get('approved') === 'true';
 
 const claimsDirectory = new URL('../../content/claims/', import.meta.url).pathname;
 const findClaim = async (wantedSlug) => {
@@ -31,13 +30,13 @@ const findClaim = async (wantedSlug) => {
 };
 
 if (args.has('help') || !selector || !canonical || !slug) {
-  console.error('Usage: npm run knowledge:promote-cluster -- --id cluster-id --canonical "Neutral question" --slug published-claim --approved');
+  console.error('Usage: npm run knowledge:promote-cluster -- --id cluster-id --canonical "Neutral question" --slug published-claim');
   console.error('Use --signature instead of --id when promoting by canonical signature.');
   process.exit(1);
 }
 
 const claim = await findClaim(slug);
-const errors = validatePromotionRequest({ selector, canonical, slug, approved, claim });
+const errors = validatePromotionRequest({ selector, canonical, slug, claim });
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
 const sql = buildPromotionSql({ selector, canonical, slug });

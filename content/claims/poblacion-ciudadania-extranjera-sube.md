@@ -3,7 +3,7 @@ slug: poblacion-ciudadania-extranjera-sube
 claim: "La población con ciudadanía extranjera ha aumentado desde 2015."
 assessment: true
 topicSlugs: ["inmigracion", "juventud"]
-aliases: ["hay más residentes con nacionalidad extranjera", "hay más residentes con ciudadanía extranjera", "ha aumentado la población con ciudadanía extranjera", "ha aumentado la población con nacionalidad extranjera", "España tiene más extranjeros por nacionalidad", "cada vez hay más residentes extranjeros", "la población por nacionalidad extranjera ha crecido"]
+aliases: ["hay más residentes con nacionalidad extranjera","hay más residentes con ciudadanía extranjera","ha aumentado la población con ciudadanía extranjera","ha aumentado la población con nacionalidad extranjera","España tiene más extranjeros por nacionalidad","cada vez hay más residentes extranjeros","la población por nacionalidad extranjera ha crecido"]
 claimType: mixed
 evidenceStrength: high
 geography: España

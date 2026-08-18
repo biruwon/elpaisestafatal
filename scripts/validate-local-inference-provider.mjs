@@ -17,7 +17,6 @@ if (rejected.kind !== 'unavailable') throw new Error('Non-local inference endpoi
 const integrationFiles = [
   'scripts/local-claim-service.mjs',
   'scripts/knowledge/benchmark-warehouse-retrieval.mjs',
-  'scripts/knowledge/postgres-warehouse.mjs',
   'scripts/knowledge/benchmark-local-compiler.mjs',
   'scripts/knowledge/cluster-gaps.mjs',
 ];

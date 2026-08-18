@@ -3,7 +3,7 @@ slug: espana-envejece
 claim: "España está cada vez más envejecida."
 assessment: true
 topicSlugs: ["juventud", "sanidad"]
-aliases: ["España envejece", "hay cada vez más personas mayores", "España tiene cada vez más mayores", "la población española está envejecida", "cada vez hay más jubilados"]
+aliases: ["España envejece","hay cada vez más personas mayores","España tiene cada vez más mayores","la población española está envejecida","cada vez hay más jubilados"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

@@ -3,7 +3,7 @@ slug: electricidad-hogares-sube
 claim: "El precio medio de la electricidad para hogares supera 0,28 €/kWh."
 assessment: true
 topicSlugs: ["economia"]
-aliases: ["la luz cuesta más de 28 céntimos", "el precio de la electricidad supera 0,28 euros", "la electricidad para hogares es cara", "el precio de la luz en España supera 0,28", "precio luz hogares España"]
+aliases: ["la luz cuesta más de 28 céntimos","el precio de la electricidad supera 0,28 euros","la electricidad para hogares es cara","el precio de la luz en España supera 0,28","precio luz hogares España"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

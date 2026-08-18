@@ -3,7 +3,7 @@ slug: arope-espana-ue
 claim: "España tiene más riesgo de pobreza o exclusión social que la Unión Europea."
 assessment: true
 topicSlugs: ["desigualdad", "europa", "economia"]
-aliases: ["España tiene más pobreza que Europa", "la tasa AROPE española supera a la europea", "España tiene más riesgo de pobreza que la UE", "comparación europea de AROPE"]
+aliases: ["España tiene más pobreza que Europa","la tasa AROPE española supera a la europea","España tiene más riesgo de pobreza que la UE","comparación europea de AROPE"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

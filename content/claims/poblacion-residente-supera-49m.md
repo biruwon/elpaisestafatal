@@ -3,7 +3,7 @@ slug: poblacion-residente-supera-49m
 claim: "España supera los 49 millones de residentes."
 assessment: true
 topicSlugs: ["juventud", "inmigracion"]
-aliases: ["España ya tiene más de 49 millones de habitantes", "la población de España supera los 49 millones", "hay 49 millones de personas en España", "España tiene más población que nunca"]
+aliases: ["España ya tiene más de 49 millones de habitantes","la población de España supera los 49 millones","hay 49 millones de personas en España","España tiene más población que nunca"]
 claimType: mixed
 evidenceStrength: high
 geography: España

@@ -3,7 +3,7 @@ slug: espana-pobreza-cuarta-parte
 claim: "“Uno de cada cuatro españoles vive en pobreza.”"
 assessment: misleading
 topicSlugs: ["desigualdad"]
-aliases: ["'uno de cada cuatro'","'pobreza'","'arope'"]
+aliases: ["'uno de cada cuatro'","'pobreza'","'arope'","uno de cada cuatro españoles es pobre","la cuarta parte de España vive en la pobreza","España está llena de pobres"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

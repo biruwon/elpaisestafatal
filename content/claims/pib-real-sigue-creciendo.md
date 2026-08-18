@@ -3,7 +3,7 @@ slug: pib-real-sigue-creciendo
 claim: "El PIB real de España sigue creciendo."
 assessment: true
 topicSlugs: ["economia"]
-aliases: ["la economía española sigue creciendo", "el PIB real sigue subiendo", "España sigue creciendo económicamente", "el PIB de España crece"]
+aliases: ["la economía española sigue creciendo","el PIB real sigue subiendo","España sigue creciendo económicamente","el PIB de España crece"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

@@ -3,7 +3,7 @@ slug: demasiados-graduados
 claim: "“España tiene demasiados universitarios.”"
 assessment: unsupported
 topicSlugs: ["empleo"]
-aliases: ["'universitarios'","'graduados'","'sobrecualificacion'"]
+aliases: ["'universitarios'","'graduados'","'sobrecualificacion'","sobran universitarios en España","hay demasiada gente con carrera","faltan oficios porque todos van a la universidad"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

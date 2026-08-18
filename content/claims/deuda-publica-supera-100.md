@@ -3,7 +3,7 @@ slug: deuda-publica-supera-100
 claim: "La deuda pública de España supera el 100% del PIB."
 assessment: true
 topicSlugs: ["impuestos", "economia"]
-aliases: ["España tiene una deuda pública superior al 100% del PIB", "la deuda de España supera el 100 por cien", "la deuda pública sigue por encima del PIB", "España debe más de un año de PIB", "deuda pública española"]
+aliases: ["España tiene una deuda pública superior al 100% del PIB","la deuda de España supera el 100 por cien","la deuda pública sigue por encima del PIB","España debe más de un año de PIB","deuda pública española"]
 claimType: mixed
 evidenceStrength: high
 geography: España

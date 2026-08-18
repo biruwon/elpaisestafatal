@@ -3,7 +3,7 @@ slug: riesgo-pobreza-no-desaparece
 claim: "“La pobreza ha desaparecido porque baja el riesgo AROPE.”"
 assessment: false
 topicSlugs: ["desigualdad"]
-aliases: ["ya no hay pobreza en España", "el AROPE demuestra que no hay pobreza", "la pobreza está desapareciendo"]
+aliases: ["ya no hay pobreza en España","el AROPE demuestra que no hay pobreza","la pobreza está desapareciendo","la pobreza está bajando pero sigue siendo alta","el crecimiento acabó con la pobreza","España ya no tiene un problema de pobreza"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

@@ -3,7 +3,7 @@ slug: sanidad-colapsada
 claim: "“La sanidad pública española está colapsada.”"
 assessment: misleading
 topicSlugs: ["sanidad"]
-aliases: ["La sanidad española está colapsada","'sanidad colapsada'","'listas espera'","'medico'"]
+aliases: ["La sanidad española está colapsada","'sanidad colapsada'","'listas espera'","'medico'","la sanidad española está totalmente hundida","la sanidad pública no funciona","los hospitales están colapsados","los hospitales están saturados","la sanidad está desbordada","los hospitales están en situaciones infrahumanas"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

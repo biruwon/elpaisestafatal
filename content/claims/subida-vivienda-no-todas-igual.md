@@ -3,7 +3,7 @@ slug: subida-vivienda-no-todas-igual
 claim: "Si la vivienda sube un 12,9%, todas las casas suben lo mismo."
 assessment: false
 topicSlugs: ["vivienda"]
-aliases: ["todas las viviendas han subido un 12,9", "la subida media afecta igual a todas las casas", "el INE dice que todos los pisos suben igual", "precio medio vivienda no es cada casa"]
+aliases: ["todas las viviendas han subido un 12,9","la subida media afecta igual a todas las casas","el INE dice que todos los pisos suben igual","precio medio vivienda no es cada casa","todas las casas suben un 12,9%"]
 claimType: mixed
 evidenceStrength: high
 geography: España

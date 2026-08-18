@@ -1,8 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const files = [
-  'functions/api/classify.ts',
-  'functions/api/classify/[requestId].ts',
+  'functions/api/check.ts',
   'functions/api/questions.ts',
   'functions/api/feedback.ts',
 ];

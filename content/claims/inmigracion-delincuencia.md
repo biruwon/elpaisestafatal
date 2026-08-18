@@ -3,7 +3,7 @@ slug: inmigracion-delincuencia
 claim: "“La inmigración es la causa del aumento de la delincuencia.”"
 assessment: unsupported
 topicSlugs: ["seguridad"]
-aliases: ["'inmigracion'","'delincuencia'","'crimen'","'extranjeros'"]
+aliases: ["'inmigracion'","'delincuencia'","'crimen'","'extranjeros'","la inmigración trae delincuencia","desde que hay inmigrantes hay más crimen","los inmigrantes hacen inseguro el barrio","los inmigrantes crean inseguridad","la inmigración genera inseguridad","la inmigración está destruyendo la seguridad","los inmigrantes delinquen","los inmigrantes cometen delitos","la inmigración aumenta la delincuencia"]
 claimType: mixed
 evidenceStrength: medium
 geography: España
@@ -11,8 +11,8 @@ period: 2025-2026
 reviewed: 2026-07-12
 status: published
 sourceTopic: seguridad
-sourceRefs: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
-evidenceIds: ["seguridad-balance-de-criminalidad-t1-2026","seguridad-variacion-interanual-registrada-labels-total-cibercriminalidad-resto-val"]
+sourceRefs: ["condenados-nacionalidad-ine-2024"]
+evidenceIds: ["condenados-nacionalidad-ine-2024"]
 propositionIds: ["prop-inmigracion-delincuencia-core"]
 ---
 

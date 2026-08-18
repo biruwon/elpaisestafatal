@@ -3,7 +3,7 @@ slug: espana-fecundidad-baja
 claim: "España tiene menos de 1,2 hijos por mujer."
 assessment: true
 topicSlugs: ["juventud", "sanidad"]
-aliases: ["España tiene una fecundidad muy baja", "la natalidad está por los suelos", "cada mujer tiene menos de 1,2 hijos", "en España nacen muy pocos niños", "España no tiene hijos"]
+aliases: ["España tiene una fecundidad muy baja","la natalidad está por los suelos","cada mujer tiene menos de 1,2 hijos","en España nacen muy pocos niños","España no tiene hijos"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

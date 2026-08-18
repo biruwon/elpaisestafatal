@@ -155,7 +155,7 @@ export const rankMaterializationCandidates = (clusters, { minCount = 3, max = 50
       'Run knowledge validation before publishing the static claim.',
     ],
     auditClass: String(cluster.auditClass || 'unclassified'),
-    auditAction: String(cluster.auditAction || (cluster.newlyCovered ? 'auto_route' : 'human_review')),
+    auditAction: String(cluster.auditAction || (cluster.newlyCovered ? 'auto_route' : 'source_research')),
     matchedMetricIds: Array.isArray(cluster.matchedMetricIds) ? cluster.matchedMetricIds : [],
     evidenceStatus: String(cluster.evidenceStatus || (cluster.newlyCovered ? 'warehouse_ready' : 'not_ready')),
   }))

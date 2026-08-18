@@ -3,7 +3,7 @@ slug: empleo-record
 claim: "“España nunca ha tenido tanta gente trabajando.”"
 assessment: true
 topicSlugs: ["empleo"]
-aliases: ["'empleo record'","'ocupados'","'trabajo'"]
+aliases: ["'empleo record'","'ocupados'","'trabajo'","nunca ha trabajado tanta gente en España","hay récord de empleo","España crea empleo como nunca"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

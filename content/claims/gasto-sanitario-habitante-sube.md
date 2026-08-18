@@ -3,7 +3,7 @@ slug: gasto-sanitario-habitante-sube
 claim: "España gasta más por habitante en sanidad que en 2015."
 assessment: true
 topicSlugs: ["sanidad", "economia"]
-aliases: ["España gasta más en sanidad por persona", "el gasto sanitario por habitante ha subido", "se gasta más en salud que en 2015", "el gasto sanitario ha aumentado", "España invierte más en sanidad"]
+aliases: ["España gasta más en sanidad por persona","el gasto sanitario por habitante ha subido","se gasta más en salud que en 2015","el gasto sanitario ha aumentado","España invierte más en sanidad"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

@@ -3,7 +3,7 @@ slug: inmigrantes-patera
 claim: "“La mayoría de inmigrantes llega en patera.”"
 assessment: false
 topicSlugs: ["inmigracion"]
-aliases: ["'patera'","'barco'","'irregular'","'canarias'"]
+aliases: ["'patera'","'barco'","'irregular'","'canarias'","todos los inmigrantes vienen en patera","la mayoría llega en barco","la inmigración entra ilegalmente","cuantos inmigrantes llegan en patera"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

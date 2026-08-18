@@ -3,7 +3,7 @@ slug: smi-destruye-empleo
 claim: "“Subir el salario mínimo destruyó empleo.”"
 assessment: unsupported
 topicSlugs: ["empleo"]
-aliases: ["'smi'","'salario minimo'","'destruye empleo'", "el salario mínimo destruye empleo", "el salario minimo destruye empleo"]
+aliases: ["'smi'","'salario minimo'","'destruye empleo'","el salario mínimo destruye empleo","el salario minimo destruye empleo","el salario mínimo destruye puestos de trabajo","subir el smi provoca paro","el sueldo mínimo deja a gente sin empleo"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

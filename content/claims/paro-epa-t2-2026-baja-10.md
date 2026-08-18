@@ -3,7 +3,7 @@ slug: paro-epa-t2-2026-baja-10
 claim: "La tasa de paro de la EPA bajó del 10% en el segundo trimestre de 2026."
 assessment: true
 topicSlugs: ["empleo", "economia"]
-aliases: ["el paro bajó del 10%", "la tasa de paro está por debajo del 10%", "el desempleo EPA bajó del diez por ciento", "paro EPA segundo trimestre 2026", "la EPA marca menos de un 10% de paro"]
+aliases: ["el paro bajó del 10%","la tasa de paro está por debajo del 10%","el desempleo EPA bajó del diez por ciento","paro EPA segundo trimestre 2026","la EPA marca menos de un 10% de paro"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

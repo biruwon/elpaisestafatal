@@ -3,7 +3,7 @@ slug: espana-recesion
 claim: "“España está en recesión.”"
 assessment: false
 topicSlugs: ["economia"]
-aliases: ["la economía española está en recesión", "España está quebrada económicamente", "el PIB español cae"]
+aliases: ["la economía española está en recesión","España está quebrada económicamente","el PIB español cae","España está arruinada","la economía española se hunde","España ya está en recesión"]
 claimType: descriptive
 evidenceStrength: medium
 geography: España

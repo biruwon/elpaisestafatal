@@ -3,7 +3,7 @@ slug: record-empleo-no-resuelve-paro
 claim: "Un récord de ocupación significa que el paro ya está resuelto."
 assessment: false
 topicSlugs: ["empleo", "economia"]
-aliases: ["si hay récord de empleo ya no hay paro", "más ocupados significa pleno empleo", "el récord de empleo demuestra que todos trabajan", "récord de ocupación y paro"]
+aliases: ["si hay récord de empleo ya no hay paro","más ocupados significa pleno empleo","el récord de empleo demuestra que todos trabajan","récord de ocupación y paro","récord de empleo significa pleno empleo","el paro está resuelto"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

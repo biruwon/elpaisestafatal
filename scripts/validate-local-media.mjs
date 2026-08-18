@@ -4,7 +4,7 @@ const [service, compose, homepage, input, smoke] = await Promise.all([
   readFile('scripts/local-claim-service.mjs', 'utf8'),
   readFile('docker-compose.local.yml', 'utf8'),
   readFile('src/pages/index.astro', 'utf8'),
-  readFile('src/scripts/claim-input.ts', 'utf8'),
+  readFile('src/scripts/claim-checker.ts', 'utf8'),
   readFile('scripts/smoke-local-resolver.mjs', 'utf8'),
 ]);
 

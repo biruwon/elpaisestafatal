@@ -3,7 +3,7 @@ slug: paro-juvenil-espana-ue
 claim: "España tiene más paro juvenil que la Unión Europea."
 assessment: true
 topicSlugs: ["empleo", "juventud", "europa"]
-aliases: ["España tiene más desempleo juvenil que Europa", "el paro juvenil español supera al europeo", "España tiene una tasa de paro juvenil mayor que la UE", "¿Tiene España más paro juvenil que la Unión Europea?"]
+aliases: ["España tiene más desempleo juvenil que Europa","el paro juvenil español supera al europeo","España tiene una tasa de paro juvenil mayor que la UE","¿Tiene España más paro juvenil que la Unión Europea?","España tiene una tasa de paro juvenil mayor que la Unión Europea","paro juvenil frente a Europa","comparación europea del paro juvenil"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

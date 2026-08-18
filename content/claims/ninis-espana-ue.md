@@ -3,7 +3,7 @@ slug: ninis-espana-ue
 claim: "España tiene más jóvenes que ni estudian ni trabajan que la Unión Europea."
 assessment: true
 topicSlugs: ["juventud", "empleo", "educacion", "europa"]
-aliases: ["España tiene más ninis que Europa", "la tasa de ninis española supera a la europea", "España tiene más jóvenes fuera del empleo y la educación que la UE", "¿España tiene más ninis que la Unión Europea?"]
+aliases: ["España tiene más ninis que Europa","la tasa de ninis española supera a la europea","España tiene más jóvenes fuera del empleo y la educación que la UE","¿España tiene más ninis que la Unión Europea?","comparación europea de ninis"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

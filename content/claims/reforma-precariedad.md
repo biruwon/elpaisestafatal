@@ -3,7 +3,7 @@ slug: reforma-precariedad
 claim: "“La reforma laboral acabó con la precariedad.”"
 assessment: false
 topicSlugs: ["empleo"]
-aliases: ["'reforma laboral'","'precariedad'","'temporalidad'"]
+aliases: ["'reforma laboral'","'precariedad'","'temporalidad'","la reforma laboral acabó con los contratos temporales","ya no existe precariedad laboral","la reforma laboral solucionó el trabajo precario","ya no hay contratos precarios"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

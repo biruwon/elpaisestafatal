@@ -3,7 +3,7 @@ slug: recaudacion-tributaria-crece
 claim: "“La recaudación tributaria bajó en 2025.”"
 assessment: false
 topicSlugs: ["impuestos", "economia"]
-aliases: ["Hacienda recaudó menos en 2025", "la recaudación fiscal cayó", "los ingresos tributarios bajaron"]
+aliases: ["Hacienda recaudó menos en 2025","la recaudación fiscal cayó","los ingresos tributarios bajaron","Hacienda recauda menos","el Gobierno recauda menos impuestos","han bajado los ingresos fiscales"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

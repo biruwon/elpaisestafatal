@@ -3,7 +3,7 @@ slug: paro-historico
 claim: "“El paro está en mínimos históricos.”"
 assessment: misleading
 topicSlugs: ["empleo"]
-aliases: ["'paro minimo'","'sepe'","'epa'","'desempleo'"]
+aliases: ["'paro minimo'","'sepe'","'epa'","'desempleo'","España tiene el paro más bajo de la historia","el desempleo está en mínimos históricos","el paro registrado nunca fue tan bajo","España anuncia un récord de ocupados pero también tiene un récord de parados"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

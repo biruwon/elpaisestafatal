@@ -3,7 +3,6 @@ import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
 const files = [
   'warehouse-query.mjs',
-  'postgres-warehouse.mjs',
   'export-warehouse-sql.mjs',
 ];
 for (const file of files) {

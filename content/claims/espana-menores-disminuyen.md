@@ -3,7 +3,7 @@ slug: espana-menores-disminuyen
 claim: "En España hay cada vez menos menores de 15 años."
 assessment: true
 topicSlugs: ["juventud"]
-aliases: ["cada vez hay menos niños en España", "España tiene menos niños", "hay menos menores", "la población infantil está bajando", "España se está quedando sin niños"]
+aliases: ["cada vez hay menos niños en España","España tiene menos niños","hay menos menores","la población infantil está bajando","España se está quedando sin niños"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

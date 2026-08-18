@@ -3,7 +3,7 @@ slug: la-ley-trans-permite-cambiar-de-sexo-sin-ningun-control
 claim: "La ley trans permite cambiar de sexo sin ningún control."
 assessment: misleading
 topicSlugs: ["desigualdad"]
-aliases: ["La ley trans permite cambiar de sexo sin ningún control.", "la ley trans no exige ningún requisito", "con la ley trans cualquiera cambia de sexo sin control", "la autodeterminación de género no tiene controles"]
+aliases: ["La ley trans permite cambiar de sexo sin ningún control.","la ley trans no exige ningún requisito","con la ley trans cualquiera cambia de sexo sin control","la autodeterminación de género no tiene controles","cualquiera puede cambiar de sexo sin control","cambiar de sexo sin requisitos en España","la ley trans permite cambiar el sexo sin control"]
 claimType: legal
 evidenceStrength: high
 geography: España

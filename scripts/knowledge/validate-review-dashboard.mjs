@@ -11,10 +11,10 @@ const html = renderReviewDashboard({
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 assert(html.includes('Private maintainer tool'), 'Dashboard does not identify its private maintainer scope');
 assert(html.includes('Pregunta neutral') && html.includes('Pregunta sin fuente'), 'Dashboard omitted queue candidates');
-assert(html.includes('knowledge:promote-cluster'), 'Dashboard omitted the guarded promotion command');
+assert(html.includes('knowledge:promote-auto'), 'Dashboard omitted the automatic promotion command');
 assert(html.includes('data-tab="research"') && html.includes('data-copy'), 'Dashboard is missing research filtering or command copy controls');
 assert(html.includes('Required evidence dimensions') && html.includes('geography · period'), 'Dashboard omitted required evidence dimensions');
 assert(html.includes('Evidence contract') && html.includes('Find a compatible denominator') && html.includes('No está establecido'), 'Dashboard omitted the evidence contract details');
 assert(html.includes('newly covered'), 'Dashboard omitted newly covered coverage metric');
 assert(!html.includes('/api/') && !html.includes('wrangler d1 execute'), 'Dashboard exposed an operational API or direct mutation command');
-console.log('Review dashboard validation passed: local-only queue rendering, filtering, and guarded promotion instructions are present.');
+console.log('Review dashboard validation passed: local-only queue rendering, filtering, and automatic promotion instructions are present.');

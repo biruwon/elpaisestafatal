@@ -1,5 +1,4 @@
--- D1-safe additive fields for the operational schema. PostgreSQL-specific
--- full-text/trigram indexes live under migrations/postgres instead.
+-- D1-safe additive fields for the operational schema.
 
 ALTER TABLE observations ADD COLUMN metric_id TEXT;
 

@@ -19,7 +19,6 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      WAREHOUSE_DATABASE_URL: ${{ secrets.WAREHOUSE_DATABASE_URL }}
     steps:
       - name: Check backup configuration
         id: configuration
@@ -58,7 +57,6 @@ jobs:
           backup_dir="$RUNNER_TEMP/elpaisestafatal-operations-backup"
           export BACKUP_DIR="$backup_dir"
           export BACKUP_REQUIRE_D1=1
-          if [ -n "${WAREHOUSE_DATABASE_URL:-}" ]; then export BACKUP_REQUIRE_POSTGRES=1; fi
           npm run backup:operations
           npm run backup:artifact:validate
 

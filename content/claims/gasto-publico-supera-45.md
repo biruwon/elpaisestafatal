@@ -3,7 +3,7 @@ slug: gasto-publico-supera-45
 claim: "El gasto público de España supera el 45% del PIB."
 assessment: true
 topicSlugs: ["impuestos", "economia"]
-aliases: ["España gasta más del 45% del PIB", "el gasto público supera el 45 por ciento", "el Estado gasta más del 45% del PIB", "el gasto de las administraciones supera el 45%", "gasto público España"]
+aliases: ["España gasta más del 45% del PIB","el gasto público supera el 45 por ciento","el Estado gasta más del 45% del PIB","el gasto de las administraciones supera el 45%","gasto público España"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

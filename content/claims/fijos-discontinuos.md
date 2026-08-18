@@ -3,7 +3,7 @@ slug: fijos-discontinuos
 claim: "“Los fijos discontinuos son parados ocultos.”"
 assessment: false
 topicSlugs: ["empleo"]
-aliases: ["'fijo discontinuo'","'parado oculto'","'maquillaje'"]
+aliases: ["'fijo discontinuo'","'parado oculto'","'maquillaje'","los fijos discontinuos son parados encubiertos","maquillan el paro con fijos discontinuos","los fijos discontinuos no trabajan","los fijos discontinuos ocultan más de un millón de parados","los trabajadores fijos discontinuos son parados ocultos","los fijos discontinuos trabajan tres meses al año y cuentan como ocupados"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

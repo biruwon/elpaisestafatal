@@ -3,7 +3,7 @@ slug: paro-juvenil-baja
 claim: "El paro juvenil ha bajado casi a la mitad desde 2015."
 assessment: true
 topicSlugs: ["empleo", "juventud"]
-aliases: ["ha bajado el paro juvenil", "el desempleo juvenil se ha reducido", "hay menos paro entre los jóvenes", "el paro juvenil cayó desde 2015", "España ha reducido el paro juvenil"]
+aliases: ["ha bajado el paro juvenil","el desempleo juvenil se ha reducido","hay menos paro entre los jóvenes","el paro juvenil cayó desde 2015","España ha reducido el paro juvenil"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

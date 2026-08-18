@@ -3,7 +3,7 @@ slug: economia-crece-coste-vida
 claim: "“La economía crece, pero eso no significa que el coste de vida haya bajado.”"
 assessment: mostly-true
 topicSlugs: ["economia", "desigualdad"]
-aliases: ["la economía crece pero no se nota", "la economía va bien pero las familias no llegan", "crecimiento y coste de vida", "el PIB sube pero todo está más caro", "España crece y la gente sigue peor"]
+aliases: ["la economía crece pero no se nota","la economía va bien pero las familias no llegan","crecimiento y coste de vida","el PIB sube pero todo está más caro","España crece y la gente sigue peor","la economía va bien pero no llego a fin de mes","si la economía crece por qué todo está más caro","España crece pero la gente vive peor","la economía crece, pero la vida sigue demasiado cara"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

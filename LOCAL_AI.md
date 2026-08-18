@@ -11,13 +11,13 @@ npm run ai:setup
 npm run dev:ai
 ```
 
-Then use the browser at `http://127.0.0.1:4321`. Typed claims, links, screenshots, and audio all enter the same same-origin `/api/classify` flow. The browser submits once, shows deterministic guidance immediately, and polls optional local enrichment automatically. There is no separate command or second classification path.
+Then use the browser at `http://127.0.0.1:4321`. Typed claims, links, screenshots, and audio all enter the same same-origin `/api/check` flow. The browser submits once, shows deterministic guidance immediately, and polls optional local enrichment automatically. There is no separate command or second classification path.
 
 The local resolver accepts the same multipart media contract used by the deployed Pages Function. Screenshot extraction uses the configured local vision model when available; audio uses the configured local speech command. If either optional runtime is unavailable, the deterministic text/caption guidance remains usable and the failure is reported generically.
 
 ## Endpoint and local models
 
-The browser always submits to the same-origin `/api/classify` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
+The browser always submits to the same-origin `/api/check` endpoint. Provider configuration stays server-side and is never included in the built HTML. The endpoint may return a completed result or a request ID; the browser polls automatically until the local analysis completes or times out.
 
 For a tunneled or containerized origin, set the same random `LOCAL_CLASSIFIER_TOKEN` in the Pages Function environment and the local resolver environment. The token is optional for a loopback-only development setup.
 
@@ -27,7 +27,7 @@ For the persistent production origin, use a named Cloudflare Tunnel with a token
 
 On macOS, keep the resolver alive with `npm run origin:serve`. The checked-in launchd template is `config/com.elpaisestafatal.local-origin.plist.example`; it supervises the resolver, avoids duplicate processes, waits for `/healthz`, and restarts the child after a crash. The actual machine-specific plist and credentials must remain outside Git. The public `/api/health` endpoint should report `dynamic: true` while the local machine and tunnel are available; if the origin goes offline, deterministic fallback remains available.
 
-The local development proxy keeps the local inference service behind the same-origin `/api/classify` boundary.
+The local development proxy keeps the local inference service behind the same-origin `/api/check` boundary.
 
 The service uses the locally installed `gemma3:4b` router and `bge-m3` embedding model by default. Override them only with models installed in the local Ollama instance using `OLLAMA_ROUTER_MODEL` and `OLLAMA_EMBED_MODEL`. Production keeps the deterministic lookup and uses the same bounded local inference path when the configured origin is available.
 
@@ -49,7 +49,7 @@ The resolver can also run as a restartable local container while Astro and Ollam
 docker compose -f docker-compose.local.yml up --build -d
 ```
 
-The compose file binds the resolver to `127.0.0.1:8789`, mounts only the local derived cache, and uses host services for the catalog and local model runtime. It is a development/deployment convenience; the public site still communicates through the same-origin API boundary.
+The compose file binds the resolver to `127.0.0.1:8789`, mounts only the local derived cache, and uses the host for the local model runtime. It is a development/deployment convenience; the public site still communicates through the same-origin API boundary.
 
 ## Refresh the local evidence warehouse
 
@@ -63,29 +63,6 @@ npm run knowledge:warehouse
 ```
 
 The example refreshes approved BOE, INE, and Eurostat resources. `{yesterday}` and `{today}` placeholders are expanded at refresh time. Normalized observations are used for provisional number and trend cards; they do not become published verdicts without an explicit reviewed claim.
-
-### Optional PostgreSQL retrieval backend
-
-The JSON warehouse is the offline fallback. For a larger local installation, load the same derived data into PostgreSQL and let the resolver query indexed rows instead of scanning files:
-
-```bash
-export WAREHOUSE_DATABASE_URL='postgresql://localhost/claims'
-npm run knowledge:warehouse:postgres
-WAREHOUSE_DATABASE_URL="$WAREHOUSE_DATABASE_URL" npm run dev:ai
-```
-
-The loader applies the additive warehouse migrations, creates the `pg_trgm` search index, and upserts the current source snapshots and observations. If the database is unavailable, the resolver automatically falls back to `.local/source-warehouse`; the public API and UI do not change. PostgreSQL is a derived copy and can always be rebuilt from the source manifests.
-
-For semantic retrieval, the compose file also provides an optional PostgreSQL profile with `pgvector`:
-
-```bash
-docker compose -f docker-compose.local.yml --profile warehouse up -d warehouse
-export WAREHOUSE_DATABASE_URL='postgresql://claims:local-development-only@127.0.0.1:5433/claims'
-WAREHOUSE_EMBEDDINGS=1 npm run knowledge:warehouse:postgres
-WAREHOUSE_SEMANTIC_SEARCH=1 npm run dev:ai
-```
-
-This creates a rebuildable 1,024-dimension embedding index for the current `bge-m3` baseline. Semantic retrieval is opt-in: it is fused with lexical results, retains the retrieval channel and score, rejects weak semantic-only candidates, and falls back to trigram or JSON retrieval when the vector extension, embedding runtime, or database is unavailable. If the embedding model changes, rebuild the derived embeddings and re-run the evaluation corpus before enabling it.
 
 Run the metric-routing benchmark before changing the embedding model or thresholds:
 

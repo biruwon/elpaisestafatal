@@ -3,7 +3,7 @@ slug: paro-espana-supera-ue
 claim: "España tiene más paro que la media de la Unión Europea."
 assessment: true
 topicSlugs: ["empleo", "economia"]
-aliases: ["España tiene más desempleo que Europa", "el paro español supera la media europea", "España está peor que la UE en paro", "la tasa de paro de España es mayor que la europea", "España lidera el paro europeo"]
+aliases: ["España tiene más desempleo que Europa","el paro español supera la media europea","España está peor que la UE en paro","la tasa de paro de España es mayor que la europea","España lidera el paro europeo"]
 claimType: comparative
 evidenceStrength: high
 geography: "España y UE-27"

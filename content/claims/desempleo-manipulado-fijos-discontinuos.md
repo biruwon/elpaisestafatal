@@ -3,7 +3,7 @@ slug: desempleo-manipulado-fijos-discontinuos
 claim: "El desempleo está manipulado porque los fijos discontinuos se cuentan como ocupados."
 assessment: misleading
 topicSlugs: ["empleo", "economia"]
-aliases: ["el desempleo está manipulado porque los fijos discontinuos se cuentan como ocupados", "el desempleo está manipado porque los fijos discontinuos se cuentan como ocupados", "el paro está manipulado por los fijos discontinuos", "maquillan el paro contando fijos discontinuos como ocupados", "los fijos discontinuos manipulan las cifras del paro"]
+aliases: ["el desempleo está manipulado porque los fijos discontinuos se cuentan como ocupados","el desempleo está manipado porque los fijos discontinuos se cuentan como ocupados","el paro está manipulado por los fijos discontinuos","maquillan el paro contando fijos discontinuos como ocupados","los fijos discontinuos manipulan las cifras del paro"]
 claimType: mixed
 evidenceStrength: high
 geography: España

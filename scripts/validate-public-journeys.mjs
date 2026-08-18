@@ -12,7 +12,7 @@ const requireText = (label, content, snippets) => {
 const [searchPage, searchSource, inputSource, investigationsPage, sourcesPage, affirmationPage] = await Promise.all([
   read('dist/buscar/index.html'),
   read('src/pages/buscar.astro'),
-  read('src/scripts/claim-input.ts'),
+  read('src/scripts/claim-checker.ts'),
   read('dist/investigaciones/index.html'),
   read('dist/fuentes/index.html'),
   read('dist/afirmaciones/inmigrantes-ayudas/index.html'),

@@ -3,7 +3,7 @@ slug: paro-epa-registro
 claim: "“El paro registrado y el de la EPA son la misma cifra.”"
 assessment: false
 topicSlugs: ["empleo", "economia"]
-aliases: ["el paro del SEPE y el de la EPA son lo mismo", "paro registrado frente al paro de la EPA", "la EPA infla el paro", "el paro real es el del SEPE"]
+aliases: ["el paro del SEPE y el de la EPA son lo mismo","paro registrado frente al paro de la EPA","la EPA infla el paro","el paro real es el del SEPE","el paro de la EPA y el paro registrado son iguales","por qué no coincide el paro del INE con el del SEPE","el Gobierno maquilla el paro con dos cifras"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

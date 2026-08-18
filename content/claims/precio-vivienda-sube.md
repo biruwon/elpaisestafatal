@@ -3,7 +3,7 @@ slug: precio-vivienda-sube
 claim: "“La vivienda está bajando de precio en España.”"
 assessment: false
 topicSlugs: ["vivienda", "economia"]
-aliases: ["la vivienda ya baja", "los pisos están bajando", "el precio de la vivienda cae en España"]
+aliases: ["la vivienda ya baja","los pisos están bajando","el precio de la vivienda cae en España","los pisos bajan de precio","la vivienda ya está bajando","el precio de las casas cae","el precio del alquiler y de la vivienda cae"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

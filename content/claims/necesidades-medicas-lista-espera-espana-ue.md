@@ -3,7 +3,7 @@ slug: necesidades-medicas-lista-espera-espana-ue
 claim: "España tiene más necesidades médicas no atendidas por lista de espera que la Unión Europea."
 assessment: true
 topicSlugs: ["sanidad", "europa"]
-aliases: ["España tiene más espera sanitaria que Europa", "España tiene más lista de espera que la UE", "necesidades médicas no atendidas frente a Europa", "comparación europea de listas de espera"]
+aliases: ["España tiene más espera sanitaria que Europa","España tiene más lista de espera que la UE","necesidades médicas no atendidas frente a Europa","comparación europea de listas de espera"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

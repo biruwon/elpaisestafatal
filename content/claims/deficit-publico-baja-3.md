@@ -3,7 +3,7 @@ slug: deficit-publico-baja-3
 claim: "El déficit público de España baja del 3% del PIB."
 assessment: true
 topicSlugs: ["impuestos", "economia"]
-aliases: ["España tiene un déficit inferior al 3%", "el déficit público baja del 3 por ciento", "el déficit del Estado es menor del 3%", "España reduce el déficit público", "déficit público España"]
+aliases: ["España tiene un déficit inferior al 3%","el déficit público baja del 3 por ciento","el déficit del Estado es menor del 3%","España reduce el déficit público","déficit público España"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

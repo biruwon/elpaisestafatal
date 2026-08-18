@@ -3,7 +3,7 @@ slug: politicos-corruptos
 claim: "“Todos los políticos son corruptos.”"
 assessment: false
 topicSlugs: ["corrupcion"]
-aliases: ["'todos politicos'","'corrupcion'","'partidos'"]
+aliases: ["'todos politicos'","'corrupcion'","'partidos'","todos los políticos roban","no hay ningún político honrado","la política española es toda corrupción","la política está llena de corruptos","el sistema español está corrupto de izquierda a derecha","todo está corrupto en España"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

@@ -1,5 +1,5 @@
-const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const path = process.env.SMOKE_RESOLVE_PATH || '/api/classify';
+const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
+const path = process.env.SMOKE_RESOLVE_PATH || '/api/check';
 const failures = [];
 
 try {

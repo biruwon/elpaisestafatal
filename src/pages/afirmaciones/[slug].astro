@@ -51,7 +51,7 @@ const explicitRelations=[...item.supports.map((slug)=>({label:'Apoya',slug})),..
     <details id="claim-sources" class="claim-details"><summary>Fuentes originales <span aria-hidden="true">＋</span></summary><section class="claim-sources"><p class="eyebrow">Fuentes y evidencia</p>{registrySources.map((source,index)=><a href={source.url} target="_blank" rel="noreferrer"><span>{String(index+1).padStart(2,'0')}</span><strong>{source.title}</strong><small>{source.date} · {sourceTypeLabel(source.type)} ↗</small></a>)}</section></details>
     {related.length>0&&<details class="claim-details"><summary>Preguntas relacionadas <span aria-hidden="true">＋</span></summary><section class="related-claims"><header class="section-header section-header-left"><p class="eyebrow">Sigue comprobando</p><h2>Preguntas<br /><em>relacionadas.</em></h2></header><div>{related.map((claim,index)=><a class:list={{'featured-next':index===0}} href={`/afirmaciones/${claim.slug}`}><TopicBadge slug={claim.topicSlugs[0]} compact/><strong>{index===0?'Siguiente pregunta · ':''}{claim.claim.replace(/[“”]/g,'')}</strong></a>)}</div></section></details>}
     <script is:inline>
-      const expandClaimHash = () => { const target = document.querySelector(location.hash); const details = target?.closest('details'); if (details) details.open = true; };
+      const expandClaimHash = () => { const hash = location.hash; if (!hash || hash === '#') return; const target = document.getElementById(decodeURIComponent(hash.slice(1))) || document.querySelector(hash); const details = target?.closest('details'); if (details) details.open = true; };
       expandClaimHash();
       window.addEventListener('hashchange', expandClaimHash);
     </script>

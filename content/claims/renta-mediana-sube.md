@@ -3,7 +3,7 @@ slug: renta-mediana-sube
 claim: "La renta mediana disponible ha subido en España desde 2015."
 assessment: true
 topicSlugs: ["economia", "desigualdad"]
-aliases: ["la renta mediana ha subido", "los ingresos medianos han aumentado", "las rentas de los hogares han crecido", "la renta disponible es mayor que en 2015", "la renta de los hogares ha subido"]
+aliases: ["la renta mediana ha subido","los ingresos medianos han aumentado","las rentas de los hogares han crecido","la renta disponible es mayor que en 2015","la renta de los hogares ha subido"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

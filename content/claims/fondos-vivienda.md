@@ -3,7 +3,7 @@ slug: fondos-vivienda
 claim: "“Los fondos de inversión causan la crisis de vivienda.”"
 assessment: misleading
 topicSlugs: ["vivienda"]
-aliases: ["'fondos'","'blackstone'","'buitre'","'caseros'"]
+aliases: ["'fondos'","'blackstone'","'buitre'","'caseros'","los fondos buitre tienen la culpa de la vivienda","blackstone controla todas las casas","los grandes fondos provocan los alquileres caros"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

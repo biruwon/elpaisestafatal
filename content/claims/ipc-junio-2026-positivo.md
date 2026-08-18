@@ -3,7 +3,7 @@ slug: ipc-junio-2026-positivo
 claim: "Los precios de consumo subieron un 3,2% interanual en junio de 2026."
 assessment: true
 topicSlugs: ["economia", "desigualdad"]
-aliases: ["el IPC de junio fue del 3,2%", "la inflación anual fue del 3,2% en junio", "los precios subieron un 3,2% en junio", "IPC 3,2 junio 2026", "la inflación de junio se mantuvo en 3,2"]
+aliases: ["el IPC de junio fue del 3,2%","la inflación anual fue del 3,2% en junio","los precios subieron un 3,2% en junio","IPC 3,2 junio 2026","la inflación de junio se mantuvo en 3,2"]
 claimType: mixed
 evidenceStrength: high
 geography: España

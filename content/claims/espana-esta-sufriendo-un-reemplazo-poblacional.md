@@ -3,7 +3,7 @@ slug: espana-esta-sufriendo-un-reemplazo-poblacional
 claim: "España está sufriendo un reemplazo poblacional."
 assessment: misleading
 topicSlugs: ["inmigracion", "juventud"]
-aliases: ["España está sufriendo un reemplazo poblacional.", "están reemplazando a los españoles", "España vive un reemplazo demográfico", "nos están sustituyendo", "reemplazo étnico en España", "la inmigración está reemplazando a los españoles"]
+aliases: ["España está sufriendo un reemplazo poblacional.","están reemplazando a los españoles","España vive un reemplazo demográfico","nos están sustituyendo","reemplazo étnico en España","la inmigración está reemplazando a los españoles"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

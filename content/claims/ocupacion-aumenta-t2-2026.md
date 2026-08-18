@@ -3,7 +3,7 @@ slug: ocupacion-aumenta-t2-2026
 claim: "España ganó 486.000 ocupados en el segundo trimestre de 2026."
 assessment: true
 topicSlugs: ["empleo", "economia"]
-aliases: ["se crearon 486000 empleos en el segundo trimestre", "España ganó 486.000 empleos", "la ocupación subió en 486000 personas", "hay 22,779 millones de ocupados", "récord de ocupación segundo trimestre 2026"]
+aliases: ["se crearon 486000 empleos en el segundo trimestre","España ganó 486.000 empleos","la ocupación subió en 486000 personas","hay 22,779 millones de ocupados","récord de ocupación segundo trimestre 2026"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

@@ -1,5 +1,4 @@
 import type { Source } from './concerns';
-import { claimAliases } from './claimAliases';
 import { markdownClaims, type MarkdownClaimRecord } from './content';
 import { getSource } from './registry';
 import { getTopicPresentation } from './topicPresentation';
@@ -83,7 +82,7 @@ const relatedFor = (record: MarkdownClaimRecord, records: MarkdownClaimRecord[])
 
 const toClaim = (record: MarkdownClaimRecord, records: MarkdownClaimRecord[]): ClaimVerification => {
   const topicSlug = record.topicSlugs[0] || 'politica';
-  const aliases = [...new Set([...record.aliases, ...(claimAliases[record.slug] ?? [])])];
+  const aliases = [...new Set(record.aliases)];
   const sources = record.sourceRefs.map(sourceFor).filter((source): source is Source => Boolean(source));
   const assessment = isAssessment(record.assessment) ? record.assessment : 'uncertain';
   const claimType = isClaimType(record.claimType) ? record.claimType : 'mixed';

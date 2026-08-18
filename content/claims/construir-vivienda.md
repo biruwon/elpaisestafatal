@@ -3,7 +3,7 @@ slug: construir-vivienda
 claim: "“Basta con construir más vivienda.”"
 assessment: mostly-true
 topicSlugs: ["vivienda"]
-aliases: ["'construir'","'oferta'","'suelo'","'licencias'"]
+aliases: ["'construir'","'oferta'","'suelo'","'licencias'","hay que construir más casas","la solución a la vivienda es construir","faltan viviendas porque no se construye"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

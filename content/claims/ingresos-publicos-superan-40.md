@@ -3,7 +3,7 @@ slug: ingresos-publicos-superan-40
 claim: "Los ingresos públicos de España superan el 40% del PIB."
 assessment: true
 topicSlugs: ["impuestos", "economia"]
-aliases: ["España recauda más del 40% del PIB", "los ingresos públicos superan el 40 por ciento", "la recaudación pública supera el 40%", "el Estado ingresa más del 40% del PIB", "ingresos públicos España"]
+aliases: ["España recauda más del 40% del PIB","los ingresos públicos superan el 40 por ciento","la recaudación pública supera el 40%","el Estado ingresa más del 40% del PIB","ingresos públicos España"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

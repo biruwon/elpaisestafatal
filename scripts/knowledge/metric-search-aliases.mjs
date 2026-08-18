@@ -1,5 +1,5 @@
 // Search vocabulary broader than public metric names. It is copied into every
-// derived warehouse index so local and PostgreSQL retrieval share behaviour.
+// derived warehouse index so local retrieval shares behaviour.
 export const metricSearchAliases = Object.freeze({
   youth_unemployment_rate: ['joven', 'jovenes', 'juvenil', 'activos', 'trabajo'],
   youth_unemployment_rate_europe: ['paro juvenil', 'desempleo juvenil', 'jovenes', 'europa', 'union europea', 'comparacion europea'],

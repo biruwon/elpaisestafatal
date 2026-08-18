@@ -3,7 +3,7 @@ slug: paro-epa-supera-10
 claim: "La tasa de paro de la EPA sigue por encima del 10%."
 assessment: true
 topicSlugs: ["empleo", "economia"]
-aliases: ["el paro de la EPA supera el 10%", "la EPA todavía marca más de un 10% de paro", "el desempleo EPA sigue por encima del 10%", "el paro real está por encima del 10%", "la tasa de paro sigue alta"]
+aliases: ["el paro de la EPA supera el 10%","la EPA todavía marca más de un 10% de paro","el desempleo EPA sigue por encima del 10%","el paro real está por encima del 10%","la tasa de paro sigue alta"]
 claimType: mixed
 evidenceStrength: high
 geography: España

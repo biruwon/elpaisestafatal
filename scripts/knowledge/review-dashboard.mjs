@@ -12,7 +12,7 @@ const outputPath = args.get('output') || join(root, '.local/review-dashboard.htm
 const escapeHtml = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 const asArray = (value) => Array.isArray(value) ? value : [];
 const commandFor = (candidate) => candidate?.suggestedSlug
-  ? `npm run knowledge:promote-cluster -- --id ${candidate.clusterId} --canonical "${String(candidate.canonicalText || '').replaceAll('"', '\\"')}" --slug ${candidate.suggestedSlug} --approved`
+  ? `npm run knowledge:promote-auto -- --input .local/candidates/${candidate.clusterId}.json --slug ${candidate.suggestedSlug}`
   : '';
 const evidenceLabel = (candidate) => {
   if (candidate.researchOnly) return candidate.sourceAvailability === 'none' ? 'No direct source' : candidate.sourceAvailability === 'discovery_only' ? 'Discovery lead only' : 'Needs research';
@@ -33,13 +33,13 @@ const card = (candidate, kind) => {
     <div class="stats"><span><b>${escapeHtml(candidate.queryCount)}</b> queries</span><span><b>${escapeHtml(candidate.count7d)}</b> last 7 days</span><span><b>${escapeHtml(candidate.priorityScore)}</b> priority</span></div>
     <p class="reason">${escapeHtml(candidate.reason || 'No additional reason recorded.')}</p>
     <div class="next"><strong>Next action</strong><p>${escapeHtml(candidate.nextAction || 'Review the evidence and define the next step.')}</p></div>
-    <p class="muted">Audit: <strong>${escapeHtml(candidate.auditClass || 'unclassified')}</strong> · ${escapeHtml(candidate.auditAction || 'human_review')} · ${escapeHtml(candidate.evidenceStatus || 'not_ready')}</p>
+    <p class="muted">Audit: <strong>${escapeHtml(candidate.auditClass || 'unclassified')}</strong> · ${escapeHtml(candidate.auditAction || 'autonomous_promotion')} · ${escapeHtml(candidate.evidenceStatus || 'not_ready')}</p>
     ${candidate.rankScore != null ? `<p class="muted">Priority: ${escapeHtml(candidate.rankScore)} · harm ${escapeHtml(candidate.harmScore)} · urgency ${escapeHtml(candidate.urgencyScore)} · evidence readiness ${escapeHtml(candidate.evidenceReadiness)}</p>` : ''}
     ${candidate.matchedMetricIds?.length ? `<p class="muted">Matched metric: ${escapeHtml(candidate.matchedMetricIds.join(' · '))}</p>` : ''}
     ${candidate.sourceIds?.length ? `<details><summary>Source references (${candidate.sourceIds.length})</summary><code>${escapeHtml(candidate.sourceIds.join(' · '))}</code></details>` : '<p class="muted">No source references attached.</p>'}
     ${candidate.requiredDimensions?.length ? `<details><summary>Required evidence dimensions</summary><p class="muted">${escapeHtml(candidate.requiredDimensions.join(' · '))}</p></details>` : ''}
     ${evidenceSummary}
-    ${ready ? `<details class="promotion"><summary>Promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">Run only after the reviewed claim is present, the build passes, and the original wording has been verified.</p></details>` : ''}
+    ${ready ? `<details class="promotion"><summary>Autonomous promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">The command runs deterministic evidence gates and publishes only when they pass.</p></details>` : ''}
   </article>`;
 };
 

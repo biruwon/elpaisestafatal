@@ -32,16 +32,6 @@ try {
   console.warn('D1 export skipped; run with BACKUP_REQUIRE_D1=1 to make it mandatory.');
 }
 
-if (process.env.WAREHOUSE_DATABASE_URL) {
-  try {
-    await execFileAsync('pg_dump', ['--no-owner', '--no-privileges', '--file', join(destination, 'postgres.sql'), process.env.WAREHOUSE_DATABASE_URL], { cwd: root, timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
-    copied.push('postgres.sql');
-  } catch (error) {
-    if (process.env.BACKUP_REQUIRE_POSTGRES === '1') throw new Error(`PostgreSQL export failed: ${error instanceof Error ? error.message : error}`);
-    console.warn('PostgreSQL export skipped; run with BACKUP_REQUIRE_POSTGRES=1 to make it mandatory.');
-  }
-}
-
 const collectFiles = async (path, prefix = '') => {
   const entries = [];
   for (const entry of await readdir(path, { withFileTypes: true })) {
@@ -62,7 +52,7 @@ for (const item of await collectFiles(destination)) {
 }
 files.sort((left, right) => left.path.localeCompare(right.path));
 
-const manifest = { schemaVersion: 1, createdAt: new Date().toISOString(), destination, files: copied, entries: files, d1: copied.includes('d1.sql'), postgres: copied.includes('postgres.sql') };
+const manifest = { schemaVersion: 1, createdAt: new Date().toISOString(), destination, files: copied, entries: files, d1: copied.includes('d1.sql') };
 await writeFile(join(destination, 'manifest.json'), JSON.stringify(manifest, null, 2));
 console.log(`Operations backup created: ${destination}`);
 console.log(`Included: ${copied.join(', ') || 'no local files'}`);

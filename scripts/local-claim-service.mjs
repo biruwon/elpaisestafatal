@@ -70,7 +70,6 @@ const speechArgs = (() => {
 const speechTimeoutMs = Math.min(60000, Math.max(10000, Number(process.env.LOCAL_SPEECH_TIMEOUT_MS || 45000)));
 const allowedInferenceHosts = new Set(['127.0.0.1', 'localhost', '::1', 'host.docker.internal']);
 const execFileAsync = promisify(execFile);
-const catalogUrl = process.env.LOCAL_CATALOG_URL || 'http://127.0.0.1:4321/claim-catalog.json';
 const indexPath = join(root, `.local/claim-semantic-index-${RUNTIME_VERSIONS.indexKnowledge}.json`);
 const warehousePath = join(root, '.local/source-warehouse');
 const warehouseIndexPath = join(warehousePath, 'search-index.json');
@@ -918,29 +917,12 @@ const plannedClaims = async () => {
 };
 
 const fetchCatalog = async () => {
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    try {
-      const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(350) });
-      if (response.ok) {
-        const remoteEntries = await response.json();
-        // In local development, a dev-server response can briefly lag the
-        // built catalog while Astro rebuilds. Merge the immutable build
-        // artifact when present so published claims are never silently
-        // omitted from the resolver's derived index.
-        try {
-          const builtEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8'));
-          const merged = new Map([...builtEntries, ...remoteEntries].map((entry) => [entry.slug || `${entry.kind}:${entry.title}`, entry]));
-          if (process.env.LOCAL_DEBUG_ROUTING === '1') console.error('Catalog merge:', { cwd: process.cwd(), built: builtEntries.length, remote: remoteEntries.length, merged: merged.size, hasTarget: merged.has('poblacion-residente-supera-49m') });
-          return [...merged.values()];
-        } catch (error) {
-          if (process.env.LOCAL_DEBUG_ROUTING === '1') console.error('Built catalog fallback unavailable:', error instanceof Error ? error.message : error);
-          return remoteEntries;
-        }
-      }
-    } catch { /* The Astro server may still be starting. */ }
-    await new Promise((resolve) => setTimeout(resolve, 150));
+  try {
+    return JSON.parse(await readFile(builtCatalogPath, 'utf8'));
+  } catch (error) {
+    if (process.env.LOCAL_DEBUG_ROUTING === '1') console.error('Built catalogue unavailable:', error instanceof Error ? error.message : error);
+    return [];
   }
-  return [];
 };
 
 const getIndex = async () => {
@@ -2911,7 +2893,7 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts } }));
     return;
   }
-  if (!request.url?.startsWith('/api/classify') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
+  if (!request.url?.startsWith('/api/check') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
   try {
     if (classifierToken && request.headers.authorization !== `Bearer ${classifierToken}`) { response.writeHead(401, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: 'unavailable' })); return; }
     const url = new URL(request.url, 'http://127.0.0.1');

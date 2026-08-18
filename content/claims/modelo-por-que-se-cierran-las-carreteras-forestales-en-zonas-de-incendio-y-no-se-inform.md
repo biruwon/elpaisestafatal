@@ -1,0 +1,38 @@
+---
+slug: "modelo-por-que-se-cierran-las-carreteras-forestales-en-zonas-de-incendio-y-no-se-inform"
+claim: "¿Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?"
+assessment: uncertain
+topicSlugs: ["medio ambiente e incendios"]
+aliases: ["¿Por qué se cierran las carreteras sin informar a los vecinos?","¿Por qué no informan adecuadamente a los vecinos cuando se cierran carreteras?","¿Por qué se cierran las carreteras forestales sin avisar?","¿Por qué no se informa a los vecinos cuando se cierran carreteras forestales?","¿Por qué se cierran las carreteras y no se informa?","¿Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos","¿Es cierto que Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","¿Qué datos permiten comprobar si Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","Quiero saber si Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos","¿Cómo se puede verificar Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","¿Hay evidencia sobre si Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","¿Es verdad que Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","¿Qué sabemos de Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?","¿Se sostiene la afirmación de que Por qué se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-18"
+status: published
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "por que se cierran las carreteras forestales en zonas de incendio y no se informa adecuadamente a los vecinos"
+generatedAt: "2026-08-18T18:47:32.079Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

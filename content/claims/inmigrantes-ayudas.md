@@ -3,7 +3,7 @@ slug: inmigrantes-ayudas
 claim: "“Los inmigrantes vienen a España a vivir de ayudas.”"
 assessment: misleading
 topicSlugs: ["inmigracion"]
-aliases: ["'inmigrantes'","'ayudas'","'paguitas'","'prestaciones'"]
+aliases: ["'inmigrantes'","'ayudas'","'paguitas'","'prestaciones'","los extranjeros cobran todas las ayudas","dan las ayudas antes a los inmigrantes","los inmigrantes viven de paguitas","ayudas para extranjeros","los inmigrantes reciben todas las ayudas económicas","los extranjeros viven de las ayudas"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

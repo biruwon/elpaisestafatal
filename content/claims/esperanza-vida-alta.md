@@ -3,7 +3,7 @@ slug: esperanza-vida-alta
 claim: "España supera los 84 años de esperanza de vida."
 assessment: true
 topicSlugs: ["sanidad", "desigualdad"]
-aliases: ["España tiene más de 84 años de esperanza de vida", "la esperanza de vida en España supera los 84 años", "vivimos más de 84 años", "España tiene una esperanza de vida muy alta", "la longevidad en España supera los 84 años"]
+aliases: ["España tiene más de 84 años de esperanza de vida","la esperanza de vida en España supera los 84 años","vivimos más de 84 años","España tiene una esperanza de vida muy alta","la longevidad en España supera los 84 años"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

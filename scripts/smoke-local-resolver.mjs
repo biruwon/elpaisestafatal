@@ -1,5 +1,5 @@
-const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:4321').replace(/\/$/, '');
-const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/classify';
+const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
+const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/check';
 const healthPath = process.env.SMOKE_HEALTH_PATH || '/healthz';
 const failures = [];
 
@@ -16,7 +16,7 @@ const resolve = async (text, inputType = 'text') => {
   let result = await response.json();
   for (let attempt = 0; attempt < 30 && result.status === 'processing'; attempt += 1) {
     await new Promise((resolveWait) => setTimeout(resolveWait, 350));
-    const pending = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) });
+    const pending = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.id)}`, { signal: AbortSignal.timeout(5000) });
     result = await pending.json();
   }
   return result;
@@ -32,7 +32,7 @@ const resolveMultipart = async (inputType, mimeType, text = '') => {
   let result = await response.json();
   for (let attempt = 0; attempt < 30 && result.status === 'processing'; attempt += 1) {
     await new Promise((resolveWait) => setTimeout(resolveWait, 350));
-    const pending = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.requestId)}`, { signal: AbortSignal.timeout(5000) });
+    const pending = await fetch(`${base}${resolvePath}/${encodeURIComponent(result.id)}`, { signal: AbortSignal.timeout(5000) });
     result = await pending.json();
   }
   return result;

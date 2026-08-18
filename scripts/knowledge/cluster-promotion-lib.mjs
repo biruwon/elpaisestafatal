@@ -1,12 +1,11 @@
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const validatePromotionRequest = ({ selector, canonical, slug, approved, claim }) => {
+export const validatePromotionRequest = ({ selector, canonical, slug, claim }) => {
   const errors = [];
   if (!selector || (selector.id && selector.signature) || (!selector.id && !selector.signature)) errors.push('Provide exactly one cluster selector: id or signature.');
   if (!canonical || canonical.trim().length < 8) errors.push('A neutral canonical wording of at least 8 characters is required.');
   if (canonical && canonical.length > 240) errors.push('Canonical wording must be 240 characters or fewer.');
   if (!slugPattern.test(slug || '')) errors.push('Claim slug must contain only lowercase letters, numbers, and hyphens.');
-  if (approved !== true) errors.push('Promotion requires explicit --approved.');
   if (!claim) errors.push('The linked claim was not found.');
   if (claim && (claim.slug !== slug || claim.status !== 'published')) errors.push('The linked claim must exist and be published.');
   return errors;

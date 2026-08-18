@@ -15,8 +15,10 @@ for (const staleSymbol of ['baseClaims', 'additionalClaims', 'eventClaims', 'get
   if (catalog.includes(staleSymbol)) failures.push(`claimCatalog.ts still contains stale catalogue symbol ${staleSymbol}`);
 }
 
-const index = await readFile(join(root, 'src/data/claimIndexData.ts'), 'utf8');
-if (index.includes("from './content'")) failures.push('browser claim index still has a second Markdown fallback source');
+try {
+  await access(join(root, 'src/data/claimIndexData.ts'));
+  failures.push('obsolete browser claim index still exists');
+} catch { /* Expected: the canonical catalogue has no browser index source. */ }
 
 const files = await readdir(join(root, 'content/claims'));
 let published = 0;

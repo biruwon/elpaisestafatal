@@ -3,7 +3,7 @@ slug: sobrecarga-vivienda-baja
 claim: "La sobrecarga del coste de la vivienda ha bajado en España desde 2015."
 assessment: true
 topicSlugs: ["vivienda", "desigualdad"]
-aliases: ["la sobrecarga de la vivienda ha bajado", "menos personas sufren sobrecarga de vivienda", "el esfuerzo de vivienda ha bajado", "los gastos de vivienda pesan menos", "el coste de la vivienda pesa menos"]
+aliases: ["la sobrecarga de la vivienda ha bajado","menos personas sufren sobrecarga de vivienda","el esfuerzo de vivienda ha bajado","los gastos de vivienda pesan menos","el coste de la vivienda pesa menos"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

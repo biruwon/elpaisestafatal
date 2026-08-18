@@ -1,93 +1,23 @@
 import { readFile } from 'node:fs/promises';
 
-const source = await readFile(new URL('../src/scripts/claim-input.ts', import.meta.url), 'utf8');
+const source = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 const required = [
-  'const clearDynamicStatus',
-  'const fetchWithTimeout',
-  'const setDynamicStatus',
-  'data-dynamic-status',
-  'renderCompactResult',
-  'compactResultMarkup',
+  "fetchJson('/api/check'",
+  "fetchJson(`/api/check/${encodeURIComponent(response.id)}`",
+  "status: 'complete' | 'processing' | 'unavailable'",
   'validateInputMetadata',
-  'form?.requestSubmit()',
-  'conversation-counter',
-  "primary?.kind === 'topic'",
-  "if (data.status === 'unavailable')",
-  'Resultado inicial disponible',
-  'Resultado inicial listo',
-  'status.dataset.statusMode',
-  'dynamicStatusTimer',
-  'pollingDeadline',
-  'Date.now() + (file ? 15000 : 90000)',
-  'Math.min(1500, 350 + Math.floor(attempt / 8) * 150)',
-  'fetchWithTimeout(`/api/classify/${encodeURIComponent(pendingRequestId)}`',
-  'window.setTimeout',
-  'data-stop-enrichment',
-  'Usar solo este resultado',
-  'claim-result-enrichment',
-  'result.setAttribute(\'tabindex\', \'-1\')',
-  'result.focus({ preventScroll: true })',
-  "'enrichment' | 'media'",
-  'statusState',
-  'const assessmentLabels',
-  'const displayedAssessment',
-  'const submittedClaimMarkup',
-  'const resetChecker',
-  'data-new-check',
-  'recentChecksStorageKey',
-  'readRecentChecks',
-  'renderRecentChecks',
-  'rememberRecentCheck',
-  'data-recent-query',
-  'data-remove-recent',
-  'data-clear-recent',
-  'localStorage',
-  'const shareUrlFor',
-  'data-share-url',
-  'url: shareUrl',
-  'input?.focus()',
-  'defaultRefinementChoices',
-  'data-refinement-topic',
-  'broadComplaintSignals',
-  'resultTitle',
-  'questionsLabel',
-  'suggestionsLabel',
-  'navigateToPublishedClaim',
-  'history.replaceState',
-  'encodeURIComponent(query)',
-  'aria-labelledby="claim-result-title"',
-  'claim-result-short-answer',
-  'claim-result-overview',
-  'Comprobar otra frase',
-  "response.status === 'partial' && response.result",
-  'leemos la captura en segundo plano para comprobar si añade contexto',
-  'transcribimos el audio en segundo plano para comprobar si añade contexto',
-  'leemos la página enlazada en segundo plano para comprobar si añade contexto',
-  "response.status === 'uncovered'",
-  "response.status === 'draft' && response.result",
-  "response.status === 'draft' && response.result",
-  'status: \'loading\'',
-  "inputKind: 'text' | 'media' = 'text'",
-  "inputKind === 'media'",
-  'Archivo recibido',
-  'No pudimos extraer una afirmación utilizable del archivo',
+  "form?.addEventListener('submit', submit)",
+  "if (file) form?.requestSubmit()",
   'data-media-dropzone',
-  'const assignMediaFile',
-  'dragover',
   'dataTransfer?.files',
-  'event.clipboardData?.files',
-  "if (selected) form?.requestSubmit()",
-  "is-dragging",
+  'localStorage',
+  'data-recent-query',
+  'history.replaceState',
+  'navigator.share',
+  'data-copy-answer',
 ];
-const missing = required.filter((snippet) => !source.includes(snippet));
-if (missing.length) throw new Error(`Claim input lifecycle is missing: ${missing.join(', ')}`);
-if (/if \(data\.status === 'processing'\)[\s\S]{0,180}renderCard\('unavailable'/.test(source)) throw new Error('Processing timeout replaces the deterministic result with an unavailable card');
-if (source.includes('Pendiente de revisión · no es un veredicto publicado')) throw new Error('Provisional structured results still use pending language');
-if (source.includes("state === 'running' ? 'Respuesta disponible'")) throw new Error('Enrichment state still presents the initial result as if it were the completed answer');
-if (source.includes('La orientación rápida está lista; comprobamos si podemos añadir contexto.')) throw new Error('File loading state still claims that a quick result is already ready');
-if (source.includes('url: location.href')) throw new Error('Share action still loses the submitted claim by sharing only the current page');
-if (source.includes('Orientación inicial lista · buscando más contexto') || source.includes('La orientación inicial sigue disponible')) throw new Error('Background enrichment still uses pending-style status language');
-if (source.includes("setDynamicStatus('La orientación de la frase sigue disponible; no hemos podido añadir el contenido del archivo ahora.')")) throw new Error('Media failure state does not distinguish the visible result from the failed enrichment');
-if (source.includes("renderCard('unavailable', file.name, undefined, fallbackPublishedClaims(), { limitation: 'No hemos podido extraer una afirmación utilizable de este archivo ahora. Puedes escribir o pegar la frase para comprobarla directamente.' });")) throw new Error('Media failure state still presents the filename as a typed claim');
-if (!/if \(selected\) form\?\.requestSubmit\(\);/.test(source)) throw new Error('Selected media still requires a second manual submission');
-console.log('Claim-input lifecycle validation passed: deterministic result is preserved during dynamic analysis.');
+const missing = required.filter((item) => !source.includes(item));
+if (missing.length) throw new Error(`Claim checker lifecycle is missing: ${missing.join(', ')}`);
+if (!source.includes("response.status === 'processing'")) throw new Error('Claim checker must poll processing responses');
+if (!source.includes("status: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
+console.log('Claim-checker lifecycle validation passed: unified submission, media, polling, recent checks, and terminal states are wired.');

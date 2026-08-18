@@ -3,7 +3,7 @@ slug: cibercriminalidad-crece
 claim: "“La cibercriminalidad crece más que la delincuencia convencional.”"
 assessment: true
 topicSlugs: ["seguridad"]
-aliases: ["la delincuencia digital crece más que la convencional", "el fraude digital sube más que el resto de delitos", "cibercrimen en España"]
+aliases: ["la delincuencia digital crece más que la convencional","el fraude digital sube más que el resto de delitos","cibercrimen en España","hay más estafas por internet","la ciberdelincuencia se ha disparado","los delitos digitales son cada vez más frecuentes","fraude online aumenta"]
 claimType: comparative
 evidenceStrength: medium
 geography: España

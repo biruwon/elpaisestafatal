@@ -1,6 +1,5 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { queryPostgresWarehouse, postgresEnabled } from './postgres-warehouse.mjs';
 import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
@@ -213,10 +212,6 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
     }));
 };
 
-export const findWarehouseObservations = async (query, limit = 12, { queryEmbedding, metricIds } = {}) => {
-  if (postgresEnabled()) {
-    const results = await queryPostgresWarehouse(query, limit, { queryEmbedding });
-    if (results) return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, results)));
-  }
+export const findWarehouseObservations = async (query, limit = 12, { metricIds } = {}) => {
   return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords({ query, metricIds }), limit, { metricIds }))));
 };

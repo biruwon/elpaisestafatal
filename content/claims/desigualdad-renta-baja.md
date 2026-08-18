@@ -3,7 +3,7 @@ slug: desigualdad-renta-baja
 claim: "La desigualdad de renta ha bajado en España desde 2015."
 assessment: true
 topicSlugs: ["desigualdad", "economia"]
-aliases: ["la desigualdad de ingresos ha bajado", "el Gini ha bajado", "hay menos desigualdad de renta", "la distribución de la renta ha mejorado", "España es menos desigual"]
+aliases: ["la desigualdad de ingresos ha bajado","el Gini ha bajado","hay menos desigualdad de renta","la distribución de la renta ha mejorado","España es menos desigual"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

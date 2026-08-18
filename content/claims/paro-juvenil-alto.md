@@ -3,7 +3,7 @@ slug: paro-juvenil-alto
 claim: "Casi uno de cada cuatro jóvenes activos está en paro."
 assessment: true
 topicSlugs: ["empleo", "juventud"]
-aliases: ["el paro juvenil sigue por encima del 20%", "uno de cada cuatro jóvenes está en paro", "los jóvenes tienen mucho paro", "el desempleo juvenil en España es del 25%", "paro entre los jóvenes"]
+aliases: ["el paro juvenil sigue por encima del 20%","uno de cada cuatro jóvenes está en paro","los jóvenes tienen mucho paro","el desempleo juvenil en España es del 25%","paro entre los jóvenes"]
 claimType: descriptive
 evidenceStrength: high
 geography: España

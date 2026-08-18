@@ -3,7 +3,7 @@ slug: precio-vivienda-caera
 claim: "“La vivienda acabará cayendo como en 2008.”"
 assessment: uncertain
 topicSlugs: ["vivienda"]
-aliases: ["'burbuja'","'2008'","'caida'","'precio'", "el precio de la vivienda va a caer como en 2008", "la vivienda va a caer como en 2008"]
+aliases: ["'burbuja'","'2008'","'caida'","'precio'","el precio de la vivienda va a caer como en 2008","la vivienda va a caer como en 2008","la vivienda va a bajar como en 2008","estamos ante otra burbuja inmobiliaria","los precios de las casas caerán pronto"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

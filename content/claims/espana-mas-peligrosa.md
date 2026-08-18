@@ -3,7 +3,7 @@ slug: espana-mas-peligrosa
 claim: "“España se está volviendo mucho más peligrosa.”"
 assessment: false
 topicSlugs: ["seguridad"]
-aliases: ["'peligrosa'","'inseguridad'","'delincuencia'"]
+aliases: ["'peligrosa'","'inseguridad'","'delincuencia'","cada vez hay más delincuencia","España es mucho más insegura que antes","ya no se puede salir a la calle","España está más peligrosa que nunca","en España ya no se puede vivir","la delincuencia ha aumentado desde 2015","las cifras de delincuencia son una mentira"]
 claimType: mixed
 evidenceStrength: medium
 geography: España

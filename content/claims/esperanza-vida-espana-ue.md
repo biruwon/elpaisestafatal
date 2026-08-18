@@ -3,7 +3,7 @@ slug: esperanza-vida-espana-ue
 claim: "España tiene más esperanza de vida que la Unión Europea."
 assessment: true
 topicSlugs: ["sanidad", "europa", "desigualdad"]
-aliases: ["España vive más que Europa", "la esperanza de vida española supera a la europea", "España tiene más años de vida que la UE", "comparación europea de esperanza de vida"]
+aliases: ["España vive más que Europa","la esperanza de vida española supera a la europea","España tiene más años de vida que la UE","comparación europea de esperanza de vida"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

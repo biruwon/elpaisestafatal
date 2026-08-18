@@ -3,7 +3,7 @@ slug: poblacion-nacida-fuera-sube
 claim: "La población nacida fuera de España ha aumentado desde 2015."
 assessment: true
 topicSlugs: ["inmigracion", "juventud"]
-aliases: ["hay más personas nacidas fuera de España", "ha aumentado la población inmigrante", "España tiene más residentes nacidos en el extranjero", "cada vez hay más gente nacida fuera", "la población extranjera ha crecido"]
+aliases: ["hay más personas nacidas fuera de España","ha aumentado la población inmigrante","España tiene más residentes nacidos en el extranjero","cada vez hay más gente nacida fuera","la población extranjera ha crecido"]
 claimType: mixed
 evidenceStrength: high
 geography: España

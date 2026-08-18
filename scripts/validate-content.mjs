@@ -55,6 +55,10 @@ for (const file of files) {
   if (file.includes('/claims/')) {
     claimCount += 1; if (values.status === 'published') publishedClaims += 1; if (values.status === 'planned') plannedClaims += 1;
     for (const key of ['claim','assessment','topicSlugs','aliases','claimType','evidenceStrength','geography','period','reviewed','status','sourceRefs','evidenceIds']) if (!values[key]) failures.push(`${file}: missing ${key}`);
+    const basis = values.basis || 'sourced';
+    if (!new Set(['sourced', 'model']).has(basis)) failures.push(`${file}: invalid basis ${basis}`);
+    if (basis === 'model' && (!values.generatedAt || !values.generatedBy)) failures.push(`${file}: model claim requires generatedAt and generatedBy`);
+    if (basis === 'sourced' && (!parsedList(values.sourceRefs).length || !parsedList(values.evidenceIds).length) && values.status === 'published') failures.push(`${file}: sourced published claim requires sourceRefs and evidenceIds`);
     if (!new Set(['true','mostly-true','misleading','unsupported','uncertain','false']).has(values.assessment)) failures.push(`${file}: invalid assessment ${values.assessment}`);
     if (!new Set(['descriptive','comparative','causal','predictive','legal','normative','mixed']).has(values.claimType)) failures.push(`${file}: invalid claimType ${values.claimType}`);
     if (!new Set(['high','medium','limited','insufficient']).has(values.evidenceStrength)) failures.push(`${file}: invalid evidenceStrength ${values.evidenceStrength}`);

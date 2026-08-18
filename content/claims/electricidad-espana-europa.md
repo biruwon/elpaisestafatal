@@ -3,7 +3,7 @@ slug: electricidad-espana-europa
 claim: "España paga menos por la electricidad doméstica que la Unión Europea."
 assessment: true
 topicSlugs: ["economia", "europa", "coste-de-vida"]
-aliases: ["la luz en España es más cara que en Europa", "España paga más por la electricidad que Europa", "España paga menos por la luz que Europa", "precio de la luz frente a Europa", "comparación europea del precio de la electricidad"]
+aliases: ["la luz en España es más cara que en Europa","España paga más por la electricidad que Europa","España paga menos por la luz que Europa","precio de la luz frente a Europa","comparación europea del precio de la electricidad"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

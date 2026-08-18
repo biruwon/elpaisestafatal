@@ -350,6 +350,7 @@
     {"evidenceId":"compra-voto-delito-y-casos-electorales","propositionId":"prop-compra-votos-espana-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"balance-criminalidad-categorias-graves-2015-2025","propositionId":"prop-delitos-graves-doble-triple-core","relationship":"contradicts","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
     {"evidenceId":"alquileres-serie-eurostat","propositionId":"prop-alquileres-suben-oferta-inseguridad-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
-    {"evidenceId":"alquileres-oferta-y-demanda-ine","propositionId":"prop-alquileres-suben-oferta-inseguridad-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"}
+    {"evidenceId":"alquileres-oferta-y-demanda-ine","propositionId":"prop-alquileres-suben-oferta-inseguridad-core","relationship":"qualifies","reviewStatus":"reviewed","reviewedAt":"2026-08-05"},
+    {"evidenceId":"condenados-nacionalidad-ine-2024","propositionId":"prop-inmigracion-delincuencia-core","relationship":"insufficient","reviewStatus":"reviewed","reviewedAt":"2026-08-18"}
 ]
 }

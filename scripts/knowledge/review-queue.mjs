@@ -57,7 +57,7 @@ const queueAction = (candidate) => {
   if (candidate.newlyCovered) return 'Review the new evidence link, then decide whether to publish or link the existing answer.';
   if (!candidate.sourceIds.length) return 'Find a direct primary source or mark the cluster as not verifiable.';
   if (candidate.coverageStatus === 'partial') return 'Check which proposition is missing evidence and record the limitation before writing an answer.';
-  return 'Confirm the wording, evidence directness, and claim boundaries before creating a reviewed static claim.';
+  return 'Run the deterministic evidence gates for wording, directness, and claim boundaries before publishing the entry.';
 };
 
 const researchAction = (candidate) => {
@@ -65,7 +65,7 @@ const researchAction = (candidate) => {
   if (candidate.sourceAvailability === 'discovery_only') return 'Use discovery records as leads only; verify the claim with a direct primary source.';
   if (candidate.sourceAvailability === 'none') return 'Find a direct primary source or mark the claim as not verifiable.';
   if (candidate.coverageStatus === 'partial') return 'Identify the missing proposition and record the limitation before writing an answer.';
-  return 'Investigate the claim, then promote it only after direct evidence is linked and reviewed.';
+  return 'Research the claim, link direct evidence, and let the autonomous promotion gates publish or retain it as model-generated.';
 };
 
 export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {}) => (Array.isArray(clusters) ? clusters : [])
@@ -97,7 +97,7 @@ export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {
         coverageStatus: cluster.coverageStatus,
       }),
       auditClass: cluster.auditClass || 'unclassified',
-      auditAction: cluster.auditAction || 'human_review',
+      auditAction: cluster.auditAction || 'autonomous_promotion',
       matchedMetricIds: asArray(cluster.matchedMetricIds),
       evidenceStatus: cluster.evidenceStatus || 'not_ready',
     };
@@ -151,7 +151,7 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
       reason: safeText(candidate.reason),
       nextAction: queueAction(candidate),
       auditClass: candidate.auditClass || 'unclassified',
-      auditAction: candidate.auditAction || (candidate.newlyCovered ? 'auto_route' : 'human_review'),
+      auditAction: candidate.auditAction || (candidate.newlyCovered ? 'auto_route' : 'autonomous_promotion'),
       matchedMetricIds: asArray(candidate.matchedMetricIds),
       evidenceStatus: candidate.evidenceStatus || (candidate.newlyCovered ? 'warehouse_ready' : 'not_ready'),
     })),
@@ -193,7 +193,7 @@ export const renderReviewQueueMarkdown = (queue) => {
 
 Generated: ${date(queue?.generatedAt)}
 
-This report is for the maintainer only. It is derived from clustered submissions and never publishes an unreviewed claim.
+This report is private operational input for autonomous promotion. It is derived from clustered submissions and never bypasses deterministic evidence gates.
 
 ## At a glance
 
@@ -214,7 +214,7 @@ ${table}
 1. Confirm the cluster’s canonical wording and separate its propositions.
 2. Prefer direct, current primary evidence over topical context.
 3. Record what the evidence does not establish.
-4. Only then create or update reviewed Git content.
+4. Let the autonomous promotion command create or upgrade the canonical Git content after all gates pass.
 5. Run the knowledge and UX validators before publishing.
 
 ## Newly covered
@@ -240,7 +240,7 @@ ${researchCandidates.length ? [
 ${sourceWork.length ? [
   '| Rank | Cluster | Audit class | Action | Required dimensions |',
   '| ---: | --- | --- | --- | --- |',
-  ...sourceWork.map((item) => `| ${item.rank} | ${String(item.canonicalText || '').replaceAll('|', '\\|')} | ${item.auditClass || 'unclassified'} | ${item.action || 'human_review'} | ${(item.requiredDimensions || []).join(', ')} |`),
+  ...sourceWork.map((item) => `| ${item.rank} | ${String(item.canonicalText || '').replaceAll('|', '\\|')} | ${item.auditClass || 'unclassified'} | ${item.action || 'source_research'} | ${(item.requiredDimensions || []).join(', ')} |`),
 ].join('\n') : '_Run the coverage audit to attach per-cluster source work._'}
 
 ## Excluded operational records

@@ -3,7 +3,7 @@ slug: abandono-escolar-espana-ue
 claim: "España tiene más abandono escolar temprano que la Unión Europea."
 assessment: true
 topicSlugs: ["juventud", "educacion", "europa"]
-aliases: ["España tiene más abandono escolar que Europa", "el abandono educativo español supera al europeo", "España abandona más los estudios que la UE", "abandono escolar frente a Europa", "¿España tiene más abandono escolar temprano que la Unión Europea?"]
+aliases: ["España tiene más abandono escolar que Europa","el abandono educativo español supera al europeo","España abandona más los estudios que la UE","abandono escolar frente a Europa","¿España tiene más abandono escolar temprano que la Unión Europea?","comparación europea del abandono escolar"]
 claimType: comparative
 evidenceStrength: high
 geography: España y Unión Europea

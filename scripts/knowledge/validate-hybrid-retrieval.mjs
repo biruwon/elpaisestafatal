@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { reciprocalRankFusion, resolveMetricConflict, validateEmbedding } from './hybrid-retrieval.mjs';
 
 const vector = Array.from({ length: 1024 }, (_, index) => index === 0 ? 1 : 0);
@@ -32,10 +31,5 @@ const lexicalConflict = resolveMetricConflict(
   [{ id: 'population', score: 0.55, notEquivalentTo: ['density'] }, { id: 'density', score: 0.545, notEquivalentTo: ['population'] }],
 );
 if (lexicalConflict.winner !== 'lexical' || lexicalConflict.semantic.some((item) => item.id === 'population')) throw new Error('Ambiguous semantic metric conflict did not retain lexical evidence');
-
-const migration = await readFile(new URL('../../migrations/postgres/0004_warehouse_vectors.sql', import.meta.url), 'utf8');
-for (const required of ['CREATE EXTENSION IF NOT EXISTS vector', 'vector(1024)', 'vector_cosine_ops']) {
-  if (!migration.includes(required)) throw new Error(`Vector migration is missing: ${required}`);
-}
 
 console.log('Hybrid retrieval validation passed: vector shape, semantic thresholds, provenance, and reciprocal-rank fusion are enforced.');

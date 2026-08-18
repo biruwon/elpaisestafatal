@@ -1,0 +1,38 @@
+---
+slug: "modelo-las-medidas-del-gobierno-contra-el-paro-no-sirven-de-nada"
+claim: "Las medidas del gobierno contra el paro no sirven de nada."
+assessment: uncertain
+topicSlugs: ["empleo, paro y salarios"]
+aliases: ["Las medidas del gobierno para combatir el paro no funcionan","El gobierno no hace nada por los parados","Las medidas del gobierno para el empleo son un fiasco","El paro sigue aumentando, ¿dónde están las soluciones?","El gobierno no invierte en crear empleo","Las medidas del gobierno contra el paro no sirven de nada.","¿Es cierto que Las medidas del gobierno contra el paro no sirven de nada.?","¿Qué datos permiten comprobar si Las medidas del gobierno contra el paro no sirven de nada.?","Quiero saber si Las medidas del gobierno contra el paro no sirven de nada.","¿Cómo se puede verificar Las medidas del gobierno contra el paro no sirven de nada.?","¿Hay evidencia sobre si Las medidas del gobierno contra el paro no sirven de nada.?","¿Es verdad que Las medidas del gobierno contra el paro no sirven de nada.?","¿Qué sabemos de Las medidas del gobierno contra el paro no sirven de nada.?","¿Se sostiene la afirmación de que Las medidas del gobierno contra el paro no sirven de nada.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-18"
+status: published
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "las medidas del gobierno contra el paro no sirven de nada"
+generatedAt: "2026-08-18T18:47:32.079Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

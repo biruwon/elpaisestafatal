@@ -3,7 +3,7 @@ slug: tasa-empleo-sube
 claim: "La tasa de empleo de 20 a 64 años ha subido desde 2015."
 assessment: true
 topicSlugs: ["empleo", "economia"]
-aliases: ["ha subido la tasa de empleo", "hay más empleo entre 20 y 64 años", "la tasa de ocupación ha aumentado", "España tiene más empleo que en 2015", "la tasa de empleo mejora"]
+aliases: ["ha subido la tasa de empleo","hay más empleo entre 20 y 64 años","la tasa de ocupación ha aumentado","España tiene más empleo que en 2015","la tasa de empleo mejora"]
 claimType: mixed
 evidenceStrength: high
 geography: España

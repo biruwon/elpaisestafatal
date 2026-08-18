@@ -79,7 +79,7 @@ const metricAudit = Object.entries(registry).map(([id, metric]) => {
   const hasSpainAndEurope = !id.endsWith('_europe') || feeds.some((feed) => /(?:geo=ES|España|Espana)/i.test(`${feed.url || ''} ${feed.title || ''}`) && /(?:EU27_2020|geo=EU|Europa)/i.test(`${feed.url || ''} ${feed.title || ''}`));
   let status = 'ready';
   let action = 'none';
-  if (incompleteDomainMetrics.has(id) && feeds.length) { status = 'partial_domain_evidence'; action = 'human_review'; }
+  if (incompleteDomainMetrics.has(id) && feeds.length) { status = 'partial_domain_evidence'; action = 'source_research'; }
   else if (!feeds.length) { status = 'missing_configuration'; action = 'find_source'; }
   else if (!materialized.length) { status = 'source_configured_not_refreshed'; action = 'refresh_source'; }
   else if (invalid.length) { status = 'data_quality_failure'; action = 'repair_source'; }
@@ -104,7 +104,7 @@ const classifyCluster = (cluster) => {
   if (cluster.coverageStatus === 'covered' && cluster.reviewStatus === 'published' && cluster.linkedClaimSlug) {
     return { auditClass: 'covered_existing_evidence', action: 'auto_route', metricIds: ids, domain, sourceIds };
   }
-  if (domain && (domain === 'public_housing_allocation' || domain === 'immigration_benefits' || domain === 'immigration_crime')) return { auditClass: 'partial_domain_evidence', action: 'human_review', metricIds: ids, domain };
+  if (domain && (domain === 'public_housing_allocation' || domain === 'immigration_benefits' || domain === 'immigration_crime')) return { auditClass: 'partial_domain_evidence', action: 'source_research', metricIds: ids, domain };
   if (ids.length) {
     const readiness = ids.map((id) => metricById.get(id));
     if (readiness.some((item) => item.status === 'ready')) return { auditClass: 'covered_existing_evidence', action: 'auto_route', metricIds: ids, domain, sourceIds };
@@ -112,7 +112,7 @@ const classifyCluster = (cluster) => {
     if (readiness.some((item) => item.status === 'stale')) return { auditClass: 'source_configured_not_refreshed', action: 'refresh_source', metricIds: ids, domain, sourceIds };
     return { auditClass: 'true_research_gap', action: 'find_source', metricIds: ids, domain, sourceIds };
   }
-  if (cluster.coverageStatus === 'partial' || sourceIds.length) return { auditClass: 'true_research_gap', action: 'human_review', metricIds: [], domain, sourceIds };
+  if (cluster.coverageStatus === 'partial' || sourceIds.length) return { auditClass: 'true_research_gap', action: 'source_research', metricIds: [], domain, sourceIds };
   return { auditClass: 'true_research_gap', action: 'find_source', metricIds: [], domain, sourceIds };
 };
 const clusterAudit = (clustersDoc.clusters || []).map((cluster) => ({

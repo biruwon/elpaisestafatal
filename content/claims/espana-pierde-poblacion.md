@@ -3,7 +3,7 @@ slug: espana-pierde-poblacion
 claim: "España está perdiendo población."
 assessment: false
 topicSlugs: ["juventud", "inmigracion"]
-aliases: ["España pierde población", "la población de España está bajando", "la población está bajando", "cada vez hay menos gente en España", "España se está despoblando"]
+aliases: ["España pierde población","la población de España está bajando","la población está bajando","cada vez hay menos gente en España","España se está despoblando"]
 claimType: mixed
 evidenceStrength: high
 geography: España

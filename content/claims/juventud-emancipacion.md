@@ -3,7 +3,7 @@ slug: juventud-emancipacion
 claim: "“Casi la mitad de las personas de 26 a 34 años sigue viviendo con sus padres.”"
 assessment: true
 topicSlugs: ["juventud", "vivienda"]
-aliases: ["jóvenes viven con sus padres", "los jóvenes no pueden emanciparse", "emancipación juvenil", "vivienda jóvenes", "casi la mitad de los jóvenes vive con sus padres"]
+aliases: ["jóvenes viven con sus padres","los jóvenes no pueden emanciparse","emancipación juvenil","vivienda jóvenes","casi la mitad de los jóvenes vive con sus padres","los jóvenes no pueden independizarse","la mitad de los jóvenes vive con sus padres","en España los jóvenes no se emancipan","la mitad de los jóvenes no se emancipa"]
 claimType: descriptive
 evidenceStrength: medium
 geography: España

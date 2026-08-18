@@ -3,7 +3,7 @@ slug: viviendas-vacias
 claim: "“Hay 3,8 millones de viviendas vacías; no hace falta construir.”"
 assessment: misleading
 topicSlugs: ["vivienda"]
-aliases: ["'vacias'","'3","8 millones'","'construir'","'stock'"]
+aliases: ["'vacias'","'3","8 millones'","'construir'","'stock'","hay millones de casas vacías","sobran pisos vacíos en España","no hace falta construir porque hay casas vacías","las viviendas vacías solucionarían el alquiler","hay tres millones de viviendas vacías y no hace falta construir","hay 3 millones de viviendas vacías"]
 claimType: mixed
 evidenceStrength: medium
 geography: España
