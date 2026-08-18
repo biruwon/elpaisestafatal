@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana no se toman medidas mas firmes contra las empresas que participan en contratos publicos con sospechas de corrupcion"
-generatedAt: "2026-08-18T20:06:09.488Z"
+generatedAt: "2026-08-18T20:14:22.874Z"
 ---
 
 ## Qué es cierto

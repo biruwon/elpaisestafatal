@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la infraestructura de internet en zonas rurales es muy mala lo que dificulta la adopcion de tecnologias digitales en el hogar"
-generatedAt: "2026-08-18T20:06:09.488Z"
+generatedAt: "2026-08-18T20:14:22.874Z"
 ---
 
 ## Qué es cierto

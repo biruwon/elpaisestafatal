@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gas natural esta al mismo nivel que el petroleo es decir un desproposito"
-generatedAt: "2026-08-18T20:06:09.488Z"
+generatedAt: "2026-08-18T20:14:22.874Z"
 ---
 
 ## Qué es cierto

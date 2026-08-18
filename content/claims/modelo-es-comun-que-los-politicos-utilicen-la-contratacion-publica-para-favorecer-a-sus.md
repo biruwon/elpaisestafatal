@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es comun que los politicos utilicen la contratacion publica para favorecer a sus amiguetes sin competencia justa"
-generatedAt: "2026-08-18T20:06:09.488Z"
+generatedAt: "2026-08-18T20:14:22.874Z"
 ---
 
 ## Qué es cierto

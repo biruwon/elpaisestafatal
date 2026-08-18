@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la policia en espana parece tener mas poder que la justicia ya que se siente que los policias a veces abusan de su autoridad y no se les castiga adecuadamente"
-generatedAt: "2026-08-18T20:06:09.488Z"
+generatedAt: "2026-08-18T20:14:22.874Z"
 ---
 
 ## Qué es cierto
