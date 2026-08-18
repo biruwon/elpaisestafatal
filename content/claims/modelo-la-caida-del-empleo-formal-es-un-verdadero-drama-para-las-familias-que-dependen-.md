@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la caida del empleo formal es un verdadero drama para las familias que dependen de nominas regulares"
-generatedAt: "2026-08-18T18:54:54.770Z"
+generatedAt: "2026-08-18T19:02:26.943Z"
 ---
 
 ## Qué es cierto

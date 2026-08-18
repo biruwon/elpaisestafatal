@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que se permite la construccion de viviendas en zonas de riesgo de incendios sin medidas de proteccion"
-generatedAt: "2026-08-18T18:54:54.770Z"
+generatedAt: "2026-08-18T19:02:26.943Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las politicas de recorte presupuestario han dejado a muchos hospitales y centros de salud sin recursos lo que supone un riesgo real para la salud de los ciudadanos"
-generatedAt: "2026-08-18T18:54:54.770Z"
+generatedAt: "2026-08-18T19:02:26.943Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inmigracion ha dejado a espana con un exceso de poblacion extranjera que solo consume y no contribuye lo que lleva a un colapso en los servicios publicos y a un aumento de la criminalidad"
-generatedAt: "2026-08-18T18:54:54.770Z"
+generatedAt: "2026-08-18T19:02:26.943Z"
 ---
 
 ## Qué es cierto
