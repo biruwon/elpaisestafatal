@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las politicas de teletrabajo en espana son tan limitadas que muchas personas se ven obligadas a trabajar en casa sin la adecuada infraestructura o soporte"
-generatedAt: "2026-08-18T19:58:11.263Z"
+generatedAt: "2026-08-18T20:06:09.488Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la desigualdad en la distribucion del empleo es muy alta hay muchas personas con trabajos precarios que no llegan a fin de mes"
-generatedAt: "2026-08-18T19:58:11.263Z"
+generatedAt: "2026-08-18T20:06:09.488Z"
 ---
 
 ## Qué es cierto
