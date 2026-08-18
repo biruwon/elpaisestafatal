@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los acuerdos de la ue con terceros paises afectan negativamente a la economia espanola"
-generatedAt: "2026-08-18T19:09:51.605Z"
+generatedAt: "2026-08-18T19:17:49.398Z"
 ---
 
 ## Qué es cierto

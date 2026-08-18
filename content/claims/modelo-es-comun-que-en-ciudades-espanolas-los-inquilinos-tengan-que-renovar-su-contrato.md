@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es comun que en ciudades espanolas los inquilinos tengan que renovar su contrato de alquiler anualmente"
-generatedAt: "2026-08-18T19:09:51.605Z"
+generatedAt: "2026-08-18T19:17:49.398Z"
 ---
 
 ## Qué es cierto

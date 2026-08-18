@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el mantenimiento de las tecnologias en viviendas inteligentes es costoso y frecuente lo que agota la economia de muchos hogares"
-generatedAt: "2026-08-18T19:09:51.605Z"
+generatedAt: "2026-08-18T19:17:49.398Z"
 ---
 
 ## Qué es cierto

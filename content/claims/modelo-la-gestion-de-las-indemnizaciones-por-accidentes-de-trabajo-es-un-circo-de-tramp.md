@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la gestion de las indemnizaciones por accidentes de trabajo es un circo de trampas y retrasos"
-generatedAt: "2026-08-18T19:09:51.605Z"
+generatedAt: "2026-08-18T19:17:49.398Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana ha experimentado un aumento en la frecuencia y severidad de incendios forestales en los ultimos anos"
-generatedAt: "2026-08-18T19:09:51.605Z"
+generatedAt: "2026-08-18T19:17:49.398Z"
 ---
 
 ## Qué es cierto
