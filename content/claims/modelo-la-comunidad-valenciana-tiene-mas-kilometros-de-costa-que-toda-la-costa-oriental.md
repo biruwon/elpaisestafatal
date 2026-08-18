@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la comunidad valenciana tiene mas kilometros de costa que toda la costa oriental de espana combinada"
-generatedAt: "2026-08-18T18:47:32.079Z"
+generatedAt: "2026-08-18T18:54:54.770Z"
 ---
 
 ## Qué es cierto

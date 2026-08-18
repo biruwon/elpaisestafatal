@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es verdad que la inmigracion ha cambiado la composicion etaria de la poblacion en ciertas comunidades autonomas de espana"
-generatedAt: "2026-08-18T18:47:32.079Z"
+generatedAt: "2026-08-18T18:54:54.770Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las rutas de metro y autobus estan llenas de delincuentes lo que hace que viajar en transporte publico sea un peligro constante"
-generatedAt: "2026-08-18T18:47:32.079Z"
+generatedAt: "2026-08-18T18:54:54.770Z"
 ---
 
 ## Qué es cierto

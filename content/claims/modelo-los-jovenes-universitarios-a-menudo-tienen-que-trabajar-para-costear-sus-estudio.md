@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los jovenes universitarios a menudo tienen que trabajar para costear sus estudios lo que les impide centrarse unicamente en la formacion"
-generatedAt: "2026-08-18T18:47:32.079Z"
+generatedAt: "2026-08-18T18:54:54.770Z"
 ---
 
 ## Qué es cierto

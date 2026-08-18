@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "si no compro ahora no tendre dinero para nada mas la inflacion esta haciendo que todo se haga tan caro que no puedo planificar nada"
-generatedAt: "2026-08-18T18:47:32.079Z"
+generatedAt: "2026-08-18T18:54:54.770Z"
 ---
 
 ## Qué es cierto
