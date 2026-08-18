@@ -32,7 +32,7 @@ export const checkFromCatalogue = (claim: string, entry: CatalogueEntry | Runtim
   status: 'complete',
   claim,
   answer: entry.answer,
-  basis: entry.basis,
+  basis: 'sources' in entry && entry.basis === 'sourced' && entry.sources.length > 0 ? 'sourced' : 'model',
   explanation: entry.explanation,
   limitations: 'limitations' in entry ? entry.limitations : ['La respuesta se ha seleccionado por similitud semántica; comprueba el periodo y territorio indicados.'],
   reply: 'reply' in entry ? entry.reply : entry.answer,
