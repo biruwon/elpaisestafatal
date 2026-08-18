@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las subvenciones para cuidados de mayores estan siendo reducidas lo que dificulta el acceso a cuidados adecuados"
-generatedAt: "2026-08-18T19:25:47.715Z"
+generatedAt: "2026-08-18T19:33:56.106Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "que pasa con el aumento de la edad legal de jubilacion si la salud de los mayores se ve afectada"
-generatedAt: "2026-08-18T19:25:47.715Z"
+generatedAt: "2026-08-18T19:33:56.106Z"
 ---
 
 ## Qué es cierto

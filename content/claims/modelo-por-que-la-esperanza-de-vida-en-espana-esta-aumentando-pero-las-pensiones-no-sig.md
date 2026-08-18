@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la esperanza de vida en espana esta aumentando pero las pensiones no siguen el mismo ritmo"
-generatedAt: "2026-08-18T19:25:47.715Z"
+generatedAt: "2026-08-18T19:33:56.106Z"
 ---
 
 ## Qué es cierto
