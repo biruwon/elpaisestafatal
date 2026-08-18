@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la proteccion social no esta adaptada a las nuevas realidades laborales dejando a muchos trabajadores desprotegidos"
-generatedAt: "2026-08-18T19:33:56.106Z"
+generatedAt: "2026-08-18T19:41:49.336Z"
 ---
 
 ## Qué es cierto

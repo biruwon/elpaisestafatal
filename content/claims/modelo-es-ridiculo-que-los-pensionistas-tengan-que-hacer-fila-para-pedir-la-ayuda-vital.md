@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es ridiculo que los pensionistas tengan que hacer fila para pedir la ayuda vitalicia se supone que esto es para los mayores no para que pasen hambre"
-generatedAt: "2026-08-18T19:33:56.106Z"
+generatedAt: "2026-08-18T19:41:49.336Z"
 ---
 
 ## Qué es cierto

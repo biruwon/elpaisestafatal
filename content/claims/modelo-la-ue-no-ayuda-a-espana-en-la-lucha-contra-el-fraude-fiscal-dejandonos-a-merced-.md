@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la ue no ayuda a espana en la lucha contra el fraude fiscal dejandonos a merced de las empresas que evaden impuestos"
-generatedAt: "2026-08-18T19:33:56.106Z"
+generatedAt: "2026-08-18T19:41:49.336Z"
 ---
 
 ## Qué es cierto

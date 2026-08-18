@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el crecimiento economico esta parado y la inflacion sigue subiendo por cuanto tiempo mas vamos a seguir pagando mas por menos"
-generatedAt: "2026-08-18T19:33:56.106Z"
+generatedAt: "2026-08-18T19:41:49.336Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la alta tasa de paro en canarias refleja la precariedad laboral y la falta de oportunidades para muchos jovenes"
-generatedAt: "2026-08-18T19:33:56.106Z"
+generatedAt: "2026-08-18T19:41:49.336Z"
 ---
 
 ## Qué es cierto
