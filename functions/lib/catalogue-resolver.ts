@@ -1,4 +1,4 @@
-import { publishedCatalogueEntries, type CatalogueEntry } from '../../src/data/catalogue';
+import { catalogueEntries, type CatalogueEntry } from '../../src/data/catalogue';
 import { normaliseClaimText } from '../../src/data/claimIndex';
 
 const tokens = (value: string): Set<string> => new Set(normaliseClaimText(value).split(' ').filter((token) => token.length > 2));
@@ -17,7 +17,8 @@ const score = (query: string, entry: CatalogueEntry): number => {
 };
 
 export const publishedEntryFor = (query: string): CatalogueEntry | undefined => {
-  const ranked = publishedCatalogueEntries
+  const ranked = catalogueEntries
+    .filter((entry) => entry.visibility === 'searchable' || entry.visibility === 'browsable')
     .map((entry) => ({ entry, score: score(query, entry) }))
     .filter((item) => item.score >= 0.78)
     .sort((left, right) => right.score - left.score);

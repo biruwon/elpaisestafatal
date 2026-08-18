@@ -3,7 +3,7 @@ slug: precio-vivienda-ha-subido
 claim: "Los precios de la vivienda han subido en España."
 assessment: true
 topicSlugs: ["vivienda", "economia"]
-aliases: ["los precios de la vivienda suben","la vivienda ha subido de precio","el precio de los pisos ha aumentado","la vivienda es más cara que antes","precios vivienda España","los precios de la vivienda se han disparado","la vivienda ha subido mucho en los últimos cinco años","la vivienda que compré hace tres años cuesta casi tres veces más","los precios de las casas se han disparado"]
+aliases: ["los precios de la vivienda suben","la vivienda ha subido de precio","el precio de los pisos ha aumentado","la vivienda es más cara que antes","precios vivienda España","los precios de la vivienda se han disparado","la vivienda ha subido mucho en los últimos cinco años","la vivienda que compré hace tres años cuesta casi tres veces más","los precios de las casas se han disparado","la vivienda no para de subir","la vivienda no deja de subir","cada vez sube más la vivienda"]
 claimType: descriptive
 evidenceStrength: high
 geography: España
