@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en algunas ciudades el alquiler sube mas rapido que el salario dejando a las personas en la calle"
-generatedAt: "2026-08-18T19:49:52.816Z"
+generatedAt: "2026-08-18T19:58:11.263Z"
 ---
 
 ## Qué es cierto

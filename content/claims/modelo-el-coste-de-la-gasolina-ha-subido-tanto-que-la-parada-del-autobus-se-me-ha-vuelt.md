@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el coste de la gasolina ha subido tanto que la parada del autobus se me ha vuelto insostenible"
-generatedAt: "2026-08-18T19:49:52.816Z"
+generatedAt: "2026-08-18T19:58:11.263Z"
 ---
 
 ## Qué es cierto

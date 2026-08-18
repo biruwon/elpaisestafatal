@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el aumento de la esperas en tratamientos de salud mental es alarmante ya que muchos pacientes no pueden acceder a terapia o psicologia a tiempo"
-generatedAt: "2026-08-18T19:49:52.816Z"
+generatedAt: "2026-08-18T19:58:11.263Z"
 ---
 
 ## Qué es cierto

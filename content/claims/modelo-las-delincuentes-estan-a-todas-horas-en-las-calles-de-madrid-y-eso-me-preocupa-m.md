@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las delincuentes estan a todas horas en las calles de madrid y eso me preocupa mucho"
-generatedAt: "2026-08-18T19:49:52.816Z"
+generatedAt: "2026-08-18T19:58:11.263Z"
 ---
 
 ## Qué es cierto

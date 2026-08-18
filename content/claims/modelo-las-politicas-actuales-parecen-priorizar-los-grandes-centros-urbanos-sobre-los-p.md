@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las politicas actuales parecen priorizar los grandes centros urbanos sobre los pueblos pequenos dejando sin oportunidades a muchos"
-generatedAt: "2026-08-18T19:49:52.816Z"
+generatedAt: "2026-08-18T19:58:11.263Z"
 ---
 
 ## Qué es cierto
