@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la situacion de subempleo es tan comun que incluso cuando encuentras un trabajo a menudo es para trabajar mas horas por menos dinero"
-generatedAt: "2026-08-18T21:03:02.693Z"
+generatedAt: "2026-08-18T21:05:27.953Z"
 ---
 
 ## Qué es cierto

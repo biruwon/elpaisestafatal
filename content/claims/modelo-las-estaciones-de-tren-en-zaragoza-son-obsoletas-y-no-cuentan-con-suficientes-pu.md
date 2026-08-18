@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las estaciones de tren en zaragoza son obsoletas y no cuentan con suficientes puestos de informacion para los viajeros"
-generatedAt: "2026-08-18T21:03:02.693Z"
+generatedAt: "2026-08-18T21:05:27.953Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los intercambios internacionales se han vuelto tan costosos que solo los mas afortunados pueden participar"
-generatedAt: "2026-08-18T21:03:02.693Z"
+generatedAt: "2026-08-18T21:05:27.953Z"
 ---
 
 ## Qué es cierto

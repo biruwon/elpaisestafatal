@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el paro juvenil en espana es un problema que sigue sin resolverse"
-generatedAt: "2026-08-18T21:03:02.693Z"
+generatedAt: "2026-08-18T21:05:27.953Z"
 ---
 
 ## Qué es cierto

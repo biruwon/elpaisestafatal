@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inflacion esta haciendo que la compra de vivienda sea un sueno imposible y con el alquiler tampoco nos vamos a paliar el problema por que no se hacen cosas para hacer la vida mas llevadera a los trabajadores"
-generatedAt: "2026-08-18T21:03:02.693Z"
+generatedAt: "2026-08-18T21:05:27.953Z"
 ---
 
 ## Qué es cierto
