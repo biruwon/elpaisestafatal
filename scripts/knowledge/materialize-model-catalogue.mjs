@@ -24,7 +24,7 @@ for (const candidate of candidates) {
     '---', `slug: ${quote(slug)}`, `claim: ${quote(candidate.claim)}`,
     'assessment: uncertain', `topicSlugs: ${quote([candidate.topic])}`, `aliases: ${quote(aliases)}`,
     `basis: model`, `visibility: searchable`, 'claimType: descriptive',
-    'evidenceStrength: insufficient', 'geography: España', 'period: sin periodo especificado', `reviewed: ${quote(new Date().toISOString().slice(0, 10))}`, 'status: published',
+    'evidenceStrength: insufficient', 'geography: España', 'period: sin periodo especificado', `reviewed: ${quote(new Date().toISOString().slice(0, 10))}`, 'status: planned',
     'sourceRefs: []', 'evidenceIds: []',
     `limitations: ${quote('Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia.')}`,
     `generatedBy: ${quote(candidate.model || payload.model || 'unknown')}`,

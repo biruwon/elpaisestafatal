@@ -11,7 +11,7 @@ evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
-status: published
+status: planned
 sourceRefs: []
 evidenceIds: []
 limitations: "Respuesta generada por IA; la frase es una valoración global y no define indicadores ni un periodo que permitan comprobarla como un todo."

@@ -11,7 +11,7 @@ evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
-status: published
+status: planned
 sourceRefs: []
 evidenceIds: []
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
