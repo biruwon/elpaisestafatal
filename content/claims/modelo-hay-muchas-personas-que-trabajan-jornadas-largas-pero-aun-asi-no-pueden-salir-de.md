@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "hay muchas personas que trabajan jornadas largas pero aun asi no pueden salir de la pobreza porque los sueldos son demasiado bajos"
-generatedAt: "2026-08-18T20:14:22.874Z"
+generatedAt: "2026-08-18T20:22:56.188Z"
 ---
 
 ## Qué es cierto

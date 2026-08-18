@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la subida de precios de la vivienda en madrid y barcelona hace que sea dificil para muchos jovenes adquirir su primera vivienda"
-generatedAt: "2026-08-18T20:14:22.874Z"
+generatedAt: "2026-08-18T20:22:56.188Z"
 ---
 
 ## Qué es cierto

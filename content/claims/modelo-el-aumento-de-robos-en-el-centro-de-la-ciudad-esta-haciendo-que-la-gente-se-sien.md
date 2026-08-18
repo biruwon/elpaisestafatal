@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el aumento de robos en el centro de la ciudad esta haciendo que la gente se sienta insegura y teman salir de sus casas de noche"
-generatedAt: "2026-08-18T20:14:22.874Z"
+generatedAt: "2026-08-18T20:22:56.188Z"
 ---
 
 ## Qué es cierto
