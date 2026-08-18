@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el mantenimiento de las carreteras es pesimo y los baches son constantes por que no se invierte mas en infraestructuras viales"
-generatedAt: "2026-08-18T20:31:23.187Z"
+generatedAt: "2026-08-18T20:40:05.793Z"
 ---
 
 ## Qué es cierto

@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la calidad de los servicios turisticos en espana es irregular y a veces decepcionante especialmente en ciudades turisticas donde el servicio es poco atento y la limpieza del entorno es deficiente"
-generatedAt: "2026-08-18T20:31:23.187Z"
+generatedAt: "2026-08-18T20:40:05.793Z"
 ---
 
 ## Qué es cierto

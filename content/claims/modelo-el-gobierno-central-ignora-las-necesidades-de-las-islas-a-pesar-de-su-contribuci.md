@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gobierno central ignora las necesidades de las islas a pesar de su contribucion financiera"
-generatedAt: "2026-08-18T20:31:23.187Z"
+generatedAt: "2026-08-18T20:40:05.793Z"
 ---
 
 ## Qué es cierto

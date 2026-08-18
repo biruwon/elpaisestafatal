@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "no deberian los inmigrantes contribuir mas a los servicios publicos para compensar la atencion que reciben en vez de ser un gasto para el estado"
-generatedAt: "2026-08-18T20:31:23.187Z"
+generatedAt: "2026-08-18T20:40:05.793Z"
 ---
 
 ## Qué es cierto

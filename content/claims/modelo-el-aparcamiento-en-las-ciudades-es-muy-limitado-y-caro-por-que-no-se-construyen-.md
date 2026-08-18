@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el aparcamiento en las ciudades es muy limitado y caro por que no se construyen mas garajes publicos"
-generatedAt: "2026-08-18T20:31:23.187Z"
+generatedAt: "2026-08-18T20:40:05.793Z"
 ---
 
 ## Qué es cierto

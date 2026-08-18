@@ -1,0 +1,38 @@
+---
+slug: "modelo-el-precio-de-las-tarifas-electricas-sube-cada-ano-y-no-hay-garantias-de-que-vaya"
+claim: "El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar."
+assessment: uncertain
+topicSlugs: ["energía y coste de vida"]
+aliases: ["aumento de las facturas eléctricas","tarifas eléctricas cada vez más caras","incertidumbre sobre el precio de la electricidad","subida constante de la luz","no se ve una bajada de las tarifas","El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.","¿Es cierto que El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","¿Qué datos permiten comprobar si El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","Quiero saber si El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.","¿Cómo se puede verificar El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","¿Hay evidencia sobre si El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","¿Es verdad que El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","¿Qué sabemos de El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?","¿Se sostiene la afirmación de que El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-18"
+status: published
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "el precio de las tarifas electricas sube cada ano y no hay garantias de que vayan a bajar"
+generatedAt: "2026-08-18T20:40:05.793Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.
