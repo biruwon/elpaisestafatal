@@ -243,6 +243,8 @@ export const normalizeCompilerOutput = (value, text) => {
       ...evidenceNeedsList(value.evidenceNeeds),
     ])].slice(0, 8),
     alternatives: Array.isArray(value.alternatives) ? value.alternatives.slice(0, 4).filter((item) => item && typeof item === 'object' && typeof item.normalizedClaim === 'string' && typeof item.interpretation === 'string').map((item) => ({ normalizedClaim: bounded(item.normalizedClaim, 300), interpretation: bounded(item.interpretation, 240), evidenceDifference: item.evidenceDifference === 'same' ? 'same' : 'material', confidence: Number.isFinite(item.confidence) ? Math.max(0, Math.min(1, Number(item.confidence))) : 0.5 })) : [],
+    criteriaProfile: typeof value.criteriaProfile === 'string' ? value.criteriaProfile.slice(0, 100) : undefined,
+    criteriaProfileConfidence: Number.isFinite(value.criteriaProfileConfidence) ? Math.max(0, Math.min(1, Number(value.criteriaProfileConfidence))) : undefined,
     // Never trust the model's signature. The deterministic compiler owns
     // polarity, direction, relation and metric-family boundaries.
     semanticSignature,

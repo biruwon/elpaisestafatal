@@ -15,6 +15,7 @@ import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summar
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
+import { criteriaProfiles, profileText } from './knowledge/criteria-profiles.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { neutralWebQuery } from './knowledge/trusted-web-discovery.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
@@ -460,6 +461,23 @@ const normalizeAnswerPlan = (plan) => {
 // hints and select a neighbouring series.
 const fallbackCompiler = (text) => normalizeCompilerOutput(null, text);
 
+const cosineProfile = (left, right) => left.reduce((sum, value, index) => sum + value * (right[index] || 0), 0);
+const criteriaProfileFor = async (compiled) => {
+  if (!compiled?.propositions?.length || !criteriaProfiles.length) return compiled;
+  const query = [compiled.interpretation, compiled.propositions[0]?.text, compiled.propositions[0]?.predicate].filter(Boolean).join(' ');
+  if (!query) return compiled;
+  try {
+    const result = await modelTasks.embed({ input: [query, ...criteriaProfiles.map(profileText)], timeoutMs: 4000 });
+    const vectors = Array.isArray(result?.embeddings) ? result.embeddings : [];
+    if (vectors.length !== criteriaProfiles.length + 1) return compiled;
+    const ranked = criteriaProfiles.map((profile, index) => ({ profile, score: cosineProfile(vectors[0], vectors[index + 1]) })).sort((a, b) => b.score - a.score);
+    const best = ranked[0];
+    const margin = best.score - (ranked[1]?.score || 0);
+    if (!best || best.score < 0.48 || margin < 0.015) return compiled;
+    return { ...compiled, criteriaProfile: best.profile.id, criteriaProfileConfidence: best.score, criteriaProfileMargin: margin };
+  } catch { return compiled; }
+};
+
 const compileClaim = async (text, candidates = []) => {
   const deterministic = deterministicFallbackCompiler(text);
   const familyKeys = semanticFamilyKeys(deterministic.semanticSignature).sort();
@@ -492,7 +510,7 @@ const compileClaim = async (text, candidates = []) => {
     } catch (error) {
       if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
     }
-    const result = value ? normalizeCompilerOutput(value, text) : fallbackCompiler(text);
+    const result = await criteriaProfileFor(value ? normalizeCompilerOutput(value, text) : fallbackCompiler(text));
     compilerCache.set(cacheKey, { value: result, expiresAt: Date.now() + cacheTtlMs });
     while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
     return result;
@@ -2507,6 +2525,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       confidence: classified.compiler.interpretationConfidence,
       evidenceNeeds: classified.compiler.evidenceNeeds || [],
       alternatives: classified.compiler.alternatives || [],
+      criteriaProfile: classified.compiler.criteriaProfile,
+      confidence: classified.compiler.criteriaProfileConfidence || classified.compiler.interpretationConfidence,
     } : undefined,
     evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
