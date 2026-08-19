@@ -52,9 +52,9 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
 ] });
 export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
   const sources = sourceLinks(plan, claim);
-  const reviewed = plan.reviewed === true && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0;
+  const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const criteria = criteriaFromPlan(plan); const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
-  const state = plan.evidenceLevel || (reviewed ? 'supported' : plan.resultState === 'unresolved' ? 'insufficient' : 'limited'); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
+  const state = plan.evidenceLevel || (supported ? 'supported' : 'limited'); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
 export const processingCheck = (claim: string, requestId: string): PublicCheckResponse => ({ state: 'processing', id: requestId, claim });
