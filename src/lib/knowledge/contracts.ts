@@ -50,7 +50,6 @@ export type EvidenceRecord = {
   reviewedAt?: string;
 };
 
-export type AnswerMode = 'reviewed_claim' | 'scorecard' | 'current_event' | 'provisional_evidence' | 'guidance';
 
 export type ModelHealth = { available: boolean; provider: string; model?: string; detail?: string };
 export type StructuredModelRequest<T> = { task: string; input: unknown; schema: unknown; model?: string; signal?: AbortSignal; resultType?: T };
@@ -76,7 +75,6 @@ export type ExtractedEvidence = { propositionId: string; sourceId: string; findi
 export type GroundedAnswerDraft = { headline: string; directAnswer: string; blocks: AnswerBlock[]; factualClaims: Array<{ text: string; evidenceIds: string[] }>; limitations: string[]; followUps: string[] };
 // Public MVP state. Detailed claim/evidence modes remain internal so the UI
 // can explain the result without exposing resolver implementation details.
-export type ResultState = 'answered' | 'provisional' | 'unresolved';
 export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
 
 export type ScorecardItem = {
@@ -140,9 +138,6 @@ export type AnswerPlan = {
   summary: string;
   coverage: CoverageStatus;
   claimType: ClaimType;
-  answerMode?: AnswerMode;
-  resultState?: ResultState;
-  reviewed?: boolean;
   blocks: AnswerBlock[];
   clarificationQuestion?: string;
   limitation?: string;

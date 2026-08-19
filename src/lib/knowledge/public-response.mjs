@@ -48,8 +48,7 @@ const cleanPlan = (value) => {
     || !Array.isArray(value.blocks) || !Array.isArray(value.evidenceIds)
     || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string'
     || (value.evidenceLevel !== undefined && !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel))
-    || (value.resultState !== undefined && !['answered', 'provisional', 'unresolved'].includes(value.resultState))
-    || (value.reviewed !== undefined && typeof value.reviewed !== 'boolean')) return undefined;
+    || !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel)) return undefined;
   return value;
 };
 

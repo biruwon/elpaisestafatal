@@ -4,7 +4,7 @@ const valid = publicResolveResponse({
   status: 'partial',
   requestId: 'request-1',
   relatedClaims: [{ kind: 'topic', slug: 'politica', title: 'Política', href: '/preocupaciones/politica', confidence: 0.4 }],
-  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', resultState: 'provisional', reviewed: false, blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' },
+  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' },
 });
 if (!valid || valid.relatedClaims?.[0]?.slug !== 'politica') throw new Error('Valid public response was rejected');
 

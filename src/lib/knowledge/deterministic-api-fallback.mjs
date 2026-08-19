@@ -54,14 +54,12 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   if (broadScorecard(original) && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
-      answerMode: 'scorecard',
+      evidenceLevel: 'supported',
       relatedClaims: related ? [related] : [],
       guidance: { limitation: 'La valoración política es demasiado amplia para una nota única. Mostramos los seis indicadores que deben compararse.', questions: ['¿Quieres abrir un indicador concreto del cuadro?'] },
       result: {
         schemaVersion: '1',
-        answerMode: 'scorecard',
-        resultState: 'answered',
-        reviewed: false,
+        evidenceLevel: 'supported',
         headline: 'La mayoría de indicadores mejoran, pero no hay una nota partidista',
         summary: `Desde junio de 2018, ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'improved').length} de ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.length} indicadores mejoran y ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'worsened').length} empeora. Esto describe cambios observados; no demuestra qué políticas los causaron.`,
         coverage: 'qualified',
@@ -83,8 +81,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
     guidance,
     result: {
       schemaVersion: '1',
-      resultState: 'unresolved',
-      reviewed: false,
+      evidenceLevel: 'insufficient',
       headline: 'No hay evidencia suficiente todavía',
       summary: 'No hemos encontrado datos o fuentes compatibles que permitan sostener una respuesta factual para esta frase.',
       coverage: 'insufficient',

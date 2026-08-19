@@ -23,8 +23,7 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   if (plan.schemaVersion !== RUNTIME_VERSIONS.answerPlanSchema) errors.push('unsupported schema version');
   if (typeof plan.headline !== 'string' || !plan.headline.trim()) errors.push('missing headline');
   if (typeof plan.summary !== 'string' || !plan.summary.trim()) errors.push('missing summary');
-  if (plan.answerMode && !['reviewed_claim', 'scorecard', 'current_event', 'provisional_evidence', 'guidance'].includes(plan.answerMode)) errors.push('invalid answer mode');
-  if (plan.resultState && !['answered', 'provisional', 'unresolved'].includes(plan.resultState)) errors.push('invalid public result state');
+  if (!['supported', 'limited', 'insufficient'].includes(plan.evidenceLevel)) errors.push('missing or invalid evidence level');
   if (!Array.isArray(plan.blocks)) errors.push('missing blocks');
   if (!arrayOfStrings(plan.evidenceIds)) errors.push('evidenceIds must be a string array');
   if (!arrayOfStrings(plan.sourceIds)) errors.push('sourceIds must be a string array');
