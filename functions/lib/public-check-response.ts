@@ -11,7 +11,10 @@ const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): Che
   if (!visual.evidenceIds.length || visual.evidenceIds.some((id: string) => !entry.evidenceIds.includes(id)) || visual.values.some((value: number) => !Number.isFinite(value))) return undefined;
   return { type: visual.type, title: visual.title, unit: visual.unit, labels: visual.labels, values: visual.values, evidenceIds: visual.evidenceIds };
 };
-const assessmentFor = (entry: CatalogueEntry | RuntimeCatalogueEntry): ClaimAssessment | undefined => 'assessment' in entry ? entry.assessment : undefined;
+const assessmentFor = (entry: CatalogueEntry | RuntimeCatalogueEntry): ClaimAssessment | undefined => {
+  const value = 'assessment' in entry ? entry.assessment : undefined;
+  return typeof value === 'string' && ['true', 'mostly-true', 'misleading', 'unsupported', 'uncertain', 'false'].includes(value) ? value as ClaimAssessment : undefined;
+};
 const scopeFor = (entry: CatalogueEntry | RuntimeCatalogueEntry) => ({ geography: entry.geography, period: entry.period, reviewedAt: 'evidenceVerifiedAt' in entry ? entry.evidenceVerifiedAt : undefined });
 const resultFor = (entry: CatalogueEntry | RuntimeCatalogueEntry, claim: string, reviewed: boolean): CheckResult => ({
   claim, reply: 'reply' in entry ? entry.reply : entry.answer, answer: entry.answer, keyFact: entry.explanation,
