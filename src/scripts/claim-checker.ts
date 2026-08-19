@@ -3,6 +3,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-cont
 type CheckResult = {
   claim: string; reply: string; answer: string; keyFact?: string; whatWeKnow: string[]; limitations: string[];
   scope: { geography?: string; period?: string; reviewedAt?: string };
+  criteria?: Array<{ id: string; label: string; finding: string }>;
   sources: Array<{ id: string; title: string; publisher?: string; url: string; publishedAt?: string }>;
   assessment?: string; canonicalHref?: string; visual?: { title?: string; unit?: string; labels: string[]; values: number[] };
 };
