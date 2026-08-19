@@ -1,7 +1,7 @@
 const base = (process.env.SMOKE_RESOLVE_BASE_URL || 'http://127.0.0.1:8788').replace(/\/$/, '');
 const resolvePath = process.env.SMOKE_RESOLVE_PATH || '/api/check';
 const failures = [];
-const states = new Set(['clarification', 'reviewed', 'provisional', 'unresolved', 'processing', 'unavailable']);
+const states = new Set(['clarification', 'supported', 'limited', 'insufficient', 'processing', 'unavailable']);
 
 const request = async (body, multipart = false) => {
   const response = await fetch(`${base}${resolvePath}`, {
@@ -24,27 +24,26 @@ const check = async (test) => {
       result = await pending.json();
     }
     if (result.state !== test.state) failures.push(`${test.text}: expected ${test.state}, received ${result.state}`);
-    if (result.state === 'reviewed') {
+    if (result.state === 'supported') {
       const item = result.result;
-      if (!item || !item.canonicalHref || !item.canonicalSlug || !item.reply || !item.assessment || !item.sources?.length) failures.push(`${test.text}: reviewed result is missing canonical URL, verdict, reply, or sources`);
-      if (/Orientación provisional/i.test(item?.reply || '')) failures.push(`${test.text}: reviewed reply contains provisional warning`);
+      if (!item || !item.reply || !item.evidenceLevel) failures.push(`${test.text}: supported result is missing evidence level or reply`);
     }
     if (result.state === 'clarification' && (!result.question || !Array.isArray(result.options) || result.options.length < 2)) failures.push(`${test.text}: clarification has no concrete options`);
-    if (result.state === 'provisional' && !/Orientación provisional; no es un veredicto revisado/i.test(result.result?.reply || '')) failures.push(`${test.text}: provisional reply lacks its warning`);
+    if (['limited', 'insufficient'].includes(result.state) && !result.result?.evidenceLevel) failures.push(`${test.text}: evidence-level result is missing its level`);
     if (JSON.stringify(result).match(/ollama|127\.0\.0\.1|localhost|cloudflare.*token/i)) failures.push(`${test.text}: response leaked implementation details`);
   } catch (error) { failures.push(`${test.text}: ${error instanceof Error ? error.message : String(error)}`); }
 };
 
 const cases = [
-  { text: 'España supera los 49 millones de residentes.', state: 'reviewed' },
-  { text: 'España gasta menos por habitante en sanidad que la Unión Europea', state: 'reviewed' },
-  { text: 'La amnistía rompe la igualdad ante la ley.', state: 'reviewed' },
+  { text: 'España supera los 49 millones de residentes.', state: 'supported' },
+  { text: 'España gasta menos por habitante en sanidad que la Unión Europea', state: 'supported' },
+  { text: 'La amnistía rompe la igualdad ante la ley.', state: 'supported' },
   { text: 'No hay trabajo', state: 'clarification' },
   { text: 'España va fatal', state: 'clarification' },
   { text: 'España cobra demasiados impuestos', state: 'clarification' },
-  { text: 'Pedro Sánchez traidor', state: 'clarification' },
-  { text: 'Pedro Sánchez corrupto', state: 'clarification' },
-  { text: 'Cómo ha cambiado la situación de una cuestión que no tiene fuentes', state: 'clarification' },
+  { text: 'Pedro Sánchez traidor', state: 'insufficient' },
+  { text: 'Pedro Sánchez corrupto', state: 'insufficient' },
+  { text: 'Cómo ha cambiado la situación de una cuestión que no tiene fuentes', state: 'insufficient' },
 ];
 for (const test of cases) await check(test);
 
