@@ -8,7 +8,7 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
 import { publishedEntryFor, routeCatalogueQuery } from '../lib/catalogue-resolver';
-import { checkFromCatalogue, checkFromPlan, clarificationCheck, processingCheck, unavailableCheck } from '../lib/public-check-response';
+import { checkFromCatalogue, checkFromPlan, clarificationCheck, processingCheck, unavailableCheck, directClaimCheck } from '../lib/public-check-response';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
@@ -87,6 +87,8 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (cached) cache.delete(cacheKey);
 
   if (body.inputType === 'text') {
+    const direct = body.clarification ? undefined : directClaimCheck(body.text);
+    if (direct) return json(direct);
     const routedText = body.clarification?.prompt ? `${body.text} ${body.clarification.prompt}` : body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: Boolean(body.clarification) });
     if (route.route === 'clarify' && !body.clarification) {
@@ -104,7 +106,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
     const response = fallbackResponse(body.text, body.inputType);
-    if (cacheKey && response.state === 'reviewed') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+    if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
@@ -142,7 +144,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     }
     const plan = safe?.result;
     const response = plan ? checkFromPlan(body.text, plan, safe?.requestId) : fallbackResponse(body.text, body.inputType);
-    if (cacheKey && response.state === 'reviewed') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
+    if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
