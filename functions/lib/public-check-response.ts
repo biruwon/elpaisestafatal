@@ -4,13 +4,6 @@ import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolv
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion } from '../../src/lib/knowledge/public-check';
 
 const normalise = (value: string): string[] => String(value).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter((token) => token.length > 3);
-type CriteriaProfile = { kind: 'institutional_label' | 'factual_allegation' | 'evaluative_judgment'; definition: string; criteria: string[]; defaultLimitation: string };
-export const criteriaProfiles: Record<string, CriteriaProfile> = {
-  'democratic-power': { kind: 'institutional_label', definition: 'Whether a person or government exercises unchecked dictatorial or authoritarian power.', criteria: ['Acceso al cargo', 'Controles institucionales', 'Competencia política'], defaultLimitation: 'Esta conclusión se refiere a la etiqueta institucional; no resuelve acusaciones sobre decisiones concretas.' },
-  allegation: { kind: 'factual_allegation', definition: 'A concrete allegation of unlawful conduct by an identified person, group or institution.', criteria: ['Conducta concreta', 'Estado del procedimiento', 'Fuente directamente relacionada'], defaultLimitation: 'Una acusación general no permite distinguir entre opinión, investigación, acusación formal o condena.' },
-  'collective-allegation': { kind: 'factual_allegation', definition: 'A generalized allegation that public or influential actors unlawfully take money or benefit from their position.', criteria: ['Qué conducta se atribuye', 'A quién y cuándo', 'Resolución o evidencia directa'], defaultLimitation: 'Una acusación colectiva mezcla posibles delitos, decisiones discutibles y una percepción política; hay que separar cada hecho y no atribuir una condena sin un caso identificado.' },
-  'performance-judgment': { kind: 'evaluative_judgment', definition: 'A negative or positive evaluation that can be tested against an explicit criterion and comparable indicators.', criteria: ['Criterio evaluable', 'Indicadores relevantes', 'Periodo comparable'], defaultLimitation: 'Una valoración depende del criterio y periodo elegidos; no equivale por sí sola a un hecho.' },
-};
 const sourceLinks = (plan?: AnswerPlan, claim = ''): CheckSource[] => {
   const claimTokens = new Set(normalise(claim));
   return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt })).filter((source) => {
