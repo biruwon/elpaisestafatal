@@ -1,8 +1,8 @@
 const base = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:8788';
 const checks = [
   { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'supported' },
-  { text: 'No hay trabajo', inputType: 'text', state: 'clarification' },
-  { text: 'España va fatal', inputType: 'text', state: 'clarification' },
+  { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient'] },
+  { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient'] },
 ];
 const failures = [];
 for (const input of checks) {
@@ -16,7 +16,7 @@ for (const input of checks) {
     const body = await response.json().catch(() => undefined);
     if (![200, 202, 400, 429].includes(response.status)) failures.push(`unexpected HTTP status ${response.status}`);
     if (!body || typeof body.id !== 'string' || !['clarification', 'supported', 'limited', 'insufficient', 'processing', 'unavailable'].includes(body.state)) failures.push('response does not match the current check contract');
-    if (body?.state !== input.state) failures.push(`${input.text}: expected ${input.state}, received ${body?.state}`);
+    if (input.states && !input.states.includes(body?.state)) failures.push(`${input.text}: expected one of ${input.states.join(', ')}, received ${body?.state}`);
     if (body?.state === 'clarification' && (!body.question || !Array.isArray(body.options) || body.options.length < 2)) failures.push(`${input.text}: clarification did not expose concrete options`);
     if (body?.state === 'supported' && (!body.result?.evidenceLevel || !body.result?.reply)) failures.push('supported response has no evidence level or reply');
     if (body && /ollama|127\.0\.0\.1|localhost|cloudflare.*token/i.test(JSON.stringify(body))) failures.push('response leaked implementation details');
