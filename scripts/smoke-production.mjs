@@ -1,7 +1,8 @@
 const base = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:8788';
 const checks = [
-  { text: 'España supera los 49 millones de residentes.', inputType: 'text' },
-  { text: 'España va fatal', inputType: 'text' },
+  { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'reviewed' },
+  { text: 'No hay trabajo', inputType: 'text', state: 'clarification' },
+  { text: 'España va fatal', inputType: 'text', state: 'clarification' },
 ];
 const failures = [];
 for (const input of checks) {
@@ -15,6 +16,8 @@ for (const input of checks) {
     const body = await response.json().catch(() => undefined);
     if (![200, 202, 400, 429].includes(response.status)) failures.push(`unexpected HTTP status ${response.status}`);
     if (!body || typeof body.id !== 'string' || !['clarification', 'reviewed', 'provisional', 'unresolved', 'processing', 'unavailable'].includes(body.state)) failures.push('response does not match the current check contract');
+    if (body?.state !== input.state) failures.push(`${input.text}: expected ${input.state}, received ${body?.state}`);
+    if (body?.state === 'clarification' && (!body.question || !Array.isArray(body.options) || body.options.length < 2)) failures.push(`${input.text}: clarification did not expose concrete options`);
     if (body?.state === 'reviewed' && (!body.result?.canonicalHref || !Array.isArray(body.result?.sources) || body.result.sources.length === 0)) failures.push('reviewed response has no canonical URL or sources');
     if (body && /ollama|127\.0\.0\.1|localhost|cloudflare.*token/i.test(JSON.stringify(body))) failures.push('response leaked implementation details');
   } catch (error) {
