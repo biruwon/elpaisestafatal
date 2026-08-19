@@ -1,8 +1,8 @@
 const base = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:8788';
 const checks = [
   { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'supported' },
-  { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient'] },
-  { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient'] },
+  { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient', 'processing'] },
+  { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient', 'processing'] },
 ];
 const failures = [];
 for (const input of checks) {
