@@ -77,6 +77,7 @@ export type GroundedAnswerDraft = { headline: string; directAnswer: string; bloc
 // Public MVP state. Detailed claim/evidence modes remain internal so the UI
 // can explain the result without exposing resolver implementation details.
 export type ResultState = 'answered' | 'provisional' | 'unresolved';
+export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
 
 export type ScorecardItem = {
   metricId: string;
@@ -150,6 +151,7 @@ export type AnswerPlan = {
   sourceLinks?: Array<{ id: string; title: string; url: string; publisher?: string; publishedAt?: string; retrievedAt?: string; role?: 'primary' | 'corroboration' | 'context'; originPublisher?: string }>;
   asOf?: string;
   knowledgeVersion: string;
+  evidenceLevel?: EvidenceLevel;
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
   researchPlan?: ResearchPlan;
 };

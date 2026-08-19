@@ -443,6 +443,7 @@ const normalizeAnswerPlan = (plan) => {
   const answerMode = plan.answerMode || (plan.blocks?.some((block) => block?.type === 'scorecard') ? 'scorecard' : plan.blocks?.some((block) => block?.type === 'event_status') ? 'current_event' : plan.sourceLinks?.length ? 'provisional_evidence' : 'guidance');
   return {
     ...plan,
+    evidenceLevel: plan.evidenceLevel || (plan.resultState === 'answered' ? 'supported' : plan.resultState === 'provisional' ? 'limited' : 'insufficient'),
     resultState: plan.resultState || (answerMode === 'guidance' ? 'unresolved' : answerMode === 'current_event' || answerMode === 'provisional_evidence' ? 'provisional' : 'answered'),
     reviewed: plan.reviewed === true || answerMode === 'reviewed_claim',
     answerMode,
@@ -2499,6 +2500,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
     answerMode: primary ? 'reviewed_claim' : broadConditionRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
     resultState: primary || broadConditionRequested || warehouseSeries ? 'answered' : currentEvent || observations.length ? 'provisional' : 'unresolved',
+    evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     reviewed: Boolean(primary),
     asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,
     headline: scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),

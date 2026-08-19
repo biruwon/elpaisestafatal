@@ -47,6 +47,7 @@ const cleanPlan = (value) => {
     || typeof value.headline !== 'string' || typeof value.summary !== 'string'
     || !Array.isArray(value.blocks) || !Array.isArray(value.evidenceIds)
     || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string'
+    || (value.evidenceLevel !== undefined && !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel))
     || (value.resultState !== undefined && !['answered', 'provisional', 'unresolved'].includes(value.resultState))
     || (value.reviewed !== undefined && typeof value.reviewed !== 'boolean')) return undefined;
   return value;
