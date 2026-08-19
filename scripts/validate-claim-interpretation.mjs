@@ -16,4 +16,5 @@ if (!profiles.includes('definition:')) throw new Error('Semantic criteria profil
 if (api.includes('directClaimCheck') || response.includes('directClaimCheck') || response.includes('roban?')) throw new Error('Loaded claim interpretation must not depend on phrase-specific routing');
 for (const fragment of ['interpretationConfidence', 'alternatives', 'subjectType', 'evidenceDifference']) if (!compiler.includes(fragment)) throw new Error(`Semantic compiler contract is missing ${fragment}`);
 if (!response.includes('attributedIds.has(source.id)')) throw new Error('Public sources must be filtered by criterion attribution');
+if (!response.includes('clarificationFromPlan') || !response.includes("evidenceDifference === 'material'")) throw new Error('Material interpretation alternatives must become structured clarification');
 console.log('Claim interpretation validation passed: semantic profiles and structured interpretation routing are present.');
