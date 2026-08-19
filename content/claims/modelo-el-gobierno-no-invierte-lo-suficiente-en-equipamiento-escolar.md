@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-c3e04e7e1cd5"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gobierno no invierte lo suficiente en equipamiento escolar"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-dfebc329e74a"]
 ---
 
 ## Qué es cierto

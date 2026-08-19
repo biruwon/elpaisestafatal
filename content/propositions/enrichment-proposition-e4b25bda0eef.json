@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e4b25bda0eef",
+  "claimSlug": "\"modelo-por-que-el-gobierno-no-hace-nada-para-frenar-la-inflacion-y-al-menos-mantener-el\"",
+  "text": "¿Por qué el gobierno no hace nada para frenar la inflación y al menos mantener el nivel de vida de los ciudadanos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1453c50965c"
+  ]
+}

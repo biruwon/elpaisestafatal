@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-704b01d1c5e3"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de especialistas en areas como la dermatologia esta provocando que los pacientes esperen meses para consulta"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-382dbf9e898a"]
 ---
 
 ## Qué es cierto

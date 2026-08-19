@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0fcf3df804b3",
+  "claimSlug": "\"modelo-la-factura-de-la-luz-en-espana-es-la-mas-cara-de-toda-europa\"",
+  "text": "La factura de la luz en España es la más cara de toda Europa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1cda0c9a40e7"
+  ]
+}

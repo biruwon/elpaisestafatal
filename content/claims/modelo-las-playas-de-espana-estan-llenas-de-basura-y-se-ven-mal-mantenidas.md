@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-8f6662ed6b86"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las playas de espana estan llenas de basura y se ven mal mantenidas"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-295972a4d9c3"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4083257c5a04",
+  "claimSlug": "\"modelo-los-productos-de-agricultura-ecologica-en-espana-son-demasiado-caros-y-dificiles\"",
+  "text": "Los productos de agricultura ecológica en España son demasiado caros y difíciles de encontrar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-de7ad647d417"
+  ]
+}

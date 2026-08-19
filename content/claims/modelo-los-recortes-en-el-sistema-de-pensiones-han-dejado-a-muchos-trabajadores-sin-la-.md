@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-8b41d3e9ceed"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los recortes en el sistema de pensiones han dejado a muchos trabajadores sin la seguridad que esperaban al jubilarse"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-baab5787c21c"]
 ---
 
 ## Qué es cierto

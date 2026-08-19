@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-62e625b49969",
+  "claimSlug": "\"modelo-en-muchas-ocasiones-los-especialistas-no-tienen-disponibilidad-para-citas-urgent\"",
+  "text": "En muchas ocasiones, los especialistas no tienen disponibilidad para citas urgentes, lo que se traduce en días de espera innecesarios.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-e2d445c6de57"
+  ]
+}

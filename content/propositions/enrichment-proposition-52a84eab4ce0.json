@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-52a84eab4ce0",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-infraestructuras-del-norte-afecta-la-movilidad-y-el-tur\"",
+  "text": "La falta de inversión en infraestructuras del norte afecta la movilidad y el turismo en esas regiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-89af705e5887"
+  ]
+}

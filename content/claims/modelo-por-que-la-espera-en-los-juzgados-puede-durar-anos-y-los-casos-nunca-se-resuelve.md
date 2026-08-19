@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-0909afe60efa"]
+evidenceIds: ["enrichment-evidence-500d039d0075"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que la espera en los juzgados puede durar anos y los casos nunca se resuelven"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-d94b45b11da8"]
 ---
 
 ## Qué es cierto

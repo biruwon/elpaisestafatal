@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b6dfb5670253",
+  "claimSlug": "\"modelo-en-los-ultimos-anos-la-inmigracion-ha-aumentado-tanto-que-las-escuelas-estan-sob\"",
+  "text": "En los últimos años, la inmigración ha aumentado tanto que las escuelas están sobrepasadas y los niños no tienen espacio para sentarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-43715dd35860"
+  ]
+}

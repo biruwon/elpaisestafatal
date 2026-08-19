@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4e8e25b4fe00",
+  "claimSlug": "\"modelo-se-ha-notado-un-aumento-en-los-robos-en-el-barrio-de-la-latina-de-madrid-lo-cual\"",
+  "text": "Se ha notado un aumento en los robos en el barrio de la Latina de Madrid, lo cual preocupa a los residentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6d857959327"
+  ]
+}

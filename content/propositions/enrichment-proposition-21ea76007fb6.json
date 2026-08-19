@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-21ea76007fb6",
+  "claimSlug": "\"modelo-la-inmigracion-ha-hecho-que-los-precios-del-alquiler-y-la-vivienda-suban-de-prec\"",
+  "text": "La inmigración ha hecho que los precios del alquiler y la vivienda suban de precio en zonas urbanas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b048b621b47d"
+  ]
+}

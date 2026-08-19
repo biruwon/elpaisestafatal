@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de334c4d59ba",
+  "claimSlug": "\"modelo-las-playas-de-espana-no-se-limpian-lo-suficiente-hay-bolsas-de-plastico-y-basura\"",
+  "text": "Las playas de España no se limpian lo suficiente, hay bolsas de plástico y basura en la arena.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c503a1db1d5"
+  ]
+}

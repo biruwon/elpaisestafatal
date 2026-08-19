@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2557cea38a27",
+  "claimSlug": "\"modelo-la-corrupcion-en-la-administracion-de-justicia-es-un-problema-grave-que-afecta-a\"",
+  "text": "La corrupción en la administración de justicia es un problema grave que afecta a la confianza en el sistema.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-470195ae80c4"
+  ]
+}

@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-a71ae0a892d1"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que las empresas no ofrecen mas facilidades para la teletrabajo si los trabajadores necesitan conciliar la vida laboral con la familiar"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-23bbedd883a3"]
 ---
 
 ## Qué es cierto

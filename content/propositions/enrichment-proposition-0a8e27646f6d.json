@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a8e27646f6d",
+  "claimSlug": "\"modelo-el-hurto-de-bicicletas-es-un-problema-generalizado-en-muchas-ciudades\"",
+  "text": "El hurto de bicicletas es un problema generalizado en muchas ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-60b7c0309400"
+  ]
+}

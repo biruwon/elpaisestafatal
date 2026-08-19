@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0cab192b5be2",
+  "claimSlug": "\"modelo-los-recortes-en-los-servicios-publicos-estan-dejando-a-los-ciudadanos-solos\"",
+  "text": "Los recortes en los servicios públicos están dejando a los ciudadanos solos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a90b2ee1e248"
+  ]
+}

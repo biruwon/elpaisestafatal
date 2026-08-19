@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-0909afe60efa"]
+evidenceIds: ["enrichment-evidence-582047b6b1c4"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema de proteccion social en espana no cubre adecuadamente las necesidades de los ciudadanos especialmente en temas de salud"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-1afe1d4c22c9"]
 ---
 
 ## Qué es cierto

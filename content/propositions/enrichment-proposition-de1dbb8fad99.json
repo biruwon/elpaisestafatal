@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de1dbb8fad99",
+  "claimSlug": "\"modelo-la-subida-de-las-tarifas-de-la-luz-es-un-autentico-robo\"",
+  "text": "La subida de las tarifas de la luz es un auténtico robo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3a1520016c94"
+  ]
+}

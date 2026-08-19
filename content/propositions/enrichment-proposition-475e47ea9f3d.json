@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-475e47ea9f3d",
+  "claimSlug": "\"modelo-los-contratos-temporales-son-el-pan-nuestro-de-cada-dia-en-espana\"",
+  "text": "Los contratos temporales son el pan nuestro de cada día en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-04da3677d5df"
+  ]
+}

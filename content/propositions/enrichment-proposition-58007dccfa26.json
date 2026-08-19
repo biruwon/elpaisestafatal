@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-58007dccfa26",
+  "claimSlug": "\"modelo-el-coste-de-la-vivienda-en-espana-es-un-lastre-para-la-economia-domestica\"",
+  "text": "El coste de la vivienda en España es un lastre para la economía doméstica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5fd17114c7dc"
+  ]
+}

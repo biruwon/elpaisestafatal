@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-673c8964ae81",
+  "claimSlug": "\"modelo-la-policia-de-barcelona-es-suficiente-para-combatir-el-crimen-callejero\"",
+  "text": "¿La policía de Barcelona es suficiente para combatir el crimen callejero?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10c786b6b5bf"
+  ]
+}

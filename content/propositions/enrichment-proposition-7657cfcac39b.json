@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7657cfcac39b",
+  "claimSlug": "\"modelo-los-precios-de-los-productos-locales-en-los-mercados-de-agricultura-son-irrisori\"",
+  "text": "Los precios de los productos locales en los mercados de agricultura son irrisorios para los productores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eb58e7cb21e4"
+  ]
+}

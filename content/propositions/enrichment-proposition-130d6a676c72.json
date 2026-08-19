@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-130d6a676c72",
+  "claimSlug": "\"modelo-en-espana-los-pacientes-con-dolores-cronicos-estan-esperando-durante-meses-para-\"",
+  "text": "En España, los pacientes con dolores crónicos están esperando durante meses para consultar a un especialista que les ayude a gestionar su dolor, lo que agrava su calidad de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-898ab368db43"
+  ]
+}

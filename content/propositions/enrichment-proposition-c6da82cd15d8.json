@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c6da82cd15d8",
+  "claimSlug": "\"modelo-se-necesitan-mas-recursos-humanos-y-materiales-para-combatir-los-incendios-fores\"",
+  "text": "Se necesitan más recursos humanos y materiales para combatir los incendios forestales en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8fd7228b413b"
+  ]
+}

@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-0909afe60efa"]
+evidenceIds: ["enrichment-evidence-0d2c139b2770"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la promesa de inteligencia artificial en viviendas digitales no se esta cumpliendo dejando a los usuarios frustrados y sin las ventajas prometidas"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-7b4d1c9b4a78"]
 ---
 
 ## Qué es cierto

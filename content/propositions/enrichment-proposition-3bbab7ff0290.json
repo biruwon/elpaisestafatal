@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3bbab7ff0290",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-de-la-luz-esta-dejando-a-muchas-familias-en-la-miseria\"",
+  "text": "La subida de los precios de la luz está dejando a muchas familias en la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e2cbd264e176"
+  ]
+}

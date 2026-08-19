@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e8cfbeda7b2",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-el-pan-se-convierta-en-un-lujo-imposible-para-muc\"",
+  "text": "La inflación está haciendo que el pan se convierta en un lujo imposible para muchos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7511bbb22209"
+  ]
+}

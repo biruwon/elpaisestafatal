@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6bc072748191",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-costo-de-vida-en-las-ciudades\"",
+  "text": "La inmigración está aumentando el costo de vida en las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2cfe805f3455"
+  ]
+}

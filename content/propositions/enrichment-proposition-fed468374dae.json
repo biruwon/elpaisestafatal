@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fed468374dae",
+  "claimSlug": "\"modelo-los-dias-de-descanso-son-demasiado-cortos-dejando-a-los-trabajadores-sin-tiempo-\"",
+  "text": "Los días de descanso son demasiado cortos, dejando a los trabajadores sin tiempo suficiente para descansar y relajarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea6b9acfcbb7"
+  ]
+}

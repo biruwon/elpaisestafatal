@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-122301ef3243",
+  "claimSlug": "\"modelo-el-transporte-publico-es-demasiado-caro-para-los-espanoles\"",
+  "text": "El transporte público es demasiado caro para los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e189868f3343"
+  ]
+}

@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-92ad42189567"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las listas de espera para cirugia en espana son tan largas que muchos pacientes acaban teniendo complicaciones prevenibles"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-a20df76f3dbd"]
 ---
 
 ## Qué es cierto

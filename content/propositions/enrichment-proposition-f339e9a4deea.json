@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f339e9a4deea",
+  "claimSlug": "\"modelo-las-viviendas-inteligentes-son-un-sueno-incumplido-en-espana-ya-que-la-adopcion-\"",
+  "text": "Las viviendas inteligentes son un sueño incumplido en España, ya que la adopción de sistemas domóticos es muy baja.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86346f0bd638"
+  ]
+}

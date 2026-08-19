@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e45d37eff087",
+  "claimSlug": "\"modelo-no-hay-suficientes-recursos-informaticos-para-todos-los-estudiantes-en-las-escue\"",
+  "text": "No hay suficientes recursos informáticos para todos los estudiantes en las escuelas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-429fa7016280"
+  ]
+}

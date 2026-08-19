@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc2d169cc08a",
+  "claimSlug": "\"modelo-por-que-el-parque-natural-de-donana-no-controla-mejor-la-entrada-de-visitantes-y\"",
+  "text": "¿Por qué el parque natural de Doñana no controla mejor la entrada de visitantes y se llena de basura?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db7c7d947cae"
+  ]
+}

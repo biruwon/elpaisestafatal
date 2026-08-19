@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fb2c68d8cdb2",
+  "claimSlug": "\"modelo-es-posible-que-en-espana-algunos-hospitales-no-tengan-plazas-disponibles-para-at\"",
+  "text": "¿Es posible que en España algunos hospitales no tengan plazas disponibles para atender pacientes con necesidades urgentes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-95fe570accca"
+  ]
+}

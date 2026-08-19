@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4806bef20fb",
+  "claimSlug": "\"modelo-en-muchos-barrios-la-falta-de-tiendas-de-alimentacion-fresca-hace-que-sea-difici\"",
+  "text": "En muchos barrios, la falta de tiendas de alimentación fresca hace que sea difícil conseguir frutas y verduras de calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a2310a06532a"
+  ]
+}

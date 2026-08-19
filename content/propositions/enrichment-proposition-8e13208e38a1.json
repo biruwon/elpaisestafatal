@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e13208e38a1",
+  "claimSlug": "\"modelo-con-mi-sueldo-no-llego-ni-a-pagar-el-alquiler-que-esperanza-hay-de-mejorar\"",
+  "text": "¡Con mi sueldo no llego ni a pagar el alquiler! ¿Qué esperanza hay de mejorar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-043af1c02880"
+  ]
+}

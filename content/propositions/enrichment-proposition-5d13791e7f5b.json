@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d13791e7f5b",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-mejorar-la-calidad-de-la-vivienda-digital\"",
+  "text": "El gobierno no hace nada para mejorar la calidad de la vivienda digital.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4108621d272b"
+  ]
+}

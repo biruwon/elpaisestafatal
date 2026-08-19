@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5432c71c665",
+  "claimSlug": "\"modelo-los-trenes-de-cercanias-a-menudo-llegan-tarde-y-se-cancelan-por-obras-lo-cual-es\"",
+  "text": "Los trenes de cercanías a menudo llegan tarde y se cancelan por obras, lo cual es un caos para los trabajadores que dependen de ellos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1b21f02eb71"
+  ]
+}

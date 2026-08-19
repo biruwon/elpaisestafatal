@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-6c4815fcc31e"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las playas de espana estan llenas de pescadores que se aprovechan de los banistas para vender sus productos a precios abusivos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-dd457d9c7499"]
 ---
 
 ## Qué es cierto

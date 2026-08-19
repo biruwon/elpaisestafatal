@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc9890ec0381",
+  "claimSlug": "\"modelo-la-falta-de-crecimiento-economico-esta-haciendo-que-las-empresas-se-cierren-y-de\"",
+  "text": "La falta de crecimiento económico está haciendo que las empresas se cierren y dejemos de tener opciones de empleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6dd0439a2358"
+  ]
+}

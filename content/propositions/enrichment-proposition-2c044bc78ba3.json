@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c044bc78ba3",
+  "claimSlug": "\"modelo-el-precio-de-la-luz-esta-subiendo-un-poquito-mas-cada-mes-como-van-a-aguantar-lo\"",
+  "text": "El precio de la luz está subiendo un poquito más cada mes, ¿cómo van a aguantar los pensionistas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4948a4e87b1"
+  ]
+}

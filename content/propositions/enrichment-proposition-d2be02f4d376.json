@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2be02f4d376",
+  "claimSlug": "\"modelo-la-falta-de-lluvia-y-los-incendios-han-dejado-la-tierra-seca-y-desolada-cuando-v\"",
+  "text": "La falta de lluvia y los incendios han dejado la tierra seca y desolada, ¿cuándo vendrá la lluvia?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-658a4c39276f"
+  ]
+}

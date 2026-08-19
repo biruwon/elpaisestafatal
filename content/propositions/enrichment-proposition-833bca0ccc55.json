@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-833bca0ccc55",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-paro-juvenil\"",
+  "text": "La inmigración está aumentando el paro juvenil.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c489106da67a"
+  ]
+}

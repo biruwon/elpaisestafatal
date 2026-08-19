@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dcd6caa415a3",
+  "claimSlug": "\"modelo-la-energia-solar-en-espana-deberia-ser-mas-accesible-pero-los-kits-son-muy-caros\"",
+  "text": "La energía solar en España debería ser más accesible, pero los kits son muy caros y no hay incentivos suficientes para los consumidores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0e0867d64610"
+  ]
+}

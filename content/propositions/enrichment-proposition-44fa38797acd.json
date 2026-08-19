@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44fa38797acd",
+  "claimSlug": "\"modelo-los-alquileres-en-las-ciudades-de-cataluna-han-aumentado-mas-que-en-el-resto-de-\"",
+  "text": "Los alquileres en las ciudades de Cataluña han aumentado más que en el resto de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a1f79b9ad3dc"
+  ]
+}

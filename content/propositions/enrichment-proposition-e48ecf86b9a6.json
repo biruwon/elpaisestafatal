@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e48ecf86b9a6",
+  "claimSlug": "\"modelo-el-turismo-en-espana-se-basa-demasiado-en-las-playas-y-el-sol-olvidando-otros-at\"",
+  "text": "El turismo en España se basa demasiado en las playas y el sol, olvidando otros atractivos culturales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6821d5033024"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed87ce4cb5b1",
+  "claimSlug": "\"modelo-la-audiencia-nacional-nunca-ha-juzgado-a-un-politico-de-alto-nivel-por-corrupcio\"",
+  "text": "La Audiencia Nacional nunca ha juzgado a un político de alto nivel por corrupción en el último lustro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1960f56e7080"
+  ]
+}

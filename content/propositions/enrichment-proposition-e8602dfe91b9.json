@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e8602dfe91b9",
+  "claimSlug": "\"modelo-los-inmigrantes-no-respetan-las-costumbres-locales-y-causan-disturbios\"",
+  "text": "Los inmigrantes no respetan las costumbres locales y causan disturbios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c9b2bbfa8b4"
+  ]
+}

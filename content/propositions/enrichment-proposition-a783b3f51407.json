@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a783b3f51407",
+  "claimSlug": "\"modelo-por-que-la-justicia-en-espana-es-tan-lenta-y-complicada-que-se-tarda-anos-en-res\"",
+  "text": "¿Por qué la Justicia en España es tan lenta y complicada que se tarda años en resolver un juicio sencillo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6427042acfd5"
+  ]
+}

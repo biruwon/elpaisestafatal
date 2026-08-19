@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9f3e862d1ddb",
+  "claimSlug": "\"modelo-es-frustrante-que-las-autoridades-sanitarias-no-tomen-medidas-urgentes-para-redu\"",
+  "text": "Es frustrante que las autoridades sanitarias no tomen medidas urgentes para reducir las listas de espera, dejando a la gente sin atención",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8e6f3ab91ef1"
+  ]
+}

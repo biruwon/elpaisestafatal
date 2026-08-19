@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5d738583d0d",
+  "claimSlug": "\"modelo-en-espana-los-jovenes-no-reciben-formacion-en-habilidades-digitales-basicas-en-e\"",
+  "text": "En España, los jóvenes no reciben formación en habilidades digitales básicas en el currículo escolar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa5dfe5b97ce"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-09f6e4ba01f7",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-la-pension-se-esta-alargando-demasiado\"",
+  "text": "La espera para acceder a la pension se está alargando demasiado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b1b222009435"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ed08934ab5f",
+  "claimSlug": "\"modelo-los-inmigrantes-estan-desplazando-a-los-espanoles-del-mercado-laboral\"",
+  "text": "Los inmigrantes están desplazando a los españoles del mercado laboral.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-24d5db93400a"
+  ]
+}

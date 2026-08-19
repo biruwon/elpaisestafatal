@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b9c447468ab6",
+  "claimSlug": "\"modelo-la-comida-en-espana-es-mas-cara-que-en-otros-paises-de-la-ue\"",
+  "text": "La comida en España es más cara que en otros países de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c6ee791918c"
+  ]
+}

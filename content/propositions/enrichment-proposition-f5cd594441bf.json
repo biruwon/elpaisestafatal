@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5cd594441bf",
+  "claimSlug": "\"modelo-el-precio-del-gas-natural-en-espana-es-mas-alto-que-en-otros-paises-europeos\"",
+  "text": "¿El precio del gas natural en España es más alto que en otros países europeos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b998a5df54d8"
+  ]
+}

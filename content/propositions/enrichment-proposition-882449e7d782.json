@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-882449e7d782",
+  "claimSlug": "\"modelo-la-fiscalia-anticorrupcion-nunca-ha-incoado-un-procedimiento-contra-un-politico-\"",
+  "text": "La Fiscalía Anticorrupción nunca ha incoado un procedimiento contra un político del Partido Popular en el último año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67353aa750a9"
+  ]
+}

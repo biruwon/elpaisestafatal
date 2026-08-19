@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b0ca05243dc",
+  "claimSlug": "\"modelo-el-sistema-de-pensiones-esta-desigualmente-distribuido-favoreciendo-a-los-mas-jo\"",
+  "text": "El sistema de pensiones está desigualmente distribuido, favoreciendo a los más jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd34bef89794"
+  ]
+}

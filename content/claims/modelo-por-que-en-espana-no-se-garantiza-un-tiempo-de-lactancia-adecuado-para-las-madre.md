@@ -4,21 +4,22 @@ claim: "¿Por qué en España no se garantiza un tiempo de lactancia adecuado pa
 assessment: uncertain
 topicSlugs: ["derechos laborales y conciliación"]
 aliases: ["¿Cuánto tiempo de lactancia tienen las madres en España?","¿Cómo se pueden mejorar las condiciones de lactancia en el trabajo?","¿Qué medidas se toman para facilitar la lactancia en el trabajo?","¿Cuánto tiempo se debería garantizar de lactancia en España?","¿Cómo pueden las empresas adaptarse mejor a las necesidades de lactancia de las madres?","¿Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas","¿Es cierto que Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","¿Qué datos permiten comprobar si Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","Quiero saber si Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas","¿Cómo se puede verificar Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","¿Hay evidencia sobre si Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","¿Es verdad que Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","¿Qué sabemos de Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?","¿Se sostiene la afirmación de que Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-fa2a24019c0e"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-b3413b13e60f"]
 ---
 
 ## Qué es cierto

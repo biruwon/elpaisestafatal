@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a9e5f0b8a94",
+  "claimSlug": "\"modelo-la-proteccion-social-se-ha-vuelto-insuficiente-para-cubrir-los-gastos-de-los-may\"",
+  "text": "La protección social se ha vuelto insuficiente para cubrir los gastos de los mayores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-289fbf9ecf5e"
+  ]
+}

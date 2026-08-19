@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0ef75d2875f",
+  "claimSlug": "\"modelo-cuando-se-va-a-arreglar-el-puente-colapsado-de-la-campana-en-malaga\"",
+  "text": "¿Cuándo se va a arreglar el puente colapsado de La Campana en Málaga?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dffb0a8b44e6"
+  ]
+}

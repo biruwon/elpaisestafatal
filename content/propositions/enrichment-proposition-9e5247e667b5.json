@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9e5247e667b5",
+  "claimSlug": "\"modelo-por-que-no-hay-mas-viviendas-con-tecnologia-de-ultima-generacion-en-espana\"",
+  "text": "¿Por qué no hay más viviendas con tecnología de última generación en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cef4667f3292"
+  ]
+}

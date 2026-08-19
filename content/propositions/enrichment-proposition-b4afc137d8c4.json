@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4afc137d8c4",
+  "claimSlug": "\"modelo-el-aumento-de-la-esperas-en-tratamientos-de-salud-mental-es-alarmante-ya-que-muc\"",
+  "text": "El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-1e9ec7640ed6"
+  ]
+}

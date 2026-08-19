@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a1ab07f7fca",
+  "claimSlug": "\"modelo-los-parques-naturales-de-espana-no-tienen-suficientes-personal-para-cuidar-del-m\"",
+  "text": "Los parques naturales de España no tienen suficientes personal para cuidar del medio ambiente y la flora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2027f8177ec3"
+  ]
+}

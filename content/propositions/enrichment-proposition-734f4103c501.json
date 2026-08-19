@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-734f4103c501",
+  "claimSlug": "\"modelo-por-que-la-produccion-de-tomate-en-la-comunidad-valenciana-sigue-bajando-y-los-p\"",
+  "text": "¿Por qué la producción de tomate en la Comunidad Valenciana sigue bajando y los precios se disparan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78cfc96f209a"
+  ]
+}

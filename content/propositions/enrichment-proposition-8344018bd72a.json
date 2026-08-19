@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8344018bd72a",
+  "claimSlug": "\"modelo-es-inadmisible-que-la-sanidad-no-pueda-atender-a-todos-en-tiempo-record-solo-a-l\"",
+  "text": "Es inadmisible que la sanidad no pueda atender a todos en tiempo récord, solo a los que están en riesgo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-edf93110da6c"
+  ]
+}

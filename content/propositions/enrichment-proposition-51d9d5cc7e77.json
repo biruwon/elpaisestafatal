@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-51d9d5cc7e77",
+  "claimSlug": "\"modelo-la-nomina-de-muchos-empleados-es-tan-baja-que-no-cubre-ni-siquiera-el-alquiler-e\"",
+  "text": "La nómina de muchos empleados es tan baja que no cubre ni siquiera el alquiler en ciudades como Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e9de820a654"
+  ]
+}

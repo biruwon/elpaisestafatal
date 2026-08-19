@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79cdfa78086d",
+  "claimSlug": "\"modelo-el-paro-juvenil-en-espana-es-un-problema-de-larga-data\"",
+  "text": "El paro juvenil en España es un problema de larga data.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-372600dbd4bf"
+  ]
+}

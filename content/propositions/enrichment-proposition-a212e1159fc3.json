@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a212e1159fc3",
+  "claimSlug": "\"modelo-los-gobiernos-no-hacen-nada-por-reducir-el-coste-de-la-luz-y-el-gas\"",
+  "text": "Los gobiernos no hacen nada por reducir el coste de la luz y el gas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-181be09af027"
+  ]
+}

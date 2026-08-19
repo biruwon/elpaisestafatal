@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2af5ccfefb6",
+  "claimSlug": "\"modelo-las-autopistas-tienen-demasiados-peajes-que-alargan-el-tiempo-de-viaje-y-son-un-\"",
+  "text": "Las autopistas tienen demasiados peajes que alargan el tiempo de viaje y son un lastre económico para los conductores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5e23d22cff6"
+  ]
+}

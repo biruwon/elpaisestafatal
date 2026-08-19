@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c6558410446b",
+  "claimSlug": "\"modelo-la-delincuencia-ha-aumentado-en-el-ultimo-ano-en-el-centro-de-la-ciudad\"",
+  "text": "¿La delincuencia ha aumentado en el último año en el centro de la ciudad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-55b69951a96e"
+  ]
+}

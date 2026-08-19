@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfeafce12056",
+  "claimSlug": "\"modelo-las-becas-para-estudios-superiores-son-dificiles-de-acceder-excluyendo-a-muchos-\"",
+  "text": "Las becas para estudios superiores son difíciles de acceder, excluyendo a muchos estudiantes con talento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5ec86c121b5"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "¿Por qué las comunidades del norte tienen menos presupuesto para turis
 assessment: uncertain
 topicSlugs: ["territorio y diferencias regionales"]
 aliases: ["¿Por qué la Comunidad de Madrid tiene más presupuesto para turismo que todas las comunidades del norte juntas?","¿Por qué Madrid recibe más ayudas para turismo que Galicia y Asturias?","¿Por qué Madrid tiene más presupuesto para turismo que Cantabria y País Vasco?","¿Por qué Madrid gana más en turismo que todas las comunidades del norte?","¿Por qué Madrid se lleva más presupuesto en turismo que las Islas Canarias?","¿Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid","¿Es cierto que Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","¿Qué datos permiten comprobar si Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","Quiero saber si Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid","¿Cómo se puede verificar Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","¿Hay evidencia sobre si Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","¿Es verdad que Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","¿Qué sabemos de Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?","¿Se sostiene la afirmación de que Por qué las comunidades del norte tienen menos presupuesto para turismo que la Comunidad de Madrid?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-8b22623f7cc3"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que las comunidades del norte tienen menos presupuesto para turismo que la comunidad de madrid"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-46091afa9630"]
 ---
 
 ## Qué es cierto

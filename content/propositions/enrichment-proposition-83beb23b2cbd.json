@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83beb23b2cbd",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-tecnologia-afecta-la-lucha-contra-incendios\"",
+  "text": "La falta de inversión en tecnología afecta la lucha contra incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b79cb2a4fa8c"
+  ]
+}

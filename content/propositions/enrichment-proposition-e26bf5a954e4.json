@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e26bf5a954e4",
+  "claimSlug": "\"modelo-como-es-que-el-metro-de-barcelona-sigue-tan-lento-y-con-tantos-retrasos\"",
+  "text": "¿Cómo es que el metro de Barcelona sigue tan lento y con tantos retrasos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-950cbd2e803a"
+  ]
+}

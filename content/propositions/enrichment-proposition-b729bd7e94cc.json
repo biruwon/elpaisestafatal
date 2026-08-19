@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b729bd7e94cc",
+  "claimSlug": "\"modelo-el-paro-sube-en-el-ultimo-mes-y-la-gente-se-siente-mas-desesperada-que-nunca\"",
+  "text": "El paro sube en el último mes y la gente se siente más desesperada que nunca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-508087cc34c2"
+  ]
+}

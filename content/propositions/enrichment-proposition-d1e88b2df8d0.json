@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1e88b2df8d0",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-ha-construido-suficiente-infraestructura-para-el-transpo\"",
+  "text": "¿Por qué en España no se ha construido suficiente infraestructura para el transporte de mercancías?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ff541adca61d"
+  ]
+}

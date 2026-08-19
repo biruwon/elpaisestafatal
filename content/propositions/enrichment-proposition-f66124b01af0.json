@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f66124b01af0",
+  "claimSlug": "\"modelo-la-justicia-laboral-es-un-desastre-y-las-empresas-siempre-ganan-a-los-trabajador\"",
+  "text": "La justicia laboral es un desastre y las empresas siempre ganan a los trabajadores en los tribunales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd62e90b61bf"
+  ]
+}

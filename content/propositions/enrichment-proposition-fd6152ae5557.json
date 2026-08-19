@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd6152ae5557",
+  "claimSlug": "\"modelo-la-precariedad-laboral-es-un-problema-que-afecta-a-toda-la-poblacion\"",
+  "text": "La precariedad laboral es un problema que afecta a toda la población.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22ffc79d2fd9"
+  ]
+}

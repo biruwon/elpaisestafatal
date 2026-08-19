@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ba8405968639",
+  "claimSlug": "\"modelo-espana-siempre-tiene-que-pedir-permiso-a-la-ue-para-hacer-cambios-en-su-constitu\"",
+  "text": "España siempre tiene que pedir permiso a la UE para hacer cambios en su Constitución.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5f56caf9a8e"
+  ]
+}

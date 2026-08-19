@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-708150044e1a",
+  "claimSlug": "\"modelo-la-estacion-de-atocha-en-madrid-esta-siempre-colapsada-especialmente-los-fines-d\"",
+  "text": "La estación de Atocha en Madrid está siempre colapsada, especialmente los fines de semana.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d606046b20f0"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "La falta de empleo para jóvenes es un problema crónico en España, con
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["problema de la juventud","falta de empleo para los jóvenes","tachados de la universidad","oportunidades laborales escasas","crónica de la desempleada","La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.","¿Es cierto que La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","¿Qué datos permiten comprobar si La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","Quiero saber si La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.","¿Cómo se puede verificar La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","¿Hay evidencia sobre si La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","¿Es verdad que La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","¿Qué sabemos de La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?","¿Se sostiene la afirmación de que La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-23a3f0922ad6"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de empleo para jovenes es un problema cronico en espana con muchos tachados de la universidad sin oportunidades"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-3a81cf6cfce6"]
 ---
 
 ## Qué es cierto

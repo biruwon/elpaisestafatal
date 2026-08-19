@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-576ad8953e86",
+  "claimSlug": "\"modelo-las-politicas-de-prevencion-de-incendios-forestales-en-espana-son-tan-buenas-que\"",
+  "text": "Las políticas de prevención de incendios forestales en España son tan buenas que no necesitamos preocuparnos por ellos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8c59ab2f596f"
+  ]
+}

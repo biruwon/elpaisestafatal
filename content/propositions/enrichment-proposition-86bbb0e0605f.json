@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-86bbb0e0605f",
+  "claimSlug": "\"modelo-por-que-los-servicios-de-salud-publicos-no-tienen-mas-personal-estamos-esperando\"",
+  "text": "¿Por qué los servicios de salud públicos no tienen más personal? Estamos esperando horas para ver al médico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a276d9c61da6"
+  ]
+}

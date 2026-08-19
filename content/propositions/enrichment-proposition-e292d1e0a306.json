@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e292d1e0a306",
+  "claimSlug": "\"modelo-el-precio-del-gasoil-en-espana-esta-a-la-deriva\"",
+  "text": "El precio del gasoil en España está a la deriva.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b75a8de730a1"
+  ]
+}

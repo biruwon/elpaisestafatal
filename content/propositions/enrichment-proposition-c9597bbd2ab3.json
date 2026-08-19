@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c9597bbd2ab3",
+  "claimSlug": "\"modelo-las-playas-de-marbella-estan-llena-de-coches-abandonados-y-basura\"",
+  "text": "Las playas de Marbella están llena de coches abandonados y basura.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f78872d22a0"
+  ]
+}

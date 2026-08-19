@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e55e5cdbb53e",
+  "claimSlug": "\"modelo-es-normal-que-en-hospitales-publicos-de-espana-los-pacientes-se-queden-sin-cita-\"",
+  "text": "¿Es normal que en hospitales públicos de España los pacientes se queden sin cita ni atender?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a866c0176b2"
+  ]
+}

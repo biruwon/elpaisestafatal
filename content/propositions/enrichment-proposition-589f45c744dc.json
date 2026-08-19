@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-589f45c744dc",
+  "claimSlug": "\"modelo-en-espana-los-delincuentes-son-cada-vez-mas-audaces-y-no-respeta-ni-siquiera-los\"",
+  "text": "En España, los delincuentes son cada vez más audaces y no respeta ni siquiera los lugares más alejados del centro de las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-000467068666"
+  ]
+}

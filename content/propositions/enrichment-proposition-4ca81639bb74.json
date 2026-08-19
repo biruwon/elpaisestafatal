@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ca81639bb74",
+  "claimSlug": "\"modelo-el-sistema-educativo-no-ofrece-suficientes-practicas-profesionales\"",
+  "text": "El sistema educativo no ofrece suficientes prácticas profesionales",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e60e8fa5b997"
+  ]
+}

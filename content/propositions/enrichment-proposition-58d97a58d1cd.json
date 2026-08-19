@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-58d97a58d1cd",
+  "claimSlug": "\"modelo-como-es-que-en-muchos-edificios-modernos-no-hay-ascensores-accesibles-para-silla\"",
+  "text": "¿Cómo es que en muchos edificios modernos no hay ascensores accesibles para sillas de ruedas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-314095dc1015"
+  ]
+}

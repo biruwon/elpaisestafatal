@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c442330d92c3",
+  "claimSlug": "\"modelo-hay-que-pagar-tantos-gastos-extra-con-el-alquiler-que-resulta-mas-caro-de-lo-que\"",
+  "text": "¡Hay que pagar tantos gastos extra con el alquiler que resulta más caro de lo que parece!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-59c93ee03686"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-09109ce5be9c",
+  "claimSlug": "\"modelo-en-muchas-zonas-la-falta-de-transporte-publico-regular-hace-que-sea-dificil-move\"",
+  "text": "En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31fccca9fb40"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-54cce2192cfe",
+  "claimSlug": "\"modelo-la-gestion-de-residuos-forestales-no-esta-siendo-efectiva-y-esta-contribuyendo-a\"",
+  "text": "La gestión de residuos forestales no está siendo efectiva y está contribuyendo al riesgo de incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-68442a4a18e9"
+  ]
+}

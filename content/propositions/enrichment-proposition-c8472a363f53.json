@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8472a363f53",
+  "claimSlug": "\"modelo-el-proceso-de-alquiler-es-tan-complicado-que-prefiero-no-intentarlo\"",
+  "text": "¡El proceso de alquiler es tan complicado que prefiero no intentarlo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-21c07575e5de"
+  ]
+}

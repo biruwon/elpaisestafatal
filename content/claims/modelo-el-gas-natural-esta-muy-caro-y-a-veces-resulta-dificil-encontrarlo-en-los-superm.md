@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-cfb7803e454f"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gas natural esta muy caro y a veces resulta dificil encontrarlo en los supermercados lo que hace que las facturas sean altas"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-30e398fca292"]
 ---
 
 ## Qué es cierto

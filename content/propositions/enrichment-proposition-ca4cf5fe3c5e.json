@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca4cf5fe3c5e",
+  "claimSlug": "\"modelo-los-agricultores-espanoles-estan-constantemente-luchando-contra-la-escasez-de-ag\"",
+  "text": "Los agricultores españoles están constantemente luchando contra la escasez de agua, lo que afecta directamente a la calidad de los productos que exportamos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-342bc81d625a"
+  ]
+}

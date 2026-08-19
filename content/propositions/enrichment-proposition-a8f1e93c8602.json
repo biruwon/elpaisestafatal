@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8f1e93c8602",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-distribucion-de-la-renta-en-espana-es-tan-grande-que-alguno\"",
+  "text": "La desigualdad en la distribución de la renta en España es tan grande que algunos vecinos viven en casas con electricidad y otros en la oscuridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5bab983c32ea"
+  ]
+}

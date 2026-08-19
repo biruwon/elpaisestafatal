@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c06f2ba6f8c",
+  "claimSlug": "\"modelo-las-politicas-actuales-parecen-priorizar-los-grandes-centros-urbanos-sobre-los-p\"",
+  "text": "Las políticas actuales parecen priorizar los grandes centros urbanos sobre los pueblos pequeños, dejando sin oportunidades a muchos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-375a3e78e1a7"
+  ]
+}

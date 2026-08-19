@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9786077dd891",
+  "claimSlug": "\"modelo-la-ue-no-responde-a-las-necesidades-especificas-del-sector-agrario-espanol\"",
+  "text": "La UE no responde a las necesidades específicas del sector agrario español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-79ebf3956317"
+  ]
+}

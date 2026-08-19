@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-649fdf5a646f",
+  "claimSlug": "\"modelo-por-que-en-espana-hay-tantas-empresas-que-no-ofrecen-permisos-para-cuidar-a-los-\"",
+  "text": "¿Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-453221e7c22d"
+  ]
+}

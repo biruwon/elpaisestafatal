@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d47024ab81a6",
+  "claimSlug": "\"modelo-los-salarios-en-espana-se-estan-quedando-muy-atras-en-comparacion-con-otras-euro\"",
+  "text": "Los salarios en España se están quedando muy atrás en comparación con otras europeas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e3e5d2c5198b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-857af2a416e0",
+  "claimSlug": "\"modelo-la-ue-no-ha-dado-respuesta-a-las-demandas-de-la-industria-textil-espanola\"",
+  "text": "La UE no ha dado respuesta a las demandas de la industria textil española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e025dd26c143"
+  ]
+}

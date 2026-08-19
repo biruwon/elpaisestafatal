@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2bc4aea2d2a2",
+  "claimSlug": "\"modelo-la-falta-de-centros-deportivos-para-jovenes-causa-que-muchos-no-practiquen-depor\"",
+  "text": "La falta de centros deportivos para jóvenes causa que muchos no practiquen deporte regularmente.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-3706e5ab9a85"
+  ]
+}

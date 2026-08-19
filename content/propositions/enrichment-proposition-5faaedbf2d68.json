@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5faaedbf2d68",
+  "claimSlug": "\"modelo-la-violencia-domestica-se-ha-convertido-en-un-problema-grave-en-muchas-ciudades-\"",
+  "text": "La violencia doméstica se ha convertido en un problema grave en muchas ciudades españolas, con casos que no se resuelven a tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0e8a4719e4d2"
+  ]
+}

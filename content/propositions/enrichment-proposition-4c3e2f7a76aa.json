@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4c3e2f7a76aa",
+  "claimSlug": "\"modelo-las-aulas-estan-llenas-de-alumnos-y-los-profesores-no-pueden-dar-la-clase-que-de\"",
+  "text": "Las aulas están llenas de alumnos y los profesores no pueden dar la clase que deberían.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37bd19edec36"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2b45c9cb25d",
+  "claimSlug": "\"modelo-no-me-dan-el-piso-porque-mi-sueldo-no-alcanza-que-cojones\"",
+  "text": "¡No me dan el piso porque mi sueldo no alcanza, qué cojones!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9fc2e09a3b99"
+  ]
+}

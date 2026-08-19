@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4a66c4fbe53a",
+  "claimSlug": "\"modelo-la-infraestructura-de-autopistas-en-espana-es-costosa-y-hay-pocos-peajes-lo-que-\"",
+  "text": "La infraestructura de autopistas en España es costosa y hay pocos peajes, lo que hace que viajar sea caro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-59bf219ebe64"
+  ]
+}

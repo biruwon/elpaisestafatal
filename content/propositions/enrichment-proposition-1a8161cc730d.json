@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a8161cc730d",
+  "claimSlug": "\"modelo-la-delincuencia-en-los-parques-es-tal-que-se-ha-convertido-en-un-problema-de-seg\"",
+  "text": "La delincuencia en los parques es tal que se ha convertido en un problema de seguridad para los vecinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-053e40c33ee8"
+  ]
+}

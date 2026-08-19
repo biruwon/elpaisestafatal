@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3a22b2c55308",
+  "claimSlug": "\"modelo-los-servicios-de-salud-estan-colapsados-por-tanta-inmigracion-y-no-llegamos-a-ve\"",
+  "text": "Los servicios de salud están colapsados por tanta inmigración y no llegamos a ver a nuestros doctores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f657b4ff187"
+  ]
+}

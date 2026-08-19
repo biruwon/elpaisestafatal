@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ff09823d572",
+  "claimSlug": "\"modelo-las-politicas-medioambientales-son-ineficaces-para-combatir-los-incendios\"",
+  "text": "Las políticas medioambientales son ineficaces para combatir los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8926bf304c66"
+  ]
+}

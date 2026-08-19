@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5989850a0759",
+  "claimSlug": "\"modelo-la-atencion-primaria-en-espana-esta-tan-colapsada-que-los-medicos-no-tienen-tiem\"",
+  "text": "La atención primaria en España está tan colapsada que los médicos no tienen tiempo para atender correctamente a los pacientes, a veces ni siquiera los ven.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-04444337599d"
+  ]
+}

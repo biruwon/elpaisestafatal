@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-791076ff533b",
+  "claimSlug": "\"modelo-los-ladrones-de-bicicletas-son-tan-despiadados-que-no-dejan-rastro\"",
+  "text": "¡Los ladrones de bicicletas son tan despiadados que no dejan rastro!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9656194708a3"
+  ]
+}

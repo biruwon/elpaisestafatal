@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a0f0af59b99",
+  "claimSlug": "\"modelo-los-planes-de-gestion-del-fuego-no-se-estan-implementando-correctamente-y-estan-\"",
+  "text": "Los planes de gestión del fuego no se están implementando correctamente y están causando más problemas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3450fd9e5d7"
+  ]
+}

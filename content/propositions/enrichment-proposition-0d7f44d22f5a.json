@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d7f44d22f5a",
+  "claimSlug": "\"modelo-las-horas-extras-en-espana-se-pagan-muy-mal\"",
+  "text": "Las horas extras en España se pagan muy mal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-82390e0c6a73"
+  ]
+}

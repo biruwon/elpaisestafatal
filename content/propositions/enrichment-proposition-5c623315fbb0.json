@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5c623315fbb0",
+  "claimSlug": "\"modelo-es-frecuente-que-los-acusados-se-queden-condenados-sin-que-la-prueba-sea-suficie\"",
+  "text": "¿Es frecuente que los acusados se queden condenados sin que la prueba sea suficiente?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d1c1d6779a2f"
+  ]
+}

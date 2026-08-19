@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf0232a96a44",
+  "claimSlug": "\"modelo-los-impuestos-a-las-bebidas-gaseosas-son-tan-altos-que-ya-no-las-consumo\"",
+  "text": "Los impuestos a las bebidas gaseosas son tan altos que ya no las consumo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e44b19038b01"
+  ]
+}

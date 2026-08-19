@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1210edc330b5",
+  "claimSlug": "\"modelo-el-gasto-en-servicios-basicos-se-ha-disparado-y-el-sueldo-no-sube-con-ellos\"",
+  "text": "El gasto en servicios básicos se ha disparado, ¡y el sueldo no sube con ellos!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-05350cca2473"
+  ]
+}

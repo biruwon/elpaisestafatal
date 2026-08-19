@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b181117222d9",
+  "claimSlug": "\"modelo-los-trenes-demoran-demasiado-con-frecuentes-retrasos-y-viajes-incomodos\"",
+  "text": "Los trenes demoran demasiado, con frecuentes retrasos y viajes incómodos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-317ff7d0a276"
+  ]
+}

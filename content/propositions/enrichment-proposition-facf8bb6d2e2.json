@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-facf8bb6d2e2",
+  "claimSlug": "\"modelo-se-ve-que-la-inmigracion-esta-creando-conflictos-con-los-locales-especialmente-e\"",
+  "text": "Se ve que la inmigración está creando conflictos con los locales, especialmente en zonas residenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c352e3f19c0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7f6a3d7abdec",
+  "claimSlug": "\"modelo-los-hoteles-de-la-comunidad-valenciana-cobran-demasiado-por-la-temporada-alta\"",
+  "text": "Los hoteles de la Comunidad Valenciana cobran demasiado por la temporada alta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7fd5ca4fe156"
+  ]
+}

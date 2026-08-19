@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-67cb96c3dfb9",
+  "claimSlug": "\"modelo-las-subidas-constantes-del-alquiler-son-un-problema-real-no-se-puede-vivir-de-un\"",
+  "text": "¡Las subidas constantes del alquiler son un problema real! No se puede vivir de un sueldo medio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b6e74118929a"
+  ]
+}

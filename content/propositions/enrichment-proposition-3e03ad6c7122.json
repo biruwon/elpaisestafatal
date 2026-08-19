@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e03ad6c7122",
+  "claimSlug": "\"modelo-los-servicios-publicos-como-la-electricidad-y-el-agua-estan-sufriendo-porque-no-\"",
+  "text": "Los servicios públicos como la electricidad y el agua están sufriendo porque no se controla bien la inmigración.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cbbb8452c736"
+  ]
+}

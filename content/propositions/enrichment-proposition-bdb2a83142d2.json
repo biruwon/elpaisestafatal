@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bdb2a83142d2",
+  "claimSlug": "\"modelo-los-costes-energeticos-estan-matando-al-consumidor\"",
+  "text": "Los costes energéticos están matando al consumidor",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e910dd91cff6"
+  ]
+}

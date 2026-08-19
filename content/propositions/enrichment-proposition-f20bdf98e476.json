@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f20bdf98e476",
+  "claimSlug": "\"modelo-la-red-de-autobuses-en-muchas-ciudades-de-espana-es-ineficiente-y-llena-de-retra\"",
+  "text": "La red de autobuses en muchas ciudades de España es ineficiente y llena de retrasos, especialmente en horario de rush hour.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d78398246815"
+  ]
+}

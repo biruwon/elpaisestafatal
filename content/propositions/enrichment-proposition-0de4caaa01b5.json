@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0de4caaa01b5",
+  "claimSlug": "\"modelo-por-que-en-espana-se-estan-cerrando-las-comisarias-de-distrito-en-zonas-urbanas-\"",
+  "text": "¿Por qué en España se están cerrando las comisarías de distrito en zonas urbanas, dejando a los ciudadanos más expuestos a la delincuencia?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-166fec35e933"
+  ]
+}

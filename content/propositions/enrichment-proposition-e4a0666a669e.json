@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e4a0666a669e",
+  "claimSlug": "\"modelo-por-que-la-esperanza-de-vida-en-espana-esta-aumentando-pero-las-pensiones-no-sig\"",
+  "text": "¿Por qué la esperanza de vida en España está aumentando pero las pensiones no siguen el mismo ritmo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cfb96e0e6fdb"
+  ]
+}

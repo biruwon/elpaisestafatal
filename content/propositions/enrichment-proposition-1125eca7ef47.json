@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1125eca7ef47",
+  "claimSlug": "\"modelo-la-despoblacion-de-asturias-esta-dejando-a-los-ninos-sin-oportunidades\"",
+  "text": "La despoblación de Asturias está dejando a los niños sin oportunidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-acfecb2c7863"
+  ]
+}

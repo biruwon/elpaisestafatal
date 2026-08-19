@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1fb0ff2614d0",
+  "claimSlug": "\"modelo-la-ue-no-ha-sido-lo-suficientemente-flexible-en-permitir-que-espana-aplique-sus-\"",
+  "text": "La UE no ha sido lo suficientemente flexible en permitir que España aplique sus propias políticas de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-38eb2adc7f00"
+  ]
+}

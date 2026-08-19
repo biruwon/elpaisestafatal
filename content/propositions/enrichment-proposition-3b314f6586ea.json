@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b314f6586ea",
+  "claimSlug": "\"modelo-la-inmigracion-esta-sobrecargando-los-servicios-publicos-y-la-infraestructura\"",
+  "text": "La inmigración está sobrecargando los servicios públicos y la infraestructura.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78bb46337862"
+  ]
+}

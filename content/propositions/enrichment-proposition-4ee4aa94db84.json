@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ee4aa94db84",
+  "claimSlug": "\"modelo-en-espana-los-proveedores-de-fibra-optica-son-un-hervidero-de-mierda-no-se-comun\"",
+  "text": "En España, los proveedores de fibra óptica son un hervidero de mierda, no se comunican bien y te dejan en la estacada.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-8bf1fa8b1b7b"
+  ]
+}

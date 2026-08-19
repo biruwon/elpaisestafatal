@@ -4,21 +4,22 @@ claim: "El sistema eléctrico está diseñado para engañar a los consumidores."
 assessment: uncertain
 topicSlugs: ["energía y coste de vida"]
 aliases: ["la electricidad nos roba por el sistema","la electricidad nos engaña con el sistema","el sistema eléctrico nos miente","el sistema eléctrico nos caga la cama","el sistema eléctrico nos engaña","El sistema eléctrico está diseñado para engañar a los consumidores.","¿Es cierto que El sistema eléctrico está diseñado para engañar a los consumidores.?","¿Qué datos permiten comprobar si El sistema eléctrico está diseñado para engañar a los consumidores.?","Quiero saber si El sistema eléctrico está diseñado para engañar a los consumidores.","¿Cómo se puede verificar El sistema eléctrico está diseñado para engañar a los consumidores.?","¿Hay evidencia sobre si El sistema eléctrico está diseñado para engañar a los consumidores.?","¿Es verdad que El sistema eléctrico está diseñado para engañar a los consumidores.?","¿Qué sabemos de El sistema eléctrico está diseñado para engañar a los consumidores.?","¿Se sostiene la afirmación de que El sistema eléctrico está diseñado para engañar a los consumidores.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-1338329c98fd"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema electrico esta disenado para enganar a los consumidores"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-3f6d3c5d31cf"]
 ---
 
 ## Qué es cierto

@@ -4,21 +4,22 @@ claim: "¿Cuánto tiempo se tarda en reponer los servicios de bomberos forestale
 assessment: uncertain
 topicSlugs: ["medio ambiente e incendios"]
 aliases: ["¿Por qué los bomberos tardan en regresar?","¿Cuánto tiempo sin bomberos?","¿Por qué la cobertura de bomberos se reduce?","¿Por qué no hay suficientes bomberos?","¿Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio","¿Es cierto que Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","¿Qué datos permiten comprobar si Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","Quiero saber si Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio","¿Cómo se puede verificar Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","¿Hay evidencia sobre si Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","¿Es verdad que Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","¿Qué sabemos de Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?","¿Se sostiene la afirmación de que Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-083ff0ed1153"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "cuanto tiempo se tarda en reponer los servicios de bomberos forestales despues de un incendio"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-53b3b2261e32"]
 ---
 
 ## Qué es cierto

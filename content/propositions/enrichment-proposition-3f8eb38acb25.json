@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f8eb38acb25",
+  "claimSlug": "\"modelo-el-sueldo-que-me-pagan-no-alcanza-ni-para-pagar-el-alquiler-como-voy-a-comer-y-v\"",
+  "text": "El sueldo que me pagan no alcanza ni para pagar el alquiler, ¿cómo voy a comer y vivir dignamente?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-921dd669c35e"
+  ]
+}

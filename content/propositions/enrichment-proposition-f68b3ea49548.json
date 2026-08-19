@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f68b3ea49548",
+  "claimSlug": "\"modelo-la-electricidad-en-espana-es-mas-cara-que-en-cualquier-otro-pais-de-europa\"",
+  "text": "La electricidad en España es más cara que en cualquier otro país de Europa",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b8ed032956e3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd41d9384dfb",
+  "claimSlug": "\"modelo-cuanto-tiempo-se-tarda-en-recuperar-el-ecosistema-tras-los-incendios-en-comparac\"",
+  "text": "¿Cuánto tiempo se tarda en recuperar el ecosistema tras los incendios en comparación con otros países?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-028a0dc52f06"
+  ]
+}

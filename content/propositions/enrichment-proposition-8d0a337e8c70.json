@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8d0a337e8c70",
+  "claimSlug": "\"modelo-los-miembros-del-consejo-general-del-poder-judicial-no-son-elegidos-por-voto-pop\"",
+  "text": "Los miembros del Consejo General del Poder Judicial no son elegidos por voto popular.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-07da4bbb4a95"
+  ]
+}

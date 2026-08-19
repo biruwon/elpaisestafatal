@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d4dbdfcf825",
+  "claimSlug": "\"modelo-pedro-sanchez-esta-destruyendo-el-pais\"",
+  "text": "Pedro Sánchez está destruyendo el país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bfdd4faeefd5"
+  ]
+}

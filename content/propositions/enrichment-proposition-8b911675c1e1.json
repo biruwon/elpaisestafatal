@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8b911675c1e1",
+  "claimSlug": "\"modelo-las-politicas-de-ayudas-son-tan-burocraticas-que-a-menudo-resultan-desalentadora\"",
+  "text": "Las políticas de ayudas son tan burocráticas que a menudo resultan desalentadoras para quienes las necesitan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-13dfba1fe57e"
+  ]
+}

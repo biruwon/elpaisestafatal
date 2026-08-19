@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6cc1b1502d97",
+  "claimSlug": "\"modelo-el-iva-en-espana-es-tan-alto-que-se-siente-en-cada-compra-sobre-todo-en-alimento\"",
+  "text": "El IVA en España es tan alto que se siente en cada compra, sobre todo en alimentos y servicios básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-656701809a34"
+  ]
+}

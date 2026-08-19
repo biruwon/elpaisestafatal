@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef56206434fa",
+  "claimSlug": "\"modelo-la-deuda-publica-esta-creciendo-exponencialmente-lo-que-preocupa-por-el-futuro-f\"",
+  "text": "La deuda pública está creciendo exponencialmente, lo que preocupa por el futuro financiero del país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84aedd9407b8"
+  ]
+}

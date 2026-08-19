@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e85ab4dd832",
+  "claimSlug": "\"modelo-la-ue-no-ha-tomado-medidas-para-mejorar-la-calidad-de-la-educacion-en-espana\"",
+  "text": "La UE no ha tomado medidas para mejorar la calidad de la educación en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f3e3135af84"
+  ]
+}

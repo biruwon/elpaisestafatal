@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d16520667659",
+  "claimSlug": "\"modelo-por-que-las-tiendas-de-barrio-no-ofrecen-mas-productos-a-precios-bajos\"",
+  "text": "¿Por qué las tiendas de barrio no ofrecen más productos a precios bajos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a6b64590d59"
+  ]
+}

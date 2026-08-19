@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-0909afe60efa"]
+evidenceIds: ["enrichment-evidence-91dd6df79d59"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana es uno de los paises europeos que ha tenido un crecimiento economico moderado en los ultimos anos"
 generatedAt: "2026-08-18T17:27:50.721Z"
+propositionIds: ["enrichment-proposition-0fa5bd20bf7c"]
 ---
 
 ## Qué es cierto

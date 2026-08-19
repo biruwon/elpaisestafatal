@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d873c6adea7",
+  "claimSlug": "\"modelo-la-llegada-de-muchos-inmigrantes-no-ayuda-a-reducir-el-desempleo-en-cambio-agobi\"",
+  "text": "La llegada de muchos inmigrantes no ayuda a reducir el desempleo, en cambio, agobia el sistema de empleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-671a741b3471"
+  ]
+}

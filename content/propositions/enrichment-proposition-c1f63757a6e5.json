@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c1f63757a6e5",
+  "claimSlug": "\"modelo-las-viviendas-inteligentes-son-solo-un-lujo-para-pocos-en-espana\"",
+  "text": "Las viviendas inteligentes son solo un lujo para pocos en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c05c320ff21"
+  ]
+}

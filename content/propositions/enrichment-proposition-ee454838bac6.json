@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee454838bac6",
+  "claimSlug": "\"modelo-la-policia-espanola-no-responde-a-los-ciudadanos-en-los-casos-de-delincuencia-lo\"",
+  "text": "La policía española no responde a los ciudadanos en los casos de delincuencia local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-27c42ad253a4"
+  ]
+}

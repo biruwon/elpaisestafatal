@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8008f654aef",
+  "claimSlug": "\"modelo-el-gas-es-tan-costoso-que-prefiero-cocinar-con-las-velas\"",
+  "text": "El gas es tan costoso que prefiero cocinar con las velas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f35575805f2a"
+  ]
+}

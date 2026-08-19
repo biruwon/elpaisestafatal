@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de43232031e4",
+  "claimSlug": "\"modelo-la-situacion-economica-en-espana-es-cada-vez-mas-dificil-para-las-familias-y-se-\"",
+  "text": "La situación económica en España es cada vez más difícil para las familias y se siente como si no hubiera salida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ed63d73ba8b2"
+  ]
+}

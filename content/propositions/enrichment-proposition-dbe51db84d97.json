@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dbe51db84d97",
+  "claimSlug": "\"modelo-la-contratacion-publica-en-espana-ha-mejorado-significativamente-en-los-ultimos-\"",
+  "text": "La contratación pública en España ha mejorado significativamente en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f2e74b85867"
+  ]
+}

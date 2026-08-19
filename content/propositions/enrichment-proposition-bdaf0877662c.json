@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bdaf0877662c",
+  "claimSlug": "\"modelo-el-turismo-en-espana-esta-cada-vez-mas-basado-en-el-exceso-de-hoteles-y-menos-en\"",
+  "text": "El turismo en España está cada vez más basado en el exceso de hoteles y menos en la calidad del servicio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-383985f12ef6"
+  ]
+}

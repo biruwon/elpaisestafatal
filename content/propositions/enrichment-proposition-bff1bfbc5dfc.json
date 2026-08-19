@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bff1bfbc5dfc",
+  "claimSlug": "\"modelo-la-temporada-alta-de-turismo-en-espana-hace-que-el-alojamiento-sea-imposible-de-\"",
+  "text": "La temporada alta de turismo en España hace que el alojamiento sea imposible de reservar en verano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f925d9efb5e3"
+  ]
+}

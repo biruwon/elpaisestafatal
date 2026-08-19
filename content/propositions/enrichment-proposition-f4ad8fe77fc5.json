@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4ad8fe77fc5",
+  "claimSlug": "\"modelo-las-ciudades-grandes-estan-llenas-de-inmigrantes-que-no-contribuyen-a-nada\"",
+  "text": "Las ciudades grandes están llenas de inmigrantes que no contribuyen a nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d9ae827f8dbc"
+  ]
+}

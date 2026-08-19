@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4492fbc5461",
+  "claimSlug": "\"modelo-es-muy-dificil-acceder-a-la-ayuda-social-para-enfermos-cronicos\"",
+  "text": "Es muy difícil acceder a la ayuda social para enfermos crónicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31f8801e6f22"
+  ]
+}

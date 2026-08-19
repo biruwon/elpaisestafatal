@@ -4,21 +4,22 @@ claim: "Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nun
 assessment: uncertain
 topicSlugs: ["inmigración y demografía"]
 aliases: ["Los inmigrantes son un fraude","La inmigración está socavando la seguridad social","No veo a los inmigrantes aportando a las pensiones","Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.","¿Es cierto que Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","¿Qué datos permiten comprobar si Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","Quiero saber si Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.","¿Cómo se puede verificar Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","¿Hay evidencia sobre si Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","¿Es verdad que Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","¿Qué sabemos de Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?","¿Se sostiene la afirmación de que Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-c339288daab1"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los inmigrantes no contribuyen al sistema de pensiones solo toman y nunca pagan"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-b700256b4406"]
 ---
 
 ## Qué es cierto

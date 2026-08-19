@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c97fcfa2eb6",
+  "claimSlug": "\"modelo-la-ue-no-ha-combatido-la-corrupcion-en-el-sector-publico-espanol\"",
+  "text": "La UE no ha combatido la corrupción en el sector público español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-664633c378df"
+  ]
+}

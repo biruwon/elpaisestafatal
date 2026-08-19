@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2193986a3e40",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-de-los-trenes-en-espana-hace-que-los-viajeros-tengan-q\"",
+  "text": "La falta de mantenimiento de los trenes en España hace que los viajeros tengan que soportar demoras y cancelaciones constantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6095a3b8e0ef"
+  ]
+}

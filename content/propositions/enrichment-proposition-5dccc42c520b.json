@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5dccc42c520b",
+  "claimSlug": "\"modelo-el-trafico-de-drogas-en-las-zonas-residenciales-esta-a-la-vista-de-todos-y-nadie\"",
+  "text": "El tráfico de drogas en las zonas residenciales está a la vista de todos y nadie hace nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-68b8c3c30657"
+  ]
+}

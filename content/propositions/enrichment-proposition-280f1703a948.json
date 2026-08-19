@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-280f1703a948",
+  "claimSlug": "\"modelo-los-sistemas-de-seguridad-domesticos-promocionados-por-las-constructoras-a-menud\"",
+  "text": "Los sistemas de seguridad domésticos promocionados por las constructoras a menudo resultan en malos rendimientos y frustración.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-ff9d3326d54d"
+  ]
+}

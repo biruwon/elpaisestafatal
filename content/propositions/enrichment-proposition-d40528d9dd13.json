@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d40528d9dd13",
+  "claimSlug": "\"modelo-el-precio-de-la-energia-esta-fuera-de-control-y-afecta-negativamente-al-bolsillo\"",
+  "text": "El precio de la energía está fuera de control y afecta negativamente al bolsillo de la familia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0829c5c7362f"
+  ]
+}

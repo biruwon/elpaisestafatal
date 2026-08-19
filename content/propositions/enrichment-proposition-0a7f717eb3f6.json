@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a7f717eb3f6",
+  "claimSlug": "\"modelo-el-alquiler-sube-mas-rapido-que-el-sueldo-en-espana-que-pesadilla\"",
+  "text": "El alquiler sube más rápido que el sueldo en España, ¡qué pesadilla!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-65793c467117"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2fa801c24b12",
+  "claimSlug": "\"modelo-las-prestaciones-del-paro-se-reducen-cada-vez-mas\"",
+  "text": "Las prestaciones del paro se reducen cada vez más.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d300524d2fcd"
+  ]
+}

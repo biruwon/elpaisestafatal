@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0dcae02a0e03",
+  "claimSlug": "\"modelo-es-frustrante-que-la-sanidad-publica-no-ofrezca-citas-urgentes-para-tratar-dolen\"",
+  "text": "Es frustrante que la sanidad pública no ofrezca citas urgentes para tratar dolencias que no son de vida o muerte.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94517e8febed"
+  ]
+}

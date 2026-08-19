@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad083763a3eb",
+  "claimSlug": "\"modelo-la-desigualdad-de-oportunidades-entre-urbanos-y-rurales-en-castilla-y-leon-es-un\"",
+  "text": "La desigualdad de oportunidades entre urbanos y rurales en Castilla y León es un problema real.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bb566fc3ea7"
+  ]
+}

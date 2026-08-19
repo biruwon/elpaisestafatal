@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e0ea7ff19fbd",
+  "claimSlug": "\"modelo-la-policia-no-responde-rapido-a-las-llamadas-de-emergencia-en-zonas-urbanas\"",
+  "text": "La policía no responde rápido a las llamadas de emergencia en zonas urbanas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5f89a67e60f"
+  ]
+}

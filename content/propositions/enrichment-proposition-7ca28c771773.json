@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7ca28c771773",
+  "claimSlug": "\"modelo-espana-se-siente-que-no-tiene-la-misma-representacion-que-otros-paises-en-la-ue\"",
+  "text": "España se siente que no tiene la misma representación que otros países en la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-872c102ea3df"
+  ]
+}

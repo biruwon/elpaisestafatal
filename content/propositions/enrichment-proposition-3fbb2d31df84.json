@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fbb2d31df84",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-emocional-para-los-estudiantes-en-las-escuelas-es-alarmante\"",
+  "text": "La falta de apoyo emocional para los estudiantes en las escuelas es alarmante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c43cb7b2a2d4"
+  ]
+}

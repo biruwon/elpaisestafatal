@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7a729ab125eb",
+  "claimSlug": "\"modelo-el-turismo-masivo-esta-agotando-los-recursos-naturales-de-las-islas-perjudicando\"",
+  "text": "El turismo masivo está agotando los recursos naturales de las islas, perjudicando a los residentes locales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9341cceb9611"
+  ]
+}

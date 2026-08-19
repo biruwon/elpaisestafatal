@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-15743d6bf5da",
+  "claimSlug": "\"modelo-la-subida-del-paro-afecta-directamente-a-las-familias-con-muchos-hogares-luchand\"",
+  "text": "La subida del paro afecta directamente a las familias, con muchos hogares luchando por mantenerse a flote.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f4e6f8d624e2"
+  ]
+}

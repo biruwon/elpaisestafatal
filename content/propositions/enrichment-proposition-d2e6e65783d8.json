@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2e6e65783d8",
+  "claimSlug": "\"modelo-la-ue-no-ha-resuelto-el-problema-de-la-contaminacion-en-las-ciudades-espanolas\"",
+  "text": "La UE no ha resuelto el problema de la contaminación en las ciudades españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-77931dce09db"
+  ]
+}

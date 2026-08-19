@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-efbbbf226a5c",
+  "claimSlug": "\"modelo-la-subida-de-las-facturas-de-luz-y-gas-esta-fuera-de-control-cuando-bajara\"",
+  "text": "La subida de las facturas de luz y gas está fuera de control, ¿cuándo bajará?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5fa08273d39c"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "La falta de financiación para los deportes en las escuelas está dejand
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["falta de financiación para deportes","deportes en las escuelas","falta de oportunidades en deportes","financiación insuficiente para deportes","deportes restringidos en las escuelas","falta de apoyo en el deporte","La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.","¿Es cierto que La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","¿Qué datos permiten comprobar si La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","Quiero saber si La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.","¿Cómo se puede verificar La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","¿Hay evidencia sobre si La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","¿Es verdad que La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","¿Qué sabemos de La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?","¿Se sostiene la afirmación de que La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-80cb3cfa0af7"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de financiacion para los deportes en las escuelas esta dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-c2f80ff7bf6f"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44adad37b250",
+  "claimSlug": "\"modelo-la-criminalidad-esta-subiendo-en-las-zonas-residenciales-de-zaragoza\"",
+  "text": "La criminalidad está subiendo en las zonas residenciales de Zaragoza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2891eee908a3"
+  ]
+}

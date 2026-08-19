@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-459ac41ed660",
+  "claimSlug": "\"modelo-el-sistema-penitenciario-espanol-parece-estar-disenado-para-que-los-reos-salgan-\"",
+  "text": "El sistema penitenciario español parece estar diseñado para que los reos salgan con menos penas de las que han recibido, a pesar de la gravedad del crimen.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2645c8f52612"
+  ]
+}

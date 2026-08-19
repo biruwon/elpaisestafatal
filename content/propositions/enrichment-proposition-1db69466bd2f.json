@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1db69466bd2f",
+  "claimSlug": "\"modelo-cuanto-tiempo-mas-tarda-la-junta-de-andalucia-en-declarar-emergencia-forestal-cu\"",
+  "text": "¿Cuánto tiempo más tarda la Junta de Andalucía en declarar emergencia forestal cuando hay incendios en zonas de montaña?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c1b4ae4df32e"
+  ]
+}

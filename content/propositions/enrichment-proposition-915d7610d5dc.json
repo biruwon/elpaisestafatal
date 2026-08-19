@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-915d7610d5dc",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-de-las-autopistas-esta-creando-mas-accidentes-de-trafi\"",
+  "text": "La falta de mantenimiento de las autopistas está creando más accidentes de tráfico que la propia conducción en estado de embriaguez.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b22d6e18559a"
+  ]
+}

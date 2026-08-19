@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd216bc7e182",
+  "claimSlug": "\"modelo-en-las-ciudades-espanolas-el-alquiler-de-un-piso-es-mas-caro-que-el-de-una-casa\"",
+  "text": "En las ciudades españolas, el alquiler de un piso es más caro que el de una casa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d5ef2b406d02"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a44e5038bd09",
+  "claimSlug": "\"modelo-en-espana-los-trabajadores-interinos-no-tienen-garantizadas-las-mismas-prestacio\"",
+  "text": "En España, los trabajadores interinos no tienen garantizadas las mismas prestaciones que los empleados fijos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-820c54a4a392"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b23e9efdc9a1",
+  "claimSlug": "\"modelo-la-policia-no-responde-a-las-llamadas-de-emergencia-en-tiempo-util\"",
+  "text": "La policía no responde a las llamadas de emergencia en tiempo útil.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be80471ecf58"
+  ]
+}

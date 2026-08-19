@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d524a700ea1f",
+  "claimSlug": "\"modelo-el-sistema-sanitario-espanol-deberia-hacer-mas-para-reducir-las-listas-de-espera\"",
+  "text": "El sistema sanitario español debería hacer más para reducir las listas de espera, no solo prometerlo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f755fbd8ef64"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a36ad51cbf35",
+  "claimSlug": "\"modelo-no-hay-suficiente-oferta-formativa-en-ciertas-areas-de-interes-para-la-juventud\"",
+  "text": "No hay suficiente oferta formativa en ciertas áreas de interés para la juventud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-52bd07810268"
+  ]
+}

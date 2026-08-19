@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1596dba1bf50",
+  "claimSlug": "\"modelo-el-sistema-de-transporte-publico-en-algunas-ciudades-es-muy-deficiente-por-que-n\"",
+  "text": "El sistema de transporte público en algunas ciudades es muy deficiente, ¿por qué no se mejoran las líneas de metro y autobuses?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dc227ce11c5c"
+  ]
+}

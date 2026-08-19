@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea94a2612c8f",
+  "claimSlug": "\"modelo-los-atracos-a-bancos-son-cada-vez-mas-comunes-causando-preocupacion-entre-la-pob\"",
+  "text": "Los atracos a bancos son cada vez más comunes, causando preocupación entre la población.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84d6291ef774"
+  ]
+}

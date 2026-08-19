@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06c1bb807344",
+  "claimSlug": "\"modelo-la-ue-no-ha-hecho-lo-suficiente-por-el-empleo-en-espana-durante-la-crisis\"",
+  "text": "La UE no ha hecho lo suficiente por el empleo en España durante la crisis.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b77cfdecb003"
+  ]
+}

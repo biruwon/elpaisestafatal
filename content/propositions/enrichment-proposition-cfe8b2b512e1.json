@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfe8b2b512e1",
+  "claimSlug": "\"modelo-espana-no-tiene-un-programa-estatal-enfocado-en-la-transformacion-de-viviendas-e\"",
+  "text": "España no tiene un programa estatal enfocado en la transformación de viviendas en edificios inteligentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b24cdac06498"
+  ]
+}

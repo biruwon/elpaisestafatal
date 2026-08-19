@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd18f4722f5a",
+  "claimSlug": "\"modelo-la-situacion-de-precariedad-laboral-es-muy-comun-en-espana-especialmente-en-los-\"",
+  "text": "La situación de precariedad laboral es muy común en España, especialmente en los contratos temporales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae6231954a68"
+  ]
+}

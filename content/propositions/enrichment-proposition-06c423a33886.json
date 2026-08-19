@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06c423a33886",
+  "claimSlug": "\"modelo-los-parques-de-ocio-estan-llenos-de-grupos-de-inmigrantes\"",
+  "text": "Los parques de ocio están llenos de grupos de inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8cf800da865b"
+  ]
+}

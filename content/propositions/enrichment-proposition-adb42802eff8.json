@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-adb42802eff8",
+  "claimSlug": "\"modelo-como-se-puede-vivir-con-un-sueldo-si-el-alquiler-te-come-la-mitad-del-salario\"",
+  "text": "¿Cómo se puede vivir con un sueldo si el alquiler te come la mitad del salario?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e18dc8ec135c"
+  ]
+}

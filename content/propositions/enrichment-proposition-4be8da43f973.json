@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4be8da43f973",
+  "claimSlug": "\"modelo-el-gobierno-central-no-hace-nada-por-reducir-el-desempleo-en-el-pais-vasco\"",
+  "text": "El gobierno central no hace nada por reducir el desempleo en el País Vasco.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9fa27c46964"
+  ]
+}

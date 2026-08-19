@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0f596bf57833",
+  "claimSlug": "\"modelo-en-espana-la-ratio-de-profesores-por-alumno-en-las-escuelas-publicas-es-tan-alta\"",
+  "text": "En España, la ratio de profesores por alumno en las escuelas públicas es tan alta que los profesores están constantemente sobrecargados de trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-700237ac0022"
+  ]
+}

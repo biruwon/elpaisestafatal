@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fdbd07468518",
+  "claimSlug": "\"modelo-es-comun-que-en-ciudades-espanolas-los-inquilinos-tengan-que-renovar-su-contrato\"",
+  "text": "¿Es común que en ciudades españolas los inquilinos tengan que renovar su contrato de alquiler anualmente?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2618b4cc84b8"
+  ]
+}

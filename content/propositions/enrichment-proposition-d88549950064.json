@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d88549950064",
+  "claimSlug": "\"modelo-la-situacion-en-galicia-es-un-lio-porque-la-falta-de-empleo-y-la-emigracion-hace\"",
+  "text": "La situación en Galicia es un lío porque la falta de empleo y la emigración hacen que la gente se sienta desesperada y descontenta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b3c1aef99af"
+  ]
+}

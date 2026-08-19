@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-557faa227eb8",
+  "claimSlug": "\"modelo-la-falta-de-recursos-tecnologicos-en-las-escuelas-esta-haciendo-que-los-ninos-pi\"",
+  "text": "La falta de recursos tecnológicos en las escuelas está haciendo que los niños pierdan oportunidades en el mundo digital.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-48a6836f3ca4"
+  ]
+}

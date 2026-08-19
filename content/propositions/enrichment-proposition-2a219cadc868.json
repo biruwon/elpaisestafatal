@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2a219cadc868",
+  "claimSlug": "\"modelo-la-red-de-autopistas-en-espana-es-tan-congestionada-que-incluso-los-coches-prefi\"",
+  "text": "La red de autopistas en España es tan congestionada que incluso los coches prefieren caminar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4f6840aebf0e"
+  ]
+}

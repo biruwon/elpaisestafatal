@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-184281ce0238",
+  "claimSlug": "\"modelo-es-peligroso-caminar-por-las-calles-de-barcelona-a-la-noche-sin-compania\"",
+  "text": "Es peligroso caminar por las calles de Barcelona a la noche sin compañía.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-598e1d00d7a4"
+  ]
+}

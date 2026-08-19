@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea5aff28481f",
+  "claimSlug": "\"modelo-la-policia-no-responde-a-los-casos-de-delitos-de-alto-nivel-dejando-a-la-ciudada\"",
+  "text": "La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba15adb2a13d"
+  ]
+}

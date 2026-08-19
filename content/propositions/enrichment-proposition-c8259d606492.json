@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8259d606492",
+  "claimSlug": "\"modelo-en-las-ciudades-espanolas-los-alquileres-en-pisos-son-mas-baratos-que-en-casas\"",
+  "text": "En las ciudades españolas, los alquileres en pisos son más baratos que en casas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1d79a83c75b"
+  ]
+}

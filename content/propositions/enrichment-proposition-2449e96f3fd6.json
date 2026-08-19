@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2449e96f3fd6",
+  "claimSlug": "\"modelo-la-falta-de-centros-de-ocio-y-deporte-en-barrios-populares-conlleva-que-los-nino\"",
+  "text": "La falta de centros de ocio y deporte en barrios populares conlleva que los niños no tengan donde divertirse y hacer deporte.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a272f03906fc"
+  ]
+}

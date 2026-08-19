@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4608195d7de2",
+  "claimSlug": "\"modelo-la-inmigracion-a-espana-esta-creando-zonas-donde-solo-se-habla-otro-idioma\"",
+  "text": "La inmigración a España está creando zonas donde solo se habla otro idioma.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-830ec7ef9155"
+  ]
+}

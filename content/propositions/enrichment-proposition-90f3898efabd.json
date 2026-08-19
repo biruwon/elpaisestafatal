@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-90f3898efabd",
+  "claimSlug": "\"modelo-los-tribunales-no-se-adaptan-bien-a-las-demandas-de-los-ciudadanos\"",
+  "text": "Los tribunales no se adaptan bien a las demandas de los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7222e2fe2fdc"
+  ]
+}

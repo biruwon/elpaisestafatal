@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63ba9aec04d8",
+  "claimSlug": "\"modelo-por-que-se-permite-la-inmigracion-de-paises-con-problemas-de-seguridad-y-salud-e\"",
+  "text": "¿Por qué se permite la inmigración de países con problemas de seguridad y salud en España? Estamos asumiendo riesgos que no debería haber.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4059bc97e695"
+  ]
+}

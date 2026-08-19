@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b7cadf065c0",
+  "claimSlug": "\"modelo-se-ha-incrementado-mucho-la-presencia-de-inmigrantes-en-los-centros-educativos-l\"",
+  "text": "Se ha incrementado mucho la presencia de inmigrantes en los centros educativos, lo que ha aumentado la carga para los maestros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cd4b87ce3946"
+  ]
+}

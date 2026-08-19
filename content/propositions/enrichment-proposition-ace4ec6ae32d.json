@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ace4ec6ae32d",
+  "claimSlug": "\"modelo-la-falta-de-limpieza-de-malezas-en-los-bosques-hace-que-los-incendios-sean-peore\"",
+  "text": "La falta de limpieza de malezas en los bosques hace que los incendios sean peores cada año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-593954449b09"
+  ]
+}

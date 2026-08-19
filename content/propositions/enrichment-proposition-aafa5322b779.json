@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aafa5322b779",
+  "claimSlug": "\"modelo-se-ve-que-la-inmigracion-esta-cambiando-el-aspecto-de-la-poblacion-lo-que-alguno\"",
+  "text": "Se ve que la inmigración está cambiando el aspecto de la población, lo que algunos encuentran desagradable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd799fbfe7d2"
+  ]
+}

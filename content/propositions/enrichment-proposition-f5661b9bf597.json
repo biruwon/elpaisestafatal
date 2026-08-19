@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5661b9bf597",
+  "claimSlug": "\"modelo-la-infraestructura-escolar-esta-obsoleta-y-necesita-ser-renovada\"",
+  "text": "La infraestructura escolar está obsoleta y necesita ser renovada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4031de90b00a"
+  ]
+}

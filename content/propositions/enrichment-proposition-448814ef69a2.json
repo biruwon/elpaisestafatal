@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-448814ef69a2",
+  "claimSlug": "\"modelo-la-inflacion-esta-arruinando-las-finanzas-de-las-pequenas-empresas\"",
+  "text": "La inflación está arruinando las finanzas de las pequeñas empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be678111afe6"
+  ]
+}

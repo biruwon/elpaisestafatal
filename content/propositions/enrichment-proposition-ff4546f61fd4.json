@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff4546f61fd4",
+  "claimSlug": "\"modelo-por-que-la-comunidad-valenciana-tiene-mas-ayuntamientos-que-el-resto-de-la-comun\"",
+  "text": "¿Por qué la Comunidad Valenciana tiene más ayuntamientos que el resto de la Comunidad Valenciana juntos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e884f3b1c6dd"
+  ]
+}

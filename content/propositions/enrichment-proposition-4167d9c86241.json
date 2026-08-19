@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4167d9c86241",
+  "claimSlug": "\"modelo-no-deberia-el-gobierno-haber-invertido-mas-en-sanidad-para-evitar-que-los-precio\"",
+  "text": "¿No debería el gobierno haber invertido más en sanidad para evitar que los precios de los medicamentos sigan subiendo tanto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eee1f458695f"
+  ]
+}

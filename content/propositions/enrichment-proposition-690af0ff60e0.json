@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-690af0ff60e0",
+  "claimSlug": "\"modelo-la-falta-de-agua-en-la-meseta-castellana-esta-limitando-la-produccion-agricola\"",
+  "text": "La falta de agua en la meseta castellana está limitando la producción agrícola.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-febdf5e21e33"
+  ]
+}

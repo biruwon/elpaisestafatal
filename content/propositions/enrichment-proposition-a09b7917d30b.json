@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a09b7917d30b",
+  "claimSlug": "\"modelo-los-centros-educativos-espanoles-a-menudo-carecen-de-espacios-adecuados-para-el-\"",
+  "text": "Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-0edba82a11aa"
+  ]
+}

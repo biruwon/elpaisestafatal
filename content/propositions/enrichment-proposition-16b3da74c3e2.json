@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-16b3da74c3e2",
+  "claimSlug": "\"modelo-la-subida-del-precio-de-la-electricidad-hace-que-no-puedas-calentar-bien-la-casa\"",
+  "text": "La subida del precio de la electricidad hace que no puedas calentar bien la casa en invierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-43b4cfdc71b8"
+  ]
+}

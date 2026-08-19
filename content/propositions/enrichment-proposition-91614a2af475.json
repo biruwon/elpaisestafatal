@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-91614a2af475",
+  "claimSlug": "\"modelo-las-listas-de-espera-de-cirugia-programada-son-tan-largas-que-las-personas-se-qu\"",
+  "text": "Las listas de espera de cirugía programada son tan largas que las personas se quitan el seguro médico.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-7d55fb91df2c"
+  ]
+}

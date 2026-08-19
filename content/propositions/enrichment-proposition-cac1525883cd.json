@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cac1525883cd",
+  "claimSlug": "\"modelo-los-libros-de-texto-en-espana-son-tan-viejos-que-a-veces-la-informacion-esta-des\"",
+  "text": "Los libros de texto en España son tan viejos que a veces la información está desactualizada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cc5d1f20a9ae"
+  ]
+}

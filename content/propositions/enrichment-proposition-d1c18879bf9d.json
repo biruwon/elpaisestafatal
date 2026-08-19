@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1c18879bf9d",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-la-presion-sobre-el-sistema-de-pensiones\"",
+  "text": "La inmigración está aumentando la presión sobre el sistema de pensiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd13a421376c"
+  ]
+}

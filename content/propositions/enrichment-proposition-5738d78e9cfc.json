@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5738d78e9cfc",
+  "claimSlug": "\"modelo-los-recortes-en-politicas-de-empleo-en-espana-afectan-gravemente-a-las-familias\"",
+  "text": "Los recortes en políticas de empleo en España afectan gravemente a las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6e902bdc9e3"
+  ]
+}

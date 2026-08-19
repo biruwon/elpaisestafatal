@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-875a3b113efe",
+  "claimSlug": "\"modelo-la-inmigracion-legal-es-complicada-y-los-procesos-son-demacrantes-para-los-solic\"",
+  "text": "La inmigración legal es complicada y los procesos son demacrantes para los solicitantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31ab85a103e4"
+  ]
+}

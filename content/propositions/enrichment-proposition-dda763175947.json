@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dda763175947",
+  "claimSlug": "\"modelo-las-carteras-son-robadas-con-frecuencia-en-las-paradas-de-autobus-de-las-ciudade\"",
+  "text": "Las carteras son robadas con frecuencia en las paradas de autobús de las ciudades grandes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00872473190c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bb35805e6a0",
+  "claimSlug": "\"modelo-la-falta-de-un-sistema-claro-de-competencias-hace-que-sea-dificil-para-los-ciuda\"",
+  "text": "La falta de un sistema claro de competencias hace que sea difícil para los ciudadanos entender qué competencias tiene cada comunidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6b5ee995f02b"
+  ]
+}

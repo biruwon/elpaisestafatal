@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a4d36914487",
+  "claimSlug": "\"modelo-no-se-supone-que-la-inflacion-deberia-afectar-a-todos-los-productos-no-solo-a-lo\"",
+  "text": "¿No se supone que la inflación debería afectar a todos los productos, no solo a los alimentos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2e8deb26fa93"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b773c8f90599",
+  "claimSlug": "\"modelo-los-jovenes-universitarios-en-espana-a-menudo-tienen-que-trabajar-para-poder-pag\"",
+  "text": "Los jóvenes universitarios en España a menudo tienen que trabajar para poder pagar sus estudios y vivienda, lo que los agota y les impide centrarse en su formación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b14184dc9da8"
+  ]
+}

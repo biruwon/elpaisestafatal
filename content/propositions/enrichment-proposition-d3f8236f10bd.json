@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d3f8236f10bd",
+  "claimSlug": "\"modelo-los-impuestos-suben-pero-no-veo-menos-deuda-ni-mas-empleo\"",
+  "text": "Los impuestos suben, pero no veo menos deuda ni más empleo",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-630c9dccccf4"
+  ]
+}

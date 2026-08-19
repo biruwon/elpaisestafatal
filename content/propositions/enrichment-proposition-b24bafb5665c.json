@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b24bafb5665c",
+  "claimSlug": "\"modelo-es-dificil-conseguir-becas-para-estudios-superiores-verdad\"",
+  "text": "Es difícil conseguir becas para estudios superiores, ¿verdad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-70f338574735"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e4756381d2ef",
+  "claimSlug": "\"modelo-como-es-posible-que-el-aeropuerto-de-barajas-no-tenga-mas-pistas-para-aterrizar\"",
+  "text": "¿Cómo es posible que el Aeropuerto de Barajas no tenga más pistas para aterrizar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-41b5189998c8"
+  ]
+}

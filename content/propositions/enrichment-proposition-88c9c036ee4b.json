@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-88c9c036ee4b",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-tanto-que-los-puestos-de-trabajo-en-los-hospitales-y\"",
+  "text": "La inmigración ha aumentado tanto que los puestos de trabajo en los hospitales y en el sector de la educación están ocupados por inmigrantes y los ciudadanos no pueden aspirar a ellos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-218daf5a49c9"
+  ]
+}

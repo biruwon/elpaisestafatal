@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a33725409ed3",
+  "claimSlug": "\"modelo-los-cortes-en-la-ayuda-por-desempleo-son-un-golpe-duro-dejando-a-muchos-parados-\"",
+  "text": "Los cortes en la ayuda por desempleo son un golpe duro, dejando a muchos parados con pocas opciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e2da4dc34e30"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1149ec6ecdde",
+  "claimSlug": "\"modelo-la-ley-de-educacion-en-espana-permite-a-los-padres-elegir-la-escuela-publica-par\"",
+  "text": "La ley de educación en España permite a los padres elegir la escuela pública para sus hijos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-08591c0865d3"
+  ]
+}

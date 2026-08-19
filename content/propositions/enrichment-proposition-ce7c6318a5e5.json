@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce7c6318a5e5",
+  "claimSlug": "\"modelo-la-ayuda-para-personas-con-discapacidad-no-se-adapta-a-las-necesidades-variadas\"",
+  "text": "La ayuda para personas con discapacidad no se adapta a las necesidades variadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85a1aae5713b"
+  ]
+}

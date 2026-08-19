@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2fafdded539a",
+  "claimSlug": "\"modelo-en-barcelona-la-gente-camina-por-calles-desiertas-mientras-que-en-otros-barrios-\"",
+  "text": "En Barcelona, la gente camina por calles desiertas mientras que en otros barrios los edificios están llenos de lujo y seguridad privada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-134952d327e0"
+  ]
+}

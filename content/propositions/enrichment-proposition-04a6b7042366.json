@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-04a6b7042366",
+  "claimSlug": "\"modelo-la-subvencion-para-los-estudiantes-de-universidad-es-muy-baja-no-alcanza-ni-para\"",
+  "text": "La subvención para los estudiantes de universidad es muy baja, no alcanza ni para cubrir los gastos básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-870c2528a4d1"
+  ]
+}

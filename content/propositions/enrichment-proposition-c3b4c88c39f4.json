@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3b4c88c39f4",
+  "claimSlug": "\"modelo-la-ue-no-esta-ayudando-lo-suficiente-a-las-pequenas-empresas-espanolas-a-superar\"",
+  "text": "La UE no está ayudando lo suficiente a las pequeñas empresas españolas a superar la crisis económica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be4b2d85b393"
+  ]
+}

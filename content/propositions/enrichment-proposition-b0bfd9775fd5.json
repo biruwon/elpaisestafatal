@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0bfd9775fd5",
+  "claimSlug": "\"modelo-las-politicas-de-vivienda-social-son-insuficientes-para-combatir-el-alza-de-prec\"",
+  "text": "Las políticas de vivienda social son insuficientes para combatir el alza de precios en el mercado inmobiliario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b1348731e48e"
+  ]
+}

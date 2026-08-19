@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12e86def5b3c",
+  "claimSlug": "\"modelo-la-calidad-del-producto-en-los-mercados-locales-espanoles-es-variable-y-a-veces-\"",
+  "text": "La calidad del producto en los mercados locales españoles es variable y a veces deficiente, lo que preocupa a los consumidores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1df21f78eb1c"
+  ]
+}

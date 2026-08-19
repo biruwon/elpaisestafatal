@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-caf2b2380c6d",
+  "claimSlug": "\"modelo-la-politica-de-precios-de-la-luz-esta-haciendo-que-los-ciudadanos-espanoles-pagu\"",
+  "text": "La política de precios de la luz está haciendo que los ciudadanos españoles paguen más por la electricidad que en otros países de la Unión Europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d6669e17771b"
+  ]
+}

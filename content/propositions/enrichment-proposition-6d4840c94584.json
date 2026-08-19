@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6d4840c94584",
+  "claimSlug": "\"modelo-el-gasto-en-educacion-deberia-aumentar-pero-veo-que-los-libros-de-texto-siguen-s\"",
+  "text": "El gasto en educación debería aumentar, pero veo que los libros de texto siguen subiendo de precio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3b765b2b3df4"
+  ]
+}

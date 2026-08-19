@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4102ee481f75",
+  "claimSlug": "\"modelo-los-tramites-para-solicitar-la-prestacion-por-desempleo-son-complicados-y-demora\"",
+  "text": "Los trámites para solicitar la prestación por desempleo son complicados y demoran mucho.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fcc9fdabc73e"
+  ]
+}

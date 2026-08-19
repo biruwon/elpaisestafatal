@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-eac77a7f3b09"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inmigracion ha incrementado el gasto sanitario estan abrumando los hospitales y generando problemas de salud publica"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-e59b7a10ccc0"]
 ---
 
 ## Qué es cierto

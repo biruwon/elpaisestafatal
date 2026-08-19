@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6905e038ff00",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-un-psicologo-en-los-centros-educativos-es-cada-vez-mas-\"",
+  "text": "La espera para acceder a un psicólogo en los centros educativos es cada vez más larga, lo que está causando estrés en los estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-618bc895f7d9"
+  ]
+}

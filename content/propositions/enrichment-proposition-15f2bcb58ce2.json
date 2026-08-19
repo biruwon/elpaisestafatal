@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-15f2bcb58ce2",
+  "claimSlug": "\"modelo-la-delincuencia-ha-afectado-la-confianza-en-los-vecinos\"",
+  "text": "¿La delincuencia ha afectado la confianza en los vecinos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3b17d4243d9"
+  ]
+}

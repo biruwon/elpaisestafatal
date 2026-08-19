@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ee436d22eae",
+  "claimSlug": "\"modelo-las-prestaciones-de-desempleo-en-espana-son-muy-limitadas-dejando-a-muchos-desem\"",
+  "text": "Las prestaciones de desempleo en España son muy limitadas, dejando a muchos desempleados en la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fb0364700586"
+  ]
+}

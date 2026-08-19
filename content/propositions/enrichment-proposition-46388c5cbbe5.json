@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-46388c5cbbe5",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-para-los-estudiantes-internacionales-es-tal-que-muchos-se-sien\"",
+  "text": "La falta de apoyo para los estudiantes internacionales es tal que muchos se sienten excluidos del sistema educativo.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-b4e599038c5c"
+  ]
+}

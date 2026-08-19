@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-07296fc1d4be",
+  "claimSlug": "\"modelo-la-inmigracion-ha-agotado-los-servicios-publicos-en-espana\"",
+  "text": "La inmigración ha agotado los servicios públicos en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67ec0b975037"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "¿Cómo es posible que los pensionistas sigan con problemas si se gasta 
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["¿Por qué los pensionistas siguen teniendo problemas si se invierten tantos euros?","¿Dónde se queda el dinero para los pensionistas si se gasta tanto?","¿Qué pasa con los pensionistas si se invierten tantos millones en otros sectores?","¿Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público","¿Es cierto que Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","¿Qué datos permiten comprobar si Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","Quiero saber si Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público","¿Cómo se puede verificar Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","¿Hay evidencia sobre si Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","¿Es verdad que Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","¿Qué sabemos de Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?","¿Se sostiene la afirmación de que Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-ea344cf1bb84"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "como es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema publico"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-6531f230ca34"]
 ---
 
 ## Qué es cierto

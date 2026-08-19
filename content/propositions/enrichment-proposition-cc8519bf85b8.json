@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cc8519bf85b8",
+  "claimSlug": "\"modelo-el-trafico-en-madrid-es-un-infierno-no-pueden-hacer-algo-al-respecto\"",
+  "text": "¡El tráfico en Madrid es un infierno! ¿No pueden hacer algo al respecto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-169b0d67c3ea"
+  ]
+}

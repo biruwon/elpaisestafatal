@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f31d9825b92b",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-cultura-y-los-valores-tradicionales-de-espana\"",
+  "text": "La inmigración está cambiando la cultura y los valores tradicionales de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d149392c211a"
+  ]
+}

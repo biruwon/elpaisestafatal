@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef0073a92fdb",
+  "claimSlug": "\"modelo-las-facturas-de-electricidad-en-espana-son-excesivamente-altas-en-comparacion-co\"",
+  "text": "Las facturas de electricidad en España son excesivamente altas en comparación con otras ciudades europeas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cb21180efcfd"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d8764dc6b0d",
+  "claimSlug": "\"modelo-por-que-la-comunidad-de-madrid-sigue-teniendo-problemas-de-contaminacion-y-la-ca\"",
+  "text": "¿Por qué la Comunidad de Madrid sigue teniendo problemas de contaminación y la calidad del aire sigue siendo mala?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d47cbec1afa6"
+  ]
+}

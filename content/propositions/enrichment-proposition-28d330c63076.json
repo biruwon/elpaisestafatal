@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-28d330c63076",
+  "claimSlug": "\"modelo-la-falta-de-acceso-a-la-vivienda-es-un-problema-grave-especialmente-en-ciudades-\"",
+  "text": "La falta de acceso a la vivienda es un problema grave, especialmente en ciudades con muchos estudiantes y jóvenes trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5807b6e2988b"
+  ]
+}

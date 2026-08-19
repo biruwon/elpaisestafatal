@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d9e04450a021",
+  "claimSlug": "\"modelo-los-autobuses-urbanos-de-bilbao-a-veces-son-tan-saturados-que-el-viaje-se-transf\"",
+  "text": "Los autobuses urbanos de Bilbao a veces son tan saturados que el viaje se transforma en un auténtico atasco andando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5fc17fc37a93"
+  ]
+}

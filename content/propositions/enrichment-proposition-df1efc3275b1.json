@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df1efc3275b1",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-no-cubre-adecuadamente-las-necesidades-de-los-tr\"",
+  "text": "El sistema de protección social no cubre adecuadamente las necesidades de los trabajadores autónomos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b39b673cd6f4"
+  ]
+}

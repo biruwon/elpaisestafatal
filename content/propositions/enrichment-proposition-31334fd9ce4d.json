@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-31334fd9ce4d",
+  "claimSlug": "\"modelo-en-espana-la-falta-de-acceso-a-servicios-de-salud-de-calidad-es-un-problema-cron\"",
+  "text": "En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-db51398ce1e5"
+  ]
+}

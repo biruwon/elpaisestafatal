@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-95c595514828",
+  "claimSlug": "\"modelo-los-servicios-turisticos-en-espana-no-siempre-son-de-calidad\"",
+  "text": "Los servicios turísticos en España no siempre son de calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e3f0deac05b7"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9f22e8c77d96",
+  "claimSlug": "\"modelo-las-empresas-prefieren-contratar-a-freelance-o-a-temporales-en-lugar-de-fijos-lo\"",
+  "text": "Las empresas prefieren contratar a freelance o a temporales en lugar de fijos, lo que genera incertidumbre y menos estabilidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f8fd4a7f73b8"
+  ]
+}

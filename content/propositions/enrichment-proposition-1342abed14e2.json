@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1342abed14e2",
+  "claimSlug": "\"modelo-por-que-en-espana-la-justicia-parece-ser-tan-cara-para-los-ciudadanos\"",
+  "text": "¿Por qué en España la justicia parece ser tan cara para los ciudadanos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c343191ed79a"
+  ]
+}

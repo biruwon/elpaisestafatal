@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ab052fa61fa",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-el-turismo-en-extremadura-esta-perjudicando-la-economia\"",
+  "text": "La falta de inversión en el turismo en Extremadura está perjudicando la economía de la región.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91a8172f6d52"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c9c8a4e4f41c",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-garantiza-un-tiempo-de-descanso-adecuado-entre-turnos-es\"",
+  "text": "¿Por qué en España no se garantiza un tiempo de descanso adecuado entre turnos, especialmente en servicios esenciales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8df1c7ea4106"
+  ]
+}

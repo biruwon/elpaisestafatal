@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94e4c0bb4347",
+  "claimSlug": "\"modelo-el-sistema-de-justicia-europeo-esta-desbordado-dejando-a-espana-sin-apoyo-legal-\"",
+  "text": "El sistema de justicia europeo está desbordado, dejando a España sin apoyo legal en temas europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9fd83f5468e7"
+  ]
+}

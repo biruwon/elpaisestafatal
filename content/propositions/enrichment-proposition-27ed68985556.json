@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-27ed68985556",
+  "claimSlug": "\"modelo-la-falta-de-paradas-de-taxis-en-zonas-residenciales-de-barcelona-hace-que-sea-di\"",
+  "text": "La falta de paradas de taxis en zonas residenciales de Barcelona hace que sea difícil encontrar un servicio de taxi.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-35431cad2642"
+  ]
+}

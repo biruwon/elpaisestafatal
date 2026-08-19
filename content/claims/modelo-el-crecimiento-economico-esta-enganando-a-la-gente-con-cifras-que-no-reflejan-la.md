@@ -4,21 +4,22 @@ claim: "El crecimiento económico está engañando a la gente con cifras que no 
 assessment: uncertain
 topicSlugs: ["economía, inflación y crecimiento"]
 aliases: ["el crecimiento económico no me beneficia a mí","las cosas no mejoran para la gente normal","la economía crece pero yo no siento nada","el crecimiento económico es un espejismo","El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.","¿Es cierto que El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","¿Qué datos permiten comprobar si El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","Quiero saber si El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.","¿Cómo se puede verificar El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","¿Hay evidencia sobre si El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","¿Es verdad que El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","¿Qué sabemos de El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?","¿Se sostiene la afirmación de que El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-d679e61d6a37"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el crecimiento economico esta enganando a la gente con cifras que no reflejan la realidad de mi bolsillo"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0f6d17c279fd"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-08bd27483cd1",
+  "claimSlug": "\"modelo-los-incendios-estan-causando-danos-irreversibles-en-el-medio-ambiente-y-biodiver\"",
+  "text": "Los incendios están causando daños irreversibles en el medio ambiente y biodiversidad española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d389456c456"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f174472f0f3e",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-en-las-carreteras-secundarias-es-preocupante-y-peligro\"",
+  "text": "La falta de mantenimiento en las carreteras secundarias es preocupante y peligrosa, especialmente en zonas rurales durante la lluvia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-520be832f57c"
+  ]
+}

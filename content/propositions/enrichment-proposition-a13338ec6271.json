@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a13338ec6271",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-favoreciendo-a-los-mas-ricos\"",
+  "text": "El crecimiento económico está favoreciendo a los más ricos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f5876c7b7657"
+  ]
+}

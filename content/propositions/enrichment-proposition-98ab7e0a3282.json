@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-98ab7e0a3282",
+  "claimSlug": "\"modelo-los-libros-de-texto-son-muy-caros-y-los-estudiantes-no-pueden-permitirselos\"",
+  "text": "Los libros de texto son muy caros y los estudiantes no pueden permitírselos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3227c1075852"
+  ]
+}

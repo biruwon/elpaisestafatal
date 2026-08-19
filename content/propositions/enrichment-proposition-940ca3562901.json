@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-940ca3562901",
+  "claimSlug": "\"modelo-el-gobierno-prometio-crecimiento-pero-la-economia-sigue-cayendo\"",
+  "text": "El gobierno prometió crecimiento, pero la economía sigue cayendo",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-90b609ac485b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-41147d6e7080",
+  "claimSlug": "\"modelo-se-ha-reducido-el-numero-de-dias-de-vacaciones-y-no-se-compensa-con-un-aumento-d\"",
+  "text": "Se ha reducido el número de días de vacaciones y no se compensa con un aumento de la nómina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e84cf2fce3c4"
+  ]
+}

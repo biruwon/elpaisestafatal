@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c68d682dbcf",
+  "claimSlug": "\"modelo-la-comunidad-de-madrid-no-paga-impuestos-adecuadamente-para-la-cantidad-de-servi\"",
+  "text": "La Comunidad de Madrid no paga impuestos adecuadamente para la cantidad de servicios que consume.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-af1f3dbbfd10"
+  ]
+}

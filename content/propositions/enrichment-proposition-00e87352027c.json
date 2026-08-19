@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-00e87352027c",
+  "claimSlug": "\"modelo-la-situacion-de-alquiler-es-tan-mala-que-siento-que-no-hay-salida-a-la-crisis-de\"",
+  "text": "La situación de alquiler es tan mala que siento que no hay salida a la crisis de la vivienda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bddb59a8980"
+  ]
+}

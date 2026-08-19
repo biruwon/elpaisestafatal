@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-20d85fd336b2",
+  "claimSlug": "\"modelo-por-que-en-espana-hay-tanta-falta-de-cuidados-para-personas-mayores-que-necesita\"",
+  "text": "¿Por qué en España hay tanta falta de cuidados para personas mayores que necesitan atención?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-539962bc69d8"
+  ]
+}

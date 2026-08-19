@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4d092114635",
+  "claimSlug": "\"modelo-los-altos-costes-de-alquiler-estan-provocando-que-muchas-personas-tengan-que-ele\"",
+  "text": "Los altos costes de alquiler están provocando que muchas personas tengan que elegir entre vivir o comer.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-021a387303d3"
+  ]
+}

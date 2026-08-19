@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5148d79787e",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-pensiones-es-cada-vez-mas-larga-y-no-se-mejora-con-el-t\"",
+  "text": "La espera para acceder a pensiones es cada vez más larga y no se mejora con el tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-64f02431818d"
+  ]
+}

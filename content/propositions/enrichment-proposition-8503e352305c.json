@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8503e352305c",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-promueven-mas-viviendas-con-sistemas-de-gestion-del-agua\"",
+  "text": "¿Por qué en España no se promueven más viviendas con sistemas de gestión del agua inteligentes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-af84509336f9"
+  ]
+}

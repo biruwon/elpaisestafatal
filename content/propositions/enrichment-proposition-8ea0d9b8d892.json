@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ea0d9b8d892",
+  "claimSlug": "\"modelo-la-comunidad-valenciana-esta-perdiendo-su-identidad-cultural-por-la-presion-de-l\"",
+  "text": "La Comunidad Valenciana está perdiendo su identidad cultural por la presión de la industrialización.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b43468b932e7"
+  ]
+}

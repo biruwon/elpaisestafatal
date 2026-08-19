@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe77a80254ea",
+  "claimSlug": "\"modelo-la-falta-de-empleo-decente-esta-arruinando-la-vida-de-muchos-jovenes-en-barcelon\"",
+  "text": "La falta de empleo decente está arruinando la vida de muchos jóvenes en Barcelona, muchos solo pueden trabajar en trabajos de paga baja y no tienen futuro",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-728b57afe4d8"
+  ]
+}

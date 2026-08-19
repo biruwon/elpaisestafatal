@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc5834f16b39",
+  "claimSlug": "\"modelo-la-crisis-economica-esta-haciendo-que-las-empresas-no-inviertan-en-espana\"",
+  "text": "La crisis económica está haciendo que las empresas no inviertan en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0416ddb1abf0"
+  ]
+}

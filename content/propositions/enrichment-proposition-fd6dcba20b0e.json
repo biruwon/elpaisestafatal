@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd6dcba20b0e",
+  "claimSlug": "\"modelo-el-parque-nacional-de-la-sierra-de-guadarrama-abarca-territorio-de-dos-comunidad\"",
+  "text": "El Parque Nacional de la Sierra de Guadarrama abarca territorio de dos comunidades autónomas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c37b442facf"
+  ]
+}

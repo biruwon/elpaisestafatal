@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4d69accb32e",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-mis-gastos-de-luz-y-gas-suban-tanto-que-apenas-pu\"",
+  "text": "La inflación está haciendo que mis gastos de luz y gas suban tanto que apenas puedo pagar la factura del mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3487a37af8e"
+  ]
+}

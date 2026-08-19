@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a014a2f1a7fa",
+  "claimSlug": "\"modelo-la-politica-fiscal-esta-siendo-demasiado-restrictiva-y-nos-esta-dejando-con-meno\"",
+  "text": "La política fiscal está siendo demasiado restrictiva y nos está dejando con menos recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ed4ded09262d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d4d76cfb347",
+  "claimSlug": "\"modelo-por-que-la-estacion-de-autobuses-de-granada-sigue-tan-desorganizada\"",
+  "text": "¿Por qué la estación de autobuses de Granada sigue tan desorganizada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-878eabf8cb4a"
+  ]
+}

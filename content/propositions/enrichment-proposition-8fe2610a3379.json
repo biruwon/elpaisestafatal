@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8fe2610a3379",
+  "claimSlug": "\"modelo-los-productos-de-primera-necesidad-estan-subiendo-de-precio-sin-control\"",
+  "text": "Los productos de primera necesidad están subiendo de precio sin control.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f8789788a90"
+  ]
+}

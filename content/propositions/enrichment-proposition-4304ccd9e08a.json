@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4304ccd9e08a",
+  "claimSlug": "\"modelo-espana-ha-experimentado-una-reduccion-en-el-uso-de-sistemas-de-calefaccion-digit\"",
+  "text": "España ha experimentado una reducción en el uso de sistemas de calefacción digital en las viviendas residenciales en los últimos cinco años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5b9f0d7ebf4f"
+  ]
+}

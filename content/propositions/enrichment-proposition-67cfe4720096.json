@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-67cfe4720096",
+  "claimSlug": "\"modelo-la-falta-de-ayudas-y-subvenciones-para-alquiler-hace-que-sea-dificil-encontrar-u\"",
+  "text": "La falta de ayudas y subvenciones para alquiler hace que sea difícil encontrar un lugar asequible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-caf96e5e0b69"
+  ]
+}

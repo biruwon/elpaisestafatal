@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9ccf0427b70c",
+  "claimSlug": "\"modelo-en-espana-el-precio-de-la-electricidad-es-desorbitado-en-comparacion-con-otros-p\"",
+  "text": "En España, el precio de la electricidad es desorbitado en comparación con otros países de la Unión Europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2052b2839a14"
+  ]
+}

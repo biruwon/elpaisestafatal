@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06cc713a6489",
+  "claimSlug": "\"modelo-el-gobierno-no-se-esta-esforzando-lo-suficiente-para-reducir-los-costes-de-la-en\"",
+  "text": "El gobierno no se está esforzando lo suficiente para reducir los costes de la energía, dejándonos a todos en la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80f72fe20358"
+  ]
+}

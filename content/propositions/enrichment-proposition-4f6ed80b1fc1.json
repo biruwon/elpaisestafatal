@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f6ed80b1fc1",
+  "claimSlug": "\"modelo-los-combustibles-son-un-malentendido-economico\"",
+  "text": "Los combustibles son un malentendido económico",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-59dcda85a0be"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c871208c0815",
+  "claimSlug": "\"modelo-no-me-dejan-entrar-en-el-alquiler-tienen-excusas-para-todo\"",
+  "text": "¡No me dejan entrar en el alquiler! Tienen excusas para todo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a62ef8581833"
+  ]
+}

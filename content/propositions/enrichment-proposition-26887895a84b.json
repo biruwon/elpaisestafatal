@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-26887895a84b",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-infraestructuras-agricolas-en-el-pais-vasco-esta-perjud\"",
+  "text": "La falta de inversión en infraestructuras agrícolas en el País Vasco está perjudicando la producción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f83f4e09df08"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-13488ad6d74b",
+  "claimSlug": "\"modelo-la-audiencia-nacional-no-ha-juzgado-a-ningun-miembro-de-la-guardia-civil-por-abu\"",
+  "text": "La Audiencia Nacional no ha juzgado a ningún miembro de la Guardia Civil por abusos en el marco de operaciones de seguridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cf08f5671102"
+  ]
+}

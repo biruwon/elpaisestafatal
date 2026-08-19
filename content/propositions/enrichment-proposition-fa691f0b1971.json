@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa691f0b1971",
+  "claimSlug": "\"modelo-los-precios-de-la-vivienda-siguen-subiendo-y-nos-estan-dejando-sin-casa-propia\"",
+  "text": "Los precios de la vivienda siguen subiendo y nos están dejando sin casa propia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f479f13818f0"
+  ]
+}

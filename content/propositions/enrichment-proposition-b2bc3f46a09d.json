@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b2bc3f46a09d",
+  "claimSlug": "\"modelo-como-es-que-los-incendios-forestales-estan-causando-tanta-contaminacion\"",
+  "text": "¿Cómo es que los incendios forestales están causando tanta contaminación?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-03da713a4631"
+  ]
+}

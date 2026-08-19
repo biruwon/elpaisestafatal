@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f539c385e424",
+  "claimSlug": "\"modelo-la-espera-para-entrar-en-la-universidad-es-tan-larga-que-pareciera-estar-en-un-c\"",
+  "text": "La espera para entrar en la universidad es tan larga que pareciera estar en un concurso de reality show.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c43ea0fd8ee1"
+  ]
+}

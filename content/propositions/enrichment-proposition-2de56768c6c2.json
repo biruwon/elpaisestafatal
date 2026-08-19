@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2de56768c6c2",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-muy-por-debajo-de-lo-que-se-esperaba-y-eso-nos-est\"",
+  "text": "El crecimiento económico está muy por debajo de lo que se esperaba, y eso nos está afectando a todos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-afb51e552811"
+  ]
+}

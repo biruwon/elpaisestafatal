@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33199ea0efc3",
+  "claimSlug": "\"modelo-los-menus-de-las-escuelas-son-repugnantes-no-creen\"",
+  "text": "Los menús de las escuelas son repugnantes, ¿no creen?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0a279db779f5"
+  ]
+}

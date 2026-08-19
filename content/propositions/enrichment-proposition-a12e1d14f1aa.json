@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a12e1d14f1aa",
+  "claimSlug": "\"modelo-los-precios-del-alquiler-en-madrid-suben-constantemente-y-ya-no-se-puede-vivir-d\"",
+  "text": "Los precios del alquiler en Madrid suben constantemente y ya no se puede vivir de un sueldo medio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9372ca62ef2e"
+  ]
+}

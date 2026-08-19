@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-19763263833e",
+  "claimSlug": "\"modelo-las-estaciones-de-metro-en-ciudades-grandes-son-poco-accesibles-para-personas-co\"",
+  "text": "Las estaciones de metro en ciudades grandes son poco accesibles para personas con movilidad reducida y ancianos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2054bafc8e5c"
+  ]
+}

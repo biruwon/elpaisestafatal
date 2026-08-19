@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-90791d82548c",
+  "claimSlug": "\"modelo-los-pacientes-en-espana-sufren-por-las-largas-listas-de-espera-mientras-que-en-o\"",
+  "text": "Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-431f414fb4a7"
+  ]
+}

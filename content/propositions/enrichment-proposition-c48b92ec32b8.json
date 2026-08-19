@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c48b92ec32b8",
+  "claimSlug": "\"modelo-las-listas-de-espera-son-un-reflejo-de-la-mala-gestion-del-sistema-sanitario\"",
+  "text": "Las listas de espera son un reflejo de la mala gestión del sistema sanitario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-49890a6ab3e6"
+  ]
+}

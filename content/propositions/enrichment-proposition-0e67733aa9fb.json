@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e67733aa9fb",
+  "claimSlug": "\"modelo-el-transporte-publico-esta-tan-caro-que-prefiero-caminar-o-en-bici\"",
+  "text": "El transporte público está tan caro que prefiero caminar o en bici.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4053880f72e7"
+  ]
+}

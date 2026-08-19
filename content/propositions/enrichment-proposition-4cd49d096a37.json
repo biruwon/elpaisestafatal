@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cd49d096a37",
+  "claimSlug": "\"modelo-es-normal-que-los-testigos-esten-en-riesgo-de-recibir-amenazas-tras-dar-su-testi\"",
+  "text": "¿Es normal que los testigos estén en riesgo de recibir amenazas tras dar su testimonio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0d01e7a5b669"
+  ]
+}

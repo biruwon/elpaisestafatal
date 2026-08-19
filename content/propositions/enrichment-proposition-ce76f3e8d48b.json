@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce76f3e8d48b",
+  "claimSlug": "\"modelo-es-inaceptable-que-la-sanidad-publica-no-pueda-garantizar-citas-urgentes-para-ca\"",
+  "text": "Es inaceptable que la sanidad pública no pueda garantizar citas urgentes para casos de dolor agudo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-783c05fad9ff"
+  ]
+}

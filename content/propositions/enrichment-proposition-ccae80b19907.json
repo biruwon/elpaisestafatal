@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ccae80b19907",
+  "claimSlug": "\"modelo-la-calefaccion-de-gas-es-un-autentico-misterio-cada-ano-se-nos-va-mas-dinero-que\"",
+  "text": "La calefacción de gas es un auténtico misterio, ¡cada año se nos va más dinero que en un agujero!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cae14739bf6c"
+  ]
+}

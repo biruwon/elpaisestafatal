@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8534b02c7d1",
+  "claimSlug": "\"modelo-la-falta-de-personal-medico-hace-que-sea-normal-esperar-horas-en-urgencias-sin-a\"",
+  "text": "La falta de personal médico hace que sea normal esperar horas en urgencias sin atención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c4992b19a6c0"
+  ]
+}

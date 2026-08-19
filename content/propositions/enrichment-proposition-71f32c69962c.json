@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71f32c69962c",
+  "claimSlug": "\"modelo-el-juzgado-de-guardia-no-siempre-atiende-todos-los-casos-de-urgencia-en-horario-\"",
+  "text": "El juzgado de guardia no siempre atiende todos los casos de urgencia en horario nocturno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37905ac910c9"
+  ]
+}

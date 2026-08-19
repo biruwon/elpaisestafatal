@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cefa893ed672",
+  "claimSlug": "\"modelo-la-subida-del-alquiler-es-un-robo-no-hay-control-sobre-los-precios-y-son-desorbi\"",
+  "text": "¡La subida del alquiler es un robo! ¡No hay control sobre los precios y son desorbitados!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea461d55ac5d"
+  ]
+}

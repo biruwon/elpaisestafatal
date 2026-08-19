@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bd012d908cc9",
+  "claimSlug": "\"modelo-los-pacientes-con-enfermedades-mentales-como-la-depresion-a-menudo-enfrentan-lar\"",
+  "text": "Los pacientes con enfermedades mentales como la depresión a menudo enfrentan largas esperas para recibir tratamiento psicológico, lo que puede empeorar su condición.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97efa194f05c"
+  ]
+}

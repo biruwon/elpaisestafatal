@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7eb4d105272e",
+  "claimSlug": "\"modelo-la-inmigracion-ha-agotado-los-servicios-publicos-y-hace-que-las-ciudades-sean-me\"",
+  "text": "La inmigración ha agotado los servicios públicos y hace que las ciudades sean menos habitables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e078d5a41417"
+  ]
+}

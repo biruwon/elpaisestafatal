@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b316c9c4c35",
+  "claimSlug": "\"modelo-la-falta-de-tiempo-para-cuidar-a-los-hijos-es-un-problema-generalizado-entre-las\"",
+  "text": "La falta de tiempo para cuidar a los hijos es un problema generalizado entre las madres trabajadoras en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fe6cdbf90562"
+  ]
+}

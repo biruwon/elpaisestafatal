@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1fc45befbd8",
+  "claimSlug": "\"modelo-el-sistema-de-agricultura-en-espana-esta-muy-dependiente-de-los-agrotoxicos-lo-q\"",
+  "text": "El sistema de agricultura en España está muy dependiente de los agrotóxicos, lo que está dañando la salud de las personas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f48b892e00f1"
+  ]
+}

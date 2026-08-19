@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5ac3fbf74da",
+  "claimSlug": "\"modelo-la-infraestructura-en-asturias-es-un-desastre-no-pueden-hacer-algo-para-mejorar-\"",
+  "text": "¡La infraestructura en Asturias es un desastre! ¿No pueden hacer algo para mejorar las carreteras?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c6636badb52"
+  ]
+}

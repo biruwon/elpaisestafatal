@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-013b5a8454bc",
+  "claimSlug": "\"modelo-las-aulas-estan-sobrepobladas-lo-que-dificulta-la-personalizacion-del-aprendizaj\"",
+  "text": "Las aulas están sobrepobladas, lo que dificulta la personalización del aprendizaje.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8464301ecaee"
+  ]
+}

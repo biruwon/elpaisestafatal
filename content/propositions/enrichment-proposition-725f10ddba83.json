@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-725f10ddba83",
+  "claimSlug": "\"modelo-la-inmigracion-esta-desestabilizando-la-seguridad-en-espana\"",
+  "text": "La inmigración está desestabilizando la seguridad en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c78e804d1f3f"
+  ]
+}

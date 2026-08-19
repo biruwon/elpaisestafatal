@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-70a46a8f3776",
+  "claimSlug": "\"modelo-los-centros-de-informacion-para-el-empleo-no-son-suficientemente-accesibles-para\"",
+  "text": "Los centros de información para el empleo no son suficientemente accesibles para los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae96e80d3a71"
+  ]
+}

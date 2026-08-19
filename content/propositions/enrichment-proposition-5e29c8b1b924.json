@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e29c8b1b924",
+  "claimSlug": "\"modelo-en-espana-hay-que-esperar-demasiado-para-consultas-con-especialistas\"",
+  "text": "En España, hay que esperar demasiado para consultas con especialistas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d544eb96475a"
+  ]
+}

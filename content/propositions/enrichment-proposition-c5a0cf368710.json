@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5a0cf368710",
+  "claimSlug": "\"modelo-el-sistema-de-salud-tiene-quejeras-por-falta-de-personal-y-equipamiento\"",
+  "text": "El sistema de salud tiene quejeras por falta de personal y equipamiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b0d9b3a70237"
+  ]
+}

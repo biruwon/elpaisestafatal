@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a0e421c969ac",
+  "claimSlug": "\"modelo-como-es-que-en-espana-se-vive-tan-mal-con-el-salario-medio\"",
+  "text": "¿Cómo es que en España se vive tan mal con el salario medio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5dd01a7b8b69"
+  ]
+}

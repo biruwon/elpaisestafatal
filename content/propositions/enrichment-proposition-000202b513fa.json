@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-000202b513fa",
+  "claimSlug": "\"modelo-las-politicas-de-teletrabajo-en-espana-son-tan-limitadas-que-muchas-personas-se-\"",
+  "text": "Las políticas de teletrabajo en España son tan limitadas que muchas personas se ven obligadas a trabajar en casa sin la adecuada infraestructura o soporte.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-56acc756ed93"
+  ]
+}

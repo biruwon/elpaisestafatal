@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf43f423fa45",
+  "claimSlug": "\"modelo-el-gasto-publico-en-infraestructuras-es-ineficiente-con-muchos-proyectos-que-se-\"",
+  "text": "El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-cd0d97974d09"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9fd74b2a636c",
+  "claimSlug": "\"modelo-el-asalto-en-el-metro-es-tan-frecuente-que-ya-me-preparo-un-plan-de-escape-antes\"",
+  "text": "¡El asalto en el metro es tan frecuente que ya me preparo un plan de escape antes de subir!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0674d3081cd5"
+  ]
+}

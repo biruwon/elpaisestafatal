@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83e74268b66c",
+  "claimSlug": "\"modelo-las-viviendas-digitales-no-cuentan-con-suficientes-puntos-de-acceso-wi-fi-lo-que\"",
+  "text": "Las viviendas digitales no cuentan con suficientes puntos de acceso Wi-Fi, lo que limita la conexión en espacios comunes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-718580215198"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d17e07e8b49",
+  "claimSlug": "\"modelo-las-tiendas-locales-estan-cerrando-por-la-competencia-de-tiendas-de-inmigrantes\"",
+  "text": "Las tiendas locales están cerrando por la competencia de tiendas de inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-918f1c53a83e"
+  ]
+}

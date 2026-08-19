@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-601e746dd72e",
+  "claimSlug": "\"modelo-los-tribunales-estan-sobreabarrotados-lo-que-provoca-que-los-jueces-no-tengan-ti\"",
+  "text": "Los tribunales están sobreabarrotados, lo que provoca que los jueces no tengan tiempo para casos complejos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4123609a2e2a"
+  ]
+}

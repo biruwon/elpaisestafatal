@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-693b4a04852d",
+  "claimSlug": "\"modelo-la-seguridad-en-algunos-destinos-turisticos-de-espana-es-pobre-y-se-siente-inseg\"",
+  "text": "La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-8ec956f3df65"
+  ]
+}

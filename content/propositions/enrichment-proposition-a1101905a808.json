@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a1101905a808",
+  "claimSlug": "\"modelo-los-medicamentos-no-siempre-estan-disponibles-y-el-paciente-sufre-por-ello\"",
+  "text": "Los medicamentos no siempre están disponibles y el paciente sufre por ello.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e87b3884bb09"
+  ]
+}

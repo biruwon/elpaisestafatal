@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12fa97203e1d",
+  "claimSlug": "\"modelo-el-sueldo-no-llega-ni-para-el-alquiler-basico\"",
+  "text": "El sueldo no llega ni para el alquiler básico",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-981d5ebcad45"
+  ]
+}

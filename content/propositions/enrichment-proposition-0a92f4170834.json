@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a92f4170834",
+  "claimSlug": "\"modelo-por-que-en-espana-no-hay-mas-viviendas-con-sistemas-de-iluminacion-automatizada\"",
+  "text": "¿Por qué en España no hay más viviendas con sistemas de iluminación automatizada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1500492944b8"
+  ]
+}

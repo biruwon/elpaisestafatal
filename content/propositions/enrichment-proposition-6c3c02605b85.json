@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6c3c02605b85",
+  "claimSlug": "\"modelo-los-impuestos-a-las-empresas-no-son-iguales-en-todas-las-comunidades-autonomas-l\"",
+  "text": "Los impuestos a las empresas no son iguales en todas las comunidades autónomas, lo que genera desigualdades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a6625fc7d467"
+  ]
+}

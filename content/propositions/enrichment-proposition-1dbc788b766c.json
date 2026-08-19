@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1dbc788b766c",
+  "claimSlug": "\"modelo-por-que-se-gastan-millones-en-eventos-deportivos-y-tan-poco-en-parques-publicos\"",
+  "text": "¿Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f360359f8e4b"
+  ]
+}

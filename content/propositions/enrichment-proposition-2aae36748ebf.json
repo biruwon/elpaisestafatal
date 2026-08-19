@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2aae36748ebf",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-no-cubre-la-inflacion\"",
+  "text": "El sistema de protección social no cubre la inflación",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-59ba13e3abc1"
+  ]
+}

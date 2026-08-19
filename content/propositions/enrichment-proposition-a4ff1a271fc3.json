@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4ff1a271fc3",
+  "claimSlug": "\"modelo-por-que-la-inflacion-sube-y-no-bajan-los-salarios\"",
+  "text": "¿Por qué la inflación sube y no bajan los salarios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d871f5b3c51e"
+  ]
+}

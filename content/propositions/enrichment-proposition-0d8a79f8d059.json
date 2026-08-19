@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d8a79f8d059",
+  "claimSlug": "\"modelo-el-metro-de-madrid-no-cuenta-con-suficiente-personal-en-las-estaciones-lo-que-ha\"",
+  "text": "El Metro de Madrid no cuenta con suficiente personal en las estaciones, lo que hace que el servicio sea ineficiente y desorganizado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-44e9278e57a4"
+  ]
+}

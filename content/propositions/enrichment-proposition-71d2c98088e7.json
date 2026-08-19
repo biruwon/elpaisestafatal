@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71d2c98088e7",
+  "claimSlug": "\"modelo-es-imposible-calefaccionar-la-casa-en-invierno-con-tanta-subida-de-la-gasolina\"",
+  "text": "Es imposible calefaccionar la casa en invierno con tanta subida de la gasolina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-090fc680264c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e9e751794b0",
+  "claimSlug": "\"modelo-la-falta-de-recursos-para-la-atencion-de-urgencias-causa-largas-esperas-y-un-pel\"",
+  "text": "La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-33b8ae759375"
+  ]
+}

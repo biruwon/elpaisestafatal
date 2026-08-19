@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-476e5cc54c26",
+  "claimSlug": "\"modelo-las-horas-extras-no-se-pagan-nunca-en-espana-verdad\"",
+  "text": "Las horas extras no se pagan nunca en España, ¿verdad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae1b9733897e"
+  ]
+}

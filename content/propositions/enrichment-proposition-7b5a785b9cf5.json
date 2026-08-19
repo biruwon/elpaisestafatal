@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b5a785b9cf5",
+  "claimSlug": "\"modelo-la-inmigracion-ilegal-esta-inundando-las-ciudades-y-sobrecargando-los-servicios-\"",
+  "text": "La inmigración ilegal está inundando las ciudades y sobrecargando los servicios de salud y educación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5d22d08cc02"
+  ]
+}

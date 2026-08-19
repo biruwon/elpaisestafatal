@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d89d81ec7313",
+  "claimSlug": "\"modelo-por-que-la-policia-no-hace-mas-para-reducir-el-hurto-de-bicicletas-en-las-ciudad\"",
+  "text": "¿Por qué la policía no hace más para reducir el hurto de bicicletas en las ciudades grandes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0726971f6fb9"
+  ]
+}

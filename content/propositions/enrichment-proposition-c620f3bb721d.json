@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c620f3bb721d",
+  "claimSlug": "\"modelo-por-que-se-ha-incrementado-tanto-el-numero-de-afiliados-a-la-seguridad-social-en\"",
+  "text": "¿Por qué se ha incrementado tanto el número de afiliados a la Seguridad Social en los últimos años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0eb94077a1d9"
+  ]
+}

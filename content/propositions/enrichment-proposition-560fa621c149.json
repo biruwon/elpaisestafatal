@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-560fa621c149",
+  "claimSlug": "\"modelo-la-falta-de-limpieza-en-las-playas-de-la-costa-del-sol-es-un-problema-constante\"",
+  "text": "La falta de limpieza en las playas de la Costa del Sol es un problema constante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23fa10b5cf6d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f7418592c2d8",
+  "claimSlug": "\"modelo-cuantas-veces-ha-habido-casos-de-sentencias-que-se-modifican-o-anulan-despues-de\"",
+  "text": "¿Cuántas veces ha habido casos de sentencias que se modifican o anulan después de años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-95e940885981"
+  ]
+}

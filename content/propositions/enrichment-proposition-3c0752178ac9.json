@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c0752178ac9",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-la-gente-se-sienta-cada-vez-mas-endeudada\"",
+  "text": "La inflación está haciendo que la gente se sienta cada vez más endeudada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd629c3d2103"
+  ]
+}

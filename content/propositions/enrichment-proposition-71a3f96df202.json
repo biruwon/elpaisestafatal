@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71a3f96df202",
+  "claimSlug": "\"modelo-los-autonomos-estan-mas-expuestos-a-la-crisis-y-a-la-subida-del-paro\"",
+  "text": "Los autónomos están más expuestos a la crisis y a la subida del paro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a388410c56d7"
+  ]
+}

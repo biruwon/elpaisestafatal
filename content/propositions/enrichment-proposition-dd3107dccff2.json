@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd3107dccff2",
+  "claimSlug": "\"modelo-el-iva-se-aplica-incluso-a-alimentos-basicos-lo-que-es-un-lastre-para-los-consum\"",
+  "text": "El IVA se aplica incluso a alimentos básicos, lo que es un lastre para los consumidores con bajos ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a420ad3633e0"
+  ]
+}

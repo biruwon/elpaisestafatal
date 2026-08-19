@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e0a947cb246",
+  "claimSlug": "\"modelo-los-desempleados-en-barcelona-se-ven-obligados-a-buscar-trabajo-en-zonas-urbanas\"",
+  "text": "Los desempleados en Barcelona se ven obligados a buscar trabajo en zonas urbanas lejanas, sin acceso a transporte público, lo que los expone a riesgos de seguridad y sostenibilidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0683dadd1096"
+  ]
+}

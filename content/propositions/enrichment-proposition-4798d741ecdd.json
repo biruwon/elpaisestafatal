@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4798d741ecdd",
+  "claimSlug": "\"modelo-es-verdad-que-la-inmigracion-ha-cambiado-la-composicion-etaria-de-la-poblacion-e\"",
+  "text": "¿Es verdad que la inmigración ha cambiado la composición etaria de la población en ciertas comunidades autónomas de España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5bdd12f14776"
+  ]
+}

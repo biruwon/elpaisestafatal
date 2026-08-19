@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59d0de33a69d",
+  "claimSlug": "\"modelo-por-que-en-espana-no-hay-suficientes-estaciones-de-recarga-para-coches-electrico\"",
+  "text": "¿Por qué en España no hay suficientes estaciones de recarga para coches eléctricos que no sean de Tesla?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a451dcf85bc"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-800b889fd327",
+  "claimSlug": "\"modelo-la-inmigracion-en-espana-ha-exacerbado-las-desigualdades-economicas\"",
+  "text": "La inmigración en España ha exacerbado las desigualdades económicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7cb5a2207985"
+  ]
+}

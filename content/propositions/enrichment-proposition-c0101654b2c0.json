@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c0101654b2c0",
+  "claimSlug": "\"modelo-la-inmigracion-ilegal-esta-creando-zonas-donde-apenas-se-ve-espanol-va-a-hacer-a\"",
+  "text": "La inmigración ilegal está creando zonas donde apenas se ve español, ¿va a hacer algo al respecto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-019749b9ad2f"
+  ]
+}

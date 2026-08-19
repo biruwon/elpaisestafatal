@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8727d1dbe563",
+  "claimSlug": "\"modelo-muchas-subastas-de-suministros-para-el-sector-publico-se-realizan-de-manera-opac\"",
+  "text": "Muchas subastas de suministros para el sector público se realizan de manera opaca, lo que invita a sospechas de corrupción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a2543a38413b"
+  ]
+}

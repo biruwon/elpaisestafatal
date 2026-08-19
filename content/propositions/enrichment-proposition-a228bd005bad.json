@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a228bd005bad",
+  "claimSlug": "\"modelo-los-alquileres-turisticos-en-espana-estan-al-maximo-impidiendo-a-los-habitantes-\"",
+  "text": "Los alquileres turísticos en España están al máximo, ¡impidiendo a los habitantes locales vivir en sus propias ciudades!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-62a3eb703e55"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff80a03f1ae2",
+  "claimSlug": "\"modelo-la-falta-de-cuidadores-en-las-escuelas-esta-dejando-a-los-ninos-sin-atencion-en-\"",
+  "text": "La falta de cuidadores en las escuelas está dejando a los niños sin atención en el recreo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2f180178b713"
+  ]
+}

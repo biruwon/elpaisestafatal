@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4d350ad94bf9",
+  "claimSlug": "\"modelo-en-muchas-ciudades-espanolas-los-parques-estan-llenos-de-basura-y-suciedad-por-f\"",
+  "text": "En muchas ciudades españolas, los parques están llenos de basura y suciedad por falta de limpieza pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7c43590328b5"
+  ]
+}

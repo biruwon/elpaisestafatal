@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de3a4ec33770",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-a-los-productores-de-vino-autoctonos-esta-perjudicando-su-comp\"",
+  "text": "La falta de apoyo a los productores de vino autóctonos está perjudicando su competitividad en el mercado.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-363273c1036f"
+  ]
+}

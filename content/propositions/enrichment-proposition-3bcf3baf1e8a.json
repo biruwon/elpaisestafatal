@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3bcf3baf1e8a",
+  "claimSlug": "\"modelo-los-impuestos-a-las-pymes-estan-asfixiando-el-comercio-local\"",
+  "text": "Los impuestos a las pymes están asfixiando el comercio local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ebed2f36904f"
+  ]
+}

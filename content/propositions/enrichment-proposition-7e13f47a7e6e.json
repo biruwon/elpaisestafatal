@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e13f47a7e6e",
+  "claimSlug": "\"modelo-el-aeropuerto-de-madrid-no-tiene-suficientes-pistas-para-aterrizar-y-despegar-en\"",
+  "text": "El aeropuerto de Madrid no tiene suficientes pistas para aterrizar y despegar en horas de pico, lo que provoca largas filas y retrasos en los vuelos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-008e03176be1"
+  ]
+}

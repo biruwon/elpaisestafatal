@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-28e239be1f6d",
+  "claimSlug": "\"modelo-los-inmigrantes-no-contribuyen-lo-suficiente-a-la-economia-espanola\"",
+  "text": "Los inmigrantes no contribuyen lo suficiente a la economía española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b3cecbe75c4b"
+  ]
+}

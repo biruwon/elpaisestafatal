@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9f9562386467",
+  "claimSlug": "\"modelo-el-sistema-de-pensiones-esta-dejando-a-muchas-personas-en-la-miseria-y-forzandol\"",
+  "text": "El sistema de pensiones está dejando a muchas personas en la miseria y forzándolas a solicitar ayuda social.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e4ca01f06e5e"
+  ]
+}

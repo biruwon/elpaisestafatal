@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3593e2f8dd2",
+  "claimSlug": "\"modelo-los-gobiernos-no-hacen-nada-para-frenar-la-inflacion-y-controlar-los-precios\"",
+  "text": "Los gobiernos no hacen nada para frenar la inflación y controlar los precios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-713e921b167f"
+  ]
+}

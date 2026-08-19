@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-603a22a4c767",
+  "claimSlug": "\"modelo-en-espana-los-precios-de-los-alimentos-de-primera-necesidad-suben-constantemente\"",
+  "text": "En España, los precios de los alimentos de primera necesidad suben constantemente y el gobierno no toma medidas para contenerlos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9d2128c9aba7"
+  ]
+}

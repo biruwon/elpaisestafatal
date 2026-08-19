@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c71f73696928",
+  "claimSlug": "\"modelo-la-falta-de-vacaciones-garantizadas-esta-dejando-a-muchos-trabajadores-sin-tiemp\"",
+  "text": "La falta de vacaciones garantizadas está dejando a muchos trabajadores sin tiempo para descansar y relajarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d76257086f70"
+  ]
+}

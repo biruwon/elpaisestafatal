@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-017b57c8b284",
+  "claimSlug": "\"modelo-la-atencion-a-los-pacientes-con-enfermedades-cronicas-esta-muy-deficiente-y-la-l\"",
+  "text": "La atención a los pacientes con enfermedades crónicas está muy deficiente y la lista de espera es un problema constante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0bdaae82babd"
+  ]
+}

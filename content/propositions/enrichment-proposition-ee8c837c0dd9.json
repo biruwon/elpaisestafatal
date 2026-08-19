@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee8c837c0dd9",
+  "claimSlug": "\"modelo-cuantas-personas-en-espana-se-ven-obligadas-a-vivir-en-casas-substandard-o-en-co\"",
+  "text": "¿Cuántas personas en España se ven obligadas a vivir en casas substandard o en condiciones precarias?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a6b1a9220724"
+  ]
+}

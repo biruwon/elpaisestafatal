@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e9afbfbb713",
+  "claimSlug": "\"modelo-la-dependencia-de-los-combustibles-fosiles-esta-haciendo-que-la-factura-de-la-ca\"",
+  "text": "La dependencia de los combustibles fósiles está haciendo que la factura de la calefacción sea un gran gasto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-929e83a44396"
+  ]
+}

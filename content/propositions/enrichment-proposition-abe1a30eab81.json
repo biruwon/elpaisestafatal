@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-abe1a30eab81",
+  "claimSlug": "\"modelo-por-que-en-espana-no-hay-suficientes-especialistas-para-atender-a-toda-la-gente-\"",
+  "text": "¿Por qué en España no hay suficientes especialistas para atender a toda la gente que necesita ayuda médica?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae9914a6baea"
+  ]
+}

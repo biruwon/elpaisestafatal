@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63258a531bd2",
+  "claimSlug": "\"modelo-la-policia-nacional-parece-mas-ocupada-con-sus-propios-asuntos-que-con-velar-por\"",
+  "text": "La Policía Nacional parece más ocupada con sus propios asuntos que con velar por la seguridad del ciudadano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e80d197eb75"
+  ]
+}

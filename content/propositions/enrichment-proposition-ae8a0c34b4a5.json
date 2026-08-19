@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae8a0c34b4a5",
+  "claimSlug": "\"modelo-la-construccion-de-grandes-parques-industriales-en-madrid-es-un-problema-de-cont\"",
+  "text": "La construcción de grandes parques industriales en Madrid es un problema de contaminación y ruido que afecta a los vecinos de las zonas aledañas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-79271a8962be"
+  ]
+}

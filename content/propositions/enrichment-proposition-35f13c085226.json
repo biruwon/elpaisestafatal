@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-35f13c085226",
+  "claimSlug": "\"modelo-el-precio-de-la-gasolina-y-el-diesel-sube-constantemente-y-no-hay-medidas-concre\"",
+  "text": "El precio de la gasolina y el diésel sube constantemente y no hay medidas concretas para aliviar el coste.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23f94becc67d"
+  ]
+}

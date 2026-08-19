@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-283d714d5758",
+  "claimSlug": "\"modelo-en-espana-los-salarios-son-desproporcionadamente-bajos-en-comparacion-con-el-cos\"",
+  "text": "En España, los salarios son desproporcionadamente bajos en comparación con el coste de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9519553e602a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-024bf658f11f",
+  "claimSlug": "\"modelo-la-dependencia-de-las-energias-no-renovables-esta-haciendo-que-la-factura-de-la-\"",
+  "text": "La dependencia de las energías no renovables está haciendo que la factura de la luz sea un lastre cada vez mayor.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba64ca3e2595"
+  ]
+}

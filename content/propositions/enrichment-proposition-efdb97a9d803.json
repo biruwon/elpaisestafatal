@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-efdb97a9d803",
+  "claimSlug": "\"modelo-la-proteccion-social-para-los-inmigrantes-es-muy-limitada-y-les-impide-acceder-a\"",
+  "text": "La protección social para los inmigrantes es muy limitada y les impide acceder a ciertos servicios",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97331c2902ce"
+  ]
+}

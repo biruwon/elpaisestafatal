@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-386f5f1adf91",
+  "claimSlug": "\"modelo-el-gobierno-ha-aumentado-el-numero-de-anos-de-cotizacion-necesarios-para-obtener\"",
+  "text": "El Gobierno ha aumentado el número de años de cotización necesarios para obtener una pensión completa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-06c8cb0e4f9f"
+  ]
+}

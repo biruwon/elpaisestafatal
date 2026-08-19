@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd9a1319ff32",
+  "claimSlug": "\"modelo-los-arrendamientos-de-viviendas-en-espana-no-incluyen-el-mantenimiento-de-las-in\"",
+  "text": "Los arrendamientos de viviendas en España no incluyen el mantenimiento de las instalaciones de fibra óptica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9127c0e33bf1"
+  ]
+}

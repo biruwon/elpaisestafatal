@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b02e1abe3945",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-para-la-formacion-continuada-es-un-problema-para-la-ju\"",
+  "text": "La falta de oportunidades para la formación continuada es un problema para la juventud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9df6ada2fd13"
+  ]
+}

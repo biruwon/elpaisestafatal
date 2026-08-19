@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a1e458d18df3",
+  "claimSlug": "\"modelo-en-muchas-ciudades-la-falta-de-equipamientos-comunitarios-esta-dejando-a-las-per\"",
+  "text": "En muchas ciudades, la falta de equipamientos comunitarios está dejando a las personas sin actividades ni espacios para socializar",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7336be7e530a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72f989990822",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-los-centros-educativos-ha-provocado-que-los-profesores-e\"",
+  "text": "La falta de recursos en los centros educativos ha provocado que los profesores estén sobrecargados y las aulas sean demasiado grandes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67d5b55fcdf6"
+  ]
+}

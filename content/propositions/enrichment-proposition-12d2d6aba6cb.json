@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12d2d6aba6cb",
+  "claimSlug": "\"modelo-es-inaceptable-que-la-electricidad-sea-mas-cara-en-invierno-que-en-verano-cuando\"",
+  "text": "Es inaceptable que la electricidad sea más cara en invierno que en verano cuando estamos más fríos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2a2ef7c319ff"
+  ]
+}

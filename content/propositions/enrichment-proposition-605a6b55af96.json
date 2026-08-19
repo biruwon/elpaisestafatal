@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-605a6b55af96",
+  "claimSlug": "\"modelo-las-facturas-de-luz-y-gas-en-espana-son-un-autentico-lastre-y-parecen-subir-sin-\"",
+  "text": "Las facturas de luz y gas en España son un auténtico lastre, y parecen subir sin parar, mientras las pensiones se quedan rezagadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bea7c29266ad"
+  ]
+}

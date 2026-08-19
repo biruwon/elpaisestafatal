@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a51b9338ff0",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-controlar-la-corrupcion-en-las-contrataciones-publ\"",
+  "text": "El gobierno no hace nada para controlar la corrupción en las contrataciones públicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8ae62883685"
+  ]
+}

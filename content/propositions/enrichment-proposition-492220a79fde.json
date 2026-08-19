@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-492220a79fde",
+  "claimSlug": "\"modelo-la-inflacion-esta-arruinando-las-compras-de-la-semana\"",
+  "text": "La inflación está arruinando las compras de la semana",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-21f062273584"
+  ]
+}

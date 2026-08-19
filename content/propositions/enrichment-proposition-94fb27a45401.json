@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94fb27a45401",
+  "claimSlug": "\"modelo-el-sistema-de-transporte-publico-en-ciudades-grandes-es-tan-ineficiente-que-los-\"",
+  "text": "El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-0df946b4b82b"
+  ]
+}

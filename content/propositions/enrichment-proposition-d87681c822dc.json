@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d87681c822dc",
+  "claimSlug": "\"modelo-los-subsidios-para-el-transporte-publico-estan-siendo-reducidos-haciendo-que-los\"",
+  "text": "Los subsidios para el transporte público están siendo reducidos, haciendo que los viajes sean más caros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5b5885b8811c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-08de106440c3",
+  "claimSlug": "\"modelo-la-brecha-digital-entre-los-ricos-y-los-pobres-en-espana-es-cada-vez-mayor-y-exc\"",
+  "text": "La brecha digital entre los ricos y los pobres en España es cada vez mayor y excluye a muchas personas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-51f9a7181d8d"
+  ]
+}

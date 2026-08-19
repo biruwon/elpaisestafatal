@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-89f94eb33dc6",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-los-hospitales-con-gente-que-no-habla-espanol\"",
+  "text": "La inmigración está llenando los hospitales con gente que no habla español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aaf1161d3dde"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-00f83d9f25cf",
+  "claimSlug": "\"modelo-la-tasa-de-graduacion-universitaria-en-espana-es-baja-comparada-con-paises-europ\"",
+  "text": "La tasa de graduación universitaria en España es baja comparada con países europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab1d2c1a57db"
+  ]
+}

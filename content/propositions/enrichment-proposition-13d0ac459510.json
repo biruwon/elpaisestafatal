@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-13d0ac459510",
+  "claimSlug": "\"modelo-es-cierto-que-la-justicia-se-vende-caro-y-solo-los-ricos-pueden-acceder-a-ella\"",
+  "text": "¿Es cierto que la justicia se vende caro y solo los ricos pueden acceder a ella?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c0de10a6ad8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fd834117880",
+  "claimSlug": "\"modelo-los-horarios-de-trabajo-en-espana-son-tan-inhumanos-que-muchas-personas-se-sient\"",
+  "text": "Los horarios de trabajo en España son tan inhumanos que muchas personas se sienten forzadas a pedir días libres para poder descansar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dcd913472dab"
+  ]
+}

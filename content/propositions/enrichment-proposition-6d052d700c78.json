@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6d052d700c78",
+  "claimSlug": "\"modelo-las-comarcas-de-la-comunidad-valenciana-estan-olvidadas\"",
+  "text": "Las comarcas de la Comunidad Valenciana están olvidadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78dc0e11afe7"
+  ]
+}

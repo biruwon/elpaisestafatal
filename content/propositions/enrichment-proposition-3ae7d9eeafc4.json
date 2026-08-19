@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ae7d9eeafc4",
+  "claimSlug": "\"modelo-los-robos-de-coches-con-chaleco-amarillo-estan-a-la-orden-del-dia-en-madrid\"",
+  "text": "Los robos de coches con chaleco amarillo están a la orden del día en Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-991aa66eea54"
+  ]
+}

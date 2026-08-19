@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d52765663fab",
+  "claimSlug": "\"modelo-espana-tiene-una-de-las-tasas-mas-bajas-de-estudiantas-en-universidades\"",
+  "text": "España tiene una de las tasas más bajas de estudiantas en universidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-955eda25bc05"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f358ee25e36a",
+  "claimSlug": "\"modelo-las-playas-espanolas-estan-constantemente-abarrotadas-haciendo-que-sea-dificil-e\"",
+  "text": "Las playas españolas están constantemente abarrotadas, haciendo que sea difícil encontrar un espacio en los días de sol.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4f1296b570a8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ccc6a4d1b8d0",
+  "claimSlug": "\"modelo-la-falta-de-empleo-estable-ha-llevado-a-muchos-a-trabajar-en-actividades-ilegale\"",
+  "text": "La falta de empleo estable ha llevado a muchos a trabajar en actividades ilegales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-25084b1b129f"
+  ]
+}

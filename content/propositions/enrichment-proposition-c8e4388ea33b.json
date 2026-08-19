@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8e4388ea33b",
+  "claimSlug": "\"modelo-las-playas-de-la-comunidad-valenciana-estan-muy-llenas-en-verano-dejando-poco-es\"",
+  "text": "Las playas de la Comunidad Valenciana están muy llenas en verano, dejando poco espacio para los bañistas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-27c97028d0a8"
+  ]
+}

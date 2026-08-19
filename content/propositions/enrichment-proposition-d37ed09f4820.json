@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d37ed09f4820",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-instalan-mas-sistemas-de-control-de-accesos-en-edificios\"",
+  "text": "¿Por qué en España no se instalan más sistemas de control de accesos en edificios de viviendas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d30c77cfb28"
+  ]
+}

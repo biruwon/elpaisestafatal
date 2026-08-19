@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5dc1ae6fa8e7",
+  "claimSlug": "\"modelo-la-falta-de-planificacion-urbana-esta-contribuyendo-a-los-incendios\"",
+  "text": "La falta de planificación urbana está contribuyendo a los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7f8f19a5eedc"
+  ]
+}

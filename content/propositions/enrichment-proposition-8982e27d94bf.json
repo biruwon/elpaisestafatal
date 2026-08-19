@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8982e27d94bf",
+  "claimSlug": "\"modelo-las-empresas-estan-utilizando-la-inflacion-como-excusa-para-recortar-salarios\"",
+  "text": "Las empresas están utilizando la inflación como excusa para recortar salarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8ca673d707f8"
+  ]
+}

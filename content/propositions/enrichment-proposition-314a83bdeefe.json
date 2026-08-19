@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-314a83bdeefe",
+  "claimSlug": "\"modelo-los-precios-de-la-huerta-en-espana-son-muy-altos-y-los-productos-estan-a-la-vent\"",
+  "text": "Los precios de la huerta en España son muy altos y los productos están a la venta antes de madurar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-66d258966aa0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3d6938cb3e65",
+  "claimSlug": "\"modelo-por-que-en-espana-los-precios-del-gas-domestico-son-tan-altos-si-hay-otros-paise\"",
+  "text": "¿Por qué en España los precios del gas doméstico son tan altos si hay otros países con precios similares o inferiores?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-49fb0ea6a28f"
+  ]
+}

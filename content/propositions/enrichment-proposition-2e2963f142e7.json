@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e2963f142e7",
+  "claimSlug": "\"modelo-los-pacientes-con-dolores-cronicos-estan-en-lista-de-espera-y-no-reciben-tratami\"",
+  "text": "Los pacientes con dolores crónicos están en lista de espera y no reciben tratamiento a tiempo.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-9444ec7fe7a9"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af1027bca82c",
+  "claimSlug": "\"modelo-la-polucion-del-suelo-en-el-valle-del-ebro-esta-causando-problemas-de-salud\"",
+  "text": "La polución del suelo en el Valle del Ebro está causando problemas de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f7de8109e3c"
+  ]
+}

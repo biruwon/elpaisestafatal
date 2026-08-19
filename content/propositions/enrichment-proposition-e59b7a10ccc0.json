@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e59b7a10ccc0",
+  "claimSlug": "\"modelo-la-inmigracion-ha-incrementado-el-gasto-sanitario-estan-abrumando-los-hospitales\"",
+  "text": "La inmigración ha incrementado el gasto sanitario, están abrumando los hospitales y generando problemas de salud pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eac77a7f3b09"
+  ]
+}

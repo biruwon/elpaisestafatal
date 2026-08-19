@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8cee917db5fe",
+  "claimSlug": "\"modelo-las-renovables-estan-enganando-a-los-ciudadanos-con-promesas-que-no-cumplen\"",
+  "text": "Las renovables están engañando a los ciudadanos con promesas que no cumplen.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eac2660f6faf"
+  ]
+}

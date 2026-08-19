@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-48951d315ba8",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-dejando-sin-poder-a-miles-de-trabajadores\"",
+  "text": "La subida de precios está dejando sin poder a miles de trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac2cc1393a21"
+  ]
+}

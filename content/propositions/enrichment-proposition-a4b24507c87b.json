@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4b24507c87b",
+  "claimSlug": "\"modelo-por-que-no-hay-trenes-suficientes-para-ir-al-trabajo-en-las-mananas-en-madrid\"",
+  "text": "¿Por qué no hay trenes suficientes para ir al trabajo en las mañanas en Madrid?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37e213c33e90"
+  ]
+}

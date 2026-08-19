@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8bac272ce4f9",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-cultura-espanola-de-tal-manera-que-ya-no-se-sie\"",
+  "text": "La inmigración está cambiando la cultura española de tal manera que ya no se siente tan familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-99e0968271e6"
+  ]
+}

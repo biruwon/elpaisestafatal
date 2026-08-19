@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d4a10af06f18",
+  "claimSlug": "\"modelo-las-clases-en-espana-empiezan-tarde-porque-los-maestros-se-quedan-en-las-fiestas\"",
+  "text": "Las clases en España empiezan tarde porque los maestros se quedan en las fiestas hasta tarde",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bbf752e62f8b"
+  ]
+}

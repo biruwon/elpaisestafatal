@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ffbd1427f887",
+  "claimSlug": "\"modelo-no-hay-viviendas-asequibles-en-esta-zona-siempre-encuentro-que-el-alquiler-super\"",
+  "text": "No hay viviendas asequibles en esta zona, siempre encuentro que el alquiler supera mi presupuesto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fcabc723b65f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2b7ff6bfcc71",
+  "claimSlug": "\"modelo-la-inmigracion-ha-reducido-el-nivel-de-vida-de-los-espanoles\"",
+  "text": "La inmigración ha reducido el nivel de vida de los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-af7385961c1f"
+  ]
+}

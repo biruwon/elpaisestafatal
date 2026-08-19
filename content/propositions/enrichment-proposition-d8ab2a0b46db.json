@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8ab2a0b46db",
+  "claimSlug": "\"modelo-los-pacientes-estan-constantemente-en-lista-de-espera-y-a-veces-no-se-les-inform\"",
+  "text": "Los pacientes están constantemente en lista de espera y, a veces, no se les informa sobre el motivo real de la demora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-627711b5303c"
+  ]
+}

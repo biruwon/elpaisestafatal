@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2fa2b7ed4bb9",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-en-espana-se-esta-desmoronando-con-largas-filas-\"",
+  "text": "El sistema de protección social en España se está desmoronando, con largas filas y trámites burocráticos para acceder a las prestaciones.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-6e63f5216376"
+  ]
+}

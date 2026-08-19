@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-76c1a6339915",
+  "claimSlug": "\"modelo-por-que-los-salarios-no-suben-si-el-pib-crece\"",
+  "text": "¿Por qué los salarios no suben si el PIB crece?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7542a8575c6d"
+  ]
+}

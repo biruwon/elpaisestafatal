@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e9aa5511098",
+  "claimSlug": "\"modelo-en-espana-los-contratos-de-obras-publicas-se-adjudican-a-empresas-amigos-del-gob\"",
+  "text": "En España, los contratos de obras públicas se adjudican a empresas amigos del gobierno más que a las más cualificadas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-9e91d1d537b0"
+  ]
+}

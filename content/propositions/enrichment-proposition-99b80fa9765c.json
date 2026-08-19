@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-99b80fa9765c",
+  "claimSlug": "\"modelo-espana-esta-perdiendo-terreno-en-el-crecimiento-economico-y-se-siente-como-si-es\"",
+  "text": "España está perdiendo terreno en el crecimiento económico y se siente como si estuviéramos estancados.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-b52359f7080a"
+  ]
+}

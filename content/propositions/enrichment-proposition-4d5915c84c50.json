@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4d5915c84c50",
+  "claimSlug": "\"modelo-es-comun-que-los-tribunales-rechacen-casos-de-denuncias-falsas-y-se-haga-justici\"",
+  "text": "¿Es común que los tribunales rechacen casos de denuncias falsas y se haga justicia en ellos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c22fe6226644"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-35cbbdbf8e87",
+  "claimSlug": "\"modelo-el-servicio-de-tranvia-en-barcelona-es-muy-irregular-y-muchas-lineas-llegan-tard\"",
+  "text": "El servicio de tranvía en Barcelona es muy irregular y muchas líneas llegan tarde.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37aabbe6e85b"
+  ]
+}

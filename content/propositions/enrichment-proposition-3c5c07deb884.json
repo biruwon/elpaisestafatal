@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c5c07deb884",
+  "claimSlug": "\"modelo-las-decisiones-de-la-ue-sobre-la-energia-no-benefician-a-los-consumidores-espano\"",
+  "text": "Las decisiones de la UE sobre la energía no benefician a los consumidores españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2920046dd6b8"
+  ]
+}

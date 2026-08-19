@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cc7f28237ba3",
+  "claimSlug": "\"modelo-los-precios-de-la-huerta-andaluza-son-exorbitantes-en-el-supermercado\"",
+  "text": "Los precios de la huerta andaluza son exorbitantes en el supermercado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2fbb7499de10"
+  ]
+}

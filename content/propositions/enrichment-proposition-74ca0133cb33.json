@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74ca0133cb33",
+  "claimSlug": "\"modelo-por-que-la-jornada-laboral-excesiva-es-comun-en-muchos-lugares\"",
+  "text": "¿Por qué la jornada laboral excesiva es común en muchos lugares?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b15adf0c587d"
+  ]
+}

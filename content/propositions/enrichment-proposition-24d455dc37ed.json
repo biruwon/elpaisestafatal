@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-24d455dc37ed",
+  "claimSlug": "\"modelo-las-politicas-anti-incendios-se-quedan-cortas-en-zonas-de-montana\"",
+  "text": "Las políticas anti-incendios se quedan cortas en zonas de montaña.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e4ea9169572"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-58e492144393",
+  "claimSlug": "\"modelo-la-ue-no-ha-ayudado-a-mejorar-el-transporte-publico-en-espana\"",
+  "text": "La UE no ha ayudado a mejorar el transporte público en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa707191b630"
+  ]
+}

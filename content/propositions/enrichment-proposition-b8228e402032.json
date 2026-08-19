@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8228e402032",
+  "claimSlug": "\"modelo-el-coste-de-instalacion-de-sistemas-de-vivienda-digital-es-prohibitivo-para-much\"",
+  "text": "El coste de instalación de sistemas de vivienda digital es prohibitivo para muchos hogares, haciendo que sea un lujo insuperable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eb63c6e50fc3"
+  ]
+}

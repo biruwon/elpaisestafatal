@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f03194f4d03",
+  "claimSlug": "\"modelo-los-recortes-en-la-proteccion-social-han-dejado-a-muchas-personas-sin-apoyo-en-t\"",
+  "text": "Los recortes en la protección social han dejado a muchas personas sin apoyo en tiempos de crisis.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-5e88202a8d64"
+  ]
+}

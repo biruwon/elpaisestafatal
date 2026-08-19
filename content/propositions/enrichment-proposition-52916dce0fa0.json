@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-52916dce0fa0",
+  "claimSlug": "\"modelo-las-listas-de-espera-para-cirugias-son-tan-largas-que-algunas-personas-se-ven-ob\"",
+  "text": "Las listas de espera para cirugías son tan largas que algunas personas se ven obligadas a viajar a otros países",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-89df4b8ac52e"
+  ]
+}

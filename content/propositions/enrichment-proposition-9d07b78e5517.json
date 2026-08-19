@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d07b78e5517",
+  "claimSlug": "\"modelo-la-inmigracion-ha-creado-un-gran-desempleo-entre-los-jovenes-espanoles\"",
+  "text": "La inmigración ha creado un gran desempleo entre los jóvenes españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d856943ba207"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-75cbb6d21ffa",
+  "claimSlug": "\"modelo-la-construccion-en-zonas-de-riesgo-de-incendios-aumenta-la-probabilidad-de-danos\"",
+  "text": "La construcción en zonas de riesgo de incendios aumenta la probabilidad de daños y desalojos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1a91021b3e1"
+  ]
+}

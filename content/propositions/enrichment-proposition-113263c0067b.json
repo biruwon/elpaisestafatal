@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-113263c0067b",
+  "claimSlug": "\"modelo-la-tasa-de-desempleo-entre-jovenes-en-espana-es-mayor-que-la-media-europea\"",
+  "text": "La tasa de desempleo entre jóvenes en España es mayor que la media europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8764e7ce7b7"
+  ]
+}

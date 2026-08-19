@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c915c2268b1a",
+  "claimSlug": "\"modelo-los-centros-educativos-de-espana-se-niegan-a-implementar-el-horario-flexibilizad\"",
+  "text": "Los centros educativos de España se niegan a implementar el horario flexibilizado para los estudiantes que trabajan.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-c26ad7fa4ce0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fc06a50aea9",
+  "claimSlug": "\"modelo-el-sistema-de-evaluacion-es-muy-restrictivo-y-no-permite-la-creatividad\"",
+  "text": "El sistema de evaluación es muy restrictivo y no permite la creatividad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cd4b45e5a9a8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-51d7107deb7b",
+  "claimSlug": "\"modelo-las-agresiones-callejeras-son-cada-vez-mas-frecuentes-en-la-noche-en-zonas-resid\"",
+  "text": "Las agresiones callejeras son cada vez más frecuentes en la noche en zonas residenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1b0fd8c03ade"
+  ]
+}

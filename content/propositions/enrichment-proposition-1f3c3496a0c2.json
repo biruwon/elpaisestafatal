@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1f3c3496a0c2",
+  "claimSlug": "\"modelo-donde-estan-los-espacios-para-los-ancianos-todo-el-pais-es-para-jovenes-inmigran\"",
+  "text": "¿Dónde están los espacios para los ancianos? Todo el país es para jóvenes inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1068d6ae4ef4"
+  ]
+}

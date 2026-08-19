@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-60514a7745d6",
+  "claimSlug": "\"modelo-los-autonomos-pagan-mas-impuestos-que-los-trabajadores-asalariados\"",
+  "text": "Los autónomos pagan más impuestos que los trabajadores asalariados",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0fbd2b5fdd4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-01489357ac6d",
+  "claimSlug": "\"modelo-el-sueldo-no-alcanza-para-nada-no-podeis-hacer-algo-para-aumentar-los-salarios\"",
+  "text": "¡El sueldo no alcanza para nada! ¿No podéis hacer algo para aumentar los salarios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fcfa1db907d5"
+  ]
+}

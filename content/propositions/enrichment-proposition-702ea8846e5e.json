@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-702ea8846e5e",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-no-podamos-comprar-los-alimentos-basicos\"",
+  "text": "La inflación está haciendo que no podamos comprar los alimentos básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bea716e9dcbc"
+  ]
+}

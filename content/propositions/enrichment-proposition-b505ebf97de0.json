@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b505ebf97de0",
+  "claimSlug": "\"modelo-la-luz-en-espana-es-mas-cara-que-en-portugal\"",
+  "text": "La luz en España es más cara que en Portugal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c74f22e1aa0"
+  ]
+}

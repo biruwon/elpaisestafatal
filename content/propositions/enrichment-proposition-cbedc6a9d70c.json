@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cbedc6a9d70c",
+  "claimSlug": "\"modelo-el-sistema-de-contratacion-publica-en-espana-es-tan-caotico-que-a-veces-se-repit\"",
+  "text": "El sistema de contratación pública en España es tan caótico que a veces se repiten contratos a la misma empresa sin competencia justa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7a867e9e8c2"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e17e383c652",
+  "claimSlug": "\"modelo-es-cierto-que-en-espana-se-gasta-mas-en-servicios-de-seguridad-y-policia-que-en-\"",
+  "text": "¿Es cierto que en España se gasta más en servicios de seguridad y policía que en turismo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a646302035b3"
+  ]
+}

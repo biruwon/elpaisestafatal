@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b43249f24112",
+  "claimSlug": "\"modelo-espana-ha-sido-miembro-fundador-de-la-union-europea\"",
+  "text": "España ha sido miembro fundador de la Unión Europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0b40b8c216d0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc8c236b3c15",
+  "claimSlug": "\"modelo-la-despoblacion-en-el-interior-de-andalucia-es-un-problema-cronico-que-afecta-a-\"",
+  "text": "La despoblación en el interior de Andalucía es un problema crónico que afecta a muchos pueblos, mientras que las ciudades turísticas como Marbella están llenas de inmigrantes y ricos de fuera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-572d82ed4d25"
+  ]
+}

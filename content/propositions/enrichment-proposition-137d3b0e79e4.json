@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-137d3b0e79e4",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-la-sanidad-publica-ha-llevado-a-que-las-listas-de-espera\"",
+  "text": "La falta de recursos en la sanidad pública ha llevado a que las listas de espera sean un problema diario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94998c5f9647"
+  ]
+}

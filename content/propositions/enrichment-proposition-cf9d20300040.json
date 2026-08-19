@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf9d20300040",
+  "claimSlug": "\"modelo-las-tierras-de-la-comunidad-valenciana-estan-siendo-destruidas-por-la-urbanizaci\"",
+  "text": "Las tierras de la Comunidad Valenciana están siendo destruidas por la urbanización excesiva.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a43d419cf9cf"
+  ]
+}

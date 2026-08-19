@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe79137a5af3",
+  "claimSlug": "\"modelo-la-precariedad-laboral-es-comun-entre-los-trabajadores-jovenes-y-agravia-la-pobr\"",
+  "text": "La precariedad laboral es común entre los trabajadores jóvenes y agravia la pobreza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7c11f1b7a76b"
+  ]
+}

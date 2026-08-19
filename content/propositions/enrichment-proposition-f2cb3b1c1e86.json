@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2cb3b1c1e86",
+  "claimSlug": "\"modelo-no-seria-util-que-se-aumentara-la-informacion-sobre-los-riesgos-de-incendios-en-\"",
+  "text": "¿No sería útil que se aumentara la información sobre los riesgos de incendios en zonas turísticas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d04f291b36fe"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e5f64791549",
+  "claimSlug": "\"modelo-el-sistema-de-carriles-bici-en-la-ciudad-es-inexistente-y-los-peatones-tenemos-q\"",
+  "text": "El sistema de carriles bici en la ciudad es inexistente y los peatones tenemos que compartir la vía con el tráfico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f230e9858790"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfdc3509de4d",
+  "claimSlug": "\"modelo-las-playas-de-galicia-estan-llenas-de-basura-no-se-limpian-de-verdad\"",
+  "text": "Las playas de Galicia están llenas de basura, ¡no se limpian de verdad!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3fd0c397fa22"
+  ]
+}

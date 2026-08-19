@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a5900076e4c3",
+  "claimSlug": "\"modelo-las-empresas-estan-subiendo-los-precios-de-las-facturas-sin-razon-alguna\"",
+  "text": "Las empresas están subiendo los precios de las facturas sin razón alguna.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f33a641b8c7a"
+  ]
+}

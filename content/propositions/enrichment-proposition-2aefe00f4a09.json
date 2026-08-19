@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2aefe00f4a09",
+  "claimSlug": "\"modelo-hay-demasiados-examenes-y-evaluaciones-en-la-universidad-no-hay-tiempo-para-estu\"",
+  "text": "Hay demasiados exámenes y evaluaciones en la universidad, no hay tiempo para estudiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-53c5e8909294"
+  ]
+}

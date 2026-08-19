@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1015bef5fe3c",
+  "claimSlug": "\"modelo-las-aulas-estan-muy-llenas-la-clase-es-un-infierno-no\"",
+  "text": "Las aulas están muy llenas, la clase es un infierno, ¿no?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cc9e4ca7d128"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0bce709839fd",
+  "claimSlug": "\"modelo-en-espana-el-paro-juvenil-es-un-problema-constante-que-afecta-a-muchas-familias-\"",
+  "text": "En España, el paro juvenil es un problema constante que afecta a muchas familias, dejándolas sin ingresos y sin esperanza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aee18d004831"
+  ]
+}

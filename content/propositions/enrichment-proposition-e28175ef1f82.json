@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e28175ef1f82",
+  "claimSlug": "\"modelo-por-que-la-reparacion-de-telefonos-moviles-es-tan-cara-y-complicada\"",
+  "text": "¿Por qué la reparación de teléfonos móviles es tan cara y complicada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c92e05c11e9"
+  ]
+}

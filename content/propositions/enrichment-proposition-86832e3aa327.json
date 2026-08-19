@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-86832e3aa327",
+  "claimSlug": "\"modelo-los-robos-en-viviendas-son-demasiado-frecuentes-en-las-ciudades-grandes\"",
+  "text": "Los robos en viviendas son demasiado frecuentes en las ciudades grandes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9e2b4d22a035"
+  ]
+}

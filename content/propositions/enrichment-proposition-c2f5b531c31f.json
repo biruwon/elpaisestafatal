@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c2f5b531c31f",
+  "claimSlug": "\"modelo-como-es-que-en-espana-los-pacientes-esperan-tanto-tiempo-para-ver-a-un-especiali\"",
+  "text": "¿Cómo es que en España los pacientes esperan tanto tiempo para ver a un especialista cuando la enfermedad ya está avanzada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85639c6a5bad"
+  ]
+}

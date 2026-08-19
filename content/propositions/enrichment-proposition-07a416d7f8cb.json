@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-07a416d7f8cb",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-energias-renovables-hace-que-el-coste-de-la-energia-sig\"",
+  "text": "La falta de inversión en energías renovables hace que el coste de la energía siga subiendo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d49efc94ba8f"
+  ]
+}

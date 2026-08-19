@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eec7f64264ca",
+  "claimSlug": "\"modelo-el-aumento-de-precios-esta-haciendo-que-tengamos-que-trabajar-mas-horas-para-man\"",
+  "text": "El aumento de precios está haciendo que tengamos que trabajar más horas para mantenernos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e7c271458d39"
+  ]
+}

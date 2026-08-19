@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8a9c7070144",
+  "claimSlug": "\"modelo-la-falta-de-suficientes-estaciones-de-recarga-de-coches-electricos-en-las-carret\"",
+  "text": "La falta de suficientes estaciones de recarga de coches eléctricos en las carreteras de la Comunidad de Madrid es un problema constante para los conductores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fea99b72a70e"
+  ]
+}

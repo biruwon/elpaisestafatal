@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-476fc71b7300",
+  "claimSlug": "\"modelo-las-prestaciones-por-desempleo-se-reducen-demasiado-rapido\"",
+  "text": "Las prestaciones por desempleo se reducen demasiado rápido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f99954b3a1c6"
+  ]
+}

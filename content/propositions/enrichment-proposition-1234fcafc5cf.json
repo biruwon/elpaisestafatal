@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1234fcafc5cf",
+  "claimSlug": "\"modelo-por-que-las-ciudades-del-interior-de-espana-son-mas-pobres-que-las-del-litoral\"",
+  "text": "¿Por qué las ciudades del interior de España son más pobres que las del litoral?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6715c9e06712"
+  ]
+}

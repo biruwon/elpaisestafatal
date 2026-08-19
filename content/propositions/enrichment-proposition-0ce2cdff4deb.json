@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ce2cdff4deb",
+  "claimSlug": "\"modelo-las-vacaciones-son-un-lujo-en-espana-con-tantas-restricciones-y-pocos-dias-de-de\"",
+  "text": "¡Las vacaciones son un lujo en España con tantas restricciones y pocos días de descanso!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa441f8affc9"
+  ]
+}

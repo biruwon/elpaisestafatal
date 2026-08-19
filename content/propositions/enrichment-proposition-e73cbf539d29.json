@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e73cbf539d29",
+  "claimSlug": "\"modelo-el-sector-agricola-esta-sufriendo-de-la-falta-de-agua-en-zonas-donde-antes-no-er\"",
+  "text": "El sector agrícola está sufriendo de la falta de agua en zonas donde antes no era un problema.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b5cc75849e48"
+  ]
+}

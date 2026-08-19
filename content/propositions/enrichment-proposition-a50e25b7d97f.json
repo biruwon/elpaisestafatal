@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a50e25b7d97f",
+  "claimSlug": "\"modelo-en-espana-los-servicios-de-salud-publicos-estan-sobrecargados-y-los-pacientes-es\"",
+  "text": "En España, los servicios de salud públicos están sobrecargados y los pacientes esperan horas para ser atendidos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f84ce04ad404"
+  ]
+}

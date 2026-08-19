@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b89e7c208b4b",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-cultura-de-la-ciudad-en-lugar-publico\"",
+  "text": "La inmigración está cambiando la cultura de la ciudad en lugar público.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-07f07b554767"
+  ]
+}

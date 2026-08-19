@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-62f6cf090f04",
+  "claimSlug": "\"modelo-en-muchas-zonas-de-espana-los-servicios-sociales-no-llegan-a-tiempo-a-las-person\"",
+  "text": "En muchas zonas de España, los servicios sociales no llegan a tiempo a las personas que realmente lo necesitan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd6458d91d0d"
+  ]
+}

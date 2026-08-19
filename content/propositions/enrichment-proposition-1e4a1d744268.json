@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e4a1d744268",
+  "claimSlug": "\"modelo-en-espana-los-costos-de-la-calefaccion-son-tan-altos-que-a-veces-es-mas-barato-p\"",
+  "text": "En España, los costos de la calefacción son tan altos que a veces es más barato ponerse ropa térmica que encender el radiador.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d6c777fecb65"
+  ]
+}

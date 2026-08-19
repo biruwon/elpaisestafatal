@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d79ad04d1c64",
+  "claimSlug": "\"modelo-la-situacion-en-la-sanidad-publica-es-tan-critica-que-hasta-los-tratamientos-mas\"",
+  "text": "La situación en la sanidad pública es tan crítica que hasta los tratamientos más básicos se retrasan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-875657eb052c"
+  ]
+}

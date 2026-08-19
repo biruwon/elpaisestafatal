@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c319c988e30",
+  "claimSlug": "\"modelo-los-robos-de-bicicletas-en-madrid-son-tan-comunes-que-ya-ni-siquiera-me-pregunto\"",
+  "text": "Los robos de bicicletas en Madrid son tan comunes que ya ni siquiera me pregunto si dejo la mía en un sitio seguro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac7fdfdbe7f3"
+  ]
+}

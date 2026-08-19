@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f178cb532a55",
+  "claimSlug": "\"modelo-la-ciudad-de-barcelona-se-siente-maltratada-en-la-distribucion-de-fondos-europeo\"",
+  "text": "La ciudad de Barcelona se siente maltratada en la distribución de fondos europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd81675964ea"
+  ]
+}

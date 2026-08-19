@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83d4ff07e5e5",
+  "claimSlug": "\"modelo-la-falta-de-infraestructuras-tecnologicas-adecuadas-en-los-edificios-historicos-\"",
+  "text": "La falta de infraestructuras tecnológicas adecuadas en los edificios históricos hace que su adaptación a la vivienda digital sea un desafío constante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5b180a178f4a"
+  ]
+}

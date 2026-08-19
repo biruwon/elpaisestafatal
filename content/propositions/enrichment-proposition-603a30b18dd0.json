@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-603a30b18dd0",
+  "claimSlug": "\"modelo-en-muchas-zonas-rurales-de-andalucia-la-falta-de-servicios-basicos-como-agua-pot\"",
+  "text": "En muchas zonas rurales de Andalucía, la falta de servicios básicos como agua potable es un problema constante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-618341038271"
+  ]
+}

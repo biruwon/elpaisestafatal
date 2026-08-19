@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-096e8b784a9c",
+  "claimSlug": "\"modelo-las-tarifas-de-luz-y-gas-son-un-robo-a-los-bolsillos-de-los-espanoles\"",
+  "text": "Las tarifas de luz y gas son un robo a los bolsillos de los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1b278afeba1f"
+  ]
+}

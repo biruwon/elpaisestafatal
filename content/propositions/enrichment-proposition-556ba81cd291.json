@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-556ba81cd291",
+  "claimSlug": "\"modelo-como-es-que-los-precios-de-los-alquileres-siguen-subiendo-cuando-hay-tanto-desem\"",
+  "text": "¿Cómo es que los precios de los alquileres siguen subiendo cuando hay tanto desempleo en el sector del alquiler?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2399ada288ea"
+  ]
+}

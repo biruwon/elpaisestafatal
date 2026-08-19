@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2b1c40577c7",
+  "claimSlug": "\"modelo-las-sentencias-de-la-justicia-son-a-menudo-injustas-y-no-reflejan-la-realidad-de\"",
+  "text": "Las sentencias de la justicia son a menudo injustas y no reflejan la realidad de los casos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61cdc4d6d65b"
+  ]
+}

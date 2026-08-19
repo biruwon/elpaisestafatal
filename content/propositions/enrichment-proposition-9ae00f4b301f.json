@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9ae00f4b301f",
+  "claimSlug": "\"modelo-el-precio-de-la-electricidad-en-espana-sube-mas-rapido-que-la-inflacion-y-los-sa\"",
+  "text": "El precio de la electricidad en España sube más rápido que la inflación y los salarios no se adaptan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2824bae44401"
+  ]
+}

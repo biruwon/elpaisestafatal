@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e8bbb07ff45",
+  "claimSlug": "\"modelo-se-puede-hacer-algo-para-reducir-el-coste-de-la-luz-en-espana\"",
+  "text": "¿Se puede hacer algo para reducir el coste de la luz en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a0d983d0ebbc"
+  ]
+}

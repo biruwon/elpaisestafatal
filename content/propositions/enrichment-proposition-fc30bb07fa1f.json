@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc30bb07fa1f",
+  "claimSlug": "\"modelo-las-listas-de-espera-son-un-indicador-de-la-falta-de-inversion-en-la-sanidad\"",
+  "text": "Las listas de espera son un indicador de la falta de inversión en la sanidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-87046091eeb3"
+  ]
+}

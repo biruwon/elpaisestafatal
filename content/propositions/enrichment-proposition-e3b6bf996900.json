@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e3b6bf996900",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-uso-de-idiomas-extranjeros-y-perdiendo-el-espa\"",
+  "text": "La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-c46509843639"
+  ]
+}

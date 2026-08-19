@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e6682615adda",
+  "claimSlug": "\"modelo-la-ue-esta-demorandose-en-aprobar-fondos-para-reparar-danos-por-el-clima-en-espa\"",
+  "text": "La UE está demorándose en aprobar fondos para reparar daños por el clima en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a4f22a25e50a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72b48dfcce84",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-las-facturas-de-la-luz-se-queden-en-casa-de-los-j\"",
+  "text": "La inflación está haciendo que las facturas de la luz se queden en casa de los jubilados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5a4a78b8b00"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9341ab35ee8e",
+  "claimSlug": "\"modelo-las-bibliotecas-escolares-son-demasiado-pequenas-y-con-poco-material\"",
+  "text": "Las bibliotecas escolares son demasiado pequeñas y con poco material",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9fcc931a429d"
+  ]
+}

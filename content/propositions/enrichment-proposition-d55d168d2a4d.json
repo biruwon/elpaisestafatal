@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d55d168d2a4d",
+  "claimSlug": "\"modelo-las-medidas-de-ahorro-en-el-sistema-de-pensiones-han-afectado-negativamente-a-la\"",
+  "text": "Las medidas de ahorro en el sistema de pensiones han afectado negativamente a la seguridad de los jubilados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8b5d352fc0c6"
+  ]
+}

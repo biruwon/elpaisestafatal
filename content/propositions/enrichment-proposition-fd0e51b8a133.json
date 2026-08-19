@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd0e51b8a133",
+  "claimSlug": "\"modelo-los-aeropuertos-de-espana-parecen-estar-siempre-congestionados-lo-que-hace-que-s\"",
+  "text": "Los aeropuertos de España parecen estar siempre congestionados, lo que hace que sea un calvario el viaje.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8eeed2bfe4a6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b9bfb33bc04e",
+  "claimSlug": "\"modelo-la-inmigracion-esta-alterando-la-cultura-tradicional-espanola-con-lo-que-los-nat\"",
+  "text": "La inmigración está alterando la cultura tradicional española, con lo que los nativos se sienten menos orgullosos de su identidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-89e4ea71ad77"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e128c6fda3c2",
+  "claimSlug": "\"modelo-los-recortes-en-las-prestaciones-sociales-han-hecho-que-sea-mas-dificil-para-las\"",
+  "text": "Los recortes en las prestaciones sociales han hecho que sea más difícil para las familias con hijos soportar el coste de la vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7b3f11c745c7"
+  ]
+}

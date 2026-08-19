@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-49328f9a1ab5",
+  "claimSlug": "\"modelo-los-trenes-interurbanos-a-las-ciudades-costeras-desde-madrid-a-menudo-llegan-tar\"",
+  "text": "Los trenes interurbanos a las ciudades costeras desde Madrid a menudo llegan tarde y no cumplen con el horario publicado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4d263b6dd46a"
+  ]
+}

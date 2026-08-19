@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-14a34e758f25",
+  "claimSlug": "\"modelo-los-pacientes-con-problemas-de-salud-mental-en-espana-esperan-anos-por-un-tratam\"",
+  "text": "Los pacientes con problemas de salud mental en España esperan años por un tratamiento adecuado, lo que se refleja en su calidad de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0ece78628d33"
+  ]
+}

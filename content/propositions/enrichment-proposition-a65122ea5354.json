@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a65122ea5354",
+  "claimSlug": "\"modelo-la-sierra-de-gredos-esta-llena-de-plantaciones-de-olivo-pero-el-aceite-no-se-ven\"",
+  "text": "La Sierra de Gredos está llena de plantaciones de olivo, pero el aceite no se vende en España. ¿Dónde se va a parar todo ese aceite?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4559092dd2a"
+  ]
+}

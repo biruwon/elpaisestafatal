@@ -4,21 +4,22 @@ claim: "La falta de especialistas en el sistema sanitario público hace que much
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["Falta de especialistas","Espera innecesaria de dolores","Espera sin fin","Falta de atención especializada","Espera para alivio de dolores","La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.","¿Es cierto que La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","¿Qué datos permiten comprobar si La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","Quiero saber si La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.","¿Cómo se puede verificar La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","¿Hay evidencia sobre si La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","¿Es verdad que La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","¿Qué sabemos de La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?","¿Se sostiene la afirmación de que La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-fda0fd5b61d3"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de especialistas en el sistema sanitario publico hace que muchos pacientes terminen esperando tratamientos que podrian evitarles dolores inutiles"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-a72ca03e9c0c"]
 ---
 
 ## Qué es cierto

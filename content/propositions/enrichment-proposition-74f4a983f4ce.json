@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74f4a983f4ce",
+  "claimSlug": "\"modelo-como-es-que-los-incendios-forestales-se-extienden-tan-rapido-en-zonas-urbanas\"",
+  "text": "¿Cómo es que los incendios forestales se extienden tan rápido en zonas urbanas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7a4a498bd77"
+  ]
+}

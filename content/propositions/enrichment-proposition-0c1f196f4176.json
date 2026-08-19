@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0c1f196f4176",
+  "claimSlug": "\"modelo-el-sistema-de-evaluacion-continua-de-los-estudiantes-es-tan-riguroso-que-causa-e\"",
+  "text": "El sistema de evaluación continua de los estudiantes es tan riguroso que causa estrés y falta de tiempo para el ocio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f428a5398021"
+  ]
+}

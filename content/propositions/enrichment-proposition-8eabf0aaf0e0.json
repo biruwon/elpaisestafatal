@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8eabf0aaf0e0",
+  "claimSlug": "\"modelo-en-los-ultimos-anos-la-tasa-de-robos-en-domicilios-ha-aumentado-considerablement\"",
+  "text": "En los últimos años, la tasa de robos en domicilios ha aumentado considerablemente en las zonas residenciales de Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3af7fc43b974"
+  ]
+}

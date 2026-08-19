@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf274dd157b6",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-psicologico-en-las-escuelas-esta-dejando-a-los-estudiantes-sin\"",
+  "text": "La falta de apoyo psicológico en las escuelas está dejando a los estudiantes sin la ayuda que necesitan",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bb6b7a2db62"
+  ]
+}

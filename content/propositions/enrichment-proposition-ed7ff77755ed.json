@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed7ff77755ed",
+  "claimSlug": "\"modelo-es-justo-que-los-trabajadores-autonomos-paguen-mas-por-la-misma-proteccion-que-l\"",
+  "text": "¿Es justo que los trabajadores autónomos paguen más por la misma protección que los empleados de empresas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b7123d25afd"
+  ]
+}

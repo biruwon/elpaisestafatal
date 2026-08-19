@@ -4,21 +4,22 @@ claim: "Los pacientes en España sufren por las largas listas de espera, mientra
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["listas de espera en España comparables a otros países","atención sanitaria de otros países más rápida","esperas innecesarias en España","atención sanitaria más rápida en otros países","diferencia en la atención sanitaria entre países","Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.","¿Es cierto que Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","¿Qué datos permiten comprobar si Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","Quiero saber si Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.","¿Cómo se puede verificar Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","¿Hay evidencia sobre si Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","¿Es verdad que Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","¿Qué sabemos de Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?","¿Se sostiene la afirmación de que Los pacientes en España sufren por las largas listas de espera, mientras que en otros países la atención se ofrece en tiempo real.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-431f414fb4a7"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los pacientes en espana sufren por las largas listas de espera mientras que en otros paises la atencion se ofrece en tiempo real"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-90791d82548c"]
 ---
 
 ## Qué es cierto

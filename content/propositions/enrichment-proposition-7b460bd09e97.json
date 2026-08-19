@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b460bd09e97",
+  "claimSlug": "\"modelo-la-infraestructura-de-carreteras-en-espana-esta-llenando-los-hospitales-con-acci\"",
+  "text": "La infraestructura de carreteras en España está llenando los hospitales con accidentes de coches.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-865c23ca1659"
+  ]
+}

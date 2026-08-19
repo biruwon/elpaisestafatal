@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-27c9b24ae968",
+  "claimSlug": "\"modelo-el-sueldo-es-un-chiste-menos-para-el-alquiler-menos-para-todo\"",
+  "text": "¡El sueldo es un chiste! ¡Menos para el alquiler, menos para todo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b70c134feaf1"
+  ]
+}

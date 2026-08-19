@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf09cfe7d7ea",
+  "claimSlug": "\"modelo-la-inmigracion-esta-desequilibrando-la-poblacion-hay-demasiados-jovenes-y-ancian\"",
+  "text": "La inmigración está desequilibrando la población, hay demasiados jóvenes y ancianos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ce2127ea520"
+  ]
+}

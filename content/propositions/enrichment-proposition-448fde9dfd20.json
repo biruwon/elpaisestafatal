@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-448fde9dfd20",
+  "claimSlug": "\"modelo-por-que-tardan-tanto-en-actuar-ante-los-incendios-las-llamas-estan-a-las-puertas\"",
+  "text": "¿Por qué tardan tanto en actuar ante los incendios? Las llamas están a las puertas de las casas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31b05c190352"
+  ]
+}

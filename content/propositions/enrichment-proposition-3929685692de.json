@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3929685692de",
+  "claimSlug": "\"modelo-el-turismo-en-espana-se-esta-volviendo-demasiado-turistico-con-hoteles-llenos-to\"",
+  "text": "El turismo en España se está volviendo demasiado turístico, con hoteles llenos todo el año y ciudades sin vida propia.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-5edfd116ee7a"
+  ]
+}

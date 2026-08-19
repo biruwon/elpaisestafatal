@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3db3a117fc94",
+  "claimSlug": "\"modelo-por-que-se-permiten-quemas-de-poda-en-verano-cuando-ya-hay-riesgo-de-incendio\"",
+  "text": "¿Por qué se permiten quemas de poda en verano cuando ya hay riesgo de incendio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-739db61670e8"
+  ]
+}

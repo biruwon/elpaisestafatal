@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d115e44a37d",
+  "claimSlug": "\"modelo-la-luz-esta-mas-cara-que-en-el-supermercado\"",
+  "text": "La luz está más cara que en el supermercado",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6d863565773e"
+  ]
+}

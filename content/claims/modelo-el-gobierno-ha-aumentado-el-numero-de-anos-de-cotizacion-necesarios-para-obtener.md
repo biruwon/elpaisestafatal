@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-06c8cb0e4f9f"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gobierno ha aumentado el numero de anos de cotizacion necesarios para obtener una pension completa"
 generatedAt: "2026-08-18T17:27:50.721Z"
+propositionIds: ["enrichment-proposition-386f5f1adf91"]
 ---
 
 ## Qué es cierto

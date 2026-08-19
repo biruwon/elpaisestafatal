@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4fd3f1b14930",
+  "claimSlug": "\"modelo-el-crecimiento-no-se-ve-en-mi-cuenta-bancaria\"",
+  "text": "El crecimiento no se ve en mi cuenta bancaria",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4801c211bb55"
+  ]
+}

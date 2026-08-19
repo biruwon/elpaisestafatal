@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-186840650d62",
+  "claimSlug": "\"modelo-espana-se-ha-convertido-en-un-pais-donde-es-dificil-ganar-lo-suficiente-para-cub\"",
+  "text": "España se ha convertido en un país donde es difícil ganar lo suficiente para cubrir las necesidades básicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-052826a9f0d3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a3c0497f3ea",
+  "claimSlug": "\"modelo-en-muchas-zonas-rurales-de-andalucia-los-servicios-basicos-estan-deteriorados-po\"",
+  "text": "En muchas zonas rurales de Andalucía, los servicios básicos están deteriorados por la pobreza y el abandono del gobierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b791935cfe6"
+  ]
+}

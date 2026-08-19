@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd4970ce22ad",
+  "claimSlug": "\"modelo-es-dificil-encontrar-apoyo-para-las-artes-en-la-escuela\"",
+  "text": "Es difícil encontrar apoyo para las artes en la escuela",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a01e2dd2f9ef"
+  ]
+}

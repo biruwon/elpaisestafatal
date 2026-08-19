@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-265a1051b33f",
+  "claimSlug": "\"modelo-los-precios-del-alquiler-de-tierras-agricolas-en-espana-son-muy-altos-y-van-en-a\"",
+  "text": "Los precios del alquiler de tierras agrícolas en España son muy altos y van en aumento, lo que dificulta mucho la entrada de nuevas generaciones en el sector.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94abb1718258"
+  ]
+}

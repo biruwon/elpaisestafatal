@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8454fac410f5",
+  "claimSlug": "\"modelo-el-sistema-de-transporte-publico-en-algunas-ciudades-es-tan-deficiente-que-los-c\"",
+  "text": "El sistema de transporte público en algunas ciudades es tan deficiente que los coches son la única opción viable para moverse.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-5ec167e6e946"
+  ]
+}

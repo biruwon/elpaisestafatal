@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b64d2b170a6e",
+  "claimSlug": "\"modelo-los-centros-de-ocio-juvenil-estan-cerrando-por-falta-de-subvenciones-dejando-a-l\"",
+  "text": "Los centros de ocio juvenil están cerrando por falta de subvenciones, dejando a los jóvenes sin alternativas de ocio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8b0340d843a"
+  ]
+}

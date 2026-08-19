@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb327c27c0e8",
+  "claimSlug": "\"modelo-la-subida-del-ibi-esta-pasando-factura-a-todos-los-alquileres-es-un-impuesto-mas\"",
+  "text": "La subida del IBI esta pasando factura a todos los alquileres, es un impuesto más que no me lo puedo permitir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5371a561115c"
+  ]
+}

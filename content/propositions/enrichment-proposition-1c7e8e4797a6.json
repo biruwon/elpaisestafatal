@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1c7e8e4797a6",
+  "claimSlug": "\"modelo-el-alza-del-precio-de-los-alimentos-es-un-golpe-a-las-arcas-de-los-trabajadores-\"",
+  "text": "El alza del precio de los alimentos es un golpe a las arcas de los trabajadores de bajos ingresos que apenas sobreviven como están.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a780a4cf9cf5"
+  ]
+}

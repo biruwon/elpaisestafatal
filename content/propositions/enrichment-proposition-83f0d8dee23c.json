@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83f0d8dee23c",
+  "claimSlug": "\"modelo-que-pasa-con-la-falta-de-personal-en-las-escuelas-los-ninos-estan-en-peligro\"",
+  "text": "¿Qué pasa con la falta de personal en las escuelas? ¡Los niños están en peligro!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-af6cc1a2400f"
+  ]
+}

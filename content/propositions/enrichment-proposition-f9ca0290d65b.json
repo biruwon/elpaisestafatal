@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f9ca0290d65b",
+  "claimSlug": "\"modelo-las-clases-estan-llenas-de-ninos-de-padres-inmigrantes\"",
+  "text": "Las clases están llenas de niños de padres inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c03846cf10c7"
+  ]
+}

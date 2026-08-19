@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-16282d78fa03",
+  "claimSlug": "\"modelo-las-horas-extras-no-remuneradas-son-un-mal-habitual-en-muchas-empresas\"",
+  "text": "Las horas extras no remuneradas son un mal habitual en muchas empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-07becc64103c"
+  ]
+}

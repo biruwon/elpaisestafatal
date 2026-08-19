@@ -4,21 +4,22 @@ claim: "¿Cómo es posible que un alcalde de un pequeño pueblo reciba tantos co
 assessment: uncertain
 topicSlugs: ["corrupción y contratación pública"]
 aliases: ["¿Qué pasa con tantos contratos para pequeñas obras?","¿Por qué un alcalde recibe tantos trabajos?","¿Qué hay detrás de los contratos en los pueblos pequeños?","¿Qué pasa con las obras en los pequeños municipios?","¿Cómo se explota la contratación pública en los pueblos?","¿Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado","¿Es cierto que Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","¿Qué datos permiten comprobar si Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","Quiero saber si Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado","¿Cómo se puede verificar Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","¿Hay evidencia sobre si Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","¿Es verdad que Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","¿Qué sabemos de Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?","¿Se sostiene la afirmación de que Cómo es posible que un alcalde de un pequeño pueblo reciba tantos contratos públicos para obras que parecen más bien de repintado?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-ceec4a3c6cea"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "como es posible que un alcalde de un pequeno pueblo reciba tantos contratos publicos para obras que parecen mas bien de repintado"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-2fb77382b4b6"]
 ---
 
 ## Qué es cierto

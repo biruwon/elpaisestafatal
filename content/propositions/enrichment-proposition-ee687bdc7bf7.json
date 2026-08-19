@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee687bdc7bf7",
+  "claimSlug": "\"modelo-el-sector-agricola-en-andalucia-genera-mas-empleo-que-el-turismo\"",
+  "text": "El sector agrícola en Andalucía genera más empleo que el turismo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-269c3d71f726"
+  ]
+}

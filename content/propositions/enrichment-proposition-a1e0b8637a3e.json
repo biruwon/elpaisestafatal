@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a1e0b8637a3e",
+  "claimSlug": "\"modelo-las-pensiones-son-tan-bajas-que-muchos-jubilados-tienen-que-depender-de-la-ayuda\"",
+  "text": "Las pensiones son tan bajas que muchos jubilados tienen que depender de la ayuda social para sobrevivir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7dd302a9fa18"
+  ]
+}

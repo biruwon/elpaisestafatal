@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d36f85249362",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-las-facturas-de-la-luz-se-dupliquen-cada-ano\"",
+  "text": "La inflación está haciendo que las facturas de la luz se dupliquen cada año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-841f4defcc96"
+  ]
+}

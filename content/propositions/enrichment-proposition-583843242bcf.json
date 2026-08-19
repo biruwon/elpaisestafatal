@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-583843242bcf",
+  "claimSlug": "\"modelo-la-policia-en-espana-parece-tener-mas-poder-que-la-justicia-ya-que-se-siente-que\"",
+  "text": "La policía en España parece tener más poder que la justicia, ya que se siente que los policías a veces abusan de su autoridad y no se les castiga adecuadamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f85fcb07afe4"
+  ]
+}

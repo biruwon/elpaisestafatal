@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1ab509716104",
+  "claimSlug": "\"modelo-los-precios-en-los-restaurantes-turisticos-son-desorbitados-y-no-valen-la-pena\"",
+  "text": "Los precios en los restaurantes turísticos son desorbitados y no valen la pena.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6cfbab2cb7ec"
+  ]
+}

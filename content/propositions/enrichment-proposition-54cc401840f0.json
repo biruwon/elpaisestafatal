@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-54cc401840f0",
+  "claimSlug": "\"modelo-la-communaute-autonome-de-ceuta-esta-siendo-mal-gestionada-por-el-gobierno-centr\"",
+  "text": "La communauté autonome de Ceuta está siendo mal gestionada por el gobierno central.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2af8bce300dc"
+  ]
+}

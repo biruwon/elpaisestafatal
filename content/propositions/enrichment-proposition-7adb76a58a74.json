@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7adb76a58a74",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-los-precios-suban-mas-que-los-salarios-y-el-creci\"",
+  "text": "La inflación está haciendo que los precios suban más que los salarios, y el crecimiento económico no nos beneficia",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9374b11c5d14"
+  ]
+}

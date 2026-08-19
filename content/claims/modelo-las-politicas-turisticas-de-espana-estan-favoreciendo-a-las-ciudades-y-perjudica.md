@@ -4,21 +4,22 @@ claim: "Las políticas turísticas de España están favoreciendo a las ciudades
 assessment: uncertain
 topicSlugs: ["turismo y agricultura"]
 aliases: ["destinos turísticos","ciudades turísticas","crisis rural","políticas turísticas","desigualdad territorial","fomento urbano","Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.","¿Es cierto que Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","¿Qué datos permiten comprobar si Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","Quiero saber si Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.","¿Cómo se puede verificar Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","¿Hay evidencia sobre si Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","¿Es verdad que Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","¿Qué sabemos de Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?","¿Se sostiene la afirmación de que Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-bb225183d3bc"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las politicas turisticas de espana estan favoreciendo a las ciudades y perjudicando a los destinos rurales"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-6e1b71a71337"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-127b975ee6e1",
+  "claimSlug": "\"modelo-los-centros-educativos-no-cuentan-con-suficientes-recursos-tecnologicos-lo-que-l\"",
+  "text": "Los centros educativos no cuentan con suficientes recursos tecnológicos, lo que limita la formación digital de los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ddb2080498db"
+  ]
+}

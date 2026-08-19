@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2f56bc2e545f",
+  "claimSlug": "\"modelo-las-politicas-de-desempleo-en-espana-no-ayudan-a-encontrar-trabajo-rapido\"",
+  "text": "Las políticas de desempleo en España no ayudan a encontrar trabajo rápido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-250c43ef1166"
+  ]
+}

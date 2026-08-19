@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3215a1b8f032",
+  "claimSlug": "\"modelo-la-electricidad-en-espana-sube-mas-de-lo-que-se-incrementa-el-salario\"",
+  "text": "La electricidad en España sube más de lo que se incrementa el salario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4eda9d6d49ca"
+  ]
+}

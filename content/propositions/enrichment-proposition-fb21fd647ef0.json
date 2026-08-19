@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fb21fd647ef0",
+  "claimSlug": "\"modelo-por-que-el-servicio-en-los-restaurantes-de-la-costa-es-tan-malo-en-espana\"",
+  "text": "¿Por qué el servicio en los restaurantes de la costa es tan malo en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d5fc94e3b24b"
+  ]
+}

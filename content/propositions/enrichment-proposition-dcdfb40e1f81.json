@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dcdfb40e1f81",
+  "claimSlug": "\"modelo-los-jueces-parecen-mas-interesados-en-mantener-sus-posiciones-que-en-hacer-justi\"",
+  "text": "Los jueces parecen más interesados en mantener sus posiciones que en hacer justicia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-962106d63ffb"
+  ]
+}

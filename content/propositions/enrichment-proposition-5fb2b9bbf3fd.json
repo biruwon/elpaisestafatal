@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5fb2b9bbf3fd",
+  "claimSlug": "\"modelo-el-gobierno-deberia-hacer-algo-para-frenar-la-inflacion\"",
+  "text": "El gobierno debería hacer algo para frenar la inflación",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e82fae21c25d"
+  ]
+}

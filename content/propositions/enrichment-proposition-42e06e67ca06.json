@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-42e06e67ca06",
+  "claimSlug": "\"modelo-por-que-hay-que-pagar-por-la-limpieza-del-piso-en-el-alquiler\"",
+  "text": "¿Por qué hay que pagar por la limpieza del piso en el alquiler?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0a79ee90d1f9"
+  ]
+}

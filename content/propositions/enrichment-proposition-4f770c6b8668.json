@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f770c6b8668",
+  "claimSlug": "\"modelo-la-jornada-laboral-excesiva-es-comun-entre-los-trabajadores\"",
+  "text": "La jornada laboral excesiva es común entre los trabajadores",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8a9fe3a051b"
+  ]
+}

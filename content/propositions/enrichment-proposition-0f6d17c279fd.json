@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0f6d17c279fd",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-enganando-a-la-gente-con-cifras-que-no-reflejan-la\"",
+  "text": "El crecimiento económico está engañando a la gente con cifras que no reflejan la realidad de mi bolsillo.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d679e61d6a37"
+  ]
+}

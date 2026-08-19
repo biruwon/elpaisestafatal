@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e0373a02ab6",
+  "claimSlug": "\"modelo-las-pensiones-no-alcanzan-ni-para-comprar-un-kilo-de-patatas-en-el-supermercado\"",
+  "text": "Las pensiones no alcanzan ni para comprar un kilo de patatas en el supermercado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-352c9f8d5659"
+  ]
+}

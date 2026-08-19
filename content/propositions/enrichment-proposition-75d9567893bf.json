@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-75d9567893bf",
+  "claimSlug": "\"modelo-el-precio-de-los-alquileres-en-barcelona-esta-fuera-de-mi-alcance-incluso-para-u\"",
+  "text": "El precio de los alquileres en Barcelona está fuera de mi alcance, incluso para un trabajo decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84abd51e955e"
+  ]
+}

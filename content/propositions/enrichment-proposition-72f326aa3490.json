@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72f326aa3490",
+  "claimSlug": "\"modelo-el-iva-en-espana-es-mas-alto-que-en-muchos-paises-vecinos-lo-que-hace-que-compra\"",
+  "text": "El IVA en España es más alto que en muchos países vecinos, lo que hace que comprar en tiendas sea caro para los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0817388b39dd"
+  ]
+}

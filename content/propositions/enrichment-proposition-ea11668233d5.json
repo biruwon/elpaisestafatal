@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea11668233d5",
+  "claimSlug": "\"modelo-la-caida-de-la-construccion-esta-dejando-a-muchos-trabajadores-desempleados\"",
+  "text": "La caída de la construcción está dejando a muchos trabajadores desempleados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ef7b65f5424"
+  ]
+}

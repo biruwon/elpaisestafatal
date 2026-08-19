@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b2742cfb9d9e",
+  "claimSlug": "\"modelo-en-algunas-ciudades-espanolas-el-metro-es-tan-incomodo-que-los-pasajeros-prefier\"",
+  "text": "En algunas ciudades españolas, el metro es tan incómodo que los pasajeros prefieren caminar o usar el coche, a pesar de los altos costos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c14f368505f7"
+  ]
+}

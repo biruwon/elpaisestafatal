@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-131295f9b63e",
+  "claimSlug": "\"modelo-es-comun-que-las-personas-se-sientan-ignoradas-en-las-listas-de-espera\"",
+  "text": "Es común que las personas se sientan ignoradas en las listas de espera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6b0ec85c1e0"
+  ]
+}

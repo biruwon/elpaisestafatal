@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4fabad2d402",
+  "claimSlug": "\"modelo-la-calidad-del-agua-en-los-destinos-turisticos-costeros-esta-empeorando\"",
+  "text": "La calidad del agua en los destinos turísticos costeros está empeorando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-20db5c901665"
+  ]
+}

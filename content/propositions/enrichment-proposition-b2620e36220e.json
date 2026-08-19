@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b2620e36220e",
+  "claimSlug": "\"modelo-el-desempleo-juvenil-en-espana-sigue-siendo-un-problema-cronico\"",
+  "text": "El desempleo juvenil en España sigue siendo un problema crónico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd355780b105"
+  ]
+}

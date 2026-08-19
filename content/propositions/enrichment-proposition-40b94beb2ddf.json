@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-40b94beb2ddf",
+  "claimSlug": "\"modelo-por-que-en-espana-el-paro-juvenil-sigue-siendo-tan-alto-cuando-hay-tantas-empres\"",
+  "text": "¿Por qué en España el paro juvenil sigue siendo tan alto cuando hay tantas empresas que reclaman trabajadores?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a6ccc529264"
+  ]
+}

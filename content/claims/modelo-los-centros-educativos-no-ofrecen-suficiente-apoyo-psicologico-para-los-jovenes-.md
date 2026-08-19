@@ -4,21 +4,22 @@ claim: "Los centros educativos no ofrecen suficiente apoyo psicológico para los
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["poca atención psicológica","no hay apoyo suficiente","apoyo psicológico escaso","no se les da suficiente ayuda","Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.","¿Es cierto que Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","¿Qué datos permiten comprobar si Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","Quiero saber si Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.","¿Cómo se puede verificar Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","¿Hay evidencia sobre si Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","¿Es verdad que Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","¿Qué sabemos de Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?","¿Se sostiene la afirmación de que Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-28053944ca65"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los centros educativos no ofrecen suficiente apoyo psicologico para los jovenes con problemas de salud mental"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-1cf6925eb180"]
 ---
 
 ## Qué es cierto

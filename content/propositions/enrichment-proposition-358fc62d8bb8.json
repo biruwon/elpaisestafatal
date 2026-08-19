@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-358fc62d8bb8",
+  "claimSlug": "\"modelo-por-que-en-los-barrios-mas-desfavorecidos-de-espana-se-incrementan-los-delitos-d\"",
+  "text": "¿Por qué en los barrios más desfavorecidos de España se incrementan los delitos de tráfico de drogas, y se ve cada vez más difícil evitarlos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3ddeb98da20"
+  ]
+}

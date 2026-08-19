@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-04c2c5ae3f28",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-la-presion-sobre-los-servicios-educativos-especialme\"",
+  "text": "La inmigración ha aumentado la presión sobre los servicios educativos, especialmente en áreas con gran número de inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-63772e5239e6"
+  ]
+}

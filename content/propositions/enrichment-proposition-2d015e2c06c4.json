@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d015e2c06c4",
+  "claimSlug": "\"modelo-los-coches-electricos-son-un-lujo-insostenible-con-el-precio-de-la-electricidad\"",
+  "text": "Los coches eléctricos son un lujo insostenible con el precio de la electricidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3d13cdbbdbb1"
+  ]
+}

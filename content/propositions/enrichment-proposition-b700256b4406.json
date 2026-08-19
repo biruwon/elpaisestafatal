@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b700256b4406",
+  "claimSlug": "\"modelo-los-inmigrantes-no-contribuyen-al-sistema-de-pensiones-solo-toman-y-nunca-pagan\"",
+  "text": "Los inmigrantes no contribuyen al sistema de pensiones, solo toman y nunca pagan.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-c339288daab1"
+  ]
+}

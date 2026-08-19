@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-511a56c2d415",
+  "claimSlug": "\"modelo-la-ue-no-ha-actuado-para-mejorar-la-seguridad-ciudadana-en-espana\"",
+  "text": "La UE no ha actuado para mejorar la seguridad ciudadana en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-28c949d3dfd4"
+  ]
+}

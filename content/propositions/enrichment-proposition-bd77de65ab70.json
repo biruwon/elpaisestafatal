@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bd77de65ab70",
+  "claimSlug": "\"modelo-los-puertos-de-entrada-en-espana-son-lento-y-desorganizados-causando-retrasos-en\"",
+  "text": "Los puertos de entrada en España son lento y desorganizados, causando retrasos en los envíos de mercancías.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8294cfb9824"
+  ]
+}

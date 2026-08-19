@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-459159001254",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-de-los-caminos-rurales-esta-dificultando-la-distribuci\"",
+  "text": "La falta de mantenimiento de los caminos rurales está dificultando la distribución de productos agrícolas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-0133c5908a57"
+  ]
+}

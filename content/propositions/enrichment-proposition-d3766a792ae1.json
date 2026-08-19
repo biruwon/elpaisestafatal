@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d3766a792ae1",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-en-espana-son-demasiado-duras-y-no-ayudan-a-integra\"",
+  "text": "Las políticas de inmigración en España son demasiado duras y no ayudan a integrar a los nuevos ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c2c2709ebc4f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c674b2e44afb",
+  "claimSlug": "\"modelo-la-falta-de-programas-de-apoyo-a-la-salud-mental-en-las-escuelas-es-un-problema-\"",
+  "text": "La falta de programas de apoyo a la salud mental en las escuelas es un problema que afecta a muchos estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c66783565fa"
+  ]
+}

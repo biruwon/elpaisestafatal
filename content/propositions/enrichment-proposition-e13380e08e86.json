@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e13380e08e86",
+  "claimSlug": "\"modelo-en-barcelona-la-delincuencia-juvenil-ha-aumentado-mucho-en-los-ultimos-anos\"",
+  "text": "En Barcelona, la delincuencia juvenil ha aumentado mucho en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-beeb560a2a2c"
+  ]
+}

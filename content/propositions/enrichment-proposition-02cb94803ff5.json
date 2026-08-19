@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-02cb94803ff5",
+  "claimSlug": "\"modelo-las-esperanzas-de-encontrar-un-empleo-tras-el-grado-en-ciencias-estan-muy-mermad\"",
+  "text": "Las esperanzas de encontrar un empleo tras el grado en ciencias están muy mermadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-734b0ed984b7"
+  ]
+}

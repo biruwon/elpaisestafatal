@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f71d53231b0",
+  "claimSlug": "\"modelo-las-escuelas-estan-llenas-de-alumnos-con-padres-inmigrantes\"",
+  "text": "Las escuelas están llenas de alumnos con padres inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-023f762c9850"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ae0ec968a88",
+  "claimSlug": "\"modelo-como-es-posible-que-en-espana-no-se-instalen-mas-sistemas-de-control-de-la-tempe\"",
+  "text": "¿Cómo es posible que en España no se instalen más sistemas de control de la temperatura en viviendas de alquiler?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6da5ca632c0d"
+  ]
+}

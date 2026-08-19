@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa88bdcc13b3",
+  "claimSlug": "\"modelo-la-falta-de-limpieza-de-bosques-favorece-los-incendios\"",
+  "text": "La falta de limpieza de bosques favorece los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f439d0b294d3"
+  ]
+}

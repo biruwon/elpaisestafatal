@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf9108f3220b",
+  "claimSlug": "\"modelo-los-bajos-salarios-y-altos-precios-hacen-que-sea-dificil-mantener-a-mi-familia\"",
+  "text": "Los bajos salarios y altos precios hacen que sea difícil mantener a mi familia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-46e10e55d17d"
+  ]
+}

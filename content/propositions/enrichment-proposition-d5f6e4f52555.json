@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d5f6e4f52555",
+  "claimSlug": "\"modelo-la-subida-de-la-edad-de-jubilacion-es-un-insulto-a-la-salud-de-los-trabajadores\"",
+  "text": "La subida de la edad de jubilación es un insulto a la salud de los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f097d482ecce"
+  ]
+}

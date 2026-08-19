@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e2810ba4d364",
+  "claimSlug": "\"modelo-la-espera-para-la-cirugia-de-cataratas-en-espana-es-inaceptablemente-larga\"",
+  "text": "La espera para la cirugía de cataratas en España es inaceptablemente larga.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5c88752d2fe"
+  ]
+}

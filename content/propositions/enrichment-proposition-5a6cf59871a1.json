@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a6cf59871a1",
+  "claimSlug": "\"modelo-es-frustrante-tener-que-esperar-meses-para-recibir-la-ayuda-para-el-alquiler\"",
+  "text": "Es frustrante tener que esperar meses para recibir la ayuda para el alquiler.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a27f3281de35"
+  ]
+}

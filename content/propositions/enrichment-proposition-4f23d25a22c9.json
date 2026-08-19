@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f23d25a22c9",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-esta-muy-desigual-y-favorece-a-los-que-ya-tienen\"",
+  "text": "El sistema de protección social está muy desigual y favorece a los que ya tienen trabajo",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-13a4e50ad7d5"
+  ]
+}

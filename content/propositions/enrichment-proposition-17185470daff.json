@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-17185470daff",
+  "claimSlug": "\"modelo-el-acceso-a-la-vivienda-es-un-sueno-roto-no-hay-opciones-razonables-para-el-alqu\"",
+  "text": "¡El acceso a la vivienda es un sueño roto! No hay opciones razonables para el alquiler.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-933d93854480"
+  ]
+}

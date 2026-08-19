@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e67f777736ae",
+  "claimSlug": "\"modelo-los-recortes-en-las-subvenciones-a-las-renovables-estan-afectando-directamente-a\"",
+  "text": "Los recortes en las subvenciones a las renovables están afectando directamente a la electricidad que pagamos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f17256a77aa9"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc713efb4c19",
+  "claimSlug": "\"modelo-hay-demasiados-inmigrantes-en-los-hospitales-y-no-se-les-atiende-bien\"",
+  "text": "Hay demasiados inmigrantes en los hospitales y no se les atiende bien.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db75683d97d6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d82ebfc263a7",
+  "claimSlug": "\"modelo-por-que-los-delitos-de-trafico-siguen-siendo-frecuentes-en-las-autopistas-de-mad\"",
+  "text": "¿Por qué los delitos de tráfico siguen siendo frecuentes en las autopistas de Madrid?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-362fd63ffc74"
+  ]
+}

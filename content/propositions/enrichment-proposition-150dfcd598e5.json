@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-150dfcd598e5",
+  "claimSlug": "\"modelo-el-gas-de-coz-es-un-lujo-para-el-bolsillo\"",
+  "text": "El gas de coz es un lujo para el bolsillo",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8b33bf710af7"
+  ]
+}

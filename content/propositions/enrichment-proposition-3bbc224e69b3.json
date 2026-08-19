@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3bbc224e69b3",
+  "claimSlug": "\"modelo-la-sanidad-en-espana-se-ha-convertido-en-un-sistema-de-aterrizaje-de-emergencia\"",
+  "text": "La sanidad en España se ha convertido en un sistema de aterrizaje de emergencia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e74d862a18e7"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd1a87b084b8",
+  "claimSlug": "\"modelo-por-que-la-policia-demora-tanto-en-responder-a-los-llamados-de-emergencia-en-zon\"",
+  "text": "¿Por qué la policía demora tanto en responder a los llamados de emergencia en zonas urbanas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4d3a91a3fcc8"
+  ]
+}

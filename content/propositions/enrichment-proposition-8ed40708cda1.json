@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ed40708cda1",
+  "claimSlug": "\"modelo-el-sistema-de-becas-para-estudios-de-posgrado-es-tan-limitado-que-solo-unos-poco\"",
+  "text": "El sistema de becas para estudios de posgrado es tan limitado que solo unos pocos lo consiguen.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-145cf992cefc"
+  ]
+}

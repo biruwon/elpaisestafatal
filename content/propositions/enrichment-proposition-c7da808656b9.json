@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c7da808656b9",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-combustible-en-espana-son-excesivos-afectando-directament\"",
+  "text": "Los impuestos sobre el combustible en España son excesivos, afectando directamente a la economía familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3e902933d20b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a2f90fb55e0",
+  "claimSlug": "\"modelo-la-demora-en-la-sanidad-publica-ha-llevado-a-que-los-pacientes-se-sientan-desval\"",
+  "text": "La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-65087c24cc94"
+  ]
+}

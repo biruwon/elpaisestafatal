@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4254b6460bec",
+  "claimSlug": "\"modelo-en-espana-los-trabajadores-independientes-pagan-mas-por-las-prestaciones-que-las\"",
+  "text": "En España, los trabajadores independientes pagan más por las prestaciones que las empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97c5aef348ee"
+  ]
+}

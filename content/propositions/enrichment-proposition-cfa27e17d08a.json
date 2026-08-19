@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfa27e17d08a",
+  "claimSlug": "\"modelo-por-que-los-altavoces-inteligentes-no-entienden-bien-lo-que-decimos\"",
+  "text": "¿Por qué los altavoces inteligentes no entienden bien lo que decimos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7e4975608fbe"
+  ]
+}

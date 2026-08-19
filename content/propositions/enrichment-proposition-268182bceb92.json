@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-268182bceb92",
+  "claimSlug": "\"modelo-el-sistema-de-evaluacion-con-examenes-finales-es-muy-estresante-para-los-jovenes\"",
+  "text": "El sistema de evaluación con exámenes finales es muy estresante para los jóvenes y no refleja su rendimiento real.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-92fd59faff25"
+  ]
+}

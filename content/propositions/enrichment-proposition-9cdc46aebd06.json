@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9cdc46aebd06",
+  "claimSlug": "\"modelo-la-construccion-de-grandes-centros-comerciales-en-barcelona-es-un-problema-de-es\"",
+  "text": "La construcción de grandes centros comerciales en Barcelona es un problema de estacionamiento y contaminación que afecta a los vecinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d1f7dfde0a7b"
+  ]
+}

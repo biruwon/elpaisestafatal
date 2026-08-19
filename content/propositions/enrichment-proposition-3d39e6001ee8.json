@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3d39e6001ee8",
+  "claimSlug": "\"modelo-los-robos-en-bicicletas-son-comunes-en-las-ciudades-costeras-de-espana\"",
+  "text": "Los robos en bicicletas son comunes en las ciudades costeras de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-450889f4306c"
+  ]
+}

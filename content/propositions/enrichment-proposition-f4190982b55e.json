@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4190982b55e",
+  "claimSlug": "\"modelo-la-calidad-del-agua-de-regadio-en-extremadura-no-es-confiable\"",
+  "text": "La calidad del agua de regadío en Extremadura no es confiable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3b927fe53b04"
+  ]
+}

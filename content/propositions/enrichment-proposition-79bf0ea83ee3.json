@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79bf0ea83ee3",
+  "claimSlug": "\"modelo-en-espana-los-impuestos-sobre-el-gasolina-son-tan-altos-que-a-veces-parece-que-e\"",
+  "text": "En España, los impuestos sobre el gasolina son tan altos que a veces parece que el gobierno quiera matarnos con nuestros coches.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fbb3d7db6a24"
+  ]
+}

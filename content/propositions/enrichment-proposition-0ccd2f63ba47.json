@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ccd2f63ba47",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-nuestras-compras-de-fiesta-se-vuelvan-imposibles\"",
+  "text": "La inflación está haciendo que nuestras compras de fiesta se vuelvan imposibles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-57cbdc965f52"
+  ]
+}

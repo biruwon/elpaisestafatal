@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a19947c13b53",
+  "claimSlug": "\"modelo-los-costes-energeticos-estan-matando-al-bolsillo-del-ciudadano\"",
+  "text": "Los costes energéticos están matando al bolsillo del ciudadano",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e03d6beec345"
+  ]
+}

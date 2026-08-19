@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-881b1b7c2aba",
+  "claimSlug": "\"modelo-por-que-se-gastan-miles-de-millones-en-subsidios-agricolas-mientras-los-servicio\"",
+  "text": "¿Por qué se gastan miles de millones en subsidios agrícolas mientras los servicios de salud reciben menos?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-2ed6d28ec726"
+  ]
+}

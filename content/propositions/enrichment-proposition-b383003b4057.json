@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b383003b4057",
+  "claimSlug": "\"modelo-no-se-puede-entrar-en-propiedad-el-acceso-a-la-vivienda-esta-al-nivel-de-la-luna\"",
+  "text": "No se puede entrar en propiedad, el acceso a la vivienda está al nivel de la luna, ¡se ha vuelto un lujo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9f4f77513bae"
+  ]
+}

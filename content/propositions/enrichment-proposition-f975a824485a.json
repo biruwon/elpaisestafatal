@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f975a824485a",
+  "claimSlug": "\"modelo-los-estudiantes-tienen-que-pagar-demasiados-gastos-adicionales-en-sus-estudios\"",
+  "text": "Los estudiantes tienen que pagar demasiados gastos adicionales en sus estudios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a1e9492bc447"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3d76f8315563",
+  "claimSlug": "\"modelo-el-subempleo-es-un-problema-generalizado\"",
+  "text": "El subempleo es un problema generalizado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c47d515f678"
+  ]
+}

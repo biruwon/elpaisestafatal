@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-534e9f6d5478",
+  "claimSlug": "\"modelo-la-delincuencia-juvenil-esta-creciendo-en-las-ciudades-costeras-especialmente-en\"",
+  "text": "La delincuencia juvenil está creciendo en las ciudades costeras, especialmente en verano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1666bd4e8e63"
+  ]
+}

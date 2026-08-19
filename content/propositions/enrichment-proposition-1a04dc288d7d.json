@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a04dc288d7d",
+  "claimSlug": "\"modelo-el-gas-natural-en-espana-es-mas-caro-que-en-francia\"",
+  "text": "El gas natural en España es más caro que en Francia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab9f2b571abb"
+  ]
+}

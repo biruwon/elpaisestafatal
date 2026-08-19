@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4b3944db6d5",
+  "claimSlug": "\"modelo-la-inflacion-esta-comiendo-directamente-en-nuestro-presupuesto-familiar-dejandon\"",
+  "text": "La inflación está comiendo directamente en nuestro presupuesto familiar, dejándonos con menos para gastar en cosas importantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d939c0845801"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a155d63c6a8",
+  "claimSlug": "\"modelo-la-proteccion-social-no-cubre-los-gastos-medicos-basicos-lo-que-obliga-a-las-per\"",
+  "text": "La protección social no cubre los gastos médicos básicos, lo que obliga a las personas a pedir créditos o vender sus bienes para pagar facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7002bc728e45"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f687071356e8",
+  "claimSlug": "\"modelo-es-ridiculo-que-haya-familias-que-trabajan-arduamente-todo-el-ano-pero-a-final-d\"",
+  "text": "Es ridículo que haya familias que trabajan arduamente todo el año pero a final de mes no tienen nada para comer.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b05dbbb72029"
+  ]
+}

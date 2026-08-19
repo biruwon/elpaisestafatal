@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a896beb46364",
+  "claimSlug": "\"modelo-la-politica-fiscal-esta-penalizando-a-los-ingresos-medios-y-la-gente-esta-sufrie\"",
+  "text": "La política fiscal está penalizando a los ingresos medios y la gente está sufriendo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a5444209530"
+  ]
+}

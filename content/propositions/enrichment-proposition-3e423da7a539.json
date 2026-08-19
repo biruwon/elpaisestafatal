@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e423da7a539",
+  "claimSlug": "\"modelo-el-iva-en-la-hosteleria-es-tan-alto-que-a-veces-me-cuesta-mas-comprar-un-cafe-qu\"",
+  "text": "El IVA en la hostelería es tan alto que a veces me cuesta más comprar un café que en otros países.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2b10cd13e3f"
+  ]
+}

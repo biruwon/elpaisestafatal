@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34288b6d000a",
+  "claimSlug": "\"modelo-en-muchas-zonas-de-espana-los-precios-de-los-alimentos-basicos-estan-al-nivel-de\"",
+  "text": "En muchas zonas de España, los precios de los alimentos básicos están al nivel de los de países de la UE del Este, lo cual es preocupante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-afa703ce2176"
+  ]
+}

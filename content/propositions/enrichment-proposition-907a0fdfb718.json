@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-907a0fdfb718",
+  "claimSlug": "\"modelo-el-mantenimiento-de-las-tecnologias-en-viviendas-inteligentes-es-costoso-y-frecu\"",
+  "text": "El mantenimiento de las tecnologías en viviendas inteligentes es costoso y frecuente, lo que agota la economía de muchos hogares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61302354736a"
+  ]
+}

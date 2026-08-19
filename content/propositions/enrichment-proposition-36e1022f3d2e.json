@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-36e1022f3d2e",
+  "claimSlug": "\"modelo-los-gastos-de-los-libros-de-texto-son-abusivos-no\"",
+  "text": "Los gastos de los libros de texto son abusivos, ¿no?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-181c680122cc"
+  ]
+}

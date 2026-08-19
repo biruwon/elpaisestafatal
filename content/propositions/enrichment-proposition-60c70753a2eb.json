@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-60c70753a2eb",
+  "claimSlug": "\"modelo-es-comun-que-los-pacientes-no-tengan-cita-con-el-especialista-en-el-plazo-acorda\"",
+  "text": "Es común que los pacientes no tengan cita con el especialista en el plazo acordado",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d672d61086ea"
+  ]
+}

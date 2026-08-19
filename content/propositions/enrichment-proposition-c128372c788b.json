@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c128372c788b",
+  "claimSlug": "\"modelo-el-mercado-laboral-en-espana-esta-colapsado\"",
+  "text": "El mercado laboral en España está colapsado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10254f551f54"
+  ]
+}

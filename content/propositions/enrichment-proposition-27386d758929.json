@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-27386d758929",
+  "claimSlug": "\"modelo-espana-tiene-un-sistema-de-pensiones-que-en-algunos-casos-no-alcanza-para-cubrir\"",
+  "text": "España tiene un sistema de pensiones que en algunos casos no alcanza para cubrir los costes básicos de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a7ceaef66b6"
+  ]
+}

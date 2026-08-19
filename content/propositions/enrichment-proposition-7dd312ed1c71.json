@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7dd312ed1c71",
+  "claimSlug": "\"modelo-los-impuestos-a-los-vehiculos-de-lujo-son-tan-altos-que-no-me-lo-puedo-permitir\"",
+  "text": "Los impuestos a los vehículos de lujo son tan altos que no me lo puedo permitir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca6e253f466d"
+  ]
+}

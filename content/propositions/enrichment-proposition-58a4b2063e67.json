@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-58a4b2063e67",
+  "claimSlug": "\"modelo-espana-no-invierte-lo-suficiente-en-la-conservacion-de-los-parques-naturales-dej\"",
+  "text": "España no invierte lo suficiente en la conservación de los parques naturales, dejando que la degradación se avance.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bc8f7cbadcc5"
+  ]
+}

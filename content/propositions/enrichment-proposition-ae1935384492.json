@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae1935384492",
+  "claimSlug": "\"modelo-los-impuestos-a-la-energia-renovable-son-tan-altos-que-me-costan-mas-las-factura\"",
+  "text": "Los impuestos a la energía renovable son tan altos que me costan más las facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa25c39528d2"
+  ]
+}

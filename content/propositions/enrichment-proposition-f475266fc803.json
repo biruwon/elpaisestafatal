@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f475266fc803",
+  "claimSlug": "\"modelo-en-espana-los-servicios-de-transporte-publico-son-escasos-y-costosos-acentuando-\"",
+  "text": "En España, los servicios de transporte público son escasos y costosos, acentuando la desigualdad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9cb00ed78eff"
+  ]
+}

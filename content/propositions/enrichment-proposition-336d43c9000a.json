@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-336d43c9000a",
+  "claimSlug": "\"modelo-los-incendios-forestales-en-espana-estan-cada-vez-mas-frecuentes-e-intensos\"",
+  "text": "Los incendios forestales en España están cada vez más frecuentes e intensos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d77df61ad0f4"
+  ]
+}

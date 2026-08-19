@@ -4,21 +4,22 @@ claim: "Los centros educativos españoles a menudo carecen de espacios adecuados
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["escasez de espacios para descanso en los centros educativos","carencia de espacios para la recreación","centros educativos sin áreas de juego","deficiencia en el diseño de espacios para estudiantes","falta de zonas de descanso en los institutos","Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.","¿Es cierto que Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","¿Qué datos permiten comprobar si Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","Quiero saber si Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.","¿Cómo se puede verificar Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","¿Hay evidencia sobre si Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","¿Es verdad que Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","¿Qué sabemos de Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?","¿Se sostiene la afirmación de que Los centros educativos españoles a menudo carecen de espacios adecuados para el descanso y la recreación de los estudiantes, lo que limita su bienestar y desarrollo integral.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-0edba82a11aa"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los centros educativos espanoles a menudo carecen de espacios adecuados para el descanso y la recreacion de los estudiantes lo que limita su bienestar y desarrollo integral"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-a09b7917d30b"]
 ---
 
 ## Qué es cierto

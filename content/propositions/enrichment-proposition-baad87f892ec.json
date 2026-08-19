@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-baad87f892ec",
+  "claimSlug": "\"modelo-en-espana-los-medicos-se-toman-vacaciones-largas-y-frecuentes-lo-que-provoca-que\"",
+  "text": "En España, los médicos se toman vacaciones largas y frecuentes, lo que provoca que los pacientes esperen meses por un especialista.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36cdb06150f8"
+  ]
+}

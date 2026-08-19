@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-714797a73e95",
+  "claimSlug": "\"modelo-el-precio-de-los-billetes-de-tren-en-espana-no-esta-alineado-con-la-economia-de-\"",
+  "text": "El precio de los billetes de tren en España no está alineado con la economía de muchos españoles, haciendo que el transporte público sea un lujo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e271d7c041f2"
+  ]
+}

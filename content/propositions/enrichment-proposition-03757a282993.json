@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-03757a282993",
+  "claimSlug": "\"modelo-la-justicia-espanola-es-lenta-y-carisima-para-los-ciudadanos\"",
+  "text": "La justicia española es lenta y carísima para los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d89d9b6789b"
+  ]
+}

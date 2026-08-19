@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe5d348449ad",
+  "claimSlug": "\"modelo-en-espana-los-servicios-de-urgencias-estan-tan-sobrecargados-que-incluso-los-acc\"",
+  "text": "En España, los servicios de urgencias están tan sobrecargados que incluso los accidentes más graves pueden esperar horas por atención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ddced1191af8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61450db225bf",
+  "claimSlug": "\"modelo-los-incendios-forestales-estan-causando-la-muerte-de-animales-silvestres-y-la-ge\"",
+  "text": "Los incendios forestales están causando la muerte de animales silvestres y la gente en España se está preocupando cada vez más.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-058349d791f7"
+  ]
+}

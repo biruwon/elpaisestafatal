@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-736acf41d492",
+  "claimSlug": "\"modelo-por-que-la-inflacion-sube-pero-los-salarios-no-se-ajustan-con-el-mismo-ritmo\"",
+  "text": "¿Por qué la inflación sube pero los salarios no se ajustan con el mismo ritmo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f59d8322480e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4d01b1e3db8",
+  "claimSlug": "\"modelo-por-que-en-espana-las-listas-de-espera-para-tratamientos-de-salud-se-alargan-tan\"",
+  "text": "¿Por qué en España las listas de espera para tratamientos de salud se alargan tanto, agobian a los pacientes y se ven poco atendidos?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-247d77faa2b3"
+  ]
+}

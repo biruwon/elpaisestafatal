@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-abeb11d45474",
+  "claimSlug": "\"modelo-el-paro-en-espana-afecta-mas-a-las-mujeres-que-a-los-hombres-con-un-indice-de-pa\"",
+  "text": "El paro en España afecta más a las mujeres que a los hombres, con un índice de paro femenino más alto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3e4827a50916"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fcecc78836e0",
+  "claimSlug": "\"modelo-se-esta-eliminando-el-sistema-publico-de-pensiones\"",
+  "text": "Se está eliminando el sistema público de pensiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a7da0b6948de"
+  ]
+}

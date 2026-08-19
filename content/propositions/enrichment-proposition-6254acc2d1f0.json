@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6254acc2d1f0",
+  "claimSlug": "\"modelo-la-sanidad-espanola-es-un-sueno-que-solo-los-que-tienen-dinero-pueden-sonar-con-\"",
+  "text": "La sanidad española es un sueño que solo los que tienen dinero pueden soñar con cumplir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8ef0dcd2fdf"
+  ]
+}

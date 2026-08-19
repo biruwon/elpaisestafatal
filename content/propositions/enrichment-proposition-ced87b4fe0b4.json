@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ced87b4fe0b4",
+  "claimSlug": "\"modelo-la-sanidad-publica-en-espana-se-ve-abrumada-por-el-alto-numero-de-pacientes-lo-q\"",
+  "text": "La sanidad pública en España se ve abrumada por el alto número de pacientes, lo que resulta en largas listas de espera para tratar enfermedades comunes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d705d1ad949d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d10d906b6e97",
+  "claimSlug": "\"modelo-por-que-andalucia-no-tiene-suficientes-trenes-de-alta-velocidad-para-sus-ciudada\"",
+  "text": "¿Por qué Andalucía no tiene suficientes trenes de alta velocidad para sus ciudadanos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bdb05cfce3f7"
+  ]
+}

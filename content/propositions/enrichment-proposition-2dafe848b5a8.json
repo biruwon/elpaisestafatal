@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2dafe848b5a8",
+  "claimSlug": "\"modelo-es-preocupante-que-las-bajas-por-maternidad-sean-tan-cortas-no-da-tiempo-a-recup\"",
+  "text": "Es preocupante que las bajas por maternidad sean tan cortas, no da tiempo a recuperarse del parto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7abcf7103088"
+  ]
+}

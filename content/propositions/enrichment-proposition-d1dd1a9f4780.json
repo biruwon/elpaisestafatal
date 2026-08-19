@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1dd1a9f4780",
+  "claimSlug": "\"modelo-el-sistema-sanitario-publico-en-espana-esta-sobrecargado-y-las-esperas-para-aten\"",
+  "text": "El sistema sanitario público en España está sobrecargado y las esperas para atenderse son interminables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d8f26edba8b"
+  ]
+}

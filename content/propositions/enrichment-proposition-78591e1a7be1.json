@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78591e1a7be1",
+  "claimSlug": "\"modelo-los-examenes-son-excesivamente-dificiles-y-estresantes-para-los-estudiantes\"",
+  "text": "Los exámenes son excesivamente difíciles y estresantes para los estudiantes",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f6795ffa49d"
+  ]
+}

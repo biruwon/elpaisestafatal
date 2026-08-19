@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0152d4630de4",
+  "claimSlug": "\"modelo-la-calefaccion-en-los-edificios-antiguos-de-espana-es-un-lujo-que-muchos-no-pued\"",
+  "text": "La calefacción en los edificios antiguos de España es un lujo que muchos no pueden permitirse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6192d81f4230"
+  ]
+}

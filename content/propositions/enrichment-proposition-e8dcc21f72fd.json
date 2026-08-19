@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e8dcc21f72fd",
+  "claimSlug": "\"modelo-los-precios-del-alquiler-estan-aumentando-tanto-que-los-agricultores-no-pueden-p\"",
+  "text": "Los precios del alquiler están aumentando tanto que los agricultores no pueden permitirse la vivienda en sus propias tierras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b0415c224f87"
+  ]
+}

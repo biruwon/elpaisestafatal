@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ca167c880b4",
+  "claimSlug": "\"modelo-las-autoridades-locales-no-hacen-nada-para-mantener-limpio-el-rio-jucar-esta-lle\"",
+  "text": "Las autoridades locales no hacen nada para mantener limpio el río Júcar, está lleno de basura y los pescados mueren.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-01d1b2ece3eb"
+  ]
+}

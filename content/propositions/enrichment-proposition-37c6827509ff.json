@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-37c6827509ff",
+  "claimSlug": "\"modelo-la-region-de-galicia-tiene-una-administracion-territorial-propia\"",
+  "text": "La región de Galicia tiene una administración territorial propia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c3bbf386d16"
+  ]
+}

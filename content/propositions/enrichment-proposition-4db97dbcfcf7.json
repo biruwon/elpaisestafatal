@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4db97dbcfcf7",
+  "claimSlug": "\"modelo-la-escalada-de-robos-domiciliarios-es-tal-que-se-ha-convertido-en-un-problema-de\"",
+  "text": "La escalada de robos domiciliarios es tal que se ha convertido en un problema de seguridad familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1ceca65530fa"
+  ]
+}

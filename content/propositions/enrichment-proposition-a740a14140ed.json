@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a740a14140ed",
+  "claimSlug": "\"modelo-la-inversion-en-infraestructuras-en-el-interior-de-espana-es-un-escandalo\"",
+  "text": "La inversión en infraestructuras en el interior de España es un escándalo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-952dbad2da36"
+  ]
+}

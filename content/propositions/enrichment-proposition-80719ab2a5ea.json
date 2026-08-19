@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-80719ab2a5ea",
+  "claimSlug": "\"modelo-la-llegada-de-inmigrantes-esta-sobrecargando-los-servicios-sanitarios-y-educativ\"",
+  "text": "La llegada de inmigrantes está sobrecargando los servicios sanitarios y educativos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0f7abb90b3a"
+  ]
+}

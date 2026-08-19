@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fb1d4b005ad5",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-infraestructuras-educativas-ha-provocado-que-muchas-esc\"",
+  "text": "La falta de inversión en infraestructuras educativas ha provocado que muchas escuelas estén en mal estado y con necesidades de reforma urgentes.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-2831f06e7296"
+  ]
+}

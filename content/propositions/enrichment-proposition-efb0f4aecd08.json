@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-efb0f4aecd08",
+  "claimSlug": "\"modelo-los-alimentos-son-tan-caros-que-no-me-da-ni-para-comer-saludablemente\"",
+  "text": "Los alimentos son tan caros que no me da ni para comer saludablemente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2632cf018649"
+  ]
+}

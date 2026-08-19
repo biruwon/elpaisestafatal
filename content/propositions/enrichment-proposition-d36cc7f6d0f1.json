@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d36cc7f6d0f1",
+  "claimSlug": "\"modelo-la-ciudad-de-barcelona-se-siente-marginada-en-la-toma-de-decisiones-de-las-polit\"",
+  "text": "La ciudad de Barcelona se siente marginada en la toma de decisiones de las políticas de turismo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c65e7c8ed0d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f70efd618877",
+  "claimSlug": "\"modelo-el-aparcamiento-en-el-centro-historico-de-madrid-es-un-desastre-con-precios-exor\"",
+  "text": "El aparcamiento en el centro histórico de Madrid es un desastre, con precios exorbitantes y escasas opciones para los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-beffa443b7c6"
+  ]
+}

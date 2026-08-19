@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea9b57b51b0d",
+  "claimSlug": "\"modelo-espana-ha-experimentado-un-aumento-en-la-frecuencia-y-severidad-de-incendios-for\"",
+  "text": "España ha experimentado un aumento en la frecuencia y severidad de incendios forestales en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0feb7249eea7"
+  ]
+}

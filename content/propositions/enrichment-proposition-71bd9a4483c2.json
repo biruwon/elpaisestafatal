@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71bd9a4483c2",
+  "claimSlug": "\"modelo-el-sistema-de-justicia-en-espana-no-es-accesible-para-las-personas-con-discapaci\"",
+  "text": "El sistema de justicia en España no es accesible para las personas con discapacidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-160aed27e20f"
+  ]
+}

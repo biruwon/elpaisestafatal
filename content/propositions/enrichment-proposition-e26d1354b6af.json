@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e26d1354b6af",
+  "claimSlug": "\"modelo-en-espana-los-pacientes-se-ven-obligados-a-esperar-semanas-para-un-diagnostico\"",
+  "text": "En España, los pacientes se ven obligados a esperar semanas para un diagnóstico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-58b742f9a57f"
+  ]
+}

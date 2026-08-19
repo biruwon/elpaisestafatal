@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df3490b2d02a",
+  "claimSlug": "\"modelo-por-que-la-ciudad-de-sevilla-sigue-teniendo-tanto-trafico-y-se-vuelve-intransita\"",
+  "text": "¿Por qué la ciudad de Sevilla sigue teniendo tanto tráfico y se vuelve intransitable en la hora punta?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84bb8026b2ac"
+  ]
+}

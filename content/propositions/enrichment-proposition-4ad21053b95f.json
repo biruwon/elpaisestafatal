@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ad21053b95f",
+  "claimSlug": "\"modelo-los-horarios-de-las-escuelas-estan-impidiendo-que-los-ninos-y-jovenes-participen\"",
+  "text": "Los horarios de las escuelas están impidiendo que los niños y jóvenes participen en actividades extraescolares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23f6fa420e88"
+  ]
+}

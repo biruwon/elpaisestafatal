@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a5d3e470557b",
+  "claimSlug": "\"modelo-espana-siente-que-las-decisiones-de-la-ue-se-toman-sin-consultar-a-los-ciudadano\"",
+  "text": "España siente que las decisiones de la UE se toman sin consultar a los ciudadanos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-04f49194c455"
+  ]
+}

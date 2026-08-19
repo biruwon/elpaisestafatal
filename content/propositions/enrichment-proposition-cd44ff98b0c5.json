@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd44ff98b0c5",
+  "claimSlug": "\"modelo-la-luz-en-espana-es-un-delito\"",
+  "text": "La luz en España es un delito",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a0dfcb4a5f0b"
+  ]
+}

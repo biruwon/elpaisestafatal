@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5eec5d245a41",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agobiando-los-servicios-publicos-en-las-ciudades-grandes\"",
+  "text": "La inmigración está agobiando los servicios públicos en las ciudades grandes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a05fe5af0908"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-66c2c71d8f86",
+  "claimSlug": "\"modelo-es-justo-que-las-empleadas-domesticas-no-tengan-derecho-a-un-tiempo-de-descanso-\"",
+  "text": "¿Es justo que las empleadas domésticas no tengan derecho a un tiempo de descanso durante el día de trabajo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61bed3733a71"
+  ]
+}

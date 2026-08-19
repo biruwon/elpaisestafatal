@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71ccbd46b572",
+  "claimSlug": "\"modelo-no-entiendo-por-que-la-electricidad-cuesta-tanto-en-zonas-rurales-cuando-las-gra\"",
+  "text": "No entiendo por qué la electricidad cuesta tanto en zonas rurales cuando las grandes ciudades tienen precios más bajos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea1d337ebdfd"
+  ]
+}

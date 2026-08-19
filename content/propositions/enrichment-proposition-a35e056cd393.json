@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a35e056cd393",
+  "claimSlug": "\"modelo-los-pacientes-tienen-que-esperar-mucho-para-ver-a-un-especialista-y-el-servicio-\"",
+  "text": "Los pacientes tienen que esperar mucho para ver a un especialista y el servicio es limitado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-33caa9b35857"
+  ]
+}

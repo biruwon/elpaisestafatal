@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-47f1449e5973",
+  "claimSlug": "\"modelo-la-ue-no-hace-nada-para-controlar-el-aumento-de-los-precios-de-la-gasolina\"",
+  "text": "La UE no hace nada para controlar el aumento de los precios de la gasolina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f42287b45616"
+  ]
+}

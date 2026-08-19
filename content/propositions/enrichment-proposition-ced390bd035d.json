@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ced390bd035d",
+  "claimSlug": "\"modelo-la-inflacion-esta-arruinando-las-pensiones-de-los-jubilados\"",
+  "text": "La inflación está arruinando las pensiones de los jubilados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ef75253dbba"
+  ]
+}

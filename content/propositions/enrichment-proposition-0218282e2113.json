@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0218282e2113",
+  "claimSlug": "\"modelo-las-companias-de-telecomunicaciones-en-espana-no-estan-cumpliendo-con-sus-obliga\"",
+  "text": "Las compañías de telecomunicaciones en España no están cumpliendo con sus obligaciones de ofrecer servicio de internet de calidad en todos los hogares, especialmente en zonas rurales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-059c0b52de2a"
+  ]
+}

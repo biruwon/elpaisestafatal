@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32ec7a6a75b6",
+  "claimSlug": "\"modelo-espana-siente-que-sus-intereses-son-ignorados-en-las-decisiones-de-la-ue\"",
+  "text": "España siente que sus intereses son ignorados en las decisiones de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a64c6c3370e5"
+  ]
+}

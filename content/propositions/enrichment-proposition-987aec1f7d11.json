@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-987aec1f7d11",
+  "claimSlug": "\"modelo-la-atencion-al-cliente-en-los-hoteles-de-espana-es-deficiente-y-los-empleados-so\"",
+  "text": "La atención al cliente en los hoteles de España es deficiente y los empleados son groseros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ab9f5f43b3e"
+  ]
+}

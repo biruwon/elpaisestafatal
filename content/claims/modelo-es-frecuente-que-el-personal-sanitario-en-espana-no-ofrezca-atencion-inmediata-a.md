@@ -4,21 +4,22 @@ claim: "¿Es frecuente que el personal sanitario en España no ofrezca atención
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["¿Hay falta de atención urgente en hospitales?","¿El personal sanitario demora la atención a urgencias?","¿Es normal esperar horas en urgencias?","¿Los hospitales dejan a los pacientes esperando?","¿La atención de urgencias es ineficiente?","¿Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias","¿Es cierto que Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","¿Qué datos permiten comprobar si Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","Quiero saber si Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias","¿Cómo se puede verificar Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","¿Hay evidencia sobre si Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","¿Es verdad que Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","¿Qué sabemos de Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?","¿Se sostiene la afirmación de que Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-f60cadebef6b"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es frecuente que el personal sanitario en espana no ofrezca atencion inmediata a los pacientes con urgencias"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-290ed11e3291"]
 ---
 
 ## Qué es cierto

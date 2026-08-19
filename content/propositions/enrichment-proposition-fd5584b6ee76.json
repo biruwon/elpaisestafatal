@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd5584b6ee76",
+  "claimSlug": "\"modelo-el-robo-a-domicilios-se-ha-incrementado-significativamente-en-los-ultimos-meses-\"",
+  "text": "El robo a domicilios se ha incrementado significativamente en los últimos meses, especialmente durante las horas pico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fc347f5336f5"
+  ]
+}

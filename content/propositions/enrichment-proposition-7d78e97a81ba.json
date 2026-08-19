@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d78e97a81ba",
+  "claimSlug": "\"modelo-es-costoso-ser-estudiante-universitario-en-espana\"",
+  "text": "Es costoso ser estudiante universitario en España",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5857c70deb1"
+  ]
+}

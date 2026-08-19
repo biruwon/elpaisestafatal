@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-203eecba6f00",
+  "claimSlug": "\"modelo-espana-ve-que-la-ue-le-exige-cambios-demasiado-rapidos-sin-considerar-su-capacid\"",
+  "text": "España ve que la UE le exige cambios demasiado rápidos sin considerar su capacidad de adaptación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5cc67883815f"
+  ]
+}

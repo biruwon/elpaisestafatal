@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-506fe930f08a",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-reducir-el-coste-de-la-energia-y-nos-dejan-al-bord\"",
+  "text": "El gobierno no hace nada para reducir el coste de la energía y nos dejan al borde del apagón.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7b18a2d2c1d"
+  ]
+}

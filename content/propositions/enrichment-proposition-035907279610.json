@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-035907279610",
+  "claimSlug": "\"modelo-los-robos-a-vehiculos-en-estacionamientos-son-muy-frecuentes-en-madrid-incluso-d\"",
+  "text": "Los robos a vehículos en estacionamientos son muy frecuentes en Madrid, incluso durante la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8443295fe9db"
+  ]
+}

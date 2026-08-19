@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-187f1ae1540c"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana ha experimentado una caida en el numero de empleos en el sector servicios"
 generatedAt: "2026-08-18T17:27:50.721Z"
+propositionIds: ["enrichment-proposition-e146e20182ba"]
 ---
 
 ## Qué es cierto

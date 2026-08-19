@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0edce7bc2451",
+  "claimSlug": "\"modelo-el-paro-juvenil-en-espana-es-un-problema-constante-y-cronico\"",
+  "text": "El paro juvenil en España es un problema constante y crónico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9c251999f3ee"
+  ]
+}

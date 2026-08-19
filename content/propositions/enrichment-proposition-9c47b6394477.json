@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c47b6394477",
+  "claimSlug": "\"modelo-la-inmigracion-ha-causado-un-aumento-en-el-numero-de-solicitudes-de-asilo-pero-e\"",
+  "text": "La inmigración ha causado un aumento en el número de solicitudes de asilo, pero el sistema está luchando para procesarlas en tiempo y forma.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f174fb5c629"
+  ]
+}

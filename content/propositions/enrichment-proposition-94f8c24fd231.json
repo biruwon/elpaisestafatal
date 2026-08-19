@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94f8c24fd231",
+  "claimSlug": "\"modelo-por-que-la-autopista-entre-alicante-y-valencia-tiene-tantos-tramos-de-peaje\"",
+  "text": "¿Por qué la autopista entre Alicante y Valencia tiene tantos tramos de peaje?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-abb4cb13ca9f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eb7152723aa2",
+  "claimSlug": "\"modelo-el-paro-no-mejora-la-calidad-de-vida-en-espana\"",
+  "text": "El paro no mejora la calidad de vida en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-57019cb128e7"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "El sistema de permisos de paternidad en España debería ser más genero
 assessment: uncertain
 topicSlugs: ["derechos laborales y conciliación"]
 aliases: ["permisos de paternidad","compromiso paternal","tiempo para los padres","compromiso familiar","tiempo para criar a los hijos","El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.","¿Es cierto que El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","¿Qué datos permiten comprobar si El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","Quiero saber si El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.","¿Cómo se puede verificar El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","¿Hay evidencia sobre si El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","¿Es verdad que El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","¿Qué sabemos de El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?","¿Se sostiene la afirmación de que El sistema de permisos de paternidad en España debería ser más generoso para permitir a los padres compartir mejor las responsabilidades familiares.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-34e5bc90e5e0"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema de permisos de paternidad en espana deberia ser mas generoso para permitir a los padres compartir mejor las responsabilidades familiares"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-264e2dc88e9f"]
 ---
 
 ## Qué es cierto

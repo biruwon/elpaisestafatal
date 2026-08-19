@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a504c99481eb",
+  "claimSlug": "\"modelo-por-que-los-abogados-no-reciben-formacion-suficiente-en-materia-de-derechos-huma\"",
+  "text": "¿Por qué los abogados no reciben formación suficiente en materia de derechos humanos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-925bc2749331"
+  ]
+}

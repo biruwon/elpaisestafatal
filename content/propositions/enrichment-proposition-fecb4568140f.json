@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fecb4568140f",
+  "claimSlug": "\"modelo-por-que-en-espana-no-existe-un-sistema-de-guarderias-de-calidad-y-asequible-para\"",
+  "text": "¿Por qué en España no existe un sistema de guarderías de calidad y asequible para todos los niños?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c3b33bad7f4d"
+  ]
+}

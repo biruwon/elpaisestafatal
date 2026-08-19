@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b38bc9b7f036",
+  "claimSlug": "\"modelo-por-que-se-han-recortado-los-beneficios-de-las-prestaciones-por-desempleo\"",
+  "text": "¿Por qué se han recortado los beneficios de las prestaciones por desempleo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6705effa9bab"
+  ]
+}

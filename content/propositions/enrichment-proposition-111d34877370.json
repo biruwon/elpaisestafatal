@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-111d34877370",
+  "claimSlug": "\"modelo-las-islas-canarias-estan-siendo-saqueadas-por-la-inmigracion-ilegal\"",
+  "text": "Las islas Canarias están siendo saqueadas por la inmigración ilegal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5f3c63ccf809"
+  ]
+}

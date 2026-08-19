@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bbbcd7072032",
+  "claimSlug": "\"modelo-la-tasa-de-desempleo-sigue-siendo-alta-y-no-veo-perspectivas-de-mejora-en-el-fut\"",
+  "text": "La tasa de desempleo sigue siendo alta y no veo perspectivas de mejora en el futuro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bbd30cc471c"
+  ]
+}

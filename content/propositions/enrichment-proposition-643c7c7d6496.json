@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-643c7c7d6496",
+  "claimSlug": "\"modelo-la-dependencia-de-las-energias-no-renovables-es-un-problema-que-afecta-gravement\"",
+  "text": "La dependencia de las energías no renovables es un problema que afecta gravemente al bolsillo de los consumidores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a75f4c7fa105"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8924ed7ea0ae",
+  "claimSlug": "\"modelo-en-espana-el-agua-de-la-factura-es-mas-cara-que-el-diesel\"",
+  "text": "En España, el agua de la factura es más cara que el diesel",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a7a2e8882600"
+  ]
+}

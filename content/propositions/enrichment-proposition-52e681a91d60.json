@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-52e681a91d60",
+  "claimSlug": "\"modelo-por-que-los-incendios-forestales-estan-causando-tanta-perdida-de-biodiversidad\"",
+  "text": "¿Por qué los incendios forestales están causando tanta pérdida de biodiversidad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-070392482c53"
+  ]
+}

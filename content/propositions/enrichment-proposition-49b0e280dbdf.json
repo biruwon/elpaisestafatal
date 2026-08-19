@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-49b0e280dbdf",
+  "claimSlug": "\"modelo-los-autobuses-nocturnos-en-barcelona-son-escasos-y-su-frecuencia-no-cubre-adecua\"",
+  "text": "Los autobuses nocturnos en Barcelona son escasos y su frecuencia no cubre adecuadamente las necesidades de los trabajadores nocturnos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca564a85bca4"
+  ]
+}

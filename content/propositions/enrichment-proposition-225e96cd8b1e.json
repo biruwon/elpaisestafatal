@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-225e96cd8b1e",
+  "claimSlug": "\"modelo-la-inflacion-esta-matando-mis-ahorros\"",
+  "text": "La inflación está matando mis ahorros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-727774220bfc"
+  ]
+}

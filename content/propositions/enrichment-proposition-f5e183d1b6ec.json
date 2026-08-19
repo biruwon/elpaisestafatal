@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5e183d1b6ec",
+  "claimSlug": "\"modelo-las-playas-de-mallorca-estan-demasiado-turisticas-y-son-poco-naturales\"",
+  "text": "Las playas de Mallorca están demasiado turísticas y son poco naturales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-34308b4a16fc"
+  ]
+}

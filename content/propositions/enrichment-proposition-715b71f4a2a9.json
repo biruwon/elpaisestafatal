@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-715b71f4a2a9",
+  "claimSlug": "\"modelo-los-autobuses-urbanos-en-barcelona-son-incomodos-por-su-frecuencia-irregular-y-f\"",
+  "text": "Los autobuses urbanos en Barcelona son incómodos por su frecuencia irregular y falta de paradas accesibles para personas con movilidad reducida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba7bc8bc2a2a"
+  ]
+}

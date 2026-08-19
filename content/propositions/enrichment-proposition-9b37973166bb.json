@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b37973166bb",
+  "claimSlug": "\"modelo-las-esperas-para-el-tratamiento-sanitario-son-interminables-y-la-atencion-se-est\"",
+  "text": "Las esperas para el tratamiento sanitario son interminables y la atención se está deteriorando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-951405a92a04"
+  ]
+}

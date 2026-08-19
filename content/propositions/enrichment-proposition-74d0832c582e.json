@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74d0832c582e",
+  "claimSlug": "\"modelo-las-estaciones-de-tren-en-zaragoza-son-obsoletas-y-no-cuentan-con-suficientes-pu\"",
+  "text": "Las estaciones de tren en Zaragoza son obsoletas y no cuentan con suficientes puestos de información para los viajeros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1efad4587aef"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-503d369d247f",
+  "claimSlug": "\"modelo-por-que-los-supermercados-de-barrio-tienen-tanta-comida-sin-vender-si-hay-tanta-\"",
+  "text": "¿Por qué los supermercados de barrio tienen tanta comida sin vender si hay tanta gente que no puede comprar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36f2dd1f9d90"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3645297a878f",
+  "claimSlug": "\"modelo-la-alta-tasa-de-desempleo-entre-jovenes-hace-que-sea-dificil-encontrar-un-trabaj\"",
+  "text": "La alta tasa de desempleo entre jóvenes hace que sea difícil encontrar un trabajo en muchas ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b68bf9a19745"
+  ]
+}

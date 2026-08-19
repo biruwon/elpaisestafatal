@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1fbc3b105d1d",
+  "claimSlug": "\"modelo-las-politicas-de-vivienda-en-barcelona-no-resuelven-el-problema-de-la-vivienda-a\"",
+  "text": "Las políticas de vivienda en Barcelona no resuelven el problema de la vivienda alquiler, dejando a muchos desamparados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5e81bcb1be2"
+  ]
+}

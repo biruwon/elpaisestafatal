@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0136b7617c88",
+  "claimSlug": "\"modelo-en-muchas-comunidades-autonomas-la-espera-para-cirugias-bariatricas-puede-durar-\"",
+  "text": "En muchas comunidades autónomas, la espera para cirugías bariátricas puede durar más de un año, lo que representa un riesgo para la salud de las personas con obesidad.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-a4bde5e1b903"
+  ]
+}

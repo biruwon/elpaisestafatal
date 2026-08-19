@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-57af0ba0644e",
+  "claimSlug": "\"modelo-las-playas-de-la-costa-del-sol-estan-llenas-de-pescadores-ilegales-que-ensucian-\"",
+  "text": "Las playas de la Costa del Sol están llenas de pescadores ilegales que ensucian el mar con sus redes, ¿nadie se ocupa de esto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7c588f068a5e"
+  ]
+}

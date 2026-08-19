@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef7995fef8be",
+  "claimSlug": "\"modelo-es-frustrante-que-los-horarios-de-los-vuelos-en-aeropuertos-espanoles-sean-tan-i\"",
+  "text": "Es frustrante que los horarios de los vuelos en aeropuertos españoles sean tan inestables, especialmente en temporada alta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e1c9c6c19c4"
+  ]
+}

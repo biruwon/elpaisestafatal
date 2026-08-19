@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7f80c9552a52",
+  "claimSlug": "\"modelo-el-salario-minimo-interprofesional-no-cubre-los-gastos-basicos-en-espana\"",
+  "text": "El salario mínimo interprofesional no cubre los gastos básicos en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d24d6c87e31"
+  ]
+}

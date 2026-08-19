@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7de4d665a270",
+  "claimSlug": "\"modelo-el-sistema-de-subcontratacion-en-espana-es-un-problema-ya-que-muchos-trabajadore\"",
+  "text": "El sistema de subcontratación en España es un problema, ya que muchos trabajadores son empleados indirectamente, lo que reduce sus derechos laborales y económicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd33a5bba361"
+  ]
+}

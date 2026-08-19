@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1e36ff01583",
+  "claimSlug": "\"modelo-el-precio-del-gas-en-espana-sube-mas-rapido-que-en-otros-paises-de-la-ue\"",
+  "text": "El precio del gas en España sube más rápido que en otros países de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5d28468b0f5f"
+  ]
+}

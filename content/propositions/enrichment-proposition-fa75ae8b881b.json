@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa75ae8b881b",
+  "claimSlug": "\"modelo-espana-ha-visto-un-incremento-en-el-numero-de-inmigrantes-que-no-tienen-empleo-l\"",
+  "text": "España ha visto un incremento en el número de inmigrantes que no tienen empleo, lo que ha incrementado la competencia en el mercado laboral.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-84e902d8423c"
+  ]
+}

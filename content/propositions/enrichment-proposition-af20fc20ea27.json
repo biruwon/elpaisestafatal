@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af20fc20ea27",
+  "claimSlug": "\"modelo-por-que-los-impuestos-a-la-propiedad-son-tan-altos-en-comparacion-con-otros-pais\"",
+  "text": "¿Por qué los impuestos a la propiedad son tan altos en comparación con otros países de la UE?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df24b8957c77"
+  ]
+}

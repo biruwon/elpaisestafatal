@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4a86dc5fc0b5",
+  "claimSlug": "\"modelo-la-agricultura-espanola-depende-demasiado-de-agrotoxicos-afectando-la-salud-y-el\"",
+  "text": "La agricultura española depende demasiado de agrotóxicos, afectando la salud y el medio ambiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8cff8ddc404c"
+  ]
+}

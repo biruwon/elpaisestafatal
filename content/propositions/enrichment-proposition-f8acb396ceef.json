@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f8acb396ceef",
+  "claimSlug": "\"modelo-la-ciudad-de-madrid-no-contribuye-en-proporcion-a-su-tamano-a-la-financiacion-de\"",
+  "text": "La ciudad de Madrid no contribuye en proporción a su tamaño a la financiación del resto de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c78f4f05c59"
+  ]
+}

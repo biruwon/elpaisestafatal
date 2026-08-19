@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df0f543d7fff",
+  "claimSlug": "\"modelo-cuando-volveran-los-salarios-a-crecer-mas-que-la-inflacion-si-esta-sube-tanto\"",
+  "text": "¿Cuándo volverán los salarios a crecer más que la inflación si esta sube tanto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b90ea50ba830"
+  ]
+}

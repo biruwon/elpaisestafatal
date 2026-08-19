@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-39398c502fb4",
+  "claimSlug": "\"modelo-en-espana-los-contratos-de-obras-publicas-se-adjudican-siempre-a-las-mismas-empr\"",
+  "text": "En España, los contratos de obras públicas se adjudican siempre a las mismas empresas conocidas por corrupción.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-43016f7ed547"
+  ]
+}

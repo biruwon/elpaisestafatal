@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-878001da4478",
+  "claimSlug": "\"modelo-los-precios-de-la-vivienda-siguen-subiendo-y-la-hipoteca-es-un-agujero-negro\"",
+  "text": "Los precios de la vivienda siguen subiendo y la hipoteca es un agujero negro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cc04c34e0832"
+  ]
+}

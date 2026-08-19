@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d82e6289ba05",
+  "claimSlug": "\"modelo-la-situacion-de-subempleo-es-tan-comun-que-incluso-cuando-encuentras-un-trabajo-\"",
+  "text": "La situación de subempleo es tan común que incluso cuando encuentras un trabajo, a menudo es para trabajar más horas por menos dinero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9cb8a5c8cac"
+  ]
+}

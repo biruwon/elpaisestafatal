@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de7dd1b28d81",
+  "claimSlug": "\"modelo-el-desempleo-temporal-se-extiende-demasiado\"",
+  "text": "El desempleo temporal se extiende demasiado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9405e9151cc"
+  ]
+}

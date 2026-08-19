@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9dde41703e1f",
+  "claimSlug": "\"modelo-por-que-andalucia-tiene-mas-ayuntamientos-que-todas-las-islas-juntas\"",
+  "text": "¿Por qué Andalucía tiene más ayuntamientos que todas las islas juntas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd097a49b702"
+  ]
+}

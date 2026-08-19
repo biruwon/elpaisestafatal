@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d963858ca31",
+  "claimSlug": "\"modelo-por-que-los-fiscales-tardan-tanto-en-presentar-las-acusaciones-que-los-acusados-\"",
+  "text": "¿Por qué los fiscales tardan tanto en presentar las acusaciones que los acusados se marchan del país?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-116e1a3bb100"
+  ]
+}

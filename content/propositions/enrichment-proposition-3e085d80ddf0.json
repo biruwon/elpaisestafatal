@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e085d80ddf0",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-estan-permitiendo-que-se-construyan-barrios-excluye\"",
+  "text": "Las políticas de inmigración están permitiendo que se construyan barrios excluyentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b1a60009cfe1"
+  ]
+}

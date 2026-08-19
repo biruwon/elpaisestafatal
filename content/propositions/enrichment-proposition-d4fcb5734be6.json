@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d4fcb5734be6",
+  "claimSlug": "\"modelo-el-alquiler-es-tan-caro-que-ni-siquiera-los-trabajadores-de-la-casa-pueden-permi\"",
+  "text": "El alquiler es tan caro que ni siquiera los trabajadores de la casa pueden permitirse un piso decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5110ad463b09"
+  ]
+}

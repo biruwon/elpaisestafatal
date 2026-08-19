@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bd3bf60ac258",
+  "claimSlug": "\"modelo-en-los-ultimos-anos-la-inmigracion-ha-agobiado-las-infraestructuras-de-salud-de-\"",
+  "text": "En los últimos años, la inmigración ha agobiado las infraestructuras de salud de muchas ciudades, especialmente en zonas residenciales con muchos extranjeros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-41ba103dd5e0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7204e07aa79c",
+  "claimSlug": "\"modelo-la-competencia-laboral-esta-aumentando-demasiado-por-la-inmigracion-haciendo-que\"",
+  "text": "La competencia laboral está aumentando demasiado por la inmigración, haciendo que los sueldos se estanquen.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0eb6db4e319"
+  ]
+}

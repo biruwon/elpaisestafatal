@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9ca966d02a0f",
+  "claimSlug": "\"modelo-por-que-aumenta-el-desempleo-juvenil-en-verano\"",
+  "text": "¿Por qué aumenta el desempleo juvenil en verano?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-858498f60b84"
+  ]
+}

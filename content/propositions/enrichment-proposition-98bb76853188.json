@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-98bb76853188",
+  "claimSlug": "\"modelo-que-pasa-con-todos-esos-impuestos-que-pagan-los-trabajadores-si-la-sanidad-no-me\"",
+  "text": "¿Qué pasa con todos esos impuestos que pagan los trabajadores si la sanidad no mejora?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2379d537fc1b"
+  ]
+}

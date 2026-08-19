@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9cd01bb564af",
+  "claimSlug": "\"modelo-el-gasto-en-seguridad-publica-se-ha-reducido-aumentando-el-riesgo-de-criminalida\"",
+  "text": "El gasto en seguridad pública se ha reducido, aumentando el riesgo de criminalidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-caab646a2740"
+  ]
+}

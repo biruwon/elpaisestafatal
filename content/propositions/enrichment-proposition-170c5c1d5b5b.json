@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-170c5c1d5b5b",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-nuestras-nominas-no-alcancen-ni-el-precio-de-un-c\"",
+  "text": "La inflación está haciendo que nuestras nóminas no alcancen ni el precio de un café.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-42ead31a81c3"
+  ]
+}

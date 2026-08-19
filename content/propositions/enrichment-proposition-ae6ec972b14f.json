@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae6ec972b14f",
+  "claimSlug": "\"modelo-el-sistema-de-becas-es-complicado-y-dificil-de-obtener\"",
+  "text": "El sistema de becas es complicado y difícil de obtener",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-40e7253871e1"
+  ]
+}

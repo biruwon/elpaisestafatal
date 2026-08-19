@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e56fba1775a1",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-la-formacion-de-profesores-esta-afectando-directamente-\"",
+  "text": "La falta de inversión en la formación de profesores está afectando directamente la calidad de la enseñanza en las escuelas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-328d808da54d"
+  ]
+}

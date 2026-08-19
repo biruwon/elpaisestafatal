@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a7e797a07d52",
+  "claimSlug": "\"modelo-espana-esta-teniendo-problemas-para-absorber-y-asimilar-a-los-inmigrantes-lo-que\"",
+  "text": "España está teniendo problemas para absorber y asimilar a los inmigrantes, lo que está generando conflictos sociales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bee9a999d11d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4da82295ff7",
+  "claimSlug": "\"modelo-por-que-el-aeropuerto-de-madrid-no-tiene-suficientes-terminales-para-agilizar-la\"",
+  "text": "¿Por qué el aeropuerto de Madrid no tiene suficientes terminales para agilizar las llegadas y salidas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97ebfc156325"
+  ]
+}

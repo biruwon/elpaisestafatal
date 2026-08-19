@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb7ed74e765a",
+  "claimSlug": "\"modelo-el-uso-de-armas-de-fuego-en-delitos-en-espana-es-mas-frecuente-que-en-otros-pais\"",
+  "text": "¿El uso de armas de fuego en delitos en España es más frecuente que en otros países de la Unión Europea?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-05f9ba909868"
+  ]
+}

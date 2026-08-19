@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-016c3445f4d7",
+  "claimSlug": "\"modelo-la-red-ferroviaria-espanola-es-mas-extensa-que-la-red-de-carreteras\"",
+  "text": "La red ferroviaria española es más extensa que la red de carreteras",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7db05956fd7"
+  ]
+}

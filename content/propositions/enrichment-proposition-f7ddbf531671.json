@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f7ddbf531671",
+  "claimSlug": "\"modelo-los-aeropuertos-en-espana-son-un-caos-con-retrasos-constantes-y-falta-de-organiz\"",
+  "text": "Los aeropuertos en España son un caos, con retrasos constantes y falta de organización en las salidas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-da97d5fdf91a"
+  ]
+}

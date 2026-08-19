@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cbb43b91b36f",
+  "claimSlug": "\"modelo-el-acceso-al-empleo-publico-en-espana-es-muy-complicado\"",
+  "text": "El acceso al empleo público en España es muy complicado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ec1251048de"
+  ]
+}

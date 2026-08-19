@@ -4,21 +4,22 @@ claim: "¿Cómo es posible que el dinero de los impuestos se destine a turismo e
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["¿Por qué se gastan los impuestos en turismo en el extranjero si la cultura en España queda sin fondos?","¿Qué pasa con los impuestos si se gastan en turismo en el extranjero y la cultura en España queda sin presupuesto?","¿Por qué se gastan los impuestos en turismo en el extranjero mientras la cultura en España queda sin presupuesto?","¿Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida","¿Es cierto que Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","¿Qué datos permiten comprobar si Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","Quiero saber si Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida","¿Cómo se puede verificar Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","¿Hay evidencia sobre si Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","¿Es verdad que Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","¿Qué sabemos de Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?","¿Se sostiene la afirmación de que Cómo es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en España queda desatendida?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-8c7c6c514b1a"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "como es posible que el dinero de los impuestos se destine a turismo en el extranjero mientras la cultura en espana queda desatendida"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-01ead8006899"]
 ---
 
 ## Qué es cierto

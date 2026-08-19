@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-714b62826f4c",
+  "claimSlug": "\"modelo-los-platos-tipicos-de-espana-son-caros-y-la-calidad-del-servicio-en-los-restaura\"",
+  "text": "Los platos típicos de España son caros y la calidad del servicio en los restaurantes es deficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9f40ff6c9179"
+  ]
+}

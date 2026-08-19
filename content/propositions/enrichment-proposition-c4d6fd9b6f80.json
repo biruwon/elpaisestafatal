@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c4d6fd9b6f80",
+  "claimSlug": "\"modelo-es-seguro-caminar-por-la-noche-en-las-ramblas-de-barcelona\"",
+  "text": "¿Es seguro caminar por la noche en Las Ramblas de Barcelona?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-247c4d832b99"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d199a351641",
+  "claimSlug": "\"modelo-la-politica-agraria-del-gobierno-esta-perjudicando-a-los-pequenos-agricultores-q\"",
+  "text": "La política agraria del gobierno está perjudicando a los pequeños agricultores, que están luchando por sobrevivir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8d96a5bca0d9"
+  ]
+}

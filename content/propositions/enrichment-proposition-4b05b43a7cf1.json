@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4b05b43a7cf1",
+  "claimSlug": "\"modelo-los-hospitales-estan-siempre-llenos-y-los-pacientes-esperan-dias-o-incluso-seman\"",
+  "text": "Los hospitales están siempre llenos y los pacientes esperan días o incluso semanas por atención",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0cfde2f8e719"
+  ]
+}

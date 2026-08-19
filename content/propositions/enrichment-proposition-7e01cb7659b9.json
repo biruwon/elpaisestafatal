@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e01cb7659b9",
+  "claimSlug": "\"modelo-las-politicas-economicas-actuales-estan-causando-mas-desigualdad-que-equidad\"",
+  "text": "Las políticas económicas actuales están causando más desigualdad que equidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a29371a2f5f0"
+  ]
+}

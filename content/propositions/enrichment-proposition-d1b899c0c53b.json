@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1b899c0c53b",
+  "claimSlug": "\"modelo-es-preocupante-que-las-politicas-de-recortes-y-privatizaciones-no-mejoren-la-sit\"",
+  "text": "Es preocupante que las políticas de recortes y privatizaciones no mejoren la situación de las personas más vulnerables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a342d730505"
+  ]
+}

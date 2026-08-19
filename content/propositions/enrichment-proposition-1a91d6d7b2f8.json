@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a91d6d7b2f8",
+  "claimSlug": "\"modelo-los-jovenes-no-tienen-suficientes-oportunidades-de-empleo-despues-de-terminar-la\"",
+  "text": "Los jóvenes no tienen suficientes oportunidades de empleo después de terminar la universidad",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-326dc271ff9e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e582af3b58ab",
+  "claimSlug": "\"modelo-la-renta-basica-no-llega-a-todas-las-personas-que-necesitan-ayuda\"",
+  "text": "La renta básica no llega a todas las personas que necesitan ayuda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67c9a222277c"
+  ]
+}

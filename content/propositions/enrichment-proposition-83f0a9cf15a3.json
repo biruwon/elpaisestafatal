@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83f0a9cf15a3",
+  "claimSlug": "\"modelo-las-playas-espanolas-se-estan-llenando-de-turistas-en-verano-pero-esto-esta-dana\"",
+  "text": "Las playas españolas se están llenando de turistas en verano, pero esto está dañando la infraestructura local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9bdcf989705"
+  ]
+}

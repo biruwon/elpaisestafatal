@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a363c0800c85",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-electricidad-son-excesivos-y-no-se-ven-los-beneficios-en-\"",
+  "text": "Los impuestos sobre la electricidad son excesivos y no se ven los beneficios en el precio final.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9e58815e1b0c"
+  ]
+}

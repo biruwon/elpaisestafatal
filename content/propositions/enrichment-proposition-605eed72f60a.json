@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-605eed72f60a",
+  "claimSlug": "\"modelo-por-que-en-espana-las-prisiones-estan-tan-sobrecargadas-que-los-presos-pasan-mas\"",
+  "text": "¿Por qué en España las prisiones están tan sobrecargadas que los presos pasan más tiempo esperando su libertad que cumpliendo condena?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f97834031eb"
+  ]
+}

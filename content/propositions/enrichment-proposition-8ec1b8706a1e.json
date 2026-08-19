@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ec1b8706a1e",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-matando-nuestros-ahorros-y-la-calidad-de-vida\"",
+  "text": "La subida de precios está matando nuestros ahorros y la calidad de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c7d3a8bcc993"
+  ]
+}

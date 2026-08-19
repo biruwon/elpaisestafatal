@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63b44c252f22",
+  "claimSlug": "\"modelo-la-inmigracion-ilegal-esta-creando-zonas-problematicas-en-ciudades-grandes\"",
+  "text": "La inmigración ilegal está creando zonas problemáticas en ciudades grandes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-16ffff37afdc"
+  ]
+}

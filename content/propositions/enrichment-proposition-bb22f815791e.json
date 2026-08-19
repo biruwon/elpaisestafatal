@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb22f815791e",
+  "claimSlug": "\"modelo-el-alquiler-te-mantiene-atrapado-en-un-bucle-de-deudas-y-miedos\"",
+  "text": "El alquiler te mantiene atrapado en un bucle de deudas y miedos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a3f74d978aff"
+  ]
+}

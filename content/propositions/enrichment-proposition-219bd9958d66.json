@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-219bd9958d66",
+  "claimSlug": "\"modelo-los-contratos-temporales-en-espana-son-muy-comunes-y-dificultan-encontrar-un-tra\"",
+  "text": "Los contratos temporales en España son muy comunes y dificultan encontrar un trabajo estable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-17ce681cffe3"
+  ]
+}

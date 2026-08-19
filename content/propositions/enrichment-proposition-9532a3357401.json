@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9532a3357401",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-no-podamos-permitirnos-un-coche-nuevo\"",
+  "text": "La inflación está haciendo que no podamos permitirnos un coche nuevo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e47d697e8379"
+  ]
+}

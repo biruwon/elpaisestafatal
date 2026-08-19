@@ -4,21 +4,22 @@ claim: "El sistema de transporte público en ciudades grandes es tan ineficiente
 assessment: uncertain
 topicSlugs: ["transporte e infraestructuras"]
 aliases: ["El transporte público es un desastre","Las frecuencias de autobuses son escasas","El sistema de autobuses es ineficiente","Los trenes del transporte público son a menudo escasos","El transporte público no cumple con sus promesas","El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.","¿Es cierto que El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","¿Qué datos permiten comprobar si El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","Quiero saber si El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.","¿Cómo se puede verificar El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","¿Hay evidencia sobre si El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","¿Es verdad que El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","¿Qué sabemos de El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?","¿Se sostiene la afirmación de que El sistema de transporte público en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-0df946b4b82b"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema de transporte publico en ciudades grandes es tan ineficiente que los autobuses son a menudo retrasados y los trenes suben a menos frecuencias de las prometidas"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-94fb27a45401"]
 ---
 
 ## Qué es cierto

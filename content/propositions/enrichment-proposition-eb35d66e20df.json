@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eb35d66e20df",
+  "claimSlug": "\"modelo-los-autobuses-nocturnos-son-muy-escasos-en-mi-ciudad-y-no-cubren-todo-el-territo\"",
+  "text": "Los autobuses nocturnos son muy escasos en mi ciudad y no cubren todo el territorio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9d25d4d09108"
+  ]
+}

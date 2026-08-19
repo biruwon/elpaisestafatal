@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cdc8185ff442",
+  "claimSlug": "\"modelo-por-que-la-gestion-de-residuos-en-espana-es-tan-mal-gestionada-y-causa-tantos-pr\"",
+  "text": "¿Por qué la gestión de residuos en España es tan mal gestionada y causa tantos problemas ambientales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efb9052b0c2a"
+  ]
+}

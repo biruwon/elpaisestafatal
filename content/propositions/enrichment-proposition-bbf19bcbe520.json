@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bbf19bcbe520",
+  "claimSlug": "\"modelo-los-autobuses-urbanos-son-deficientes-y-no-cubren-todas-las-zonas-lo-que-dificul\"",
+  "text": "Los autobuses urbanos son deficientes y no cubren todas las zonas, lo que dificulta el traslado de los vecinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a667feee3e6a"
+  ]
+}

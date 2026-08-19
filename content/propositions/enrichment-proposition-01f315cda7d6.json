@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-01f315cda7d6",
+  "claimSlug": "\"modelo-la-ue-no-respeta-suficientemente-los-derechos-de-los-trabajadores-en-espana\"",
+  "text": "La UE no respeta suficientemente los derechos de los trabajadores en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca5e2afa5e1c"
+  ]
+}

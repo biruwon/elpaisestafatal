@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb6ddaa831e2",
+  "claimSlug": "\"modelo-por-que-no-hay-suficientes-autobuses-nocturnos-en-las-ciudades-grandes\"",
+  "text": "¿Por qué no hay suficientes autobuses nocturnos en las ciudades grandes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37197f449e91"
+  ]
+}

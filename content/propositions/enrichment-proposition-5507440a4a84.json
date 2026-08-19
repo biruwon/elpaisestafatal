@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5507440a4a84",
+  "claimSlug": "\"modelo-la-vigilancia-policial-es-insuficiente-para-prevenir-el-crimen\"",
+  "text": "¡La vigilancia policial es insuficiente para prevenir el crimen!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-165abf19e82e"
+  ]
+}

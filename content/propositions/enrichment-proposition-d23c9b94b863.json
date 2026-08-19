@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d23c9b94b863",
+  "claimSlug": "\"modelo-las-vacaciones-son-un-lujo-que-pocas-empresas-ofrecen\"",
+  "text": "¡Las vacaciones son un lujo que pocas empresas ofrecen!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9ab65553d208"
+  ]
+}

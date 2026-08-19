@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb7404eacdfe",
+  "claimSlug": "\"modelo-la-politica-energetica-del-pais-es-un-desastre-y-los-ciudadanos-pagan-las-consec\"",
+  "text": "La política energética del país es un desastre y los ciudadanos pagan las consecuencias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c477883a2be3"
+  ]
+}

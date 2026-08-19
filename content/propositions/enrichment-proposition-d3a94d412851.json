@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d3a94d412851",
+  "claimSlug": "\"modelo-el-sistema-de-autobuses-urbanos-es-ineficiente-y-causa-retrasos-constantes-en-el\"",
+  "text": "El sistema de autobuses urbanos es ineficiente y causa retrasos constantes en el trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f106b819788c"
+  ]
+}

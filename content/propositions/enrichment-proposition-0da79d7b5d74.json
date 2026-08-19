@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0da79d7b5d74",
+  "claimSlug": "\"modelo-la-inestabilidad-en-la-politica-educativa-genera-incertidumbre-en-los-estudiante\"",
+  "text": "La inestabilidad en la política educativa genera incertidumbre en los estudiantes y dificulta su planificación futura.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1b64a09764d2"
+  ]
+}

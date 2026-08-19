@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6508c372b1ca",
+  "claimSlug": "\"modelo-las-estaciones-de-tren-en-espana-son-inseguras-y-desorganizadas-con-senales-conf\"",
+  "text": "Las estaciones de tren en España son inseguras y desorganizadas, con señales confusas y falta de información para los pasajeros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3a6165cd4c5a"
+  ]
+}

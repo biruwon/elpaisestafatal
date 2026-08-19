@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c2fd7ed316d",
+  "claimSlug": "\"modelo-el-mantenimiento-de-las-carreteras-es-pesimo-y-los-baches-son-constantes-por-que\"",
+  "text": "El mantenimiento de las carreteras es pésimo y los baches son constantes, ¿por qué no se invierte más en infraestructuras viales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2d345ffa864"
+  ]
+}

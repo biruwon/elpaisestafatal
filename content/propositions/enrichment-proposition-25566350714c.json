@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-25566350714c",
+  "claimSlug": "\"modelo-la-tasa-de-natalidad-en-espana-esta-en-minimos-historicos-y-la-inmigracion-no-es\"",
+  "text": "La tasa de natalidad en España está en mínimos históricos y la inmigración no está ayudando a mejorar la situación demográfica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a448efbc69f4"
+  ]
+}

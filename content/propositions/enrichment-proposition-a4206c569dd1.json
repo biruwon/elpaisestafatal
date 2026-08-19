@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4206c569dd1",
+  "claimSlug": "\"modelo-el-sistema-de-contratacion-temporal-en-espana-esta-haciendo-que-sea-dificil-para\"",
+  "text": "El sistema de contratación temporal en España está haciendo que sea difícil para las personas mantener estabilidad en el trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c26c01f46ace"
+  ]
+}

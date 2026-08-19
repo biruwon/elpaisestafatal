@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2376001d5903",
+  "claimSlug": "\"modelo-las-lluvias-no-llegan-a-tiempo-para-prevenir-los-incendios\"",
+  "text": "Las lluvias no llegan a tiempo para prevenir los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-11771cbb6a48"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1fa8e48f4a65",
+  "claimSlug": "\"modelo-la-comunidad-valenciana-tiene-demasiados-embajadores-y-representantes-en-el-gobi\"",
+  "text": "La Comunidad Valenciana tiene demasiados embajadores y representantes en el gobierno central.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fe0893064933"
+  ]
+}

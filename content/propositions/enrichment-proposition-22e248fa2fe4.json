@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-22e248fa2fe4",
+  "claimSlug": "\"modelo-es-inaceptable-que-en-un-pais-con-recursos-como-espana-haya-tanta-gente-que-no-p\"",
+  "text": "Es inaceptable que en un país con recursos como España haya tanta gente que no puede pagar la vivienda y se ve forzada a vivir en condiciones precarias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-541f59f0972d"
+  ]
+}

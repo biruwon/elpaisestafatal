@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e591db19f212",
+  "claimSlug": "\"modelo-los-contratos-indefinidos-en-espana-son-dificiles-de-conseguir-y-mantener\"",
+  "text": "Los contratos indefinidos en España son difíciles de conseguir y mantener.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f29f842a1bb"
+  ]
+}

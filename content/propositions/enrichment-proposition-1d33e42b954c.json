@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d33e42b954c",
+  "claimSlug": "\"modelo-las-empresas-en-espana-a-menudo-no-ofrecen-contratos-indefinidos-a-quienes-traba\"",
+  "text": "Las empresas en España a menudo no ofrecen contratos indefinidos a quienes trabajan durante mucho tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6330920e4ac"
+  ]
+}

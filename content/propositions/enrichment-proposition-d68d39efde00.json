@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d68d39efde00",
+  "claimSlug": "\"modelo-la-conectividad-en-transporte-publico-es-un-desastre-con-autobuses-y-trenes-que-\"",
+  "text": "La conectividad en transporte público es un desastre, con autobuses y trenes que llegan tarde y no siguen el horario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-811d2e525db8"
+  ]
+}

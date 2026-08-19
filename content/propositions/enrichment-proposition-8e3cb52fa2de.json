@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e3cb52fa2de",
+  "claimSlug": "\"modelo-las-carreteras-en-espana-estan-llena-de-peligros-con-muchos-tramos-sin-mantenimi\"",
+  "text": "Las carreteras en España están llena de peligros, con muchos tramos sin mantenimiento y semáforos que se quedan sin luz en plena noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0a52e3e26c67"
+  ]
+}

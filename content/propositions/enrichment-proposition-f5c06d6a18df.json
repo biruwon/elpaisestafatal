@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5c06d6a18df",
+  "claimSlug": "\"modelo-en-muchos-barrios-de-espana-no-hay-suficientes-centros-de-ocio-y-tiempo-libre-pa\"",
+  "text": "En muchos barrios de España, no hay suficientes centros de ocio y tiempo libre para los jóvenes, lo que los deja solos y sin actividades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-19df5f093ab1"
+  ]
+}

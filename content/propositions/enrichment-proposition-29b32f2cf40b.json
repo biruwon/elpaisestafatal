@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29b32f2cf40b",
+  "claimSlug": "\"modelo-la-alta-tasa-de-paro-juvenil-en-espana-hace-que-sea-dificil-encontrar-un-trabajo\"",
+  "text": "La alta tasa de paro juvenil en España hace que sea difícil encontrar un trabajo decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-74164b9a9edb"
+  ]
+}

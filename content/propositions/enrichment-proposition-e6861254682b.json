@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e6861254682b",
+  "claimSlug": "\"modelo-el-turismo-en-la-costa-blanca-esta-causando-graves-problemas-en-la-calidad-de-vi\"",
+  "text": "El turismo en la Costa Blanca está causando graves problemas en la calidad de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ec605f5d27f"
+  ]
+}

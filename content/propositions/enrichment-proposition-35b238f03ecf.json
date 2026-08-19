@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-35b238f03ecf",
+  "claimSlug": "\"modelo-la-despoblacion-de-cataluna-esta-afectando-seriamente-a-la-economia-local\"",
+  "text": "La despoblación de Cataluña está afectando seriamente a la economía local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7c605735db1"
+  ]
+}

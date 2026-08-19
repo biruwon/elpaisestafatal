@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1716367fa1e",
+  "claimSlug": "\"modelo-los-trenes-de-alta-velocidad-tardan-demasiado-en-llegar-a-su-destino\"",
+  "text": "Los trenes de alta velocidad tardan demasiado en llegar a su destino.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c2d64cdbfd7"
+  ]
+}

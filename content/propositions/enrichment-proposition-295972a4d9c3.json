@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-295972a4d9c3",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-llenas-de-basura-y-se-ven-mal-mantenidas\"",
+  "text": "Las playas de España están llenas de basura y se ven mal mantenidas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f6662ed6b86"
+  ]
+}

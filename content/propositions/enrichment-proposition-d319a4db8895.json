@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d319a4db8895",
+  "claimSlug": "\"modelo-en-andalucia-el-agua-es-un-problema-constante-y-los-planes-de-ahorro-no-se-imple\"",
+  "text": "En Andalucía, el agua es un problema constante y los planes de ahorro no se implementan bien, lo que hace que la gente se sienta decepcionada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9500f1954ee8"
+  ]
+}

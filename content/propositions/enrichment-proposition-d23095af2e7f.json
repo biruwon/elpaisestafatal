@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d23095af2e7f",
+  "claimSlug": "\"modelo-las-tarifas-de-estacionamiento-en-las-ciudades-son-excesivas-y-no-proporcionan-e\"",
+  "text": "Las tarifas de estacionamiento en las ciudades son excesivas y no proporcionan espacio suficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a9d417a1973"
+  ]
+}

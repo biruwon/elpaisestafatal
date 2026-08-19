@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-abc043a236a4",
+  "claimSlug": "\"modelo-el-teletrabajo-en-espana-es-poco-comun-y-restriccion-en-las-oportunidades-labora\"",
+  "text": "El teletrabajo en España es poco común y restricción en las oportunidades laborales.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-13fda13ce0a2"
+  ]
+}

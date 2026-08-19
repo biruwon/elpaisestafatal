@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f26d5f70ab43",
+  "claimSlug": "\"modelo-las-politicas-de-austeridad-solo-benefician-a-los-ricos-y-perjudican-a-los-traba\"",
+  "text": "Las políticas de austeridad solo benefician a los ricos y perjudican a los trabajadores, ¿no es así?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3ac29cbcb46e"
+  ]
+}

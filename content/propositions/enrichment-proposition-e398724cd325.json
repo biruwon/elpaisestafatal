@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e398724cd325",
+  "claimSlug": "\"modelo-el-ajetreo-del-turismo-y-la-produccion-agricola-estan-destruyendo-el-paisaje-nat\"",
+  "text": "El ajetreo del turismo y la producción agrícola están destruyendo el paisaje natural de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d44137d0b5c2"
+  ]
+}

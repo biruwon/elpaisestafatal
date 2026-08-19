@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-524da69b2cb2",
+  "claimSlug": "\"modelo-las-renovables-no-estan-abaratando-el-precio-de-la-electricidad-al-contrario-est\"",
+  "text": "Las renovables no están abaratando el precio de la electricidad, al contrario, están subiendo los costes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c1374d82607c"
+  ]
+}

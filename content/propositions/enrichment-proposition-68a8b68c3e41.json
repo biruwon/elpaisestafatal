@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-68a8b68c3e41",
+  "claimSlug": "\"modelo-el-tren-ave-a-barcelona-tiene-frecuencias-muy-limitadas-y-los-precios-son-desorb\"",
+  "text": "El tren AVE a Barcelona tiene frecuencias muy limitadas y los precios son desorbitados, haciendo el viaje un lujo inalcanzable para muchos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-32f2475cf0c8"
+  ]
+}

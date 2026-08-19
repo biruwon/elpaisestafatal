@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ec2d35a4a44",
+  "claimSlug": "\"modelo-la-inmigracion-ha-incrementado-el-coste-de-la-educacion-en-espana\"",
+  "text": "La inmigración ha incrementado el coste de la educación en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-71c7885b5443"
+  ]
+}

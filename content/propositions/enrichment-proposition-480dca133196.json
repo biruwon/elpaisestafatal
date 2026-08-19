@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-480dca133196",
+  "claimSlug": "\"modelo-en-espana-la-contratacion-publica-a-veces-se-lleva-a-cabo-sin-el-conocimiento-de\"",
+  "text": "En España, la contratación pública a veces se lleva a cabo sin el conocimiento del público, lo que genera preocupación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fca03cb249c3"
+  ]
+}

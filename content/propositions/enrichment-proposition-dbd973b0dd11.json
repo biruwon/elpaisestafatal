@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dbd973b0dd11",
+  "claimSlug": "\"modelo-la-calidad-del-agua-de-las-playas-en-espana-esta-cada-vez-peor\"",
+  "text": "La calidad del agua de las playas en España está cada vez peor.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2e98124b42c5"
+  ]
+}

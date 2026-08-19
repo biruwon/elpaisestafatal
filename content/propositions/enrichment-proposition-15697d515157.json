@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-15697d515157",
+  "claimSlug": "\"modelo-es-frecuente-que-los-jueces-se-retrase-en-emitir-sentencias-en-casos-de-violenci\"",
+  "text": "¿Es frecuente que los jueces se retrase en emitir sentencias en casos de violencia de género?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c2c8ae99698d"
+  ]
+}

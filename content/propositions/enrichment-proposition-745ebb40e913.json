@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-745ebb40e913",
+  "claimSlug": "\"modelo-las-playas-de-la-costa-del-sol-estan-llenas-de-carteles-publicitarios-se-supone-\"",
+  "text": "Las playas de la Costa del Sol están llenas de carteles publicitarios, ¿se supone que esto mejora la estética del lugar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a82a2fce6c37"
+  ]
+}

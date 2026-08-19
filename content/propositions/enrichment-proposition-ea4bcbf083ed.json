@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea4bcbf083ed",
+  "claimSlug": "\"modelo-las-practicas-laborales-son-escasas-y-no-reflejan-la-realidad-laboral-actual\"",
+  "text": "Las prácticas laborales son escasas y no reflejan la realidad laboral actual.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8b369fea5d05"
+  ]
+}

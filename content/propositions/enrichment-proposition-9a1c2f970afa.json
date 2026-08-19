@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9a1c2f970afa",
+  "claimSlug": "\"modelo-la-brecha-salarial-entre-hombres-y-mujeres-en-espana-persiste-y-es-alarmante\"",
+  "text": "La brecha salarial entre hombres y mujeres en España persiste y es alarmante.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-1f736f40405e"
+  ]
+}

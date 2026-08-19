@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c248c816beaa",
+  "claimSlug": "\"modelo-los-costes-de-la-energia-en-espana-estan-haciendo-que-la-gente-opte-por-no-comer\"",
+  "text": "Los costes de la energía en España están haciendo que la gente opte por no comer para pagar las facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5732d24158ed"
+  ]
+}

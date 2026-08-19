@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6e1b71a71337",
+  "claimSlug": "\"modelo-las-politicas-turisticas-de-espana-estan-favoreciendo-a-las-ciudades-y-perjudica\"",
+  "text": "Las políticas turísticas de España están favoreciendo a las ciudades y perjudicando a los destinos rurales.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-bb225183d3bc"
+  ]
+}

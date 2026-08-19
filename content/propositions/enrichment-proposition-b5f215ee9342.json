@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b5f215ee9342",
+  "claimSlug": "\"modelo-el-mantenimiento-de-las-carreteras-secundarias-es-muy-deficiente-con-frecuentes-\"",
+  "text": "El mantenimiento de las carreteras secundarias es muy deficiente, con frecuentes baches y reparaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3d521595303d"
+  ]
+}

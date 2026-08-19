@@ -4,21 +4,22 @@ claim: "¿Por qué las autoridades no hacen más para prevenir incendios foresta
 assessment: uncertain
 topicSlugs: ["medio ambiente e incendios"]
 aliases: ["¿Por qué no se hacen más controles para prevenir incendios?","¿Qué hace el gobierno para evitar incendios?","¿Por qué no se invierte más en prevención de incendios?","¿Qué medidas toman las autoridades para prevenir incendios?","¿Por qué no se informa mejor a la gente sobre prevenir incendios?","¿Por qué las autoridades no hacen más para prevenir incendios forestales en España?","Por qué las autoridades no hacen más para prevenir incendios forestales en España","¿Es cierto que Por qué las autoridades no hacen más para prevenir incendios forestales en España?","¿Qué datos permiten comprobar si Por qué las autoridades no hacen más para prevenir incendios forestales en España?","Quiero saber si Por qué las autoridades no hacen más para prevenir incendios forestales en España","¿Cómo se puede verificar Por qué las autoridades no hacen más para prevenir incendios forestales en España?","¿Hay evidencia sobre si Por qué las autoridades no hacen más para prevenir incendios forestales en España?","¿Es verdad que Por qué las autoridades no hacen más para prevenir incendios forestales en España?","¿Qué sabemos de Por qué las autoridades no hacen más para prevenir incendios forestales en España?","¿Se sostiene la afirmación de que Por qué las autoridades no hacen más para prevenir incendios forestales en España?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-ebab00bd596e"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que las autoridades no hacen mas para prevenir incendios forestales en espana"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-bbb8aa173145"]
 ---
 
 ## Qué es cierto

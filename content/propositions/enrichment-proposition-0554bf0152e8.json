@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0554bf0152e8",
+  "claimSlug": "\"modelo-por-que-la-sanidad-publica-no-parece-tener-suficientes-recursos-para-atender-a-t\"",
+  "text": "¿Por qué la sanidad pública no parece tener suficientes recursos para atender a todos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7831c18cf1d0"
+  ]
+}

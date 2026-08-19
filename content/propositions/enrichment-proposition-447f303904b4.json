@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-447f303904b4",
+  "claimSlug": "\"modelo-la-justicia-en-espana-es-muy-lenta-y-costosa-haciendo-que-muchos-casos-se-alargu\"",
+  "text": "La justicia en España es muy lenta y costosa, haciendo que muchos casos se alarguen años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-864c438d2a5e"
+  ]
+}

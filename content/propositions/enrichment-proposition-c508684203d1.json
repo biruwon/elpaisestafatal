@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c508684203d1",
+  "claimSlug": "\"modelo-la-calidad-del-transporte-publico-en-espana-esta-en-declive-con-autobuses-consta\"",
+  "text": "La calidad del transporte público en España está en declive, con autobuses constantemente retrasados y llenos de humo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c56bf8beeae3"
+  ]
+}

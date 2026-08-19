@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f324a9ad4e3e",
+  "claimSlug": "\"modelo-la-politica-de-parques-nacionales-se-esta-quedando-en-el-norte-dejando-al-sur-co\"",
+  "text": "La política de parques nacionales se está quedando en el norte, dejando al sur con parques de picnic y playas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0337bdda3f01"
+  ]
+}

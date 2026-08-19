@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1b8a5c420628",
+  "claimSlug": "\"modelo-los-recortes-en-la-educacion-publica-han-llevado-a-un-aumento-excesivo-de-las-ta\"",
+  "text": "Los recortes en la educación pública han llevado a un aumento excesivo de las tasas de matrícula en las universidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ccf65cba0d3"
+  ]
+}

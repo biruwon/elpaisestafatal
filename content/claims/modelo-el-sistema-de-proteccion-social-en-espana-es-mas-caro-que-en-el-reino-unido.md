@@ -4,21 +4,22 @@ claim: "El sistema de protección social en España es más caro que en el Reino
 assessment: uncertain
 topicSlugs: ["pensiones y protección social"]
 aliases: ["¿El sistema de protección social en España es más costoso que el británico?","¿Es el sistema de protección social en España más caro que el del Reino Unido?","¿Tiene el sistema de protección social en España un coste mayor que el británico?","¿Es el sistema de protección social en España más costoso que el británico?","¿El sistema de protección social en España cuesta más que el del Reino Unido?","El sistema de protección social en España es más caro que en el Reino Unido.","¿Es cierto que El sistema de protección social en España es más caro que en el Reino Unido.?","¿Qué datos permiten comprobar si El sistema de protección social en España es más caro que en el Reino Unido.?","Quiero saber si El sistema de protección social en España es más caro que en el Reino Unido.","¿Cómo se puede verificar El sistema de protección social en España es más caro que en el Reino Unido.?","¿Hay evidencia sobre si El sistema de protección social en España es más caro que en el Reino Unido.?","¿Es verdad que El sistema de protección social en España es más caro que en el Reino Unido.?","¿Qué sabemos de El sistema de protección social en España es más caro que en el Reino Unido.?","¿Se sostiene la afirmación de que El sistema de protección social en España es más caro que en el Reino Unido.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-5530e3e4eecd"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el sistema de proteccion social en espana es mas caro que en el reino unido"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-6c4bb554d04b"]
 ---
 
 ## Qué es cierto

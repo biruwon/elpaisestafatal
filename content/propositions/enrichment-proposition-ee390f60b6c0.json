@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee390f60b6c0",
+  "claimSlug": "\"modelo-la-educacion-vespertina-es-limitada-y-no-cubre-todas-las-necesidades\"",
+  "text": "La educación vespertina es limitada y no cubre todas las necesidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d13de99d53e8"
+  ]
+}

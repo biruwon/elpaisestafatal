@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8be3e772b9a7",
+  "claimSlug": "\"modelo-en-espana-los-delincuentes-son-tan-audaces-que-incluso-se-atreven-a-robar-en-ple\"",
+  "text": "En España, los delincuentes son tan audaces que incluso se atreven a robar en plena calle con la gente mirando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-665ba5fed421"
+  ]
+}

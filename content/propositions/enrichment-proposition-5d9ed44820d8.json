@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d9ed44820d8",
+  "claimSlug": "\"modelo-los-ladrones-en-espana-son-tan-audaces-que-ya-me-he-empezado-a-llevar-la-maleta-\"",
+  "text": "¡Los ladrones en España son tan audaces que ya me he empezado a llevar la maleta a todas partes!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3e844b2fd436"
+  ]
+}

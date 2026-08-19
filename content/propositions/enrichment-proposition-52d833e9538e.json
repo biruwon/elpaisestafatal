@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-52d833e9538e",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-mis-compras-se-hagan-impagables\"",
+  "text": "La inflación está haciendo que mis compras se hagan impagables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3b91ebc32258"
+  ]
+}

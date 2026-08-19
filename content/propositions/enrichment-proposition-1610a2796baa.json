@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1610a2796baa",
+  "claimSlug": "\"modelo-es-frustrante-que-los-pensionistas-no-puedan-acceder-a-servicios-de-salud-de-cal\"",
+  "text": "Es frustrante que los pensionistas no puedan acceder a servicios de salud de calidad sin problemas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bfbec7369968"
+  ]
+}

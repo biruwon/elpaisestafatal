@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e915200dff2",
+  "claimSlug": "\"modelo-el-trafico-de-drogas-sigue-impune-en-muchas-zonas-urbanas\"",
+  "text": "¡El tráfico de drogas sigue impune en muchas zonas urbanas!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-45c6dd4e5320"
+  ]
+}

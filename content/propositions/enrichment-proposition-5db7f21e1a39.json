@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5db7f21e1a39",
+  "claimSlug": "\"modelo-la-despoblacion-de-la-comarca-de-la-rioja-esta-dejando-a-los-ancianos-sin-ayuda\"",
+  "text": "La despoblación de la comarca de La Rioja está dejando a los ancianos sin ayuda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67e60a882fbe"
+  ]
+}

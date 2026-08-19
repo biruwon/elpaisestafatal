@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ecef5b3878b",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-de-la-electricidad-esta-haciendo-que-las-familias-pasen\"",
+  "text": "La subida de los precios de la electricidad está haciendo que las familias pasen hambre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cb4d7487234f"
+  ]
+}

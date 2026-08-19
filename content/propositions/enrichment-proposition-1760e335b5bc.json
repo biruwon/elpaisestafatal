@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1760e335b5bc",
+  "claimSlug": "\"modelo-las-turnos-de-verano-en-los-centros-educativos-estan-siendo-cancelados-sin-previ\"",
+  "text": "Las turnos de verano en los centros educativos están siendo cancelados sin previo aviso, dejando a los niños sin actividades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a9819bf92f1e"
+  ]
+}

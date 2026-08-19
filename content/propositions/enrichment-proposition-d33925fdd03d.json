@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d33925fdd03d",
+  "claimSlug": "\"modelo-por-que-en-espana-se-sigue-contratando-a-empresas-de-cercania-en-lugar-de-basars\"",
+  "text": "¿Por qué en España se sigue contratando a empresas de cercanía en lugar de basarse en la calidad y precio justo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-658e692eea7c"
+  ]
+}

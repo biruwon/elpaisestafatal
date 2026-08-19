@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6c4bb554d04b",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-en-espana-es-mas-caro-que-en-el-reino-unido\"",
+  "text": "El sistema de protección social en España es más caro que en el Reino Unido.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-5530e3e4eecd"
+  ]
+}

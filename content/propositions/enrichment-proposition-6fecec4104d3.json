@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6fecec4104d3",
+  "claimSlug": "\"modelo-los-alquileres-en-las-ciudades-costeras-de-espana-son-mas-caros-que-en-el-interi\"",
+  "text": "Los alquileres en las ciudades costeras de España son más caros que en el interior.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a118237eab85"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc017d1c37f3",
+  "claimSlug": "\"modelo-el-precio-del-gasoleo-esta-subiendo-como-la-marea-y-la-gente-no-puede-aguantar-m\"",
+  "text": "El precio del gasóleo está subiendo como la marea y la gente no puede aguantar más",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10cf51b36c8a"
+  ]
+}

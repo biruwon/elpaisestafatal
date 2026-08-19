@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c3fd787482b",
+  "claimSlug": "\"modelo-los-productos-locales-en-las-ferias-agricolas-de-espana-estan-muy-caros-y-de-baj\"",
+  "text": "Los productos locales en las ferias agrícolas de España están muy caros y de baja calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31be8668ed0e"
+  ]
+}

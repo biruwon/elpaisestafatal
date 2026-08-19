@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa581b615f86",
+  "claimSlug": "\"modelo-el-alquiler-se-ha-disparado-en-los-ultimos-meses-y-ahora-cuesta-un-paston-para-e\"",
+  "text": "El alquiler se ha disparado en los últimos meses y ahora cuesta un pastón para encontrar algo decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8077067eaf02"
+  ]
+}

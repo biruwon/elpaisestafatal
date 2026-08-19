@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c39004ef7d9",
+  "claimSlug": "\"modelo-la-calidad-de-los-libros-de-texto-es-un-desastre-y-los-precios-son-abusivos\"",
+  "text": "La calidad de los libros de texto es un desastre y los precios son abusivos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e4898be6095"
+  ]
+}

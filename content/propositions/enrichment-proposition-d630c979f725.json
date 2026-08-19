@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d630c979f725",
+  "claimSlug": "\"modelo-la-ciudad-de-bilbao-no-tiene-suficiente-transporte-publico-para-cubrir-la-demand\"",
+  "text": "La ciudad de Bilbao no tiene suficiente transporte público para cubrir la demanda de la población.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0d9d0519a89c"
+  ]
+}

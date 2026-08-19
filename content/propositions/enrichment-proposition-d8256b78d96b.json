@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8256b78d96b",
+  "claimSlug": "\"modelo-la-falta-de-infraestructuras-en-la-comunidad-valenciana-es-un-desastre\"",
+  "text": "La falta de infraestructuras en la Comunidad Valenciana es un desastre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2c25c684659"
+  ]
+}

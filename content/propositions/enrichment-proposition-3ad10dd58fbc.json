@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ad10dd58fbc",
+  "claimSlug": "\"modelo-los-viajes-en-tren-entre-madrid-y-barcelona-son-tan-complicados-que-es-preferibl\"",
+  "text": "Los viajes en tren entre Madrid y Barcelona son tan complicados que es preferible ir en coche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-963b50053dbb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e5aa94c0ca6e",
+  "claimSlug": "\"modelo-el-servicio-de-limpieza-en-el-parque-natural-de-donana-es-inexistente-nadie-se-p\"",
+  "text": "El servicio de limpieza en el parque natural de Doñana es inexistente, ¿nadie se preocupa por la basura que se acumula?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5c252cc36dd"
+  ]
+}

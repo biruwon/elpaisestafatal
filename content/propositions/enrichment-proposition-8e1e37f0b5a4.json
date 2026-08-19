@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e1e37f0b5a4",
+  "claimSlug": "\"modelo-las-primas-del-seguro-de-desempleo-son-muy-altas-y-los-desempleados-no-pueden-co\"",
+  "text": "Las primas del seguro de desempleo son muy altas y los desempleados no pueden costearlas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6fdf10332c6b"
+  ]
+}

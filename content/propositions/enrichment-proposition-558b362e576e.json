@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-558b362e576e",
+  "claimSlug": "\"modelo-no-hay-viviendas-disponibles-para-gente-con-sueldo-bajo-como-me-voy-a-poder-esta\"",
+  "text": "¡No hay viviendas disponibles para gente con sueldo bajo! ¿Cómo me voy a poder establecer aquí?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-43b04f4f580e"
+  ]
+}

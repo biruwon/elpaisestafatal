@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6f890d1d8a4b",
+  "claimSlug": "\"modelo-por-que-la-instalacion-de-fibra-optica-en-viviendas-se-demora-tanto\"",
+  "text": "¿Por qué la instalación de fibra óptica en viviendas se demora tanto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-17fa8752ed43"
+  ]
+}

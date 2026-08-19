@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c397afded44",
+  "claimSlug": "\"modelo-por-que-las-carreteras-concurridas-de-madrid-se-llenan-de-cintas-de-obra-todo-el\"",
+  "text": "¿Por qué las carreteras concurridas de Madrid se llenan de cintas de obra todo el tiempo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db20990db8d2"
+  ]
+}

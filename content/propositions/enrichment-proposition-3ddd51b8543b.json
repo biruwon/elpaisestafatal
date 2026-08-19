@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ddd51b8543b",
+  "claimSlug": "\"modelo-la-factura-de-la-luz-es-impredecible-y-cada-vez-mas-alta\"",
+  "text": "La factura de la luz es impredecible y cada vez más alta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-baedf8f809fa"
+  ]
+}

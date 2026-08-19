@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10ae90a33c4a",
+  "claimSlug": "\"modelo-las-subidas-del-iva-estan-haciendo-que-los-productos-de-primera-necesidad-sean-m\"",
+  "text": "Las subidas del IVA están haciendo que los productos de primera necesidad sean más caros para las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f268080bcd25"
+  ]
+}

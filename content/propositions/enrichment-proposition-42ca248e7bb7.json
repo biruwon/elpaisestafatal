@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-42ca248e7bb7",
+  "claimSlug": "\"modelo-las-pensiones-estan-tan-mal-que-las-personas-tienen-que-recurrir-a-programas-de-\"",
+  "text": "Las pensiones están tan mal que las personas tienen que recurrir a programas de alimentación solidaria en su jubilación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a6d5dcf3fc4e"
+  ]
+}

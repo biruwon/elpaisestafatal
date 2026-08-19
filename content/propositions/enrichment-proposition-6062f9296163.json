@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6062f9296163",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-estan-permitiendo-que-se-establezcan-culturas-extra\"",
+  "text": "Las políticas de inmigración están permitiendo que se establezcan culturas extranjeras en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5e994f78cdfd"
+  ]
+}

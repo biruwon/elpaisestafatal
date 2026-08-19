@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-15d8bc9a3beb",
+  "claimSlug": "\"modelo-el-incremento-de-los-delitos-de-odio-ha-creado-un-clima-de-incertidumbre-y-temor\"",
+  "text": "El incremento de los delitos de odio ha creado un clima de incertidumbre y temor en muchas comunidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5bd028676cc5"
+  ]
+}

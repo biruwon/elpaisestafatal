@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8891fe070084",
+  "claimSlug": "\"modelo-se-ha-notado-un-aumento-en-el-numero-de-inmigrantes-que-llegan-sin-documentacion\"",
+  "text": "Se ha notado un aumento en el número de inmigrantes que llegan sin documentación, lo que ha incrementado la carga para las autoridades de extranjería.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c31f8b0c3c18"
+  ]
+}

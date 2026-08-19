@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1b6fc77e3157",
+  "claimSlug": "\"modelo-la-construccion-del-ave-ha-tenido-problemas-en-la-inversion-prevista\"",
+  "text": "La construcción del AVE ha tenido problemas en la inversión prevista",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-83b2e4e5ce47"
+  ]
+}

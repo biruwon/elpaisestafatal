@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a5b5bf53f26",
+  "claimSlug": "\"modelo-como-es-que-en-espana-no-todos-los-apartamentos-tienen-sistemas-de-iluminacion-i\"",
+  "text": "¿Cómo es que en España no todos los apartamentos tienen sistemas de iluminación inteligente que se puedan controlar desde el teléfono?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e8b6ab47e5c3"
+  ]
+}

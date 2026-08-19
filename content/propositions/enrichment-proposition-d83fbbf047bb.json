@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d83fbbf047bb",
+  "claimSlug": "\"modelo-el-alquiler-es-prohibitivo-para-muchos-trabajadores-con-bajos-ingresos\"",
+  "text": "El alquiler es prohibitivo para muchos trabajadores con bajos ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3db0a0870012"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de9511f49512",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-la-cesta-basica-se-duplique-de-precio-en-tan-solo\"",
+  "text": "La inflación está haciendo que la cesta básica se duplique de precio en tan solo un año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-572b2a3a5792"
+  ]
+}

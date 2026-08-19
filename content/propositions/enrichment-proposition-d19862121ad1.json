@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d19862121ad1",
+  "claimSlug": "\"modelo-las-empresas-en-espana-no-se-responsabilizan-del-bienestar-de-sus-empleados-solo\"",
+  "text": "Las empresas en España no se responsabilizan del bienestar de sus empleados, solo de los beneficios económicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dba52d4da78d"
+  ]
+}

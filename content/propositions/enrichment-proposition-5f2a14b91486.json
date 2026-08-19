@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f2a14b91486",
+  "claimSlug": "\"modelo-el-gobierno-no-invierte-suficientes-recursos-en-la-prevencion-de-incendios-dejan\"",
+  "text": "El gobierno no invierte suficientes recursos en la prevención de incendios, dejando a los bosques en riesgo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6fa1739529fe"
+  ]
+}

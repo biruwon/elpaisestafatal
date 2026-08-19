@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c55bae153610",
+  "claimSlug": "\"modelo-la-calidad-del-agua-en-las-playas-espanolas-esta-cada-vez-peor-afectando-el-turi\"",
+  "text": "La calidad del agua en las playas españolas está cada vez peor, afectando el turismo costero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c4bbfeb2147e"
+  ]
+}

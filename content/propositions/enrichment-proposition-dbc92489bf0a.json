@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dbc92489bf0a",
+  "claimSlug": "\"modelo-la-conexion-ferroviaria-entre-barcelona-y-madrid-es-un-autentico-desastre\"",
+  "text": "La conexión ferroviaria entre Barcelona y Madrid es un auténtico desastre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78788f476222"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f52bdd69f067",
+  "claimSlug": "\"modelo-el-trafico-en-las-ciudades-turisticas-de-espana-es-un-desastre-los-coches-se-api\"",
+  "text": "El tráfico en las ciudades turísticas de España es un desastre, los coches se apilan en el centro histórico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1a03e7aba833"
+  ]
+}

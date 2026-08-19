@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8579c9b7e710",
+  "claimSlug": "\"modelo-la-calidad-del-servicio-en-los-comedores-escolares-es-deficiente-y-las-opciones-\"",
+  "text": "La calidad del servicio en los comedores escolares es deficiente y las opciones nutricionales son limitadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-917a72f3f4a9"
+  ]
+}

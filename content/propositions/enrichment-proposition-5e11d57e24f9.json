@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e11d57e24f9",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-llenando-los-parques-de-extranjeros-que-no-qui\"",
+  "text": "La inmigración no controlada está llenando los parques de extranjeros que no quieren aprender español o respetar nuestras costumbres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8eb45cd68fef"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f8972646c513",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-la-demanda-de-alquiler-y-ahora-resulta-imposible-enc\"",
+  "text": "La inmigración ha aumentado la demanda de alquiler, y ahora resulta imposible encontrar un piso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b406e4f772eb"
+  ]
+}

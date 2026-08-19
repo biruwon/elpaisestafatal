@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71e97f9101fb",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-los-salarios-no-alcancen-para-cubrir-los-costes-b\"",
+  "text": "La inflación está haciendo que los salarios no alcancen para cubrir los costes básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d7d83c35ca7"
+  ]
+}

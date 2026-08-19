@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e20b1cd38837",
+  "claimSlug": "\"modelo-el-sistema-de-subcontratacion-en-espana-permite-a-las-empresas-evadir-sus-respon\"",
+  "text": "El sistema de subcontratación en España permite a las empresas evadir sus responsabilidades laborales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d47f781f10b0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6de1bb2c9f77",
+  "claimSlug": "\"modelo-el-gas-natural-esta-al-mismo-nivel-que-el-petroleo-es-decir-un-desproposito\"",
+  "text": "El gas natural está al mismo nivel que el petróleo, es decir, un despropósito.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0486e56391cb"
+  ]
+}

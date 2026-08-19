@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7ae1cb7e6c87",
+  "claimSlug": "\"modelo-en-muchas-ciudades-de-espana-los-pisos-baratos-son-tan-malos-que-los-inquilinos-\"",
+  "text": "En muchas ciudades de España, los pisos baratos son tan malos que los inquilinos prefieren vivir en calles a riesgo de ser expulsados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-306f78f737cc"
+  ]
+}

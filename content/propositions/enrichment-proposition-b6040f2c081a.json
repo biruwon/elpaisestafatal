@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b6040f2c081a",
+  "claimSlug": "\"modelo-se-estan-acumulando-demasiados-pacientes-en-las-listas-de-espera-de-los-hospital\"",
+  "text": "Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-2034c4b844be"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a72ec8c505cd",
+  "claimSlug": "\"modelo-las-escuelas-no-tienen-suficientes-profesores-capacitados-en-lengua-extranjera-p\"",
+  "text": "Las escuelas no tienen suficientes profesores capacitados en lengua extranjera, perjudicando a los niños.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97b3cd18b3ea"
+  ]
+}

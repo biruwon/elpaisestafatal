@@ -4,21 +4,22 @@ claim: "La seguridad en algunos destinos turísticos de España es pobre y se si
 assessment: uncertain
 topicSlugs: ["turismo y agricultura"]
 aliases: ["el turismo no es seguro","falta seguridad en las playas","se siente miedo en las ciudades turísticas","La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.","¿Es cierto que La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","¿Qué datos permiten comprobar si La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","Quiero saber si La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.","¿Cómo se puede verificar La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","¿Hay evidencia sobre si La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","¿Es verdad que La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","¿Qué sabemos de La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?","¿Se sostiene la afirmación de que La seguridad en algunos destinos turísticos de España es pobre y se siente inseguridad.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-8ec956f3df65"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la seguridad en algunos destinos turisticos de espana es pobre y se siente inseguridad"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-693b4a04852d"]
 ---
 
 ## Qué es cierto

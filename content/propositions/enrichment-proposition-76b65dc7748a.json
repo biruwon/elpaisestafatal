@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-76b65dc7748a",
+  "claimSlug": "\"modelo-la-cobertura-de-la-enfermedad-esta-muy-limitada-en-los-planes-de-salud-baratos\"",
+  "text": "La cobertura de la enfermedad está muy limitada en los planes de salud baratos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ec05c0b3b707"
+  ]
+}

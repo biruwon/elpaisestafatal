@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8b3afca2cfd8",
+  "claimSlug": "\"modelo-por-que-en-espana-se-tienen-que-hacer-largas-colas-para-ver-a-un-especialista-cu\"",
+  "text": "¿Por qué en España se tienen que hacer largas colas para ver a un especialista cuando hay hospitales en la ciudad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7fee1c6af1f"
+  ]
+}

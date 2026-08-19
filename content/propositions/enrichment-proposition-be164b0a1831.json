@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-be164b0a1831",
+  "claimSlug": "\"modelo-las-escuelas-no-tienen-suficientes-recursos-para-apoyar-a-los-estudiantes-con-ne\"",
+  "text": "Las escuelas no tienen suficientes recursos para apoyar a los estudiantes con necesidades especiales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6c86c692f7b7"
+  ]
+}

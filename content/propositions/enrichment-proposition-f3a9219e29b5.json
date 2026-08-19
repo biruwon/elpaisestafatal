@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3a9219e29b5",
+  "claimSlug": "\"modelo-la-inflacion-esta-destrozando-los-presupuestos-familiares\"",
+  "text": "La inflación está destrozando los presupuestos familiares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-09d813ad58cd"
+  ]
+}

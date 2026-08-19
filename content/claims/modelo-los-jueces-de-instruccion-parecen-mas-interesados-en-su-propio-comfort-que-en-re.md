@@ -4,21 +4,22 @@ claim: "Los jueces de instrucción parecen más interesados en su propio comfort
 assessment: uncertain
 topicSlugs: ["instituciones y justicia"]
 aliases: ["Jueces de instrucción desatentos","Jueces de instrucción ineficientes","Jueces de instrucción negligentes","Jueces de instrucción inactivos","Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.","¿Es cierto que Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","¿Qué datos permiten comprobar si Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","Quiero saber si Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.","¿Cómo se puede verificar Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","¿Hay evidencia sobre si Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","¿Es verdad que Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","¿Qué sabemos de Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?","¿Se sostiene la afirmación de que Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-90241765e531"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los jueces de instruccion parecen mas interesados en su propio comfort que en resolver delitos parece que estan en un spa"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-d0c1e7c6754b"]
 ---
 
 ## Qué es cierto

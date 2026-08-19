@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e0f7631f59e",
+  "claimSlug": "\"modelo-las-prisiones-espanolas-estan-superpobladas-con-malas-condiciones-de-vida-para-l\"",
+  "text": "Las prisiones españolas están superpobladas, con malas condiciones de vida para los reclusos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3f40adcb34cb"
+  ]
+}

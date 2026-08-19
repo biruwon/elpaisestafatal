@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-225a3621375f",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-la-presion-en-los-servicios-publicos-y-los-espano\"",
+  "text": "La inmigración está aumentando la presión en los servicios públicos y los españoles están sufriendo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ae294c2ff29"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-08b27896315a",
+  "claimSlug": "\"modelo-la-tasa-de-inflacion-deberia-bajar-o-no-subir-mas\"",
+  "text": "La tasa de inflación debería bajar o no subir más.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ad67f989337"
+  ]
+}

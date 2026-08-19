@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-19717966674c",
+  "claimSlug": "\"modelo-en-espana-los-vecinos-comparten-la-misma-fibra-optica-lo-que-reduce-la-velocidad\"",
+  "text": "En España, los vecinos comparten la misma fibra óptica, lo que reduce la velocidad y la calidad de la conexión.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8ff4100809c5"
+  ]
+}

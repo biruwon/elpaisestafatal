@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c85eecfcd85",
+  "claimSlug": "\"modelo-por-que-en-espana-la-policia-no-responde-de-forma-rapida-a-las-llamadas-de-emerg\"",
+  "text": "¿Por qué en España la policía no responde de forma rápida a las llamadas de emergencia, dejando a las personas en peligro?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-93593a22b3d0"
+  ]
+}

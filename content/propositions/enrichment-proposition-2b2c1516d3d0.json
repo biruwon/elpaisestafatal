@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2b2c1516d3d0",
+  "claimSlug": "\"modelo-se-ha-visto-un-aumento-en-la-turistica-rural-en-espana-en-los-ultimos-anos\"",
+  "text": "¿Se ha visto un aumento en la turística rural en España en los últimos años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f659541cb312"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ac26364e229",
+  "claimSlug": "\"modelo-la-tasa-de-inflacion-no-esta-controlada-y-nos-esta-dejando-con-menos-poder-adqui\"",
+  "text": "La tasa de inflación no está controlada y nos está dejando con menos poder adquisitivo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-075af4cd13ee"
+  ]
+}

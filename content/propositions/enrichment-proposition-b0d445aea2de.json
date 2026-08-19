@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0d445aea2de",
+  "claimSlug": "\"modelo-la-tasa-de-crecimiento-economico-es-lenta-y-hace-que-los-empleos-y-salarios-se-m\"",
+  "text": "La tasa de crecimiento económico es lenta y hace que los empleos y salarios se muestren muy lentos a la hora de mejorar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a4c0e670a21d"
+  ]
+}

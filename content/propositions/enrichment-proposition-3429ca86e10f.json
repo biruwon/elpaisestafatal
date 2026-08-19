@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3429ca86e10f",
+  "claimSlug": "\"modelo-el-robo-de-coches-es-tan-comun-que-el-seguro-no-sirve-de-nada\"",
+  "text": "¡El robo de coches es tan común que el seguro no sirve de nada!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e459c72ff762"
+  ]
+}

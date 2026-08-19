@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-54504050309e",
+  "claimSlug": "\"modelo-la-delincuencia-juvenil-ha-aumentado-en-las-ultimas-semanas\"",
+  "text": "La delincuencia juvenil ha aumentado en las últimas semanas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0645f93d3197"
+  ]
+}

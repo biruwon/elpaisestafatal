@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e74fc46d192",
+  "claimSlug": "\"modelo-la-ue-no-hace-lo-suficiente-para-controlar-la-contaminacion-en-zonas-costeras-de\"",
+  "text": "La UE no hace lo suficiente para controlar la contaminación en zonas costeras de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df6620c52f99"
+  ]
+}

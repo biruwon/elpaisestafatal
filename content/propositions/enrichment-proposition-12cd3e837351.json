@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12cd3e837351",
+  "claimSlug": "\"modelo-los-salarios-son-insuficientes-en-muchos-sectores-lo-que-hace-que-sea-dificil-en\"",
+  "text": "Los salarios son insuficientes en muchos sectores, lo que hace que sea difícil enderezar la situación económica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31040892fa1f"
+  ]
+}

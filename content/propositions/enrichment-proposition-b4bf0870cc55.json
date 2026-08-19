@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4bf0870cc55",
+  "claimSlug": "\"modelo-las-viviendas-digitales-en-espana-carecen-de-suficientes-espacios-para-almacenar\"",
+  "text": "Las viviendas digitales en España carecen de suficientes espacios para almacenar equipos y dispositivos de última generación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-645a513cf7ad"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf1fba63424f",
+  "claimSlug": "\"modelo-la-despoblacion-de-zonas-rurales-en-el-interior-de-espana-es-un-problema-cronico\"",
+  "text": "La despoblación de zonas rurales en el interior de España es un problema crónico que afecta a la supervivencia de muchos pueblos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-917fd86f08b1"
+  ]
+}

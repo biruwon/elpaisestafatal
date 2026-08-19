@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8b45e09675f",
+  "claimSlug": "\"modelo-por-que-el-impuesto-de-matriculacion-sube-cada-ano-y-no-se-ve-en-la-mejora-de-la\"",
+  "text": "¿Por qué el impuesto de matriculación sube cada año y no se ve en la mejora de las carreteras?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1fc48104714d"
+  ]
+}

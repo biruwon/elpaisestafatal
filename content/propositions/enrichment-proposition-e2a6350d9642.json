@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e2a6350d9642",
+  "claimSlug": "\"modelo-el-sistema-educativo-en-zonas-aisladas-de-espana-tiene-menos-recursos-que-en-las\"",
+  "text": "El sistema educativo en zonas aisladas de España tiene menos recursos que en las áreas urbanas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-917dd3ddc585"
+  ]
+}

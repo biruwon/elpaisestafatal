@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06c2e830606f",
+  "claimSlug": "\"modelo-los-servicios-de-comedor-escolar-estan-siendo-subestimados-dejando-a-muchos-nino\"",
+  "text": "Los servicios de comedor escolar están siendo subestimados, dejando a muchos niños sin comidas saludables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c81b2f8f9ede"
+  ]
+}

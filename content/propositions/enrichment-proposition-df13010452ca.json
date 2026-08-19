@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df13010452ca",
+  "claimSlug": "\"modelo-las-politicas-de-vivienda-social-en-espana-son-insuficientes-para-la-gran-demand\"",
+  "text": "Las políticas de vivienda social en España son insuficientes para la gran demanda, dejando a muchas personas sin casa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-70f53cd3ab22"
+  ]
+}

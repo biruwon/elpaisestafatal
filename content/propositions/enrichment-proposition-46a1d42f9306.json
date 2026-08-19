@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-46a1d42f9306",
+  "claimSlug": "\"modelo-los-incendios-forestales-son-un-problema-cronico-que-el-gobierno-ignora\"",
+  "text": "Los incendios forestales son un problema crónico que el gobierno ignora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-840edaf5ba60"
+  ]
+}

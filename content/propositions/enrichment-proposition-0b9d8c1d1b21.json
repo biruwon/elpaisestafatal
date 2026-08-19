@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0b9d8c1d1b21",
+  "claimSlug": "\"modelo-el-servicio-de-urgencias-esta-saturado-con-pacientes-que-podrian-esperar-en-cons\"",
+  "text": "El servicio de urgencias está saturado con pacientes que podrían esperar en consultas generales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d2275f66cf5b"
+  ]
+}

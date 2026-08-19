@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a857fe17de46",
+  "claimSlug": "\"modelo-la-ciudad-de-ceuta-es-la-unica-ciudad-espanola-que-no-pertenece-a-la-comunidad-a\"",
+  "text": "La Ciudad de Ceuta es la única ciudad española que no pertenece a la Comunidad Autónoma de Andalucía.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-42ffc3ba4819"
+  ]
+}

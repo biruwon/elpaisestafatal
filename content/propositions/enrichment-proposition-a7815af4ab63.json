@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a7815af4ab63",
+  "claimSlug": "\"modelo-por-que-las-comunidades-del-norte-son-mas-pobres-que-las-del-sur\"",
+  "text": "¿Por qué las comunidades del norte son más pobres que las del sur?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-09649a3613d3"
+  ]
+}

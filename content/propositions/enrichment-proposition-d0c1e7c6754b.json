@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0c1e7c6754b",
+  "claimSlug": "\"modelo-los-jueces-de-instruccion-parecen-mas-interesados-en-su-propio-comfort-que-en-re\"",
+  "text": "Los jueces de instrucción parecen más interesados en su propio comfort que en resolver delitos, parece que están en un spa.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-90241765e531"
+  ]
+}

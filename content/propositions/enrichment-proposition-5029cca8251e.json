@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5029cca8251e",
+  "claimSlug": "\"modelo-por-que-en-algunas-ciudades-el-alquiler-sube-mas-rapido-que-el-salario-dejando-a\"",
+  "text": "¿Por qué en algunas ciudades el alquiler sube más rápido que el salario, dejando a las personas en la calle?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c76a019ebb9"
+  ]
+}

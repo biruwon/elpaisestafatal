@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-192c9afc768c",
+  "claimSlug": "\"modelo-el-acceso-al-seguro-de-desempleo-en-espana-es-complicado\"",
+  "text": "El acceso al seguro de desempleo en España es complicado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7b58e35be2a9"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a19d1b577f4",
+  "claimSlug": "\"modelo-la-region-de-castilla-y-leon-tiene-un-sistema-educativo-que-se-ha-quedado-estanc\"",
+  "text": "La región de Castilla y León tiene un sistema educativo que se ha quedado estancado y que no ofrece suficientes oportunidades a sus jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5ec2f74154d6"
+  ]
+}

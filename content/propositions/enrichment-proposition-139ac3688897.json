@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-139ac3688897",
+  "claimSlug": "\"modelo-el-proceso-de-justicia-en-espana-es-demasiado-lento-especialmente-en-casos-de-de\"",
+  "text": "El proceso de justicia en España es demasiado lento, especialmente en casos de delitos de odio donde la victimología lleva años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67320aa8c1d2"
+  ]
+}

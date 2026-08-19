@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e5026b57e90",
+  "claimSlug": "\"modelo-espana-tiene-una-tasa-de-cobertura-de-pensiones-baja-en-comparacion-con-francia\"",
+  "text": "España tiene una tasa de cobertura de pensiones baja en comparación con Francia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-30a837248130"
+  ]
+}

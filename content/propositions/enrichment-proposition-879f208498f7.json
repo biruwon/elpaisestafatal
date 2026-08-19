@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-879f208498f7",
+  "claimSlug": "\"modelo-la-ue-esta-dejando-solo-a-espana-cargar-con-la-presion-de-la-inmigracion-mientra\"",
+  "text": "La UE está dejando solo a España cargar con la presión de la inmigración mientras otros países se quedarían quietos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d0768a20a234"
+  ]
+}

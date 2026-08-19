@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f67c9a59653a",
+  "claimSlug": "\"modelo-se-esta-inmigrando-mas-de-lo-que-podiamos-controlar-y-ahora-hay-un-problema-de-s\"",
+  "text": "Se está inmigrando más de lo que podíamos controlar y ahora hay un problema de seguridad en la calle, con personas indocumentadas por todas partes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-422a9e9c7c58"
+  ]
+}

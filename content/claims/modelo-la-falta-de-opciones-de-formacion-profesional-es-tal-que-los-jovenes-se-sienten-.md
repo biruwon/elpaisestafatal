@@ -4,21 +4,22 @@ claim: "La falta de opciones de formación profesional es tal que los jóvenes s
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["falta de formación profesional","opciones limitadas de formación","falta de orientación vocacional","baja oferta de formación","dificultades para el futuro","La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.","¿Es cierto que La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","¿Qué datos permiten comprobar si La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","Quiero saber si La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.","¿Cómo se puede verificar La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","¿Hay evidencia sobre si La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","¿Es verdad que La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","¿Qué sabemos de La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?","¿Se sostiene la afirmación de que La falta de opciones de formación profesional es tal que los jóvenes se sienten desorientados sobre su futuro.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-26576dd2b826"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de opciones de formacion profesional es tal que los jovenes se sienten desorientados sobre su futuro"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-df03de0ebfd0"]
 ---
 
 ## Qué es cierto

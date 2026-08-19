@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f841dd552c5",
+  "claimSlug": "\"modelo-el-desempleo-juvenil-sigue-siendo-un-gran-problema-en-espana\"",
+  "text": "El desempleo juvenil sigue siendo un gran problema en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ce1ba75e03f3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-da84a34e9b10",
+  "claimSlug": "\"modelo-la-agricultura-en-extremadura-esta-sufriendo-por-la-falta-de-agua\"",
+  "text": "La agricultura en Extremadura está sufriendo por la falta de agua.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ebb0e0100b43"
+  ]
+}

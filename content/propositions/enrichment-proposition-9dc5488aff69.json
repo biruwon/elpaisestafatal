@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9dc5488aff69",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-la-economia-se-hunda-y-a-los-espanoles-nos-cueste\"",
+  "text": "La inflación está haciendo que la economía se hunda y a los españoles nos cueste más pagar las facturas",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ad15b441d08"
+  ]
+}

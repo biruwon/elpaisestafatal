@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bbcbbb685c33",
+  "claimSlug": "\"modelo-los-peajes-en-carreteras-de-pago-son-excesivamente-altos-a-veces-superando-el-co\"",
+  "text": "Los peajes en carreteras de pago son excesivamente altos, a veces superando el coste de combustible en el mismo trayecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3cd5486b3e0b"
+  ]
+}

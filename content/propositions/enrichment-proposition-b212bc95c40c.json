@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b212bc95c40c",
+  "claimSlug": "\"modelo-se-gastan-millones-en-publicidad-y-luego-se-contratan-a-empresas-que-no-han-part\"",
+  "text": "Se gastan millones en publicidad y luego se contratan a empresas que no han participado en el proceso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b1495e69051d"
+  ]
+}

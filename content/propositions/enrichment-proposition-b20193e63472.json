@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b20193e63472",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-a-la-industria-textil-en-cataluna-esta-dejando-a-muchas-empres\"",
+  "text": "La falta de apoyo a la industria textil en Cataluña está dejando a muchas empresas en peligro de quiebra.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ccca5eaf731"
+  ]
+}

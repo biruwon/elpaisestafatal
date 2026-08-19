@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-567e04ead55c",
+  "claimSlug": "\"modelo-los-politicos-espanoles-son-impunes-ante-la-corrupcion-y-no-se-les-sanciona-nunc\"",
+  "text": "Los políticos españoles son impunes ante la corrupción y no se les sanciona nunca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2a7f1b4d85ad"
+  ]
+}

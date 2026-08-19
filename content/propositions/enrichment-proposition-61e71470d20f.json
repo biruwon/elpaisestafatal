@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61e71470d20f",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-de-las-carreteras-rurales-dificulta-la-llegada-de-turi\"",
+  "text": "La falta de mantenimiento de las carreteras rurales dificulta la llegada de turistas a las zonas menos turísticas de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7be6dfcb4f89"
+  ]
+}

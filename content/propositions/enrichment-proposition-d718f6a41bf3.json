@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d718f6a41bf3",
+  "claimSlug": "\"modelo-por-que-la-inmigracion-no-se-distribuye-mejor-entre-las-ciudades-de-espana\"",
+  "text": "¿Por qué la inmigración no se distribuye mejor entre las ciudades de España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e544304a3150"
+  ]
+}

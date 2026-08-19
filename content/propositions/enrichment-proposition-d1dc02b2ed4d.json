@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1dc02b2ed4d",
+  "claimSlug": "\"modelo-se-ha-llegado-a-un-punto-en-que-incluso-los-pacientes-con-problemas-graves-de-sa\"",
+  "text": "Se ha llegado a un punto en que incluso los pacientes con problemas graves de salud tienen que esperar para ser atendidos por especialistas",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd6f2e77f838"
+  ]
+}

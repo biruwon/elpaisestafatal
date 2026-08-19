@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8a7dcbdbd5da",
+  "claimSlug": "\"modelo-las-pensiones-se-estan-cayendo-por-la-inflacion-y-no-alcanzan-para-cubrir-las-ne\"",
+  "text": "Las pensiones se están cayendo por la inflación y no alcanzan para cubrir las necesidades básicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f93d388c3bd"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eadb2cf3e04f",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-de-formacion-impide-mejorar-las-condiciones-laborales\"",
+  "text": "La falta de oportunidades de formación impide mejorar las condiciones laborales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4840a37cd94e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74f88cab8fec",
+  "claimSlug": "\"modelo-la-ue-esta-dejando-a-espana-a-la-deriva-en-cuestion-de-ayudas-economicas-para-la\"",
+  "text": "La UE está dejando a España a la deriva en cuestión de ayudas económicas para la reconstrucción tras el temporal de diciembre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e31394d3bfd"
+  ]
+}

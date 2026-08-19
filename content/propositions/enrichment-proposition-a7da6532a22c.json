@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a7da6532a22c",
+  "claimSlug": "\"modelo-el-sistema-de-ayudas-para-combatir-la-inflacion-es-ineficiente-y-no-llega-a-quie\"",
+  "text": "El sistema de ayudas para combatir la inflación es ineficiente y no llega a quien más lo necesita.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f00a7c993ff5"
+  ]
+}

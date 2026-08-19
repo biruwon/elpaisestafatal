@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-864a418587f5",
+  "claimSlug": "\"modelo-por-que-el-wifi-en-los-edificios-modernos-es-tan-inestable-y-lento-en-espana\"",
+  "text": "¿Por qué el WiFi en los edificios modernos es tan inestable y lento en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5275c65c513f"
+  ]
+}

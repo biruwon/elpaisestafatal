@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-00d8dc23d736",
+  "claimSlug": "\"modelo-en-madrid-los-alquileres-en-el-distrito-de-retiro-son-mas-caros-que-en-el-distri\"",
+  "text": "En Madrid, los alquileres en el distrito de Retiro son más caros que en el distrito de Usera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e03d53d8c0e4"
+  ]
+}

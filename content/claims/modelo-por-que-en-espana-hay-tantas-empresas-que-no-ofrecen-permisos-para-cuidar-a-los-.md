@@ -4,21 +4,22 @@ claim: "¿Por qué en España hay tantas empresas que no ofrecen permisos para c
 assessment: uncertain
 topicSlugs: ["derechos laborales y conciliación"]
 aliases: ["¿Por qué las empresas no respetan la ley?","¿Cuándo van a implementar mejoras en la legislación?","¿Por qué sigue habiendo falta de ayudas para cuidar a los mayores?","¿Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley","¿Es cierto que Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","¿Qué datos permiten comprobar si Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","Quiero saber si Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley","¿Cómo se puede verificar Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","¿Hay evidencia sobre si Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","¿Es verdad que Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","¿Qué sabemos de Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?","¿Se sostiene la afirmación de que Por qué en España hay tantas empresas que no ofrecen permisos para cuidar a los mayores, a pesar de la ley?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-453221e7c22d"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana hay tantas empresas que no ofrecen permisos para cuidar a los mayores a pesar de la ley"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-649fdf5a646f"]
 ---
 
 ## Qué es cierto

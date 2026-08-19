@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b6c55849aec",
+  "claimSlug": "\"modelo-los-aeropuertos-de-espana-no-sufren-sobrecarga-de-trafico-durante-los-fines-de-s\"",
+  "text": "Los aeropuertos de España no sufren sobrecarga de tráfico durante los fines de semana.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-87bfc0dfaff1"
+  ]
+}

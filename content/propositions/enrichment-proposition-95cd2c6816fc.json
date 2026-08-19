@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-95cd2c6816fc",
+  "claimSlug": "\"modelo-las-delincuentes-estan-a-todas-horas-en-las-calles-de-madrid-y-eso-me-preocupa-m\"",
+  "text": "Las delincuentes están a todas horas en las calles de Madrid, y eso me preocupa mucho.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23ddfa05ab4d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-66f0e54d7510",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-energia-en-espana-son-entre-los-mas-altos-de-europa\"",
+  "text": "Los impuestos sobre la energía en España son entre los más altos de Europa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a26886712cba"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b11f7292d34e",
+  "claimSlug": "\"modelo-el-coste-de-la-energia-solar-esta-muy-por-encima-del-necesario-lo-que-impide-que\"",
+  "text": "El coste de la energía solar está muy por encima del necesario, lo que impide que más hogares se sumen a esta opción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8c76a2bc3c4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8f2e4e268ba",
+  "claimSlug": "\"modelo-el-gasto-en-publicidad-turistica-parece-mas-que-el-gasto-en-seguridad-ciudadana\"",
+  "text": "El gasto en publicidad turística parece más que el gasto en seguridad ciudadana.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3efc409b4f7"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ad95030f6ee",
+  "claimSlug": "\"modelo-los-precios-de-las-frutas-y-verduras-en-las-ciudades-espanolas-suben-constanteme\"",
+  "text": "Los precios de las frutas y verduras en las ciudades españolas suben constantemente, ¿qué está pasando?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-04951e8df0bb"
+  ]
+}

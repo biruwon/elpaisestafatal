@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e945d3b2a076",
+  "claimSlug": "\"modelo-es-cada-vez-mas-comun-que-la-gente-tenga-que-esperar-meses-para-ser-atendida-por\"",
+  "text": "Es cada vez más común que la gente tenga que esperar meses para ser atendida por un especialista, incluso con urgencias",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-40c61c42a84f"
+  ]
+}

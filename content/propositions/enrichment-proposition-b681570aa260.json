@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b681570aa260",
+  "claimSlug": "\"modelo-el-precio-de-la-electricidad-afecta-negativamente-a-la-economia-domestica\"",
+  "text": "El precio de la electricidad afecta negativamente a la economía doméstica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5f3de8f3c5dd"
+  ]
+}

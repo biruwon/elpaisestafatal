@@ -4,21 +4,22 @@ claim: "¿Por qué en España las listas de espera para cirugías se alargan tan
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["¿Por qué en España se demoran tanto las cirugías?","¿Por qué en España las cirugías se retrasan tanto?","¿Por qué en España las listas de espera son tan largas para cirugías?","¿Por qué en España se alargan tanto las listas de espera para cirugías?","¿Por qué en España las cirugías se programan tan tarde?","¿Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo","¿Es cierto que Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","¿Qué datos permiten comprobar si Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","Quiero saber si Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo","¿Cómo se puede verificar Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","¿Hay evidencia sobre si Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","¿Es verdad que Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","¿Qué sabemos de Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?","¿Se sostiene la afirmación de que Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-7eebf46d9e2d"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana las listas de espera para cirugias se alargan tanto y se demoran tanto tiempo"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-bde7a2184774"]
 ---
 
 ## Qué es cierto

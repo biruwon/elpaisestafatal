@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e69a7f2c86c",
+  "claimSlug": "\"modelo-el-precio-del-alquiler-sube-como-la-leche-y-siempre-a-costillas-de-un-cambio-de-\"",
+  "text": "¡El precio del alquiler sube como la leche, y siempre a costillas de un cambio de gobierno!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3decc13141b8"
+  ]
+}

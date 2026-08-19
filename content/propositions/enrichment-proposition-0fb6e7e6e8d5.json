@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0fb6e7e6e8d5",
+  "claimSlug": "\"modelo-las-fresas-de-la-mancha-se-ven-eclipsadas-por-las-importadas-de-chile\"",
+  "text": "Las fresas de La Mancha se ven eclipsadas por las importadas de Chile.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-87bda744aace"
+  ]
+}

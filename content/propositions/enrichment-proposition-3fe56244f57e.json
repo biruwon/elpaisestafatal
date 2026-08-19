@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fe56244f57e",
+  "claimSlug": "\"modelo-la-crisis-energetica-esta-haciendo-que-nuestras-facturas-de-luz-y-gas-se-dupliqu\"",
+  "text": "La crisis energética está haciendo que nuestras facturas de luz y gas se dupliquen y nos estén ahogando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-069191618ef6"
+  ]
+}

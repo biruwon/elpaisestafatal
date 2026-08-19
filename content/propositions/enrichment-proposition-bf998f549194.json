@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf998f549194",
+  "claimSlug": "\"modelo-los-juicios-en-espana-se-alargan-tanto-que-la-gente-ya-no-confia-en-el-sistema-j\"",
+  "text": "Los juicios en España se alargan tanto que la gente ya no confía en el sistema judicial.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c04758d74451"
+  ]
+}

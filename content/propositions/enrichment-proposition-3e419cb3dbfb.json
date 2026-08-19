@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e419cb3dbfb",
+  "claimSlug": "\"modelo-la-falta-de-modernizacion-en-los-sistemas-de-riego-agricola-es-un-lastre-para-la\"",
+  "text": "La falta de modernización en los sistemas de riego agrícola es un lastre para la producción agrícola en España.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-1c2bf4d87712"
+  ]
+}

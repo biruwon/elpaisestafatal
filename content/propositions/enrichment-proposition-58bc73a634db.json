@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-58bc73a634db",
+  "claimSlug": "\"modelo-las-agresiones-callejeras-son-comunes-en-las-noches-de-las-calles-de-valencia\"",
+  "text": "Las agresiones callejeras son comunes en las noches de las calles de Valencia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4309893186c4"
+  ]
+}

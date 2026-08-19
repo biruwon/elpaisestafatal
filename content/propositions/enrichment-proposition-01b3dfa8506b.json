@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-01b3dfa8506b",
+  "claimSlug": "\"modelo-es-comun-encontrarse-con-robos-a-mano-armada-en-las-ciudades-costeras-de-espana\"",
+  "text": "¿Es común encontrarse con robos a mano armada en las ciudades costeras de España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c31fc9fb6e74"
+  ]
+}

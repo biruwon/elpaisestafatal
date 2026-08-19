@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-04821c169a7b",
+  "claimSlug": "\"modelo-las-listas-de-espera-para-tratamientos-oncologicos-son-inaceptablesmente-largas\"",
+  "text": "Las listas de espera para tratamientos oncológicos son inaceptablesmente largas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-30c5a483fa81"
+  ]
+}

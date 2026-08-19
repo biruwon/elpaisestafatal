@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-910f19df3c35",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-demografia-de-las-ciudades-lo-que-algunos-ven-c\"",
+  "text": "La inmigración está cambiando la demografía de las ciudades, lo que algunos ven como negativo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7b74c7c7b29"
+  ]
+}

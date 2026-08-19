@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e278f6741636",
+  "claimSlug": "\"modelo-se-esta-permitiendo-la-inmigracion-en-zonas-de-alto-riesgo-para-la-seguridad\"",
+  "text": "Se está permitiendo la inmigración en zonas de alto riesgo para la seguridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-28b9965c55b0"
+  ]
+}

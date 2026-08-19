@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-60eb6f5b41b5",
+  "claimSlug": "\"modelo-la-atencion-a-los-estudiantes-en-las-universidades-es-deficiente\"",
+  "text": "La atención a los estudiantes en las universidades es deficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9bd496899d42"
+  ]
+}

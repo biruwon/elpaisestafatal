@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c9970898656b",
+  "claimSlug": "\"modelo-el-gobierno-no-esta-haciendo-nada-por-reducir-la-inflacion-estamos-pagando-mas-p\"",
+  "text": "El gobierno no está haciendo nada por reducir la inflación, estamos pagando más por menos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0a1affe24ec"
+  ]
+}

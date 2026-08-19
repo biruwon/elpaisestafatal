@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dfb0bc0ff030",
+  "claimSlug": "\"modelo-por-que-el-proceso-de-justicia-en-espana-es-tan-lento-y-frustrante-con-largas-es\"",
+  "text": "¿Por qué el proceso de justicia en España es tan lento y frustrante, con largas esperas en los juzgados?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e8047cc8c44b"
+  ]
+}

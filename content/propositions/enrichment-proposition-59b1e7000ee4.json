@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59b1e7000ee4",
+  "claimSlug": "\"modelo-la-senalizacion-de-los-itinerarios-en-la-red-ferroviaria-es-confusa\"",
+  "text": "La señalización de los itinerarios en la red ferroviaria es confusa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d52fff2486f8"
+  ]
+}

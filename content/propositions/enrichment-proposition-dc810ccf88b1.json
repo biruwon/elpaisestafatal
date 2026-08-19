@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc810ccf88b1",
+  "claimSlug": "\"modelo-por-que-algunas-regiones-tienen-mas-ayudas-para-promover-el-vino-que-otras\"",
+  "text": "¿Por qué algunas regiones tienen más ayudas para promover el vino que otras?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dc3275131266"
+  ]
+}

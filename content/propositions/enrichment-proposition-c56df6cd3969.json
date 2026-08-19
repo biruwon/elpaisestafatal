@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c56df6cd3969",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-esta-tan-endeudado-que-si-algo-sale-mal-te-caes-\"",
+  "text": "El sistema de protección social está tan endeudado que si algo sale mal, te caes y rompes un hueso y te dan la tarjeta sanitaria para que te cure un vecino.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d39fd18536b"
+  ]
+}

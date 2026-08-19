@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa2d2b08daba",
+  "claimSlug": "\"modelo-el-ministerio-publico-parece-mas-preocupa-en-protegerse-que-en-ayudar-a-la-justi\"",
+  "text": "El Ministerio Público parece más preocupa en protegerse que en ayudar a la justicia con su papel de fiscal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8ef49fe702ee"
+  ]
+}

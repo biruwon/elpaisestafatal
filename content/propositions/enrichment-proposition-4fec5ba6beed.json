@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4fec5ba6beed",
+  "claimSlug": "\"modelo-la-justicia-penal-esta-demasiado-centrada-en-la-detencion-y-castigo-sin-consider\"",
+  "text": "La justicia penal está demasiado centrada en la detención y castigo, sin considerar las circunstancias de los acusados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8735c1dd214b"
+  ]
+}

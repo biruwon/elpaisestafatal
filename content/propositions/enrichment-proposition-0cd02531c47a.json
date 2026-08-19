@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0cd02531c47a",
+  "claimSlug": "\"modelo-las-ayudas-para-la-movilidad-de-los-estudiantes-son-insuficientes\"",
+  "text": "Las ayudas para la movilidad de los estudiantes son insuficientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1f912b2284ff"
+  ]
+}

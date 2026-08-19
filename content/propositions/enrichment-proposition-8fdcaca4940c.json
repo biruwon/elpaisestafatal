@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8fdcaca4940c",
+  "claimSlug": "\"modelo-los-precios-de-los-productos-agricolas-en-espana-son-demasiado-altos-para-los-co\"",
+  "text": "Los precios de los productos agrícolas en España son demasiado altos para los consumidores locales, ¿está relacionado con la subvención del sector agrícola?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10180078d230"
+  ]
+}

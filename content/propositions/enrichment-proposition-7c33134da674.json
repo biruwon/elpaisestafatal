@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c33134da674",
+  "claimSlug": "\"modelo-las-autopistas-en-espana-son-muy-caras-con-peajes-excesivos-y-frecuentes-aumento\"",
+  "text": "Las autopistas en España son muy caras, con peajes excesivos y frecuentes aumentos sin justificación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-450cf109c845"
+  ]
+}

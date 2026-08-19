@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f1507da85a3",
+  "claimSlug": "\"modelo-la-precariedad-laboral-esta-al-alza-en-los-ultimos-anos\"",
+  "text": "La precariedad laboral está al alza en los últimos años",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7288d00ff9c5"
+  ]
+}

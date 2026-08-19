@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb1b8e2cbf6f",
+  "claimSlug": "\"modelo-por-que-el-desempleo-entre-las-personas-con-discapacidad-es-tan-alto\"",
+  "text": "¿Por qué el desempleo entre las personas con discapacidad es tan alto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-11958ad56d43"
+  ]
+}

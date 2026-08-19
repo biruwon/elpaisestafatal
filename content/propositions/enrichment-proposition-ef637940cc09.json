@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef637940cc09",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-psicologico-en-las-universidades-hace-que-los-estudiantes-sufr\"",
+  "text": "La falta de apoyo psicológico en las universidades hace que los estudiantes sufran mucho con el estrés.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a4bedb49b95"
+  ]
+}

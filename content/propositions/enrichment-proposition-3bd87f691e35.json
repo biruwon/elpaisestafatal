@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3bd87f691e35",
+  "claimSlug": "\"modelo-por-que-en-muchos-edificios-de-viviendas-en-espana-no-se-instalan-sistemas-de-re\"",
+  "text": "¿Por qué en muchos edificios de viviendas en España no se instalan sistemas de reciclaje de aguas residuales para uso en jardines o inodoros?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-286428f0ab02"
+  ]
+}

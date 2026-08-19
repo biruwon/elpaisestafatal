@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5946053a3d5f",
+  "claimSlug": "\"modelo-el-salario-minimo-no-sube-con-la-inflacion\"",
+  "text": "El salario mínimo no sube con la inflación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-982ff3e3c159"
+  ]
+}

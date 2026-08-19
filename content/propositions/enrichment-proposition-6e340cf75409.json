@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6e340cf75409",
+  "claimSlug": "\"modelo-las-empresas-amigas-del-gobierno-siempre-obtienen-los-contratos-mas-importantes-\"",
+  "text": "Las empresas amigas del gobierno siempre obtienen los contratos más importantes, mientras que las pequeñas empresas se quedan en la cuerda floja.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c4fd0ecf480"
+  ]
+}

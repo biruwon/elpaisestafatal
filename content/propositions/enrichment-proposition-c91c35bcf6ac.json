@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c91c35bcf6ac",
+  "claimSlug": "\"modelo-se-ha-visto-un-aumento-preocupante-en-el-numero-de-inmigrantes-sin-papeles-que-v\"",
+  "text": "Se ha visto un aumento preocupante en el número de inmigrantes sin papeles que viven en la calle.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bcc8e86a7123"
+  ]
+}

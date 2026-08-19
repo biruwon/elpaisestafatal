@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f15f7c762e4a",
+  "claimSlug": "\"modelo-por-que-los-impuestos-a-las-pymes-siguen-subiendo-mientras-los-gastos-de-la-admi\"",
+  "text": "¿Por qué los impuestos a las pymes siguen subiendo mientras los gastos de la administración aumentan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab8022caa1ad"
+  ]
+}

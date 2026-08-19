@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ba029d27c037",
+  "claimSlug": "\"modelo-los-altos-costes-de-vida-hacen-que-los-salarios-no-alcancen-y-la-gente-se-siente\"",
+  "text": "Los altos costes de vida hacen que los salarios no alcancen y la gente se siente engañada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c70424ba85f6"
+  ]
+}

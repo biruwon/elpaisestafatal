@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-49e4393395e5",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-los-precios-de-los-productos-de-primera-necesidad\"",
+  "text": "La inflación está haciendo que los precios de los productos de primera necesidad suban más de lo que esperábamos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-32c32be01abb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-90270f1608b1",
+  "claimSlug": "\"modelo-los-robos-en-tiendas-siguen-siendo-frecuentes-en-la-zona-sur-de-sevilla\"",
+  "text": "Los robos en tiendas siguen siendo frecuentes en la zona sur de Sevilla.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c4bd8cb069e2"
+  ]
+}

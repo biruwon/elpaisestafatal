@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59e5877b92ca",
+  "claimSlug": "\"modelo-la-desigualdad-salarial-en-espana-es-inaceptable-con-trabajadores-de-la-hosteler\"",
+  "text": "La desigualdad salarial en España es inaceptable, con trabajadores de la hostelería ganando menos que un panadero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f29bcb1e65a"
+  ]
+}

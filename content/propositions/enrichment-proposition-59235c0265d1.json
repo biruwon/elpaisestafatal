@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59235c0265d1",
+  "claimSlug": "\"modelo-espana-ha-renunciado-a-la-participacion-en-la-moneda-unica\"",
+  "text": "España ha renunciado a la participación en la moneda única.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-02dbbaa603b0"
+  ]
+}

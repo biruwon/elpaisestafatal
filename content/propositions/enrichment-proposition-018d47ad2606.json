@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-018d47ad2606",
+  "claimSlug": "\"modelo-la-subida-de-precios-de-la-vivienda-en-espana-es-inalcanzable-para-muchos-trabaj\"",
+  "text": "La subida de precios de la vivienda en España es inalcanzable para muchos trabajadores de bajo ingreso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2eb9a25da31c"
+  ]
+}

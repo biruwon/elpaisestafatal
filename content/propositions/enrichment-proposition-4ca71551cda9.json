@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ca71551cda9",
+  "claimSlug": "\"modelo-la-ue-no-hace-lo-suficiente-por-la-proteccion-del-medio-ambiente-en-espana\"",
+  "text": "La UE no hace lo suficiente por la protección del medio ambiente en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8d36ff59663a"
+  ]
+}

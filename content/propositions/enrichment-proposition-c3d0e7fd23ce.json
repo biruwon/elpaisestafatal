@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3d0e7fd23ce",
+  "claimSlug": "\"modelo-los-delincuentes-se-sienten-seguros-en-las-zonas-residenciales-de-sevilla-sin-vi\"",
+  "text": "Los delincuentes se sienten seguros en las zonas residenciales de Sevilla sin vigilancia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eeffc471fd5b"
+  ]
+}

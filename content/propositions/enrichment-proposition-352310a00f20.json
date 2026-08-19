@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-352310a00f20",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-el-trafico-de-drogas-y-la-delincuencia-en-las-ciudad\"",
+  "text": "La inmigración ha aumentado el tráfico de drogas y la delincuencia en las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e59b7e271c5e"
+  ]
+}

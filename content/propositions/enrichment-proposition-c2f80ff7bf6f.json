@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c2f80ff7bf6f",
+  "claimSlug": "\"modelo-la-falta-de-financiacion-para-los-deportes-en-las-escuelas-esta-dejando-a-muchos\"",
+  "text": "La falta de financiación para los deportes en las escuelas está dejando a muchos estudiantes sin la posibilidad de practicar sus deportes favoritos.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-80cb3cfa0af7"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-47f22b6539ff",
+  "claimSlug": "\"modelo-la-energia-solar-en-espana-es-cara-y-no-compensa\"",
+  "text": "La energía solar en España es cara y no compensa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bde866100791"
+  ]
+}

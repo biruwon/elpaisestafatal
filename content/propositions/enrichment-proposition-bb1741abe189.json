@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb1741abe189",
+  "claimSlug": "\"modelo-los-colegios-publicos-estan-muy-sobrecargados-y-mal-equipados\"",
+  "text": "Los colegios públicos están muy sobrecargados y mal equipados",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f62f3b2a4e3b"
+  ]
+}

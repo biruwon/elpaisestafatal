@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7393fed87081",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-estan-permitiendo-que-se-construyan-mezquitas-en-la\"",
+  "text": "Las políticas de inmigración están permitiendo que se construyan mezquitas en las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f9807a583005"
+  ]
+}

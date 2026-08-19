@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8cd2e6f72c4c",
+  "claimSlug": "\"modelo-las-escuelas-de-idiomas-son-caras-y-no-siempre-valen-la-pena\"",
+  "text": "Las escuelas de idiomas son caras y no siempre valen la pena.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d75b976d9aa5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59a915a03f71",
+  "claimSlug": "\"modelo-el-paro-de-larga-duracion-es-un-problema-critico-en-espana\"",
+  "text": "El paro de larga duración es un problema crítico en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-41c691b1e51b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f8d736a4a578",
+  "claimSlug": "\"modelo-los-inmigrantes-no-respetan-las-normas-de-higiene-y-orden-publico\"",
+  "text": "Los inmigrantes no respetan las normas de higiene y orden público.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a6145dd93aa8"
+  ]
+}

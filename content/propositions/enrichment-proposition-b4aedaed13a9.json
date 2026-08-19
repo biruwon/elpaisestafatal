@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b4aedaed13a9",
+  "claimSlug": "\"modelo-la-presencia-de-pandillas-juveniles-en-las-ciudades-es-insoportable\"",
+  "text": "La presencia de pandillas juveniles en las ciudades es insoportable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d1a0ee05de2"
+  ]
+}

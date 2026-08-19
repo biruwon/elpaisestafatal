@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b5f266848c4",
+  "claimSlug": "\"modelo-espana-esta-perdiendo-su-autonomia-demografica-y-se-ve-sometida-a-la-inmigracion\"",
+  "text": "España está perdiendo su autonomía demográfica y se ve sometida a la inmigración.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b6cca542f6d6"
+  ]
+}

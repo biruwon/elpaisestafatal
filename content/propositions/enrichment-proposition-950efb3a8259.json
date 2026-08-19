@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-950efb3a8259",
+  "claimSlug": "\"modelo-las-infraestructuras-ferroviarias-son-obsoletas-y-estan-retrasando-la-economia-r\"",
+  "text": "Las infraestructuras ferroviarias son obsoletas y están retrasando la economía regional.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b27b14eb88ee"
+  ]
+}

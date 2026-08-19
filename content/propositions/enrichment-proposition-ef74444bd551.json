@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef74444bd551",
+  "claimSlug": "\"modelo-la-ue-no-ha-tomado-medidas-para-mejorar-la-calidad-del-agua-en-espana\"",
+  "text": "La UE no ha tomado medidas para mejorar la calidad del agua en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3fdba0b8cd61"
+  ]
+}

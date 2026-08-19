@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-09123be39424",
+  "claimSlug": "\"modelo-los-autobuses-interurbanos-entre-cataluna-y-andalucia-son-inseguros-con-frecuent\"",
+  "text": "Los autobuses interurbanos entre Cataluña y Andalucía son inseguros, con frecuentes retrasos y cancelaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-96773bbc1284"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae031b3f8cfc",
+  "claimSlug": "\"modelo-los-agricultores-andaluces-lamentan-la-falta-de-apoyo-estatal-en-el-cultivo-de-p\"",
+  "text": "Los agricultores andaluces lamentan la falta de apoyo estatal en el cultivo de productos orgánicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-623f485f5b61"
+  ]
+}

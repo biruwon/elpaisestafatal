@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-75b9b116c676",
+  "claimSlug": "\"modelo-los-trenes-a-veces-llegan-retrasados-y-el-servicio-es-inestable-por-que-no-se-op\"",
+  "text": "Los trenes a veces llegan retrasados y el servicio es inestable, ¿por qué no se optimizan mejor las rutas ferroviarias?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e67f143f6f1a"
+  ]
+}

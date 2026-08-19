@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a74acd11c39c",
+  "claimSlug": "\"modelo-las-tardanzas-en-el-ave-son-insoportables-especialmente-en-las-lineas-de-madrid-\"",
+  "text": "Las tardanzas en el AVE son insoportables, especialmente en las líneas de Madrid a Barcelona y Sevilla.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3a797555a1e7"
+  ]
+}

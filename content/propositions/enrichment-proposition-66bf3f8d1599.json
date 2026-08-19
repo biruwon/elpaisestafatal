@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-66bf3f8d1599",
+  "claimSlug": "\"modelo-los-servicios-de-limpieza-y-mantenimiento-en-las-escuelas-son-un-desastre\"",
+  "text": "Los servicios de limpieza y mantenimiento en las escuelas son un desastre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22817d2d2a08"
+  ]
+}

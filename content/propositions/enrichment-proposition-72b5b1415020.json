@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72b5b1415020",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-los-servicios-publicos-y-no-hay-suficiente-dinero-p\"",
+  "text": "La inmigración está llenando los servicios públicos y no hay suficiente dinero para todos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97c3c28fd329"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e582850b3626",
+  "claimSlug": "\"modelo-no-se-puede-vivir-en-espana-con-el-sueldo-que-se-gana-en-el-sector-servicios\"",
+  "text": "¡No se puede vivir en España con el sueldo que se gana en el sector servicios!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3a07852a8077"
+  ]
+}

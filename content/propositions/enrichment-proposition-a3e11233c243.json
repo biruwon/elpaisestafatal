@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a3e11233c243",
+  "claimSlug": "\"modelo-los-precios-de-los-productos-agricolas-en-espana-son-muy-altos-especialmente-en-\"",
+  "text": "Los precios de los productos agrícolas en España son muy altos, especialmente en comparación con otros países de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cc906939fbac"
+  ]
+}

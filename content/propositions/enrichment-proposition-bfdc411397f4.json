@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bfdc411397f4",
+  "claimSlug": "\"modelo-las-prisiones-espanolas-son-tan-malas-que-los-reos-prefieren-ser-liberados-en-li\"",
+  "text": "Las prisiones españolas son tan malas que los reos prefieren ser liberados en libertad condicional antes que pasar por ellas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ed0137dd69d9"
+  ]
+}

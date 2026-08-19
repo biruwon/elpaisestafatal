@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-05bba3951a43",
+  "claimSlug": "\"modelo-el-acceso-a-internet-en-zonas-rurales-es-insuficiente-lo-que-limita-el-acceso-a-\"",
+  "text": "El acceso a internet en zonas rurales es insuficiente, lo que limita el acceso a la educación a distancia y a los recursos digitales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df83c3d5858c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-37f3a456aa5d",
+  "claimSlug": "\"modelo-la-ue-esta-imponiendo-impuestos-desproporcionados-a-espana\"",
+  "text": "La UE está imponiendo impuestos desproporcionados a España",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-19f0765bc2a0"
+  ]
+}

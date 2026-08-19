@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0b6bab27e791",
+  "claimSlug": "\"modelo-las-politicas-agricolas-del-gobierno-no-favorecen-a-los-pequenos-productores-sin\"",
+  "text": "Las políticas agrícolas del gobierno no favorecen a los pequeños productores, sino que se centran en grandes empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f59e9cbd1915"
+  ]
+}

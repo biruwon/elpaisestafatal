@@ -4,21 +4,22 @@ claim: "La falta de protección social en España afecta directamente a las pers
 assessment: uncertain
 topicSlugs: ["pobreza y desigualdad"]
 aliases: ["la falta de protección social es un problema","las personas más vulnerables no tienen protección","la falta de seguridad social es una lacra","la protección social es insuficiente","las personas más vulnerables se ven afectadas","La falta de protección social en España afecta directamente a las personas más vulnerables.","¿Es cierto que La falta de protección social en España afecta directamente a las personas más vulnerables.?","¿Qué datos permiten comprobar si La falta de protección social en España afecta directamente a las personas más vulnerables.?","Quiero saber si La falta de protección social en España afecta directamente a las personas más vulnerables.","¿Cómo se puede verificar La falta de protección social en España afecta directamente a las personas más vulnerables.?","¿Hay evidencia sobre si La falta de protección social en España afecta directamente a las personas más vulnerables.?","¿Es verdad que La falta de protección social en España afecta directamente a las personas más vulnerables.?","¿Qué sabemos de La falta de protección social en España afecta directamente a las personas más vulnerables.?","¿Se sostiene la afirmación de que La falta de protección social en España afecta directamente a las personas más vulnerables.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-ccb27e83a3f4"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de proteccion social en espana afecta directamente a las personas mas vulnerables"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-fa3193f19b1d"]
 ---
 
 ## Qué es cierto

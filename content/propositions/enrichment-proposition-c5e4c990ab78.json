@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5e4c990ab78",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-consumo-de-energia-electrica-en-espana-son-muy-altos-y-no\"",
+  "text": "Los impuestos sobre el consumo de energía eléctrica en España son muy altos y no se ven reducciones en los presupuestos familiares.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-19c5877bd786"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0001aa127ac3",
+  "claimSlug": "\"modelo-el-sistema-de-pensiones-esta-colapsando-y-hay-gente-que-trabaja-toda-la-vida-y-r\"",
+  "text": "El sistema de pensiones está colapsando y hay gente que trabaja toda la vida y recibe menos que su madre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-283765461c4d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32b95f854249",
+  "claimSlug": "\"modelo-los-precios-de-la-electricidad-suben-cada-vez-mas-y-la-gente-se-pregunta-si-real\"",
+  "text": "Los precios de la electricidad suben cada vez más y la gente se pregunta si realmente vale la pena pagar tanto por la luz.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0b952c0ec913"
+  ]
+}

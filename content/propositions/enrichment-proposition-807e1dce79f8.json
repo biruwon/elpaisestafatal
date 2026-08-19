@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-807e1dce79f8",
+  "claimSlug": "\"modelo-tiene-la-agricultura-de-espana-importancia-para-la-economia-del-pais-o-es-secund\"",
+  "text": "¿Tiene la agricultura de España importancia para la economía del país, o es secundaria a otras industrias?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-15f21426084e"
+  ]
+}

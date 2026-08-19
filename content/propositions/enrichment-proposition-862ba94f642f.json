@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-862ba94f642f",
+  "claimSlug": "\"modelo-la-falta-de-limpieza-y-mantenimiento-en-los-acuiferos-esta-perjudicando-la-calid\"",
+  "text": "La falta de limpieza y mantenimiento en los acuíferos está perjudicando la calidad del agua para los agricultores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4d15b2196fa0"
+  ]
+}

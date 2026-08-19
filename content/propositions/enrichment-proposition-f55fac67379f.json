@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f55fac67379f",
+  "claimSlug": "\"modelo-la-policia-no-hace-nada-para-disminuir-el-crimen-en-barrios-desfavorecidos\"",
+  "text": "La policía no hace nada para disminuir el crimen en barrios desfavorecidos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1b64ff346ceb"
+  ]
+}

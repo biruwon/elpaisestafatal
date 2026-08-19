@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e79846ce7271",
+  "claimSlug": "\"modelo-los-robos-en-viviendas-son-comunes-en-las-noches-de-verano-en-barrios-residencia\"",
+  "text": "Los robos en viviendas son comunes en las noches de verano en barrios residenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ffa1c067b20"
+  ]
+}

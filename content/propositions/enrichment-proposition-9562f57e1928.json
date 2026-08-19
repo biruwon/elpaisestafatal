@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9562f57e1928",
+  "claimSlug": "\"modelo-los-recortes-en-las-pensiones-estan-dejando-a-muchos-jubilados-sin-suficiente-di\"",
+  "text": "Los recortes en las pensiones están dejando a muchos jubilados sin suficiente dinero para vivir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bb706a488559"
+  ]
+}

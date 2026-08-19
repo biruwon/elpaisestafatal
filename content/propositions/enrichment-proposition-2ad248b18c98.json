@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ad248b18c98",
+  "claimSlug": "\"modelo-el-paro-juvenil-es-un-desastre-que-arruina-la-vida-de-miles-de-jovenes\"",
+  "text": "El paro juvenil es un desastre que arruina la vida de miles de jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c77505755a5c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e8623b7edc5",
+  "claimSlug": "\"modelo-la-esperanza-de-vida-en-espana-esta-estancada-en-los-hospitales-de-la-periferia\"",
+  "text": "La esperanza de vida en España está estancada en los hospitales de la periferia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85c1e7a045a1"
+  ]
+}

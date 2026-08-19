@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dfbe4c1207e3",
+  "claimSlug": "\"modelo-la-falta-de-actualizacion-de-software-y-sistemas-en-viviendas-digitales-esta-dej\"",
+  "text": "La falta de actualización de software y sistemas en viviendas digitales está dejando a los residentes expuestos a amenazas de seguridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-51682559f321"
+  ]
+}

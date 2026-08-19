@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34010fb759ec",
+  "claimSlug": "\"modelo-el-gasto-en-combustible-para-coches-es-imposible-de-gestionar-con-el-actual-prec\"",
+  "text": "El gasto en combustible para coches es imposible de gestionar con el actual precio del litro de gasolina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b6000f433960"
+  ]
+}

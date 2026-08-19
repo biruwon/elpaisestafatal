@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e81e7959dbf5",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-frenar-la-inflacion-mientras-que-el-paro-sigue-sub\"",
+  "text": "El gobierno no hace nada para frenar la inflación, mientras que el paro sigue subiendo, ¿qué medidas están tomando?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2643a105bcc"
+  ]
+}

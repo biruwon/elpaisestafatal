@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8de4e6a171f1",
+  "claimSlug": "\"modelo-la-reforma-de-las-pensiones-ha-dejado-a-muchos-jubilados-con-un-ingreso-insufici\"",
+  "text": "La reforma de las pensiones ha dejado a muchos jubilados con un ingreso insuficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3a0ae8b1b9b5"
+  ]
+}

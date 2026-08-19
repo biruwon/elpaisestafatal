@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f05de17ee6a",
+  "claimSlug": "\"modelo-en-muchas-zonas-urbanas-el-alquiler-es-prohibitivo-para-los-jovenes-que-empiezan\"",
+  "text": "En muchas zonas urbanas, el alquiler es prohibitivo para los jóvenes que empiezan a trabajar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2cfbdccae7ca"
+  ]
+}

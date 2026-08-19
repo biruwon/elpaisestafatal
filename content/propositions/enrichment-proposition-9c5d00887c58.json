@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c5d00887c58",
+  "claimSlug": "\"modelo-la-subida-de-impuestos-a-la-gasolina-es-un-robo-del-gobierno-los-precios-han-sub\"",
+  "text": "¡La subida de impuestos a la gasolina es un robo del gobierno! Los precios han subido tanto que ni puedo ir al supermercado sin hacer colas para cargar el coche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6c90152fde8"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "Los recortes en la protección social están afectando a los más necesi
 assessment: uncertain
 topicSlugs: ["pensiones y protección social"]
 aliases: ["recortes en protección social","protección social para pobres","asistencia social para los más necesitados","servicios básicos inaccesibles","protección social limitada","Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.","¿Es cierto que Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","¿Qué datos permiten comprobar si Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","Quiero saber si Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.","¿Cómo se puede verificar Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","¿Hay evidencia sobre si Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","¿Es verdad que Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","¿Qué sabemos de Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?","¿Se sostiene la afirmación de que Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-c27d3e90eaed"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los recortes en la proteccion social estan afectando a los mas necesitados que no pueden pagar servicios como la sanidad o la educacion"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-1375edefc43d"]
 ---
 
 ## Qué es cierto

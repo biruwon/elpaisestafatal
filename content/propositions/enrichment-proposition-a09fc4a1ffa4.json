@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a09fc4a1ffa4",
+  "claimSlug": "\"modelo-el-coste-de-la-comida-en-supermercados-espanoles-es-muy-elevado-especialmente-pa\"",
+  "text": "El coste de la comida en supermercados españoles es muy elevado, especialmente para los alimentos frescos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f7ac70e40474"
+  ]
+}

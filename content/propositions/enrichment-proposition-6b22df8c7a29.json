@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b22df8c7a29",
+  "claimSlug": "\"modelo-la-administracion-de-la-rioja-se-preocupa-mas-por-los-intereses-de-los-turistas-\"",
+  "text": "La administración de La Rioja se preocupa más por los intereses de los turistas que por los residentes, generando un sentimiento de abandono y desprecio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2fcd0c6d821"
+  ]
+}

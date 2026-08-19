@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8bdf294aa14",
+  "claimSlug": "\"modelo-la-precariedad-laboral-es-un-problema-que-afecta-a-practicamente-todos-los-joven\"",
+  "text": "La precariedad laboral es un problema que afecta a prácticamente todos los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6b8d5f71963"
+  ]
+}

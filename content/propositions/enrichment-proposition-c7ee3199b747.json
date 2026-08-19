@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c7ee3199b747",
+  "claimSlug": "\"modelo-la-tasa-de-paro-sigue-siendo-alta-y-las-oportunidades-de-empleo-son-escasas\"",
+  "text": "La tasa de paro sigue siendo alta y las oportunidades de empleo son escasas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-20282afa5657"
+  ]
+}

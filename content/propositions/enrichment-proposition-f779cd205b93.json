@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f779cd205b93",
+  "claimSlug": "\"modelo-la-comunidad-valenciana-ha-experimentado-cambios-significativos-en-su-sistema-ed\"",
+  "text": "La Comunidad Valenciana ha experimentado cambios significativos en su sistema educativo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9d2d797cea02"
+  ]
+}

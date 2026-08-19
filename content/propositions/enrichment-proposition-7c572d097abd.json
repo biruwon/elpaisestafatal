@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c572d097abd",
+  "claimSlug": "\"modelo-las-pensiones-se-estan-recortando-tanto-que-parece-que-te-estan-quitando-la-comi\"",
+  "text": "Las pensiones se están recortando tanto que parece que te están quitando la comida de la boca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0114e564fb1"
+  ]
+}

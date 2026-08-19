@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-30e398fca292",
+  "claimSlug": "\"modelo-el-gas-natural-esta-muy-caro-y-a-veces-resulta-dificil-encontrarlo-en-los-superm\"",
+  "text": "El gas natural está muy caro y a veces resulta difícil encontrarlo en los supermercados, lo que hace que las facturas sean altas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cfb7803e454f"
+  ]
+}

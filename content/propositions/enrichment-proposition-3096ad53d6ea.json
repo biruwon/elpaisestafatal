@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3096ad53d6ea",
+  "claimSlug": "\"modelo-la-inmigracion-en-espana-no-se-controla-bien-y-eso-esta-haciendo-que-el-pais-se-\"",
+  "text": "La inmigración en España no se controla bien y eso está haciendo que el país se llene de extraños.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea5400a825ed"
+  ]
+}

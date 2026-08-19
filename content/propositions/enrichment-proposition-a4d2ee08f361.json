@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4d2ee08f361",
+  "claimSlug": "\"modelo-por-que-en-espana-los-gastos-de-comunidad-son-tan-altos-y-a-veces-no-se-explican\"",
+  "text": "¿Por qué en España los gastos de comunidad son tan altos y a veces no se explican?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81c57ad11279"
+  ]
+}

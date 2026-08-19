@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5ee98fb6215",
+  "claimSlug": "\"modelo-en-muchos-destinos-turisticos-los-restaurantes-locales-estan-siendo-reemplazados\"",
+  "text": "En muchos destinos turísticos, los restaurantes locales están siendo reemplazados por cadenas internacionales, perdiendo el auténtico sabor de la cocina española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-839f580c15bf"
+  ]
+}

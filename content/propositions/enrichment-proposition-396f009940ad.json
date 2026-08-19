@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-396f009940ad",
+  "claimSlug": "\"modelo-las-renovables-estan-haciendo-que-la-electricidad-sea-mas-cara-y-menos-accesible\"",
+  "text": "Las renovables están haciendo que la electricidad sea más cara y menos accesible para todos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-31fa0cb6212c"
+  ]
+}

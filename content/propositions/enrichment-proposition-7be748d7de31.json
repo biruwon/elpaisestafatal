@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7be748d7de31",
+  "claimSlug": "\"modelo-es-suficiente-la-vigilancia-en-el-centro-de-barcelona-para-prevenir-el-robo-de-m\"",
+  "text": "¿Es suficiente la vigilancia en el centro de Barcelona para prevenir el robo de motocicletas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a0181cf6cdb"
+  ]
+}

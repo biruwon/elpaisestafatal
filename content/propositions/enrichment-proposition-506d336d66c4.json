@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-506d336d66c4",
+  "claimSlug": "\"modelo-los-horarios-escolares-en-espana-son-tan-tempranos-que-los-ninos-llegan-cansados\"",
+  "text": "Los horarios escolares en España son tan tempranos que los niños llegan cansados a casa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67a98750cc3f"
+  ]
+}

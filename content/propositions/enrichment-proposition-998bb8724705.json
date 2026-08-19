@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-998bb8724705",
+  "claimSlug": "\"modelo-las-estaciones-de-tren-son-poco-accesibles-para-personas-con-movilidad-reducida\"",
+  "text": "Las estaciones de tren son poco accesibles para personas con movilidad reducida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67e257e5a9ff"
+  ]
+}

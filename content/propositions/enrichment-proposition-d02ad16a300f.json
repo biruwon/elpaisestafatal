@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d02ad16a300f",
+  "claimSlug": "\"modelo-los-contratos-a-tiempo-parcial-en-espana-tienen-muchas-limitaciones\"",
+  "text": "Los contratos a tiempo parcial en España tienen muchas limitaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b8c9066624d4"
+  ]
+}

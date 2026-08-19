@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b063a9f7e4db",
+  "claimSlug": "\"modelo-por-que-los-precios-de-la-fruta-y-verdura-en-los-supermercados-son-tan-altos-en-\"",
+  "text": "¿Por qué los precios de la fruta y verdura en los supermercados son tan altos en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eb6f0451881d"
+  ]
+}

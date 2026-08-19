@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29a7efa9cd27",
+  "claimSlug": "\"modelo-la-falta-de-infraestructuras-en-la-comarca-de-los-pirineos-oscenses-es-un-proble\"",
+  "text": "La falta de infraestructuras en la comarca de los Pirineos oscenses es un problema crónico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-383352ead6c6"
+  ]
+}

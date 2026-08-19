@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dab1a78cbd35",
+  "claimSlug": "\"modelo-las-tarifas-electricas-en-espana-son-un-verdadero-lastre-para-las-familias-espec\"",
+  "text": "Las tarifas eléctricas en España son un verdadero lastre para las familias, especialmente en tiempos de frío.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e64bb073b8bd"
+  ]
+}

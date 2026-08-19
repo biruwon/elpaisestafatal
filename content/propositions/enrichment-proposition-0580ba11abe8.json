@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0580ba11abe8",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-las-pensiones-es-mas-larga-que-nunca-lo-que-significa-q\"",
+  "text": "La espera para acceder a las pensiones es más larga que nunca, lo que significa que muchos jubilados tienen que trabajar en la informalidad para sobrevivir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8a7c792b509"
+  ]
+}

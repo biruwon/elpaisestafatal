@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-54a8a6b8b82f",
+  "claimSlug": "\"modelo-la-delincuencia-en-los-supermercados-ha-llegado-a-tal-punto-que-ya-es-un-problem\"",
+  "text": "La delincuencia en los supermercados ha llegado a tal punto que ya es un problema cotidiano para los compradores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a71cab41986d"
+  ]
+}

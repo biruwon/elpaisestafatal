@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e455d71337f6",
+  "claimSlug": "\"modelo-la-inflacion-esta-matando-nuestras-ahorristas-pensiones\"",
+  "text": "La inflación está matando nuestras ahorristas pensiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac29560f209d"
+  ]
+}

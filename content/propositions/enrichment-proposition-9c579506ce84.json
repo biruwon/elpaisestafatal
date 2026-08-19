@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c579506ce84",
+  "claimSlug": "\"modelo-la-educacion-publica-esta-deteriorada-y-las-escuelas-se-quedan-sin-recursos\"",
+  "text": "La educación pública está deteriorada y las escuelas se quedan sin recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5d48caa78cf"
+  ]
+}

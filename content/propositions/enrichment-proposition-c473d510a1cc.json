@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c473d510a1cc",
+  "claimSlug": "\"modelo-la-infraestructura-de-metro-es-obsoleta-y-congestiona-facilmente\"",
+  "text": "La infraestructura de metro es obsoleta y congestiona fácilmente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4e1877c5cb3"
+  ]
+}

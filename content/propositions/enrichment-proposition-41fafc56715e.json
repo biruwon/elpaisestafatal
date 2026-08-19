@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-41fafc56715e",
+  "claimSlug": "\"modelo-el-gasto-en-publicidad-del-gobierno-se-ha-duplicado-en-los-ultimos-anos-mientras\"",
+  "text": "El gasto en publicidad del gobierno se ha duplicado en los últimos años, mientras la calidad de los servicios públicos ha disminuido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-62ef3bfcd3da"
+  ]
+}

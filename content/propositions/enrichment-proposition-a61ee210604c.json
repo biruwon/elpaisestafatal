@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a61ee210604c",
+  "claimSlug": "\"modelo-la-falta-de-politicas-de-integracion-adecuadas-esta-causando-problemas\"",
+  "text": "La falta de políticas de integración adecuadas está causando problemas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-855c5f51a536"
+  ]
+}

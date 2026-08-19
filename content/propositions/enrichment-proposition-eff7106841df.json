@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eff7106841df",
+  "claimSlug": "\"modelo-las-islas-baleares-se-sienten-abandonadas-en-materia-de-seguridad-y-defensa\"",
+  "text": "Las Islas Baleares se sienten abandonadas en materia de seguridad y defensa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea4545c948a2"
+  ]
+}

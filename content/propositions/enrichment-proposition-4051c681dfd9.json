@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4051c681dfd9",
+  "claimSlug": "\"modelo-la-vivienda-asequible-es-un-lujo-en-muchas-ciudades-espanolas\"",
+  "text": "La vivienda asequible es un lujo en muchas ciudades españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a3724472c728"
+  ]
+}

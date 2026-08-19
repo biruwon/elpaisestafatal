@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-664f1a615a12",
+  "claimSlug": "\"modelo-no-me-aceptan-porque-el-sueldo-no-cubre-el-alquiler-que-mierda\"",
+  "text": "¡No me aceptan porque el sueldo no cubre el alquiler, qué mierda!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-82b4062ef832"
+  ]
+}

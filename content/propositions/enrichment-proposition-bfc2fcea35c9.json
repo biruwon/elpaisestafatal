@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bfc2fcea35c9",
+  "claimSlug": "\"modelo-la-falta-de-politicas-de-igualdad-de-genero-impide-el-ascenso-de-las-mujeres\"",
+  "text": "La falta de políticas de igualdad de género impide el ascenso de las mujeres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-64506fbdbd83"
+  ]
+}

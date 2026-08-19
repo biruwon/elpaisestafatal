@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-53b333713762",
+  "claimSlug": "\"modelo-los-costos-de-mantenimiento-de-las-instalaciones-de-energia-renovable-en-espana-\"",
+  "text": "Los costos de mantenimiento de las instalaciones de energía renovable en España son inaceptables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd3ef14f7ae1"
+  ]
+}

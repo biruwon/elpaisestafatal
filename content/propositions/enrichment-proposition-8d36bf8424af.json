@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8d36bf8424af",
+  "claimSlug": "\"modelo-los-precios-del-alquiler-de-coches-en-espana-son-excesivamente-altos-y-los-coche\"",
+  "text": "Los precios del alquiler de coches en España son excesivamente altos y los coches son viejos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bf492033b12a"
+  ]
+}

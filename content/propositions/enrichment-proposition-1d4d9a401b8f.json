@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d4d9a401b8f",
+  "claimSlug": "\"modelo-los-agricultores-de-la-zona-de-extremadura-estan-quejandose-de-la-sequia-donde-s\"",
+  "text": "Los agricultores de la zona de Extremadura están quejándose de la sequía. ¿Dónde se ha ido el agua de los ríos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e3a0541c332"
+  ]
+}

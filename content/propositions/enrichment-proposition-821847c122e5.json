@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-821847c122e5",
+  "claimSlug": "\"modelo-los-servicios-de-salud-estan-sobrecargados-por-inmigrantes\"",
+  "text": "Los servicios de salud están sobrecargados por inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23273a960720"
+  ]
+}

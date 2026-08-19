@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9829a53daa61",
+  "claimSlug": "\"modelo-en-espana-la-pobreza-no-es-solo-un-problema-de-dinero-es-un-circulo-vicioso-que-\"",
+  "text": "En España, la pobreza no es solo un problema de dinero, es un círculo vicioso que afecta a todos los aspectos de la vida de las personas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-6bf9e2e06865"
+  ]
+}

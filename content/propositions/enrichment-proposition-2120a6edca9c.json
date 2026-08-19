@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2120a6edca9c",
+  "claimSlug": "\"modelo-las-instalaciones-deportivas-publicas-estan-subutilizadas-y-mal-mantenidas\"",
+  "text": "Las instalaciones deportivas públicas están subutilizadas y mal mantenidas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d9b4d3ae1948"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6988a1377c8d",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-en-las-vias-del-tren-en-la-comunidad-valenciana-ha-pro\"",
+  "text": "La falta de mantenimiento en las vías del tren en la Comunidad Valenciana ha provocado accidentes y cancelaciones frecuentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8cebc151d2cb"
+  ]
+}

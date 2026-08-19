@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72c165ca67b8",
+  "claimSlug": "\"modelo-la-subida-del-iva-esta-haciendo-que-todo-sea-mas-caro-y-el-presupuesto-se-hunda\"",
+  "text": "La subida del IVA está haciendo que todo sea más caro y el presupuesto se hunda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-35b3a0f30e89"
+  ]
+}

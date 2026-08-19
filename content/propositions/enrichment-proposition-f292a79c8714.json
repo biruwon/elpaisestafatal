@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f292a79c8714",
+  "claimSlug": "\"modelo-las-autoridades-no-hacen-lo-suficiente-para-prevenir-y-controlar-los-incendios-f\"",
+  "text": "Las autoridades no hacen lo suficiente para prevenir y controlar los incendios forestales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fcf711b9e924"
+  ]
+}

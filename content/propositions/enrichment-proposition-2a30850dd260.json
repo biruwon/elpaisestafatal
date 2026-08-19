@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2a30850dd260",
+  "claimSlug": "\"modelo-las-renovables-estan-haciendo-que-la-electricidad-sea-tan-cara-que-los-consumido\"",
+  "text": "Las renovables están haciendo que la electricidad sea tan cara que los consumidores se sienten engañados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7651d0907589"
+  ]
+}

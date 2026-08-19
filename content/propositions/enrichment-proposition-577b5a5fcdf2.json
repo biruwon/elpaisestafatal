@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-577b5a5fcdf2",
+  "claimSlug": "\"modelo-todavia-hay-empresas-en-espana-que-no-ofrecen-teletrabajo-a-sus-empleados-por-ra\"",
+  "text": "¿Todavía hay empresas en España que no ofrecen teletrabajo a sus empleados por razones de productividad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1e1f2f244f7"
+  ]
+}

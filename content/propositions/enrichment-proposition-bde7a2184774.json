@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bde7a2184774",
+  "claimSlug": "\"modelo-por-que-en-espana-las-listas-de-espera-para-cirugias-se-alargan-tanto-y-se-demor\"",
+  "text": "¿Por qué en España las listas de espera para cirugías se alargan tanto y se demoran tanto tiempo?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-7eebf46d9e2d"
+  ]
+}

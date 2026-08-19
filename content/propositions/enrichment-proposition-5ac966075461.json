@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5ac966075461",
+  "claimSlug": "\"modelo-las-carreteras-secundarias-de-espana-estan-en-un-estado-deplorable-con-muchos-ba\"",
+  "text": "Las carreteras secundarias de España están en un estado deplorable, con muchos baches y accidentes frecuentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e80f09dae1d5"
+  ]
+}

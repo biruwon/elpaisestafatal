@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c4ee01df1b4d",
+  "claimSlug": "\"modelo-las-empresas-no-invierten-lo-suficiente-en-formacion-continua-para-sus-empleados\"",
+  "text": "Las empresas no invierten lo suficiente en formación continua para sus empleados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d50d06958b2e"
+  ]
+}

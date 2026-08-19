@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-852c988ff91a",
+  "claimSlug": "\"modelo-la-falta-de-atencion-en-las-aulas-ha-aumentado-la-insatisfaccion-de-los-estudian\"",
+  "text": "La falta de atención en las aulas ha aumentado la insatisfacción de los estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c832f8ba22c"
+  ]
+}

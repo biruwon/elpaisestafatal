@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b831b7a781f0",
+  "claimSlug": "\"modelo-la-falta-de-alternativas-energeticas-hace-que-las-facturas-sean-insoportables\"",
+  "text": "La falta de alternativas energéticas hace que las facturas sean insoportables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5ceb9aea5933"
+  ]
+}

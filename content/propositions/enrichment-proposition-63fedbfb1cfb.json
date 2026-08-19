@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63fedbfb1cfb",
+  "claimSlug": "\"modelo-espana-ha-reducido-significativamente-el-presupuesto-para-la-juventud-en-los-ult\"",
+  "text": "España ha reducido significativamente el presupuesto para la juventud en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-01abec8edbbf"
+  ]
+}

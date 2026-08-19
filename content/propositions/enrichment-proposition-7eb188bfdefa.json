@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7eb188bfdefa",
+  "claimSlug": "\"modelo-la-policia-no-protege-a-los-ciudadanos-en-situaciones-de-peligro-dejandolos-solo\"",
+  "text": "La policía no protege a los ciudadanos en situaciones de peligro, dejándolos solos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-627655cc3644"
+  ]
+}

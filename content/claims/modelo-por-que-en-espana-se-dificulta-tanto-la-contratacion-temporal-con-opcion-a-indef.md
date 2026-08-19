@@ -4,21 +4,22 @@ claim: "¿Por qué en España se dificulta tanto la contratación temporal con o
 assessment: uncertain
 topicSlugs: ["derechos laborales y conciliación"]
 aliases: ["¿Cuándo acabará con la dificultad de la contratación temporal?","¿Por qué es tan complicado acceder a la contratación temporal en España?","¿Cuándo se facilitará la transición a la contratación indefinida?","¿Por qué las empresas se resisten a contratar temporalmente?","¿Cuándo veremos más contratos temporales con opción a indefinida?","¿Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida","¿Es cierto que Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","¿Qué datos permiten comprobar si Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","Quiero saber si Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida","¿Cómo se puede verificar Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","¿Hay evidencia sobre si Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","¿Es verdad que Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","¿Qué sabemos de Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?","¿Se sostiene la afirmación de que Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-15f2d8aaa3de"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que en espana se dificulta tanto la contratacion temporal con opcion a indefinida que las empresas prefieren ir directamente por el camino de la indefinida"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-95ffbac586c2"]
 ---
 
 ## Qué es cierto

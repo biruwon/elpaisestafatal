@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b7103e6660b",
+  "claimSlug": "\"modelo-la-precariedad-laboral-es-un-problema-cronico-que-afecta-a-mucha-gente\"",
+  "text": "La precariedad laboral es un problema crónico que afecta a mucha gente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0361b5827a8d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bf2d9bf8a7d",
+  "claimSlug": "\"modelo-el-desempleo-juvenil-sigue-siendo-un-problema-grave-con-muchos-jovenes-sin-persp\"",
+  "text": "El desempleo juvenil sigue siendo un problema grave, con muchos jóvenes sin perspectivas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a2f5f8675cfa"
+  ]
+}

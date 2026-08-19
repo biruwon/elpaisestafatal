@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d28eec919112",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-llena-de-basura-como-es-posible-que-no-se-hagan-nada-\"",
+  "text": "Las playas de España están llena de basura, ¿cómo es posible que no se hagan nada al respecto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3154af48145b"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "El gasto público en infraestructuras es ineficiente, con muchos proyect
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["infraestructuras ineficientes","proyectos costosos","retrasos en obras","presupuestos desbordados","gasto ineficaz","El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.","¿Es cierto que El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","¿Qué datos permiten comprobar si El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","Quiero saber si El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.","¿Cómo se puede verificar El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","¿Hay evidencia sobre si El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","¿Es verdad que El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","¿Qué sabemos de El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?","¿Se sostiene la afirmación de que El gasto público en infraestructuras es ineficiente, con muchos proyectos que se retrasan y sobrepasan el presupuesto.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-cd0d97974d09"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gasto publico en infraestructuras es ineficiente con muchos proyectos que se retrasan y sobrepasan el presupuesto"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-bf43f423fa45"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ddd75e6a323f",
+  "claimSlug": "\"modelo-los-estudiantes-de-universidad-tienen-que-hacer-largas-colas-para-pedir-sus-docu\"",
+  "text": "Los estudiantes de universidad tienen que hacer largas colas para pedir sus documentos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61be8de175c2"
+  ]
+}

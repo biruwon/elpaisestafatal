@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-24fa22a4d8e1",
+  "claimSlug": "\"modelo-la-inmigracion-ha-generado-un-gran-estres-en-los-servicios-de-atencion-a-la-ciud\"",
+  "text": "La inmigración ha generado un gran estrés en los servicios de atención a la ciudadanía, lo que ha incrementado la espera en los trámites.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c2b8d30f7c7"
+  ]
+}

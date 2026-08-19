@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ea0f5c630c0",
+  "claimSlug": "\"modelo-los-fiscales-en-espana-no-estan-respaldados-lo-suficiente-para-perseguir-delitos\"",
+  "text": "Los fiscales en España no están respaldados lo suficiente para perseguir delitos graves.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e3e2768e46ef"
+  ]
+}

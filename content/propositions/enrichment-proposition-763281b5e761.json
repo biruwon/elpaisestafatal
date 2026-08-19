@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-763281b5e761",
+  "claimSlug": "\"modelo-la-subida-del-alquiler-cada-ano-es-insoportable-no-me-lo-puedo-permitir\"",
+  "text": "¡La subida del alquiler cada año es insoportable, no me lo puedo permitir!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a6cea8960c76"
+  ]
+}

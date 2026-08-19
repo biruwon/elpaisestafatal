@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f19040d965a",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-electricidad-son-abusivos-y-hacen-que-las-facturas-sean-i\"",
+  "text": "Los impuestos sobre la electricidad son abusivos y hacen que las facturas sean irrealizables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fc8c1eb3ded7"
+  ]
+}

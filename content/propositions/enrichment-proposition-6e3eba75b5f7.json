@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6e3eba75b5f7",
+  "claimSlug": "\"modelo-hay-demasiados-inmigrantes-en-las-escuelas-lo-que-esta-afectando-la-calidad-de-l\"",
+  "text": "Hay demasiados inmigrantes en las escuelas, lo que está afectando la calidad de la educación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a576d36d4df9"
+  ]
+}

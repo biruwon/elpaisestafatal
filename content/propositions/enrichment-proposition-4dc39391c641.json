@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4dc39391c641",
+  "claimSlug": "\"modelo-es-cierto-que-el-gasto-en-investigacion-y-desarrollo-en-espana-es-inferior-al-pr\"",
+  "text": "¿Es cierto que el gasto en investigación y desarrollo en España es inferior al promedio de la UE?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e72cbb4d3492"
+  ]
+}

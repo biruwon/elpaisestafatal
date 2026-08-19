@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e257d344ca6",
+  "claimSlug": "\"modelo-la-falta-de-acceso-a-internet-en-las-zonas-rurales-limita-las-oportunidades-educ\"",
+  "text": "La falta de acceso a internet en las zonas rurales limita las oportunidades educativas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ef73164bc365"
+  ]
+}

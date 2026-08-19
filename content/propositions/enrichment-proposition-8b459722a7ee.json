@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8b459722a7ee",
+  "claimSlug": "\"modelo-la-falta-de-flexibilidad-en-los-contratos-dificulta-la-movilidad-laboral\"",
+  "text": "La falta de flexibilidad en los contratos dificulta la movilidad laboral.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-860239012b0c"
+  ]
+}

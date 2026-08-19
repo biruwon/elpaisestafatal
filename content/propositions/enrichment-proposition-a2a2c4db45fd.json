@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a2a2c4db45fd",
+  "claimSlug": "\"modelo-las-pensiones-se-estan-reduciendo-cada-ano-sin-que-se-haga-nada-al-respecto-por-\"",
+  "text": "Las pensiones se están reduciendo cada año sin que se haga nada al respecto por parte del gobierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f80802c89f3e"
+  ]
+}

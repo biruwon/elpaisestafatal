@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f883b22dea12",
+  "claimSlug": "\"modelo-los-gastos-extras-del-alquiler-como-el-agua-luz-y-gas-son-un-fastidio-y-se-acaba\"",
+  "text": "Los gastos extras del alquiler, como el agua, luz y gas, son un fastidio y se acaban agotando rápidamente el presupuesto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36eec051ddfe"
+  ]
+}

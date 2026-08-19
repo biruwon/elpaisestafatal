@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a8c3f047878",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-no-es-justo-y-los-mas-necesitados-se-quedan-sin-\"",
+  "text": "El sistema de protección social no es justo y los más necesitados se quedan sin ayudas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-5f6df79a0b1b"
+  ]
+}

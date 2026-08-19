@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-633be21269a9",
+  "claimSlug": "\"modelo-el-sistema-educativo-espanol-es-demasiado-rigido-y-poco-adaptable-a-las-necesida\"",
+  "text": "El sistema educativo español es demasiado rigido y poco adaptable a las necesidades de los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2565488dfd87"
+  ]
+}

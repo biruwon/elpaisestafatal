@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5a94c2b6f2f",
+  "claimSlug": "\"modelo-el-turismo-en-las-islas-baleares-depende-mas-de-los-visitantes-extranjeros-que-l\"",
+  "text": "El turismo en las Islas Baleares depende más de los visitantes extranjeros que los de Canarias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76a1c7719bbd"
+  ]
+}

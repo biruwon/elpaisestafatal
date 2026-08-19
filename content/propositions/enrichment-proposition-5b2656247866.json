@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b2656247866",
+  "claimSlug": "\"modelo-por-que-el-gobierno-de-espana-no-ha-podido-resolver-el-problema-del-trafico-en-l\"",
+  "text": "¿Por qué el gobierno de España no ha podido resolver el problema del tráfico en las ciudades, mientras que la UE promete soluciones?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d43301ef7845"
+  ]
+}

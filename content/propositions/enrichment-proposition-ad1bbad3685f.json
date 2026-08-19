@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad1bbad3685f",
+  "claimSlug": "\"modelo-la-ue-no-hace-nada-para-combatir-el-desempleo-juvenil-en-espana\"",
+  "text": "La UE no hace nada para combatir el desempleo juvenil en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-12181f5a1441"
+  ]
+}

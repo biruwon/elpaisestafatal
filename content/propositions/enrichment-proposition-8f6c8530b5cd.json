@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f6c8530b5cd",
+  "claimSlug": "\"modelo-el-gobierno-no-esta-haciendo-nada-para-frenar-la-inflacion-que-nos-esta-dejando-\"",
+  "text": "El gobierno no está haciendo nada para frenar la inflación que nos está dejando sin dinero para pagar las facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6d1a9ca07535"
+  ]
+}

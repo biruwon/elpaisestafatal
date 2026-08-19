@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6103489727b4",
+  "claimSlug": "\"modelo-es-normal-que-en-madrid-se-cometa-robo-en-tiendas-durante-las-horas-pico\"",
+  "text": "¿Es normal que en Madrid se cometa robo en tiendas durante las horas pico?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86fdaa4df223"
+  ]
+}

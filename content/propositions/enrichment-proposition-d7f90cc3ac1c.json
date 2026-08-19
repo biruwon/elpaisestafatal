@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d7f90cc3ac1c",
+  "claimSlug": "\"modelo-en-espana-los-contratos-de-fibra-optica-son-enganosos-prometiendo-velocidades-qu\"",
+  "text": "En España, los contratos de fibra óptica son engañosos, prometiendo velocidades que no se cumplen.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-488476570d47"
+  ]
+}

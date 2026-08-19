@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d15147c23bf4",
+  "claimSlug": "\"modelo-el-coste-de-la-calefaccion-solar-esta-resultando-en-un-gasto-excesivo-para-los-c\"",
+  "text": "El coste de la calefacción solar está resultando en un gasto excesivo para los consumidores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a271ad43411b"
+  ]
+}

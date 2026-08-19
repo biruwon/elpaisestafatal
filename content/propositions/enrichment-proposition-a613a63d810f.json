@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a613a63d810f",
+  "claimSlug": "\"modelo-en-muchos-lugares-de-espana-las-agencias-de-viaje-se-centran-solo-en-promocionar\"",
+  "text": "En muchos lugares de España, las agencias de viaje se centran solo en promocionar las playas, dejando a los amantes de la historia sin opciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4ab030ab8a6e"
+  ]
+}

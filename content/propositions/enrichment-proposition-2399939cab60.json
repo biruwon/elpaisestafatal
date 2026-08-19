@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2399939cab60",
+  "claimSlug": "\"modelo-la-desigualdad-salarial-entre-hombres-y-mujeres-sigue-siendo-un-problema-cronico\"",
+  "text": "La desigualdad salarial entre hombres y mujeres sigue siendo un problema crónico en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4586983fa4a2"
+  ]
+}

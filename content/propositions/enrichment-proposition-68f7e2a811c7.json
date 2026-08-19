@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-68f7e2a811c7",
+  "claimSlug": "\"modelo-la-gestion-forestal-preventiva-es-crucial-para-reducir-la-severidad-de-los-incen\"",
+  "text": "La gestión forestal preventiva es crucial para reducir la severidad de los incendios forestales en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-afc79fff0ef5"
+  ]
+}

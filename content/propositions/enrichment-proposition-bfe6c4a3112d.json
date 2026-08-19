@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bfe6c4a3112d",
+  "claimSlug": "\"modelo-en-muchas-ciudades-espanolas-la-falta-de-parques-y-espacios-verdes-es-un-problem\"",
+  "text": "En muchas ciudades españolas, la falta de parques y espacios verdes es un problema creciente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-23a6908f1f06"
+  ]
+}

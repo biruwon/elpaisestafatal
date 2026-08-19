@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-926e771e6a32",
+  "claimSlug": "\"modelo-los-recortes-en-el-presupuesto-educativo-han-afectado-negativamente-la-calidad-d\"",
+  "text": "Los recortes en el presupuesto educativo han afectado negativamente la calidad de los libros y el material didáctico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-52279c9f2b81"
+  ]
+}

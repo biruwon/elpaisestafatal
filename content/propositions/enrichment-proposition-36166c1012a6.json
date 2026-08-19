@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-36166c1012a6",
+  "claimSlug": "\"modelo-la-discriminacion-en-el-sector-del-empleo-es-un-problema-persistente\"",
+  "text": "La discriminación en el sector del empleo es un problema persistente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-768d8245d508"
+  ]
+}

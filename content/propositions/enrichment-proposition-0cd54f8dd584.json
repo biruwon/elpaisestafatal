@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0cd54f8dd584",
+  "claimSlug": "\"modelo-el-auge-de-la-inmigracion-esta-superando-la-capacidad-de-la-sanidad-publica\"",
+  "text": "El auge de la inmigración está superando la capacidad de la sanidad pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4232ba6735c"
+  ]
+}

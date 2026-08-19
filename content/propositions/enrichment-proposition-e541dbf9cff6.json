@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e541dbf9cff6",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-las-compras-de-lujo-sean-un-sueno-lejano\"",
+  "text": "La inflación está haciendo que las compras de lujo sean un sueño lejano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d3ec187f0e89"
+  ]
+}

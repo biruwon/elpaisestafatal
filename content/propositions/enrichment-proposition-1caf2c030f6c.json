@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1caf2c030f6c",
+  "claimSlug": "\"modelo-los-procesos-judiciales-son-tan-lentos-que-a-veces-las-personas-acaban-muertas-d\"",
+  "text": "Los procesos judiciales son tan lentos que a veces las personas acaban muertas de viejas antes de que termine la causa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5b74be7d0adc"
+  ]
+}

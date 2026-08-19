@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e770e227b46d",
+  "claimSlug": "\"modelo-por-que-en-espana-hay-tanta-dificultad-para-combinar-el-trabajo-con-la-educacion\"",
+  "text": "¿Por qué en España hay tanta dificultad para combinar el trabajo con la educación y cuidado de los hijos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-de2e932ad874"
+  ]
+}

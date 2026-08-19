@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-03fcc8ad848b",
+  "claimSlug": "\"modelo-las-playas-de-mallorca-estan-muy-congestionadas-es-imposible-encontrar-un-lugar-\"",
+  "text": "Las playas de Mallorca están muy congestionadas, ¡es imposible encontrar un lugar tranquilo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7f4100ed8068"
+  ]
+}

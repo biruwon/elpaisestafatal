@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61e2c4d2f44b",
+  "claimSlug": "\"modelo-las-aulas-de-secundaria-estan-demasiado-llenas-los-profesores-no-pueden-atender-\"",
+  "text": "Las aulas de secundaria están demasiado llenas, los profesores no pueden atender a todos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8e02087bcfc"
+  ]
+}

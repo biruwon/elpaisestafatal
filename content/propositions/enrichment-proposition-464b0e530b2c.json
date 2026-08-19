@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-464b0e530b2c",
+  "claimSlug": "\"modelo-los-tribunales-no-prestan-atencion-a-las-quejas-de-las-victimas-haciendo-que-no-\"",
+  "text": "Los tribunales no prestan atención a las quejas de las víctimas, haciendo que no sientan justicia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5ccd36153f1f"
+  ]
+}

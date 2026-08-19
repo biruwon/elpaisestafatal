@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-76422d9a38c8",
+  "claimSlug": "\"modelo-la-escasez-de-viviendas-disponibles-y-baratas-hace-que-sea-muy-dificil-encontrar\"",
+  "text": "La escasez de viviendas disponibles y baratas hace que sea muy difícil encontrar un sitio donde vivir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0535ef992e2a"
+  ]
+}

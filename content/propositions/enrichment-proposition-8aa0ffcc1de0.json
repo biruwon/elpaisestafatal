@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8aa0ffcc1de0",
+  "claimSlug": "\"modelo-el-salario-minimo-en-espana-es-muy-bajo\"",
+  "text": "El salario mínimo en España es muy bajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86c2ad37e2de"
+  ]
+}

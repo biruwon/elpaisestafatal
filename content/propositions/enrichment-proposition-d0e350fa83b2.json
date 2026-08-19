@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0e350fa83b2",
+  "claimSlug": "\"modelo-el-coste-de-los-servicios-basicos-del-piso-es-un-disparate-el-agua-y-la-luz-se-h\"",
+  "text": "El coste de los servicios básicos del piso es un disparate, el agua y la luz se han duplicado en poco tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bff3889ef146"
+  ]
+}

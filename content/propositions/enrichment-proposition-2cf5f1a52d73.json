@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2cf5f1a52d73",
+  "claimSlug": "\"modelo-el-parque-de-autobuses-es-antiguo-y-causa-incomodidad\"",
+  "text": "El parque de autobuses es antiguo y causa incomodidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5226a7e02454"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8239737fab4b",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-calidad-de-la-educacion-se-nota-mucho-entre-colegios-de-dif\"",
+  "text": "La desigualdad en la calidad de la educación se nota mucho entre colegios de diferentes barrios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f39aacd177b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea8eaef1b94e",
+  "claimSlug": "\"modelo-el-sistema-de-alquiler-es-un-circo-de-trampas-para-los-inquilinos\"",
+  "text": "El sistema de alquiler es un circo de trampas para los inquilinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6fe03c726a7"
+  ]
+}

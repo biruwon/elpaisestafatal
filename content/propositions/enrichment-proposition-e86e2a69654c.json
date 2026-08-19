@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e86e2a69654c",
+  "claimSlug": "\"modelo-las-listas-de-espera-para-cirugias-de-cadera-son-interminables-y-la-gente-sufre-\"",
+  "text": "Las listas de espera para cirugías de cadera son interminables y la gente sufre mucho.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-79d39c1a8a86"
+  ]
+}

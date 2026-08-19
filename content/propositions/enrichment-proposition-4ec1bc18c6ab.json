@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ec1bc18c6ab",
+  "claimSlug": "\"modelo-espana-siente-que-la-ue-no-respeta-su-soberania-al-imponer-politicas-economicas-\"",
+  "text": "España siente que la UE no respeta su soberanía al imponer políticas económicas sin consultar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cd19f6813f18"
+  ]
+}

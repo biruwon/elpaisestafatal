@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33b66e936543",
+  "claimSlug": "\"modelo-la-comunidad-autonoma-de-melilla-esta-sufriendo-por-la-falta-de-inversion-en-inf\"",
+  "text": "La comunidad autónoma de Melilla está sufriendo por la falta de inversión en infraestructuras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e32b2ca0e65f"
+  ]
+}

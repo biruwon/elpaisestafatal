@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0599c5b1f3fc",
+  "claimSlug": "\"modelo-por-que-la-comunidad-valenciana-no-tiene-un-aeropuerto-de-primer-nivel-en-la-ciu\"",
+  "text": "¿Por qué la Comunidad Valenciana no tiene un aeropuerto de primer nivel en la ciudad de Valencia?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c360ed6bc23"
+  ]
+}

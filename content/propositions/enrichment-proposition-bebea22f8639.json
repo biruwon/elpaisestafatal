@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bebea22f8639",
+  "claimSlug": "\"modelo-espana-tiene-mas-de-un-sistema-de-gestion-de-los-rios-del-pais\"",
+  "text": "España tiene más de un sistema de gestión de los ríos del país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-30a89842ac28"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-36c2dbc0efb4",
+  "claimSlug": "\"modelo-la-demora-en-la-atencion-a-urgencias-es-preocupante-y-los-pacientes-se-sienten-d\"",
+  "text": "La demora en la atención a urgencias es preocupante y los pacientes se sienten desatendidos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5770d257141"
+  ]
+}

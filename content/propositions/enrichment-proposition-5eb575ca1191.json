@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5eb575ca1191",
+  "claimSlug": "\"modelo-espana-tiene-un-sistema-de-proteccion-social-que-ofrece-menos-servicios-que-ital\"",
+  "text": "España tiene un sistema de protección social que ofrece menos servicios que Italia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1ab48b1187bd"
+  ]
+}

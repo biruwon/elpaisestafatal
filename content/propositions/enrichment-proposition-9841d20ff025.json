@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9841d20ff025",
+  "claimSlug": "\"modelo-por-que-los-bomberos-no-tienen-suficientes-recursos-para-combatir-los-incendios-\"",
+  "text": "¿Por qué los bomberos no tienen suficientes recursos para combatir los incendios en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0758156b3447"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8a72147ff24a",
+  "claimSlug": "\"modelo-la-falta-de-servicios-en-las-islas-baleares-es-un-problema-que-las-autoridades-n\"",
+  "text": "La falta de servicios en las islas Baleares es un problema que las autoridades no solucionan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2fd4e4f7b03"
+  ]
+}

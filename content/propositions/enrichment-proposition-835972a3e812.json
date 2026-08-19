@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-835972a3e812",
+  "claimSlug": "\"modelo-el-paro-en-espana-persiste-en-zonas-rurales-y-perifericas-a-pesar-de-la-recupera\"",
+  "text": "El paro en España persiste en zonas rurales y periféricas, a pesar de la recuperación económica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-34fc652f76f7"
+  ]
+}

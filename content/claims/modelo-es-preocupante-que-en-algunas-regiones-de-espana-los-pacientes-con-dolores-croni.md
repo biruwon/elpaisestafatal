@@ -4,21 +4,22 @@ claim: "Es preocupante que en algunas regiones de España, los pacientes con dol
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["tratamiento demorado","dolores crónicos","espera excesiva","sufren innecesariamente","demora en el tratamiento","Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.","¿Es cierto que Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","¿Qué datos permiten comprobar si Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","Quiero saber si Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.","¿Cómo se puede verificar Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","¿Hay evidencia sobre si Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","¿Es verdad que Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","¿Qué sabemos de Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?","¿Se sostiene la afirmación de que Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-f7e7d3f169c8"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es preocupante que en algunas regiones de espana los pacientes con dolores cronicos esten esperando mas de un ano para un tratamiento adecuado lo que les lleva a sufrir mucho mas de lo necesario"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0318c094dbd5"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2fffa6fbbb27",
+  "claimSlug": "\"modelo-la-oferta-de-becas-para-estudios-superiores-es-escasa-y-dificil-de-conseguir-lo-\"",
+  "text": "La oferta de becas para estudios superiores es escasa y difícil de conseguir, lo que dificulta la igualdad de oportunidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa4e9a9e8ec8"
+  ]
+}

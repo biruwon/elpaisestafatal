@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32b016fa339c",
+  "claimSlug": "\"modelo-el-sueldo-no-alcanza-ni-para-un-cafe-y-un-pan-en-barcelona-que-vida\"",
+  "text": "El sueldo no alcanza ni para un café y un pan en Barcelona, ¡qué vida!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b14ef0f155f6"
+  ]
+}

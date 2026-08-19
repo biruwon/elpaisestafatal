@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8fc6307fad57",
+  "claimSlug": "\"modelo-los-puertos-en-espana-no-se-modernizan-lo-suficiente-resultando-en-retrasos-y-de\"",
+  "text": "Los puertos en España no se modernizan lo suficiente, resultando en retrasos y demoras en el transporte marítimo de mercancías.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c6b24c70091"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-30607b5ac035",
+  "claimSlug": "\"modelo-la-inmigracion-esta-afectando-negativamente-a-la-educacion-publica\"",
+  "text": "La inmigración está afectando negativamente a la educación pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7fa9f639e4b2"
+  ]
+}

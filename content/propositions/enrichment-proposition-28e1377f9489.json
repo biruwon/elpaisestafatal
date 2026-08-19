@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-28e1377f9489",
+  "claimSlug": "\"modelo-como-es-posible-que-el-sistema-de-salud-no-tenga-suficientes-camas-para-todos\"",
+  "text": "¿Cómo es posible que el sistema de salud no tenga suficientes camas para todos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8165b1291b3"
+  ]
+}

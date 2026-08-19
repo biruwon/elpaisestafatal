@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfce973ebeaa",
+  "claimSlug": "\"modelo-la-falta-de-acceso-a-la-vivienda-de-calidad-y-el-alto-coste-del-alquiler-son-un-\"",
+  "text": "La falta de acceso a la vivienda de calidad y el alto coste del alquiler son un problema crítico que afecta directamente a la calidad de vida de los jóvenes en la Comunidad Valenciana.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b0508613496"
+  ]
+}

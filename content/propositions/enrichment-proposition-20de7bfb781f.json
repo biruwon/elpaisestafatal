@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-20de7bfb781f",
+  "claimSlug": "\"modelo-los-trabajadores-en-espana-ven-como-sus-salarios-se-quedan-estancados-en-un-mome\"",
+  "text": "Los trabajadores en España ven cómo sus salarios se quedan estancados en un momento de inflación alta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91d4989b56e1"
+  ]
+}

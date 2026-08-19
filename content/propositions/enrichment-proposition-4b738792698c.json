@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4b738792698c",
+  "claimSlug": "\"modelo-el-sistema-de-salud-publica-es-un-desastre-la-atencion-no-es-lo-que-deberiamos-e\"",
+  "text": "El sistema de salud pública es un desastre, la atención no es lo que deberíamos esperar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a08820cbc2ac"
+  ]
+}

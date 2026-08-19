@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f528b600d961",
+  "claimSlug": "\"modelo-por-que-suben-los-precios-del-alquiler-y-no-bajan-los-sueldos\"",
+  "text": "¿Por qué suben los precios del alquiler y no bajan los sueldos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ad0395670756"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae891d35a2a3",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-penaliza-a-las-empresas-que-no-ofrecen-becas-para-la-edu\"",
+  "text": "¿Por qué en España no se penaliza a las empresas que no ofrecen becas para la educación infantil?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-60000745c3c1"
+  ]
+}

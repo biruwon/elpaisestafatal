@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3a80172bf48",
+  "claimSlug": "\"modelo-la-calidad-de-la-educacion-en-espana-ha-empeorado-y-los-recursos-para-mejorarla-\"",
+  "text": "La calidad de la educación en España ha empeorado y los recursos para mejorarla son escasos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c590237bbcd"
+  ]
+}

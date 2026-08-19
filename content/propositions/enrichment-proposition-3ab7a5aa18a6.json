@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ab7a5aa18a6",
+  "claimSlug": "\"modelo-las-politicas-de-vivienda-en-valencia-favorecen-a-los-adinerados-ya-que-los-alqu\"",
+  "text": "Las políticas de vivienda en Valencia favorecen a los adinerados, ya que los alquileres son prohibitivos y los planes de vivienda pública son escasos y caros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-906f0ae9b41c"
+  ]
+}

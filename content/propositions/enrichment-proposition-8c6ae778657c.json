@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c6ae778657c",
+  "claimSlug": "\"modelo-el-precio-de-la-electricidad-aumenta-cada-vez-que-llueve-lo-que-es-incomprensibl\"",
+  "text": "El precio de la electricidad aumenta cada vez que llueve, lo que es incomprensible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4efd8d6c49ce"
+  ]
+}

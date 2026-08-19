@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3adbcc95908a",
+  "claimSlug": "\"modelo-la-falta-de-empleo-estable-en-el-interior-de-espana-hace-que-mucha-gente-tenga-q\"",
+  "text": "La falta de empleo estable en el interior de España hace que mucha gente tenga que buscar trabajo en las grandes ciudades, perdiendo su comunidad y su red social.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-06f1284cc8c3"
+  ]
+}

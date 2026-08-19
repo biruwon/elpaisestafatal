@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff9b557f0753",
+  "claimSlug": "\"modelo-las-autoridades-turisticas-no-hacen-lo-suficiente-para-proteger-las-playas-de-la\"",
+  "text": "Las autoridades turísticas no hacen lo suficiente para proteger las playas de la erosión costera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-548bb99258b0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4d4295414c31",
+  "claimSlug": "\"modelo-los-medicamentos-para-enfermedades-cronicas-estan-frecuentemente-agotados-en-los\"",
+  "text": "Los medicamentos para enfermedades crónicas están frecuentemente agotados en los hospitales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00e7c36a681b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-66af9f3456a7",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-la-asistencia-sanitaria-esta-demasiado-larga-y-se-vuelv\"",
+  "text": "La espera para acceder a la asistencia sanitaria está demasiado larga y se vuelve insoportable",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd2133af121e"
+  ]
+}

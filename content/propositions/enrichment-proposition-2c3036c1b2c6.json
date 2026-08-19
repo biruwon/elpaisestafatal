@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c3036c1b2c6",
+  "claimSlug": "\"modelo-los-inmigrantes-no-resuelven-el-problema-del-desempleo-solo-lo-empeoran\"",
+  "text": "Los inmigrantes no resuelven el problema del desempleo, solo lo empeoran.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca5b41ee732e"
+  ]
+}

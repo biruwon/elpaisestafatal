@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f63101dc2934",
+  "claimSlug": "\"modelo-por-que-la-velocidad-del-ave-en-la-linea-madrid-sevilla-sigue-siendo-tan-lenta\"",
+  "text": "¿Por qué la velocidad del AVE en la línea Madrid-Sevilla sigue siendo tan lenta?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eebd7dec438d"
+  ]
+}

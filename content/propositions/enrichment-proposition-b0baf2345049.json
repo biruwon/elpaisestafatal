@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0baf2345049",
+  "claimSlug": "\"modelo-por-que-en-la-comunidad-de-galicia-no-se-invierte-mas-en-la-mejora-de-la-calidad\"",
+  "text": "¿Por qué en la Comunidad de Galicia no se invierte más en la mejora de la calidad del vino y sigue habiendo escándalos de falsificación?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b07270244f7b"
+  ]
+}

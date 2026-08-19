@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0fd0b506883a",
+  "claimSlug": "\"modelo-espana-se-siente-excluida-del-proceso-de-toma-de-decisiones-en-la-ue\"",
+  "text": "España se siente excluida del proceso de toma de decisiones en la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84ab4fab1948"
+  ]
+}

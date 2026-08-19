@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df91f611f586",
+  "claimSlug": "\"modelo-la-vigilancia-en-las-ciudades-espanolas-es-efectiva-contra-la-delincuencia-juven\"",
+  "text": "¿La vigilancia en las ciudades españolas es efectiva contra la delincuencia juvenil?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-600395de9c7e"
+  ]
+}

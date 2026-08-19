@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b77adb0b6999",
+  "claimSlug": "\"modelo-la-vivienda-para-jovenes-en-el-centro-de-madrid-es-un-misterio-parece-que-no-exi\"",
+  "text": "La vivienda para jóvenes en el centro de Madrid es un misterio, parece que no existen opciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-68a5a1a2e352"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2bd96c0ccbf3",
+  "claimSlug": "\"modelo-espana-tiene-la-sensacion-de-ser-un-eslabon-debil-en-la-cadena-de-la-ue-sin-igua\"",
+  "text": "España tiene la sensación de ser un eslabón débil en la cadena de la UE, sin igualdad de trato.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2deb5b2b51bb"
+  ]
+}

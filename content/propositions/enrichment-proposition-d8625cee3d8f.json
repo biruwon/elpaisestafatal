@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8625cee3d8f",
+  "claimSlug": "\"modelo-por-que-los-impuestos-suben-y-los-servicios-publicos-bajan\"",
+  "text": "¿Por qué los impuestos suben y los servicios públicos bajan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1ac6c730175a"
+  ]
+}

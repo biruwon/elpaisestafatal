@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bfd7ed094c5e",
+  "claimSlug": "\"modelo-la-calidad-de-los-servicios-turisticos-en-espana-es-irregular-y-a-veces-decepcio\"",
+  "text": "La calidad de los servicios turísticos en España es irregular y a veces decepcionante, especialmente en ciudades turísticas donde el servicio es poco atento y la limpieza del entorno es deficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c09823b161be"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-304064ff57c4",
+  "claimSlug": "\"modelo-las-becas-para-la-educacion-superior-estan-cada-vez-mas-escasas-poniendo-en-peli\"",
+  "text": "Las becas para la educación superior están cada vez más escasas, poniendo en peligro la posibilidad de acceso a la formación superior.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e01d64ba20e4"
+  ]
+}

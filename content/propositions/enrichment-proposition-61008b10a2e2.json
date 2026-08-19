@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61008b10a2e2",
+  "claimSlug": "\"modelo-las-playas-de-la-comunidad-valenciana-tienen-mucha-basura-marina\"",
+  "text": "Las playas de la Comunidad Valenciana tienen mucha basura marina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae66b74c0da3"
+  ]
+}

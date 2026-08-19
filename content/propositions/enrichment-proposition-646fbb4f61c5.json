@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-646fbb4f61c5",
+  "claimSlug": "\"modelo-el-seguro-de-desempleo-es-un-chiste-y-no-cubre-ni-la-mitad-del-salario\"",
+  "text": "El seguro de desempleo es un chiste y no cubre ni la mitad del salario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e99953b01faa"
+  ]
+}

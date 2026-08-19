@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e17bb743c03",
+  "claimSlug": "\"modelo-las-prestaciones-no-alcanzan-para-cubrir-el-coste-de-vida-de-muchos-jubilados\"",
+  "text": "Las prestaciones no alcanzan para cubrir el coste de vida de muchos jubilados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c04282d90883"
+  ]
+}

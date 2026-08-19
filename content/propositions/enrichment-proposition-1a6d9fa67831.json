@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a6d9fa67831",
+  "claimSlug": "\"modelo-las-indemnizaciones-por-despido-en-espana-son-muy-bajas\"",
+  "text": "Las indemnizaciones por despido en España son muy bajas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-66ba583bf57d"
+  ]
+}

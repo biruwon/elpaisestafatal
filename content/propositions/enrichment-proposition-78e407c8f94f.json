@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78e407c8f94f",
+  "claimSlug": "\"modelo-la-inversion-en-infraestructuras-en-cataluna-siempre-supera-a-la-de-otras-region\"",
+  "text": "La inversión en infraestructuras en Cataluña siempre supera a la de otras regiones, y esto genera un sentimiento de injusticia y desigualdad con el resto de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2740a60d48b3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e6fc525134f",
+  "claimSlug": "\"modelo-por-que-las-casas-inteligentes-en-espana-son-mas-caras-que-en-otros-paises-de-la\"",
+  "text": "¿Por qué las casas inteligentes en España son más caras que en otros países de la UE?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca690dc29bc3"
+  ]
+}

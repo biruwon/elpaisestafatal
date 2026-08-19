@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-04e45532c757",
+  "claimSlug": "\"modelo-las-zonas-turisticas-estan-llenas-de-basura-y-falta-de-limpieza-causando-problem\"",
+  "text": "Las zonas turísticas están llenas de basura y falta de limpieza, causando problemas de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ddfaefdd431b"
+  ]
+}

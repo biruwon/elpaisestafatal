@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7fa220ab93f6",
+  "claimSlug": "\"modelo-los-gastos-de-electricidad-en-espana-son-tan-altos-que-afectan-directamente-a-la\"",
+  "text": "Los gastos de electricidad en España son tan altos que afectan directamente a la economía familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c33bc85699f"
+  ]
+}

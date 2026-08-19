@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff379adebccf",
+  "claimSlug": "\"modelo-la-policia-no-se-preocupa-por-la-seguridad-en-las-playas-de-malaga-durante-la-no\"",
+  "text": "La policía no se preocupa por la seguridad en las playas de Málaga durante la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c39024b3599"
+  ]
+}

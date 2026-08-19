@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c484d8818db1",
+  "claimSlug": "\"modelo-la-cantidad-de-estudiantes-que-abandonan-las-aulas-en-primaria-por-falta-de-recu\"",
+  "text": "La cantidad de estudiantes que abandonan las aulas en primaria por falta de recursos básicos es preocupante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3cac560d0438"
+  ]
+}

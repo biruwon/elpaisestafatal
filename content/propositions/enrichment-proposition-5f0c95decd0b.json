@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f0c95decd0b",
+  "claimSlug": "\"modelo-la-conexion-entre-zaragoza-y-barcelona-por-tren-es-muy-lenta-y-carisima\"",
+  "text": "La conexión entre Zaragoza y Barcelona por tren es muy lenta y carísima.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c58574ca3ddc"
+  ]
+}

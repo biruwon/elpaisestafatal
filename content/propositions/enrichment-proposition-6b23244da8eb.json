@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b23244da8eb",
+  "claimSlug": "\"modelo-la-ue-esta-demorando-la-aprobacion-de-subvenciones-para-la-agricultura-en-espana\"",
+  "text": "La UE está demorando la aprobación de subvenciones para la agricultura en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ebd201aaac72"
+  ]
+}

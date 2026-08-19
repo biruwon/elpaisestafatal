@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-52e11dc73896",
+  "claimSlug": "\"modelo-por-que-las-prisiones-espanolas-estan-tan-sobrepobladas\"",
+  "text": "¿Por qué las prisiones españolas están tan sobrepobladas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91a51f243fe0"
+  ]
+}

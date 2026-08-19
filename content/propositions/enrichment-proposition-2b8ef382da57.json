@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2b8ef382da57",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-aumento-en-los-servicios-de-salud-y-educacion-ha\"",
+  "text": "La inmigración está causando un aumento en los servicios de salud y educación, haciendo que los costos suban y se degraden los servicios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0b5fd33e2d38"
+  ]
+}

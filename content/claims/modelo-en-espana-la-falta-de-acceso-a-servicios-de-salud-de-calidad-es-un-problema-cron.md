@@ -4,21 +4,22 @@ claim: "En España, la falta de acceso a servicios de salud de calidad es un pro
 assessment: uncertain
 topicSlugs: ["pobreza y desigualdad"]
 aliases: ["la falta de atención médica","la inaccesibilidad a la salud","la salud no garantizada","la dificultad para acceder a servicios médicos","la precariedad en el acceso a la sanidad","En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.","¿Es cierto que En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","¿Qué datos permiten comprobar si En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","Quiero saber si En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.","¿Cómo se puede verificar En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","¿Hay evidencia sobre si En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","¿Es verdad que En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","¿Qué sabemos de En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?","¿Se sostiene la afirmación de que En España, la falta de acceso a servicios de salud de calidad es un problema crónico, con muchas personas que no pueden permitirse el médico.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-db51398ce1e5"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en espana la falta de acceso a servicios de salud de calidad es un problema cronico con muchas personas que no pueden permitirse el medico"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-31334fd9ce4d"]
 ---
 
 ## Qué es cierto

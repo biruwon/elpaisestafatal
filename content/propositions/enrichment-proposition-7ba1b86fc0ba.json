@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7ba1b86fc0ba",
+  "claimSlug": "\"modelo-la-subida-de-las-cuotas-de-la-seguridad-social-perjudica-a-los-autonomos\"",
+  "text": "La subida de las cuotas de la Seguridad Social perjudica a los autónomos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1f62898aa3e4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0295a097d255",
+  "claimSlug": "\"modelo-que-tan-segura-es-la-ciudad-en-la-hora-punta-del-transporte-publico\"",
+  "text": "¿Qué tan segura es la ciudad en la hora punta del transporte público?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e522027d0468"
+  ]
+}

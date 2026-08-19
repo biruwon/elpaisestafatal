@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-99f86df0f2ac",
+  "claimSlug": "\"modelo-espana-ha-sido-criticada-por-la-ue-por-su-falta-de-acciones-en-la-lucha-contra-l\"",
+  "text": "España ha sido criticada por la UE por su falta de acciones en la lucha contra la corrupción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d3dccfa7f53f"
+  ]
+}

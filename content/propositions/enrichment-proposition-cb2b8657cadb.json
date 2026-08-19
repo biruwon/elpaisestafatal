@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb2b8657cadb",
+  "claimSlug": "\"modelo-por-que-no-se-hace-mas-para-combatir-el-robo-de-combustible-en-las-estaciones-de\"",
+  "text": "¿Por qué no se hace más para combatir el robo de combustible en las estaciones de servicio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4d40dde7b72"
+  ]
+}

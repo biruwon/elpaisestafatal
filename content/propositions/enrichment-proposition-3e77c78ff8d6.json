@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e77c78ff8d6",
+  "claimSlug": "\"modelo-la-falta-de-senalizacion-en-los-lugares-turisticos-es-un-problema-cronico-y-frus\"",
+  "text": "La falta de señalización en los lugares turísticos es un problema crónico y frustrante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c65774571772"
+  ]
+}

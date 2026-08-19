@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a778872e0a72",
+  "claimSlug": "\"modelo-la-inflacion-esta-de-cona-a-cuando-llega-el-alza-generalizada\"",
+  "text": "La inflación está de coña, ¿a cuándo llega el alza generalizada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5d9e4159a7a"
+  ]
+}

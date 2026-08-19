@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b27ef786cbd",
+  "claimSlug": "\"modelo-la-region-de-pais-vasco-ha-visto-como-su-autonomia-se-ha-debilitado-en-las-ultim\"",
+  "text": "La región de País Vasco ha visto cómo su autonomía se ha debilitado en las últimas décadas, perdiendo poder y recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c8ff6e9ba47b"
+  ]
+}

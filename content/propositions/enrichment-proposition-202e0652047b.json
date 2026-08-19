@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-202e0652047b",
+  "claimSlug": "\"modelo-por-que-en-espana-no-hay-mas-tecnologias-de-ventilacion-automatizada-en-vivienda\"",
+  "text": "¿Por qué en España no hay más tecnologías de ventilación automatizada en viviendas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0cd6ed46f026"
+  ]
+}

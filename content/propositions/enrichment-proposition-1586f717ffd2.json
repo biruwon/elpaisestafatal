@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1586f717ffd2",
+  "claimSlug": "\"modelo-la-tasa-de-paro-juvenil-en-espana-sigue-siendo-muy-alta-mas-de-la-mitad-de-los-j\"",
+  "text": "La tasa de paro juvenil en España sigue siendo muy alta, más de la mitad de los jóvenes no tienen trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c5d2757c6b9"
+  ]
+}

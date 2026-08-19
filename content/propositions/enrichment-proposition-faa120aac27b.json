@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-faa120aac27b",
+  "claimSlug": "\"modelo-la-calidad-del-servicio-en-los-aeropuertos-mejora-poco-a-poco\"",
+  "text": "La calidad del servicio en los aeropuertos mejora poco a poco.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b1a6ea45b5e8"
+  ]
+}

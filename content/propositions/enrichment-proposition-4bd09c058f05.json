@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bd09c058f05",
+  "claimSlug": "\"modelo-a-pesar-del-crecimiento-economico-no-vemos-como-nuestras-vidas-se-estan-haciendo\"",
+  "text": "A pesar del crecimiento económico, no vemos cómo nuestras vidas se están haciendo más fáciles o cómodas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-168dac0b78d5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4e8aa6555710",
+  "claimSlug": "\"modelo-el-precio-de-las-tarifas-electricas-sube-cada-ano-y-no-hay-garantias-de-que-vaya\"",
+  "text": "El precio de las tarifas eléctricas sube cada año y no hay garantías de que vayan a bajar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b28adfbe3ef0"
+  ]
+}

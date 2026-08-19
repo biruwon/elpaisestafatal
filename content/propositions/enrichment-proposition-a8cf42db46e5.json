@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8cf42db46e5",
+  "claimSlug": "\"modelo-la-desigualdad-en-el-acceso-a-internet-en-zonas-rurales-es-tan-grande-que-se-sie\"",
+  "text": "La desigualdad en el acceso a Internet en zonas rurales es tan grande que se siente como estar en el siglo pasado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a35b5b506ea1"
+  ]
+}

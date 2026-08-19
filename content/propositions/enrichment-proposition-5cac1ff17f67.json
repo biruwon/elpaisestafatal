@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5cac1ff17f67",
+  "claimSlug": "\"modelo-espana-esta-sufriendo-las-consecuencias-de-la-inaccion-de-la-ue-frente-a-la-cris\"",
+  "text": "España está sufriendo las consecuencias de la inacción de la UE frente a la crisis migratoria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ceb9b8c4c109"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10eea0757af0",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-de-empleo-ha-llevado-a-muchos-a-emigrar-en-busca-de-me\"",
+  "text": "La falta de oportunidades de empleo ha llevado a muchos a emigrar en busca de mejores condiciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-69aa9ad221ca"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c6af5b2cda55",
+  "claimSlug": "\"modelo-los-trenes-de-cercanias-en-muchas-zonas-son-tan-lentos-que-es-mas-rapido-ir-en-c\"",
+  "text": "Los trenes de cercanías en muchas zonas son tan lentos que es más rápido ir en coche, incluso con el tráfico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c245729ce064"
+  ]
+}

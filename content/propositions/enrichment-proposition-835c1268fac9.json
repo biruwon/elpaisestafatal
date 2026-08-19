@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-835c1268fac9",
+  "claimSlug": "\"modelo-por-que-en-algunos-barrios-se-ven-tanto-abandono-y-falta-de-mantenimiento-de-las\"",
+  "text": "¿Por qué en algunos barrios se ven tanto abandono y falta de mantenimiento de las calles y edificios, mientras que en otros todo está en perfecto estado?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8b41ffd9c9ff"
+  ]
+}

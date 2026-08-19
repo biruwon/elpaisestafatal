@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5962dbf09aeb",
+  "claimSlug": "\"modelo-la-jornada-laboral-en-espana-es-demasiado-larga-no-se-respeta-el-fin-de-semana\"",
+  "text": "La jornada laboral en España es demasiado larga, no se respeta el fin de semana.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c2e2d5b786da"
+  ]
+}

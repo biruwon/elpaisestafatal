@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59940c72e770",
+  "claimSlug": "\"modelo-los-servicios-de-atencion-a-la-infancia-estan-sobrecargados-y-carecen-de-recurso\"",
+  "text": "Los servicios de atención a la infancia están sobrecargados y carecen de recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-263ed7130ca8"
+  ]
+}

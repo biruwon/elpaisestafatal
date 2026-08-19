@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8d1c76c132d",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-la-competencia-en-el-mercado-laboral\"",
+  "text": "La inmigración está aumentando la competencia en el mercado laboral.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9481f8c3f7d1"
+  ]
+}

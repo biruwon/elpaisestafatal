@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-69f38c2b3381",
+  "claimSlug": "\"modelo-la-falta-de-apoyo-en-las-escuelas-esta-llevando-a-muchos-ninos-a-quedarse-en-cas\"",
+  "text": "La falta de apoyo en las escuelas está llevando a muchos niños a quedarse en casa por temor a enfrentarse a situaciones de acoso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-273ab8893953"
+  ]
+}

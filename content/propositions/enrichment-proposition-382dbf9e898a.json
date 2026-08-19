@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-382dbf9e898a",
+  "claimSlug": "\"modelo-la-falta-de-especialistas-en-areas-como-la-dermatologia-esta-provocando-que-los-\"",
+  "text": "La falta de especialistas en áreas como la dermatología está provocando que los pacientes esperen meses para consulta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-704b01d1c5e3"
+  ]
+}

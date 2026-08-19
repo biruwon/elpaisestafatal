@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-508868a9bf42",
+  "claimSlug": "\"modelo-es-justo-que-los-incendios-forestales-dejen-tanta-ruina-en-los-bosques-espanoles\"",
+  "text": "¿Es justo que los incendios forestales dejen tanta ruina en los bosques españoles si el gobierno no invierte más en su control y prevención?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d0b97694ddd7"
+  ]
+}

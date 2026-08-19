@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79335f37a57b",
+  "claimSlug": "\"modelo-el-incremento-del-ipc-esta-perjudicando-seriamente-la-capacidad-de-compra-de-los\"",
+  "text": "El incremento del IPC está perjudicando seriamente la capacidad de compra de los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a3d8e84687f8"
+  ]
+}

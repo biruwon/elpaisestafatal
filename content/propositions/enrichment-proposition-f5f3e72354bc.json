@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5f3e72354bc",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agotando-los-recursos-y-dejando-a-los-nativos-sin-oportunida\"",
+  "text": "La inmigración está agotando los recursos y dejando a los nativos sin oportunidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-372b8261b27e"
+  ]
+}

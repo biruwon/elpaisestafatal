@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3398042e127d",
+  "claimSlug": "\"modelo-los-recortes-presupuestarios-en-educacion-han-perjudicado-seriamente-la-calidad-\"",
+  "text": "Los recortes presupuestarios en educación han perjudicado seriamente la calidad de la enseñanza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-687e717092b2"
+  ]
+}

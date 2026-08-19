@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-42c89b5be792",
+  "claimSlug": "\"modelo-los-servicios-sociales-estan-sobreabrumados-y-no-pueden-atender-a-todos-que-nece\"",
+  "text": "Los servicios sociales están sobreabrumados y no pueden atender a todos que necesitan ayuda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-88b273d022f3"
+  ]
+}

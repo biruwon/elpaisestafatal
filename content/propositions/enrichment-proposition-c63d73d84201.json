@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c63d73d84201",
+  "claimSlug": "\"modelo-a-pesar-del-aumento-de-la-productividad-los-salarios-no-suben-y-estamos-perdiend\"",
+  "text": "A pesar del aumento de la productividad, los salarios no suben y estamos perdiendo poder adquisitivo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d422dd88dec2"
+  ]
+}

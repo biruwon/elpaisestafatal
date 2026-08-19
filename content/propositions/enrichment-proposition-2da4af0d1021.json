@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2da4af0d1021",
+  "claimSlug": "\"modelo-el-sueldo-no-alcanza-ni-para-cubrir-el-alquiler-que-cada-vez-es-mas-caro\"",
+  "text": "El sueldo no alcanza ni para cubrir el alquiler, que cada vez es más caro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e418ee74afaf"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b479623bbc69",
+  "claimSlug": "\"modelo-las-infraestructuras-de-transporte-en-espana-son-un-desastre-con-tantas-carreter\"",
+  "text": "Las infraestructuras de transporte en España son un desastre, con tantas carreteras en mal estado que resulta peligroso circular por ellas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db80fcb61ce2"
+  ]
+}

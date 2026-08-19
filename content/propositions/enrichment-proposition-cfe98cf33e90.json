@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfe98cf33e90",
+  "claimSlug": "\"modelo-el-gasoil-en-espana-es-mucho-mas-caro-que-en-paises-vecinos-lo-que-afecta-a-los-\"",
+  "text": "El gasoil en España es mucho más caro que en países vecinos, lo que afecta a los precios de la calefacción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea89a21f430d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2442a659182c",
+  "claimSlug": "\"modelo-el-gasto-en-educacion-no-ha-mejorado-a-pesar-de-que-el-presupuesto-para-este-sec\"",
+  "text": "El gasto en educación no ha mejorado a pesar de que el presupuesto para este sector ha crecido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7694e1a36c0"
+  ]
+}

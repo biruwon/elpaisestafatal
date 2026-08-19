@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-251a0c24591a",
+  "claimSlug": "\"modelo-los-impuestos-son-demasiado-altos-y-solo-suben-no-bajan\"",
+  "text": "Los impuestos son demasiado altos y solo suben, no bajan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-90036b06c472"
+  ]
+}

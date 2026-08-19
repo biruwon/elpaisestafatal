@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4894d0c49cc",
+  "claimSlug": "\"modelo-las-pensiones-estan-estallando-por-la-inmigracion\"",
+  "text": "Las pensiones están estallando por la inmigración.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6562e1b834c"
+  ]
+}

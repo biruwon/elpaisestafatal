@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a566dd5602a",
+  "claimSlug": "\"modelo-la-subida-de-la-electricidad-es-un-lastre-constante-en-los-presupuestos-familiar\"",
+  "text": "La subida de la electricidad es un lastre constante en los presupuestos familiares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fc88481d294e"
+  ]
+}

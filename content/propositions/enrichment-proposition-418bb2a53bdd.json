@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-418bb2a53bdd",
+  "claimSlug": "\"modelo-los-campos-de-olivos-de-andalucia-estan-llenos-de-basura-y-desperdicio-quien-se-\"",
+  "text": "Los campos de olivos de Andalucía están llenos de basura y desperdicio, ¿quién se encarga de la limpieza?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9fc114834dde"
+  ]
+}

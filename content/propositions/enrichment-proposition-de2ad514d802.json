@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de2ad514d802",
+  "claimSlug": "\"modelo-la-espera-para-recibir-prestaciones-por-desempleo-es-demasiado-larga-y-resulta-d\"",
+  "text": "La espera para recibir prestaciones por desempleo es demasiado larga y resulta desalentadora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bc91970637e1"
+  ]
+}

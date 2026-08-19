@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eb14cf62ddfa",
+  "claimSlug": "\"modelo-la-gestion-forestal-negligente-contribuye-al-aumento-de-los-incendios-y-su-grave\"",
+  "text": "La gestión forestal negligente contribuye al aumento de los incendios y su gravedad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-840115550071"
+  ]
+}

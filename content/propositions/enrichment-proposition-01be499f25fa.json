@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-01be499f25fa",
+  "claimSlug": "\"modelo-la-dependencia-de-la-energia-nuclear-esta-poniendo-en-riesgo-la-seguridad-alimen\"",
+  "text": "La dependencia de la energía nuclear está poniendo en riesgo la seguridad alimentaria de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9df50d01f629"
+  ]
+}

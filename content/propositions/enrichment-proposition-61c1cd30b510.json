@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61c1cd30b510",
+  "claimSlug": "\"modelo-hay-un-exceso-de-inmigrantes-no-autorizados-que-causan-problemas-de-seguridad-y-\"",
+  "text": "Hay un exceso de inmigrantes no autorizados que causan problemas de seguridad y delincuencia en muchas ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-675609e27612"
+  ]
+}

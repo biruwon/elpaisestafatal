@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0230efbb9ea2",
+  "claimSlug": "\"modelo-las-listas-de-espera-para-cirugias-urgentes-en-espana-estan-alucinantes-y-van-a-\"",
+  "text": "Las listas de espera para cirugías urgentes en España están alucinantes y van a peor año tras año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-031841627ef0"
+  ]
+}

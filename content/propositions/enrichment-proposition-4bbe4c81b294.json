@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bbe4c81b294",
+  "claimSlug": "\"modelo-los-precios-de-la-vivienda-en-espana-siguen-siendo-altos-en-las-ciudades-costera\"",
+  "text": "Los precios de la vivienda en España siguen siendo altos en las ciudades costeras",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22c10bf30b1a"
+  ]
+}

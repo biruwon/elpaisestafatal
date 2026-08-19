@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7028d1ace399",
+  "claimSlug": "\"modelo-las-escuelas-estan-tan-sobrepobladas-que-los-ninos-no-tienen-espacio-para-sentar\"",
+  "text": "Las escuelas están tan sobrepobladas que los niños no tienen espacio para sentarse en el piso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-25bf7f579f92"
+  ]
+}

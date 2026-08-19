@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-60dc2dbc216b",
+  "claimSlug": "\"modelo-el-gasto-de-espana-en-la-ue-se-ha-incrementado-mas-que-el-aporte-de-fondos-perju\"",
+  "text": "El gasto de España en la UE se ha incrementado más que el aporte de fondos, perjudicando la economía nacional.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c93316ba2e43"
+  ]
+}

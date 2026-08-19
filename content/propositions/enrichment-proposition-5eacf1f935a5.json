@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5eacf1f935a5",
+  "claimSlug": "\"modelo-por-que-se-tarda-tanto-en-recibir-la-prestacion-por-desempleo\"",
+  "text": "¿Por qué se tarda tanto en recibir la prestación por desempleo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a78043d51b39"
+  ]
+}

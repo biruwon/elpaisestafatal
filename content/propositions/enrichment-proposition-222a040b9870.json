@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-222a040b9870",
+  "claimSlug": "\"modelo-el-ave-no-conecta-todas-las-ciudades-espanolas\"",
+  "text": "El AVE no conecta todas las ciudades españolas",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-600eb85869f6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-495ecc56f368",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-de-la-electricidad-esta-haciendo-que-ahorremos-menos-y-\"",
+  "text": "La subida de los precios de la electricidad está haciendo que ahorremos menos y paguemos más.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eb9beab3aea1"
+  ]
+}

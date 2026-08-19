@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a476ac48f872",
+  "claimSlug": "\"modelo-por-que-en-espana-el-alquiler-sigue-subiendo-sin-control-mientras-los-salarios-n\"",
+  "text": "¿Por qué en España el alquiler sigue subiendo sin control mientras los salarios no crecen?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-259b3297f941"
+  ]
+}

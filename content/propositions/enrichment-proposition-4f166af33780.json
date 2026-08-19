@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f166af33780",
+  "claimSlug": "\"modelo-que-pasa-con-tantos-impuestos-si-el-gobierno-no-reduce-la-burocracia-y-los-trami\"",
+  "text": "¿Qué pasa con tantos impuestos si el gobierno no reduce la burocracia y los trámites engorrosos?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d49f6e54781c"
+  ]
+}

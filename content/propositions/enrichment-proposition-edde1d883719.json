@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-edde1d883719",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-no-se-adapta-a-las-necesidades-actuales-de-los-c\"",
+  "text": "El sistema de protección social no se adapta a las necesidades actuales de los ciudadanos, con muchos servicios subutilizados o inadecuados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1b341f829032"
+  ]
+}

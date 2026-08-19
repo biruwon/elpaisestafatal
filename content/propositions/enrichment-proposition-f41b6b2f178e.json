@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f41b6b2f178e",
+  "claimSlug": "\"modelo-la-precariedad-laboral-en-espana-se-ha-incrementado-mucho-en-los-ultimos-anos\"",
+  "text": "La precariedad laboral en España se ha incrementado mucho en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-64d2dc26a044"
+  ]
+}

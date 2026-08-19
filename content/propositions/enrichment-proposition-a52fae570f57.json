@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a52fae570f57",
+  "claimSlug": "\"modelo-las-empresas-no-invierten-en-formacion-y-se-quedan-con-el-mismo-personal-desde-h\"",
+  "text": "Las empresas no invierten en formación y se quedan con el mismo personal desde hace años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8075e292f4e3"
+  ]
+}

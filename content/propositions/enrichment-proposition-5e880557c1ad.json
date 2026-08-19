@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e880557c1ad",
+  "claimSlug": "\"modelo-las-carreteras-secundarias-estan-llenas-de-baches-lo-que-hace-que-el-viaje-sea-u\"",
+  "text": "Las carreteras secundarias están llenas de baches, lo que hace que el viaje sea un infierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c58a4fd41f16"
+  ]
+}

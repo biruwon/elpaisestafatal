@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-57227e683c64",
+  "claimSlug": "\"modelo-la-subida-de-las-tarifas-de-luz-esta-haciendo-que-muchas-familias-se-vean-obliga\"",
+  "text": "La subida de las tarifas de luz está haciendo que muchas familias se vean obligadas a apagar las luces por la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e400c44fc8d"
+  ]
+}

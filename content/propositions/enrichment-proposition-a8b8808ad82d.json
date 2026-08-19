@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8b8808ad82d",
+  "claimSlug": "\"modelo-el-sistema-de-fiscalia-en-espana-parece-estar-sesgado-hacia-los-acusados-ya-que-\"",
+  "text": "El sistema de fiscalía en España parece estar sesgado hacia los acusados, ya que a veces se les exime de responsabilidad sin justa causa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fb3f5de0418e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-46e94c3f741c",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-desastre-educativo-con-tantos-ninos-en-las-aulas\"",
+  "text": "La inmigración está causando un desastre educativo con tantos niños en las aulas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8ec75dc862ec"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3d79e6e25f75",
+  "claimSlug": "\"modelo-los-precios-de-las-huertas-familiares-en-espana-estan-subiendo-de-manera-alarman\"",
+  "text": "Los precios de las huertas familiares en España están subiendo de manera alarmante, haciendo que la verdura sea un lujo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bfacb53ddba8"
+  ]
+}

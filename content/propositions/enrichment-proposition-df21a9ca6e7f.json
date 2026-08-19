@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df21a9ca6e7f",
+  "claimSlug": "\"modelo-las-condiciones-de-los-centros-de-acogida-son-horribles-los-inmigrantes-estan-en\"",
+  "text": "Las condiciones de los centros de acogida son horribles, los inmigrantes están en peligro de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-109a9c398379"
+  ]
+}

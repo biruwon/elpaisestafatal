@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9adb255a9007",
+  "claimSlug": "\"modelo-las-pensiones-en-espana-estan-muy-ajustadas-con-muchas-personas-a-punto-de-queda\"",
+  "text": "Las pensiones en España están muy ajustadas, con muchas personas a punto de quedarse sin dinero al jubilarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bab148e52284"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe5f7740e2b5",
+  "claimSlug": "\"modelo-como-es-posible-que-el-precio-del-pan-suba-tanto-si-la-economia-esta-en-crecimie\"",
+  "text": "¿Cómo es posible que el precio del pan suba tanto si la economía está en crecimiento?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fc41d3fa58a0"
+  ]
+}

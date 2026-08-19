@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-08eb96fd4807",
+  "claimSlug": "\"modelo-las-rutas-de-metro-y-autobus-estan-llenas-de-delincuentes-lo-que-hace-que-viajar\"",
+  "text": "Las rutas de metro y autobús están llenas de delincuentes, lo que hace que viajar en transporte público sea un peligro constante.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-9c8ecc18939a"
+  ]
+}

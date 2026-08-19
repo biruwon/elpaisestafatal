@@ -4,21 +4,22 @@ claim: "La demora en la sanidad pública ha llevado a que los pacientes se sient
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["sentirse desvalorizados","sentirse olvidados","atención insuficiente","valoración insuficiente","tratamiento despreciado","La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.","¿Es cierto que La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","¿Qué datos permiten comprobar si La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","Quiero saber si La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.","¿Cómo se puede verificar La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","¿Hay evidencia sobre si La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","¿Es verdad que La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","¿Qué sabemos de La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?","¿Se sostiene la afirmación de que La demora en la sanidad pública ha llevado a que los pacientes se sientan desvalorizados y olvidados.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-65087c24cc94"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la demora en la sanidad publica ha llevado a que los pacientes se sientan desvalorizados y olvidados"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0a2f90fb55e0"]
 ---
 
 ## Qué es cierto

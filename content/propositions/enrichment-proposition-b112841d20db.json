@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b112841d20db",
+  "claimSlug": "\"modelo-por-que-los-impuestos-a-los-coches-electricos-son-mas-altos-que-los-de-los-coche\"",
+  "text": "¿Por qué los impuestos a los coches eléctricos son más altos que los de los coches de gasolina?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3be2258a307a"
+  ]
+}

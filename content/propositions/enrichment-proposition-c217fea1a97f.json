@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c217fea1a97f",
+  "claimSlug": "\"modelo-el-paro-juvenil-esta-cada-vez-mas-alto-y-los-jovenes-estan-atrapados-en-el-circu\"",
+  "text": "El paro juvenil está cada vez más alto y los jóvenes están atrapados en el círculo vicioso del paro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-29715b8c1dc9"
+  ]
+}

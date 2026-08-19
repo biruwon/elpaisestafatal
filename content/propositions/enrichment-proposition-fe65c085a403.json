@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe65c085a403",
+  "claimSlug": "\"modelo-la-ue-no-ha-hecho-lo-suficiente-para-combatir-el-fraude-fiscal-en-espana\"",
+  "text": "La UE no ha hecho lo suficiente para combatir el fraude fiscal en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-506a252f3e79"
+  ]
+}

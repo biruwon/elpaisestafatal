@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9668919a4d18",
+  "claimSlug": "\"modelo-la-inflacion-esta-arruinando-nuestras-vacaciones-en-el-extranjero\"",
+  "text": "La inflación está arruinando nuestras vacaciones en el extranjero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e5521be2b74"
+  ]
+}

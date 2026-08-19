@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-42a616f34db7",
+  "claimSlug": "\"modelo-el-atraso-en-la-implantacion-de-tecnologias-de-vivienda-inteligente-esta-dejando\"",
+  "text": "El atraso en la implantación de tecnologías de vivienda inteligente está dejando a España en un estado de obsolescencia tecnológica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df0d23595bd6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-99b81b6a029f",
+  "claimSlug": "\"modelo-los-recortes-en-la-jornada-laboral-han-afectado-negativamente-a-los-salarios\"",
+  "text": "Los recortes en la jornada laboral han afectado negativamente a los salarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c06f28f84af7"
+  ]
+}

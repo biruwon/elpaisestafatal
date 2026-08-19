@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b5f26b1a1b4f",
+  "claimSlug": "\"modelo-el-gasto-en-campanas-electorales-esta-subiendo-pero-la-corrupcion-no-se-toca\"",
+  "text": "El gasto en campañas electorales está subiendo pero la corrupción no se toca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b46bf6b6347"
+  ]
+}

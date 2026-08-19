@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bc705030359d",
+  "claimSlug": "\"modelo-la-sanidad-no-responde-a-tiempo-siempre-me-toca-esperar-meses-para-cirugias-norm\"",
+  "text": "¡La sanidad no responde a tiempo, siempre me toca esperar meses para cirugías normales!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-917b1a543cab"
+  ]
+}

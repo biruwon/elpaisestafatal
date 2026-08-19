@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5dac2990e921",
+  "claimSlug": "\"modelo-los-robos-en-los-supermercados-de-madrid-son-muy-frecuentes-lo-que-genera-miedo-\"",
+  "text": "Los robos en los supermercados de Madrid son muy frecuentes, lo que genera miedo entre los clientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-05852b96836c"
+  ]
+}

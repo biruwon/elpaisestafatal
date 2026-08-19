@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f9a46a5741e9",
+  "claimSlug": "\"modelo-los-casos-de-corrupcion-en-contratacion-publica-son-tan-comunes-que-la-gente-ya-\"",
+  "text": "Los casos de corrupción en contratación pública son tan comunes que la gente ya no se sorprende ni informa sobre ellos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5681177bb2f5"
+  ]
+}

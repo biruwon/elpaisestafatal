@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-db0723791e1f",
+  "claimSlug": "\"modelo-el-cambio-a-las-renovables-en-espana-ha-aumentado-el-coste-de-la-electricidad\"",
+  "text": "El cambio a las renovables en España ha aumentado el coste de la electricidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76d42ec7fbad"
+  ]
+}

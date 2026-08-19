@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dddb0b4f943d",
+  "claimSlug": "\"modelo-es-comun-que-los-pacientes-acudan-a-urgencias-por-problemas-que-podrian-atenders\"",
+  "text": "Es común que los pacientes acudan a urgencias por problemas que podrían atenderse en la consulta ordinaria",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-69164763781e"
+  ]
+}

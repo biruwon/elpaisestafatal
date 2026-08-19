@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c519bbb1165d",
+  "claimSlug": "\"modelo-la-tasa-de-paro-en-espana-es-alta-y-se-ha-mantenido-estable-durante-anos\"",
+  "text": "La tasa de paro en España es alta y se ha mantenido estable durante años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c3f44455e827"
+  ]
+}

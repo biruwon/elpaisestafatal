@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2da7bc0cf6b",
+  "claimSlug": "\"modelo-en-espana-la-pobreza-en-zonas-rurales-es-tan-cronica-que-las-tiendas-de-ultramar\"",
+  "text": "En España, la pobreza en zonas rurales es tan crónica que las tiendas de ultramarinos son el único servicio que cierran en invierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e439c3f63a41"
+  ]
+}

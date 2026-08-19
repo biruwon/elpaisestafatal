@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd05b47ddf32",
+  "claimSlug": "\"modelo-las-listas-de-espera-son-un-problema-que-afecta-a-todos-los-ciudadanos\"",
+  "text": "Las listas de espera son un problema que afecta a todos los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3f33a85e9d9f"
+  ]
+}

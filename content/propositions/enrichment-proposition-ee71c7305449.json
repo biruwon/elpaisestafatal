@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee71c7305449",
+  "claimSlug": "\"modelo-la-ciudad-de-la-velazquez-en-madrid-es-un-complejo-de-transporte-y-ocio-que-reun\"",
+  "text": "La Ciudad de la Velázquez en Madrid es un complejo de transporte y ocio que reúne a varios medios de transporte en un solo lugar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a728e30c008e"
+  ]
+}

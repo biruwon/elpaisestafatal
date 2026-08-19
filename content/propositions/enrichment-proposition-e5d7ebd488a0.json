@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e5d7ebd488a0",
+  "claimSlug": "\"modelo-los-planes-de-ajuste-economicos-del-gobierno-han-provocado-una-reduccion-en-el-e\"",
+  "text": "Los planes de ajuste económicos del gobierno han provocado una reducción en el empleo en ciertos sectores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6bcc8b151cb8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1b1efc2514e4",
+  "claimSlug": "\"modelo-las-politicas-de-recorte-de-empleo-han-hecho-que-las-empresas-prefieran-contrata\"",
+  "text": "Las políticas de recorte de empleo han hecho que las empresas prefieran contratar temporales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7530c273a1a6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b785189d4497",
+  "claimSlug": "\"modelo-los-servicios-sociales-no-cubren-completamente-las-necesidades-de-las-personas-m\"",
+  "text": "Los servicios sociales no cubren completamente las necesidades de las personas más vulnerables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0113edaf3f3d"
+  ]
+}

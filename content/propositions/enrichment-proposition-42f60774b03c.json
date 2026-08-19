@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-42f60774b03c",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-esta-dejando-a-muchas-personas-en-la-miseria-y-s\"",
+  "text": "El sistema de protección social está dejando a muchas personas en la miseria y sin apoyo en la vejez.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3eaab440f85"
+  ]
+}

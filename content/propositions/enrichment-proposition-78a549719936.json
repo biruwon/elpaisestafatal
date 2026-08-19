@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78a549719936",
+  "claimSlug": "\"modelo-la-precariedad-laboral-es-tan-extrema-que-la-gente-trabaja-todos-los-dias-del-an\"",
+  "text": "La precariedad laboral es tan extrema que la gente trabaja todos los días del año, incluso en festivos, y aún así no llega a fin de mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d33f62edf52c"
+  ]
+}

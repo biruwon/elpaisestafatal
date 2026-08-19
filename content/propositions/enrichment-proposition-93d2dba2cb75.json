@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-93d2dba2cb75",
+  "claimSlug": "\"modelo-la-politica-de-ayudas-a-la-pesca-se-esta-quedando-en-el-norte-dejando-al-sur-con\"",
+  "text": "La política de ayudas a la pesca se está quedando en el norte, dejando al sur con la marea roja y el acoso pesquero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3da63b13f664"
+  ]
+}

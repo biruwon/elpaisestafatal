@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9c6eaf8b8ef7",
+  "claimSlug": "\"modelo-la-infraestructura-turistica-en-las-zonas-rurales-de-espana-es-deficiente-lo-que\"",
+  "text": "La infraestructura turística en las zonas rurales de España es deficiente, lo que perjudica la promoción del turismo rural.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e584541e7485"
+  ]
+}

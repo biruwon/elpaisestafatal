@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cc1a5ccac756",
+  "claimSlug": "\"modelo-el-aumento-de-robos-en-el-centro-de-la-ciudad-esta-haciendo-que-la-gente-se-sien\"",
+  "text": "El aumento de robos en el centro de la ciudad está haciendo que la gente se sienta insegura y teman salir de sus casas de noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4cb2ab6d6d44"
+  ]
+}

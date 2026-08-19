@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad0e143a14b5",
+  "claimSlug": "\"modelo-las-ayudas-para-los-autonomos-son-escasas-y-poco-utiles-en-espana\"",
+  "text": "Las ayudas para los autónomos son escasas y poco útiles en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-12c9a0a31ef2"
+  ]
+}

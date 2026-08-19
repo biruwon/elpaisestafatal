@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d3e8fba60ed",
+  "claimSlug": "\"modelo-la-sequia-y-los-incendios-han-dejado-los-parques-verdes-como-ruinas-de-lo-que-al\"",
+  "text": "La sequía y los incendios han dejado los parques verdes como ruinas de lo que alguna vez fueron.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d156757dc780"
+  ]
+}

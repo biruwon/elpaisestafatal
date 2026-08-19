@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-6a03ca8f9b03"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana tiene una ley que obliga a las viviendas a aislarse para reducir costes energeticos"
 generatedAt: "2026-08-18T17:27:50.721Z"
+propositionIds: ["enrichment-proposition-6703630540c9"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7855caeb0913",
+  "claimSlug": "\"modelo-las-carreteras-secundarias-estan-llenas-de-baches-y-son-peligrosas\"",
+  "text": "Las carreteras secundarias están llenas de baches y son peligrosas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a895ec2ea38e"
+  ]
+}

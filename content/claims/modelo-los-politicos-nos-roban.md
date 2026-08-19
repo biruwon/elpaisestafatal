@@ -12,12 +12,13 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-a4e51628b081"]
 limitations: "Respuesta generada por IA; la acusación no identifica personas, hechos, expedientes ni periodo verificables."
 generatedBy: "codex-model-catalogue-expansion"
 generatedAt: "2026-08-18T00:00:00.000Z"
 semanticFingerprint: "los politicos nos roban"
+propositionIds: ["enrichment-proposition-b0e8b038c8d6"]
 ---
 
 ## Qué es cierto

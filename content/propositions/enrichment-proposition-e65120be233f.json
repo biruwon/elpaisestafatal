@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e65120be233f",
+  "claimSlug": "\"modelo-la-dependencia-de-las-energias-no-renovables-hace-que-los-precios-se-suban-de-ma\"",
+  "text": "La dependencia de las energías no renovables hace que los precios se suban de manera impredecible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ffb09a69790f"
+  ]
+}

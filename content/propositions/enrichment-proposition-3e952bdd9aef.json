@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e952bdd9aef",
+  "claimSlug": "\"modelo-la-sanidad-en-espana-deberia-garantizar-atencion-inmediata-no-dejar-a-las-person\"",
+  "text": "La sanidad en España debería garantizar atención inmediata, no dejar a las personas a merced de las listas de espera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a116adff11a5"
+  ]
+}

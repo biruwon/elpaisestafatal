@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d37ea8bacdb",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-el-paisaje-urbano-y-la-arquitectura-de-las-ciudade\"",
+  "text": "La inmigración está cambiando el paisaje urbano y la arquitectura de las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efe73e541116"
+  ]
+}

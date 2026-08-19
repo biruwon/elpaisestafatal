@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd1ff65b92f6",
+  "claimSlug": "\"modelo-los-incendios-forestales-en-espana-estan-aumentando-mucho-y-el-gobierno-no-hace-\"",
+  "text": "Los incendios forestales en España están aumentando mucho y el gobierno no hace nada al respecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-180ebaf4de54"
+  ]
+}

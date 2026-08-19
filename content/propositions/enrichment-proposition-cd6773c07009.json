@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd6773c07009",
+  "claimSlug": "\"modelo-el-salario-minimo-en-espana-no-alcanza-para-vivir-dignamente\"",
+  "text": "El salario mínimo en España no alcanza para vivir dignamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efc6706ac7d7"
+  ]
+}

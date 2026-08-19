@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff3ccf99ad2f",
+  "claimSlug": "\"modelo-las-subidas-de-precios-del-alquiler-son-demasiado-frecuentes-y-muy-grandes-hacie\"",
+  "text": "Las subidas de precios del alquiler son demasiado frecuentes y muy grandes, haciendo imposible mantener un alquiler estable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7224674a1c9b"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "¿Por qué se gastan tantos millones en publicidad gubernamental mientra
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["¿Gobiernos gastan mucho en publicidad y poco en servicios?","¿Por qué se gastan millones en publicidad y se recortan servicios?","¿Gobiernos gastan en publicidad y recortan servicios?","¿Publicidad gobierna mientras se recortan servicios?","¿Gobiernos invierten en publicidad y recortan servicios?","¿Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos","¿Es cierto que Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","¿Qué datos permiten comprobar si Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","Quiero saber si Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos","¿Cómo se puede verificar Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","¿Hay evidencia sobre si Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","¿Es verdad que Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","¿Qué sabemos de Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?","¿Se sostiene la afirmación de que Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-2879d7f727e9"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios publicos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0dca65ea6d61"]
 ---
 
 ## Qué es cierto

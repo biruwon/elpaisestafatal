@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-172d31712569",
+  "claimSlug": "\"modelo-la-calefaccion-en-espana-es-un-lujo-que-no-se-puede-permitir\"",
+  "text": "La calefacción en España es un lujo que no se puede permitir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eddff5cb0996"
+  ]
+}

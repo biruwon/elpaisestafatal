@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-286eebe69fd1",
+  "claimSlug": "\"modelo-la-policia-responde-rapido-en-casos-de-robos-en-el-barrio\"",
+  "text": "¿La policía responde rápido en casos de robos en el barrio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-69795d8b93b0"
+  ]
+}

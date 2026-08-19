@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1be30fa67ea5",
+  "claimSlug": "\"modelo-la-agricultura-en-espana-esta-plagada-de-pesticidas-y-los-productos-son-muy-caro\"",
+  "text": "La agricultura en España está plagada de pesticidas y los productos son muy caros, especialmente en los supermercados de la zona rural.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b6b5c2cc578"
+  ]
+}

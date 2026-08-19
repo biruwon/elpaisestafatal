@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4816a2b28d4d",
+  "claimSlug": "\"modelo-la-situacion-de-las-listas-de-espera-es-tan-grave-que-incluso-los-pediatras-tien\"",
+  "text": "La situación de las listas de espera es tan grave que incluso los pediatras tienen pacientes en espera por temas no urgentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5edd39f4acc4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e230cc61631c",
+  "claimSlug": "\"modelo-la-despoblacion-en-las-islas-baleares-es-un-problema-grave-que-se-agrava-con-el-\"",
+  "text": "La despoblación en las Islas Baleares es un problema grave que se agrava con el turismo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-718ea071cf79"
+  ]
+}

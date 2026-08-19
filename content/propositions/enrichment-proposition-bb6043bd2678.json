@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb6043bd2678",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-mas-enfocado-en-las-grandes-empresas-que-en-las-py\"",
+  "text": "El crecimiento económico está más enfocado en las grandes empresas que en las pymes y autónomos que son los que realmente necesitan apoyo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-20801e0d47d5"
+  ]
+}

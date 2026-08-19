@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f376da2da7fb",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-numero-de-solicitantes-de-asilo-sin-un-plan-de\"",
+  "text": "La inmigración está aumentando el número de solicitantes de asilo sin un plan de integración.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cf2c04667737"
+  ]
+}

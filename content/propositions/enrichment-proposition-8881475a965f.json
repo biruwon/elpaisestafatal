@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8881475a965f",
+  "claimSlug": "\"modelo-es-cierto-que-el-turismo-en-espana-se-basa-principalmente-en-el-sol-y-playa-sin-\"",
+  "text": "¿Es cierto que el turismo en España se basa principalmente en el sol y playa, sin importar la región?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bef62cffae55"
+  ]
+}

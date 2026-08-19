@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0217611e2111",
+  "claimSlug": "\"modelo-en-espana-es-comun-ver-anuncios-de-trabajo-para-puestos-que-ya-existen-o-son-ine\"",
+  "text": "En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-6dda1a6e6775"
+  ]
+}

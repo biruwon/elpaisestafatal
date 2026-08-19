@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-53b4418eaaa9",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-todo-sea-mas-caro-y-nuestra-pasta-se-haga-cada-ve\"",
+  "text": "La inflación está haciendo que todo sea más caro y nuestra pasta se haga cada vez más escasa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-832149d7cde2"
+  ]
+}

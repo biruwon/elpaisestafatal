@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-496e8c53e8e7",
+  "claimSlug": "\"modelo-la-vivienda-en-alquiler-es-tan-cara-que-muchos-no-pueden-permitirsela\"",
+  "text": "La vivienda en alquiler es tan cara que muchos no pueden permitírsela.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-92991ade7678"
+  ]
+}

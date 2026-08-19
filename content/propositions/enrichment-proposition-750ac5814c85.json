@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-750ac5814c85",
+  "claimSlug": "\"modelo-el-coste-de-la-matricula-en-universidades-publicas-es-prohibitivo-para-muchos-es\"",
+  "text": "El coste de la matrícula en universidades públicas es prohibitivo para muchos estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c4b7e607e2a"
+  ]
+}

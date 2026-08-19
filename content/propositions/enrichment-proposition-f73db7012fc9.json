@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f73db7012fc9",
+  "claimSlug": "\"modelo-la-calidad-de-la-comida-en-los-restaurantes-turisticos-de-espana-es-cada-vez-peo\"",
+  "text": "La calidad de la comida en los restaurantes turísticos de España es cada vez peor, ¿es el resultado de la sobrecapacidad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2fca17f531e3"
+  ]
+}

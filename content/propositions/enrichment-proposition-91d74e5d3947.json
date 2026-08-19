@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-91d74e5d3947",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-electricidad-y-el-gas-son-excesivos-haciendolos-mas-costo\"",
+  "text": "Los impuestos sobre la electricidad y el gas son excesivos, haciéndolos más costosos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00f9ba6e62cb"
+  ]
+}

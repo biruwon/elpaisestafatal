@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d4da6c2f0e1",
+  "claimSlug": "\"modelo-se-ha-notado-un-incremento-en-el-numero-de-inmigrantes-que-solicitan-servicios-d\"",
+  "text": "Se ha notado un incremento en el número de inmigrantes que solicitan servicios de la policía y las fuerzas de seguridad, lo que ha aumentado la carga de trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f557443c398"
+  ]
+}

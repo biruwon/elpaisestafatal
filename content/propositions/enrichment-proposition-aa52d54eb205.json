@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa52d54eb205",
+  "claimSlug": "\"modelo-los-jovenes-estan-perdiendo-oportunidades-por-la-falta-de-programas-vocacionales\"",
+  "text": "Los jóvenes están perdiendo oportunidades por la falta de programas vocacionales en las escuelas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2371f3f9699e"
+  ]
+}

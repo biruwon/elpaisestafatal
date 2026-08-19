@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4da02d2b8bb6",
+  "claimSlug": "\"modelo-el-turismo-en-espana-es-mas-rentable-que-el-sector-agricola-en-terminos-de-ingre\"",
+  "text": "El turismo en España es más rentable que el sector agrícola en términos de ingresos por habitante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-424673652fd3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5507d588296",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-siendo-insuficiente-para-crear-nuevos-empleos\"",
+  "text": "El crecimiento económico está siendo insuficiente para crear nuevos empleos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76efeae473ce"
+  ]
+}

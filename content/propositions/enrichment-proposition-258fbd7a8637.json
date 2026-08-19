@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-258fbd7a8637",
+  "claimSlug": "\"modelo-en-muchos-centros-urbanos-las-tiendas-de-cercanias-estan-cerrando-dejando-a-los-\"",
+  "text": "En muchos centros urbanos, las tiendas de cercanías están cerrando, dejando a los vecinos sin acceso a productos básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3a8737229c5"
+  ]
+}

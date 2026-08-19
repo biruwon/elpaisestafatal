@@ -4,21 +4,22 @@ claim: "La falta de oportunidades laborales en zonas rurales agravia la pobreza 
 assessment: uncertain
 topicSlugs: ["pobreza y desigualdad"]
 aliases: ["Oportunidades laborales escasas","Trabajo rural difícil","Ruralidad desfavorecida","Oportunidades laborales limitadas","Zonas rurales marginadas","La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.","¿Es cierto que La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","¿Qué datos permiten comprobar si La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","Quiero saber si La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.","¿Cómo se puede verificar La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","¿Hay evidencia sobre si La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","¿Es verdad que La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","¿Qué sabemos de La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?","¿Se sostiene la afirmación de que La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-f8e8b707caa6"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de oportunidades laborales en zonas rurales agravia la pobreza rural"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0e9041a0d7f9"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7304a1aa5feb",
+  "claimSlug": "\"modelo-en-espana-el-precio-de-las-instalaciones-de-paneles-solares-es-tan-alto-que-pare\"",
+  "text": "En España, el precio de las instalaciones de paneles solares es tan alto que parece que el gobierno quiere que nadie se haga energías renovables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b32e106f77e0"
+  ]
+}

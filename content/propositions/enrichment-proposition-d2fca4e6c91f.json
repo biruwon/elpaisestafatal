@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2fca4e6c91f",
+  "claimSlug": "\"modelo-la-politica-de-vivienda-social-en-el-pais-vasco-no-llega-a-todos-los-que-necesit\"",
+  "text": "La política de vivienda social en el País Vasco no llega a todos los que necesitan, generando un sentimiento de injusticia y desigualdad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c42d764affc9"
+  ]
+}

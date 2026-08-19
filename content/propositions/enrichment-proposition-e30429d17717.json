@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e30429d17717",
+  "claimSlug": "\"modelo-la-policia-no-llega-a-tiempo-en-los-robos-de-coches-en-el-centro-de-madrid\"",
+  "text": "La policía no llega a tiempo en los robos de coches en el centro de Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8c519d582431"
+  ]
+}

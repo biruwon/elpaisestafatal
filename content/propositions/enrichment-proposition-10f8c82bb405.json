@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10f8c82bb405",
+  "claimSlug": "\"modelo-es-normal-que-un-traumatismo-de-tobillo-se-quede-en-lista-de-espera-durante-mese\"",
+  "text": "¿Es normal que un traumatismo de tobillo se quede en lista de espera durante meses?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8bce5544ce19"
+  ]
+}

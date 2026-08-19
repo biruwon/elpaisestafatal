@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c0e5fca41890",
+  "claimSlug": "\"modelo-los-profesores-en-espana-no-estan-suficientemente-formados-para-las-nuevas-tecno\"",
+  "text": "Los profesores en España no están suficientemente formados para las nuevas tecnologías y recursos digitales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-343d9b13b663"
+  ]
+}

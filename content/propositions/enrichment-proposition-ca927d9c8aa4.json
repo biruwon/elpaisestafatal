@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca927d9c8aa4",
+  "claimSlug": "\"modelo-la-ue-esta-mas-preocupada-por-las-normativas-ecologicas-que-por-la-economia-de-l\"",
+  "text": "La UE está más preocupada por las normativas ecológicas que por la economía de los países miembros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cf0f220fa180"
+  ]
+}

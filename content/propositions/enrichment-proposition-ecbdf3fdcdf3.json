@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ecbdf3fdcdf3",
+  "claimSlug": "\"modelo-por-que-en-espana-los-tribunales-son-tan-lentos-y-caoticos\"",
+  "text": "¿Por qué en España los tribunales son tan lentos y caóticos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e8d954a74f99"
+  ]
+}

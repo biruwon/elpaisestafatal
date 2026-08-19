@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-da754ac50fba",
+  "claimSlug": "\"modelo-por-que-los-medicos-no-paran-de-aumentar-las-listas-de-espera\"",
+  "text": "¿Por qué los médicos no paran de aumentar las listas de espera?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0c79ea0953d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-028adf58f49f",
+  "claimSlug": "\"modelo-la-tasa-de-desempleo-sigue-siendo-alta-y-los-jovenes-estan-teniendo-dificultades\"",
+  "text": "La tasa de desempleo sigue siendo alta y los jóvenes están teniendo dificultades para encontrar trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-30b178026f7e"
+  ]
+}

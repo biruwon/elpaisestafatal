@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a42148763146",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-en-espana-hace-que-las-personas-se-sientan-atrapadas-e\"",
+  "text": "La falta de oportunidades en España hace que las personas se sientan atrapadas en empleos de baja calidad o con contratos temporales de por vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1ee820ad9d52"
+  ]
+}

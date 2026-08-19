@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fb77a8b761d",
+  "claimSlug": "\"modelo-el-servicio-de-taxi-en-madrid-es-caro-y-a-veces-imposible-de-encontrar-especialm\"",
+  "text": "El servicio de taxi en Madrid es caro y a veces imposible de encontrar, especialmente en horas pico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f600eab1a4a2"
+  ]
+}

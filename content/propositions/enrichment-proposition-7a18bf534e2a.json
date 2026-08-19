@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7a18bf534e2a",
+  "claimSlug": "\"modelo-el-sistema-de-trenes-en-espana-es-muy-deficiente-con-frecuencias-inadecuadas-y-d\"",
+  "text": "El sistema de trenes en España es muy deficiente, con frecuencias inadecuadas y demoras constantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cdf8f0700fa8"
+  ]
+}

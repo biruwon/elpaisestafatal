@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1ea62bb5be79",
+  "claimSlug": "\"modelo-las-prestaciones-por-desempleo-son-un-fraude-duran-poco-y-no-sirven-para-nada\"",
+  "text": "Las prestaciones por desempleo son un fraude, duran poco y no sirven para nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a62cec005729"
+  ]
+}

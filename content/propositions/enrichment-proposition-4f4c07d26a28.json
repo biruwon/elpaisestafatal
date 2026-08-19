@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f4c07d26a28",
+  "claimSlug": "\"modelo-el-aforo-de-las-aulas-en-espana-esta-tan-sobrepasado-que-a-veces-los-ninos-no-ti\"",
+  "text": "El aforo de las aulas en España está tan sobrepasado que a veces los niños no tienen donde sentarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca34813524b2"
+  ]
+}

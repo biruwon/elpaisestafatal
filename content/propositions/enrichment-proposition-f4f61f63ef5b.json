@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4f61f63ef5b",
+  "claimSlug": "\"modelo-por-que-se-dedican-mas-recursos-al-turismo-que-a-la-mejora-de-las-carreteras-que\"",
+  "text": "¿Por qué se dedican más recursos al turismo que a la mejora de las carreteras que todos usamos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a63ce9f32799"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b99fbea2fa6",
+  "claimSlug": "\"modelo-los-precios-de-los-inmuebles-en-las-ciudades-mas-grandes-son-tan-desorbitados-qu\"",
+  "text": "Los precios de los inmuebles en las ciudades más grandes son tan desorbitados que la vivienda digna se convierte en un sueño lejano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-def88fd83c43"
+  ]
+}

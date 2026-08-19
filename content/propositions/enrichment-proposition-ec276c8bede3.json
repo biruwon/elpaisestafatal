@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ec276c8bede3",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-la-dependencia-de-las-ayudas-sociales-y-la-tasa-d\"",
+  "text": "La inmigración está aumentando la dependencia de las ayudas sociales y la tasa de natalidad está bajando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-77d65474bc73"
+  ]
+}

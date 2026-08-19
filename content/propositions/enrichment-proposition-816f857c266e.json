@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-816f857c266e",
+  "claimSlug": "\"modelo-los-centros-de-acogida-estan-sobrecargados-y-los-inmigrantes-tienen-que-esperar-\"",
+  "text": "Los centros de acogida están sobrecargados y los inmigrantes tienen que esperar largos periodos para tener un lugar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8c20fa3d8ec"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-16df800734da",
+  "claimSlug": "\"modelo-los-servicios-penitenciarios-no-garantizan-la-seguridad-ni-el-bienestar-de-los-r\"",
+  "text": "Los servicios penitenciarios no garantizan la seguridad ni el bienestar de los reclusos, lo que genera preocupación sobre la eficacia de los sistemas carcelarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-38964a7e7d72"
+  ]
+}

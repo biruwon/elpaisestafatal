@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1607b448a880",
+  "claimSlug": "\"modelo-los-productos-agricolas-espanoles-a-menudo-se-importan-de-otros-paises-a-pesar-d\"",
+  "text": "Los productos agrícolas españoles a menudo se importan de otros países a pesar de contar con mejores condiciones de producción locales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-67f6dd9f3fee"
+  ]
+}

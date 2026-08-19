@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b31fa30a2524",
+  "claimSlug": "\"modelo-las-estaciones-de-tren-en-espana-a-menudo-estan-llenas-hasta-el-tope-especialmen\"",
+  "text": "Las estaciones de tren en España a menudo están llenas hasta el tope, especialmente durante el horario de picos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3a69a496d5e"
+  ]
+}

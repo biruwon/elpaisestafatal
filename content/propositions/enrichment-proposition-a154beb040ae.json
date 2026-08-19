@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a154beb040ae",
+  "claimSlug": "\"modelo-la-situacion-del-paro-en-espana-parece-que-no-mejora-a-pesar-de-que-el-pais-ya-h\"",
+  "text": "La situación del paro en España parece que no mejora, a pesar de que el país ya ha pasado por crisis similares antes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5cb2b9b542c2"
+  ]
+}

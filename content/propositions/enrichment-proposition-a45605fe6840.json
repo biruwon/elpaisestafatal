@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a45605fe6840",
+  "claimSlug": "\"modelo-los-horarios-de-los-centros-educativos-son-un-desastre-y-no-encajan-con-las-nece\"",
+  "text": "Los horarios de los centros educativos son un desastre y no encajan con las necesidades de los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7e3c1629d934"
+  ]
+}

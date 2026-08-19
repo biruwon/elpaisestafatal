@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-84af5946a21a",
+  "claimSlug": "\"modelo-los-juicios-en-espana-son-muy-lentos-y-a-veces-los-delitos-no-se-juzgan-durante-\"",
+  "text": "Los juicios en España son muy lentos y a veces los delitos no se juzgan durante años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f8f968b95e1"
+  ]
+}

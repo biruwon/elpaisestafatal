@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e6d9779dc40",
+  "claimSlug": "\"modelo-los-trenes-de-alta-velocidad-a-veces-llegan-tarde-y-los-pasajeros-pierden-su-con\"",
+  "text": "Los trenes de alta velocidad a veces llegan tarde y los pasajeros pierden su conexión a Barcelona o Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-067f350d63d4"
+  ]
+}

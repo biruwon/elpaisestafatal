@@ -4,21 +4,22 @@ claim: "Los centros educativos no siempre tienen personal de apoyo suficiente pa
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["falta de personal de apoyo","inclusión educativa deficiente","apoyo insuficiente para estudiantes","personal de apoyo escaso","recursos humanos insuficientes","Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.","¿Es cierto que Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","¿Qué datos permiten comprobar si Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","Quiero saber si Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.","¿Cómo se puede verificar Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","¿Hay evidencia sobre si Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","¿Es verdad que Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","¿Qué sabemos de Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?","¿Se sostiene la afirmación de que Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-cfd677da7cbe"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusion"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-e907ee5b0af1"]
 ---
 
 ## Qué es cierto

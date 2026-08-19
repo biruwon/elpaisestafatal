@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ebdc925749bc",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-perjudicando-a-los-autonomos\"",
+  "text": "El crecimiento económico está perjudicando a los autónomos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e7da1b5ec667"
+  ]
+}

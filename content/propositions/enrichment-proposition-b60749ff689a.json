@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b60749ff689a",
+  "claimSlug": "\"modelo-las-estaciones-de-servicio-estan-muy-alejadas-entre-si-dificultando-el-viaje\"",
+  "text": "Las estaciones de servicio están muy alejadas entre sí, dificultando el viaje.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c2587defc99"
+  ]
+}

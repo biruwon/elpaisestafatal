@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e401b4f32095",
+  "claimSlug": "\"modelo-los-descuentos-para-consumos-reducidos-no-son-suficientes-para-aliviar-la-situac\"",
+  "text": "Los descuentos para consumos reducidos no son suficientes para aliviar la situación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3dcfabc0975a"
+  ]
+}

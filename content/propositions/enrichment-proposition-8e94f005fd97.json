@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e94f005fd97",
+  "claimSlug": "\"modelo-espana-tiene-que-ajustar-su-legislacion-para-adaptarse-a-las-normativas-de-la-ue\"",
+  "text": "España tiene que ajustar su legislación para adaptarse a las normativas de la UE, lo que afecta a nuestros servicios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-64801e0ed618"
+  ]
+}

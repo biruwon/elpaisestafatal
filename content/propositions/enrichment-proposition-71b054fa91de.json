@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71b054fa91de",
+  "claimSlug": "\"modelo-la-falta-de-mantenimiento-en-las-carreteras-de-mi-region-hace-que-se-produzcan-m\"",
+  "text": "La falta de mantenimiento en las carreteras de mi región hace que se produzcan muchos accidentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df51115a00db"
+  ]
+}

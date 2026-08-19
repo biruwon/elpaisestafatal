@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd48caf8a19d",
+  "claimSlug": "\"modelo-por-que-la-jornada-laboral-se-extiende-tanto-mas-cuando-hay-mas-horas-de-trabajo\"",
+  "text": "¿Por qué la jornada laboral se extiende tanto más cuando hay más horas de trabajo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c0a512a44e5e"
+  ]
+}

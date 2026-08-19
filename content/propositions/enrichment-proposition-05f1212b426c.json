@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-05f1212b426c",
+  "claimSlug": "\"modelo-el-subempleo-es-un-problema-importante-en-espana\"",
+  "text": "El subempleo es un problema importante en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1618684ef7b9"
+  ]
+}

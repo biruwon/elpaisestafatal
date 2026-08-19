@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c89d0d72c564",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-haciendo-que-la-gente-compre-menos-y-eso-esta-afectand\"",
+  "text": "La subida de precios está haciendo que la gente compre menos, y eso está afectando al comercio local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a1b53d8d4396"
+  ]
+}

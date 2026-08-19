@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3d2574a1999",
+  "claimSlug": "\"modelo-las-decisiones-de-la-ue-sobre-la-agricultura-afectan-negativamente-a-los-product\"",
+  "text": "Las decisiones de la UE sobre la agricultura afectan negativamente a los productores españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d39af266fc6"
+  ]
+}

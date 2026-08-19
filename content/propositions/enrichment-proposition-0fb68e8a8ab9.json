@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0fb68e8a8ab9",
+  "claimSlug": "\"modelo-los-alquileres-en-la-sierra-de-guadarrama-estan-muy-altos-para-los-agricultores-\"",
+  "text": "Los alquileres en la Sierra de Guadarrama están muy altos para los agricultores locales.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-01181f38041c"
+  ]
+}

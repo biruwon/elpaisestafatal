@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d105efdc2e2",
+  "claimSlug": "\"modelo-es-verdad-que-el-gasto-en-educacion-y-sanidad-en-espana-es-inferior-al-promedio-\"",
+  "text": "¿Es verdad que el gasto en educación y sanidad en España es inferior al promedio de la UE?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5fecb89543d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e8c99ecda81f",
+  "claimSlug": "\"modelo-el-proceso-de-justicia-en-espana-es-muy-lento-y-costoso-haciendo-que-muchos-ciud\"",
+  "text": "El proceso de justicia en España es muy lento y costoso, haciendo que muchos ciudadanos se sientan desanimados al intentar resolver sus problemas legales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8eee2042e043"
+  ]
+}

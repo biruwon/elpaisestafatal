@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cab3faa2d599",
+  "claimSlug": "\"modelo-es-dificil-encontrar-trabajo-en-espana-hoy-en-dia\"",
+  "text": "Es difícil encontrar trabajo en España hoy en día.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-932f22aecaae"
+  ]
+}

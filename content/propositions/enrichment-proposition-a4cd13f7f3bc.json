@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a4cd13f7f3bc",
+  "claimSlug": "\"modelo-en-las-calles-de-madrid-es-seguro-dejar-el-coche-con-el-vidrio-subido\"",
+  "text": "En las calles de Madrid, ¿es seguro dejar el coche con el vidrio subido?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1f046a2d01c8"
+  ]
+}

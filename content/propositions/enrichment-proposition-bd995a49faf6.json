@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bd995a49faf6",
+  "claimSlug": "\"modelo-el-descanso-en-espana-es-un-cuento-nunca-se-da-el-tiempo-suficiente\"",
+  "text": "El descanso en España es un cuento, nunca se da el tiempo suficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c43753a9735"
+  ]
+}

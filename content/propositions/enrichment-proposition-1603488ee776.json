@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1603488ee776",
+  "claimSlug": "\"modelo-el-alquiler-en-madrid-es-desorbitado-no-se-puede-vivir-de-un-sueldo-medio\"",
+  "text": "¡El alquiler en Madrid es desorbitado! No se puede vivir de un sueldo medio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-011d87988632"
+  ]
+}

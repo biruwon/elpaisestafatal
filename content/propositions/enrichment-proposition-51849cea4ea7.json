@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-51849cea4ea7",
+  "claimSlug": "\"modelo-la-tasa-de-delitos-informaticos-en-espana-ha-aumentado-en-los-ultimos-anos\"",
+  "text": "¿La tasa de delitos informáticos en España ha aumentado en los últimos años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6adac24cdc1"
+  ]
+}

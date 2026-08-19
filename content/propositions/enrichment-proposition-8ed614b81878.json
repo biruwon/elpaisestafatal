@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ed614b81878",
+  "claimSlug": "\"modelo-la-falta-de-acceso-a-la-educacion-de-calidad-perpetua-la-pobreza-en-muchas-famil\"",
+  "text": "La falta de acceso a la educación de calidad perpetúa la pobreza en muchas familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c88569aaa0e8"
+  ]
+}

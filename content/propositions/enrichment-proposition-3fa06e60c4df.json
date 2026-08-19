@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fa06e60c4df",
+  "claimSlug": "\"modelo-por-que-siempre-se-habla-de-espana-en-la-ue-como-un-pais-del-sur-cuando-somos-el\"",
+  "text": "¿Por qué siempre se habla de España en la UE como un país del sur, cuando somos el primer productor de vino del mundo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4c64caea3e31"
+  ]
+}

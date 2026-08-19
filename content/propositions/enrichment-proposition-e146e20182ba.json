@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e146e20182ba",
+  "claimSlug": "\"modelo-espana-ha-experimentado-una-caida-en-el-numero-de-empleos-en-el-sector-servicios\"",
+  "text": "España ha experimentado una caída en el número de empleos en el sector servicios",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-187f1ae1540c"
+  ]
+}

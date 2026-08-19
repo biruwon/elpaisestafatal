@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6acee54d799f",
+  "claimSlug": "\"modelo-las-medidas-del-gobierno-para-mejorar-la-eficiencia-energetica-no-estan-funciona\"",
+  "text": "Las medidas del gobierno para mejorar la eficiencia energética no están funcionando y los precios siguen subiendo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-831fabc1dd5c"
+  ]
+}

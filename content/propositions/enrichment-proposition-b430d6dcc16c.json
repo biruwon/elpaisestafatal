@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b430d6dcc16c",
+  "claimSlug": "\"modelo-las-carreteras-entre-valencia-y-murcia-son-un-infierno-durante-el-fin-de-semana-\"",
+  "text": "Las carreteras entre Valencia y Murcia son un infierno durante el fin de semana, con interminables colas de tráfico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fe925581fd03"
+  ]
+}

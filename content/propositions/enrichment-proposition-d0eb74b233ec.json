@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0eb74b233ec",
+  "claimSlug": "\"modelo-la-calidad-del-agua-en-las-zonas-rurales-ha-disminuido-es-porque-la-supervision-\"",
+  "text": "La calidad del agua en las zonas rurales ha disminuido, ¿es porque la supervisión es inadecuada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1f0a17749b2f"
+  ]
+}

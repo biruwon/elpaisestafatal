@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e959a367073",
+  "claimSlug": "\"modelo-en-muchos-colegios-de-espana-los-profesores-no-tienen-tiempo-para-dar-las-notas-\"",
+  "text": "En muchos colegios de España, los profesores no tienen tiempo para dar las notas a tiempo, lo que genera estrés entre padres e hijos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-969525bed15b"
+  ]
+}

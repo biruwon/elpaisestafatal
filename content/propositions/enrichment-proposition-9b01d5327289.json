@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b01d5327289",
+  "claimSlug": "\"modelo-la-falta-de-politicas-de-proteccion-social-para-los-trabajadores-por-cuenta-prop\"",
+  "text": "La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-a617d7f49e0e"
+  ]
+}

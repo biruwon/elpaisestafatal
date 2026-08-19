@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-967c3bdf5327",
+  "claimSlug": "\"modelo-la-inmigracion-ha-incrementado-la-desigualdad-en-espana\"",
+  "text": "La inmigración ha incrementado la desigualdad en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7fa709425aa1"
+  ]
+}

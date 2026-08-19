@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9e16028e9fba",
+  "claimSlug": "\"modelo-el-sector-turistico-esta-sufriendo-mucho-por-la-crisis-economica\"",
+  "text": "El sector turístico está sufriendo mucho por la crisis económica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d92e22fb2168"
+  ]
+}

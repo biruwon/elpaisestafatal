@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9381a055d833",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-para-el-crecimiento-profesional-en-espana-esta-frustra\"",
+  "text": "La falta de oportunidades para el crecimiento profesional en España está frustrando a muchas personas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d469df1329fb"
+  ]
+}

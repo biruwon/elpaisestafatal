@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe50faddf59a",
+  "claimSlug": "\"modelo-las-tiendas-de-barrio-no-estan-bien-protegidas-contra-robos-y-los-hurtos-son-fre\"",
+  "text": "Las tiendas de barrio no están bien protegidas contra robos y los hurtos son frecuentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3eb0e1ee4b69"
+  ]
+}

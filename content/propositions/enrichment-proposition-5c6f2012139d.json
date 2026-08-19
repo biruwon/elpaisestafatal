@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5c6f2012139d",
+  "claimSlug": "\"modelo-la-policia-no-actua-en-casos-de-delitos-domesticos-dejando-a-las-victimas-indefe\"",
+  "text": "La policía no actúa en casos de delitos domésticos, dejando a las víctimas indefensas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efdcd3875954"
+  ]
+}

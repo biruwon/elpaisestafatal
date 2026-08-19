@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8c2fd7e68b1",
+  "claimSlug": "\"modelo-las-politicas-de-ayudas-sociales-son-insuficientes-para-combatir-la-pobreza-infa\"",
+  "text": "Las políticas de ayudas sociales son insuficientes para combatir la pobreza infantil.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d405adf0e0a"
+  ]
+}

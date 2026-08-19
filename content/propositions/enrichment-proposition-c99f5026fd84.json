@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c99f5026fd84",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-el-salario-no-alcance-para-nada\"",
+  "text": "La inflación está haciendo que el salario no alcance para nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-48b57c684000"
+  ]
+}

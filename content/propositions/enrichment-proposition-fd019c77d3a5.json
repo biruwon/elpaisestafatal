@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd019c77d3a5",
+  "claimSlug": "\"modelo-la-subida-de-impuestos-sobre-el-salon-de-la-familia-se-hace-cada-vez-mas-frecuen\"",
+  "text": "La subida de impuestos sobre el salón de la familia se hace cada vez más frecuente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8326806181d1"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d4981a53f824",
+  "claimSlug": "\"modelo-por-que-los-trabajadores-por-tiempo-parcial-no-reciben-el-mismo-salario-que-los-\"",
+  "text": "¿Por qué los trabajadores por tiempo parcial no reciben el mismo salario que los que trabajan de jornada completa?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ff6f646d1051"
+  ]
+}

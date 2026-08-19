@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b973c0b40703",
+  "claimSlug": "\"modelo-la-espana-continental-se-siente-subvencionada-por-las-islas-baleares\"",
+  "text": "La España continental se siente subvencionada por las Islas Baleares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-756e2589947d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-268542cf22e2",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agotando-los-servicios-educativos-y-se-nota-en-la-calidad-de\"",
+  "text": "La inmigración está agotando los servicios educativos y se nota en la calidad de la enseñanza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a05f1b783dd5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d841c14ce4a7",
+  "claimSlug": "\"modelo-por-que-los-precios-del-alquiler-siguen-subiendo-mientras-los-sueldos-no-paran-d\"",
+  "text": "¿Por qué los precios del alquiler siguen subiendo mientras los sueldos no paran de bajar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-24c0ef45dbcd"
+  ]
+}

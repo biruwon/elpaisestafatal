@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9f72f6cf6fe7",
+  "claimSlug": "\"modelo-la-inmigracion-esta-incrementando-el-trafico-en-las-ciudades-lo-que-resulta-en-m\"",
+  "text": "La inmigración está incrementando el tráfico en las ciudades, lo que resulta en más congestionamiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9ffc7a102834"
+  ]
+}

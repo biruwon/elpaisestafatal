@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e680dba41f87",
+  "claimSlug": "\"modelo-la-falta-de-bicicletas-en-zonas-urbanas-principales-dificulta-el-desplazamiento-\"",
+  "text": "La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f2ad0cdfdcd0"
+  ]
+}

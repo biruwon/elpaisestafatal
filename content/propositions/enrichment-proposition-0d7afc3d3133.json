@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d7afc3d3133",
+  "claimSlug": "\"modelo-espana-ha-tenido-que-esperar-demasiado-para-acceder-a-fondos-europeos\"",
+  "text": "España ha tenido que esperar demasiado para acceder a fondos europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-13a9a2b402ff"
+  ]
+}

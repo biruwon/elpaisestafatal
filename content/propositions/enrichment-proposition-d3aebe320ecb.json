@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d3aebe320ecb",
+  "claimSlug": "\"modelo-el-robo-en-las-tiendas-es-comun-y-se-nota-la-falta-de-seguridad\"",
+  "text": "¿El robo en las tiendas es común y se nota la falta de seguridad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d959aeaef46d"
+  ]
+}

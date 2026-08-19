@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a69cfdd6571d",
+  "claimSlug": "\"modelo-la-falta-de-agua-en-el-sur-de-espana-es-un-problema-real-no-pueden-hacer-algo-pa\"",
+  "text": "¡La falta de agua en el sur de España es un problema real! ¿No pueden hacer algo para mejorar la situación?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8cfc1a199b82"
+  ]
+}

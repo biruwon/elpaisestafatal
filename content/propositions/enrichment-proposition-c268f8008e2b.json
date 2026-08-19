@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c268f8008e2b",
+  "claimSlug": "\"modelo-la-gente-en-zonas-rurales-de-espana-se-siente-olvidada-por-el-gobierno-en-materi\"",
+  "text": "La gente en zonas rurales de España se siente olvidada por el gobierno en materia de ayudas sociales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8f74a8551ff"
+  ]
+}

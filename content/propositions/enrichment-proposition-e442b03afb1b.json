@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e442b03afb1b",
+  "claimSlug": "\"modelo-el-sistema-de-reciclaje-en-las-ciudades-turisticas-de-espana-no-esta-bien-implan\"",
+  "text": "El sistema de reciclaje en las ciudades turísticas de España no está bien implantado, se llena de basura en los contenedores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9bb63b10d33a"
+  ]
+}

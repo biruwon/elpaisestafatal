@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-05f2599e1d56",
+  "claimSlug": "\"modelo-por-que-la-velocidad-de-internet-en-mi-apartamento-sigue-siendo-tan-lenta\"",
+  "text": "¿Por qué la velocidad de internet en mi apartamento sigue siendo tan lenta?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-42adbca25bfb"
+  ]
+}

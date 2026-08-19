@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-50bb5f6a31ae",
+  "claimSlug": "\"modelo-la-desigualdad-en-el-acceso-a-la-salud-publica-es-un-problema-grave-los-pobres-t\"",
+  "text": "¡La desigualdad en el acceso a la salud pública es un problema grave, los pobres tienen que ir corriendo a los hospitales privados!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-35b67d6b2b27"
+  ]
+}

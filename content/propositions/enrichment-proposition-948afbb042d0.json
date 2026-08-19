@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-948afbb042d0",
+  "claimSlug": "\"modelo-la-region-de-extremadura-es-la-mas-extensa-en-terminos-de-superficie-territorial\"",
+  "text": "La región de Extremadura es la más extensa en términos de superficie territorial de todas las autonomías españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6745edc47243"
+  ]
+}

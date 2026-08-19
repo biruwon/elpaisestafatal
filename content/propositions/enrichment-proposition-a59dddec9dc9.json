@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a59dddec9dc9",
+  "claimSlug": "\"modelo-los-precios-del-alquiler-de-tierras-agricolas-estan-subiendo-tanto-que-muchos-pe\"",
+  "text": "Los precios del alquiler de tierras agrícolas están subiendo tanto que muchos pequeños agricultores no pueden seguir trabajando su parcela.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a19cdb3be9b0"
+  ]
+}

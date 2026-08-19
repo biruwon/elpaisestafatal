@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8916b75af5c",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-del-gas-domestico-esta-destrozando-las-cuentas-familiar\"",
+  "text": "La subida de los precios del gas doméstico está destrozando las cuentas familiares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d3296dee9de"
+  ]
+}

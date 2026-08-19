@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d2aa19e5e0d",
+  "claimSlug": "\"modelo-el-gobierno-central-ignora-las-necesidades-de-las-islas-a-pesar-de-su-contribuci\"",
+  "text": "El gobierno central ignora las necesidades de las islas, a pesar de su contribución financiera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8e588a4bd60"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-280a5347139b",
+  "claimSlug": "\"modelo-se-puede-justificar-que-los-precios-de-los-productos-basicos-aumenten-si-el-pais\"",
+  "text": "¿Se puede justificar que los precios de los productos básicos aumenten si el país está en crecimiento?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7eecd71cd86"
+  ]
+}

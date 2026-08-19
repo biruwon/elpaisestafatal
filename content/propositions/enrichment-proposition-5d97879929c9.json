@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d97879929c9",
+  "claimSlug": "\"modelo-la-sequia-cronica-en-andalucia-y-murcia-afecta-severamente-a-la-agricultura-y-a-\"",
+  "text": "La sequía crónica en Andalucía y Murcia afecta severamente a la agricultura y a la calidad de vida de los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-becc8d39edc0"
+  ]
+}

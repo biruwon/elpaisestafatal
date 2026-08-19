@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c02f51c7345",
+  "claimSlug": "\"modelo-los-tramites-para-acceder-a-las-prestaciones-son-demasiado-complicados-y-demoran\"",
+  "text": "Los trámites para acceder a las prestaciones son demasiado complicados y demoran mucho tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78d7c09f898b"
+  ]
+}

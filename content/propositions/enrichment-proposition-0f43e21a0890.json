@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0f43e21a0890",
+  "claimSlug": "\"modelo-la-falta-de-infraestructuras-en-las-escuelas-esta-afectando-negativamente-el-apr\"",
+  "text": "La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-8739a65bd76a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a6e430892d8e",
+  "claimSlug": "\"modelo-por-que-la-instalacion-de-las-ventanas-de-bajo-consumo-se-ha-retrasado-tanto\"",
+  "text": "¿Por qué la instalación de las ventanas de bajo consumo se ha retrasado tanto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7635e2a263e5"
+  ]
+}

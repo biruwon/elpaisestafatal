@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d9338dfd58ae",
+  "claimSlug": "\"modelo-las-islas-canarias-sufren-de-falta-de-hospitalizacion-especialmente-en-las-islas\"",
+  "text": "Las islas Canarias sufren de falta de hospitalización, especialmente en las islas menos pobladas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9da38f25ef96"
+  ]
+}

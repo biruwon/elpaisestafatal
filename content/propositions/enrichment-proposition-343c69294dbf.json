@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-343c69294dbf",
+  "claimSlug": "\"modelo-el-aumento-de-inmigrantes-ha-llevado-a-un-problema-de-integracion-social-con-inm\"",
+  "text": "El aumento de inmigrantes ha llevado a un problema de integración social, con inmigrantes que se sienten excluidos y discriminados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-69185e08ba44"
+  ]
+}

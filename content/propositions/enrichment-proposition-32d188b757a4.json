@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32d188b757a4",
+  "claimSlug": "\"modelo-las-tarifas-electricas-en-espana-suben-constantemente-haciendo-imposible-mantene\"",
+  "text": "Las tarifas eléctricas en España suben constantemente, haciendo imposible mantenerse a flote.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-96341a044144"
+  ]
+}

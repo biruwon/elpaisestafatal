@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5c83991f3923",
+  "claimSlug": "\"modelo-los-servicios-publicos-como-la-educacion-y-la-sanidad-son-de-mejor-calidad-en-la\"",
+  "text": "Los servicios públicos como la educación y la sanidad son de mejor calidad en las áreas más adineradas, mientras que en los barrios pobres los servicios están en peores condiciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-006e3eacd617"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a616f1aae547",
+  "claimSlug": "\"modelo-es-dificil-encontrar-estacionamiento-en-zonas-urbanas-especialmente-en-centros-h\"",
+  "text": "Es difícil encontrar estacionamiento en zonas urbanas, especialmente en centros históricos y comerciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-18bf18008c4e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a4607a495c6",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-volviendo-a-los-tiempos-dificiles-de-los-anos-noventa\"",
+  "text": "La subida de precios está volviendo a los tiempos difíciles de los años noventa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b88b1924cafd"
+  ]
+}

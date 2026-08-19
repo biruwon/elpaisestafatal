@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e802f5a403f2",
+  "claimSlug": "\"modelo-los-gobiernos-estan-dejando-que-la-economia-se-descontrola-y-la-inflacion-se-hag\"",
+  "text": "Los gobiernos están dejando que la economía se descontrola y la inflación se haga cada vez más alta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3da4e767b713"
+  ]
+}

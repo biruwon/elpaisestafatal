@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e781bb12f5de",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-laborales-en-ciertas-regiones-ha-dejado-a-jovenes-y-fa\"",
+  "text": "La falta de oportunidades laborales en ciertas regiones ha dejado a jóvenes y familias en la desesperación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9f4f7e90f395"
+  ]
+}

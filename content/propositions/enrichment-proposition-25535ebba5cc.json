@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-25535ebba5cc",
+  "claimSlug": "\"modelo-las-calles-estan-llenas-de-vendedores-ambulantes-de-inmigrantes\"",
+  "text": "Las calles están llenas de vendedores ambulantes de inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7fc8b9f1c53"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79ba9c35311d",
+  "claimSlug": "\"modelo-el-uso-de-la-energia-renovable-en-viviendas-digitales-no-es-tan-ampliamente-adop\"",
+  "text": "El uso de la energía renovable en viviendas digitales no es tan ampliamente adoptado en España como en Noruega.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0d792ff0423"
+  ]
+}

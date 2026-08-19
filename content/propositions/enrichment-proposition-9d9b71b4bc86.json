@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d9b71b4bc86",
+  "claimSlug": "\"modelo-los-salarios-no-aumentan-en-proporcion-con-la-inflacion-lo-que-perjudica-cada-ve\"",
+  "text": "Los salarios no aumentan en proporción con la inflación, lo que perjudica cada vez más a los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-65f71cbfe095"
+  ]
+}

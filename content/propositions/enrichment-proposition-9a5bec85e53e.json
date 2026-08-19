@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9a5bec85e53e",
+  "claimSlug": "\"modelo-por-que-la-gestion-de-residuos-no-es-mejor-para-evitar-incendios\"",
+  "text": "¿Por qué la gestión de residuos no es mejor para evitar incendios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-05c82e4921fc"
+  ]
+}

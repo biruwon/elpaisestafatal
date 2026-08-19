@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94d7ea810fea",
+  "claimSlug": "\"modelo-por-que-en-espana-hay-tantos-casos-de-corrupcion-en-la-policia-y-la-justicia-que\"",
+  "text": "¿Por qué en España hay tantos casos de corrupción en la policía y la justicia que no se resuelven?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5c6d65378f0"
+  ]
+}

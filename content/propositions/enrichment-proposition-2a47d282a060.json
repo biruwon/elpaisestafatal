@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2a47d282a060",
+  "claimSlug": "\"modelo-la-ue-no-ha-abordado-el-problema-de-la-vivienda-en-espana\"",
+  "text": "La UE no ha abordado el problema de la vivienda en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7a7efa3516ff"
+  ]
+}

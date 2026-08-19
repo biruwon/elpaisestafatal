@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1408fef0e3f9",
+  "claimSlug": "\"modelo-las-playas-de-la-costa-cantabrica-estan-deterioradas-por-la-falta-de-inversion-e\"",
+  "text": "Las playas de la costa cantábrica están deterioradas por la falta de inversión en mantenimiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cfe4c4cc3a12"
+  ]
+}

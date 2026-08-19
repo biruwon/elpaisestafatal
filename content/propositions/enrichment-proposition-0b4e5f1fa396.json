@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0b4e5f1fa396",
+  "claimSlug": "\"modelo-la-politica-turistica-se-esta-enfocando-en-el-sol-y-playa-del-sur-dejando-al-nor\"",
+  "text": "La política turística se está enfocando en el sol y playa del sur, dejando al norte congelado en la nieve y la niebla.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0eabee166d88"
+  ]
+}

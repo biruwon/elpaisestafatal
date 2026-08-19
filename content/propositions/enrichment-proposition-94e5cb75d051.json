@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94e5cb75d051",
+  "claimSlug": "\"modelo-por-que-se-ha-incrementado-tanto-el-tiempo-de-espera-para-citas-con-especialista\"",
+  "text": "¿Por qué se ha incrementado tanto el tiempo de espera para citas con especialistas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2cfa14191fc8"
+  ]
+}

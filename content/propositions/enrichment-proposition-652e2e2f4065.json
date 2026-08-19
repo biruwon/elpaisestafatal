@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-652e2e2f4065",
+  "claimSlug": "\"modelo-la-ue-no-invierte-lo-suficiente-en-el-sistema-de-salud-espanol\"",
+  "text": "La UE no invierte lo suficiente en el sistema de salud español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9838aae9cdbf"
+  ]
+}

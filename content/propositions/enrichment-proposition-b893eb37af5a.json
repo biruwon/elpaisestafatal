@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b893eb37af5a",
+  "claimSlug": "\"modelo-cuando-se-va-a-construir-un-nuevo-puente-en-la-ria-de-huelva\"",
+  "text": "¿Cuándo se va a construir un nuevo puente en la ría de Huelva?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b5f383d956a6"
+  ]
+}

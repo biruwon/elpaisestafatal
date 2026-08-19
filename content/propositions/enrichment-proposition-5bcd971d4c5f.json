@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5bcd971d4c5f",
+  "claimSlug": "\"modelo-los-altos-costes-de-vida-en-ciertas-ciudades-de-espana-hacen-que-sea-dificil-man\"",
+  "text": "Los altos costes de vida en ciertas ciudades de España hacen que sea difícil mantenerse a flote.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b23425c9932"
+  ]
+}

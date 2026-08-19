@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-13e0eba41a42",
+  "claimSlug": "\"modelo-por-que-la-region-de-murcia-no-tiene-mas-parques-naturales-en-sus-comarcas\"",
+  "text": "¿Por qué la región de Murcia no tiene más parques naturales en sus comarcas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7ca585b42ac"
+  ]
+}

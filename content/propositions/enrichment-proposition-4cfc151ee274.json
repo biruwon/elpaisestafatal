@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cfc151ee274",
+  "claimSlug": "\"modelo-la-economia-sigue-siendo-inestable-y-las-empresas-no-saben-a-donde-mirar\"",
+  "text": "La economía sigue siendo inestable y las empresas no saben a dónde mirar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c8b7bc9c7df"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ba431fa2c34",
+  "claimSlug": "\"modelo-la-falta-de-politicas-de-fomento-del-empleo-hace-que-sea-dificil-encontrar-traba\"",
+  "text": "La falta de políticas de fomento del empleo hace que sea difícil encontrar trabajo incluso en épocas de recuperación económica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cb01f907bdb8"
+  ]
+}

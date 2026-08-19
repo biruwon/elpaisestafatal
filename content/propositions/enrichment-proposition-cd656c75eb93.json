@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd656c75eb93",
+  "claimSlug": "\"modelo-la-inmigracion-ha-cambiado-la-cultura-culinaria-y-ahora-todo-es-comida-de-otros-\"",
+  "text": "La inmigración ha cambiado la cultura culinaria, y ahora todo es comida de otros países, no hay auténtico plato español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6809b6662a7"
+  ]
+}

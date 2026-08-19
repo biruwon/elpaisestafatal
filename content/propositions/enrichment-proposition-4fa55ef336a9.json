@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4fa55ef336a9",
+  "claimSlug": "\"modelo-las-agresiones-callejeras-son-tan-frecuentes-que-muchas-personas-prefieren-evita\"",
+  "text": "Las agresiones callejeras son tan frecuentes que muchas personas prefieren evitar caminar por ciertas zonas durante la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e48766145a7b"
+  ]
+}

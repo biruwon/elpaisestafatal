@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bbc56eadec2a",
+  "claimSlug": "\"modelo-las-lineas-de-autobus-en-mi-ciudad-son-muy-escasas-y-a-veces-no-llegan-nunca-a-t\"",
+  "text": "Las líneas de autobús en mi ciudad son muy escasas y a veces no llegan nunca a tiempo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba832b04e1de"
+  ]
+}

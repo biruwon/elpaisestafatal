@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94f00a177029",
+  "claimSlug": "\"modelo-la-concentracion-de-poblacion-en-la-comunidad-valenciana-es-tan-elevada-que-se-p\"",
+  "text": "La concentración de población en la Comunidad Valenciana es tan elevada que se produce un desgaste excesivo de los servicios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a004a38e223d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1b2e5e34ae5a",
+  "claimSlug": "\"modelo-los-alquileres-en-las-zonas-verdes-de-madrid-son-mas-economicos\"",
+  "text": "Los alquileres en las zonas verdes de Madrid son más económicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7a68c3f761a4"
+  ]
+}

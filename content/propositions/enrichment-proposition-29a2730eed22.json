@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29a2730eed22",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-mis-compras-se-hagan-cada-vez-mas-caras-y-me-cues\"",
+  "text": "La inflación está haciendo que mis compras se hagan cada vez más caras y me cuesta más dinero para mantener a mi familia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80820f2019a0"
+  ]
+}

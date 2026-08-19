@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c595710bd5a",
+  "claimSlug": "\"modelo-el-sistema-sanitario-tiene-dificultades-para-atender-a-todos-los-ciudadanos-espe\"",
+  "text": "El sistema sanitario tiene dificultades para atender a todos los ciudadanos, especialmente a los pobres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b9ddb17253e"
+  ]
+}

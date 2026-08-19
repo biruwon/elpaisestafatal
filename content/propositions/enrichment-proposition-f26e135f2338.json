@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f26e135f2338",
+  "claimSlug": "\"modelo-por-que-las-escuelas-publicas-tienen-menos-recursos-que-las-privadas-y-los-padre\"",
+  "text": "¿Por qué las escuelas públicas tienen menos recursos que las privadas y los padres tienen que pagar para que sus hijos tengan lo básico?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cf06434f1dea"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b3413b13e60f",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-garantiza-un-tiempo-de-lactancia-adecuado-para-las-madre\"",
+  "text": "¿Por qué en España no se garantiza un tiempo de lactancia adecuado para las madres trabajadoras en las empresas?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-fa2a24019c0e"
+  ]
+}

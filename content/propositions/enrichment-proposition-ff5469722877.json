@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff5469722877",
+  "claimSlug": "\"modelo-el-tiempo-de-espera-para-acceder-a-la-jubilacion-se-esta-haciendo-insostenible-p\"",
+  "text": "El tiempo de espera para acceder a la jubilación se está haciendo insostenible para muchos trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e17b2f115833"
+  ]
+}

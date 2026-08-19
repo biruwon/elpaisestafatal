@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-86c6fdb0cde5",
+  "claimSlug": "\"modelo-el-agua-en-espana-es-mas-cara-que-en-portugal\"",
+  "text": "El agua en España es más cara que en Portugal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-71a64c34f96e"
+  ]
+}

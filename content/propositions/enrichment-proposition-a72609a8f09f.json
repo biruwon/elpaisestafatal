@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a72609a8f09f",
+  "claimSlug": "\"modelo-la-falta-de-recursos-para-los-centros-de-salud-socava-la-calidad-de-la-atencion\"",
+  "text": "La falta de recursos para los centros de salud socava la calidad de la atención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e643ff3b30a"
+  ]
+}

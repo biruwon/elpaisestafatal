@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72fa97c2d707",
+  "claimSlug": "\"modelo-los-gastos-de-telecomunicaciones-en-espana-son-inesperadamente-altos-y-ofrecen-u\"",
+  "text": "Los gastos de telecomunicaciones en España son inesperadamente altos y ofrecen un servicio desproporcionadamente bajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2466e3af80b3"
+  ]
+}

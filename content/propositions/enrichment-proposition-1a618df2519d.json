@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a618df2519d",
+  "claimSlug": "\"modelo-las-rutas-de-senderismo-en-galicia-estan-en-mal-estado-y-sin-senalizacion-nadie-\"",
+  "text": "Las rutas de senderismo en Galicia están en mal estado y sin señalización, ¿nadie se ocupa de mejorarlas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cc6847019049"
+  ]
+}

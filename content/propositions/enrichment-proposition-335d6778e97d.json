@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-335d6778e97d",
+  "claimSlug": "\"modelo-los-campos-de-arroz-en-valencia-estan-secos-nadie-invierte-en-riego\"",
+  "text": "Los campos de arroz en Valencia están secos, ¡nadie invierte en riego!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-42e8977f52c0"
+  ]
+}

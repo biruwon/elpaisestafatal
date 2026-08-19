@@ -4,21 +4,22 @@ claim: "La falta de oportunidades en pequeñas ciudades empuja a jóvenes a busc
 assessment: uncertain
 topicSlugs: ["pobreza y desigualdad"]
 aliases: ["crisis de pequeñas ciudades","jóvenes emigrando","fuga intelectual","crisis de oportunidades en pequeñas ciudades","jóvenes buscando oportunidades","La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.","¿Es cierto que La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","¿Qué datos permiten comprobar si La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","Quiero saber si La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.","¿Cómo se puede verificar La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","¿Hay evidencia sobre si La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","¿Es verdad que La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","¿Qué sabemos de La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?","¿Se sostiene la afirmación de que La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-1f14540c1761"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de oportunidades en pequenas ciudades empuja a jovenes a buscar trabajo en grandes ciudades"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-9b8308a2b943"]
 ---
 
 ## Qué es cierto

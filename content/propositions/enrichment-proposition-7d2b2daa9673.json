@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d2b2daa9673",
+  "claimSlug": "\"modelo-el-alquiler-sube-todo-el-tiempo-nunca-se-estabiliza\"",
+  "text": "¡El alquiler sube todo el tiempo! ¡Nunca se estabiliza!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fe944a8f14b0"
+  ]
+}

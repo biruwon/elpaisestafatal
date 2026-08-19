@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-92f7af7360d4",
+  "claimSlug": "\"modelo-la-espera-para-las-becas-de-estudios-superiores-se-ha-alargado-tanto-que-los-est\"",
+  "text": "La espera para las becas de estudios superiores se ha alargado tanto que los estudiantes tienen que pedir préstamos para pagar el alquiler.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2f6e16b288c7"
+  ]
+}

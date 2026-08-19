@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea8cf914dc6a",
+  "claimSlug": "\"modelo-las-familias-de-barcelona-tienen-que-decidir-entre-pagar-la-hipoteca-o-las-factu\"",
+  "text": "Las familias de Barcelona tienen que decidir entre pagar la hipoteca o las facturas de luz y agua.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10a79142c403"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a75d2b3b941c",
+  "claimSlug": "\"modelo-la-estacion-de-renfe-en-valencia-es-siempre-un-caos-especialmente-los-viernes-po\"",
+  "text": "La estación de Renfe en Valencia es siempre un caos, especialmente los viernes por la tarde.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2cd32e5caa0d"
+  ]
+}

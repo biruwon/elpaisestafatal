@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-729120ae01df",
+  "claimSlug": "\"modelo-los-inmigrantes-estan-tomando-puestos-de-trabajo-de-los-ciudadanos-espanoles\"",
+  "text": "Los inmigrantes están tomando puestos de trabajo de los ciudadanos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0e075a944ca3"
+  ]
+}

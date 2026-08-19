@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a19a57de6256",
+  "claimSlug": "\"modelo-la-falta-de-empleo-de-calidad-esta-haciendo-que-muchos-trabajadores-se-muestren-\"",
+  "text": "La falta de empleo de calidad está haciendo que muchos trabajadores se muestren preocupados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-560d0d66d7d4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10c726068910",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-el-trafico-de-drogas-en-espana\"",
+  "text": "La inmigración ha aumentado el tráfico de drogas en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f35780fa6e35"
+  ]
+}

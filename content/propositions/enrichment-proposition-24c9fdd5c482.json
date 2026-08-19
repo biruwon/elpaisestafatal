@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-24c9fdd5c482",
+  "claimSlug": "\"modelo-hay-demasiados-inmigrantes-en-los-supermercados-y-ahora-no-hay-trabajo-para-los-\"",
+  "text": "Hay demasiados inmigrantes en los supermercados, y ahora no hay trabajo para los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f584a543376f"
+  ]
+}

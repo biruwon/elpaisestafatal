@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-66d93a514828",
+  "claimSlug": "\"modelo-la-falta-de-planificacion-y-control-en-los-bosques-deja-al-pais-mas-vulnerable-a\"",
+  "text": "La falta de planificación y control en los bosques deja al país más vulnerable a los incendios severos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c72a06a77c81"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-41510adfd872",
+  "claimSlug": "\"modelo-en-el-sur-de-espana-los-servicios-de-salud-estan-tan-subfinanciados-que-a-veces-\"",
+  "text": "En el sur de España, los servicios de salud están tan subfinanciados que a veces se está en peligro de vida",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0cb3a2988ac1"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-49b35e2f2d89",
+  "claimSlug": "\"modelo-la-pobreza-extrema-en-espana-afecta-mas-a-las-mujeres-que-a-los-hombres\"",
+  "text": "La pobreza extrema en España afecta más a las mujeres que a los hombres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e8020802baee"
+  ]
+}

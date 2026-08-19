@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-908328599ed5",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-numero-de-parados-y-bajando-los-salarios\"",
+  "text": "La inmigración está aumentando el número de parados y bajando los salarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dab2aea991c4"
+  ]
+}

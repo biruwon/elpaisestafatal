@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6672a953ca58",
+  "claimSlug": "\"modelo-la-ue-no-hace-lo-suficiente-para-reducir-la-brecha-digital-en-espana\"",
+  "text": "La UE no hace lo suficiente para reducir la brecha digital en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a0899b66acff"
+  ]
+}

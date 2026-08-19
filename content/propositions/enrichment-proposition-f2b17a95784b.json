@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2b17a95784b",
+  "claimSlug": "\"modelo-la-inmigracion-esta-incrementando-la-dependencia-del-estado-haciendo-que-los-con\"",
+  "text": "La inmigración está incrementando la dependencia del estado, haciendo que los contribuyentes se sientan estafados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-da6c5ba05353"
+  ]
+}

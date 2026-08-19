@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-684f2aeccda0",
+  "claimSlug": "\"modelo-la-falta-de-equipamiento-en-la-comarca-del-alto-mijares-esta-afectando-la-calida\"",
+  "text": "La falta de equipamiento en la comarca del Alto Mijares está afectando la calidad de vida de los residentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-60c6e1d29a52"
+  ]
+}

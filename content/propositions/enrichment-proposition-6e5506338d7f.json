@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6e5506338d7f",
+  "claimSlug": "\"modelo-el-sueldo-no-alcanza-ni-para-el-alquiler-menos-para-comer\"",
+  "text": "El sueldo no alcanza ni para el alquiler, ¡menos para comer!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36f51bcf0f4f"
+  ]
+}

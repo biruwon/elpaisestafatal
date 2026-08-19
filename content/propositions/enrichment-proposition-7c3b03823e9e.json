@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c3b03823e9e",
+  "claimSlug": "\"modelo-espana-esta-decepcionada-con-la-falta-de-respuestas-de-la-ue-a-los-problemas-de-\"",
+  "text": "España está decepcionada con la falta de respuestas de la UE a los problemas de vivienda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a950dd617b8"
+  ]
+}

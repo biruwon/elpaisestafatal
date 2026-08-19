@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cd380d7592ce",
+  "claimSlug": "\"modelo-el-seguro-de-desempleo-es-un-fraude-solo-te-pagan-si-estas-buscando-trabajo-pero\"",
+  "text": "El seguro de desempleo es un fraude, solo te pagan si estás buscando trabajo, pero nadie te ayuda a encontrarlo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-da60d0a792a4"
+  ]
+}

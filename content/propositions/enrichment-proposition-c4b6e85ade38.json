@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c4b6e85ade38",
+  "claimSlug": "\"modelo-la-ue-no-ha-proporcionado-suficiente-ayuda-para-modernizar-la-infraestructura-en\"",
+  "text": "La UE no ha proporcionado suficiente ayuda para modernizar la infraestructura en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9f081c968235"
+  ]
+}

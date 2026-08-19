@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6056a885769f",
+  "claimSlug": "\"modelo-la-falta-de-personal-en-los-centros-educativos-esta-dejando-a-los-ninos-sin-aten\"",
+  "text": "La falta de personal en los centros educativos está dejando a los niños sin atención en caso de necesidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0bc979275281"
+  ]
+}

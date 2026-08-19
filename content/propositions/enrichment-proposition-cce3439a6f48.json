@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cce3439a6f48",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-carbon-estan-haciendo-que-sea-casi-imposible-mantenerse-a\"",
+  "text": "Los impuestos sobre el carbón están haciendo que sea casi imposible mantenerse al día con las facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7e13c32633ea"
+  ]
+}

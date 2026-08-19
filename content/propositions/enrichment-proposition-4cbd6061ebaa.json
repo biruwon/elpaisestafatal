@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cbd6061ebaa",
+  "claimSlug": "\"modelo-en-algunas-ciudades-los-supermercados-rebosan-de-alimentos-mientras-que-en-otros\"",
+  "text": "En algunas ciudades, los supermercados rebosan de alimentos mientras que en otros barrios los supermercados cierran por falta de clientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efde9631dcc6"
+  ]
+}

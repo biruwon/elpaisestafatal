@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ef4b1d4597e7",
+  "claimSlug": "\"modelo-las-pensiones-no-alcanzan-para-cubrir-el-alquiler-en-madrid\"",
+  "text": "Las pensiones no alcanzan para cubrir el alquiler en Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bb74f855da34"
+  ]
+}

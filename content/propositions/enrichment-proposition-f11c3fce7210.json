@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f11c3fce7210",
+  "claimSlug": "\"modelo-el-sistema-de-becas-es-tan-engorroso-que-parece-que-estas-jugando-a-un-juego-de-\"",
+  "text": "El sistema de becas es tan engorroso que parece que estás jugando a un juego de mesa de complicadas reglas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-57bbcc11de30"
+  ]
+}

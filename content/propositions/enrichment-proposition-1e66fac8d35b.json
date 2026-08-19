@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e66fac8d35b",
+  "claimSlug": "\"modelo-por-que-en-espana-se-tarda-tanto-en-operar-a-los-pacientes-que-necesitan-cirugia\"",
+  "text": "¿Por qué en España se tarda tanto en operar a los pacientes que necesitan cirugía urgente?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e48feaa42cc0"
+  ]
+}

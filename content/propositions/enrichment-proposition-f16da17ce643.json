@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f16da17ce643",
+  "claimSlug": "\"modelo-por-que-los-coches-electricos-en-espana-no-son-mas-accesibles-y-faciles-de-carga\"",
+  "text": "¿Por qué los coches eléctricos en España no son más accesibles y fáciles de cargar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-56d0be702e49"
+  ]
+}

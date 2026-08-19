@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-03391a23b9ea",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-salud-es-evidente-en-zonas-rurales-y-urbanas\"",
+  "text": "La desigualdad en la salud es evidente en zonas rurales y urbanas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e68d955bd77f"
+  ]
+}

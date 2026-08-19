@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d923b3ceb953",
+  "claimSlug": "\"modelo-los-trenes-de-cercanias-a-menudo-son-llenos-a-punto-de-explotar-con-pasajeros-en\"",
+  "text": "Los trenes de cercanías a menudo son llenos a punto de explotar, con pasajeros en pie durante el viaje.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ea0e6528b0f"
+  ]
+}

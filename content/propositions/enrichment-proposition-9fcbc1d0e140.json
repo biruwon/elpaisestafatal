@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9fcbc1d0e140",
+  "claimSlug": "\"modelo-por-que-se-ha-recortado-tanto-la-ayuda-a-los-enfermos-de-larga-duracion\"",
+  "text": "¿Por qué se ha recortado tanto la ayuda a los enfermos de larga duración?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca14ca62d500"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59ce39b80442",
+  "claimSlug": "\"modelo-las-vacaciones-en-espana-son-un-capricho-no-se-toman-nunca\"",
+  "text": "Las vacaciones en España son un capricho, no se toman nunca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-49710bf3c4a4"
+  ]
+}

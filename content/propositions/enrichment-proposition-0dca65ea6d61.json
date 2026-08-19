@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0dca65ea6d61",
+  "claimSlug": "\"modelo-por-que-se-gastan-tantos-millones-en-publicidad-gubernamental-mientras-se-recort\"",
+  "text": "¿Por qué se gastan tantos millones en publicidad gubernamental mientras se recortan los servicios públicos?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-2879d7f727e9"
+  ]
+}

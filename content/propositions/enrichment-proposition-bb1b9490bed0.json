@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb1b9490bed0",
+  "claimSlug": "\"modelo-por-que-siempre-me-dicen-que-si-no-pago-alquiler-no-hay-opcion-y-encima-el-preci\"",
+  "text": "¿Por qué siempre me dicen que si no pago alquiler, no hay opción, y encima el precio es tan irrealista para mi sueldo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3c09be8b76ba"
+  ]
+}

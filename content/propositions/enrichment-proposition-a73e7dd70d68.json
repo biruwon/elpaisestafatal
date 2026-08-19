@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a73e7dd70d68",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-haciendo-que-no-podamos-permitirnos-vacaciones-en-espa\"",
+  "text": "La subida de precios está haciendo que no podamos permitirnos vacaciones en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94fc72b4e926"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e6c69563aca",
+  "claimSlug": "\"modelo-espana-tiene-que-seguir-las-normas-de-la-ue-a-pesar-de-que-las-cosas-funcionan-b\"",
+  "text": "España tiene que seguir las normas de la UE a pesar de que las cosas funcionan bien de otra manera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-945ce0e991f7"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "El aumento de la esperas en tratamientos de salud mental es alarmante, y
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["esperas largas en salud mental","falta de atención psicológica","listas de espera para psicología","atención deficiente en salud mental","demora en terapias","El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.","¿Es cierto que El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","¿Qué datos permiten comprobar si El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","Quiero saber si El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.","¿Cómo se puede verificar El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","¿Hay evidencia sobre si El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","¿Es verdad que El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","¿Qué sabemos de El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?","¿Se sostiene la afirmación de que El aumento de la esperas en tratamientos de salud mental es alarmante, ya que muchos pacientes no pueden acceder a terapia o psicología a tiempo.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-1e9ec7640ed6"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el aumento de la esperas en tratamientos de salud mental es alarmante ya que muchos pacientes no pueden acceder a terapia o psicologia a tiempo"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-b4afc137d8c4"]
 ---
 
 ## Qué es cierto

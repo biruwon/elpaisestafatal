@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e952d93c2d2",
+  "claimSlug": "\"modelo-las-subvenciones-para-vivienda-en-ciudades-grandes-son-tan-limitadas-que-resulta\"",
+  "text": "Las subvenciones para vivienda en ciudades grandes son tan limitadas que resulta casi imposible encontrar un piso asequible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-501c1ef91b6f"
+  ]
+}

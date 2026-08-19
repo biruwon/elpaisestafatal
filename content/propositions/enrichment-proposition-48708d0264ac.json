@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-48708d0264ac",
+  "claimSlug": "\"modelo-el-acceso-a-internet-gratuito-en-los-colegios-es-un-problema-critico\"",
+  "text": "El acceso a internet gratuito en los colegios es un problema crítico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-801ca1e90452"
+  ]
+}

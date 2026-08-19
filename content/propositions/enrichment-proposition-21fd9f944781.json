@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-21fd9f944781",
+  "claimSlug": "\"modelo-los-horarios-de-los-centros-educativos-son-tan-irregulares-que-son-un-problema-p\"",
+  "text": "Los horarios de los centros educativos son tan irregulares que son un problema para la conciliación familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d09014625e47"
+  ]
+}

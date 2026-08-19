@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-583dbd3902cc",
+  "claimSlug": "\"modelo-por-que-suben-tanto-los-alquileres-en-madrid-y-barcelona-mientras-no-mejora-el-s\"",
+  "text": "¿Por qué suben tanto los alquileres en Madrid y Barcelona mientras no mejora el salario de los trabajadores?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-24e426045599"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc89f463a1a6",
+  "claimSlug": "\"modelo-los-impuestos-estan-subiendo-demasiado-y-no-veo-mejora-alguna\"",
+  "text": "Los impuestos están subiendo demasiado y no veo mejora alguna.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-99d368758168"
+  ]
+}

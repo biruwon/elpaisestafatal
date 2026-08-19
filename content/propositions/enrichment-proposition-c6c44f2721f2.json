@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c6c44f2721f2",
+  "claimSlug": "\"modelo-la-educacion-publica-en-espana-es-totalmente-gratuita-hasta-el-grado-de-bachille\"",
+  "text": "La educación pública en España es totalmente gratuita hasta el grado de bachillerato.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-27e114313b3a"
+  ]
+}

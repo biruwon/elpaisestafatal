@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-003fc205205f",
+  "claimSlug": "\"modelo-el-gasto-publico-en-sanidad-esta-enfocado-mas-en-tratamientos-costosos-que-en-pr\"",
+  "text": "El gasto público en sanidad está enfocado más en tratamientos costosos que en prevención de enfermedades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca9e1805256c"
+  ]
+}

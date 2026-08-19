@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-edbf288ae068",
+  "claimSlug": "\"modelo-la-inmigracion-esta-sobrecargando-los-servicios-de-salud-especialmente-en-zonas-\"",
+  "text": "La inmigración está sobrecargando los servicios de salud, especialmente en zonas rurales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0936e740ce78"
+  ]
+}

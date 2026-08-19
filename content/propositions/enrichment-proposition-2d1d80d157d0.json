@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d1d80d157d0",
+  "claimSlug": "\"modelo-la-proteccion-social-no-cubre-adecuadamente-las-necesidades-de-los-trabajadores-\"",
+  "text": "La protección social no cubre adecuadamente las necesidades de los trabajadores por enfermedad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-754fa3326d8b"
+  ]
+}

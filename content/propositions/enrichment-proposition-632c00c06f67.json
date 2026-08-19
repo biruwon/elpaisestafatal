@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-632c00c06f67",
+  "claimSlug": "\"modelo-por-que-el-tren-ave-en-espana-no-llega-a-todas-las-ciudades-importantes\"",
+  "text": "¿Por qué el tren AVE en España no llega a todas las ciudades importantes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37b898a71d81"
+  ]
+}

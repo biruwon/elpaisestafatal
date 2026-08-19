@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e9041a0d7f9",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-laborales-en-zonas-rurales-agravia-la-pobreza-rural\"",
+  "text": "La falta de oportunidades laborales en zonas rurales agravia la pobreza rural.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f8e8b707caa6"
+  ]
+}

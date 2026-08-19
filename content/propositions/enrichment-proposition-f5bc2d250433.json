@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5bc2d250433",
+  "claimSlug": "\"modelo-los-contratos-temporales-se-estan-haciendo-cada-vez-mas-comunes-y-la-gente-se-si\"",
+  "text": "Los contratos temporales se están haciendo cada vez más comunes y la gente se siente inestable en el trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e9f7343d8e84"
+  ]
+}

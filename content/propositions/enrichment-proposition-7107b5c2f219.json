@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7107b5c2f219",
+  "claimSlug": "\"modelo-las-consultas-de-especialistas-en-espana-se-alargan-tanto-que-los-pacientes-term\"",
+  "text": "Las consultas de especialistas en España se alargan tanto que los pacientes terminan llegando tarde a su trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-351639cd5d54"
+  ]
+}

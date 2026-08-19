@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-18fdc95b3a64",
+  "claimSlug": "\"modelo-el-precio-de-la-electricidad-sube-mas-que-el-de-la-gasolina\"",
+  "text": "El precio de la electricidad sube más que el de la gasolina",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e044eb34a26d"
+  ]
+}

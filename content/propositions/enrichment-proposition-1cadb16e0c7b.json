@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1cadb16e0c7b",
+  "claimSlug": "\"modelo-las-zonas-rurales-estan-vaciando-y-la-inmigracion-no-se-distribuye-equitativamen\"",
+  "text": "Las zonas rurales están vaciando y la inmigración no se distribuye equitativamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-471dbe9b0314"
+  ]
+}

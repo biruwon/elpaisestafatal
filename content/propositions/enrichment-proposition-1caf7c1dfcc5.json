@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1caf7c1dfcc5",
+  "claimSlug": "\"modelo-los-altos-precios-estan-haciendo-que-las-familias-se-atasquen-en-deudas-y-que-la\"",
+  "text": "Los altos precios están haciendo que las familias se atasquen en deudas y que la economía no crezca de forma justa",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9c2f4338548c"
+  ]
+}

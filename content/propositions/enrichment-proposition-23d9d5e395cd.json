@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-23d9d5e395cd",
+  "claimSlug": "\"modelo-la-facturacion-de-la-electricidad-es-un-desproposito-no-entiendo-nada\"",
+  "text": "La facturación de la electricidad es un despropósito, no entiendo nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e805b0c8f38"
+  ]
+}

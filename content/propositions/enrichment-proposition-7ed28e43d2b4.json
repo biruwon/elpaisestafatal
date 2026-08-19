@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7ed28e43d2b4",
+  "claimSlug": "\"modelo-la-subida-del-iva-ha-dejado-a-la-gente-sin-dinero-para-las-compras-esenciales\"",
+  "text": "La subida del IVA ha dejado a la gente sin dinero para las compras esenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-166a4b8cdb7e"
+  ]
+}

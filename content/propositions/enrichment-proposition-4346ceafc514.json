@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4346ceafc514",
+  "claimSlug": "\"modelo-la-comunidad-de-madrid-ha-sido-objeto-de-numerosas-investigaciones-por-corrupcio\"",
+  "text": "La Comunidad de Madrid ha sido objeto de numerosas investigaciones por corrupción en contratación pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ee6bf2482102"
+  ]
+}

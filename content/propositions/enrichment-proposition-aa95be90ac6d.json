@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa95be90ac6d",
+  "claimSlug": "\"modelo-el-mantenimiento-de-los-sistemas-de-vivienda-digital-es-un-gasto-constante-que-s\"",
+  "text": "El mantenimiento de los sistemas de vivienda digital es un gasto constante que sobrecarga a muchos usuarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f7e9ef0d961e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5fff75593c5",
+  "claimSlug": "\"modelo-la-subida-del-precio-de-la-electricidad-en-espana-es-incontrolable-y-nos-esta-ha\"",
+  "text": "La subida del precio de la electricidad en España es incontrolable y nos está haciendo vivir en la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-524ee2596893"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b7f1f78b50e",
+  "claimSlug": "\"modelo-el-alquiler-de-un-piso-en-madrid-es-un-autentico-robo-dado-el-alto-coste-de-la-e\"",
+  "text": "El alquiler de un piso en Madrid es un auténtico robo, dado el alto coste de la energía y el gas en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f6754180c940"
+  ]
+}

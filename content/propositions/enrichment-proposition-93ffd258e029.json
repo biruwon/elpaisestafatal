@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-93ffd258e029",
+  "claimSlug": "\"modelo-las-tiendas-de-joyeria-en-espana-son-tan-seguras-que-a-veces-me-pregunto-si-la-s\"",
+  "text": "Las tiendas de joyería en España son tan seguras que a veces me pregunto si la seguridad es más peligrosa que los propios ladrones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e29a21c7f3bf"
+  ]
+}

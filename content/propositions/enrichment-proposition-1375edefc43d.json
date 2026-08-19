@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1375edefc43d",
+  "claimSlug": "\"modelo-los-recortes-en-la-proteccion-social-estan-afectando-a-los-mas-necesitados-que-n\"",
+  "text": "Los recortes en la protección social están afectando a los más necesitados, que no pueden pagar servicios como la sanidad o la educación.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-c27d3e90eaed"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa3193f19b1d",
+  "claimSlug": "\"modelo-la-falta-de-proteccion-social-en-espana-afecta-directamente-a-las-personas-mas-v\"",
+  "text": "La falta de protección social en España afecta directamente a las personas más vulnerables.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-ccb27e83a3f4"
+  ]
+}

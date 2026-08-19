@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d7a8c814381",
+  "claimSlug": "\"modelo-los-impuestos-para-la-salud-son-altos-pero-las-esperas-para-consulta-medica-sigu\"",
+  "text": "Los impuestos para la salud son altos pero las esperas para consulta médica siguen largas",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-88a06ec20804"
+  ]
+}

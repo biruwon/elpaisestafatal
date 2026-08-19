@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34bed72280d9",
+  "claimSlug": "\"modelo-los-productos-agricolas-espanoles-son-muy-caros-en-comparacion-con-los-importado\"",
+  "text": "Los productos agrícolas españoles son muy caros en comparación con los importados, lo que perjudica a los consumidores.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-88e43cf5aa72"
+  ]
+}

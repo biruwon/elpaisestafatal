@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9ebe137551e3",
+  "claimSlug": "\"modelo-el-cierre-de-bares-y-restaurantes-a-la-hora-de-salida-del-trabajo-ha-aumentado-e\"",
+  "text": "El cierre de bares y restaurantes a la hora de salida del trabajo ha aumentado el riesgo de agresiones en las calles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94fbed6c13ec"
+  ]
+}

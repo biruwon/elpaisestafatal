@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c2dc504afa14",
+  "claimSlug": "\"modelo-el-coste-de-la-electricidad-de-mi-piso-es-un-disparate\"",
+  "text": "El coste de la electricidad de mi piso es un disparate.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fbecc1b7af32"
+  ]
+}

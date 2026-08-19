@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-897baaca6594",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-tanto-que-los-servicios-sociales-estan-sobrecargados\"",
+  "text": "La inmigración ha aumentado tanto que los servicios sociales están sobrecargados y no pueden ayudar a todos los que necesitan asistencia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9919c03ab7dd"
+  ]
+}

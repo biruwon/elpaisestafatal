@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bccc8be40351",
+  "claimSlug": "\"modelo-la-subida-de-impuestos-afecta-negativamente-a-los-trabajadores-con-bajos-ingreso\"",
+  "text": "La subida de impuestos afecta negativamente a los trabajadores con bajos ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-480caa472cdc"
+  ]
+}

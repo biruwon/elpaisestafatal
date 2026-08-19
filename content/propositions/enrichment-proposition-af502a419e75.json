@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af502a419e75",
+  "claimSlug": "\"modelo-en-espana-los-delincuentes-siempre-salen-en-libertad-condicional\"",
+  "text": "¡En España, los delincuentes siempre salen en libertad condicional!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e7db367cacb9"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9fdfb5deb731",
+  "claimSlug": "\"modelo-no-se-me-da-acceso-a-vivienda-a-pesar-de-tener-un-buen-trabajo-y-ahorros\"",
+  "text": "No se me da acceso a vivienda a pesar de tener un buen trabajo y ahorros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa84f41bafef"
+  ]
+}

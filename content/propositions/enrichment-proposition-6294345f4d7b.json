@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6294345f4d7b",
+  "claimSlug": "\"modelo-la-gente-esta-quejandose-porque-el-alquiler-sube-cada-mes-y-el-sueldo-no-llega\"",
+  "text": "La gente está quejándose porque el alquiler sube cada mes y el sueldo no llega",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c35582f520a7"
+  ]
+}

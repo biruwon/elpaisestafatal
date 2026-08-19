@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-174db953afc6",
+  "claimSlug": "\"modelo-el-aumento-del-iva-esta-haciendo-que-todo-sea-mas-caro\"",
+  "text": "El aumento del IVA está haciendo que todo sea más caro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ec0ea674ad7b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc31e28e74bc",
+  "claimSlug": "\"modelo-la-proteccion-social-se-esta-desmantelando-y-los-trabajadores-no-tienen-acceso-a\"",
+  "text": "La protección social se está desmantelando y los trabajadores no tienen acceso a cuidados de salud básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-180339afc91d"
+  ]
+}

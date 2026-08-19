@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-852680d1263c",
+  "claimSlug": "\"modelo-la-falta-de-empleo-estable-en-espana-hace-que-muchos-trabajadores-esten-constant\"",
+  "text": "La falta de empleo estable en España hace que muchos trabajadores estén constantemente en busca de nuevos trabajos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f23093b31422"
+  ]
+}

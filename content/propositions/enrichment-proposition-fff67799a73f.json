@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fff67799a73f",
+  "claimSlug": "\"modelo-las-carreteras-secundarias-en-la-comunidad-valenciana-estan-en-un-estado-deplora\"",
+  "text": "Las carreteras secundarias en la Comunidad Valenciana están en un estado deplorable, llenas de baches y con falta de mantenimiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ef4bef9c9978"
+  ]
+}

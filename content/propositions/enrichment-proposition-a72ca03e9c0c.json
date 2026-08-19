@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a72ca03e9c0c",
+  "claimSlug": "\"modelo-la-falta-de-especialistas-en-el-sistema-sanitario-publico-hace-que-muchos-pacien\"",
+  "text": "La falta de especialistas en el sistema sanitario público hace que muchos pacientes terminen esperando tratamientos que podrían evitarles dolores inútiles.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-fda0fd5b61d3"
+  ]
+}

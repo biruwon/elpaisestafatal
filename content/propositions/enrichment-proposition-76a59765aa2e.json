@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-76a59765aa2e",
+  "claimSlug": "\"modelo-la-falta-de-acceso-a-internet-en-muchas-zonas-rurales-de-espana-es-un-problema-d\"",
+  "text": "La falta de acceso a internet en muchas zonas rurales de España es un problema de desigualdad digital.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00e4695708be"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c0198c4fe7d1",
+  "claimSlug": "\"modelo-el-gas-domestico-es-prohibitivo-para-muchos-hogares\"",
+  "text": "El gas doméstico es prohibitivo para muchos hogares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a190bceb834"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed5ca510c476",
+  "claimSlug": "\"modelo-por-que-los-impuestos-a-la-gasolina-siguen-subiendo-mientras-el-salario-no-lo-ha\"",
+  "text": "¿Por qué los impuestos a la gasolina siguen subiendo mientras el salario no lo hace?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-45a10d781ba4"
+  ]
+}

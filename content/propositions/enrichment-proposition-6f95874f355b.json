@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6f95874f355b",
+  "claimSlug": "\"modelo-la-alta-tasa-de-paro-en-canarias-refleja-la-precariedad-laboral-y-la-falta-de-op\"",
+  "text": "La alta tasa de paro en Canarias refleja la precariedad laboral y la falta de oportunidades para muchos jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5575222474a6"
+  ]
+}

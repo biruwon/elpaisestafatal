@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4a51fc2aca63",
+  "claimSlug": "\"modelo-por-que-se-ha-incrementado-tanto-la-tasa-de-siniestralidad-en-los-seguros-de-sal\"",
+  "text": "¿Por qué se ha incrementado tanto la tasa de siniestralidad en los seguros de salud de España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1883713d09eb"
+  ]
+}

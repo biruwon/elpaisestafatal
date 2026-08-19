@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-841cdcafc89c",
+  "claimSlug": "\"modelo-en-andalucia-la-sequia-y-el-cambio-climatico-han-dejado-a-muchos-aldeanos-sin-ag\"",
+  "text": "En Andalucía, la sequía y el cambio climático han dejado a muchos aldeanos sin agua potable durante meses.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e81b6b0e6bdd"
+  ]
+}

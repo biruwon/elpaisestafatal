@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-653e7bf9b203",
+  "claimSlug": "\"modelo-el-turismo-en-la-costa-del-sol-es-mas-diverso-que-en-la-costa-brava\"",
+  "text": "El turismo en la Costa del Sol es más diverso que en la Costa Brava.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c772383f5b8d"
+  ]
+}

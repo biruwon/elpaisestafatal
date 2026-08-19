@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d84b0f284abe",
+  "claimSlug": "\"modelo-el-sueldo-minimo-no-alcanza-ni-para-un-cafe-al-dia-en-madrid\"",
+  "text": "¡El sueldo mínimo no alcanza ni para un café al día en Madrid!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f06d3cb0fe55"
+  ]
+}

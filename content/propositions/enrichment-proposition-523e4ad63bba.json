@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-523e4ad63bba",
+  "claimSlug": "\"modelo-los-recortes-en-becas-universitarias-han-dejado-a-muchos-jovenes-sin-posibilidad\"",
+  "text": "Los recortes en becas universitarias han dejado a muchos jóvenes sin posibilidades de estudiar y eso es un gran problema.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86c828591eba"
+  ]
+}

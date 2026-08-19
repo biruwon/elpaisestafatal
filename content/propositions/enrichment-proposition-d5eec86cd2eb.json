@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d5eec86cd2eb",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-la-dependencia-de-los-servicios-sociales\"",
+  "text": "La inmigración está aumentando la dependencia de los servicios sociales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f9b319b3718f"
+  ]
+}

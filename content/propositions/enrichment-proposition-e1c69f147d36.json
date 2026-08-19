@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1c69f147d36",
+  "claimSlug": "\"modelo-por-que-el-sistema-de-pensiones-en-espana-no-cubre-la-totalidad-de-la-vida-de-ju\"",
+  "text": "¿Por qué el sistema de pensiones en España no cubre la totalidad de la vida de jubilación?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ec280515f444"
+  ]
+}

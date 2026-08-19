@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eeb83dfa35dd",
+  "claimSlug": "\"modelo-el-alquiler-es-un-maldito-agujero-negro-nunca-termina-de-pagar\"",
+  "text": "¡El alquiler es un maldito agujero negro! Nunca termina de pagar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9b09cdd3814"
+  ]
+}

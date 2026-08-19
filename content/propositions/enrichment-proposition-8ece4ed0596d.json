@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ece4ed0596d",
+  "claimSlug": "\"modelo-la-espera-para-acceder-a-servicios-de-atencion-medica-esta-aumentando-y-no-hay-s\"",
+  "text": "La espera para acceder a servicios de atención médica está aumentando y no hay suficientes profesionales de la salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0db52b7b295"
+  ]
+}

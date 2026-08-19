@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8a445e8d490",
+  "claimSlug": "\"modelo-espana-no-es-parte-del-tratado-de-libre-asociacion-con-la-ue\"",
+  "text": "España no es parte del Tratado de Libre Asociación con la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-522a31b0100b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a7d30420bd9",
+  "claimSlug": "\"modelo-los-parques-naturales-de-cantabrico-sufren-con-la-sobreexplotacion-turistica\"",
+  "text": "Los parques naturales de Cantábrico sufren con la sobreexplotación turística.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d713ece82aa7"
+  ]
+}

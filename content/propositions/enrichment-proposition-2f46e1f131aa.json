@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2f46e1f131aa",
+  "claimSlug": "\"modelo-la-subida-constante-de-precios-de-los-alimentos-hace-que-la-cesta-basica-se-vuel\"",
+  "text": "La subida constante de precios de los alimentos hace que la cesta básica se vuelva cada vez más costosa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c8d51f304b9"
+  ]
+}

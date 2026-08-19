@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b5ec3905dc5",
+  "claimSlug": "\"modelo-el-salario-minimo-en-espana-es-un-insulto\"",
+  "text": "El salario mínimo en España es un insulto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-782f53a197b0"
+  ]
+}

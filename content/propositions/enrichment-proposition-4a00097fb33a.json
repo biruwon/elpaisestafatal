@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4a00097fb33a",
+  "claimSlug": "\"modelo-la-subida-de-las-cotizaciones-de-salud-esta-dejando-a-muchos-desempleados-sin-se\"",
+  "text": "La subida de las cotizaciones de salud está dejando a muchos desempleados sin seguro médico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0d342682793"
+  ]
+}

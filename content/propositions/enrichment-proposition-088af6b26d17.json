@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-088af6b26d17",
+  "claimSlug": "\"modelo-en-espana-los-medicos-de-familia-se-niegan-sistematicamente-a-atender-pacientes-\"",
+  "text": "En España, los médicos de familia se niegan sistemáticamente a atender pacientes con listas de espera larguísimas, dejándoles sin atención",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-93649ab97253"
+  ]
+}

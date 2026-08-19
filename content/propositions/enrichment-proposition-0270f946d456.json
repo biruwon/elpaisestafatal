@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0270f946d456",
+  "claimSlug": "\"modelo-por-que-los-trabajadores-temporales-ganan-menos-que-los-fijos\"",
+  "text": "¿Por qué los trabajadores temporales ganan menos que los fijos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-26329db196a2"
+  ]
+}

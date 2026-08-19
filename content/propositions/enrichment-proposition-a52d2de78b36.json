@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a52d2de78b36",
+  "claimSlug": "\"modelo-la-falta-de-regulacion-sobre-el-uso-de-plaguicidas-esta-causando-problemas-de-sa\"",
+  "text": "La falta de regulación sobre el uso de plaguicidas está causando problemas de salud en los trabajadores de la agricultura.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ecf3f0bbbd5f"
+  ]
+}

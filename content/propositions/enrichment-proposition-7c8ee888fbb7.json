@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c8ee888fbb7",
+  "claimSlug": "\"modelo-las-politicas-de-reforestacion-estan-siendo-poco-efectivas-y-no-abarcan-areas-su\"",
+  "text": "Las políticas de reforestación están siendo poco efectivas y no abarcan áreas suficientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e96d5649cd65"
+  ]
+}

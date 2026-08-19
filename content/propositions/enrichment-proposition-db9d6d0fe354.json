@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-db9d6d0fe354",
+  "claimSlug": "\"modelo-como-es-posible-que-un-sueldo-minimo-haya-subido-tan-poco-mientras-los-precios-d\"",
+  "text": "¿Cómo es posible que un sueldo mínimo haya subido tan poco mientras los precios del alquiler suban tanto que no se puede vivir?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8628b36d0f9b"
+  ]
+}

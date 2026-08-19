@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5de61aa0265c",
+  "claimSlug": "\"modelo-el-paro-sube-cada-vez-que-empieza-el-verano\"",
+  "text": "El paro sube cada vez que empieza el verano",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-43674fd8989e"
+  ]
+}

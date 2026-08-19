@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6ec793cdbf43",
+  "claimSlug": "\"modelo-la-inflacion-en-espana-ha-aumentado-mas-de-lo-esperado-en-el-ultimo-trimestre\"",
+  "text": "La inflación en España ha aumentado más de lo esperado en el último trimestre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea21f624626a"
+  ]
+}

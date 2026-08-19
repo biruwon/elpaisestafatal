@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-338971bd8410",
+  "claimSlug": "\"modelo-el-empleo-en-el-sector-publico-en-espana-es-mas-estable-que-el-del-sector-privad\"",
+  "text": "El empleo en el sector público en España es más estable que el del sector privado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a1ff9df054ec"
+  ]
+}

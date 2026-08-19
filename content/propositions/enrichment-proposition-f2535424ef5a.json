@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2535424ef5a",
+  "claimSlug": "\"modelo-las-pensiones-no-son-suficientes-para-vivir-dignamente-en-espana\"",
+  "text": "Las pensiones no son suficientes para vivir dignamente en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c11e10fd22ba"
+  ]
+}

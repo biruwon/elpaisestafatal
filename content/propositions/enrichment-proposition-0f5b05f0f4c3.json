@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0f5b05f0f4c3",
+  "claimSlug": "\"modelo-el-crecimiento-economico-en-espana-se-basa-mas-en-el-sector-turistico-que-en-emp\"",
+  "text": "El crecimiento económico en España se basa más en el sector turístico que en empleos de calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9be756caa4d8"
+  ]
+}

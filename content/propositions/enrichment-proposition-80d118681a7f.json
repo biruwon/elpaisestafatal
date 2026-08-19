@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-80d118681a7f",
+  "claimSlug": "\"modelo-la-ue-no-garantiza-el-acceso-a-servicios-de-salud-de-calidad-en-todas-las-region\"",
+  "text": "La UE no garantiza el acceso a servicios de salud de calidad en todas las regiones de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-10c4bb571206"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e7d860651283",
+  "claimSlug": "\"modelo-la-proteccion-social-no-cubre-los-gastos-de-los-medicamentos-y-muchos-enfermos-s\"",
+  "text": "La protección social no cubre los gastos de los medicamentos y muchos enfermos se endeudan para pagarlos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba1376a27725"
+  ]
+}

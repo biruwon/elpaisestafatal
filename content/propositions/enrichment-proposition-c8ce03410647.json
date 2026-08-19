@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8ce03410647",
+  "claimSlug": "\"modelo-la-ue-no-hace-lo-suficiente-para-proteger-los-derechos-de-los-trabajadores-en-es\"",
+  "text": "La UE no hace lo suficiente para proteger los derechos de los trabajadores en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7500efd4bb5b"
+  ]
+}

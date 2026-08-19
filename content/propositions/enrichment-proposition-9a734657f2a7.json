@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9a734657f2a7",
+  "claimSlug": "\"modelo-en-espana-es-frecuente-que-los-profesores-no-dispongan-de-formacion-especifica-p\"",
+  "text": "En España, es frecuente que los profesores no dispongan de formación específica para el uso de las nuevas tecnologías en el aula.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aad86db1ef8e"
+  ]
+}

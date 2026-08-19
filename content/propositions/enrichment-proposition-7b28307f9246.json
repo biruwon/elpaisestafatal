@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b28307f9246",
+  "claimSlug": "\"modelo-la-tasa-de-turismo-en-ciudades-esta-haciendo-que-se-suban-los-alquileres-y-los-s\"",
+  "text": "La tasa de turismo en ciudades está haciendo que se suban los alquileres y los servicios se vuelvan menos accesibles",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-15c14f4bbdb0"
+  ]
+}

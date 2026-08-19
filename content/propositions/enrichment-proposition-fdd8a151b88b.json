@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fdd8a151b88b",
+  "claimSlug": "\"modelo-la-proteccion-social-no-abarca-la-salud-mental-de-los-trabajadores\"",
+  "text": "La protección social no abarca la salud mental de los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1a889f9ad981"
+  ]
+}

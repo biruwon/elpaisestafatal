@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed7397bf819d",
+  "claimSlug": "\"modelo-la-falta-de-regulaciones-sobre-el-uso-de-drones-en-zonas-de-riesgo-podria-estar-\"",
+  "text": "La falta de regulaciones sobre el uso de drones en zonas de riesgo podría estar causando problemas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8dc48f10f1f2"
+  ]
+}

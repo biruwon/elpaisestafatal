@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10c9eac0349a",
+  "claimSlug": "\"modelo-la-espera-por-cirugias-en-espana-es-tan-larga-que-a-veces-se-puede-morir-mientra\"",
+  "text": "La espera por cirugías en España es tan larga que a veces se puede morir mientras esperas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9e050db40634"
+  ]
+}

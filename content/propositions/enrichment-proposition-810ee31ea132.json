@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-810ee31ea132",
+  "claimSlug": "\"modelo-los-recursos-del-sistema-de-pensiones-no-estan-siendo-utilizados-de-manera-efici\"",
+  "text": "Los recursos del sistema de pensiones no están siendo utilizados de manera eficiente para mejorar las pensiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aeffcc1a476f"
+  ]
+}

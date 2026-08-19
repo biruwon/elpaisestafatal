@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e7c46cfbf6e3",
+  "claimSlug": "\"modelo-la-falta-de-viviendas-asequibles-es-un-problema-cronico-los-pobres-viven-en-cond\"",
+  "text": "¡La falta de viviendas asequibles es un problema crónico, los pobres viven en condiciones miserables!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4a896cc627a8"
+  ]
+}

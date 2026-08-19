@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-305282e42d28",
+  "claimSlug": "\"modelo-los-controles-de-seguridad-en-los-lugares-publicos-son-muy-escasos\"",
+  "text": "Los controles de seguridad en los lugares públicos son muy escasos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6f8bdac6e84"
+  ]
+}

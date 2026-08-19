@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32218e273066",
+  "claimSlug": "\"modelo-los-peatones-se-sienten-inseguros-en-las-aceras-de-granada-por-la-falta-de-ilumi\"",
+  "text": "Los peatones se sienten inseguros en las aceras de Granada por la falta de iluminación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aab819cb518e"
+  ]
+}

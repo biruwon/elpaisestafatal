@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de8b11361efa",
+  "claimSlug": "\"modelo-por-que-no-se-hacen-mas-controles-en-las-zonas-forestales-estamos-a-la-deriva-fr\"",
+  "text": "¿Por qué no se hacen más controles en las zonas forestales? Estamos a la deriva frente a los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e9c5bbbafc8"
+  ]
+}

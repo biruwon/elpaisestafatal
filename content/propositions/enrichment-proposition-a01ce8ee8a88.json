@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a01ce8ee8a88",
+  "claimSlug": "\"modelo-el-crecimiento-economico-no-esta-beneficiando-a-la-gente-de-a-pie-solo-a-los-ric\"",
+  "text": "El crecimiento económico no está beneficiando a la gente de a pie, solo a los ricos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d3ad28a498e"
+  ]
+}

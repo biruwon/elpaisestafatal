@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1cf6925eb180",
+  "claimSlug": "\"modelo-los-centros-educativos-no-ofrecen-suficiente-apoyo-psicologico-para-los-jovenes-\"",
+  "text": "Los centros educativos no ofrecen suficiente apoyo psicológico para los jóvenes con problemas de salud mental.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-28053944ca65"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1423798e3e09",
+  "claimSlug": "\"modelo-la-inmigracion-esta-creando-problemas-de-seguridad-en-el-barrio\"",
+  "text": "La inmigración está creando problemas de seguridad en el barrio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5db9acb2b47"
+  ]
+}

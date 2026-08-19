@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-392b6984d9d9",
+  "claimSlug": "\"modelo-es-frecuente-que-los-pacientes-se-sientan-ignorados-por-el-personal-medico\"",
+  "text": "Es frecuente que los pacientes se sientan ignorados por el personal médico",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-054ac163e3fe"
+  ]
+}

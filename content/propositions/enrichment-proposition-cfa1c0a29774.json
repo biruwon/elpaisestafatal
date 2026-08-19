@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfa1c0a29774",
+  "claimSlug": "\"modelo-el-coste-de-la-energia-en-espana-es-desproporcionado-en-comparacion-con-otros-pa\"",
+  "text": "El coste de la energía en España es desproporcionado en comparación con otros países europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0455e5680b4c"
+  ]
+}

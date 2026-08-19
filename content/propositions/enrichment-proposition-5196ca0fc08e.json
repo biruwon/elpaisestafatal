@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5196ca0fc08e",
+  "claimSlug": "\"modelo-las-agresiones-callejeras-en-sevilla-son-frecuentes-y-nadie-hace-nada-al-respect\"",
+  "text": "Las agresiones callejeras en Sevilla son frecuentes y nadie hace nada al respecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e711cfe14a6c"
+  ]
+}

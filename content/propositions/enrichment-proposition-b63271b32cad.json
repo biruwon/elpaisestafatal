@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b63271b32cad",
+  "claimSlug": "\"modelo-el-sistema-de-aparcamiento-en-el-centro-de-barcelona-es-tan-costoso-que-es-mas-e\"",
+  "text": "El sistema de aparcamiento en el centro de Barcelona es tan costoso que es más económico circular con el coche que aparcar y caminar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80f136130611"
+  ]
+}

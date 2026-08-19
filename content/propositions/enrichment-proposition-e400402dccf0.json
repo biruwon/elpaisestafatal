@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e400402dccf0",
+  "claimSlug": "\"modelo-el-aumento-constante-de-la-tasa-de-inquilinato-turistico-esta-desplazando-a-los-\"",
+  "text": "El aumento constante de la tasa de inquilinato turístico está desplazando a los residentes locales de sus viviendas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c5a9881d935"
+  ]
+}

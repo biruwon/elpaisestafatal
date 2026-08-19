@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0955225585ac",
+  "claimSlug": "\"modelo-las-horas-extras-son-comunes-pero-las-empresas-no-pagan-el-doble-del-salario-nor\"",
+  "text": "Las horas extras son comunes, pero las empresas no pagan el doble del salario normal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-24f6b24a3745"
+  ]
+}

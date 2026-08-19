@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9074c167b033",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-los-parques-de-ninos-que-no-hablan-espanol\"",
+  "text": "La inmigración está llenando los parques de niños que no hablan español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efdb94682c12"
+  ]
+}

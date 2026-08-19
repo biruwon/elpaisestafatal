@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-84b9e60cdd85",
+  "claimSlug": "\"modelo-los-alquileres-en-las-ciudades-costeras-de-espana-han-aumentado-mas-que-en-las-c\"",
+  "text": "Los alquileres en las ciudades costeras de España han aumentado más que en las ciudades interiores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae07f7e7ee67"
+  ]
+}

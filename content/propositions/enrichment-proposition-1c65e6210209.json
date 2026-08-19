@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1c65e6210209",
+  "claimSlug": "\"modelo-la-precariedad-laboral-esta-a-la-orden-del-dia-en-espana-con-muchos-trabajadores\"",
+  "text": "La precariedad laboral está a la orden del día en España, con muchos trabajadores viviendo en la línea roja de la pobreza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-15c4b1cff86f"
+  ]
+}

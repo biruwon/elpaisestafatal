@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd457d9c7499",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-llenas-de-pescadores-que-se-aprovechan-de-los-banista\"",
+  "text": "Las playas de España están llenas de pescadores que se aprovechan de los bañistas para vender sus productos, a precios abusivos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6c4815fcc31e"
+  ]
+}

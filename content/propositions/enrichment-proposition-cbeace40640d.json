@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cbeace40640d",
+  "claimSlug": "\"modelo-la-falta-de-inversiones-en-el-aeropuerto-de-madrid-hace-que-los-pasajeros-tengan\"",
+  "text": "La falta de inversiones en el aeropuerto de Madrid hace que los pasajeros tengan que soportar largas horas de espera y líneas de control interminables.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0a0dc2a1548"
+  ]
+}

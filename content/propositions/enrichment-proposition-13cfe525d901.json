@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-13cfe525d901",
+  "claimSlug": "\"modelo-como-es-posible-que-las-carreteras-secundarias-en-espana-esten-tan-mal-mantenida\"",
+  "text": "¿Cómo es posible que las carreteras secundarias en España estén tan mal mantenidas y con tantos baches?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b78980decfec"
+  ]
+}

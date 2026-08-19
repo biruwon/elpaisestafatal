@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32c4c8c28596",
+  "claimSlug": "\"modelo-por-que-la-union-europea-no-toma-medidas-mas-contundentes-para-combatir-el-desem\"",
+  "text": "¿Por qué la Unión Europea no toma medidas más contundentes para combatir el desempleo juvenil en España?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-fb959f8cb3bb"
+  ]
+}

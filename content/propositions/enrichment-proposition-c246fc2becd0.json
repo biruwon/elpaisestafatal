@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c246fc2becd0",
+  "claimSlug": "\"modelo-que-se-hace-con-las-cenizas-de-los-incendios-se-estan-acumulando-en-los-valles\"",
+  "text": "¿Qué se hace con las cenizas de los incendios? Se están acumulando en los valles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a66feaa1aff9"
+  ]
+}

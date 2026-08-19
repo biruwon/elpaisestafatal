@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-446c6c261f5b",
+  "claimSlug": "\"modelo-los-centros-educativos-estan-priorizando-la-seguridad-en-lugar-de-la-atencion-ed\"",
+  "text": "Los centros educativos están priorizando la seguridad en lugar de la atención educativa, dejando a muchos estudiantes sin atención personalizada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7b07db071d0d"
+  ]
+}

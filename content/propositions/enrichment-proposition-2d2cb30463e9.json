@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d2cb30463e9",
+  "claimSlug": "\"modelo-los-combustibles-en-espana-son-prohibitivos-para-el-presupuesto-de-un-trabajador\"",
+  "text": "Los combustibles en España son prohibitivos para el presupuesto de un trabajador medio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-98b8b50baf87"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94f52c873a5e",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-en-espana-esta-desgastado-y-la-gente-se-siente-a\"",
+  "text": "El sistema de protección social en España está desgastado y la gente se siente abandonada por la falta de apoyo en momentos de necesidad.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-931f494237a0"
+  ]
+}

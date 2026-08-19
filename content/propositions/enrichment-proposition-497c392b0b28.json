@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-497c392b0b28",
+  "claimSlug": "\"modelo-hay-muchas-personas-que-trabajan-jornadas-largas-pero-aun-asi-no-pueden-salir-de\"",
+  "text": "Hay muchas personas que trabajan jornadas largas pero aún así no pueden salir de la pobreza, porque los sueldos son demasiado bajos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6875ea8fa1d2"
+  ]
+}

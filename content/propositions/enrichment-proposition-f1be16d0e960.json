@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1be16d0e960",
+  "claimSlug": "\"modelo-la-despoblacion-en-el-interior-de-andalucia-es-tan-grave-que-ya-se-estan-cerrand\"",
+  "text": "La despoblación en el interior de Andalucía es tan grave que ya se están cerrando escuelas y centros de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f1b04c0b3555"
+  ]
+}

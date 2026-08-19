@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f425baa9fa4e",
+  "claimSlug": "\"modelo-la-subida-constante-del-alquiler-esta-restando-calidad-de-vida-a-la-gente\"",
+  "text": "La subida constante del alquiler está restando calidad de vida a la gente",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab1796a0289f"
+  ]
+}

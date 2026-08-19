@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63b0927b0bbe",
+  "claimSlug": "\"modelo-la-educacion-publica-se-ha-degradado-tanto-que-los-pobres-salen-peor-parados\"",
+  "text": "¡La educación pública se ha degradado tanto que los pobres salen peor parados!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5656724a872"
+  ]
+}

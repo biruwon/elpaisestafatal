@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-540529759bca",
+  "claimSlug": "\"modelo-espana-tiene-mas-dificultades-para-acceder-a-fondos-comunitarios-que-otros-paise\"",
+  "text": "España tiene más dificultades para acceder a fondos comunitarios que otros países de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5cdcd03d8382"
+  ]
+}

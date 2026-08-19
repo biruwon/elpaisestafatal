@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-65f567627f2a",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-diesel-y-el-gasoil-estan-haciendo-que-el-transporte-sea-p\"",
+  "text": "Los impuestos sobre el diésel y el gasoil están haciendo que el transporte sea prohibitivo para los bolsillos de los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9b78041e64d5"
+  ]
+}

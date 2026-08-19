@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d6afc881289",
+  "claimSlug": "\"modelo-espana-cree-que-la-ue-no-hace-lo-suficiente-para-proteger-a-sus-ciudadanos-de-am\"",
+  "text": "España cree que la UE no hace lo suficiente para proteger a sus ciudadanos de amenazas inmigratorias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-20c4af6e0b3a"
+  ]
+}

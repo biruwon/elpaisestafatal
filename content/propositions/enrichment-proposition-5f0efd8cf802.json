@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f0efd8cf802",
+  "claimSlug": "\"modelo-el-gobierno-esta-demorando-demasiado-en-declarar-zonas-de-riesgo-alto-de-incendi\"",
+  "text": "El Gobierno está demorando demasiado en declarar zonas de riesgo alto de incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-09d9d47fb0c3"
+  ]
+}

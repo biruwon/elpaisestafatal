@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f2312641ae7",
+  "claimSlug": "\"modelo-la-falta-de-formacion-continua-dificulta-el-acceso-al-empleo-en-espana\"",
+  "text": "La falta de formación continua dificulta el acceso al empleo en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e5d6c4b20dbe"
+  ]
+}

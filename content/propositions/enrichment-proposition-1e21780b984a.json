@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e21780b984a",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-los-bancos-suban-las-tasas-de-interes-y-nos-hagan\"",
+  "text": "La inflación está haciendo que los bancos suban las tasas de interés y nos hagan pagar más por los préstamos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e9f926d07d41"
+  ]
+}

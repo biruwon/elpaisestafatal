@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c9366e568e9",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-frenar-la-inflacion-y-proteger-los-ingresos-de-los\"",
+  "text": "El gobierno no hace nada para frenar la inflación y proteger los ingresos de los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3b1672eab284"
+  ]
+}

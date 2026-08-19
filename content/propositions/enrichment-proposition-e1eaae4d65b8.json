@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1eaae4d65b8",
+  "claimSlug": "\"modelo-en-espana-la-sanidad-ha-dejado-de-ser-un-derecho-para-convertirse-en-un-lujo\"",
+  "text": "En España, la sanidad ha dejado de ser un derecho para convertirse en un lujo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fe3ebe19b688"
+  ]
+}

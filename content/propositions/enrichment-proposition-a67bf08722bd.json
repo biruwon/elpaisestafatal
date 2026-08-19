@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a67bf08722bd",
+  "claimSlug": "\"modelo-la-deforestacion-en-espana-esta-siendo-tan-rapida-que-los-bosques-no-tienen-tiem\"",
+  "text": "La deforestación en España está siendo tan rápida que los bosques no tienen tiempo de recuperarse de los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-04c6df2514ba"
+  ]
+}

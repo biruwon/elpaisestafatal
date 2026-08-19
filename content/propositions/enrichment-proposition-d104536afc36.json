@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d104536afc36",
+  "claimSlug": "\"modelo-en-espana-los-sindicatos-tienen-poco-peso-en-las-negociaciones-de-salarios-y-con\"",
+  "text": "En España, los sindicatos tienen poco peso en las negociaciones de salarios y contratos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f90c48950cd"
+  ]
+}

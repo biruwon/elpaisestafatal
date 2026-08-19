@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a9bd2457c7c5",
+  "claimSlug": "\"modelo-por-que-la-ciudad-de-madrid-sigue-teniendo-tanto-trafico-y-es-imposible-moverse-\"",
+  "text": "¿Por qué la ciudad de Madrid sigue teniendo tanto tráfico y es imposible moverse por ella sin estar en atasco?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0511a69e1118"
+  ]
+}

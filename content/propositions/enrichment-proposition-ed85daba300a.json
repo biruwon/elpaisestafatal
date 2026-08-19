@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed85daba300a",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-en-espana-hace-que-sea-dificil-encontrar-un-trabajo-de\"",
+  "text": "La falta de oportunidades en España hace que sea difícil encontrar un trabajo decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-743e8e73874e"
+  ]
+}

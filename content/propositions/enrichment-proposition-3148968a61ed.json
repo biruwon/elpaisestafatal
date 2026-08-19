@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3148968a61ed",
+  "claimSlug": "\"modelo-las-aulas-de-secundaria-estan-cada-vez-mas-llenas-lo-que-dificulta-el-aprendizaj\"",
+  "text": "Las aulas de secundaria están cada vez más llenas, lo que dificulta el aprendizaje de los estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-988ec716c9dd"
+  ]
+}

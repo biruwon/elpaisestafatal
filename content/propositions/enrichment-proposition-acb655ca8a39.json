@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-acb655ca8a39",
+  "claimSlug": "\"modelo-el-sistema-educativo-se-esta-haciendo-cada-vez-mas-selectivo-excluyendo-a-muchos\"",
+  "text": "El sistema educativo se está haciendo cada vez más selectivo, excluyendo a muchos jóvenes de oportunidades de formación superior.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-65b82e08fa2b"
+  ]
+}

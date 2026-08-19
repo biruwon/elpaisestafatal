@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7d12b4db3d59",
+  "claimSlug": "\"modelo-la-calidad-del-servicio-en-los-hoteles-turisticos-es-deficiente-y-decepcionante\"",
+  "text": "La calidad del servicio en los hoteles turísticos es deficiente y decepcionante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c37b1b8e74f"
+  ]
+}

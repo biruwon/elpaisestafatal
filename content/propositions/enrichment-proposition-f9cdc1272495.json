@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f9cdc1272495",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-estan-permitiendo-la-entrada-de-personas-que-no-est\"",
+  "text": "Las políticas de inmigración están permitiendo la entrada de personas que no están legalmente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-99d28f0ca309"
+  ]
+}

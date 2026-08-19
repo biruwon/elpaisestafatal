@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-990a83ed00b6",
+  "claimSlug": "\"modelo-el-precio-de-la-uva-de-la-region-de-la-mancha-sube-cada-ano-se-supone-que-el-cli\"",
+  "text": "El precio de la uva de la región de La Mancha sube cada año, ¿se supone que el clima se ha vuelto más favorable para los vinos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-83fdd7d298f1"
+  ]
+}

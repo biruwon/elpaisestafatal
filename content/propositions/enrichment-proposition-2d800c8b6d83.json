@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d800c8b6d83",
+  "claimSlug": "\"modelo-el-gasto-en-museos-esta-subiendo-pero-la-entrada-sigue-siendo-cara\"",
+  "text": "El gasto en museos está subiendo pero la entrada sigue siendo cara.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-adaae6423050"
+  ]
+}

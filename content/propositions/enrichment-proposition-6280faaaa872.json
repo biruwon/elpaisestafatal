@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6280faaaa872",
+  "claimSlug": "\"modelo-la-subida-del-iva-a-los-alimentos-esta-matando-nuestras-arcas-familiares\"",
+  "text": "La subida del IVA a los alimentos está matando nuestras arcas familiares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9be334ca2acc"
+  ]
+}

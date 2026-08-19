@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-45d2235165f7",
+  "claimSlug": "\"modelo-la-ue-impone-demasiadas-reglas-que-solo-benefician-a-las-grandes-empresas-en-esp\"",
+  "text": "La UE impone demasiadas reglas que solo benefician a las grandes empresas en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f4c5f3223a5f"
+  ]
+}

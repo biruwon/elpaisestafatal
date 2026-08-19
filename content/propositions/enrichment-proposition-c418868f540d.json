@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c418868f540d",
+  "claimSlug": "\"modelo-la-ue-esta-haciendo-poco-para-combatir-el-aumento-de-los-precios-de-la-energia-e\"",
+  "text": "La UE está haciendo poco para combatir el aumento de los precios de la energía en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5d1b68b93fb"
+  ]
+}

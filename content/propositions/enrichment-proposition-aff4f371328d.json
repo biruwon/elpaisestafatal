@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aff4f371328d",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-no-pueda-mantener-a-mi-familia\"",
+  "text": "La inflación está haciendo que no pueda mantener a mi familia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3c8b26eb68e7"
+  ]
+}

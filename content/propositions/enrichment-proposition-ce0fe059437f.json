@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce0fe059437f",
+  "claimSlug": "\"modelo-es-normal-esperar-meses-para-cirugias-que-podrian-haberse-realizado-en-tiempo-y-\"",
+  "text": "Es normal esperar meses para cirugías que podrían haberse realizado en tiempo y forma.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4206f4f137b8"
+  ]
+}

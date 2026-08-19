@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b027b6e854f",
+  "claimSlug": "\"modelo-espana-ha-perdido-mucho-poder-en-las-decisiones-de-la-ue\"",
+  "text": "España ha perdido mucho poder en las decisiones de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-63d999c3ab6b"
+  ]
+}

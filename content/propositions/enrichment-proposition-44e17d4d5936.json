@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44e17d4d5936",
+  "claimSlug": "\"modelo-por-que-las-viviendas-digitales-no-tienen-un-sistema-de-alerta-temprana-para-cor\"",
+  "text": "¿Por qué las viviendas digitales no tienen un sistema de alerta temprana para cortar la electricidad en caso de incendio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c0d8f52329c4"
+  ]
+}

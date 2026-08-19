@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-65f27f7d61e1",
+  "claimSlug": "\"modelo-los-juzgados-tienen-tanta-sobrecarga-que-los-juzgados-se-ven-como-un-pasillo-de-\"",
+  "text": "Los juzgados tienen tanta sobrecarga que los juzgados se ven como un pasillo de un hospital de emergencias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b207bd11339d"
+  ]
+}

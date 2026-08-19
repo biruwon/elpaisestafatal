@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c5362bbed07b",
+  "claimSlug": "\"modelo-las-lluvias-invernales-en-espana-han-disminuido-la-posibilidad-de-incendios-fore\"",
+  "text": "¿Las lluvias invernales en España han disminuido la posibilidad de incendios forestales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ff94f04a2f5e"
+  ]
+}

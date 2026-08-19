@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-65b7a62b4ae1",
+  "claimSlug": "\"modelo-la-crisis-del-paro-no-se-ha-resuelto-y-muchas-personas-trabajan-a-tiempo-parcial\"",
+  "text": "La crisis del paro no se ha resuelto y muchas personas trabajan a tiempo parcial porque no hay suficiente empleo completo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-454e44ceb92c"
+  ]
+}

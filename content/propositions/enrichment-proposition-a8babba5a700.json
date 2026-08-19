@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8babba5a700",
+  "claimSlug": "\"modelo-los-autobuses-urbanos-de-madrid-son-tan-incomodos-que-prefiero-caminar\"",
+  "text": "Los autobuses urbanos de Madrid son tan incómodos que prefiero caminar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85560bc88f7c"
+  ]
+}

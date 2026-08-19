@@ -1,9 +1,9 @@
 {
   "id": "enrichment-proposition-4dabdd0ed686",
-  "claimSlug": "modelo-como-es-posible-que-despues-de-tantos-meses-buscando-todo-el-mundo-me-diga-que-n",
+  "claimSlug": "\"modelo-como-es-posible-que-despues-de-tantos-meses-buscando-todo-el-mundo-me-diga-que-n\"",
   "text": "¿Cómo es posible que después de tantos meses buscando, todo el mundo me diga que no hay nada, y encima las que hay son inalcanzables?",
-  "type": "unverified-enrichment",
-  "status": "lead",
+  "type": "descriptive",
+  "status": "unreviewed",
   "evidenceIds": [
     "enrichment-evidence-56809bc4736f"
   ]

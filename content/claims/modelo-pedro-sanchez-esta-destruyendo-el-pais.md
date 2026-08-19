@@ -12,12 +12,13 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-bfdd4faeefd5"]
 limitations: "Respuesta generada por IA; la frase es una valoración global y no define indicadores ni un periodo que permitan comprobarla como un todo."
 generatedBy: "codex-model-catalogue-expansion"
 generatedAt: "2026-08-18T00:00:00.000Z"
 semanticFingerprint: "pedro sanchez esta destruyendo el pais"
+propositionIds: ["enrichment-proposition-2d4dbdfcf825"]
 ---
 
 ## Qué es cierto

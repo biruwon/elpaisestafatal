@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0c9ef5441e91",
+  "claimSlug": "\"modelo-el-sueldo-no-alcanza-para-cubrir-los-gastos-basicos-menos-para-el-alquiler-en-mu\"",
+  "text": "El sueldo no alcanza para cubrir los gastos básicos, menos para el alquiler, en muchas ciudades de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3c224061d0b0"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-727f1cd73fa5",
+  "claimSlug": "\"modelo-el-gas-y-la-electricidad-son-mas-caros-que-en-otros-paises-europeos\"",
+  "text": "El gas y la electricidad son más caros que en otros países europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be9589be520d"
+  ]
+}

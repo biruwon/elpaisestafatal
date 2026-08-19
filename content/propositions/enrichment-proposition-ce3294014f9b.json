@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce3294014f9b",
+  "claimSlug": "\"modelo-la-luz-se-ha-vuelto-tan-cara-que-me-preocupo-por-poder-pagarla-al-final-del-mes\"",
+  "text": "La luz se ha vuelto tan cara que me preocupo por poder pagarla al final del mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c55070a534e"
+  ]
+}

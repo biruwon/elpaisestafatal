@@ -4,21 +4,22 @@ claim: "En regiones con menos recursos, como ciertas zonas rurales, la falta de 
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["Zonas rurales con largas esperas","Acceso limitado a especialistas en zonas rurales","Largas listas de espera en áreas rurales","Zonas rurales con especialistas escasos","Acceso a la atención médica limitado en zonas rurales","En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.","¿Es cierto que En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","¿Qué datos permiten comprobar si En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","Quiero saber si En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.","¿Cómo se puede verificar En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","¿Hay evidencia sobre si En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","¿Es verdad que En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","¿Qué sabemos de En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?","¿Se sostiene la afirmación de que En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-f4c072ca1e43"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en regiones con menos recursos como ciertas zonas rurales la falta de especialistas puede hacer que los pacientes esperen meses para citas lo que afecta su acceso a la atencion medica"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-e5f6cc532119"]
 ---
 
 ## Qué es cierto

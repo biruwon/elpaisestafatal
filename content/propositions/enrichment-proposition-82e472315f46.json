@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-82e472315f46",
+  "claimSlug": "\"modelo-la-educacion-publica-en-muchas-zonas-de-espana-es-muy-deficiente\"",
+  "text": "La educación pública en muchas zonas de España es muy deficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4fa651aa3bc"
+  ]
+}

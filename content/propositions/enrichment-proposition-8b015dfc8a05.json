@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8b015dfc8a05",
+  "claimSlug": "\"modelo-la-electricidad-sube-de-forma-incontrolada-y-sin-justificacion\"",
+  "text": "La electricidad sube de forma incontrolada y sin justificación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e7d092a0101"
+  ]
+}

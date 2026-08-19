@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-876b4cca0cba",
+  "claimSlug": "\"modelo-las-pruebas-diagnosticas-se-demoran-tanto-que-el-tratamiento-se-retarda-y-el-pac\"",
+  "text": "Las pruebas diagnósticas se demoran tanto que el tratamiento se retarda y el paciente se agota esperando.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-64c6011a9544"
+  ]
+}

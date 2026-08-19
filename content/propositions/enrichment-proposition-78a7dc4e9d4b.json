@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78a7dc4e9d4b",
+  "claimSlug": "\"modelo-en-espana-los-tribunales-tardan-demasiado-en-resolver-los-casos-de-violencia-de-\"",
+  "text": "En España, los tribunales tardan demasiado en resolver los casos de violencia de género.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-905672c3a9e9"
+  ]
+}

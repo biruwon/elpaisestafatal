@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-805b6a442e13",
+  "claimSlug": "\"modelo-la-subcontratacion-esta-creciendo-en-espana-y-dana-a-los-trabajadores\"",
+  "text": "La subcontratación está creciendo en España y daña a los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bddbb65d9396"
+  ]
+}

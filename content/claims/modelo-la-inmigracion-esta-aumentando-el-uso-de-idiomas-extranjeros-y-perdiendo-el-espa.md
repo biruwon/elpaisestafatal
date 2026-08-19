@@ -4,21 +4,22 @@ claim: "La inmigración está aumentando el uso de idiomas extranjeros y perdien
 assessment: uncertain
 topicSlugs: ["inmigración y demografía"]
 aliases: ["El español está en peligro","Se está perdiendo el español","La inmigración está amenazando la lengua materna","La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.","¿Es cierto que La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","¿Qué datos permiten comprobar si La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","Quiero saber si La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.","¿Cómo se puede verificar La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","¿Hay evidencia sobre si La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","¿Es verdad que La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","¿Qué sabemos de La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?","¿Se sostiene la afirmación de que La inmigración está aumentando el uso de idiomas extranjeros y perdiendo el español como lengua materna.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-c46509843639"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la inmigracion esta aumentando el uso de idiomas extranjeros y perdiendo el espanol como lengua materna"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-e3b6bf996900"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b0d6d2c5e22",
+  "claimSlug": "\"modelo-espana-esta-sufriendo-las-consecuencias-de-la-ineficacia-de-la-ue-en-la-gestion-\"",
+  "text": "España está sufriendo las consecuencias de la ineficacia de la UE en la gestión de las crisis humanitarias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4901156f660c"
+  ]
+}

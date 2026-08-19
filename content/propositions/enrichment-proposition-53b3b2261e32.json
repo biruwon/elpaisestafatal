@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-53b3b2261e32",
+  "claimSlug": "\"modelo-cuanto-tiempo-se-tarda-en-reponer-los-servicios-de-bomberos-forestales-despues-d\"",
+  "text": "¿Cuánto tiempo se tarda en reponer los servicios de bomberos forestales después de un incendio?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-083ff0ed1153"
+  ]
+}

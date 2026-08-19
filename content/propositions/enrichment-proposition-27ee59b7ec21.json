@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-27ee59b7ec21",
+  "claimSlug": "\"modelo-las-prestaciones-de-incapacidad-en-espana-son-muy-limitadas-con-muchos-trabajado\"",
+  "text": "Las prestaciones de incapacidad en España son muy limitadas, con muchos trabajadores con discapacidad quedándose sin apoyo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6b8f76ed9828"
+  ]
+}

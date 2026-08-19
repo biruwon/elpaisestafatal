@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3d56be9bd1a5",
+  "claimSlug": "\"modelo-los-servicios-turisticos-en-mallorca-estan-saturados-y-los-precios-son-abusivos\"",
+  "text": "Los servicios turísticos en Mallorca están saturados y los precios son abusivos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-da3fc5c9e68e"
+  ]
+}

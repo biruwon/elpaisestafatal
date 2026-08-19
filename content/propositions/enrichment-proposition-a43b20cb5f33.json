@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a43b20cb5f33",
+  "claimSlug": "\"modelo-la-subida-del-alquiler-es-un-robo\"",
+  "text": "¡La subida del alquiler es un robo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d24da7447a4"
+  ]
+}

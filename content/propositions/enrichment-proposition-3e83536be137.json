@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e83536be137",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-los-parques-de-ninos-que-no-son-espanoles\"",
+  "text": "La inmigración está llenando los parques de niños que no son españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ebfce419cd37"
+  ]
+}

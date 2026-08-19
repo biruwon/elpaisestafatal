@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0876cbddb6a8",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-la-vida-sea-cada-vez-mas-cara-para-las-familias\"",
+  "text": "La inflación está haciendo que la vida sea cada vez más cara para las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7242134b38fd"
+  ]
+}

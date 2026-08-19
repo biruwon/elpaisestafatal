@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-43d998bb3b90",
+  "claimSlug": "\"modelo-por-que-los-libros-de-texto-son-tan-caros-que-ni-siquiera-los-estudiantes-de-uni\"",
+  "text": "¿Por qué los libros de texto son tan caros que ni siquiera los estudiantes de universidad pueden permitírselos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9147d3d1b0be"
+  ]
+}

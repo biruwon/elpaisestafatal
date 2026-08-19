@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-baab5787c21c",
+  "claimSlug": "\"modelo-los-recortes-en-el-sistema-de-pensiones-han-dejado-a-muchos-trabajadores-sin-la-\"",
+  "text": "Los recortes en el sistema de pensiones han dejado a muchos trabajadores sin la seguridad que esperaban al jubilarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8b41d3e9ceed"
+  ]
+}

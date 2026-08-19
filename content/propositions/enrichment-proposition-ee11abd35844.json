@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee11abd35844",
+  "claimSlug": "\"modelo-las-subcontratas-pagan-muy-poco-a-sus-empleados\"",
+  "text": "Las subcontratas pagan muy poco a sus empleados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-609b2b1eb0e6"
+  ]
+}

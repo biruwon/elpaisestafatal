@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-91a3a7dd1625",
+  "claimSlug": "\"modelo-por-que-las-areas-verdes-de-madrid-siguen-ardiendo-en-verano\"",
+  "text": "¿Por qué las áreas verdes de Madrid siguen ardiendo en verano?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8fe7bb50be8b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8b9fdd28318b",
+  "claimSlug": "\"modelo-por-que-en-espana-sigue-habiendo-tantas-empresas-que-no-pagan-la-maternidad-a-ti\"",
+  "text": "¿Por qué en España sigue habiendo tantas empresas que no pagan la maternidad a tiempo completo?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-9eb75b7d808d"
+  ]
+}

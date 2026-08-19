@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eabf34f26faa",
+  "claimSlug": "\"modelo-la-temporada-alta-de-turismo-en-espana-esta-matando-los-negocios-de-los-pequenos\"",
+  "text": "La temporada alta de turismo en España está matando los negocios de los pequeños dueños de casas rurales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2123ead2ff75"
+  ]
+}

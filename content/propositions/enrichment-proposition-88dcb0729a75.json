@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-88dcb0729a75",
+  "claimSlug": "\"modelo-como-es-que-en-muchos-edificios-no-hay-sistemas-de-control-de-humo-que-funcionen\"",
+  "text": "¿Cómo es que en muchos edificios no hay sistemas de control de humo que funcionen correctamente en caso de incendio?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-19cc9b906829"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bea72f3f30b2",
+  "claimSlug": "\"modelo-los-jovenes-en-espana-tienen-que-enfrentarse-a-altas-tasas-de-desempleo-incluso-\"",
+  "text": "Los jóvenes en España tienen que enfrentarse a altas tasas de desempleo incluso después de terminar sus estudios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c8121a92367"
+  ]
+}

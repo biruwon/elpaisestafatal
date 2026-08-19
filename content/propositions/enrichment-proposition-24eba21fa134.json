@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-24eba21fa134",
+  "claimSlug": "\"modelo-la-inflacion-nos-esta-dejando-en-la-ruina\"",
+  "text": "La inflación nos está dejando en la ruina",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3916df319bd8"
+  ]
+}

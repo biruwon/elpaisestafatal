@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-db6fa81c8b75",
+  "claimSlug": "\"modelo-la-agricultura-en-espana-no-se-dedica-suficientemente-a-la-sostenibilidad-hay-mu\"",
+  "text": "La agricultura en España no se dedica suficientemente a la sostenibilidad, hay muchos campos abandonados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d5122ec9681"
+  ]
+}

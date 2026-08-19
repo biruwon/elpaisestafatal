@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e9beae68bd0",
+  "claimSlug": "\"modelo-los-jueces-no-toman-decisiones-justas-favoreciendo-a-los-poderosos\"",
+  "text": "Los jueces no toman decisiones justas, favoreciendo a los poderosos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ff4027964b64"
+  ]
+}

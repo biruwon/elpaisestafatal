@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5752839bfbb7",
+  "claimSlug": "\"modelo-en-muchas-zonas-urbanas-los-precios-de-los-alimentos-y-del-alquiler-suben-mas-ra\"",
+  "text": "En muchas zonas urbanas, los precios de los alimentos y del alquiler suben más rápido que los salarios, haciendo que sea cada vez más difícil para las familias con niños vivir decentemente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d3a4894c6f3a"
+  ]
+}

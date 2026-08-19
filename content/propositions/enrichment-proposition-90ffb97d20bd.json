@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-90ffb97d20bd",
+  "claimSlug": "\"modelo-en-muchas-zonas-rurales-de-galicia-el-desempleo-es-tan-cronico-que-la-gente-se-s\"",
+  "text": "En muchas zonas rurales de Galicia, el desempleo es tan crónico que la gente se siente desesperada y sin futuro",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4ac806545c9"
+  ]
+}

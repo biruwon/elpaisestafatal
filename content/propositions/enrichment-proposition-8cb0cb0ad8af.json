@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8cb0cb0ad8af",
+  "claimSlug": "\"modelo-los-jovenes-no-tienen-suficientes-becas-para-estudios-superiores\"",
+  "text": "Los jóvenes no tienen suficientes becas para estudios superiores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c013885d207d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe3b28e19368",
+  "claimSlug": "\"modelo-por-que-en-espana-se-espera-tanto-tiempo-para-cirugias-simples-que-en-otros-pais\"",
+  "text": "¿Por qué en España se espera tanto tiempo para cirugías simples que en otros países se resuelven en semanas y no en meses?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f3284d3e05af"
+  ]
+}

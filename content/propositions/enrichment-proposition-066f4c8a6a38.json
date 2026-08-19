@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-066f4c8a6a38",
+  "claimSlug": "\"modelo-la-inmigracion-ha-incrementado-la-dependencia-de-la-asistencia-social-en-espana\"",
+  "text": "La inmigración ha incrementado la dependencia de la asistencia social en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2322087db2b7"
+  ]
+}

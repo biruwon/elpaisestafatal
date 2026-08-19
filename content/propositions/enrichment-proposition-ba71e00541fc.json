@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ba71e00541fc",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-carburante-en-espana-son-los-mas-altos-del-continente\"",
+  "text": "Los impuestos sobre el carburante en España son los más altos del continente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bc0107c31686"
+  ]
+}

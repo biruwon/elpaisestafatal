@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e51dc71f7bef",
+  "claimSlug": "\"modelo-los-precios-de-los-alojamientos-en-espana-son-irrisorios-comparados-con-otros-pa\"",
+  "text": "Los precios de los alojamientos en España son irrisorios comparados con otros países europeos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3e17191acd81"
+  ]
+}

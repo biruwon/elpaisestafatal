@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b568d91405d5",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-electricidad-son-muy-altos-y-se-siente-como-si-el-gobiern\"",
+  "text": "Los impuestos sobre la electricidad son muy altos y se siente como si el gobierno estuviera cobrando demasiado por el servicio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-918ab057a216"
+  ]
+}

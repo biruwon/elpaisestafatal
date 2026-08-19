@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5cbafbac899",
+  "claimSlug": "\"modelo-espana-esta-siendo-utilizada-como-moneda-de-cambio-en-las-negociaciones-de-la-ue\"",
+  "text": "España está siendo utilizada como moneda de cambio en las negociaciones de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e75e5f2b2470"
+  ]
+}

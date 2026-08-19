@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c090bb09f039",
+  "claimSlug": "\"modelo-por-que-el-servicio-de-taxi-en-barcelona-es-tan-caro-y-no-llega-a-todas-las-zona\"",
+  "text": "¿Por qué el servicio de taxi en Barcelona es tan caro y no llega a todas las zonas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8970fd96e889"
+  ]
+}

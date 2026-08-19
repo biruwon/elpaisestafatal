@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a860ad1db7f2",
+  "claimSlug": "\"modelo-las-politicas-de-turismo-en-espana-favorecen-demasiado-a-las-grandes-cadenas-hot\"",
+  "text": "Las políticas de turismo en España favorecen demasiado a las grandes cadenas hoteleras, dejando a los pequeños propietarios de alquileres turísticos sin recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0123a63f019b"
+  ]
+}

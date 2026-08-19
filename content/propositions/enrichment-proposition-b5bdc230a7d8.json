@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b5bdc230a7d8",
+  "claimSlug": "\"modelo-las-politicas-de-recorte-presupuestario-han-dejado-a-muchos-hospitales-y-centros\"",
+  "text": "Las políticas de recorte presupuestario han dejado a muchos hospitales y centros de salud sin recursos, lo que supone un riesgo real para la salud de los ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b200396e71b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-04783dd9e578",
+  "claimSlug": "\"modelo-los-altos-costos-de-las-renovables-estan-perjudicando-a-las-pequenas-empresas\"",
+  "text": "Los altos costos de las renovables están perjudicando a las pequeñas empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-081f1c03c52f"
+  ]
+}

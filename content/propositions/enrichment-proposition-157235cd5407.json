@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-157235cd5407",
+  "claimSlug": "\"modelo-el-despido-en-espana-es-muy-costoso-y-preocupa-a-los-trabajadores\"",
+  "text": "El despido en España es muy costoso y preocupa a los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d2b403780058"
+  ]
+}

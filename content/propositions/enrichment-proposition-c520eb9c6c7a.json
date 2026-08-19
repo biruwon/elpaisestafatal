@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c520eb9c6c7a",
+  "claimSlug": "\"modelo-la-proteccion-social-no-es-suficiente-para-cubrir-el-coste-de-vida-actual\"",
+  "text": "La protección social no es suficiente para cubrir el coste de vida actual.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-48f7e48b640a"
+  ]
+}

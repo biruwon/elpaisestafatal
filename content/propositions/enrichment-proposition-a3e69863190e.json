@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a3e69863190e",
+  "claimSlug": "\"modelo-la-falta-de-normativas-claras-sobre-el-uso-de-tecnologias-en-viviendas-esta-deja\"",
+  "text": "La falta de normativas claras sobre el uso de tecnologías en viviendas está dejando a los compradores en la oscuridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-68dd9fbaa806"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca2037483460",
+  "claimSlug": "\"modelo-la-luz-y-el-gas-se-me-van-todas-las-semanas-no-me-da-ni-para-otro-gasto\"",
+  "text": "La luz y el gas se me van todas las semanas, no me da ni para otro gasto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4e84c7b395a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b710757e95d0",
+  "claimSlug": "\"modelo-la-ue-no-ha-resuelto-los-problemas-del-agotamiento-de-las-playas-en-verano\"",
+  "text": "La UE no ha resuelto los problemas del agotamiento de las playas en verano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bf38d600223"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-77dfaac7bcba",
+  "claimSlug": "\"modelo-las-actividades-extraescolares-en-espana-estan-tan-caras-que-muchas-familias-no-\"",
+  "text": "Las actividades extraescolares en España están tan caras que muchas familias no pueden permitírselas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a922091ed719"
+  ]
+}

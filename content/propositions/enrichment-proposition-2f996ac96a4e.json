@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2f996ac96a4e",
+  "claimSlug": "\"modelo-por-que-hay-tanto-retraso-en-la-construccion-de-nuevas-escuelas-en-los-barrios-m\"",
+  "text": "¿Por qué hay tanto retraso en la construcción de nuevas escuelas en los barrios más pobres?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-938f07010c07"
+  ]
+}

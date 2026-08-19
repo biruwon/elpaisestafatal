@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-afe87523ccf9",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-desastre-social-con-familias-inadaptadas\"",
+  "text": "La inmigración está causando un desastre social con familias inadaptadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-606b4acecc63"
+  ]
+}

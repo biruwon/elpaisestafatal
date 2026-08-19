@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f74af01d79a6",
+  "claimSlug": "\"modelo-la-maternidad-en-espana-es-un-engano-no-se-da-apoyo-suficiente\"",
+  "text": "La maternidad en España es un engaño, no se da apoyo suficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7c02a70886f3"
+  ]
+}

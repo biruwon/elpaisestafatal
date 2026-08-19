@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc2913b07d3b",
+  "claimSlug": "\"modelo-los-procesos-de-adjudicacion-de-contratos-son-tan-opacos-que-nadie-sabe-quien-ga\"",
+  "text": "Los procesos de adjudicación de contratos son tan opacos que nadie sabe quién gana los puestos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-38e6b520ece3"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-987d3c868c9f",
+  "claimSlug": "\"modelo-los-gastos-de-la-luz-y-el-gas-son-incontrolables-y-absorben-gran-parte-del-presu\"",
+  "text": "Los gastos de la luz y el gas son incontrolables y absorben gran parte del presupuesto familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-88b5363b82e0"
+  ]
+}

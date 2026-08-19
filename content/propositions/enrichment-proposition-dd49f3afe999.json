@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dd49f3afe999",
+  "claimSlug": "\"modelo-los-salarios-no-paran-de-caer-y-la-gente-esta-empezando-a-vivir-de-la-miseria\"",
+  "text": "Los salarios no paran de caer y la gente está empezando a vivir de la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6222482ed23d"
+  ]
+}

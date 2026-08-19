@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a5ef79e5ff6d",
+  "claimSlug": "\"modelo-la-ue-no-ofrece-suficiente-ayuda-a-espana-para-enfrentar-desafios-medioambiental\"",
+  "text": "La UE no ofrece suficiente ayuda a España para enfrentar desafíos medioambientales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2dea85ed405c"
+  ]
+}

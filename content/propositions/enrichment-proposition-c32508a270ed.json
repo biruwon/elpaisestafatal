@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c32508a270ed",
+  "claimSlug": "\"modelo-los-coches-electricos-son-impagables-en-espana\"",
+  "text": "Los coches eléctricos son impagables en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b56a1b4cf2d8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06f355b6e21a",
+  "claimSlug": "\"modelo-en-espana-para-encontrar-un-trabajo-decente-que-pague-lo-que-merezco-hay-que-est\"",
+  "text": "En España, para encontrar un trabajo decente que pague lo que merezco, hay que estar dispuesto a moverse a ciudades con peor climatología.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e2a69917e1fd"
+  ]
+}

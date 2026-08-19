@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e5f6cc532119",
+  "claimSlug": "\"modelo-en-regiones-con-menos-recursos-como-ciertas-zonas-rurales-la-falta-de-especialis\"",
+  "text": "En regiones con menos recursos, como ciertas zonas rurales, la falta de especialistas puede hacer que los pacientes esperen meses para citas, lo que afecta su acceso a la atención médica.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f4c072ca1e43"
+  ]
+}

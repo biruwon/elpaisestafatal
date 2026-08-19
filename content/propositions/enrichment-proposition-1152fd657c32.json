@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1152fd657c32",
+  "claimSlug": "\"modelo-el-acceso-a-programas-de-formacion-continua-y-cursos-de-verano-es-muy-limitado-y\"",
+  "text": "El acceso a programas de formación continua y cursos de verano es muy limitado y costoso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d8d4af289b3"
+  ]
+}

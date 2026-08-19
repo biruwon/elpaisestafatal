@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9715056a8453",
+  "claimSlug": "\"modelo-el-acceso-a-la-justicia-para-personas-de-bajos-ingresos-es-practicamente-inexist\"",
+  "text": "El acceso a la justicia para personas de bajos ingresos es prácticamente inexistente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-527e27c48fab"
+  ]
+}

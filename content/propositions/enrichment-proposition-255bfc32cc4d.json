@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-255bfc32cc4d",
+  "claimSlug": "\"modelo-la-inflacion-esta-desinflando-las-pensiones\"",
+  "text": "La inflación está desinflando las pensiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9740c1bd1f66"
+  ]
+}

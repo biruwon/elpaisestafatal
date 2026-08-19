@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a32f96e7772d",
+  "claimSlug": "\"modelo-las-empresas-estan-subiendo-los-precios-sin-parar-y-no-se-ven-medidas-para-frena\"",
+  "text": "Las empresas están subiendo los precios sin parar y no se ven medidas para frenar esto. ¿Cuándo van a empezar a hacer algo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0b5efcffa9cb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79794878a50c",
+  "claimSlug": "\"modelo-la-fianza-que-se-exige-para-alquilar-es-demasiado-alta-y-desproporcionada-a-vece\"",
+  "text": "La fianza que se exige para alquilar es demasiado alta y desproporcionada, a veces hasta el triple del alquiler mensual.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f647e9dc956a"
+  ]
+}

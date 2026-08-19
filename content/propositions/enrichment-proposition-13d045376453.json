@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-13d045376453",
+  "claimSlug": "\"modelo-cual-es-la-situacion-de-la-pobreza-infantil-en-espana-y-como-compara-con-otros-p\"",
+  "text": "¿Cuál es la situación de la pobreza infantil en España y cómo compara con otros países de la Unión Europea?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c00135e360dc"
+  ]
+}

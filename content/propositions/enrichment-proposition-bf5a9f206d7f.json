@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf5a9f206d7f",
+  "claimSlug": "\"modelo-las-viviendas-en-espana-se-quedan-muy-atras-en-cuanto-a-tecnologia\"",
+  "text": "Las viviendas en España se quedan muy atrás en cuanto a tecnología.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aad9f00c2833"
+  ]
+}

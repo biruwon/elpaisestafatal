@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2cf4c5bf3f8c",
+  "claimSlug": "\"modelo-es-imposible-encontrar-trabajadores-autoctonos-todo-el-mundo-es-inmigrante\"",
+  "text": "Es imposible encontrar trabajadores autóctonos, todo el mundo es inmigrante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-558319cf1282"
+  ]
+}

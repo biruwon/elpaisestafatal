@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1f780d96ae7",
+  "claimSlug": "\"modelo-los-delincuentes-se-aprovechan-de-la-falta-de-iluminacion-en-las-calles-de-barce\"",
+  "text": "Los delincuentes se aprovechan de la falta de iluminación en las calles de Barcelona por la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-801b7ef9aab2"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b1bb3a20583",
+  "claimSlug": "\"modelo-en-muchos-barrios-la-pobreza-es-tan-visible-que-cuesta-respirar\"",
+  "text": "En muchos barrios, la pobreza es tan visible que cuesta respirar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd9343096563"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-116343fd56e8",
+  "claimSlug": "\"modelo-la-falta-de-transporte-escolar-para-los-alumnos-de-distancias-es-un-problema-rea\"",
+  "text": "La falta de transporte escolar para los alumnos de distancias es un problema real.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d3b905d94627"
+  ]
+}

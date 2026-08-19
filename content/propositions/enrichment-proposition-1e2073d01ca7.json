@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e2073d01ca7",
+  "claimSlug": "\"modelo-la-contratacion-publica-en-espana-suele-ser-un-terreno-propicio-para-la-corrupci\"",
+  "text": "La contratación pública en España suele ser un terreno propicio para la corrupción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-def83c65a4d6"
+  ]
+}

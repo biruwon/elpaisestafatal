@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-43f0bfe4ed7b",
+  "claimSlug": "\"modelo-el-incremento-de-inmigrantes-esta-provocando-un-aumento-de-delitos-especialmente\"",
+  "text": "El incremento de inmigrantes está provocando un aumento de delitos, especialmente en zonas urbanas con alta presencia extranjera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e9ea3aabbec5"
+  ]
+}

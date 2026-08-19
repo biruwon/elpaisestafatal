@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-affcca1190a6",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-distribucion-de-la-renta-es-evidente-en-la-gran-brecha-entr\"",
+  "text": "La desigualdad en la distribución de la renta es evidente en la gran brecha entre ricos y pobres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5d46604e580"
+  ]
+}

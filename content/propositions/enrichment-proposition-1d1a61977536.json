@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1d1a61977536",
+  "claimSlug": "\"modelo-la-falta-de-crecimiento-economico-esta-dejando-a-muchos-en-el-paro-y-sin-opcione\"",
+  "text": "La falta de crecimiento económico está dejando a muchos en el paro y sin opciones de futuro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-163c33510216"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0d5f0751f84",
+  "claimSlug": "\"modelo-el-subempleo-es-un-problema-comun-ya-que-muchas-personas-aceptan-puestos-por-deb\"",
+  "text": "El subempleo es un problema común, ya que muchas personas aceptan puestos por debajo de su formación o experiencia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-82845ae16bf9"
+  ]
+}

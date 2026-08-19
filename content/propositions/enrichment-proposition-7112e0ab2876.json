@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7112e0ab2876",
+  "claimSlug": "\"modelo-el-parque-de-autobuses-en-el-transporte-publico-esta-muy-anticuado-con-muchos-mo\"",
+  "text": "El parque de autobuses en el transporte público está muy anticuado, con muchos modelos muy viejos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b248c500ad4b"
+  ]
+}

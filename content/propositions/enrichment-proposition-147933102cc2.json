@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-147933102cc2",
+  "claimSlug": "\"modelo-la-precariedad-laboral-ha-aumentado-en-los-ultimos-anos-con-contratos-temporales\"",
+  "text": "La precariedad laboral ha aumentado en los últimos años, con contratos temporales y bolsas de trabajo predominando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fad75b38fb9b"
+  ]
+}

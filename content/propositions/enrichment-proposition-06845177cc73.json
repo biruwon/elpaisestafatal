@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-06845177cc73",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-en-espana-no-cubre-las-necesidades-de-los-trabaj\"",
+  "text": "El sistema de protección social en España no cubre las necesidades de los trabajadores autónomos, con muchas personas desatendidas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-dbbdb8032be8"
+  ]
+}

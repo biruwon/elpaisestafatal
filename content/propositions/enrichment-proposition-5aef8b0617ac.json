@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5aef8b0617ac",
+  "claimSlug": "\"modelo-las-politicas-de-la-ue-sobre-el-clima-estan-perjudicando-a-los-agricultores-de-e\"",
+  "text": "Las políticas de la UE sobre el clima están perjudicando a los agricultores de España con sus restricciones a la quema de residuos en el campo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0d41ba070cd4"
+  ]
+}

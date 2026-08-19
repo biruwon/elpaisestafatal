@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd497fee64c7",
+  "claimSlug": "\"modelo-el-sistema-de-compensacion-de-horas-es-muy-restrictivo-dificultando-a-los-trabaj\"",
+  "text": "El sistema de compensación de horas es muy restrictivo, dificultando a los trabajadores el equilibrio entre vida laboral y personal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4d381afe986"
+  ]
+}

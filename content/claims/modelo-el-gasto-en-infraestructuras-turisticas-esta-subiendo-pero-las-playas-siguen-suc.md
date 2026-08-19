@@ -4,21 +4,22 @@ claim: "El gasto en infraestructuras turísticas está subiendo pero las playas 
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["Sube el gasto en infraestructuras turísticas pero las playas siguen sucias","Gasto en playas sube pero siguen sucias","¿Dónde se va el dinero en infraestructuras turísticas?","Playas siguen sucias con gasto subiendo","El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.","¿Es cierto que El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","¿Qué datos permiten comprobar si El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","Quiero saber si El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.","¿Cómo se puede verificar El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","¿Hay evidencia sobre si El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","¿Es verdad que El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","¿Qué sabemos de El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?","¿Se sostiene la afirmación de que El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-63d8812389dc"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el gasto en infraestructuras turisticas esta subiendo pero las playas siguen sucias"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-92792493840d"]
 ---
 
 ## Qué es cierto

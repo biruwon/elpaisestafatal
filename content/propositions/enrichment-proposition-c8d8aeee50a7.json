@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8d8aeee50a7",
+  "claimSlug": "\"modelo-como-es-que-la-asistencia-a-distancia-en-caso-de-emergencia-no-funciona-en-todos\"",
+  "text": "¿Cómo es que la asistencia a distancia en caso de emergencia no funciona en todos los edificios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e173f3afd73f"
+  ]
+}

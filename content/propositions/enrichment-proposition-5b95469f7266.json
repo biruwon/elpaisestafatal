@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b95469f7266",
+  "claimSlug": "\"modelo-la-inmigracion-aumenta-el-desempleo-entre-los-jovenes-espanoles\"",
+  "text": "La inmigración aumenta el desempleo entre los jóvenes españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c87f20fc9b19"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b2ec48d4e879",
+  "claimSlug": "\"modelo-la-policia-no-responde-a-los-llamados-en-tiempo-util-lo-que-hace-que-las-emergen\"",
+  "text": "La policía no responde a los llamados en tiempo útil, lo que hace que las emergencias domésticas sean cada vez más críticas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c370c0392691"
+  ]
+}

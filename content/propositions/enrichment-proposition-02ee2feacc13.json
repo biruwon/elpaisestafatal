@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-02ee2feacc13",
+  "claimSlug": "\"modelo-la-tasa-de-crecimiento-economico-es-demasiado-lenta-y-no-veo-como-mejoraran-mis-\"",
+  "text": "La tasa de crecimiento económico es demasiado lenta y no veo cómo mejorarán mis ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2a037258f011"
+  ]
+}

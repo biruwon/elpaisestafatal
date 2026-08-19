@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a96f3444f022",
+  "claimSlug": "\"modelo-la-subida-del-alquiler-cada-ano-es-frustrante-y-hace-que-sea-dificil-planificar-\"",
+  "text": "La subida del alquiler cada año es frustrante y hace que sea difícil planificar el futuro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-14edea1c5825"
+  ]
+}

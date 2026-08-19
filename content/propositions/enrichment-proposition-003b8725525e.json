@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-003b8725525e",
+  "claimSlug": "\"modelo-la-falta-de-infraestructuras-en-zonas-rurales-impide-un-desarrollo-equitativo\"",
+  "text": "La falta de infraestructuras en zonas rurales impide un desarrollo equitativo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-025851a87f2f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-95ffbac586c2",
+  "claimSlug": "\"modelo-por-que-en-espana-se-dificulta-tanto-la-contratacion-temporal-con-opcion-a-indef\"",
+  "text": "¿Por qué en España se dificulta tanto la contratación temporal con opción a indefinida, que las empresas prefieren ir directamente por el camino de la indefinida?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-15f2d8aaa3de"
+  ]
+}

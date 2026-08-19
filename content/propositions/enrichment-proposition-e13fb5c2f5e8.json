@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e13fb5c2f5e8",
+  "claimSlug": "\"modelo-el-coste-de-la-calefaccion-esta-fuera-de-control-y-nos-quita-el-ahorro\"",
+  "text": "El coste de la calefacción está fuera de control y nos quita el ahorro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e6e66b40946e"
+  ]
+}

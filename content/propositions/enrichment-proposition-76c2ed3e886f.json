@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-76c2ed3e886f",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-distribucion-del-empleo-es-muy-alta-hay-muchas-personas-con\"",
+  "text": "La desigualdad en la distribución del empleo es muy alta, hay muchas personas con trabajos precarios que no llegan a fin de mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c90800b5a8a7"
+  ]
+}

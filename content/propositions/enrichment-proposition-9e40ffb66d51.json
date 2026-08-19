@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9e40ffb66d51",
+  "claimSlug": "\"modelo-la-proteccion-social-en-espana-esta-muy-desigual-con-muchas-empresas-que-no-paga\"",
+  "text": "La protección social en España está muy desigual, con muchas empresas que no pagan a tiempo las cuotas a la Seguridad Social.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5fa8cc5c92c"
+  ]
+}

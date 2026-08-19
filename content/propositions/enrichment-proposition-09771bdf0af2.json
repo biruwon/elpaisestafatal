@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-09771bdf0af2",
+  "claimSlug": "\"modelo-la-politica-de-ayudas-a-los-agricultores-esta-siendo-ineficiente-y-no-esta-mejor\"",
+  "text": "La política de ayudas a los agricultores está siendo ineficiente y no está mejorando la situación económica de los campesinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c563cdf03920"
+  ]
+}

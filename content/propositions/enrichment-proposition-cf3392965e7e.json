@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf3392965e7e",
+  "claimSlug": "\"modelo-la-red-de-autobuses-en-ciertas-ciudades-es-tan-limitada-que-se-convierte-en-un-d\"",
+  "text": "La red de autobuses en ciertas ciudades es tan limitada que se convierte en un desafío para moverse por la ciudad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-32067859c5d9"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33a2666f6c73",
+  "claimSlug": "\"modelo-las-pensiones-no-se-ajustan-a-la-inflacion-y-la-gente-se-queda-en-la-miseria\"",
+  "text": "Las pensiones no se ajustan a la inflación y la gente se queda en la miseria.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0fcb4ea77c04"
+  ]
+}

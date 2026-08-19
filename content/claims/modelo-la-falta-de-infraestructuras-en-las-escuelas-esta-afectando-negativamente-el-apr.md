@@ -4,21 +4,22 @@ claim: "La falta de infraestructuras en las escuelas está afectando negativamen
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["las escuelas carecen de las instalaciones necesarias","la infraestructura escolar es deficiente","el aprendizaje se ve afectado por la falta de recursos","los estudiantes sufren por la falta de equipamiento","las escuelas no tienen los medios necesarios para una buena educación","La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes","¿Es cierto que La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","¿Qué datos permiten comprobar si La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","Quiero saber si La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes","¿Cómo se puede verificar La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","¿Hay evidencia sobre si La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","¿Es verdad que La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","¿Qué sabemos de La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?","¿Se sostiene la afirmación de que La falta de infraestructuras en las escuelas está afectando negativamente el aprendizaje de los estudiantes?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-8739a65bd76a"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de infraestructuras en las escuelas esta afectando negativamente el aprendizaje de los estudiantes"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0f43e21a0890"]
 ---
 
 ## Qué es cierto

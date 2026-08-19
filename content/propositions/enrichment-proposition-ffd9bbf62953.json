@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ffd9bbf62953",
+  "claimSlug": "\"modelo-la-audiencia-nacional-parece-mas-lenta-que-un-coche-en-un-atasco-de-madrid-en-ho\"",
+  "text": "La Audiencia Nacional parece más lenta que un coche en un atasco de Madrid en horario de punta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a317bccd6490"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "Es preocupante la falta de medidas para mejorar la seguridad nocturna en
 assessment: uncertain
 topicSlugs: ["seguridad y delincuencia"]
 aliases: ["medidas insuficientes para seguridad nocturna","falta de seguridad en bares y discotecas de noche","discotecas sin medidas de seguridad adecuadas","bares y discotecas sin protección adecuada","seguridad nocturna insuficiente en España","Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.","¿Es cierto que Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","¿Qué datos permiten comprobar si Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","Quiero saber si Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.","¿Cómo se puede verificar Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","¿Hay evidencia sobre si Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","¿Es verdad que Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","¿Qué sabemos de Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?","¿Se sostiene la afirmación de que Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-eaef98da2cbb"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de espana"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-5ef69e4e06aa"]
 ---
 
 ## Qué es cierto

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b215befb2cc",
+  "claimSlug": "\"modelo-es-posible-que-el-gasto-en-pensiones-en-espana-sea-menor-que-el-gasto-en-deuda-p\"",
+  "text": "¿Es posible que el gasto en pensiones en España sea menor que el gasto en deuda pública?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-453d092531c5"
+  ]
+}

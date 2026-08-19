@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-38f20011dc9a",
+  "claimSlug": "\"modelo-se-deberia-mejorar-la-conexion-entre-la-estacion-de-tren-y-el-centro-de-la-ciuda\"",
+  "text": "Se debería mejorar la conexión entre la estación de tren y el centro de la ciudad, es un desastre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d330e06459f5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-96ed1889d581",
+  "claimSlug": "\"modelo-en-espana-los-estudiantes-no-reciben-educacion-sexual-integral-en-el-colegio\"",
+  "text": "En España, los estudiantes no reciben educación sexual integral en el colegio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-99d87f272ff0"
+  ]
+}

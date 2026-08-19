@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e43d854bc116",
+  "claimSlug": "\"modelo-los-agricultores-de-extremadura-ven-sus-cosechas-afectadas-por-la-sequia\"",
+  "text": "Los agricultores de Extremadura ven sus cosechas afectadas por la sequía.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3fd243aa34c0"
+  ]
+}

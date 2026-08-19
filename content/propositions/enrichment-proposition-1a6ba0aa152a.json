@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a6ba0aa152a",
+  "claimSlug": "\"modelo-en-muchas-zonas-de-madrid-los-precios-de-los-alimentos-suben-mucho-mas-rapido-qu\"",
+  "text": "En muchas zonas de Madrid, los precios de los alimentos suben mucho más rápido que los sueldos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6d2805b1985"
+  ]
+}

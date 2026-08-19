@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f53b6ce98079",
+  "claimSlug": "\"modelo-el-mercado-laboral-es-muy-competitivo-y-dificil\"",
+  "text": "El mercado laboral es muy competitivo y difícil.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a0ec56850b8b"
+  ]
+}

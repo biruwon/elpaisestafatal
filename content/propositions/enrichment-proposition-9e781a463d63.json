@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9e781a463d63",
+  "claimSlug": "\"modelo-el-turismo-en-espana-genera-muchos-problemas-de-trafico-y-estacionamiento-en-ciu\"",
+  "text": "El turismo en España genera muchos problemas de tráfico y estacionamiento en ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-16e7ee34c0fb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7fc9d3c67a4a",
+  "claimSlug": "\"modelo-los-tribunales-demoran-demasiado-en-resolver-los-casos-de-abuso-infantil\"",
+  "text": "Los tribunales demoran demasiado en resolver los casos de abuso infantil.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9d4b80a32d20"
+  ]
+}

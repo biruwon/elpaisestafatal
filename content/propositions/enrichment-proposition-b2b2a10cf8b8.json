@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b2b2a10cf8b8",
+  "claimSlug": "\"modelo-la-violencia-domestica-en-zaragoza-es-un-problema-silenciado-y-no-se-hace-nada-p\"",
+  "text": "La violencia doméstica en Zaragoza es un problema silenciado, y no se hace nada para proteger a las víctimas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac43840a0631"
+  ]
+}

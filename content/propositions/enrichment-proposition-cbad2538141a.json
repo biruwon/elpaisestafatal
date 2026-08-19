@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cbad2538141a",
+  "claimSlug": "\"modelo-los-alquileres-en-barcelona-han-aumentado-mas-en-el-ultimo-ano\"",
+  "text": "Los alquileres en Barcelona han aumentado más en el último año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5221f872ace5"
+  ]
+}

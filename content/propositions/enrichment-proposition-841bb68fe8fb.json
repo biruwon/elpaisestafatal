@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-841bb68fe8fb",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-agobiando-los-servicios-publicos\"",
+  "text": "La inmigración no controlada está agobiando los servicios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d1bcf46ecb35"
+  ]
+}

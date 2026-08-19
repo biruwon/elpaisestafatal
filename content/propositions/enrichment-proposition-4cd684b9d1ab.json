@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cd684b9d1ab",
+  "claimSlug": "\"modelo-espana-se-siente-excluida-de-las-decisiones-importantes-de-la-ue-lo-que-perjudic\"",
+  "text": "España se siente excluida de las decisiones importantes de la UE, lo que perjudica sus intereses nacionales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0d04b92ff38f"
+  ]
+}

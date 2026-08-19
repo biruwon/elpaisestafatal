@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-017c218a57e5",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-todos-mis-ahorros-se-desvanezcan-rapidamente\"",
+  "text": "La inflación está haciendo que todos mis ahorros se desvanezcan rápidamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4a372e420048"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-23754fb14514",
+  "claimSlug": "\"modelo-el-precio-de-la-electricidad-en-espana-es-mas-alto-que-en-paises-vecinos\"",
+  "text": "El precio de la electricidad en España es más alto que en países vecinos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fce536e3c642"
+  ]
+}

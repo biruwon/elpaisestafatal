@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c394b3004b4",
+  "claimSlug": "\"modelo-los-jovenes-sienten-que-les-falta-oportunidad-para-desarrollar-habilidades-tecno\"",
+  "text": "Los jóvenes sienten que les falta oportunidad para desarrollar habilidades tecnológicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c407ace632d7"
+  ]
+}

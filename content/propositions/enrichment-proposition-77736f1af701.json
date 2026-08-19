@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-77736f1af701",
+  "claimSlug": "\"modelo-por-que-el-alquiler-sube-cada-ano-mas-que-el-sueldo\"",
+  "text": "¿Por qué el alquiler sube cada año más que el sueldo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4583c0e85c50"
+  ]
+}

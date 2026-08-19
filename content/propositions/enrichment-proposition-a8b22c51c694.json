@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8b22c51c694",
+  "claimSlug": "\"modelo-la-vivienda-digital-en-espana-deberia-ser-un-derecho-no-un-lujo\"",
+  "text": "La vivienda digital en España debería ser un derecho, no un lujo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-275affc96123"
+  ]
+}

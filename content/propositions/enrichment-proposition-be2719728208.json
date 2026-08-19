@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-be2719728208",
+  "claimSlug": "\"modelo-espana-deberia-presionar-a-la-ue-para-que-mejore-la-calidad-de-vida-de-sus-ciuda\"",
+  "text": "España debería presionar a la UE para que mejore la calidad de vida de sus ciudadanos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9848c44ed59b"
+  ]
+}

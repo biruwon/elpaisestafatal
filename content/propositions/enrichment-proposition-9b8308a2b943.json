@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b8308a2b943",
+  "claimSlug": "\"modelo-la-falta-de-oportunidades-en-pequenas-ciudades-empuja-a-jovenes-a-buscar-trabajo\"",
+  "text": "La falta de oportunidades en pequeñas ciudades empuja a jóvenes a buscar trabajo en grandes ciudades.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-1f14540c1761"
+  ]
+}

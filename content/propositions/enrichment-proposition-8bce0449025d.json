@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8bce0449025d",
+  "claimSlug": "\"modelo-los-costes-de-la-calefaccion-en-espana-son-elevados-y-no-siempre-proporcionan-el\"",
+  "text": "Los costes de la calefacción en España son elevados y no siempre proporcionan el calentamiento adecuado, a pesar de los altos precios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-30165e62c6da"
+  ]
+}

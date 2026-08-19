@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1bee0727cf0",
+  "claimSlug": "\"modelo-espana-esta-siendo-perjudicada-por-las-politicas-de-competencia-de-la-ue\"",
+  "text": "España está siendo perjudicada por las políticas de competencia de la UE",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0fb90a159d41"
+  ]
+}

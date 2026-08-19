@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9b9862365b04",
+  "claimSlug": "\"modelo-la-despoblacion-de-galicia-esta-dejando-los-pueblos-en-ruinas\"",
+  "text": "La despoblación de Galicia está dejando los pueblos en ruinas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0e895cd7bde8"
+  ]
+}

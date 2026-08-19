@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-894b720ef565",
+  "claimSlug": "\"modelo-la-inmigracion-ha-subido-los-precios-del-alquiler-en-las-ciudades-y-las-vivienda\"",
+  "text": "La inmigración ha subido los precios del alquiler en las ciudades y las viviendas son escasas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84006b520734"
+  ]
+}

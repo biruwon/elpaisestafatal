@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af2c13be0547",
+  "claimSlug": "\"modelo-el-alquiler-en-madrid-sube-todo-el-tiempo-y-parece-que-nunca-vais-a-hacer-algo-a\"",
+  "text": "El alquiler en Madrid sube todo el tiempo, y parece que nunca vais a hacer algo al respecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea9506dc9796"
+  ]
+}

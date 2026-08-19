@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c0139c69637",
+  "claimSlug": "\"modelo-los-aeropuertos-en-espana-son-tan-desorganizados-que-los-viajeros-se-pelean-por-\"",
+  "text": "Los aeropuertos en España son tan desorganizados que los viajeros se pelean por un asiento en el avión.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f2fee141941"
+  ]
+}

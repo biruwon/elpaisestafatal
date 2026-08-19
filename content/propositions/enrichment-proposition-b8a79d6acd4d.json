@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8a79d6acd4d",
+  "claimSlug": "\"modelo-las-subvenciones-para-las-escuelas-privadas-son-demasiado-generosas-dejando-poco\"",
+  "text": "Las subvenciones para las escuelas privadas son demasiado generosas, dejando poco presupuesto para las escuelas públicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0cdadbf17b74"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3851c4c5602",
+  "claimSlug": "\"modelo-los-robos-en-tiendas-son-muy-comunes-especialmente-en-horas-de-pico\"",
+  "text": "Los robos en tiendas son muy comunes, especialmente en horas de pico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e3426719b5a8"
+  ]
+}

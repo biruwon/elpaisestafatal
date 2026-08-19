@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c30133b784c9",
+  "claimSlug": "\"modelo-en-espana-la-atencion-medica-solo-llega-a-quienes-no-tienen-otra-opcion-y-las-li\"",
+  "text": "En España, la atención médica solo llega a quienes no tienen otra opción y las listas de espera son el reflejo de eso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8d527e65acfc"
+  ]
+}

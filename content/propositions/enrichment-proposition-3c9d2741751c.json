@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c9d2741751c",
+  "claimSlug": "\"modelo-como-es-que-en-espana-los-precios-de-la-gasolina-siguen-subiendo-sin-control\"",
+  "text": "¿Cómo es que en España los precios de la gasolina siguen subiendo sin control?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa6adf29a864"
+  ]
+}

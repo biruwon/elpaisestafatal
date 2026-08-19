@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1c0024bf7210",
+  "claimSlug": "\"modelo-la-negociacion-colectiva-en-espana-no-se-respeta-a-menudo-lo-que-limita-los-aume\"",
+  "text": "La negociación colectiva en España no se respeta a menudo, lo que limita los aumentos de salario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76a046ba2bd4"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd3e71c4be95",
+  "claimSlug": "\"modelo-los-gastos-extras-del-alquiler-son-un-agujero-negro-siempre-hay-algo-mas-que-pag\"",
+  "text": "Los gastos extras del alquiler son un agujero negro, siempre hay algo más que pagar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4144b9b14a69"
+  ]
+}

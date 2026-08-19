@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e0cf5160927c",
+  "claimSlug": "\"modelo-los-recortes-en-sanidad-publica-han-dejado-a-muchos-ciudadanos-sin-atencion-medi\"",
+  "text": "Los recortes en sanidad pública han dejado a muchos ciudadanos sin atención médica de calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-990bedbbf00d"
+  ]
+}

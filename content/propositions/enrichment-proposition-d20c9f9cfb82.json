@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d20c9f9cfb82",
+  "claimSlug": "\"modelo-por-que-la-calidad-del-vino-no-mejora-si-la-agricultura-tradicional-esta-en-peli\"",
+  "text": "¿Por qué la calidad del vino no mejora si la agricultura tradicional está en peligro?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-caab2489ec8e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4eea3f1c819",
+  "claimSlug": "\"modelo-la-delincuencia-en-ciudades-como-madrid-y-barcelona-esta-al-alza-y-los-delincuen\"",
+  "text": "La delincuencia en ciudades como Madrid y Barcelona está al alza y los delincuentes se aprovechan de la gente mayor.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-017a1dff35e5"
+  ]
+}

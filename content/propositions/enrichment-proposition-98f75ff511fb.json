@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-98f75ff511fb",
+  "claimSlug": "\"modelo-los-jovenes-en-espana-no-reciben-suficiente-orientacion-sobre-opciones-de-formac\"",
+  "text": "Los jóvenes en España no reciben suficiente orientación sobre opciones de formación y trabajo después del secundario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dec88b07b662"
+  ]
+}

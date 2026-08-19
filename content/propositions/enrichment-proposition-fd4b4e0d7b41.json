@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd4b4e0d7b41",
+  "claimSlug": "\"modelo-el-turismo-en-espana-esta-lleno-de-turistas-chinos-que-se-comportan-muy-mal-y-co\"",
+  "text": "El turismo en España está lleno de turistas chinos que se comportan muy mal y contaminan la cultura local.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4632bf42d97"
+  ]
+}

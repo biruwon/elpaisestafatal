@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ecbef8204942",
+  "claimSlug": "\"modelo-espana-deberia-pedir-a-la-ue-que-mejore-la-coordinacion-de-politicas-sanitarias-\"",
+  "text": "España debería pedir a la UE que mejore la coordinación de políticas sanitarias para luchar contra la pandemia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-faf59b86c1a9"
+  ]
+}

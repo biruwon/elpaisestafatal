@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ba05bdf623ce",
+  "claimSlug": "\"modelo-por-que-suben-tanto-los-precios-del-alquiler-en-madrid-si-los-sueldos-no-aumenta\"",
+  "text": "¿Por qué suben tanto los precios del alquiler en Madrid si los sueldos no aumentan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-079f88984353"
+  ]
+}

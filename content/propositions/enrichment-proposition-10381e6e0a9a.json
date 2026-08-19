@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-10381e6e0a9a",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-llenando-los-parques-y-jardines-con-gente-de-o\"",
+  "text": "La inmigración no controlada está llenando los parques y jardines con gente de otros países que no entienden las normas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d071ad3515be"
+  ]
+}

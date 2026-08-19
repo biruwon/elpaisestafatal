@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-007cf2b41137",
+  "claimSlug": "\"modelo-las-prisiones-estan-superpobladas-y-no-cuentan-con-los-recursos-necesarios-para-\"",
+  "text": "Las prisiones están superpobladas y no cuentan con los recursos necesarios para la rehabilitación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e245a07f3e68"
+  ]
+}

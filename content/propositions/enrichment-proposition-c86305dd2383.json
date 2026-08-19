@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c86305dd2383",
+  "claimSlug": "\"modelo-la-inmigracion-ha-incrementado-el-coste-de-la-sanidad-en-espana\"",
+  "text": "La inmigración ha incrementado el coste de la sanidad en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a02de6714f74"
+  ]
+}

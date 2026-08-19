@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e3db3aff5d3e",
+  "claimSlug": "\"modelo-el-gasto-en-publicidad-de-la-administracion-publica-es-tan-alto-que-me-da-asco\"",
+  "text": "El gasto en publicidad de la administración pública es tan alto que me da asco.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3dbd1e7374d2"
+  ]
+}

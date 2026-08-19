@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce83cedd9db6",
+  "claimSlug": "\"modelo-las-politicas-de-ayuda-a-las-personas-sin-hogar-en-madrid-son-ineficaces-con-muc\"",
+  "text": "Las políticas de ayuda a las personas sin hogar en Madrid son ineficaces, con muchas personas durmiendo en la calle.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0ba44aa0ea28"
+  ]
+}

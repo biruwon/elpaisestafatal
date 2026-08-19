@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12b6ce43e703",
+  "claimSlug": "\"modelo-el-coste-de-la-energia-esta-haciendo-que-sea-imposible-mantenerse-a-flote-econom\"",
+  "text": "El coste de la energía está haciendo que sea imposible mantenerse a flote económicamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-958b21db8f9e"
+  ]
+}

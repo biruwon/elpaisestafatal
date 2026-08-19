@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6d599fb7adbe",
+  "claimSlug": "\"modelo-la-falta-de-control-en-la-venta-de-productos-agricolas-falsificados-esta-danando\"",
+  "text": "La falta de control en la venta de productos agrícolas falsificados está dañando la reputación de productos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0e4343e1ccc"
+  ]
+}

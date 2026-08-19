@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-352a5e42ef92",
+  "claimSlug": "\"modelo-el-pais-no-tiene-derecho-a-veto-en-el-consejo-europeo\"",
+  "text": "El país no tiene derecho a veto en el Consejo Europeo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-accc236789c4"
+  ]
+}

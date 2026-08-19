@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-543deb7565e7",
+  "claimSlug": "\"modelo-la-falta-de-control-sobre-la-exportacion-ilegal-de-productos-agricolas-esta-perj\"",
+  "text": "La falta de control sobre la exportación ilegal de productos agrícolas está perjudicando a los productores locales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-41237d8de37a"
+  ]
+}

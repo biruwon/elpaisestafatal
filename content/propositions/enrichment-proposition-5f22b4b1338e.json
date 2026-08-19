@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f22b4b1338e",
+  "claimSlug": "\"modelo-la-inmigracion-esta-elevando-el-coste-de-la-vivienda-y-los-alquileres\"",
+  "text": "La inmigración está elevando el coste de la vivienda y los alquileres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80767b260e5e"
+  ]
+}

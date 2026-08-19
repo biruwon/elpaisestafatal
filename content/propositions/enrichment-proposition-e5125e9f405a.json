@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e5125e9f405a",
+  "claimSlug": "\"modelo-las-frutas-de-la-mancha-se-venden-a-precios-abusivos-en-las-grandes-superficies\"",
+  "text": "Las frutas de La Mancha se venden a precios abusivos en las grandes superficies.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f18544ae880c"
+  ]
+}

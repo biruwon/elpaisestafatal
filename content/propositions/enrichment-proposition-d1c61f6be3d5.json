@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1c61f6be3d5",
+  "claimSlug": "\"modelo-la-subida-de-precios-de-la-vivienda-en-madrid-y-barcelona-hace-que-sea-dificil-p\"",
+  "text": "La subida de precios de la vivienda en Madrid y Barcelona hace que sea difícil para muchos jóvenes adquirir su primera vivienda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-44dd81428fc4"
+  ]
+}

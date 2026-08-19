@@ -4,21 +4,22 @@ claim: "La falta de bicicletas en zonas urbanas principales dificulta el desplaz
 assessment: uncertain
 topicSlugs: ["transporte e infraestructuras"]
 aliases: ["falta de bicicletas en ciudades","transporte en bicicleta limitado","desplazamiento en bicicleta difícil","bicicletas escasas en zonas urbanas","La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.","¿Es cierto que La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","¿Qué datos permiten comprobar si La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","Quiero saber si La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.","¿Cómo se puede verificar La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","¿Hay evidencia sobre si La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","¿Es verdad que La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","¿Qué sabemos de La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?","¿Se sostiene la afirmación de que La falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-7c7aba016bec"]
+evidenceIds: ["enrichment-evidence-f2ad0cdfdcd0"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de bicicletas en zonas urbanas principales dificulta el desplazamiento en bicicleta para los que buscan alternativas de transporte sostenible"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-e680dba41f87"]
 ---
 
 ## Qué es cierto

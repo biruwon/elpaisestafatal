@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7bb9bf49f09c",
+  "claimSlug": "\"modelo-los-incendios-estan-causando-danos-a-la-salud-de-la-gente\"",
+  "text": "Los incendios están causando daños a la salud de la gente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6bfa8f625fbf"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fbbe7b2cb8d",
+  "claimSlug": "\"modelo-la-desigualdad-en-el-acceso-a-servicios-sanitarios-es-evidente-en-ciudades-como-\"",
+  "text": "La desigualdad en el acceso a servicios sanitarios es evidente en ciudades como Sevilla, donde la atención se divide por barrios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-40772a79e6db"
+  ]
+}

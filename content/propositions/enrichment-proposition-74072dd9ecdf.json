@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74072dd9ecdf",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-sueldo-de-los-trabajadores-son-demasiado-altos-dejando-mu\"",
+  "text": "Los impuestos sobre el sueldo de los trabajadores son demasiado altos, dejando muy poco en el bolsillo al final del mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5cc50916c8a3"
+  ]
+}

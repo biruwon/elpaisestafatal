@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94397a64c688",
+  "claimSlug": "\"modelo-el-acceso-a-la-vivienda-es-tan-dificil-que-me-da-miedo-intentarlo\"",
+  "text": "¡El acceso a la vivienda es tan difícil que me da miedo intentarlo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91baa79e6d60"
+  ]
+}

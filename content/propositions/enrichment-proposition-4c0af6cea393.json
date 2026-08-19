@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4c0af6cea393",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-educacion-afecta-directamente-a-la-oportunidad-de-empleo-en\"",
+  "text": "¿La desigualdad en la educación afecta directamente a la oportunidad de empleo en ciertas áreas de España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b518f6a6d1a8"
+  ]
+}

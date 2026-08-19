@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eb4c1832aa20",
+  "claimSlug": "\"modelo-el-sistema-de-prestaciones-para-desempleados-es-insuficiente-y-la-gente-se-queda\"",
+  "text": "El sistema de prestaciones para desempleados es insuficiente y la gente se queda sin ayuda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-87d5ddaa8526"
+  ]
+}

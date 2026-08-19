@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-84b67ab41297",
+  "claimSlug": "\"modelo-la-policia-no-reacciona-a-tiempo-en-casos-de-robos-en-el-barrio-lo-que-genera-in\"",
+  "text": "La policía no reacciona a tiempo en casos de robos en el barrio, lo que genera inseguridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0500d93c0c18"
+  ]
+}

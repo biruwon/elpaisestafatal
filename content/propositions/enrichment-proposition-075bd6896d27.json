@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-075bd6896d27",
+  "claimSlug": "\"modelo-los-salarios-en-espana-no-suben-a-la-par-con-la-inflacion-lo-que-significa-que-l\"",
+  "text": "Los salarios en España no suben a la par con la inflación, lo que significa que los trabajadores pierden poder adquisitivo con cada mes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d5d80efa2570"
+  ]
+}

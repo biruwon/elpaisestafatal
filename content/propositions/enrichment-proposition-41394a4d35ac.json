@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-41394a4d35ac",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-las-facturas-de-luz-sean-un-autentico-mazazo-para\"",
+  "text": "La inflación está haciendo que las facturas de luz sean un auténtico mazazo para los hogares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-82e71c842d77"
+  ]
+}

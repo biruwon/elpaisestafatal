@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8a0945ca7436",
+  "claimSlug": "\"modelo-la-inmigracion-esta-superando-la-capacidad-de-los-servicios-de-educacion-publica\"",
+  "text": "La inmigración está superando la capacidad de los servicios de educación pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c610ff6fda7b"
+  ]
+}

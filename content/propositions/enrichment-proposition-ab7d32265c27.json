@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ab7d32265c27",
+  "claimSlug": "\"modelo-el-sector-agricola-esta-siendo-desplazado-por-el-turismo-perjudicando-a-los-prod\"",
+  "text": "El sector agrícola está siendo desplazado por el turismo, perjudicando a los productores locales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c0d2b287c4cb"
+  ]
+}

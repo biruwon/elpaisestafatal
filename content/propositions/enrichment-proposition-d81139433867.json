@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d81139433867",
+  "claimSlug": "\"modelo-la-luz-es-tan-cara-que-no-puedo-ni-poner-la-television-a-la-noche-sin-que-me-saq\"",
+  "text": "La luz es tan cara que no puedo ni poner la televisión a la noche sin que me saquen un ojo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00eef0362f5a"
+  ]
+}

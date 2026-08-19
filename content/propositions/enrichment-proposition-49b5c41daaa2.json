@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-49b5c41daaa2",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-desastre-en-el-trafico-con-personas-que-no-respe\"",
+  "text": "La inmigración está causando un desastre en el tráfico con personas que no respetan las normas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7704781452b4"
+  ]
+}

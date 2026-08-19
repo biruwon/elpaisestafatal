@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b6e55197cf11",
+  "claimSlug": "\"modelo-la-inmigracion-ha-aumentado-el-trafico-de-personas-y-la-trata-en-espana\"",
+  "text": "La inmigración ha aumentado el tráfico de personas y la trata en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2b6f1628b9b"
+  ]
+}

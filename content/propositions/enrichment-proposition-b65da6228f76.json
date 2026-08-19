@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b65da6228f76",
+  "claimSlug": "\"modelo-por-que-los-jueces-en-espana-siempre-parecen-estar-de-acuerdo-en-favor-de-los-ac\"",
+  "text": "¿Por qué los jueces en España siempre parecen estar de acuerdo en favor de los acusados, incluso en casos graves?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-46413d0a3e37"
+  ]
+}

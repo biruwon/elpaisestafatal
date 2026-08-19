@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1580df42e581",
+  "claimSlug": "\"modelo-el-transporte-publico-en-ciudades-espanolas-es-menos-costoso-que-en-ciudades-de-\"",
+  "text": "El transporte público en ciudades españolas es menos costoso que en ciudades de Italia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d12c1dd2820d"
+  ]
+}

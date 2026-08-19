@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cab0c3ec3da4",
+  "claimSlug": "\"modelo-los-trenes-en-espana-son-tan-ineficientes-que-es-mejor-conducir\"",
+  "text": "Los trenes en España son tan ineficientes que es mejor conducir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6313b261dbe4"
+  ]
+}

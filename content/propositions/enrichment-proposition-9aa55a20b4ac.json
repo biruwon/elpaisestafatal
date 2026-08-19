@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9aa55a20b4ac",
+  "claimSlug": "\"modelo-por-que-la-vivienda-digital-no-se-implementa-en-todas-las-viviendas-antiguas\"",
+  "text": "¿Por qué la vivienda digital no se implementa en todas las viviendas antiguas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ebb415a8022"
+  ]
+}

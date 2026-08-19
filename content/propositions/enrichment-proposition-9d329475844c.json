@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d329475844c",
+  "claimSlug": "\"modelo-en-espana-los-padres-de-ninos-pequenos-tienen-que-luchar-constantemente-por-cons\"",
+  "text": "En España, los padres de niños pequeños tienen que luchar constantemente por conseguir un horario flexible en el trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9a17477eefbb"
+  ]
+}

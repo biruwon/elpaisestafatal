@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6e85cd026218",
+  "claimSlug": "\"modelo-la-sanidad-publica-no-tiene-personal-suficiente-para-atender-a-los-pacientes-sol\"",
+  "text": "La sanidad pública no tiene personal suficiente para atender a los pacientes, solo se les atiende cuando hay enfermos graves.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9da590be3acf"
+  ]
+}

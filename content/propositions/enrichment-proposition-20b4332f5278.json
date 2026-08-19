@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-20b4332f5278",
+  "claimSlug": "\"modelo-el-contrato-temporal-es-muy-comun-en-espana-lo-que-genera-inestabilidad-laboral\"",
+  "text": "El contrato temporal es muy común en España, lo que genera inestabilidad laboral.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5d33194da9cd"
+  ]
+}

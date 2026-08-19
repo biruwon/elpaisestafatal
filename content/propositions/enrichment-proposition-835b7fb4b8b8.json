@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-835b7fb4b8b8",
+  "claimSlug": "\"modelo-la-falta-de-aparcamiento-en-las-ciudades-espanolas-es-un-problema-grave-que-afec\"",
+  "text": "La falta de aparcamiento en las ciudades españolas es un problema grave que afecta a toda la población.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-220076e0881f"
+  ]
+}

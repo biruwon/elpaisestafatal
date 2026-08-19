@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a0a4ec400c21",
+  "claimSlug": "\"modelo-la-corrupcion-en-la-contratacion-publica-se-ha-convertido-en-un-cancer-para-la-e\"",
+  "text": "La corrupción en la contratación pública se ha convertido en un cáncer para la economía española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d6b6122eb2a"
+  ]
+}

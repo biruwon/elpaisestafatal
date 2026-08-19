@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-816ca4fb203a",
+  "claimSlug": "\"modelo-no-se-como-van-a-pagar-la-fianza-y-el-deposito-del-alquiler-que-mierda\"",
+  "text": "¡No sé cómo van a pagar la fianza y el depósito del alquiler, qué mierda!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78dcaf749a6d"
+  ]
+}

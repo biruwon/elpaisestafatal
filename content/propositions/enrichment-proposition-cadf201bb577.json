@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cadf201bb577",
+  "claimSlug": "\"modelo-las-prestaciones-de-paro-no-son-suficientes-para-vivir-dignamente\"",
+  "text": "Las prestaciones de paro no son suficientes para vivir dignamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a5a9379c5145"
+  ]
+}

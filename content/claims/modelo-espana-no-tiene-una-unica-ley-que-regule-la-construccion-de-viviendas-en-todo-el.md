@@ -12,13 +12,14 @@ geography: España
 period: sin periodo especificado
 reviewed: "2026-08-18"
 status: planned
-sourceRefs: []
-evidenceIds: []
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-fa3f4e809d91"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "espana no tiene una unica ley que regule la construccion de viviendas en todo el territorio"
 generatedAt: "2026-08-18T17:27:50.721Z"
+propositionIds: ["enrichment-proposition-04c72d9fa3dd"]
 ---
 
 ## Qué es cierto

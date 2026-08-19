@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa69f174e6e5",
+  "claimSlug": "\"modelo-que-esta-haciendo-el-gobierno-para-impulsar-la-vivienda-digital-en-espana\"",
+  "text": "¿Qué está haciendo el gobierno para impulsar la vivienda digital en España?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d219f4ee7101"
+  ]
+}

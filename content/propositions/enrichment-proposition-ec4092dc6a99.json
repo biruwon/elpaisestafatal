@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ec4092dc6a99",
+  "claimSlug": "\"modelo-los-contratos-temporales-son-la-regla-en-el-mercado-laboral-espanol-lo-que-dific\"",
+  "text": "Los contratos temporales son la regla en el mercado laboral español, lo que dificulta el ascenso profesional.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0aa5d3c89f40"
+  ]
+}

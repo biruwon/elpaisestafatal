@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6ac663941499",
+  "claimSlug": "\"modelo-la-ue-impone-regulaciones-que-dificultan-la-exportacion-de-productos-espanoles\"",
+  "text": "La UE impone regulaciones que dificultan la exportación de productos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-094ab3c57ec6"
+  ]
+}

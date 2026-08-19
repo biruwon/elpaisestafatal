@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0049e8aa7590",
+  "claimSlug": "\"modelo-el-seguro-de-coche-es-tan-caro-que-prefiero-no-tener-coche\"",
+  "text": "El seguro de coche es tan caro que prefiero no tener coche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97e6e44fed85"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa1a213ddb02",
+  "claimSlug": "\"modelo-por-que-el-sistema-de-proteccion-social-en-espana-no-cubre-las-necesidades-de-la\"",
+  "text": "¿Por qué el sistema de protección social en España no cubre las necesidades de las personas con discapacidad?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-0287f4bcc751"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1fdea586f05",
+  "claimSlug": "\"modelo-la-inflacion-nos-esta-dejando-sin-dinero\"",
+  "text": "La inflación nos está dejando sin dinero",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2e49f6f42047"
+  ]
+}

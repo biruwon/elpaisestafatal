@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b7d1971ec11",
+  "claimSlug": "\"modelo-la-delincuencia-juvenil-aumenta-en-los-barrios-de-madrid-al-atardecer\"",
+  "text": "La delincuencia juvenil aumenta en los barrios de Madrid al atardecer.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-873cd0e14846"
+  ]
+}

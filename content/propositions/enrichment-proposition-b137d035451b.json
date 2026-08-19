@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b137d035451b",
+  "claimSlug": "\"modelo-el-trafico-de-mercancias-en-la-frontera-entre-espana-y-la-ue-se-esta-volviendo-c\"",
+  "text": "El tráfico de mercancías en la frontera entre España y la UE se está volviendo cada vez más costoso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c9fc00b38229"
+  ]
+}

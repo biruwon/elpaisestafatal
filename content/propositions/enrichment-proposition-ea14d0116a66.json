@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea14d0116a66",
+  "claimSlug": "\"modelo-es-dificil-encontrar-trabajo-decente-en-las-zonas-rurales-de-espana\"",
+  "text": "Es difícil encontrar trabajo decente en las zonas rurales de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6780ae465b52"
+  ]
+}

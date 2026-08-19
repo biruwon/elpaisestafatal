@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63c0708aebba",
+  "claimSlug": "\"modelo-los-parques-nacionales-de-espana-estan-llenos-de-basura-y-vandalismo\"",
+  "text": "Los parques nacionales de España están llenos de basura y vandalismo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7c52e314c0e8"
+  ]
+}

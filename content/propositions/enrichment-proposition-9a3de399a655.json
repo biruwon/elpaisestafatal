@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9a3de399a655",
+  "claimSlug": "\"modelo-por-que-se-ha-reducido-el-numero-de-profesores-en-las-escuelas-secundarias\"",
+  "text": "¿Por qué se ha reducido el número de profesores en las escuelas secundarias?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1170c946e6ef"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c9019788d374",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-de-la-electricidad-esta-matando-a-las-familias\"",
+  "text": "La subida de los precios de la electricidad está matando a las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5c3e785af3d8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dfebc329e74a",
+  "claimSlug": "\"modelo-el-gobierno-no-invierte-lo-suficiente-en-equipamiento-escolar\"",
+  "text": "El gobierno no invierte lo suficiente en equipamiento escolar",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c3e04e7e1cd5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c529445d869",
+  "claimSlug": "\"modelo-los-incendios-forestales-arrasan-con-la-biodiversidad-y-los-servicios-ecosistemi\"",
+  "text": "Los incendios forestales arrasan con la biodiversidad y los servicios ecosistémicos que dependemos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b49967cb2a43"
+  ]
+}

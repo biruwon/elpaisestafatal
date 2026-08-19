@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a49e9646e611",
+  "claimSlug": "\"modelo-por-que-los-juzgados-no-tienen-personal-suficiente-para-atender-los-casos-de-aco\"",
+  "text": "¿Por qué los juzgados no tienen personal suficiente para atender los casos de acoso laboral?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-862e15d2f69e"
+  ]
+}

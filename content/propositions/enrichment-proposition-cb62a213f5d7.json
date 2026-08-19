@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb62a213f5d7",
+  "claimSlug": "\"modelo-los-pacientes-se-sienten-frustrados-porque-las-listas-de-espera-para-medicamento\"",
+  "text": "Los pacientes se sienten frustrados porque las listas de espera para medicamentos son tan largas que los problemas de salud se agravan",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5ef1d9206629"
+  ]
+}

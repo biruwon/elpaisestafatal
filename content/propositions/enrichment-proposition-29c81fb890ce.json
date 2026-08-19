@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29c81fb890ce",
+  "claimSlug": "\"modelo-la-politica-de-prevencion-de-incendios-en-espana-ha-sido-exitosa-en-minimizar-da\"",
+  "text": "¿La política de prevención de incendios en España ha sido exitosa en minimizar daños?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81a98732620d"
+  ]
+}

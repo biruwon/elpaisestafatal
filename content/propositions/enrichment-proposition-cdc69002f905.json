@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cdc69002f905",
+  "claimSlug": "\"modelo-en-espana-es-comun-que-las-infraestructuras-de-los-centros-educativos-sean-insuf\"",
+  "text": "En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-90e0167bf092"
+  ]
+}

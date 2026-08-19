@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7b577acc06f0",
+  "claimSlug": "\"modelo-que-pasa-con-la-sequia-en-castilla-la-mancha-cada-ano-se-seca-mas-y-mas\"",
+  "text": "¿Qué pasa con la sequía en Castilla-La Mancha? ¡Cada año se seca más y más!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-01625f02204e"
+  ]
+}

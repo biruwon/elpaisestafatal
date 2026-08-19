@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-55079c939484",
+  "claimSlug": "\"modelo-el-auge-de-la-inmigracion-esta-causando-un-agobio-en-los-servicios-publicos-espe\"",
+  "text": "El auge de la inmigración está causando un agobio en los servicios públicos, especialmente la sanidad y la educación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ceb80f0b358"
+  ]
+}

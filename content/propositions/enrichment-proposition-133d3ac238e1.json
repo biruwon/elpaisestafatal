@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-133d3ac238e1",
+  "claimSlug": "\"modelo-los-centros-educativos-de-espana-no-ofertan-suficientes-becas-para-los-estudiant\"",
+  "text": "Los centros educativos de España no ofertan suficientes becas para los estudiantes de bajos ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5debc849aec2"
+  ]
+}

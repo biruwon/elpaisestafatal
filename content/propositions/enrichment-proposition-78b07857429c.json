@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78b07857429c",
+  "claimSlug": "\"modelo-la-audiencia-nacional-no-siempre-toma-decisiones-unanime-en-sus-sentencias\"",
+  "text": "La Audiencia Nacional no siempre toma decisiones unánime en sus sentencias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1ccce3a1090d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a8be3c5b0c2",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-cultura-espanola-mas-rapido-de-lo-que-la-gente-\"",
+  "text": "La inmigración está cambiando la cultura española más rápido de lo que la gente puede asimilar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d26fb75e00bd"
+  ]
+}

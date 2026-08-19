@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-098f5c8654ff",
+  "claimSlug": "\"modelo-por-que-el-sueldo-no-alcanza-para-cubrir-el-alquiler\"",
+  "text": "¿Por qué el sueldo no alcanza para cubrir el alquiler?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ae5b50fdbc3"
+  ]
+}

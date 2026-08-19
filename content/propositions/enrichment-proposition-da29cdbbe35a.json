@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-da29cdbbe35a",
+  "claimSlug": "\"modelo-la-delincuencia-organizada-esta-en-cada-esquina\"",
+  "text": "¡La delincuencia organizada está en cada esquina!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7b92e946d0e2"
+  ]
+}

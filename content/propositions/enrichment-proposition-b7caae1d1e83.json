@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b7caae1d1e83",
+  "claimSlug": "\"modelo-espana-es-el-pais-europeo-con-mayor-desigualdad-economica-entre-ciudades-y-regio\"",
+  "text": "España es el país europeo con mayor desigualdad económica entre ciudades y regiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d653a08c4e0a"
+  ]
+}

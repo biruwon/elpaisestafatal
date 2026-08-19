@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a6f4f17b392",
+  "claimSlug": "\"modelo-en-espana-los-contratos-de-servicios-publicos-a-veces-son-adjudicados-a-empresas\"",
+  "text": "En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-24dd9e3b2f77"
+  ]
+}

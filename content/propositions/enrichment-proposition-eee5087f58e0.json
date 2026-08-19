@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eee5087f58e0",
+  "claimSlug": "\"modelo-la-falta-de-inversion-en-energias-renovables-esta-causando-que-la-factura-de-la-\"",
+  "text": "La falta de inversión en energías renovables está causando que la factura de la luz siga aumentando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b354711912da"
+  ]
+}

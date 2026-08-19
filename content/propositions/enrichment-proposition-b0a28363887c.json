@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0a28363887c",
+  "claimSlug": "\"modelo-por-que-en-espana-los-precios-del-gas-domestico-suben-tanto\"",
+  "text": "¿Por qué en España los precios del gas doméstico suben tanto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2a58f0d2ba6a"
+  ]
+}

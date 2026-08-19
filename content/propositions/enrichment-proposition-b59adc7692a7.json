@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b59adc7692a7",
+  "claimSlug": "\"modelo-la-policia-no-siempre-responde-a-las-denuncias-de-malos-tratos-en-tiempo-y-forma\"",
+  "text": "La policía no siempre responde a las denuncias de malos tratos en tiempo y forma.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8ca858ff33f7"
+  ]
+}

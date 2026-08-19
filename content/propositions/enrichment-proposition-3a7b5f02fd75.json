@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3a7b5f02fd75",
+  "claimSlug": "\"modelo-las-espera-para-acceder-a-servicios-de-salud-publica-son-excesivas-lo-que-genera\"",
+  "text": "Las espera para acceder a servicios de salud pública son excesivas, lo que genera estrés y malestar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0d53be055844"
+  ]
+}

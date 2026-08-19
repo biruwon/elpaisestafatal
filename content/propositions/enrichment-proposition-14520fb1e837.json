@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-14520fb1e837",
+  "claimSlug": "\"modelo-la-espera-para-obtener-la-pension-de-jubilacion-esta-cada-vez-mas-larga\"",
+  "text": "La espera para obtener la pensión de jubilación está cada vez más larga.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9d9ab014d053"
+  ]
+}

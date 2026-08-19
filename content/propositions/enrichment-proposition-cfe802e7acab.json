@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cfe802e7acab",
+  "claimSlug": "\"modelo-el-aparcamiento-en-los-centros-comerciales-es-muy-caro-y-dificil-de-encontrar\"",
+  "text": "El aparcamiento en los centros comerciales es muy caro y difícil de encontrar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5845df02dd8a"
+  ]
+}

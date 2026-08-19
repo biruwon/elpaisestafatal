@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fd31d3749d3",
+  "claimSlug": "\"modelo-la-politica-agricola-en-espana-favorece-a-grandes-empresas-a-costa-de-los-pequen\"",
+  "text": "La política agrícola en España favorece a grandes empresas a costa de los pequeños productores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0aa5b7981e30"
+  ]
+}

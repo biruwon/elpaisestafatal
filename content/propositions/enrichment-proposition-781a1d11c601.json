@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-781a1d11c601",
+  "claimSlug": "\"modelo-las-politicas-de-vivienda-en-espana-son-desastrosas-dejando-a-muchas-familias-en\"",
+  "text": "Las políticas de vivienda en España son desastrosas, dejando a muchas familias en la calle.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6c24622094d7"
+  ]
+}

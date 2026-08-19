@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33b8e37fcb86",
+  "claimSlug": "\"modelo-la-desigualdad-en-espana-sigue-en-alza-y-los-sectores-mas-afectados-son-los-de-m\"",
+  "text": "La desigualdad en España sigue en alza y los sectores más afectados son los de menor ingreso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-06ca74a82c1a"
+  ]
+}

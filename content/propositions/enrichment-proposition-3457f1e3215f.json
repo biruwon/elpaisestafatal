@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3457f1e3215f",
+  "claimSlug": "\"modelo-el-sistema-educativo-no-brinda-suficiente-apoyo-a-los-estudiantes-con-problemas-\"",
+  "text": "El sistema educativo no brinda suficiente apoyo a los estudiantes con problemas de salud mental.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b7546198dff"
+  ]
+}

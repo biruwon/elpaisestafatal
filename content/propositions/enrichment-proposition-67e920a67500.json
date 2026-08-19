@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-67e920a67500",
+  "claimSlug": "\"modelo-la-cantidad-de-plasticos-en-los-almacenes-de-frutas-y-verduras-es-excesiva-afect\"",
+  "text": "La cantidad de plásticos en los almacenes de frutas y verduras es excesiva, afectando la calidad del producto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-16d8486d4440"
+  ]
+}

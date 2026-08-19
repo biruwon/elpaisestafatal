@@ -4,21 +4,22 @@ claim: "En España, es común que las infraestructuras de los centros educativos
 assessment: uncertain
 topicSlugs: ["educación y juventud"]
 aliases: ["Infraestructuras deficientes","Espacios insuficientes","Centros educativos desfasados","Falta de espacio","Infravaloración de infraestructuras","En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.","¿Es cierto que En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","¿Qué datos permiten comprobar si En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","Quiero saber si En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.","¿Cómo se puede verificar En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","¿Hay evidencia sobre si En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","¿Es verdad que En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","¿Qué sabemos de En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?","¿Se sostiene la afirmación de que En España, es común que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente número de estudiantes.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-90e0167bf092"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en espana es comun que las infraestructuras de los centros educativos sean insuficientes para soportar el creciente numero de estudiantes"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-cdc69002f905"]
 ---
 
 ## Qué es cierto

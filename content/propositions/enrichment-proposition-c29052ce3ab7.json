@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c29052ce3ab7",
+  "claimSlug": "\"modelo-la-discriminacion-y-bullying-en-las-aulas-es-un-problema-persistente\"",
+  "text": "La discriminación y bullying en las aulas es un problema persistente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3ee353873230"
+  ]
+}

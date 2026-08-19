@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-96b9ac84e0b5",
+  "claimSlug": "\"modelo-el-precio-del-gas-domestico-ha-subido-tanto-que-ni-siquiera-puedo-cocinar-con-se\"",
+  "text": "El precio del gas doméstico ha subido tanto que ni siquiera puedo cocinar con seguridad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-169135878275"
+  ]
+}

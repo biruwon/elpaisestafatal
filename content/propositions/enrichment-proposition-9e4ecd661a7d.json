@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9e4ecd661a7d",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-no-cubre-bien-las-necesidades-de-las-personas-co\"",
+  "text": "El sistema de protección social no cubre bien las necesidades de las personas con discapacidad, muchas veces quedan excluidas de ayudas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d26ca5cb0757"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b7b6c9229577",
+  "claimSlug": "\"modelo-las-infraestructuras-educativas-estan-obsoletas-y-no-adaptadas-a-las-necesidades\"",
+  "text": "Las infraestructuras educativas están obsoletas y no adaptadas a las necesidades actuales de los estudiantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-96e1c84192b5"
+  ]
+}

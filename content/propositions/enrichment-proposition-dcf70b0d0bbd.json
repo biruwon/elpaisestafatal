@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dcf70b0d0bbd",
+  "claimSlug": "\"modelo-es-ridiculo-que-los-pensionistas-tengan-que-hacer-fila-para-pedir-la-ayuda-vital\"",
+  "text": "¡Es ridículo que los pensionistas tengan que hacer fila para pedir la ayuda vitalicia! Se supone que esto es para los mayores, no para que pasen hambre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dc2397de8312"
+  ]
+}

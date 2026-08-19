@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-85d0dc7f4a83",
+  "claimSlug": "\"modelo-las-prisiones-espanolas-estan-repletas-de-personas-que-no-pueden-pagar-fianzas\"",
+  "text": "Las prisiones españolas están repletas de personas que no pueden pagar fianzas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b0e140c47327"
+  ]
+}

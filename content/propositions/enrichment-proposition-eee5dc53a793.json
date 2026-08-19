@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eee5dc53a793",
+  "claimSlug": "\"modelo-la-presion-demografica-por-la-inmigracion-esta-agobiando-los-servicios-publicos\"",
+  "text": "La presión demográfica por la inmigración está agobiando los servicios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e2e24b852541"
+  ]
+}

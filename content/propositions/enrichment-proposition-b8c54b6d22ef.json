@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8c54b6d22ef",
+  "claimSlug": "\"modelo-la-violencia-domestica-sigue-siendo-un-problema-serio-en-muchas-ciudades-espanol\"",
+  "text": "La violencia doméstica sigue siendo un problema serio en muchas ciudades españolas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-e009fde0f49d"
+  ]
+}

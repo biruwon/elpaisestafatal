@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae407ddbe288",
+  "claimSlug": "\"modelo-la-calidad-de-los-libros-de-texto-es-variable-y-a-veces-de-baja-calidad\"",
+  "text": "La calidad de los libros de texto es variable y a veces de baja calidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b333551d6e94"
+  ]
+}

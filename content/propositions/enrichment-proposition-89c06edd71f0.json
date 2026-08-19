@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-89c06edd71f0",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llevando-a-un-cambio-demografico-que-amenaza-nuestra-identid\"",
+  "text": "La inmigración está llevando a un cambio demográfico que amenaza nuestra identidad y cultura tradicional.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2cd3c2d0f494"
+  ]
+}

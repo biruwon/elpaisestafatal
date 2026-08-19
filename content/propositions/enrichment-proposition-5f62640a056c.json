@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f62640a056c",
+  "claimSlug": "\"modelo-el-alto-paro-juvenil-en-espana-es-un-problema-que-afecta-seriamente-a-la-generac\"",
+  "text": "El alto paro juvenil en España es un problema que afecta seriamente a la generación joven.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8bc9b3f1ebad"
+  ]
+}

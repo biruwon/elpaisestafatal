@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78cfb750bb60",
+  "claimSlug": "\"modelo-en-madrid-los-alquileres-en-edificios-antiguos-son-mas-baratos-que-en-edificios-\"",
+  "text": "En Madrid, los alquileres en edificios antiguos son más baratos que en edificios modernos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e92896ebe916"
+  ]
+}

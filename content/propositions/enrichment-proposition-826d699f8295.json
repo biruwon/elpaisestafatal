@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-826d699f8295",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-crimen-vemos-mas-robos-y-delitos\"",
+  "text": "La inmigración está aumentando el crimen, vemos más robos y delitos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d1c5cff4174"
+  ]
+}

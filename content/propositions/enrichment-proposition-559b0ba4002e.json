@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-559b0ba4002e",
+  "claimSlug": "\"modelo-los-inmigrantes-estan-ocupando-todos-los-puestos-de-trabajo-y-dejando-sin-oportu\"",
+  "text": "Los inmigrantes están ocupando todos los puestos de trabajo y dejando sin oportunidades a los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cd10b7d91f39"
+  ]
+}

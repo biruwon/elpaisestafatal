@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d03b51cc350b",
+  "claimSlug": "\"modelo-por-que-el-transporte-publico-en-madrid-es-tan-ineficiente-y-lleno-de-problemas\"",
+  "text": "¿Por qué el transporte público en Madrid es tan ineficiente y lleno de problemas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e4ae93d4852a"
+  ]
+}

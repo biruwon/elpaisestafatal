@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a4a6cc0af8d",
+  "claimSlug": "\"modelo-el-alquiler-en-espana-esta-alucinante-cuando-bajara-de-precio\"",
+  "text": "El alquiler en España está alucinante, ¿cuándo bajará de precio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b74dde9459ec"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d9b7a2d52927",
+  "claimSlug": "\"modelo-la-presion-demografica-de-los-inmigrantes-agota-los-servicios-publicos\"",
+  "text": "La presión demográfica de los inmigrantes agota los servicios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-34594791815a"
+  ]
+}

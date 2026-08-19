@@ -4,21 +4,22 @@ claim: "La falta de políticas de protección social para los trabajadores por c
 assessment: uncertain
 topicSlugs: ["pensiones y protección social"]
 aliases: ["trabajadores por cuenta propia","protección social insuficiente","falta de cobertura","protección social para autónomos","falta de apoyo sanitario","La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.","¿Es cierto que La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","¿Qué datos permiten comprobar si La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","Quiero saber si La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.","¿Cómo se puede verificar La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","¿Hay evidencia sobre si La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","¿Es verdad que La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","¿Qué sabemos de La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?","¿Se sostiene la afirmación de que La falta de políticas de protección social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-a617d7f49e0e"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de politicas de proteccion social para los trabajadores por cuenta propia ha dejado a muchos sin cobertura cuando se enferman"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-9b01d5327289"]
 ---
 
 ## Qué es cierto

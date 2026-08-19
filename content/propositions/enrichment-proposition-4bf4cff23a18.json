@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bf4cff23a18",
+  "claimSlug": "\"modelo-es-normal-que-haya-tanta-demora-en-los-tribunales-que-los-acusados-esperan-anos-\"",
+  "text": "¿Es normal que haya tanta demora en los tribunales que los acusados esperan años para juicio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7457f57c36b1"
+  ]
+}

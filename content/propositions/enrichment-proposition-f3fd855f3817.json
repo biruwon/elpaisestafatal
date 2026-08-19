@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3fd855f3817",
+  "claimSlug": "\"modelo-por-que-se-dan-tantos-retrasos-en-la-reparacion-de-carreteras-en-zonas-de-bajo-p\"",
+  "text": "¿Por qué se dan tantos retrasos en la reparación de carreteras en zonas de bajo presupuesto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c89642da916b"
+  ]
+}

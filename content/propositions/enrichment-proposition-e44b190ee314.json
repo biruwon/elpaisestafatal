@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e44b190ee314",
+  "claimSlug": "\"modelo-se-supone-que-los-controles-de-seguridad-en-las-estaciones-de-tren-son-cada-vez-\"",
+  "text": "¡Se supone que los controles de seguridad en las estaciones de tren son cada vez más laxos en España!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-94e8b1473796"
+  ]
+}

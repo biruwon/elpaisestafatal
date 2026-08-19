@@ -4,21 +4,22 @@ claim: "¿Por qué no se construyen más centros de acogida para inmigrantes si 
 assessment: uncertain
 topicSlugs: ["inmigración y demografía"]
 aliases: ["¿Dónde están los refugios?","¿Por qué no se aumenta la capacidad?","¿Qué pasa con los sin techo?","¿Cómo se maneja la vivienda?","¿Por qué no se soluciona el problema de los sin hogar?","¿Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir","¿Es cierto que Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","¿Qué datos permiten comprobar si Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","Quiero saber si Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir","¿Cómo se puede verificar Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","¿Hay evidencia sobre si Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","¿Es verdad que Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","¿Qué sabemos de Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?","¿Se sostiene la afirmación de que Por qué no se construyen más centros de acogida para inmigrantes si los pueblos están llenos de gente que no tiene donde vivir?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-61959a0bbc85"]
+evidenceIds: ["enrichment-evidence-6605cf2fb364"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que no se construyen mas centros de acogida para inmigrantes si los pueblos estan llenos de gente que no tiene donde vivir"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-27d66a4ab019"]
 ---
 
 ## Qué es cierto

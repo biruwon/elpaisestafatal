@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-be48d4552ae8",
+  "claimSlug": "\"modelo-por-que-la-formacion-continua-es-tan-dificil-de-encontrar\"",
+  "text": "¿Por qué la formación continua es tan difícil de encontrar?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-71e2b3181f4b"
+  ]
+}

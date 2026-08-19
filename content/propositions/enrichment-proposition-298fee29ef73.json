@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-298fee29ef73",
+  "claimSlug": "\"modelo-los-salarios-en-espana-no-siempre-reflejan-el-trabajo-que-se-realiza-ya-que-hay-\"",
+  "text": "Los salarios en España no siempre reflejan el trabajo que se realiza, ya que hay casos de sobretrabajo sin correspondencia en la nómina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab52a4440d52"
+  ]
+}

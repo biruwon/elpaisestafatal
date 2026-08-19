@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e94383bb296",
+  "claimSlug": "\"modelo-los-incendios-han-dejado-a-muchas-personas-sin-hogar-y-sin-recursos-quien-los-ay\"",
+  "text": "Los incendios han dejado a muchas personas sin hogar y sin recursos, ¿quién los ayuda?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4f7e5914adf7"
+  ]
+}

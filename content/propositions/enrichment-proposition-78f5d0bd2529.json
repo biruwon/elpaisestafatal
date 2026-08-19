@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78f5d0bd2529",
+  "claimSlug": "\"modelo-los-alquileres-son-prohibitivos-en-muchas-ciudades-lo-que-hace-que-sea-dificil-p\"",
+  "text": "Los alquileres son prohibitivos en muchas ciudades, lo que hace que sea difícil para los jóvenes y las familias mantenerse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8eadfdca67f"
+  ]
+}

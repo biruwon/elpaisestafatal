@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe4637044056",
+  "claimSlug": "\"modelo-los-recortes-en-la-educacion-son-tan-graves-que-los-colegios-no-tienen-dinero-pa\"",
+  "text": "Los recortes en la educación son tan graves que los colegios no tienen dinero para comprar libros de texto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f4be04a3a829"
+  ]
+}

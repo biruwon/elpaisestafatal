@@ -4,21 +4,22 @@ claim: "El crecimiento económico no se ve en el bolsillo del ciudadano."
 assessment: uncertain
 topicSlugs: ["economía, inflación y crecimiento"]
 aliases: ["el crecimiento económico no ha beneficiado a los ciudadanos","la economía está creciendo pero no me beneficia","no veo beneficios del crecimiento económico","el crecimiento económico no es para todos","el crecimiento económico no se refleja en mi economía","El crecimiento económico no se ve en el bolsillo del ciudadano.","¿Es cierto que El crecimiento económico no se ve en el bolsillo del ciudadano.?","¿Qué datos permiten comprobar si El crecimiento económico no se ve en el bolsillo del ciudadano.?","Quiero saber si El crecimiento económico no se ve en el bolsillo del ciudadano.","¿Cómo se puede verificar El crecimiento económico no se ve en el bolsillo del ciudadano.?","¿Hay evidencia sobre si El crecimiento económico no se ve en el bolsillo del ciudadano.?","¿Es verdad que El crecimiento económico no se ve en el bolsillo del ciudadano.?","¿Qué sabemos de El crecimiento económico no se ve en el bolsillo del ciudadano.?","¿Se sostiene la afirmación de que El crecimiento económico no se ve en el bolsillo del ciudadano.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-0909afe60efa"]
+evidenceIds: ["enrichment-evidence-8d38cce81953"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el crecimiento economico no se ve en el bolsillo del ciudadano"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-f03b39e63e6d"]
 ---
 
 ## Qué es cierto

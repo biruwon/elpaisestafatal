@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c75015815a6",
+  "claimSlug": "\"modelo-espana-esta-perdiendo-la-capacidad-de-crecer-a-un-ritmo-decente\"",
+  "text": "España está perdiendo la capacidad de crecer a un ritmo decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-809819c4d01c"
+  ]
+}

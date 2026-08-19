@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-73a572633e80",
+  "claimSlug": "\"modelo-el-permiso-parental-en-espana-es-un-capricho-no-se-reconoce-lo-suficiente\"",
+  "text": "El permiso parental en España es un capricho, no se reconoce lo suficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab8c11750bf2"
+  ]
+}

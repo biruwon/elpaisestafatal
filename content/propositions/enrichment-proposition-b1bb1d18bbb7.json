@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b1bb1d18bbb7",
+  "claimSlug": "\"modelo-la-ue-no-ha-garantizado-el-acceso-a-la-educacion-de-calidad-en-espana\"",
+  "text": "La UE no ha garantizado el acceso a la educación de calidad en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80b95745817d"
+  ]
+}

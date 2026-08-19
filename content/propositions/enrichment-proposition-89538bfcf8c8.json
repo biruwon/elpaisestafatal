@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-89538bfcf8c8",
+  "claimSlug": "\"modelo-los-libros-de-texto-en-espana-son-carisimos-y-muchos-estudiantes-no-pueden-permi\"",
+  "text": "Los libros de texto en España son carísimos y muchos estudiantes no pueden permitírselos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a40515ee7859"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-626d4b9da5ab",
+  "claimSlug": "\"modelo-espana-considera-que-la-ue-no-hace-lo-suficiente-por-la-seguridad-interior\"",
+  "text": "España considera que la UE no hace lo suficiente por la seguridad interior.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2734030ff693"
+  ]
+}

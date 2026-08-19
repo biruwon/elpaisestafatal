@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-375d755f794d",
+  "claimSlug": "\"modelo-las-politicas-de-la-ue-estan-perjudicando-la-agricultura-espanola\"",
+  "text": "Las políticas de la UE están perjudicando la agricultura española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2adc5a29a93"
+  ]
+}

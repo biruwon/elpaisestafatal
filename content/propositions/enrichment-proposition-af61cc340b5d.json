@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af61cc340b5d",
+  "claimSlug": "\"modelo-la-delincuencia-organizada-esta-extendiendose-a-zonas-rurales-poniendo-en-peligr\"",
+  "text": "La delincuencia organizada está extendiéndose a zonas rurales, poniendo en peligro a los residentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1fbeb3d212b3"
+  ]
+}

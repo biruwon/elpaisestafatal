@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-338a3b435132",
+  "claimSlug": "\"modelo-las-esperas-para-acceder-a-servicios-de-atencion-sanitaria-son-interminables-hac\"",
+  "text": "Las esperas para acceder a servicios de atención sanitaria son interminables, haciendo que muchas personas dejen el país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1815d7283ba0"
+  ]
+}

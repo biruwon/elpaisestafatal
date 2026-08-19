@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2bed0a9308ea",
+  "claimSlug": "\"modelo-si-no-compro-ahora-no-tendre-dinero-para-nada-mas-la-inflacion-esta-haciendo-que\"",
+  "text": "Si no compro ahora, no tendré dinero para nada más. La inflación está haciendo que todo se haga tan caro que no puedo planificar nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d8f4216eec0a"
+  ]
+}

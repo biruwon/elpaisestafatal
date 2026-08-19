@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-69dbeffbf9aa",
+  "claimSlug": "\"modelo-los-servicios-publicos-en-muchas-zonas-estan-deteriorados-y-sin-mantenimiento\"",
+  "text": "Los servicios públicos en muchas zonas están deteriorados y sin mantenimiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-33c90e930f32"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-910ed32dfafc",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-trabajo-en-espana-son-muy-altos-lo-que-disuade-a-las-empr\"",
+  "text": "Los impuestos sobre el trabajo en España son muy altos, lo que disuade a las empresas de contratar más personal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fbd32f813d00"
+  ]
+}

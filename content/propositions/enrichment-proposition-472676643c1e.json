@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-472676643c1e",
+  "claimSlug": "\"modelo-el-gasto-publico-en-sanidad-no-es-suficiente-dejando-a-muchas-personas-sin-atenc\"",
+  "text": "El gasto público en sanidad no es suficiente, dejando a muchas personas sin atención médica o con largas esperas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86f08509f037"
+  ]
+}

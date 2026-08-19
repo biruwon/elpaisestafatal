@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fb2b356ef725",
+  "claimSlug": "\"modelo-la-factura-de-la-electricidad-es-incontrolable-y-se-incrementa-sin-aviso\"",
+  "text": "La factura de la electricidad es incontrolable y se incrementa sin aviso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5773485341c8"
+  ]
+}

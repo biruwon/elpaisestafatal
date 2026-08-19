@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6803709450a2",
+  "claimSlug": "\"modelo-el-aumento-de-inmigrantes-sin-papeles-ha-generado-un-sentimiento-de-inseguridad-\"",
+  "text": "El aumento de inmigrantes sin papeles ha generado un sentimiento de inseguridad en la ciudad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0b0872c38f6d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d94b45b11da8",
+  "claimSlug": "\"modelo-por-que-la-espera-en-los-juzgados-puede-durar-anos-y-los-casos-nunca-se-resuelve\"",
+  "text": "¿Por qué la espera en los juzgados puede durar años y los casos nunca se resuelven?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-500d039d0075"
+  ]
+}

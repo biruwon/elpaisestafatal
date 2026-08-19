@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-05c97838a4e8",
+  "claimSlug": "\"modelo-espana-ha-dejado-de-invertir-en-agricultura-lo-que-afecta-la-calidad-de-nuestros\"",
+  "text": "España ha dejado de invertir en agricultura, lo que afecta la calidad de nuestros productos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6cf5b8c1058b"
+  ]
+}

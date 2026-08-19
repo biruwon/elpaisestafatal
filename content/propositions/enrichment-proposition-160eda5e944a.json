@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-160eda5e944a",
+  "claimSlug": "\"modelo-espana-se-siente-olvidada-en-la-toma-de-decisiones-de-la-ue\"",
+  "text": "España se siente olvidada en la toma de decisiones de la UE",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-103520fa9102"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-616b3c0253b3",
+  "claimSlug": "\"modelo-el-paro-juvenil-en-espana-es-un-problema-que-sigue-sin-resolverse\"",
+  "text": "El paro juvenil en España es un problema que sigue sin resolverse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-827d6e57db24"
+  ]
+}

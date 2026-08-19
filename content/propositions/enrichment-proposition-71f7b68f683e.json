@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71f7b68f683e",
+  "claimSlug": "\"modelo-en-espana-si-no-tienes-dinero-ni-contactos-puedes-quedar-sin-tratamiento-por-lar\"",
+  "text": "En España, si no tienes dinero ni contactos, puedes quedar sin tratamiento por largos periodos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-99210cf9ee21"
+  ]
+}

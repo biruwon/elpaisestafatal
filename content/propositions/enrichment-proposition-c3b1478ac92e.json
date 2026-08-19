@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c3b1478ac92e",
+  "claimSlug": "\"modelo-la-atencion-a-la-salud-mental-de-los-jovenes-es-muy-limitada\"",
+  "text": "La atención a la salud mental de los jóvenes es muy limitada",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2b9d5811b470"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cbf3c826f9cb",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-aumentando-el-trafico-y-el-caos-en-las-carrete\"",
+  "text": "La inmigración no controlada está aumentando el tráfico y el caos en las carreteras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a02ab4b52b79"
+  ]
+}

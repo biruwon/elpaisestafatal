@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1aec239f7aa9",
+  "claimSlug": "\"modelo-los-gastos-en-publicidad-del-gobierno-superan-a-la-inversion-en-educacion\"",
+  "text": "Los gastos en publicidad del gobierno superan a la inversión en educación",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fcec2513abc8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ff2c272664a9",
+  "claimSlug": "\"modelo-el-sistema-de-inmigracion-es-un-desastre-llenando-los-hospitales-y-escuelas-con-\"",
+  "text": "El sistema de inmigración es un desastre, llenando los hospitales y escuelas con personas que no entienden ni respetan nuestras costumbres.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f430e76aee91"
+  ]
+}

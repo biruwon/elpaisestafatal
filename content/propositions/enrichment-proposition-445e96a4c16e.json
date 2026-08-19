@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-445e96a4c16e",
+  "claimSlug": "\"modelo-la-precariedad-laboral-en-espana-es-un-problema-cronico-con-contratos-temporales\"",
+  "text": "La precariedad laboral en España es un problema crónico, con contratos temporales y parciales que dificultan el acceso a un empleo estable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-da2320a3d021"
+  ]
+}

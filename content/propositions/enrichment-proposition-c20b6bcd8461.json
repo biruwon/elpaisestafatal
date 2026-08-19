@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c20b6bcd8461",
+  "claimSlug": "\"modelo-en-muchos-barrios-de-madrid-no-hay-suficiente-comida-en-los-almacenes-comunitari\"",
+  "text": "En muchos barrios de Madrid, no hay suficiente comida en los almacenes comunitarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3d625ec17d4f"
+  ]
+}

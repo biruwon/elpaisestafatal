@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-68d8f0f5fdc8",
+  "claimSlug": "\"modelo-los-agricultores-de-espana-no-reciben-apoyo-suficiente-del-gobierno-para-mejorar\"",
+  "text": "Los agricultores de España no reciben apoyo suficiente del gobierno para mejorar sus cultivos y competir con otros países.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-46a6581f7e19"
+  ]
+}

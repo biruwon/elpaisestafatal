@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6d4704238fde",
+  "claimSlug": "\"modelo-por-que-en-espana-se-ven-tan-largas-las-listas-de-espera-para-tratamientos-que-e\"",
+  "text": "¿Por qué en España se ven tan largas las listas de espera para tratamientos que en otros países son más inmediatos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-456e96f57817"
+  ]
+}

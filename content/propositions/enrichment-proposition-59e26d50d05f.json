@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-59e26d50d05f",
+  "claimSlug": "\"modelo-las-politicas-economicas-del-gobierno-no-estan-resolviendo-la-problematica-de-la\"",
+  "text": "Las políticas económicas del gobierno no están resolviendo la problemática de la inflación y el crecimiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f049afbf1f1d"
+  ]
+}

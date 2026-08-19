@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9a9c1fae9ac4",
+  "claimSlug": "\"modelo-el-gasto-en-educacion-ha-disminuido-dejando-a-los-ninos-sin-las-herramientas-nec\"",
+  "text": "El gasto en educación ha disminuido, dejando a los niños sin las herramientas necesarias para el futuro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97fc0d270866"
+  ]
+}

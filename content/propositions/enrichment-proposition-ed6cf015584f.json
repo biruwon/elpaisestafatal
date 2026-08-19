@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ed6cf015584f",
+  "claimSlug": "\"modelo-la-inmigracion-ha-subido-tanto-que-ya-no-hay-espacio-para-la-integracion-todo-el\"",
+  "text": "La inmigración ha subido tanto que ya no hay espacio para la integración, todo el mundo habla en sus idiomas y se niegan a aprender español.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-32ebe21bc2f3"
+  ]
+}

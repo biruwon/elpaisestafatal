@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d738f6828eac",
+  "claimSlug": "\"modelo-el-tiempo-de-busqueda-de-empleo-es-innecesariamente-largo-y-frustrante-para-much\"",
+  "text": "El tiempo de búsqueda de empleo es innecesariamente largo y frustrante para muchos trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e0509fcb049"
+  ]
+}

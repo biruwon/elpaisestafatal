@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a2da4035511",
+  "claimSlug": "\"modelo-los-recortes-presupuestarios-estan-afectando-directamente-a-los-servicios-public\"",
+  "text": "Los recortes presupuestarios están afectando directamente a los servicios públicos esenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bc0dcb0185cd"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-db5fefbb2ca8",
+  "claimSlug": "\"modelo-como-es-que-en-espana-las-vacaciones-son-tan-dificiles-de-planificar-cuando-las-\"",
+  "text": "¿Cómo es que en España las vacaciones son tan difíciles de planificar cuando las empresas siguen cerrando al público en Semana Santa?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d814df71f74c"
+  ]
+}

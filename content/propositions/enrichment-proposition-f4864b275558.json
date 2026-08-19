@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f4864b275558",
+  "claimSlug": "\"modelo-el-precio-del-gasoil-sube-cada-semana-que-hago-con-mi-coche\"",
+  "text": "El precio del gasoil sube cada semana, ¿qué hago con mi coche?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-12940bad3427"
+  ]
+}

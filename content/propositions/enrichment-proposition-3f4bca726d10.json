@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f4bca726d10",
+  "claimSlug": "\"modelo-por-que-se-otorgan-tantos-contratos-a-empresas-que-no-cumplen-con-los-requisitos\"",
+  "text": "¿Por qué se otorgan tantos contratos a empresas que no cumplen con los requisitos mínimos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-60b3391979cc"
+  ]
+}

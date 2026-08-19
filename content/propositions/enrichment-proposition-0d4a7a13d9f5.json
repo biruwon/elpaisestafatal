@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0d4a7a13d9f5",
+  "claimSlug": "\"modelo-la-falta-de-programas-de-formacion-en-habilidades-laborales-en-las-escuelas-de-e\"",
+  "text": "La falta de programas de formación en habilidades laborales en las escuelas de España dificulta mucho encontrar trabajo para los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0de1ffd35b3"
+  ]
+}

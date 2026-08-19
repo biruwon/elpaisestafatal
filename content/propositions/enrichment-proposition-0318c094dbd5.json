@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0318c094dbd5",
+  "claimSlug": "\"modelo-es-preocupante-que-en-algunas-regiones-de-espana-los-pacientes-con-dolores-croni\"",
+  "text": "Es preocupante que en algunas regiones de España, los pacientes con dolores crónicos estén esperando más de un año para un tratamiento adecuado, lo que les lleva a sufrir mucho más de lo necesario.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f7e7d3f169c8"
+  ]
+}

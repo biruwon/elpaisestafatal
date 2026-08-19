@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b594bb3e452",
+  "claimSlug": "\"modelo-la-instalacion-de-tecnologia-en-viviendas-es-muy-costosa-y-lleva-mucho-tiempo-lo\"",
+  "text": "La instalación de tecnología en viviendas es muy costosa y lleva mucho tiempo, lo que puede desalentar a muchos propietarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a9f926189a25"
+  ]
+}

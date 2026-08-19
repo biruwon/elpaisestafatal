@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fbb9028ffc65",
+  "claimSlug": "\"modelo-el-acceso-ainternet-en-las-escuelas-rurales-es-muy-limitado-lo-que-esta-perjudic\"",
+  "text": "El acceso aInternet en las escuelas rurales es muy limitado, lo que está perjudicando el aprendizaje de los jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eba3c1a220a1"
+  ]
+}

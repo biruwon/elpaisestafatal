@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d7a426d10211",
+  "claimSlug": "\"modelo-los-jueces-son-demasiado-influenciados-por-el-poder-politico\"",
+  "text": "Los jueces son demasiado influenciados por el poder político.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8a2cf89e36ed"
+  ]
+}

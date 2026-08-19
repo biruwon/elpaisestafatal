@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b92180fafc31",
+  "claimSlug": "\"modelo-las-autovias-estan-llenas-de-trafico-todos-los-dias-por-que-no-se-construyen-mas\"",
+  "text": "Las autovías están llenas de tráfico todos los días, ¿por qué no se construyen más carreteras para aliviar la congestión?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-80bbbddb93bb"
+  ]
+}

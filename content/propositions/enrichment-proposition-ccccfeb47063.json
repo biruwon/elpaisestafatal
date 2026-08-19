@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ccccfeb47063",
+  "claimSlug": "\"modelo-la-ue-impone-impuestos-sin-contar-con-los-espanoles\"",
+  "text": "La UE impone impuestos sin contar con los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1629cb0dd91f"
+  ]
+}

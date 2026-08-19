@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f7e633e89bc",
+  "claimSlug": "\"modelo-la-economia-en-espana-es-un-desastre-cuando-se-recupera\"",
+  "text": "La economía en España es un desastre, ¿cuándo se recupera?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2c70341be6f2"
+  ]
+}

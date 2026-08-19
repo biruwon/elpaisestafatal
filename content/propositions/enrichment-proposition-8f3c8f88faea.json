@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f3c8f88faea",
+  "claimSlug": "\"modelo-el-tren-de-alta-velocidad-esta-muy-subutilizado-y-deberian-bajar-los-precios-par\"",
+  "text": "El tren de alta velocidad está muy subutilizado y deberían bajar los precios para atraer a más usuarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd6e335d20f9"
+  ]
+}

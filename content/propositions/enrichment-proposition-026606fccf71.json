@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-026606fccf71",
+  "claimSlug": "\"modelo-es-cierto-que-la-agricultura-en-el-norte-de-espana-se-centra-en-la-produccion-de\"",
+  "text": "¿Es cierto que la agricultura en el norte de España se centra en la producción de vino y en la del sur en olivos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-55ed79a1da90"
+  ]
+}

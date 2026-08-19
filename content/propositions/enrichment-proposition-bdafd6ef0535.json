@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bdafd6ef0535",
+  "claimSlug": "\"modelo-los-trabajadores-en-espana-a-menudo-se-ven-obligados-a-aceptar-contratos-con-con\"",
+  "text": "Los trabajadores en España a menudo se ven obligados a aceptar contratos con condiciones laborales desfavorables para encontrar trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3d54dabc1e79"
+  ]
+}

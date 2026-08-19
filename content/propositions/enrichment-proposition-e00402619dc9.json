@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e00402619dc9",
+  "claimSlug": "\"modelo-el-aumento-de-inmigrantes-ha-generado-un-incremento-en-la-demanda-de-servicios-s\"",
+  "text": "El aumento de inmigrantes ha generado un incremento en la demanda de servicios sociales, lo que ha agobiado las finanzas públicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a25a56a98e7"
+  ]
+}

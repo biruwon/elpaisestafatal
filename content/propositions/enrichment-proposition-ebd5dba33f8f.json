@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ebd5dba33f8f",
+  "claimSlug": "\"modelo-la-falta-de-control-sobre-el-turismo-en-ciertas-areas-esta-causando-problemas-de\"",
+  "text": "La falta de control sobre el turismo en ciertas áreas está causando problemas de tráfico y estacionamiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e364aab6091f"
+  ]
+}

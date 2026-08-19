@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf4e53e32a3b",
+  "claimSlug": "\"modelo-por-que-el-acceso-a-vivienda-en-espana-es-tan-dificil-y-caro-para-los-jovenes\"",
+  "text": "¿Por qué el acceso a vivienda en España es tan difícil y caro para los jóvenes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fca5f9149a16"
+  ]
+}

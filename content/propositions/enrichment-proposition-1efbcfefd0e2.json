@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1efbcfefd0e2",
+  "claimSlug": "\"modelo-las-politicas-de-inmigracion-son-un-fracaso-permitiendo-que-se-establezcan-barri\"",
+  "text": "Las políticas de inmigración son un fracaso, permitiendo que se establezcan barrios donde la cultura local se ve amenazada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b581d2bafc98"
+  ]
+}

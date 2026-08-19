@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c916004acc4",
+  "claimSlug": "\"modelo-el-acceso-a-empleos-de-calidad-es-un-sueno-lejano-para-muchos-trabajadores\"",
+  "text": "El acceso a empleos de calidad es un sueño lejano para muchos trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8f934c45656"
+  ]
+}

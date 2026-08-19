@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b831d8c37dae",
+  "claimSlug": "\"modelo-la-falta-de-personal-calificado-hace-que-los-pacientes-esperen-mas-tiempo-y-se-s\"",
+  "text": "La falta de personal calificado hace que los pacientes esperen más tiempo y se sientan incómodos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-adf0432eac1a"
+  ]
+}

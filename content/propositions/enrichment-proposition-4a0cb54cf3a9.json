@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4a0cb54cf3a9",
+  "claimSlug": "\"modelo-la-agricultura-en-espana-no-invierte-en-la-innovacion-suficiente-sigue-usando-me\"",
+  "text": "La agricultura en España no invierte en la innovación suficiente, sigue usando métodos antiguos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-57fdcbf0ee74"
+  ]
+}

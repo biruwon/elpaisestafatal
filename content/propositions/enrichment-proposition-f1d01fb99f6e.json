@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f1d01fb99f6e",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-provocando-que-haya-mas-delincuencia-en-las-ci\"",
+  "text": "La inmigración no controlada está provocando que haya más delincuencia en las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4357a54aedec"
+  ]
+}

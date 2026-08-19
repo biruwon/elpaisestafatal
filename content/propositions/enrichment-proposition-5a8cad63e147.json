@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5a8cad63e147",
+  "claimSlug": "\"modelo-los-precios-de-la-electricidad-suben-cada-ano-y-el-gobierno-parece-no-hacer-nada\"",
+  "text": "Los precios de la electricidad suben cada año y el gobierno parece no hacer nada al respecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-56b2c4cdef02"
+  ]
+}

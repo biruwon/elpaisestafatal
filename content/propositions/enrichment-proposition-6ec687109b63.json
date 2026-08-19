@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6ec687109b63",
+  "claimSlug": "\"modelo-se-esta-inmigrando-tanto-que-la-cultura-y-la-identidad-espanola-estan-en-peligro\"",
+  "text": "Se está inmigrando tanto que la cultura y la identidad española están en peligro de ser olvidadas y reemplazadas por culturas extranjeras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd518591fd0b"
+  ]
+}

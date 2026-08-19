@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-78fefd6e195c",
+  "claimSlug": "\"modelo-la-vivienda-asequible-es-un-sueno-lejano-para-muchos-trabajadores\"",
+  "text": "La vivienda asequible es un sueño lejano para muchos trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-edff54e89ce3"
+  ]
+}

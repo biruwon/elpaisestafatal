@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-305f60cd7d99",
+  "claimSlug": "\"modelo-el-coste-de-la-electricidad-y-el-gas-es-tan-alto-que-apenas-se-puede-pagar-la-ca\"",
+  "text": "El coste de la electricidad y el gas es tan alto que apenas se puede pagar la calefacción en invierno.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-082d975141d3"
+  ]
+}

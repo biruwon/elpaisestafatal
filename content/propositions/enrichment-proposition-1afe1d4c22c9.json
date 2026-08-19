@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1afe1d4c22c9",
+  "claimSlug": "\"modelo-el-sistema-de-proteccion-social-en-espana-no-cubre-adecuadamente-las-necesidades\"",
+  "text": "El sistema de protección social en España no cubre adecuadamente las necesidades de los ciudadanos, especialmente en temas de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-582047b6b1c4"
+  ]
+}

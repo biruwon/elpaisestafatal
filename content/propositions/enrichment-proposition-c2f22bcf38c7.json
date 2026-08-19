@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c2f22bcf38c7",
+  "claimSlug": "\"modelo-la-cantidad-de-inmigrantes-no-controlada-esta-sobrecargando-los-servicios-sanita\"",
+  "text": "La cantidad de inmigrantes no controlada está sobrecargando los servicios sanitarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-37ac88b5efe4"
+  ]
+}

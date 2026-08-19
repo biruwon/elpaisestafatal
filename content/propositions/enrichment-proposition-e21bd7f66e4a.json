@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e21bd7f66e4a",
+  "claimSlug": "\"modelo-los-agricultores-espanoles-no-reciben-apoyo-suficiente-del-gobierno-para-moderni\"",
+  "text": "Los agricultores españoles no reciben apoyo suficiente del gobierno para modernizar sus métodos de producción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7150f4ce4754"
+  ]
+}

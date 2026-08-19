@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-03fb24342fb5",
+  "claimSlug": "\"modelo-la-falta-de-negociacion-colectiva-esta-dejando-a-los-trabajadores-sin-las-condic\"",
+  "text": "La falta de negociación colectiva está dejando a los trabajadores sin las condiciones laborales adecuadas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6c5dedbfd2f5"
+  ]
+}

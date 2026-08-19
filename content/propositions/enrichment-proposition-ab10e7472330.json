@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ab10e7472330",
+  "claimSlug": "\"modelo-el-gobierno-deberia-invertir-mas-en-energias-renovables-para-reducir-los-costes-\"",
+  "text": "El gobierno debería invertir más en energías renovables para reducir los costes de la luz.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61b02de80238"
+  ]
+}

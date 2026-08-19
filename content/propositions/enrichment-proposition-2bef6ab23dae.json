@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2bef6ab23dae",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-aumento-en-el-coste-de-la-sanidad\"",
+  "text": "La inmigración está causando un aumento en el coste de la sanidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9a3a7bc060e4"
+  ]
+}

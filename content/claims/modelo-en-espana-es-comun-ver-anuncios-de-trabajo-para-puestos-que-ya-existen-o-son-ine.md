@@ -4,21 +4,22 @@ claim: "En España, es común ver anuncios de trabajo para puestos que ya existe
 assessment: uncertain
 topicSlugs: ["empleo, paro y salarios"]
 aliases: ["Trabajos que ya existen","Anuncios falsos de trabajo","Trabajos inexistentes","Anuncios engañosos de trabajo","Trabajos que ya están cubiertos","Anuncios falsos","Puestos que ya existen","Anuncios de trabajo inexistente","En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.","¿Es cierto que En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","¿Qué datos permiten comprobar si En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","Quiero saber si En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.","¿Cómo se puede verificar En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","¿Hay evidencia sobre si En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","¿Es verdad que En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","¿Qué sabemos de En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?","¿Se sostiene la afirmación de que En España, es común ver anuncios de trabajo para puestos que ya existen o son inexistentes.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-6dda1a6e6775"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en espana es comun ver anuncios de trabajo para puestos que ya existen o son inexistentes"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-0217611e2111"]
 ---
 
 ## Qué es cierto

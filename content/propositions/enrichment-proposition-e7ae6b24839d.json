@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e7ae6b24839d",
+  "claimSlug": "\"modelo-los-servicios-basicos-estan-subiendo-y-la-factura-de-la-luz-se-vuelve-cada-vez-m\"",
+  "text": "Los servicios básicos están subiendo y la factura de la luz se vuelve cada vez más grande.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-522e734ffbfb"
+  ]
+}

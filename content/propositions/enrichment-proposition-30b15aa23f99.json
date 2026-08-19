@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-30b15aa23f99",
+  "claimSlug": "\"modelo-el-proceso-de-reconversion-profesional-es-complicado-y-poco-accesible\"",
+  "text": "El proceso de reconversión profesional es complicado y poco accesible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-310f95c8d63f"
+  ]
+}

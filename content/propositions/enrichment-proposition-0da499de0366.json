@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0da499de0366",
+  "claimSlug": "\"modelo-por-que-no-hay-suficientes-estaciones-de-recarga-para-coches-electricos-en-el-ce\"",
+  "text": "¿Por qué no hay suficientes estaciones de recarga para coches eléctricos en el centro de Barcelona?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ce4f67c8a030"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7ec70a981fb6",
+  "claimSlug": "\"modelo-por-que-las-aulas-estan-tan-sobrecargadas-que-los-ninos-no-aprenden-nada\"",
+  "text": "¿Por qué las aulas están tan sobrecargadas que los niños no aprenden nada?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b50e2a798808"
+  ]
+}

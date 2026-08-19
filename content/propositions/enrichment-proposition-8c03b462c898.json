@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c03b462c898",
+  "claimSlug": "\"modelo-por-que-el-precio-del-alquiler-en-madrid-sigue-subiendo-sin-control-mientras-los\"",
+  "text": "¿Por qué el precio del alquiler en Madrid sigue subiendo sin control mientras los sueldos no siguen?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-19f615368da1"
+  ]
+}

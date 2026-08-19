@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-744ab8f259ec",
+  "claimSlug": "\"modelo-los-gastos-en-sanidad-y-educacion-no-estan-mejorando-la-calidad-de-vida-de-la-ge\"",
+  "text": "Los gastos en sanidad y educación no están mejorando la calidad de vida de la gente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ec295b2a10ca"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a7b76847a949",
+  "claimSlug": "\"modelo-el-crecimiento-economico-en-espana-es-muy-lento-y-nos-cuesta-encontrar-un-trabaj\"",
+  "text": "El crecimiento económico en España es muy lento y nos cuesta encontrar un trabajo bien remunerado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b218eb2adb5e"
+  ]
+}

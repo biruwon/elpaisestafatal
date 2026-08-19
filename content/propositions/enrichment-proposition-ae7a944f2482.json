@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae7a944f2482",
+  "claimSlug": "\"modelo-el-sistema-sanitario-espanol-no-puede-atender-a-todas-las-personas-que-sufren-do\"",
+  "text": "El sistema sanitario español no puede atender a todas las personas que sufren dolores crónicos de rodillas, por lo que muchos quedan marginados de cualquier tratamiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-280bf3a45bd6"
+  ]
+}

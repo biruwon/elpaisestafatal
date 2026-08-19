@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a9438e9bcc2c",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-muy-contaminadas-con-basura-especialmente-en-la-costa\"",
+  "text": "Las playas de España están muy contaminadas con basura, especialmente en la Costa del Sol y en Mallorca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ea2212f96e3b"
+  ]
+}

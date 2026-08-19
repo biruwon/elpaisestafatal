@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e849b24b302",
+  "claimSlug": "\"modelo-la-subida-de-las-tarifas-electricas-esta-matando-a-la-economia-domestica\"",
+  "text": "La subida de las tarifas eléctricas está matando a la economía doméstica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-abdfd85e004d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-51f38f549fd6",
+  "claimSlug": "\"modelo-la-ue-no-ha-hecho-nada-para-mejorar-la-situacion-laboral-en-espana\"",
+  "text": "La UE no ha hecho nada para mejorar la situación laboral en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d15060aab8be"
+  ]
+}

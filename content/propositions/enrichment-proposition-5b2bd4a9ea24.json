@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b2bd4a9ea24",
+  "claimSlug": "\"modelo-en-canarias-el-turismo-esta-causando-problemas-ambientales-y-urbanisticos-y-la-g\"",
+  "text": "En Canarias, el turismo está causando problemas ambientales y urbanísticos y la gente se siente frustrada por la falta de regulación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f87bb6d8326d"
+  ]
+}

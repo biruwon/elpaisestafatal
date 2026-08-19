@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-668a93bb344f",
+  "claimSlug": "\"modelo-la-inmigracion-esta-desplazando-a-los-espanoles-en-sus-barrios-tradicionales-es-\"",
+  "text": "La inmigración está desplazando a los españoles en sus barrios tradicionales, ¿es esto normal?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e17c6f435cba"
+  ]
+}

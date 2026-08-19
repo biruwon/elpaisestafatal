@@ -4,21 +4,22 @@ claim: "En España, los gastos de energía doméstica son incontrolables y consu
 assessment: uncertain
 topicSlugs: ["energía y coste de vida"]
 aliases: ["Gastos energéticos descontrolados","Energía doméstica abusiva","Coste de la luz excesivo","Consumo de presupuesto en luz","Energía demasiado cara","En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.","¿Es cierto que En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","¿Qué datos permiten comprobar si En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","Quiero saber si En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.","¿Cómo se puede verificar En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","¿Hay evidencia sobre si En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","¿Es verdad que En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","¿Qué sabemos de En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?","¿Se sostiene la afirmación de que En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-11d5b786a990"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en espana los gastos de energia domestica son incontrolables y consumen gran parte del presupuesto familiar"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-7e867f04886d"]
 ---
 
 ## Qué es cierto

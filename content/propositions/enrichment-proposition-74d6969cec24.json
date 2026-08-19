@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74d6969cec24",
+  "claimSlug": "\"modelo-el-tribunal-constitucional-nunca-ha-declarado-inconstitucional-una-ley-de-la-gen\"",
+  "text": "El Tribunal Constitucional nunca ha declarado inconstitucional una ley de la Generalitat de Cataluña.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd63dac0f2ac"
+  ]
+}

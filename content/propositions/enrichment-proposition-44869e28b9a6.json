@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44869e28b9a6",
+  "claimSlug": "\"modelo-por-que-el-desempleo-sigue-alto-si-han-habido-muchos-contratos-temporales\"",
+  "text": "¿Por qué el desempleo sigue alto si han habido muchos contratos temporales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-374fdfb552b9"
+  ]
+}

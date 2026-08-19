@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c49a6a7ba309",
+  "claimSlug": "\"modelo-la-calidad-de-los-productos-agricolas-en-espana-no-es-lo-que-deberia-ser\"",
+  "text": "La calidad de los productos agrícolas en España no es lo que debería ser.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c3bf349a0772"
+  ]
+}

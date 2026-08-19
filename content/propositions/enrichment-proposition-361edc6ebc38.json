@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-361edc6ebc38",
+  "claimSlug": "\"modelo-las-empresas-en-espana-pueden-despedir-a-trabajadores-por-objetivos-de-rentabili\"",
+  "text": "Las empresas en España pueden despedir a trabajadores por objetivos de rentabilidad, independientemente de la calidad del empleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a09bf37c7b20"
+  ]
+}

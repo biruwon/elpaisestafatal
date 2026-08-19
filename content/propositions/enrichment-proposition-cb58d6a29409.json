@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb58d6a29409",
+  "claimSlug": "\"modelo-es-cada-vez-mas-dificil-encontrar-apoyo-social-para-los-que-pierden-el-trabajo-y\"",
+  "text": "Es cada vez más difícil encontrar apoyo social para los que pierden el trabajo y los beneficios se reducen rápidamente con el tiempo, lo que puede llevar a la marginación social.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-869852c54c96"
+  ]
+}

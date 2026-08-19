@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e4ded8ab3c8e",
+  "claimSlug": "\"modelo-como-es-posible-que-la-inflacion-suba-sin-control-mientras-los-ingresos-se-queda\"",
+  "text": "¿Cómo es posible que la inflación suba sin control mientras los ingresos se quedan estancados?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8e89b20b4a20"
+  ]
+}

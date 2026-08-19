@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b70ce88e56ab",
+  "claimSlug": "\"modelo-las-pensiones-se-estan-recortando-cada-vez-mas-y-no-se-ve-ninguna-mejora-en-el-h\"",
+  "text": "Las pensiones se están recortando cada vez más, y no se ve ninguna mejora en el horizonte.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ca0ee47742c"
+  ]
+}

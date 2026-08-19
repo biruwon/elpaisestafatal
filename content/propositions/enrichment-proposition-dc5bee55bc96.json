@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc5bee55bc96",
+  "claimSlug": "\"modelo-los-incendios-estan-danando-la-infraestructura-rural\"",
+  "text": "Los incendios están dañando la infraestructura rural.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e6011933c42d"
+  ]
+}

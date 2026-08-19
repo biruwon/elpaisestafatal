@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e0ed9a188158",
+  "claimSlug": "\"modelo-los-impuestos-a-las-empresas-estan-frenando-el-crecimiento-y-generando-desempleo\"",
+  "text": "Los impuestos a las empresas están frenando el crecimiento y generando desempleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6ab8f2ad0c46"
+  ]
+}

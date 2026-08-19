@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a6475a345465",
+  "claimSlug": "\"modelo-en-muchas-zonas-de-espana-los-precios-de-los-alimentos-y-el-alquiler-suben-mas-r\"",
+  "text": "En muchas zonas de España, los precios de los alimentos y el alquiler suben más rápido que los ingresos de los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6dae3522aaea"
+  ]
+}

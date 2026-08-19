@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2b87f4b74adb",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agotando-las-pensiones-del-sistema-publico\"",
+  "text": "La inmigración está agotando las pensiones del sistema público.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b8090e3e7405"
+  ]
+}

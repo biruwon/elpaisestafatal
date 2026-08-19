@@ -4,21 +4,22 @@ claim: "¿Cómo es posible que en España las agresiones sexuales sigan siendo u
 assessment: uncertain
 topicSlugs: ["seguridad y delincuencia"]
 aliases: ["¿Por qué las agresiones sexuales siguen siendo un problema?","¿Cuándo empezarán a proteger a las mujeres de las agresiones sexuales?","¿Cómo es posible que las agresiones sexuales sigan siendo tan comunes?","¿Cuándo empezarán a tomar medidas contra las agresiones sexuales?","¿Cómo es posible que no se haga nada para prevenir las agresiones sexuales?","¿Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto","¿Es cierto que Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","¿Qué datos permiten comprobar si Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","Quiero saber si Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto","¿Cómo se puede verificar Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","¿Hay evidencia sobre si Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","¿Es verdad que Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","¿Qué sabemos de Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?","¿Se sostiene la afirmación de que Cómo es posible que en España las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-0d722e207fbd"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "como es posible que en espana las agresiones sexuales sigan siendo un problema y nadie haga nada al respecto"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-4c708a99ea7c"]
 ---
 
 ## Qué es cierto

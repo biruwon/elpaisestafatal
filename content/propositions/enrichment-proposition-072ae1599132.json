@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-072ae1599132",
+  "claimSlug": "\"modelo-las-sentencias-en-casos-de-corrupcion-politica-se-dilatan-mucho-y-las-penas-son-\"",
+  "text": "Las sentencias en casos de corrupción política se dilatan mucho y las penas son demasiado leves.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd6e47061185"
+  ]
+}

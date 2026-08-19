@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-704ae2e788ff",
+  "claimSlug": "\"modelo-el-crecimiento-economico-esta-siendo-insuficiente-para-aliviar-la-pobreza-en-esp\"",
+  "text": "El crecimiento económico está siendo insuficiente para aliviar la pobreza en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bce542df241b"
+  ]
+}

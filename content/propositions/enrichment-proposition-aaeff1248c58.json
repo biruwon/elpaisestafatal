@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aaeff1248c58",
+  "claimSlug": "\"modelo-la-administracion-esta-retrasando-la-respuesta-a-los-incendios\"",
+  "text": "La administración está retrasando la respuesta a los incendios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-44c0270791d4"
+  ]
+}

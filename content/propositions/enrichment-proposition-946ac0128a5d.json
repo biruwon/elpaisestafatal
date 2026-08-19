@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-946ac0128a5d",
+  "claimSlug": "\"modelo-los-controles-de-trafico-en-carreteras-secundarias-son-escasos-lo-que-aumenta-el\"",
+  "text": "Los controles de tráfico en carreteras secundarias son escasos, lo que aumenta el riesgo de accidentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-787a46c98c25"
+  ]
+}

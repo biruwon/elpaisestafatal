@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2a846eb213e9",
+  "claimSlug": "\"modelo-las-playas-espanolas-estan-llena-de-basura-y-suciedad-parece-que-nadie-se-preocu\"",
+  "text": "Las playas españolas están llena de basura y suciedad, parece que nadie se preocupa por limpiarlas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6c4132f440e1"
+  ]
+}

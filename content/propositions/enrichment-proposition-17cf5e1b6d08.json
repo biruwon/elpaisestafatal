@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-17cf5e1b6d08",
+  "claimSlug": "\"modelo-los-recortes-en-el-presupuesto-de-la-sanidad-estan-afectando-la-calidad-del-serv\"",
+  "text": "Los recortes en el presupuesto de la sanidad están afectando la calidad del servicio a los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-737cafebb50f"
+  ]
+}

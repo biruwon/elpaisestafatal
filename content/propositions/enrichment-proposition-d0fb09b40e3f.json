@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0fb09b40e3f",
+  "claimSlug": "\"modelo-no-se-esta-integrando-adecuadamente-a-los-inmigrantes-en-la-sociedad-lo-que-prov\"",
+  "text": "No se está integrando adecuadamente a los inmigrantes en la sociedad, lo que provoca la creación de islas culturales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3df890ec1753"
+  ]
+}

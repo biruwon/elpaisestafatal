@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-844694a6221f",
+  "claimSlug": "\"modelo-en-espana-el-precio-de-la-electricidad-sube-cada-verano-sin-motivo\"",
+  "text": "En España, el precio de la electricidad sube cada verano sin motivo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6343a279bdd6"
+  ]
+}

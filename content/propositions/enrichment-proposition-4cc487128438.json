@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cc487128438",
+  "claimSlug": "\"modelo-las-robos-en-supermercados-son-tan-comunes-que-ya-no-se-sorprende\"",
+  "text": "Las robos en supermercados son tan comunes que ya no se sorprende.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c558e9353f7f"
+  ]
+}

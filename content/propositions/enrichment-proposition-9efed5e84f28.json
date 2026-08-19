@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9efed5e84f28",
+  "claimSlug": "\"modelo-en-muchos-barrios-de-madrid-los-servicios-basicos-como-la-luz-o-el-agua-se-corta\"",
+  "text": "En muchos barrios de Madrid, los servicios básicos como la luz o el agua se cortan a las familias por impagos que son insostenibles, mientras los bancos no se preocupan de devolver los préstamos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-65e634b4212c"
+  ]
+}

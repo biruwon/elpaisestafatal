@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2031401435d",
+  "claimSlug": "\"modelo-en-muchas-zonas-rurales-de-espana-el-acceso-a-servicios-basicos-es-un-problema-d\"",
+  "text": "En muchas zonas rurales de España, el acceso a servicios básicos es un problema diario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0cf7554a4d4b"
+  ]
+}

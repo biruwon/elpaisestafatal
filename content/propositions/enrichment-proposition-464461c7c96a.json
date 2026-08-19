@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-464461c7c96a",
+  "claimSlug": "\"modelo-la-ue-no-ha-abordado-la-problematica-de-la-inmigracion-en-las-costas-espanolas\"",
+  "text": "La UE no ha abordado la problemática de la inmigración en las costas españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a2d9ce7ee2e3"
+  ]
+}

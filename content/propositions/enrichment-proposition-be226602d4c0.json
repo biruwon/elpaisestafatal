@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-be226602d4c0",
+  "claimSlug": "\"modelo-el-sistema-de-pensiones-en-espana-es-demasiado-complejo-y-dificil-de-entender-co\"",
+  "text": "El sistema de pensiones en España es demasiado complejo y difícil de entender, con muchos jubilados sin saber cómo gestionar sus pensiones.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-adaa8d695173"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6ce33d335603",
+  "claimSlug": "\"modelo-el-acceso-a-la-justicia-en-espana-es-muy-complicado-sobre-todo-si-no-tienes-dine\"",
+  "text": "El acceso a la justicia en España es muy complicado, sobre todo si no tienes dinero para un abogado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d741640de769"
+  ]
+}

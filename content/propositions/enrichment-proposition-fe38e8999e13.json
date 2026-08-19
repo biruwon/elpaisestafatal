@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe38e8999e13",
+  "claimSlug": "\"modelo-por-que-en-espana-hay-tanta-demora-en-la-resolucion-de-casos-penales-haciendo-qu\"",
+  "text": "¿Por qué en España hay tanta demora en la resolución de casos penales, haciendo que las víctimas esperen años para justicia?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c7307dde416"
+  ]
+}

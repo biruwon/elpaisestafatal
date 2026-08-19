@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-780cd39597f8",
+  "claimSlug": "\"modelo-los-combustibles-se-han-vuelto-inaguantables-especialmente-para-las-familias-con\"",
+  "text": "Los combustibles se han vuelto inaguantables, especialmente para las familias con coche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8dc1e5e99596"
+  ]
+}

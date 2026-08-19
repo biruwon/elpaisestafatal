@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9684debd464c",
+  "claimSlug": "\"modelo-por-que-en-las-islas-baleares-no-hay-suficientes-parques-de-bomberos-y-cuartos-d\"",
+  "text": "¿Por qué en las Islas Baleares no hay suficientes parques de bomberos y cuartos de mando?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c2a3da43f114"
+  ]
+}

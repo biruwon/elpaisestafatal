@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a449a50561a0",
+  "claimSlug": "\"modelo-en-espana-es-dificil-encontrar-un-trabajo-que-pague-lo-que-mereces\"",
+  "text": "En España es difícil encontrar un trabajo que pague lo que mereces.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ad16c16e7828"
+  ]
+}

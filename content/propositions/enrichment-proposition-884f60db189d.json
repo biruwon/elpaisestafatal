@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-884f60db189d",
+  "claimSlug": "\"modelo-en-muchos-barrios-de-madrid-los-precios-de-los-alimentos-y-el-alquiler-siguen-su\"",
+  "text": "En muchos barrios de Madrid, los precios de los alimentos y el alquiler siguen subiendo más que la inflación, haciendo que sea cada vez más difícil para las familias mantenerse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-139175d7703c"
+  ]
+}

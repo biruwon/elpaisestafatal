@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c7f5a5bf7028",
+  "claimSlug": "\"modelo-la-ue-no-ayuda-lo-suficiente-a-los-paises-miembros-con-problemas-de-desempleo\"",
+  "text": "La UE no ayuda lo suficiente a los países miembros con problemas de desempleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5325a0ddcf23"
+  ]
+}

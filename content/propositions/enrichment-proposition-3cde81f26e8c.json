@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3cde81f26e8c",
+  "claimSlug": "\"modelo-la-temporada-alta-en-espana-es-demasiado-agobiante-para-los-hoteles-de-la-costa-\"",
+  "text": "La temporada alta en España es demasiado agobiante para los hoteles de la Costa del Sol, con reservas a tope todo el año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2b4c6c9a2660"
+  ]
+}

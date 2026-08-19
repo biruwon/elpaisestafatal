@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-02a287e814a2",
+  "claimSlug": "\"modelo-por-que-la-linea-de-ferrocarril-entre-madrid-y-toledo-se-cierra-por-la-noche-si-\"",
+  "text": "¿Por qué la línea de ferrocarril entre Madrid y Toledo se cierra por la noche si solo pasa un tren al día?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2757e59aa74"
+  ]
+}

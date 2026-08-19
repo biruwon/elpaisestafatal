@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8459e12d1009",
+  "claimSlug": "\"modelo-la-desigualdad-entre-galicia-y-el-resto-de-espana-en-cuanto-a-oportunidades-labo\"",
+  "text": "La desigualdad entre Galicia y el resto de España en cuanto a oportunidades laborales está frustrando a muchos gallegos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e4ddcad254c"
+  ]
+}

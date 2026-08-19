@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33a27604b723",
+  "claimSlug": "\"modelo-los-impuestos-a-las-empresas-no-se-utilizan-para-crear-empleo-sino-que-se-destin\"",
+  "text": "Los impuestos a las empresas no se utilizan para crear empleo, sino que se destinan a gastos de lujo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6e82eeefd509"
+  ]
+}

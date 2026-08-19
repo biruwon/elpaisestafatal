@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-92b9d8d3cbc6",
+  "claimSlug": "\"modelo-los-trabajadores-de-baja-calificacion-en-espana-perciben-salarios-bajos-y-precar\"",
+  "text": "Los trabajadores de baja calificación en España perciben salarios bajos y precarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cb3812adb107"
+  ]
+}

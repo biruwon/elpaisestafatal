@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6bb23a6cedee",
+  "claimSlug": "\"modelo-la-inmigracion-esta-sobrecargando-los-servicios-de-seguridad-con-delincuentes-ex\"",
+  "text": "La inmigración está sobrecargando los servicios de seguridad con delincuentes extranjeros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3b9ef22c986a"
+  ]
+}

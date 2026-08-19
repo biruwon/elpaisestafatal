@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e9ae890dc91b",
+  "claimSlug": "\"modelo-el-cambio-climatico-esta-haciendo-que-los-incendios-sean-mas-frecuentes-y-severo\"",
+  "text": "El cambio climático está haciendo que los incendios sean más frecuentes y severos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0173d97038da"
+  ]
+}

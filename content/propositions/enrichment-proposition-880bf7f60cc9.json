@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-880bf7f60cc9",
+  "claimSlug": "\"modelo-la-inmigracion-en-espana-esta-llenando-los-parques-de-extranjeros-lo-que-dificul\"",
+  "text": "La inmigración en España está llenando los parques de extranjeros, lo que dificulta el uso de las instalaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9792ace8eaa4"
+  ]
+}

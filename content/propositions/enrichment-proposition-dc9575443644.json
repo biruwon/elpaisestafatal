@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc9575443644",
+  "claimSlug": "\"modelo-el-precio-de-la-gasolina-en-espana-es-prohibitivo-para-los-conductores-de-coches\"",
+  "text": "El precio de la gasolina en España es prohibitivo para los conductores de coches pequeños.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-73a3f12e166f"
+  ]
+}

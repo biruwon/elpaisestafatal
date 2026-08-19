@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2e9f512bb9be",
+  "claimSlug": "\"modelo-en-espana-la-educacion-vial-es-obligatoria-en-los-colegios\"",
+  "text": "En España, la educación vial es obligatoria en los colegios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5be7300f66d3"
+  ]
+}

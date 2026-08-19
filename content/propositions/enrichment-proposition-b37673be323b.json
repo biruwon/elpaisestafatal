@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b37673be323b",
+  "claimSlug": "\"modelo-la-crisis-economica-esta-haciendo-que-los-jovenes-no-puedan-empezar-a-trabajar\"",
+  "text": "La crisis económica está haciendo que los jóvenes no puedan empezar a trabajar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81a2df6782b2"
+  ]
+}

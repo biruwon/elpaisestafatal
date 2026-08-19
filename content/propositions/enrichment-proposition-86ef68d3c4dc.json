@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-86ef68d3c4dc",
+  "claimSlug": "\"modelo-en-las-ciudades-grandes-el-transporte-publico-es-tan-ineficiente-que-a-veces-es-\"",
+  "text": "En las ciudades grandes, el transporte público es tan ineficiente que a veces es mejor ir a pie que a esperar el autobús",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85d7a6edeec4"
+  ]
+}

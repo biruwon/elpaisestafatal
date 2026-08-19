@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-01f2cf7c6418",
+  "claimSlug": "\"modelo-cuanto-tiempo-ha-pasado-desde-que-te-refirieron-a-un-especialista-y-aun-no-has-p\"",
+  "text": "¿Cuánto tiempo ha pasado desde que te refirieron a un especialista y aún no has podido ponerte con él?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e4ab8bc40e3e"
+  ]
+}

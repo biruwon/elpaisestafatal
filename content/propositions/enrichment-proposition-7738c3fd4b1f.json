@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7738c3fd4b1f",
+  "claimSlug": "\"modelo-el-tiempo-de-espera-para-los-autobuses-urbanos-en-la-estacion-central-de-madrid-\"",
+  "text": "El tiempo de espera para los autobuses urbanos en la estación central de Madrid es excesivo y se ha vuelto impredecible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-25e347fa3a5a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d62e2b93686f",
+  "claimSlug": "\"modelo-la-ue-no-esta-haciendo-lo-suficiente-para-combatir-el-alza-del-coste-de-vida-en-\"",
+  "text": "La UE no está haciendo lo suficiente para combatir el alza del coste de vida en España, especialmente con la inflación de los combustibles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-923e8ccb20ae"
+  ]
+}

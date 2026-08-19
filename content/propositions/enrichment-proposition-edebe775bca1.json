@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-edebe775bca1",
+  "claimSlug": "\"modelo-las-ayudas-para-los-hogares-con-bajos-ingresos-son-insuficientes-y-se-reducen-ca\"",
+  "text": "Las ayudas para los hogares con bajos ingresos son insuficientes y se reducen cada año.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1dd9e0796597"
+  ]
+}

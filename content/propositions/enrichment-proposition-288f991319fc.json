@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-288f991319fc",
+  "claimSlug": "\"modelo-la-policia-parece-mas-un-grupo-de-amigos-que-un-servicio-publico-de-confianza\"",
+  "text": "La policía parece más un grupo de amigos que un servicio público de confianza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-539da5a126f2"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8a0cb2d70a25",
+  "claimSlug": "\"modelo-el-coste-de-la-vida-en-espana-sigue-subiendo-y-estamos-perdiendo-poder-adquisiti\"",
+  "text": "El coste de la vida en España sigue subiendo y estamos perdiendo poder adquisitivo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2d2e478df399"
+  ]
+}

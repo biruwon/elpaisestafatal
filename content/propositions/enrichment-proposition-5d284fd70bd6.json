@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d284fd70bd6",
+  "claimSlug": "\"modelo-la-falta-de-informacion-clara-sobre-horarios-y-disponibilidad-en-las-atracciones\"",
+  "text": "La falta de información clara sobre horarios y disponibilidad en las atracciones turísticas es común, lo que genera frustración y pérdida de tiempo para los visitantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-de59d31fc59a"
+  ]
+}

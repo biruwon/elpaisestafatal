@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e63d6f712d12",
+  "claimSlug": "\"modelo-los-subministros-de-vivienda-para-los-pobres-son-un-desastre-las-listas-son-inte\"",
+  "text": "¡Los subministros de vivienda para los pobres son un desastre, las listas son interminables y nadie se muda de verdad!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-caed7371f742"
+  ]
+}

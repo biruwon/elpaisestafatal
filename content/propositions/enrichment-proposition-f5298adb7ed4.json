@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5298adb7ed4",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-las-pensiones-no-valgan-nada-hoy-en-dia\"",
+  "text": "La inflación está haciendo que las pensiones no valgan nada hoy en día.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-79dab5cee6bb"
+  ]
+}

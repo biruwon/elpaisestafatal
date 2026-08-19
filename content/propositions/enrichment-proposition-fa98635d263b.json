@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa98635d263b",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-el-paisaje-urbano-de-mi-ciudad-de-forma-tan-rapida\"",
+  "text": "La inmigración está cambiando el paisaje urbano de mi ciudad de forma tan rápida que ya no la reconozco.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca2dae6fc857"
+  ]
+}

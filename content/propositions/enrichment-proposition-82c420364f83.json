@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-82c420364f83",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-combatir-los-incendios-forestales-que-arrasan-nues\"",
+  "text": "El gobierno no hace nada para combatir los incendios forestales que arrasan nuestras montañas cada verano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cd751b760b64"
+  ]
+}

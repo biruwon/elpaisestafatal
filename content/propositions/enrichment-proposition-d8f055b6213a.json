@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d8f055b6213a",
+  "claimSlug": "\"modelo-la-galicia-pierde-cada-ano-miles-de-habitantes-por-la-falta-de-oportunidades-lab\"",
+  "text": "La Galicia pierde cada año miles de habitantes por la falta de oportunidades laborales en su territorio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f9d1f8e4cee"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94f19889c9d3",
+  "claimSlug": "\"modelo-los-descansos-en-el-trabajo-no-son-respetados-por-las-empresas\"",
+  "text": "Los descansos en el trabajo no son respetados por las empresas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-febdd4202e76"
+  ]
+}

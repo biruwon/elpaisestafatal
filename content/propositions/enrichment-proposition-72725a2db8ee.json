@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-72725a2db8ee",
+  "claimSlug": "\"modelo-por-que-la-falta-de-mantenimiento-de-las-carreteras-en-espana-provoca-tanto-acci\"",
+  "text": "¿Por qué la falta de mantenimiento de las carreteras en España provoca tanto accidente cada año?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d13102f3ab75"
+  ]
+}

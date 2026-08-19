@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e9a3417b20ce",
+  "claimSlug": "\"modelo-las-pensiones-en-espana-se-estan-quedando-cortas-y-la-gente-esta-teniendo-que-tr\"",
+  "text": "Las pensiones en España se están quedando cortas y la gente está teniendo que trabajar más años para poder jubilarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bd4eabbbfcb2"
+  ]
+}

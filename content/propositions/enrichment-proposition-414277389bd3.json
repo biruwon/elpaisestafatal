@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-414277389bd3",
+  "claimSlug": "\"modelo-espana-tiene-tantos-hogares-con-deuda-que-incluso-las-empresas-de-telecomunicaci\"",
+  "text": "España tiene tantos hogares con deuda que incluso las empresas de telecomunicaciones se niegan a conectar a las personas sin pago previo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0afaeab9c77e"
+  ]
+}

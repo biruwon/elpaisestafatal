@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c34418a9e36",
+  "claimSlug": "\"modelo-el-aumento-de-inmigrantes-ha-exacerbado-el-problema-de-vivienda-en-ciudades-con-\"",
+  "text": "El aumento de inmigrantes ha exacerbado el problema de vivienda en ciudades con altas tasas de inmigración, con un aumento en el alquiler y la propiedad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6f22839a79fc"
+  ]
+}

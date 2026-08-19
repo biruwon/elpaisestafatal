@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ac6a94583c20",
+  "claimSlug": "\"modelo-las-colas-en-los-hospitales-estan-aumentando-porque-hay-demasiados-inmigrantes-s\"",
+  "text": "Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9e1f323df0c1"
+  ]
+}

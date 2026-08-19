@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-98b350d39f2c",
+  "claimSlug": "\"modelo-las-pensiones-se-estan-quedando-cada-vez-mas-cortas-y-no-alcanzan-ni-para-pagar-\"",
+  "text": "Las pensiones se están quedando cada vez más cortas y no alcanzan ni para pagar el alquiler.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-09cdd6051445"
+  ]
+}

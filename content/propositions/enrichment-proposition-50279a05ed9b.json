@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-50279a05ed9b",
+  "claimSlug": "\"modelo-espana-no-ha-logrado-reducir-el-desempleo-juvenil-a-niveles-similares-a-otros-pa\"",
+  "text": "España no ha logrado reducir el desempleo juvenil a niveles similares a otros países de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-476d89f68188"
+  ]
+}

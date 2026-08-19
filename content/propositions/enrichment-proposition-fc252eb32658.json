@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc252eb32658",
+  "claimSlug": "\"modelo-los-impuestos-en-espana-son-un-robo-cuando-bajara-la-presion-fiscal\"",
+  "text": "Los impuestos en España son un robo, ¿cuándo bajará la presión fiscal?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-450ff6c31411"
+  ]
+}

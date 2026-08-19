@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df078b249c7e",
+  "claimSlug": "\"modelo-la-contaminacion-en-madrid-es-un-problema-que-no-se-aborda-adecuadamente\"",
+  "text": "La contaminación en Madrid es un problema que no se aborda adecuadamente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f54df6a8fd80"
+  ]
+}

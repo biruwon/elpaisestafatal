@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d7126af0d0c4",
+  "claimSlug": "\"modelo-la-policia-no-llega-a-tiempo-en-emergencias-delincuenciales-en-muchas-zonas-de-m\"",
+  "text": "La policía no llega a tiempo en emergencias delincuenciales en muchas zonas de Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d9cb22398cee"
+  ]
+}

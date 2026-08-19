@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e24a747c69a",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-muchos-hospitales-provoca-que-los-pacientes-con-problema\"",
+  "text": "La falta de recursos en muchos hospitales provoca que los pacientes con problemas de piel, como úlceras, tarden en ser atendidos, lo que puede complicar aún más sus condiciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d5b508e2ed1"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1e58762003a2",
+  "claimSlug": "\"modelo-la-vivienda-en-espana-es-un-lujo-para-todos-menos-para-los-que-trabajan\"",
+  "text": "¡La vivienda en España es un lujo para todos menos para los que trabajan!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e85e8969d157"
+  ]
+}

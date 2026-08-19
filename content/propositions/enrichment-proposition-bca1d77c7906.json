@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bca1d77c7906",
+  "claimSlug": "\"modelo-por-que-en-espana-los-precios-de-la-electricidad-no-bajan-si-todos-los-demas-pai\"",
+  "text": "¿Por qué en España los precios de la electricidad no bajan si todos los demás países los bajan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-947f4c0c46b0"
+  ]
+}

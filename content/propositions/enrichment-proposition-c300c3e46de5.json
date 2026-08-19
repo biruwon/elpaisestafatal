@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c300c3e46de5",
+  "claimSlug": "\"modelo-la-ciudad-de-madrid-se-siente-abrumada-por-la-cantidad-de-fondos-que-gasta-en-se\"",
+  "text": "La ciudad de Madrid se siente abrumada por la cantidad de fondos que gasta en servicios que otros regiones no necesitan tanto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e85c3c7ec40e"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ad13b4dc5bb",
+  "claimSlug": "\"modelo-el-sistema-de-cotizacion-para-autonomos-en-espana-es-tan-costoso-que-muchos-se-v\"",
+  "text": "El sistema de cotización para autónomos en España es tan costoso que muchos se ven obligados a subcontratar trabajadores a través de empresas de trabajo temporal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7a88c446c60"
+  ]
+}

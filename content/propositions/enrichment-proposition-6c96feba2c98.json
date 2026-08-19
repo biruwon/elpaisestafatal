@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6c96feba2c98",
+  "claimSlug": "\"modelo-las-lluvias-inesperadas-pueden-empeorar-la-situacion-de-los-incendios-ya-existen\"",
+  "text": "Las lluvias inesperadas pueden empeorar la situación de los incendios ya existentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fb3d31f99552"
+  ]
+}

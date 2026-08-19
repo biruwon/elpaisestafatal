@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a99595232098",
+  "claimSlug": "\"modelo-los-sueldos-no-alcanzan-ni-para-un-cafe-menos-para-un-piso\"",
+  "text": "Los sueldos no alcanzan ni para un café, menos para un piso.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b28d9bccc294"
+  ]
+}

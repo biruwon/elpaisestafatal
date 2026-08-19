@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3be1bc1b3a4d",
+  "claimSlug": "\"modelo-las-subidas-del-alquiler-son-un-maldito-desastre-que-cojones-voy-a-hacer\"",
+  "text": "¡Las subidas del alquiler son un maldito desastre, qué cojones voy a hacer!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1cf4e14ca64e"
+  ]
+}

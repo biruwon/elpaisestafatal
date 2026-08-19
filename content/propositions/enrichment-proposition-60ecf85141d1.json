@@ -1,9 +1,9 @@
 {
   "id": "enrichment-proposition-60ecf85141d1",
-  "claimSlug": "modelo-como-es-posible-que-cada-vez-que-veo-anuncios-de-alquiler-todo-me-cuesta-mas-que",
+  "claimSlug": "\"modelo-como-es-posible-que-cada-vez-que-veo-anuncios-de-alquiler-todo-me-cuesta-mas-que\"",
   "text": "¿Cómo es posible que cada vez que veo anuncios de alquiler, todo me cuesta más que en el supermercado, y encima con menos espacio?",
-  "type": "unverified-enrichment",
-  "status": "lead",
+  "type": "descriptive",
+  "status": "unreviewed",
   "evidenceIds": [
     "enrichment-evidence-9e8b90d329c5"
   ]

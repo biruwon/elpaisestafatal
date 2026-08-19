@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d2f713acf252",
+  "claimSlug": "\"modelo-la-falta-de-accion-ante-los-incendios-ha-dejado-a-los-bosques-mas-vulnerables-cu\"",
+  "text": "La falta de acción ante los incendios ha dejado a los bosques más vulnerables, ¿cuándo se actúa?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c500dff410f6"
+  ]
+}

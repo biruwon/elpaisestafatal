@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b8de64470ac7",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-el-alquiler-sea-imposible-de-pagar\"",
+  "text": "La inflación está haciendo que el alquiler sea imposible de pagar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dcb96d147121"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6cdbd37bed08",
+  "claimSlug": "\"modelo-los-sueldos-no-estan-subiendo-a-la-misma-velocidad-que-la-inflacion-estamos-trab\"",
+  "text": "Los sueldos no están subiendo a la misma velocidad que la inflación, estamos trabajando más por menos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c6f3d27b0b39"
+  ]
+}

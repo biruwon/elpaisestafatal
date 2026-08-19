@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f428d5acbfb0",
+  "claimSlug": "\"modelo-se-esta-permitiendo-demasiada-inmigracion-ilegal-en-zonas-rurales\"",
+  "text": "Se está permitiendo demasiada inmigración ilegal en zonas rurales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-56c1e82a8deb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6d1fca546cc8",
+  "claimSlug": "\"modelo-las-subidas-de-precio-del-alquiler-son-tan-frecuentes-que-parece-que-no-hay-para\"",
+  "text": "Las subidas de precio del alquiler son tan frecuentes que parece que no hay parada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9af039fa23f2"
+  ]
+}

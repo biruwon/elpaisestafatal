@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-79a67ab33e7f",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-muy-contaminadas-y-llenas-de-basura-lo-que-perjudica-\"",
+  "text": "Las playas de España están muy contaminadas y llenas de basura, lo que perjudica la experiencia de baño de los turistas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f596eb78d56"
+  ]
+}

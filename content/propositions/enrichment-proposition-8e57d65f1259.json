@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8e57d65f1259",
+  "claimSlug": "\"modelo-la-flexibilidad-laboral-en-espana-es-muy-limitada-y-perjudica-al-trabajador\"",
+  "text": "La flexibilidad laboral en España es muy limitada y perjudica al trabajador.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a471d6d40e73"
+  ]
+}

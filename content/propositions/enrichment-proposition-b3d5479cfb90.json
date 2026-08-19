@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b3d5479cfb90",
+  "claimSlug": "\"modelo-el-turismo-en-zonas-forestales-de-espana-ha-contribuido-a-la-disminucion-de-ince\"",
+  "text": "¿El turismo en zonas forestales de España ha contribuido a la disminución de incendios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9805b80f0d7b"
+  ]
+}

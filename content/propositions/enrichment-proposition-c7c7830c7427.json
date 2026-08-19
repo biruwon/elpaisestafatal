@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c7c7830c7427",
+  "claimSlug": "\"modelo-la-gestion-del-agua-en-espana-es-ineficiente-especialmente-en-regiones-de-gran-s\"",
+  "text": "La gestión del agua en España es ineficiente, especialmente en regiones de gran sequía.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0f6747136230"
+  ]
+}

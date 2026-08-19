@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8dec30855647",
+  "claimSlug": "\"modelo-las-tarifas-de-la-electricidad-suben-sin-parar-y-no-hay-garantias-de-que-bajaran\"",
+  "text": "Las tarifas de la electricidad suben sin parar y no hay garantías de que bajarán en el futuro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-07c4fb5401d3"
+  ]
+}

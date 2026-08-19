@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-92792493840d",
+  "claimSlug": "\"modelo-el-gasto-en-infraestructuras-turisticas-esta-subiendo-pero-las-playas-siguen-suc\"",
+  "text": "El gasto en infraestructuras turísticas está subiendo pero las playas siguen sucias.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-63d8812389dc"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-536c5bd8d081",
+  "claimSlug": "\"modelo-las-areas-verdes-urbanas-estan-siendo-destruidas-sin-control\"",
+  "text": "Las áreas verdes urbanas están siendo destruidas sin control.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-74d4b3e9312d"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2401f2451e03",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agobiando-los-servicios-publicos-de-espana\"",
+  "text": "La inmigración está agobiando los servicios públicos de España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b87e57f9c79e"
+  ]
+}

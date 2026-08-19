@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3fab6014a02b",
+  "claimSlug": "\"modelo-las-infraestructuras-de-transporte-publico-en-ciudades-turisticas-son-inadequada\"",
+  "text": "Las infraestructuras de transporte público en ciudades turísticas son inadequadas, con frecuentes retrasos y cancelaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d7b5e6b028c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-092a1e5ceec3",
+  "claimSlug": "\"modelo-el-sistema-de-listas-de-espera-no-se-actualiza-a-tiempo-y-a-veces-te-operan-ante\"",
+  "text": "El sistema de listas de espera no se actualiza a tiempo, y a veces te operan antes de que estés en el orden correcto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4f9a4bbd1c31"
+  ]
+}

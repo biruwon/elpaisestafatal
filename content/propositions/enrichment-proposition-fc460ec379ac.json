@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc460ec379ac",
+  "claimSlug": "\"modelo-por-que-en-espana-los-pacientes-no-reciben-atencion-medica-en-el-momento-en-que-\"",
+  "text": "¿Por qué en España los pacientes no reciben atención médica en el momento en que más la necesitan?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-85d4522f104e"
+  ]
+}

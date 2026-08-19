@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1dc8305bd47",
+  "claimSlug": "\"modelo-los-acuerdos-de-la-ue-con-terceros-paises-afectan-negativamente-a-la-economia-es\"",
+  "text": "Los acuerdos de la UE con terceros países afectan negativamente a la economía española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8c1a624695eb"
+  ]
+}

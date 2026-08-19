@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea754d056527",
+  "claimSlug": "\"modelo-la-sanidad-en-espana-se-ha-convertido-en-un-sistema-de-espera-indefinida\"",
+  "text": "La sanidad en España se ha convertido en un sistema de espera indefinida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-749aaecd73b8"
+  ]
+}

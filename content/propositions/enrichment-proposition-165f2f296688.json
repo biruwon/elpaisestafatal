@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-165f2f296688",
+  "claimSlug": "\"modelo-la-desigualdad-entre-ciudades-es-tan-grande-que-parece-que-estamos-en-paises-dif\"",
+  "text": "La desigualdad entre ciudades es tan grande que parece que estamos en países diferentes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-43941097650c"
+  ]
+}

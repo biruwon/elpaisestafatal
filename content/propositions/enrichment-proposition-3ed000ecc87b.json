@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ed000ecc87b",
+  "claimSlug": "\"modelo-la-proteccion-social-no-cubre-ni-siquiera-los-gastos-basicos-te-quedas-sin-nada-\"",
+  "text": "La protección social no cubre ni siquiera los gastos básicos, te quedas sin nada cuando te enfermas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-00705cb676ed"
+  ]
+}

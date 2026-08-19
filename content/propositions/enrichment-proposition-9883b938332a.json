@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9883b938332a",
+  "claimSlug": "\"modelo-el-sistema-educativo-esta-sobrepasado-con-tantos-inmigrantes-y-los-ninos-autocto\"",
+  "text": "El sistema educativo está sobrepasado con tantos inmigrantes, y los niños autóctonos sufren.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8c1aec816bf3"
+  ]
+}

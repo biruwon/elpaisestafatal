@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-91ed808a69c0",
+  "claimSlug": "\"modelo-la-falta-de-cobertura-sanitaria-completa-para-los-trabajadores-autonomos-hace-qu\"",
+  "text": "La falta de cobertura sanitaria completa para los trabajadores autónomos hace que muchos no se atrevan a enfermarse.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c248a54382a"
+  ]
+}

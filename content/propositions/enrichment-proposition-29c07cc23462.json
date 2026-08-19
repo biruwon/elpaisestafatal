@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29c07cc23462",
+  "claimSlug": "\"modelo-la-sanidad-publica-espanola-esta-abrumada-por-los-retrasos-en-los-tratamientos\"",
+  "text": "La sanidad pública española está abrumada por los retrasos en los tratamientos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c492f4198dda"
+  ]
+}

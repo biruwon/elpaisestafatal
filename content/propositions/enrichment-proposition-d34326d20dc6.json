@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d34326d20dc6",
+  "claimSlug": "\"modelo-el-sistema-sanitario-no-tiene-suficientes-camas-de-hospitalizacion-y-se-sobrepas\"",
+  "text": "El sistema sanitario no tiene suficientes camas de hospitalización y se sobrepasa fácilmente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bdb04136d9b9"
+  ]
+}

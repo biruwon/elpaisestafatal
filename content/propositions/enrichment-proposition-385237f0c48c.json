@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-385237f0c48c",
+  "claimSlug": "\"modelo-la-inmigracion-ha-subido-tanto-que-no-hay-viviendas-para-los-trabajadores-regula\"",
+  "text": "La inmigración ha subido tanto que no hay viviendas para los trabajadores regulares y muchas personas viven en condiciones precarias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-af0898b869e0"
+  ]
+}

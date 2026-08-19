@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ffc49f9cdad9",
+  "claimSlug": "\"modelo-es-comun-que-las-ciudades-costeras-de-espana-hayan-experimentado-un-incremento-e\"",
+  "text": "¿Es común que las ciudades costeras de España hayan experimentado un incremento en la población de inmigrantes en los últimos años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b79252683cf4"
+  ]
+}

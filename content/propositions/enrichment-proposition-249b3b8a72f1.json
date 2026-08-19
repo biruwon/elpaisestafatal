@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-249b3b8a72f1",
+  "claimSlug": "\"modelo-la-falta-de-estabilidad-laboral-y-la-precariedad-afectan-directamente-a-la-calid\"",
+  "text": "La falta de estabilidad laboral y la precariedad afectan directamente a la calidad de vida de los trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df884dd61c3c"
+  ]
+}

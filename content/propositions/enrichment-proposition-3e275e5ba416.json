@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e275e5ba416",
+  "claimSlug": "\"modelo-la-subida-de-los-salarios-minimos-no-esta-resolviendo-la-problematica-del-salari\"",
+  "text": "La subida de los salarios mínimos no está resolviendo la problemática del salario mínimo insuficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df22db300c37"
+  ]
+}

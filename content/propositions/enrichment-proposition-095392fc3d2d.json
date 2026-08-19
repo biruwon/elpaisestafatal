@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-095392fc3d2d",
+  "claimSlug": "\"modelo-en-espana-el-acceso-a-internet-de-alta-velocidad-en-los-centros-educativos-es-ir\"",
+  "text": "En España, el acceso a internet de alta velocidad en los centros educativos es irregular, lo que limita la capacidad de los estudiantes para realizar trabajos en línea y colaborar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5e939e329487"
+  ]
+}

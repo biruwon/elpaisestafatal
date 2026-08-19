@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ba5b23a3cfb3",
+  "claimSlug": "\"modelo-la-inseguridad-en-las-playas-de-espana-es-tal-que-ya-prefiero-ir-a-las-menos-tur\"",
+  "text": "La inseguridad en las playas de España es tal que ya prefiero ir a las menos turísticas para estar más tranquilo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-faf970c60b04"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bfbc137f3fe",
+  "claimSlug": "\"modelo-la-policia-en-espana-parece-no-estar-haciendo-nada-para-prevenir-los-robos-en-la\"",
+  "text": "La policía en España parece no estar haciendo nada para prevenir los robos en las calles y plazas de las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ccdecde47faa"
+  ]
+}

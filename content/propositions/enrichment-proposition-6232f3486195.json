@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6232f3486195",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-los-institutos-espanoles-ha-llevado-a-que-muchos-alumnos\"",
+  "text": "La falta de recursos en los institutos españoles ha llevado a que muchos alumnos utilicen libros usados, lo que afecta a su rendimiento académico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76a9f578a46e"
+  ]
+}

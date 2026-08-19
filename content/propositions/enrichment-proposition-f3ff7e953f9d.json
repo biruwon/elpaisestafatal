@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3ff7e953f9d",
+  "claimSlug": "\"modelo-la-desigualdad-en-el-acceso-a-la-educacion-es-evidente-hay-grandes-diferencias-e\"",
+  "text": "La desigualdad en el acceso a la educación es evidente, hay grandes diferencias entre colegios y universidades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cf4b33371728"
+  ]
+}

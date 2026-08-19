@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee64834bf637",
+  "claimSlug": "\"modelo-por-que-en-espana-se-espera-tanto-tiempo-para-cirugias-que-son-urgentes-en-otros\"",
+  "text": "¿Por qué en España se espera tanto tiempo para cirugías que son urgentes en otros países?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b7f14812d022"
+  ]
+}

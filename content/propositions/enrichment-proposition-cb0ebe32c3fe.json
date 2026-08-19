@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb0ebe32c3fe",
+  "claimSlug": "\"modelo-los-trabajadores-autonomos-en-espana-perciben-en-general-salarios-mas-bajos-que-\"",
+  "text": "Los trabajadores autónomos en España perciben en general salarios más bajos que los empleados por cuenta ajena.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3d2b6ba6bfbe"
+  ]
+}

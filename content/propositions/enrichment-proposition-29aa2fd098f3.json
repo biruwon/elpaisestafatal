@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-29aa2fd098f3",
+  "claimSlug": "\"modelo-la-inmigracion-esta-presionando-el-mercado-laboral-y-bajando-el-sueldo-de-los-es\"",
+  "text": "La inmigración está presionando el mercado laboral y bajando el sueldo de los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a55e9e5f3770"
+  ]
+}

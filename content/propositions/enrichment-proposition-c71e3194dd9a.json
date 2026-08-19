@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c71e3194dd9a",
+  "claimSlug": "\"modelo-las-vias-de-circulacion-de-mercancias-atraviesan-zonas-residenciales-sin-restric\"",
+  "text": "Las vías de circulación de mercancías atraviesan zonas residenciales sin restricciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7bdfc58c4481"
+  ]
+}

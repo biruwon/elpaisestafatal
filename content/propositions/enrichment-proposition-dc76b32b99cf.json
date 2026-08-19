@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc76b32b99cf",
+  "claimSlug": "\"modelo-las-pensiones-no-cubren-ni-el-coste-de-vida-minimo\"",
+  "text": "Las pensiones no cubren ni el coste de vida mínimo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae0cc330bf07"
+  ]
+}

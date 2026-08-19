@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-43e176663276",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-haciendo-que-los-presupuestos-familiares-se-desangren\"",
+  "text": "La subida de precios está haciendo que los presupuestos familiares se desangren.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a343043e2188"
+  ]
+}

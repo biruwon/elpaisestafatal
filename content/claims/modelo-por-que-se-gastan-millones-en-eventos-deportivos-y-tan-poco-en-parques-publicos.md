@@ -4,21 +4,22 @@ claim: "¿Por qué se gastan millones en eventos deportivos y tan poco en parque
 assessment: uncertain
 topicSlugs: ["impuestos y gasto público"]
 aliases: ["¿Por qué tanta inversión en deportes y tan poca en parques?","¿Dónde va el dinero de los eventos deportivos?","¿Cuánto se gasta en deportes y en parques?","¿Qué se pierde con tanta inversión en deportes y tan poco en parques?","¿Por qué no se invierte más en parques con tanto dinero en deportes?","¿Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","Por qué se gastan millones en eventos deportivos y tan poco en parques públicos","¿Es cierto que Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","¿Qué datos permiten comprobar si Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","Quiero saber si Por qué se gastan millones en eventos deportivos y tan poco en parques públicos","¿Cómo se puede verificar Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","¿Hay evidencia sobre si Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","¿Es verdad que Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","¿Qué sabemos de Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?","¿Se sostiene la afirmación de que Por qué se gastan millones en eventos deportivos y tan poco en parques públicos?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-078c4f22464a"]
+evidenceIds: ["enrichment-evidence-f360359f8e4b"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que se gastan millones en eventos deportivos y tan poco en parques publicos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-1dbc788b766c"]
 ---
 
 ## Qué es cierto

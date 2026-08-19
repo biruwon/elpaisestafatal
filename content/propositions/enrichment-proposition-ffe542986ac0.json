@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ffe542986ac0",
+  "claimSlug": "\"modelo-la-inflacion-en-espana-esta-haciendo-que-la-gente-se-quede-sin-dinero-para-comer\"",
+  "text": "La inflación en España está haciendo que la gente se quede sin dinero para comer bien.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-53a4309f889f"
+  ]
+}

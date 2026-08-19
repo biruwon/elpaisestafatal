@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e867f04886d",
+  "claimSlug": "\"modelo-en-espana-los-gastos-de-energia-domestica-son-incontrolables-y-consumen-gran-par\"",
+  "text": "En España, los gastos de energía doméstica son incontrolables y consumen gran parte del presupuesto familiar.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-11d5b786a990"
+  ]
+}

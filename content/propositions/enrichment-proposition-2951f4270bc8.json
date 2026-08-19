@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2951f4270bc8",
+  "claimSlug": "\"modelo-la-deuda-publica-esta-siendo-un-lastre-para-la-economia-espanola\"",
+  "text": "La deuda pública está siendo un lastre para la economía española.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-34b16cbf63ad"
+  ]
+}

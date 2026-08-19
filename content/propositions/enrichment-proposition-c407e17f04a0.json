@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c407e17f04a0",
+  "claimSlug": "\"modelo-los-impuestos-estan-subiendo-y-la-renta-no-alcanza-ni-para-las-galletas\"",
+  "text": "Los impuestos están subiendo y la renta no alcanza ni para las galletas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ef44737349f9"
+  ]
+}

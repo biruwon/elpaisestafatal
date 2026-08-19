@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0cb1212b3678",
+  "claimSlug": "\"modelo-las-listas-de-espera-son-tan-problematicas-que-hay-gente-que-no-puede-ir-al-medi\"",
+  "text": "Las listas de espera son tan problemáticas que hay gente que no puede ir al médico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-28edad570752"
+  ]
+}

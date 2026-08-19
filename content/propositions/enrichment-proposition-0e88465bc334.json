@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e88465bc334",
+  "claimSlug": "\"modelo-como-es-que-en-muchos-edificios-no-hay-sistemas-de-gestion-de-residuos-que-ayude\"",
+  "text": "¿Cómo es que en muchos edificios no hay sistemas de gestión de residuos que ayuden a la sostenibilidad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0dcedf396ecb"
+  ]
+}

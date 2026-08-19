@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-35f65a5d319c",
+  "claimSlug": "\"modelo-la-falta-de-formacion-continua-esta-dejando-a-los-trabajadores-obsoletos\"",
+  "text": "La falta de formación continua está dejando a los trabajadores obsoletos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d36a290bf6fa"
+  ]
+}

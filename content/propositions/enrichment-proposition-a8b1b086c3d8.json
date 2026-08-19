@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a8b1b086c3d8",
+  "claimSlug": "\"modelo-la-inmigracion-ha-dejado-a-espana-con-un-exceso-de-poblacion-extranjera-que-solo\"",
+  "text": "La inmigración ha dejado a España con un exceso de población extranjera que solo consume y no contribuye, lo que lleva a un colapso en los servicios públicos y a un aumento de la criminalidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9fb39fa276b0"
+  ]
+}

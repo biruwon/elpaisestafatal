@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9dc17d79f7dd",
+  "claimSlug": "\"modelo-el-proceso-de-contratacion-publica-es-tan-complicado-que-a-menudo-se-siente-impo\"",
+  "text": "El proceso de contratación pública es tan complicado que a menudo se siente imposible para la ciudadanía promedio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-beb07ea8796a"
+  ]
+}

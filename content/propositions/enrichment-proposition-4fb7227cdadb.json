@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4fb7227cdadb",
+  "claimSlug": "\"modelo-cada-vez-que-veo-los-precios-de-los-productos-basicos-me-pregunto-como-vamos-a-p\"",
+  "text": "Cada vez que veo los precios de los productos básicos, me pregunto cómo vamos a poder pagarlos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ee2064b03f8d"
+  ]
+}

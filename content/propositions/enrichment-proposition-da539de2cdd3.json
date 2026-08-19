@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-da539de2cdd3",
+  "claimSlug": "\"modelo-las-reservas-en-los-bares-de-espana-son-dificiles-de-hacer-y-los-horarios-son-li\"",
+  "text": "Las reservas en los bares de España son difíciles de hacer y los horarios son limitados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-707e8a3a31ab"
+  ]
+}

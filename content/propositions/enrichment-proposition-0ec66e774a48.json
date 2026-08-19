@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ec66e774a48",
+  "claimSlug": "\"modelo-es-normal-que-la-espera-para-consultar-a-un-psicologo-sea-de-un-ano-entero\"",
+  "text": "¿Es normal que la espera para consultar a un psicólogo sea de un año entero?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7d7b926b7454"
+  ]
+}

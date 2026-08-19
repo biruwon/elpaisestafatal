@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d7f8a102d34a",
+  "claimSlug": "\"modelo-por-que-la-subvencion-para-los-libros-de-texto-se-reduce-cada-ano\"",
+  "text": "¿Por qué la subvención para los libros de texto se reduce cada año?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-14eb0565bf33"
+  ]
+}

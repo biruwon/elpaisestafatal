@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0a07ca656174",
+  "claimSlug": "\"modelo-por-que-la-inflacion-sigue-alta-si-la-economia-esta-mejorando\"",
+  "text": "¿Por qué la inflación sigue alta si la economía está mejorando?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-de10617046be"
+  ]
+}

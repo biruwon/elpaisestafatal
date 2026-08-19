@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-55b1fc647e77",
+  "claimSlug": "\"modelo-los-delitos-de-odio-son-frecuentes-y-la-policia-no-parece-prestarles-atencion-su\"",
+  "text": "Los delitos de odio son frecuentes y la policía no parece prestarles atención suficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-899e40ecce3a"
+  ]
+}

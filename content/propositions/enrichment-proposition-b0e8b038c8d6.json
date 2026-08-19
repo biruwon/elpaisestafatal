@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b0e8b038c8d6",
+  "claimSlug": "\"modelo-los-politicos-nos-roban\"",
+  "text": "Los políticos nos roban.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a4e51628b081"
+  ]
+}

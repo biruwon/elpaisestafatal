@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3232e7403ec",
+  "claimSlug": "\"modelo-las-playas-de-la-costa-del-sol-estan-llenas-de-basura-y-suciedad\"",
+  "text": "Las playas de la Costa del Sol están llenas de basura y suciedad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f1f5cf8b5b28"
+  ]
+}

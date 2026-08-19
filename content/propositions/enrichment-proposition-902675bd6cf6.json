@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-902675bd6cf6",
+  "claimSlug": "\"modelo-es-un-disparate-que-la-electricidad-sea-mas-cara-en-momentos-de-auge-como-el-ver\"",
+  "text": "Es un disparate que la electricidad sea más cara en momentos de auge como el verano o la Navidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac315d8bbf28"
+  ]
+}

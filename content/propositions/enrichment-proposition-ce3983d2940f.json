@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce3983d2940f",
+  "claimSlug": "\"modelo-la-subida-de-los-gastos-de-comunidad-es-un-robo\"",
+  "text": "¡La subida de los gastos de comunidad es un robo!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dc2e4a4d2082"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-166c7a8e0386",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-las-escuelas-publicas-esta-haciendo-que-los-profesores-s\"",
+  "text": "La falta de recursos en las escuelas públicas está haciendo que los profesores se dediquen más a limpiar que a enseñar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-89519d73a43c"
+  ]
+}

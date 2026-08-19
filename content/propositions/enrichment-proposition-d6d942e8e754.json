@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d6d942e8e754",
+  "claimSlug": "\"modelo-la-inmigracion-no-esta-ayudando-a-reducir-la-tasa-de-natalidad-en-cambio-la-esta\"",
+  "text": "La inmigración no está ayudando a reducir la tasa de natalidad, en cambio, la está empeorando.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae72441fff13"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5aab8495eeab",
+  "claimSlug": "\"modelo-las-prestaciones-del-paro-son-muy-bajas-y-no-cubren-el-coste-de-vida\"",
+  "text": "Las prestaciones del paro son muy bajas y no cubren el coste de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9b36cc7f1ba9"
+  ]
+}

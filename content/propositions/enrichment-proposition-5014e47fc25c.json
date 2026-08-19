@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5014e47fc25c",
+  "claimSlug": "\"modelo-por-que-el-parque-natural-de-la-sierra-de-guadarrama-esta-siempre-lleno-de-basur\"",
+  "text": "¿Por qué el parque natural de La Sierra de Guadarrama está siempre lleno de basura? ¡Nos da asco!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c2db33989eaa"
+  ]
+}

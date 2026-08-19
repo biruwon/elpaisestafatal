@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-db465980c846",
+  "claimSlug": "\"modelo-las-subidas-de-precios-de-los-alquileres-y-la-vivienda-han-dejado-a-muchos-traba\"",
+  "text": "Las subidas de precios de los alquileres y la vivienda han dejado a muchos trabajadores con viviendas caras o inaccesibles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61a09cdbeca7"
+  ]
+}

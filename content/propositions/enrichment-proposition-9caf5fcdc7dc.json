@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9caf5fcdc7dc",
+  "claimSlug": "\"modelo-la-inversion-en-infraestructuras-en-el-sur-de-espana-se-esta-quedando-en-un-pozo\"",
+  "text": "La inversión en infraestructuras en el sur de España se está quedando en un pozo secado, mientras que el norte se llena de autovías y aeropuertos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-687ad4583b4e"
+  ]
+}

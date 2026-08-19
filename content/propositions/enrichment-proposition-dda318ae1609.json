@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dda318ae1609",
+  "claimSlug": "\"modelo-los-vecinos-de-madrid-se-sienten-inseguros-por-la-falta-de-controles-en-las-para\"",
+  "text": "Los vecinos de Madrid se sienten inseguros por la falta de controles en las paradas de autobús.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9a9ba21e21d6"
+  ]
+}

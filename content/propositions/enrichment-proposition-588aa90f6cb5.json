@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-588aa90f6cb5",
+  "claimSlug": "\"modelo-los-salarios-en-espana-se-suben-muy-poco-y-a-veces-no-llegan-ni-a-cubrir-el-cost\"",
+  "text": "Los salarios en España se suben muy poco y a veces no llegan ni a cubrir el coste de vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-63140c8e5283"
+  ]
+}

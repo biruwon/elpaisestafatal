@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e9481046219e",
+  "claimSlug": "\"modelo-la-ue-no-hace-nada-por-reducir-la-contaminacion-en-ciudades-espanolas\"",
+  "text": "La UE no hace nada por reducir la contaminación en ciudades españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81952045041f"
+  ]
+}

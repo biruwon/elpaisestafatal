@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-33922d92fc34",
+  "claimSlug": "\"modelo-los-recortes-de-gasto-publico-estan-afectando-a-servicios-esenciales\"",
+  "text": "Los recortes de gasto público están afectando a servicios esenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ab4ffff8ff56"
+  ]
+}

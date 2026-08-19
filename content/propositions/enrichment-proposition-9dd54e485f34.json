@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9dd54e485f34",
+  "claimSlug": "\"modelo-el-salario-minimo-interprofesional-esta-quedando-muy-corto-para-cubrir-los-gasto\"",
+  "text": "El salario mínimo interprofesional está quedando muy corto para cubrir los gastos básicos de la vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-016da24811c7"
+  ]
+}

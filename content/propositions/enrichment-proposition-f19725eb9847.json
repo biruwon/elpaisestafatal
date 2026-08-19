@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f19725eb9847",
+  "claimSlug": "\"modelo-la-ley-de-alquileres-de-madrid-ha-limitado-el-incremento-de-los-precios\"",
+  "text": "La ley de alquileres de Madrid ha limitado el incremento de los precios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3f5fb8abff58"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1b45de27556",
+  "claimSlug": "\"modelo-por-que-los-juzgados-en-espana-a-menudo-no-tienen-personal-suficiente-para-atend\"",
+  "text": "¿Por qué los juzgados en España a menudo no tienen personal suficiente para atender a todos los ciudadanos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7342b035728e"
+  ]
+}

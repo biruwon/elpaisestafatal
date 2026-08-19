@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-edf6e69ddf68",
+  "claimSlug": "\"modelo-los-centros-de-informacion-y-orientacion-vocacional-carecen-de-personal-y-recurs\"",
+  "text": "Los centros de información y orientación vocacional carecen de personal y recursos para ayudar a los jóvenes a tomar decisiones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6bbf9c335507"
+  ]
+}

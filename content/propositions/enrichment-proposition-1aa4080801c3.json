@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1aa4080801c3",
+  "claimSlug": "\"modelo-espana-es-uno-de-los-paises-mas-activos-en-la-union-europea\"",
+  "text": "España es uno de los países más activos en la Unión Europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ed86aaadae32"
+  ]
+}

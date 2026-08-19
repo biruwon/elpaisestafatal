@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad001aaac4cb",
+  "claimSlug": "\"modelo-los-robos-de-coches-son-muy-comunes-en-barcelona-especialmente-en-las-zonas-turi\"",
+  "text": "Los robos de coches son muy comunes en Barcelona, especialmente en las zonas turísticas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a803fe4341e"
+  ]
+}

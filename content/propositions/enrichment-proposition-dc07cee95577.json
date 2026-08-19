@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dc07cee95577",
+  "claimSlug": "\"modelo-no-se-como-pagar-la-factura-del-telefono-con-tanto-servicio-inexistente\"",
+  "text": "No sé cómo pagar la factura del teléfono con tanto servicio inexistente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f1b236030485"
+  ]
+}

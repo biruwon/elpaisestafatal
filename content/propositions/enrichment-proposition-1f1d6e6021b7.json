@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1f1d6e6021b7",
+  "claimSlug": "\"modelo-el-desempleo-juvenil-sigue-siendo-un-problema-critico-que-no-esta-resolviendose\"",
+  "text": "El desempleo juvenil sigue siendo un problema crítico que no está resolviéndose.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-975f8b889b15"
+  ]
+}

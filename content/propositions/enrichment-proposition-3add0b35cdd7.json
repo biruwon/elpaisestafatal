@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3add0b35cdd7",
+  "claimSlug": "\"modelo-es-correcto-afirmar-que-la-inmigracion-ha-incrementado-el-numero-de-menores-de-e\"",
+  "text": "¿Es correcto afirmar que la inmigración ha incrementado el número de menores de edad en España en los últimos años?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2705913e8405"
+  ]
+}

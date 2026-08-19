@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-84ba96c360aa",
+  "claimSlug": "\"modelo-la-sanidad-publica-en-espana-sufre-de-graves-problemas-de-listas-de-espera-que-a\"",
+  "text": "La sanidad pública en España sufre de graves problemas de listas de espera que afectan a muchos pacientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-129a220e1b04"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7a586e7aa63b",
+  "claimSlug": "\"modelo-los-trenes-demoran-mas-de-lo-que-se-prometen-en-las-aplicaciones\"",
+  "text": "Los trenes demoran más de lo que se prometen en las aplicaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a312da6ee25c"
+  ]
+}

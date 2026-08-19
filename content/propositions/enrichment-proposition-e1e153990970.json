@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1e153990970",
+  "claimSlug": "\"modelo-por-que-hay-tantos-trabajadores-que-no-pueden-acceder-a-la-seguridad-social\"",
+  "text": "¿Por qué hay tantos trabajadores que no pueden acceder a la seguridad social?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c1d511b7b627"
+  ]
+}

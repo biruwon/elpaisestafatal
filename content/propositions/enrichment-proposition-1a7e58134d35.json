@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a7e58134d35",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-los-parques-de-gente-que-no-cumple-con-las-normas-d\"",
+  "text": "La inmigración está llenando los parques de gente que no cumple con las normas de limpieza.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5d250195c0ff"
+  ]
+}

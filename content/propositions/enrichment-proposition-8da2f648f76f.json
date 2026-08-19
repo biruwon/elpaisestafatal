@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8da2f648f76f",
+  "claimSlug": "\"modelo-la-red-ferroviaria-de-alta-velocidad-en-espana-no-llega-a-todas-las-ciudades-imp\"",
+  "text": "La red ferroviaria de alta velocidad en España no llega a todas las ciudades importantes del país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ade7378e560c"
+  ]
+}

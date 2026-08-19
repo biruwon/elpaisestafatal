@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ec53dd6af0e5",
+  "claimSlug": "\"modelo-el-sistema-de-contratacion-publica-en-espana-es-tan-corrupto-que-incluso-los-par\"",
+  "text": "El sistema de contratación pública en España es tan corrupto que incluso los partidos políticos participan en él.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d7acf94000ff"
+  ]
+}

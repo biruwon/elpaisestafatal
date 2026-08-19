@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e638290e7272",
+  "claimSlug": "\"modelo-la-ue-esta-exigiendo-demasiadas-reformas-laborales-de-espana-lo-que-esta-afectan\"",
+  "text": "La UE está exigiendo demasiadas reformas laborales de España, lo que está afectando a la estabilidad del mercado laboral.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b738c0b8f8d"
+  ]
+}

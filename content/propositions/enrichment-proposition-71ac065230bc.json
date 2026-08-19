@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-71ac065230bc",
+  "claimSlug": "\"modelo-los-impuestos-son-tan-altos-que-me-quedo-sin-dinero-para-nada\"",
+  "text": "Los impuestos son tan altos que me quedo sin dinero para nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86ffcd0d8fa7"
+  ]
+}

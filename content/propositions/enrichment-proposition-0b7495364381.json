@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0b7495364381",
+  "claimSlug": "\"modelo-la-infraestructura-de-bicicletas-en-mi-ciudad-es-muy-deficiente-y-hay-pocos-esta\"",
+  "text": "La infraestructura de bicicletas en mi ciudad es muy deficiente y hay pocos estacionamientos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-830ad7c7860a"
+  ]
+}

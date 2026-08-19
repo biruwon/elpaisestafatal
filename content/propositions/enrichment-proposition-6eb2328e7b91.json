@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6eb2328e7b91",
+  "claimSlug": "\"modelo-por-que-la-instalacion-del-sistema-de-calefaccion-a-distancia-no-funciona-bien-e\"",
+  "text": "¿Por qué la instalación del sistema de calefacción a distancia no funciona bien en todos los edificios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2ddff9ebc914"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee9c115cd153",
+  "claimSlug": "\"modelo-la-escasez-de-agua-en-la-sierra-de-guadarrama-es-un-problema-cronico\"",
+  "text": "La escasez de agua en la Sierra de Guadarrama es un problema crónico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-932528ed5d4e"
+  ]
+}

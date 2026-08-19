@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-af12cbac8da7",
+  "claimSlug": "\"modelo-los-hospitales-estan-tan-sobrecargados-que-a-veces-los-medicos-no-tienen-tiempo-\"",
+  "text": "Los hospitales están tan sobrecargados que a veces los médicos no tienen tiempo de explicarte tu diagnóstico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-69b7f7c3dc05"
+  ]
+}

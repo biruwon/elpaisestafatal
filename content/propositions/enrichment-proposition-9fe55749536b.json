@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9fe55749536b",
+  "claimSlug": "\"modelo-el-gobierno-deberia-hacer-algo-para-controlar-la-inflacion-pero-no-parece-tener-\"",
+  "text": "El gobierno debería hacer algo para controlar la inflación, pero no parece tener ninguna intención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac4fdca14326"
+  ]
+}

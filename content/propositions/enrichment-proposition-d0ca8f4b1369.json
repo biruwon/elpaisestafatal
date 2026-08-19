@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0ca8f4b1369",
+  "claimSlug": "\"modelo-la-comunidad-valenciana-tiene-mas-kilometros-de-costa-que-toda-la-costa-oriental\"",
+  "text": "La Comunidad Valenciana tiene más kilómetros de costa que toda la costa oriental de España combinada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8060deaa418b"
+  ]
+}

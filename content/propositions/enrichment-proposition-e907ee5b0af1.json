@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e907ee5b0af1",
+  "claimSlug": "\"modelo-los-centros-educativos-no-siempre-tienen-personal-de-apoyo-suficiente-para-ayuda\"",
+  "text": "Los centros educativos no siempre tienen personal de apoyo suficiente para ayudar a los estudiantes con problemas de inclusión.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-cfd677da7cbe"
+  ]
+}

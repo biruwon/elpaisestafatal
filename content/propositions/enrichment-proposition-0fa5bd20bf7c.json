@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0fa5bd20bf7c",
+  "claimSlug": "\"modelo-espana-es-uno-de-los-paises-europeos-que-ha-tenido-un-crecimiento-economico-mode\"",
+  "text": "España es uno de los países europeos que ha tenido un crecimiento económico moderado en los últimos años.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91dd6df79d59"
+  ]
+}

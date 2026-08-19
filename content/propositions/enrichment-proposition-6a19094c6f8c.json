@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6a19094c6f8c",
+  "claimSlug": "\"modelo-la-infraestructura-ferroviaria-en-espana-es-un-desastre-con-retrasos-constantes-\"",
+  "text": "La infraestructura ferroviaria en España es un desastre, con retrasos constantes que dejan a muchos pasajeros atrapados en estaciones durante horas.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-52357ed53911"
+  ]
+}

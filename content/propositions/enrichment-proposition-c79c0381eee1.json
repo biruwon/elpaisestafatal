@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c79c0381eee1",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-alquiler-son-tan-altos-que-muchos-estudiantes-y-trabajado\"",
+  "text": "Los impuestos sobre el alquiler son tan altos que muchos estudiantes y trabajadores no pueden mantenerse en los barrios centrales de Valencia",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78986e9339fb"
+  ]
+}

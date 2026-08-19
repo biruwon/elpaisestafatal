@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-628c3ea1eda0",
+  "claimSlug": "\"modelo-los-salarios-minimos-son-insuficientes-para-cubrir-las-necesidades-basicas\"",
+  "text": "Los salarios mínimos son insuficientes para cubrir las necesidades básicas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a90f8a785878"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-190bcfb6c675",
+  "claimSlug": "\"modelo-espana-es-un-pais-lleno-de-robos-de-motos-en-las-calles-especialmente-en-areas-r\"",
+  "text": "España es un país lleno de robos de motos en las calles, especialmente en áreas residenciales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e10af1937f9"
+  ]
+}

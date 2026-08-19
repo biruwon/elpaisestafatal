@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7aae196cd0b9",
+  "claimSlug": "\"modelo-el-contrato-temporal-en-espana-es-demasiado-comun-y-limita-el-trabajo-fijo\"",
+  "text": "El contrato temporal en España es demasiado común y limita el trabajo fijo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d3a6e7a55d36"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12d53ac5ce12",
+  "claimSlug": "\"modelo-el-crecimiento-economico-no-se-esta-reflejando-en-los-bolsillos-de-la-gente\"",
+  "text": "El crecimiento económico no se está reflejando en los bolsillos de la gente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2edbfc8c695"
+  ]
+}

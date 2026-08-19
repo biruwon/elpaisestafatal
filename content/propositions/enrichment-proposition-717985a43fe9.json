@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-717985a43fe9",
+  "claimSlug": "\"modelo-que-medidas-ha-tomado-el-gobierno-para-combatir-el-incremento-de-robos-de-motoci\"",
+  "text": "¿Qué medidas ha tomado el gobierno para combatir el incremento de robos de motocicletas en Barcelona?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4615d7d080f0"
+  ]
+}

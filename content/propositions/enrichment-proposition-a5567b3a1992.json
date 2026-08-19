@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a5567b3a1992",
+  "claimSlug": "\"modelo-la-alta-tasa-de-desempleo-persiste-en-zonas-como-el-bajo-aragon-y-la-mancha\"",
+  "text": "La alta tasa de desempleo persiste en zonas como el Bajo Aragón y La Mancha.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-32adba4f84cf"
+  ]
+}

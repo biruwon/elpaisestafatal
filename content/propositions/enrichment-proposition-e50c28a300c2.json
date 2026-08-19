@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e50c28a300c2",
+  "claimSlug": "\"modelo-por-que-en-espana-no-se-dan-mas-medicamentos-a-los-pacientes-con-dolencias-croni\"",
+  "text": "¿Por qué en España no se dan más medicamentos a los pacientes con dolencias crónicas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5e5b03aed549"
+  ]
+}

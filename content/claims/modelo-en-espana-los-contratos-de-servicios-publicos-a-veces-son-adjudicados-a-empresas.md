@@ -4,21 +4,22 @@ claim: "En España, los contratos de servicios públicos a veces son adjudicados
 assessment: uncertain
 topicSlugs: ["corrupción y contratación pública"]
 aliases: ["Calidad deficiente","Cumplimiento dudoso","Estándares bajos","Servicios mal hechos","Calidad insuficiente","En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.","¿Es cierto que En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","¿Qué datos permiten comprobar si En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","Quiero saber si En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.","¿Cómo se puede verificar En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","¿Hay evidencia sobre si En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","¿Es verdad que En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","¿Qué sabemos de En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?","¿Se sostiene la afirmación de que En España, los contratos de servicios públicos a veces son adjudicados a empresas que no cumplen con los estándares mínimos.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-24dd9e3b2f77"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "en espana los contratos de servicios publicos a veces son adjudicados a empresas que no cumplen con los estandares minimos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-1a6f4f17b392"]
 ---
 
 ## Qué es cierto

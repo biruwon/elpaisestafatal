@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8cc7e1f38219",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-identidad-cultural-de-espana-y-perjudicando-la-\"",
+  "text": "La inmigración está cambiando la identidad cultural de España y perjudicando la tradición nacional.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be6ee70247fd"
+  ]
+}

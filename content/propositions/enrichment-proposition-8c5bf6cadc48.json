@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8c5bf6cadc48",
+  "claimSlug": "\"modelo-el-contrato-temporal-se-esta-convirtiendo-en-el-unico-disponible\"",
+  "text": "El contrato temporal se está convirtiendo en el único disponible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0c85b60c2da"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d270fd885faf",
+  "claimSlug": "\"modelo-el-coste-de-la-calefaccion-es-un-problema-constante-para-los-hogares\"",
+  "text": "El coste de la calefacción es un problema constante para los hogares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ca0526882df8"
+  ]
+}

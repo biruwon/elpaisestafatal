@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ee83c062dcb",
+  "claimSlug": "\"modelo-el-paro-juvenil-en-espana-es-un-problema-grave-que-afecta-a-muchas-familias\"",
+  "text": "El paro juvenil en España es un problema grave que afecta a muchas familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4bb35a64eb20"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4c2123b35804",
+  "claimSlug": "\"modelo-las-esperas-para-la-ayuda-educativa-en-el-centro-se-alargan-tanto-que-los-ninos-\"",
+  "text": "Las esperas para la ayuda educativa en el centro se alargan tanto que los niños llegan agotados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-223a48aace96"
+  ]
+}

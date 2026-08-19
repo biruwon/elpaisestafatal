@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d9af43b27161",
+  "claimSlug": "\"modelo-las-facturas-de-gas-en-espana-son-mas-altas-en-invierno-que-en-verano\"",
+  "text": "Las facturas de gas en España son más altas en invierno que en verano.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-92b65dcef8d4"
+  ]
+}

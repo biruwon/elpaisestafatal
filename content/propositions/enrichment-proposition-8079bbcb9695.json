@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8079bbcb9695",
+  "claimSlug": "\"modelo-la-deuda-publica-esta-creciendo-a-un-ritmo-descontrolado-y-preocupante\"",
+  "text": "La deuda pública está creciendo a un ritmo descontrolado y preocupante.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-511109c3c60e"
+  ]
+}

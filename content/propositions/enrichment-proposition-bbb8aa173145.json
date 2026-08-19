@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bbb8aa173145",
+  "claimSlug": "\"modelo-por-que-las-autoridades-no-hacen-mas-para-prevenir-incendios-forestales-en-espan\"",
+  "text": "¿Por qué las autoridades no hacen más para prevenir incendios forestales en España?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-ebab00bd596e"
+  ]
+}

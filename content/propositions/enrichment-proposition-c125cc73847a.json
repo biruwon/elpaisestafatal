@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c125cc73847a",
+  "claimSlug": "\"modelo-la-ue-no-ofrece-suficientes-ayudas-para-combatir-la-desigualdad-social-en-espana\"",
+  "text": "La UE no ofrece suficientes ayudas para combatir la desigualdad social en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6661593f9203"
+  ]
+}

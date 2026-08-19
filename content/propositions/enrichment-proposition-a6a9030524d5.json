@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a6a9030524d5",
+  "claimSlug": "\"modelo-la-subida-de-precios-esta-haciendo-que-las-facturas-de-luz-y-gas-sean-un-autenti\"",
+  "text": "La subida de precios está haciendo que las facturas de luz y gas sean un auténtico suplicio para las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-70f35cc56e69"
+  ]
+}

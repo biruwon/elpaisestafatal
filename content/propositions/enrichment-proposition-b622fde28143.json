@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b622fde28143",
+  "claimSlug": "\"modelo-las-zonas-rurales-estan-siendo-abandonadas-dejando-campos-sin-cultivo\"",
+  "text": "Las zonas rurales están siendo abandonadas, dejando campos sin cultivo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bbec0dc116aa"
+  ]
+}

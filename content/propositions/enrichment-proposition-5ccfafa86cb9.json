@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5ccfafa86cb9",
+  "claimSlug": "\"modelo-las-renovables-son-un-estorbo-para-el-bolsillo\"",
+  "text": "Las renovables son un estorbo para el bolsillo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8a1438ef88b"
+  ]
+}

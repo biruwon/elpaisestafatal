@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f5bba7920559",
+  "claimSlug": "\"modelo-el-sistema-de-evaluacion-del-rendimiento-en-espana-esta-tan-estresante-que-a-vec\"",
+  "text": "El sistema de evaluación del rendimiento en España está tan estresante que a veces los niños se sienten mal.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-77a7742b6db7"
+  ]
+}

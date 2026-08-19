@@ -4,21 +4,22 @@ claim: "Se están acumulando demasiados pacientes en las listas de espera de los
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["Acumulación de pacientes","Colas excesivas","Pacientes en espera","Pacientes demorados","Incremento de pacientes en espera","Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.","¿Es cierto que Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","¿Qué datos permiten comprobar si Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","Quiero saber si Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.","¿Cómo se puede verificar Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","¿Hay evidencia sobre si Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","¿Es verdad que Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","¿Qué sabemos de Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?","¿Se sostiene la afirmación de que Se están acumulando demasiados pacientes en las listas de espera de los hospitales públicos.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-2034c4b844be"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "se estan acumulando demasiados pacientes en las listas de espera de los hospitales publicos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-b6040f2c081a"]
 ---
 
 ## Qué es cierto

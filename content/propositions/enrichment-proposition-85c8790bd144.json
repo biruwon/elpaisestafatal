@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-85c8790bd144",
+  "claimSlug": "\"modelo-los-barrios-mas-pobres-de-barcelona-se-ven-abandonados-por-las-autoridades-con-f\"",
+  "text": "Los barrios más pobres de Barcelona se ven abandonados por las autoridades, con falta de inversiones en infraestructuras y servicios básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8ca628ccf44"
+  ]
+}

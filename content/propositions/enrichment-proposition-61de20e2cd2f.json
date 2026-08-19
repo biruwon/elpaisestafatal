@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-61de20e2cd2f",
+  "claimSlug": "\"modelo-el-desempleo-juvenil-esta-haciendo-que-los-jovenes-emigraran-en-masa\"",
+  "text": "El desempleo juvenil está haciendo que los jóvenes emigraran en masa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4e0b20e6ce50"
+  ]
+}

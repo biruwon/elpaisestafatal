@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c32323fc8ad1",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-el-paisaje-urbano-en-forma-de-barrios-de-inmigrant\"",
+  "text": "La inmigración está cambiando el paisaje urbano en forma de barrios de inmigrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b516c0a75424"
+  ]
+}

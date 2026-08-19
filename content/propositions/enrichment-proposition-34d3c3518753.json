@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34d3c3518753",
+  "claimSlug": "\"modelo-las-tarifas-de-agua-en-espana-son-inaceptablemente-altas-y-no-corresponden-con-l\"",
+  "text": "Las tarifas de agua en España son inaceptablemente altas y no corresponden con la utilización que se hace de ella en muchas zonas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b8e05dad236f"
+  ]
+}

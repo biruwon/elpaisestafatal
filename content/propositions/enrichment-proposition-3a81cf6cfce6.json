@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3a81cf6cfce6",
+  "claimSlug": "\"modelo-la-falta-de-empleo-para-jovenes-es-un-problema-cronico-en-espana-con-muchos-tach\"",
+  "text": "La falta de empleo para jóvenes es un problema crónico en España, con muchos tachados de la universidad sin oportunidades.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-23a3f0922ad6"
+  ]
+}

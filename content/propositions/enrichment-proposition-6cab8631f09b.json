@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6cab8631f09b",
+  "claimSlug": "\"modelo-por-que-en-espana-se-tiene-que-pedir-un-permiso-de-paternidad-para-que-los-padre\"",
+  "text": "¿Por qué en España se tiene que pedir un permiso de paternidad para que los padres tengan tiempo de cuidar a su hijo recién nacido?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-97a3a5020e56"
+  ]
+}

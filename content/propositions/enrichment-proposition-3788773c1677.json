@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3788773c1677",
+  "claimSlug": "\"modelo-los-gastos-extras-del-alquiler-como-la-luz-y-el-gas-son-un-lastre-extra-en-la-re\"",
+  "text": "Los gastos extras del alquiler, como la luz y el gas, son un lastre extra en la renta.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36959a74f2cc"
+  ]
+}

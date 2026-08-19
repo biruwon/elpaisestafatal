@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fdfa92c21120",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-desastre-en-la-vivienda-con-familias-sin-recurso\"",
+  "text": "La inmigración está causando un desastre en la vivienda con familias sin recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f9ca4954777a"
+  ]
+}

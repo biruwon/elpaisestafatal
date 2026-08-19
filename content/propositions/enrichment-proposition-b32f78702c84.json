@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b32f78702c84",
+  "claimSlug": "\"modelo-las-infraestructuras-escolares-en-zonas-rurales-son-deplorables-con-edificios-ob\"",
+  "text": "Las infraestructuras escolares en zonas rurales son deplorables, con edificios obsoletos y falta de equipamiento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a8112ea5e4df"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d9244155597",
+  "claimSlug": "\"modelo-los-profesores-no-tienen-el-apoyo-necesario-para-mejorar-su-formacion\"",
+  "text": "Los profesores no tienen el apoyo necesario para mejorar su formación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-607b103313e4"
+  ]
+}

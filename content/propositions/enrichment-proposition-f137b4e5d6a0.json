@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f137b4e5d6a0",
+  "claimSlug": "\"modelo-los-costes-de-la-energia-renovable-en-espana-son-inesperadamente-altos-a-pesar-d\"",
+  "text": "Los costes de la energía renovable en España son inesperadamente altos, a pesar de las promesas de reducción de costos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-968be5ee3f90"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4bc0505a8fb2",
+  "claimSlug": "\"modelo-los-procesos-de-contratacion-publica-son-demasiado-complejos-y-abusivos-dejando-\"",
+  "text": "Los procesos de contratación pública son demasiado complejos y abusivos, dejando a los ciudadanos fuera del juego.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c90f4c35c8ea"
+  ]
+}

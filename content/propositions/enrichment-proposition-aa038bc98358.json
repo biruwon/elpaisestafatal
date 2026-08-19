@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa038bc98358",
+  "claimSlug": "\"modelo-la-region-de-andalucia-tiene-una-identidad-cultural-y-linguistica-muy-distintiva\"",
+  "text": "La región de Andalucía tiene una identidad cultural y lingüística muy distintiva.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-d917a44cbbc7"
+  ]
+}

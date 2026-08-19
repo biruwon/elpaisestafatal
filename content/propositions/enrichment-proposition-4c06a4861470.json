@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4c06a4861470",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-los-productos-esenciales-se-hagan-cada-vez-mas-ca\"",
+  "text": "La inflación está haciendo que los productos esenciales se hagan cada vez más caros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9752dc177c63"
+  ]
+}

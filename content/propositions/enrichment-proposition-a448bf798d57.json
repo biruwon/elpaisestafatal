@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a448bf798d57",
+  "claimSlug": "\"modelo-por-que-el-ayuntamiento-de-barcelona-no-limpia-mas-los-montes-antes-de-la-tempor\"",
+  "text": "¿Por qué el Ayuntamiento de Barcelona no limpia más los montes antes de la temporada de incendios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2054fbe80b98"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-57c65146ef2c",
+  "claimSlug": "\"modelo-la-inmigracion-ilegal-esta-llenando-los-hospitales-publicos-y-agotando-los-recur\"",
+  "text": "La inmigración ilegal está llenando los hospitales públicos y agotando los recursos médicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c0c478a83f23"
+  ]
+}

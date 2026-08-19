@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ea97f77a35d2",
+  "claimSlug": "\"modelo-las-listas-de-espera-para-cirugias-no-urgentes-en-hospitales-publicos-son-tan-la\"",
+  "text": "Las listas de espera para cirugías no urgentes en hospitales públicos son tan largas que muchos pacientes se ven obligados a esperar años para su intervención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fb4838cea065"
+  ]
+}

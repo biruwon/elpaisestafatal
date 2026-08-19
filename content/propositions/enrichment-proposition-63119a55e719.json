@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-63119a55e719",
+  "claimSlug": "\"modelo-la-calidad-de-las-carreteras-en-la-comarca-de-la-comunidad-valenciana-es-muy-baj\"",
+  "text": "La calidad de las carreteras en la comarca de la Comunidad Valenciana es muy baja y hay muchos baches.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db0fdc0f272b"
+  ]
+}

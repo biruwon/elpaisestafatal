@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-977022d9043a",
+  "claimSlug": "\"modelo-la-infraestructura-de-internet-en-zonas-rurales-es-muy-mala-lo-que-dificulta-la-\"",
+  "text": "La infraestructura de internet en zonas rurales es muy mala, lo que dificulta la adopción de tecnologías digitales en el hogar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7eb72ca9edf5"
+  ]
+}

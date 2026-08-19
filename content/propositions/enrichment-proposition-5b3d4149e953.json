@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b3d4149e953",
+  "claimSlug": "\"modelo-las-politicas-de-turismo-en-las-islas-baleares-estan-priorizando-la-construccion\"",
+  "text": "Las políticas de turismo en las Islas Baleares están priorizando la construcción hotelera sobre la conservación de la biodiversidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0a259c6d2e36"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9ec778a29d50",
+  "claimSlug": "\"modelo-las-ayudas-a-los-pensionistas-son-escasas-y-no-se-adaptan-a-las-necesidades-actu\"",
+  "text": "Las ayudas a los pensionistas son escasas y no se adaptan a las necesidades actuales.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a952ca2cc685"
+  ]
+}

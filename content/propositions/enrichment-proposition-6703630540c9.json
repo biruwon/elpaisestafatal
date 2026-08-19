@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6703630540c9",
+  "claimSlug": "\"modelo-espana-tiene-una-ley-que-obliga-a-las-viviendas-a-aislarse-para-reducir-costes-e\"",
+  "text": "¿España tiene una ley que obliga a las viviendas a aislarse para reducir costes energéticos?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a03ca8f9b03"
+  ]
+}

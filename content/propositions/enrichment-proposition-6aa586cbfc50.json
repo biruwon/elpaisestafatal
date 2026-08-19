@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6aa586cbfc50",
+  "claimSlug": "\"modelo-la-inflacion-esta-asfixiando-mis-compras-de-supermercado\"",
+  "text": "La inflación está asfixiando mis compras de supermercado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d5bcc7ce4610"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cab03f5a1bf",
+  "claimSlug": "\"modelo-en-las-zonas-rurales-de-espana-el-nivel-de-desigualdad-economica-es-superior-al-\"",
+  "text": "En las zonas rurales de España, el nivel de desigualdad económica es superior al de las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-930cc9cf4ab2"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4650eb0a3b89",
+  "claimSlug": "\"modelo-la-politica-fiscal-esta-siendo-demasiado-restrictiva-perjudicando-el-crecimiento\"",
+  "text": "La política fiscal está siendo demasiado restrictiva, perjudicando el crecimiento económico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-54ea8e20da93"
+  ]
+}

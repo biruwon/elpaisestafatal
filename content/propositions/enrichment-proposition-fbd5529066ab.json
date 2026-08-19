@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fbd5529066ab",
+  "claimSlug": "\"modelo-la-fianza-de-alquiler-es-un-robo-nadie-puede-permitirse-pagar-un-mes-de-alquiler\"",
+  "text": "¡La fianza de alquiler es un robo! Nadie puede permitirse pagar un mes de alquiler de avance.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c0633eef7210"
+  ]
+}

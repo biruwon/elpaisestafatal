@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0378547c01a0",
+  "claimSlug": "\"modelo-la-ue-esta-recortando-el-presupuesto-para-programas-de-desarrollo-en-espana\"",
+  "text": "La UE está recortando el presupuesto para programas de desarrollo en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df9296e60377"
+  ]
+}

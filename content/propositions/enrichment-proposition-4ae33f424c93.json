@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4ae33f424c93",
+  "claimSlug": "\"modelo-los-impuestos-directos-en-espana-son-muy-altos-sobre-todo-el-irpf-con-un-tipo-pr\"",
+  "text": "Los impuestos directos en España son muy altos, sobre todo el IRPF, con un tipo progresivo que afecta a los ahorros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c4d31a0a80f2"
+  ]
+}

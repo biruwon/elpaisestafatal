@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-219162d7a5c7",
+  "claimSlug": "\"modelo-la-politica-fiscal-esta-perjudicando-a-los-trabajadores-con-bajos-ingresos\"",
+  "text": "La política fiscal está perjudicando a los trabajadores con bajos ingresos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e9bf16765e9f"
+  ]
+}

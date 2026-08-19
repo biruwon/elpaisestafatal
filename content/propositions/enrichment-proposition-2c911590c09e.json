@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2c911590c09e",
+  "claimSlug": "\"modelo-las-condiciones-de-trabajo-en-la-hosteleria-son-muy-duras\"",
+  "text": "Las condiciones de trabajo en la hostelería son muy duras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86e5bbf07778"
+  ]
+}

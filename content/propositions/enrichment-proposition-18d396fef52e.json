@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-18d396fef52e",
+  "claimSlug": "\"modelo-el-metro-de-barcelona-tiene-mas-estaciones-que-el-metro-de-madrid\"",
+  "text": "El metro de Barcelona tiene más estaciones que el metro de Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e4195110da2"
+  ]
+}

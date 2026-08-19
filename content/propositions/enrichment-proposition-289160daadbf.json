@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-289160daadbf",
+  "claimSlug": "\"modelo-los-inmigrantes-estan-ocupando-puestos-de-trabajo-que-podrian-ser-para-ciudadano\"",
+  "text": "Los inmigrantes están ocupando puestos de trabajo que podrían ser para ciudadanos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-255203911fc2"
+  ]
+}

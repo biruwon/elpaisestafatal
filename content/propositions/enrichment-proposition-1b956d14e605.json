@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1b956d14e605",
+  "claimSlug": "\"modelo-los-hospitales-estan-sobresaturados-y-los-pacientes-se-ven-obligados-a-esperar-e\"",
+  "text": "Los hospitales están sobresaturados y los pacientes se ven obligados a esperar en camas de hospital por días.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-049d71220473"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df74f08538f2",
+  "claimSlug": "\"modelo-la-ue-no-hace-nada-para-ayudar-a-reducir-la-inflacion-en-espana\"",
+  "text": "La UE no hace nada para ayudar a reducir la inflación en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4124f9485f7d"
+  ]
+}

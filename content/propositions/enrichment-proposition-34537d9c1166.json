@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34537d9c1166",
+  "claimSlug": "\"modelo-espana-ha-optado-por-no-participar-en-el-programa-de-estabilizacion-monetaria-de\"",
+  "text": "España ha optado por no participar en el programa de estabilización monetaria de la Unión Europea.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-90089ca337d6"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4f4c96cdfa02",
+  "claimSlug": "\"modelo-por-que-la-red-de-autobuses-en-ciudades-como-barcelona-y-madrid-parece-estar-sie\"",
+  "text": "¿Por qué la red de autobuses en ciudades como Barcelona y Madrid parece estar siempre colapsada y con retrasos constantes?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-19ff7aa0fb15"
+  ]
+}

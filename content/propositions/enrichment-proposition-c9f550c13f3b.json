@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c9f550c13f3b",
+  "claimSlug": "\"modelo-los-impuestos-a-los-viajes-internacionales-estan-tan-altos-que-prefiero-no-salir\"",
+  "text": "Los impuestos a los viajes internacionales están tan altos que prefiero no salir de casa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d644f90377ad"
+  ]
+}

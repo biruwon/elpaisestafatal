@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e7506ff2f2c9",
+  "claimSlug": "\"modelo-espana-tiene-un-sistema-de-pensiones-mas-completo-que-el-de-alemania\"",
+  "text": "España tiene un sistema de pensiones más completo que el de Alemania.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-11a943437c4b"
+  ]
+}

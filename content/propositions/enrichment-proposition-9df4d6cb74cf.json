@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9df4d6cb74cf",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-del-gas-en-espana-esta-haciendo-que-muchas-familias-no-\"",
+  "text": "La subida de los precios del gas en España está haciendo que muchas familias no puedan pagar sus facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-91323389ef41"
+  ]
+}

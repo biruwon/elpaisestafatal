@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-16ed4ab58c20",
+  "claimSlug": "\"modelo-espana-esta-siendo-penalizada-por-las-politicas-de-la-ue-en-materia-de-energia\"",
+  "text": "España está siendo penalizada por las políticas de la UE en materia de energía",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ae3ac258e942"
+  ]
+}

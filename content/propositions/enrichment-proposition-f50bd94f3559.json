@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f50bd94f3559",
+  "claimSlug": "\"modelo-el-sistema-de-justicia-no-tiene-suficientes-recursos-para-atender-los-casos-de-v\"",
+  "text": "El sistema de justicia no tiene suficientes recursos para atender los casos de violencia de género.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-138b80144e42"
+  ]
+}

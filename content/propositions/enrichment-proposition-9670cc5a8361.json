@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9670cc5a8361",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-de-la-electricidad-esta-haciendo-que-muchos-hogares-no-\"",
+  "text": "La subida de los precios de la electricidad está haciendo que muchos hogares no puedan pagar las facturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2de6bcc41e39"
+  ]
+}

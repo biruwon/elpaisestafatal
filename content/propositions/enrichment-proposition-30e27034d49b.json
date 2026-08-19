@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-30e27034d49b",
+  "claimSlug": "\"modelo-la-ue-impone-leyes-que-perjudican-directamente-a-las-pymes-espanolas\"",
+  "text": "La UE impone leyes que perjudican directamente a las pymes españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4474e92d1933"
+  ]
+}

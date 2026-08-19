@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e08947013d8e",
+  "claimSlug": "\"modelo-los-bajos-niveles-de-natalidad-estan-haciendo-que-el-pais-parezca-deshabitado\"",
+  "text": "Los bajos niveles de natalidad están haciendo que el país parezca deshabitado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8bc76d909af0"
+  ]
+}

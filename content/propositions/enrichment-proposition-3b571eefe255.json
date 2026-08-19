@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3b571eefe255",
+  "claimSlug": "\"modelo-se-deberia-prohibir-la-quema-de-residuos-en-el-campo-para-evitar-incendios-pero-\"",
+  "text": "Se debería prohibir la quema de residuos en el campo para evitar incendios, pero el gobierno no hace nada al respecto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ebb552aad626"
+  ]
+}

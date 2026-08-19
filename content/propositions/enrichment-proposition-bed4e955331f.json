@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bed4e955331f",
+  "claimSlug": "\"modelo-a-pesar-del-crecimiento-economico-el-desempleo-sigue-siendo-un-problema-grave\"",
+  "text": "A pesar del crecimiento económico, el desempleo sigue siendo un problema grave.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-df21bf133687"
+  ]
+}

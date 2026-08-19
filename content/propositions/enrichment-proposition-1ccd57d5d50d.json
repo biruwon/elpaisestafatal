@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1ccd57d5d50d",
+  "claimSlug": "\"modelo-es-dificil-conseguir-un-trabajo-tras-terminar-la-universidad-verdad\"",
+  "text": "Es difícil conseguir un trabajo tras terminar la universidad, ¿verdad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-46f18ace0151"
+  ]
+}

@@ -4,21 +4,22 @@ claim: "¿Qué está haciendo la industria tecnológica para hacer más asequibl
 assessment: uncertain
 topicSlugs: ["ciencia, tecnología y vivienda digital"]
 aliases: ["¿La industria tecnológica está haciendo algo para hacer más asequible la vivienda digital?","¿Cómo está la industria tecnológica en cuanto a hacer más asequible la vivienda digital?","¿Qué está haciendo la industria tecnológica para promover la vivienda digital?","¿La industria tecnológica está invirtiendo en hacer más asequible la vivienda digital?","¿Qué papel juega la industria tecnológica en la vivienda digital?","¿Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España","¿Es cierto que Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","¿Qué datos permiten comprobar si Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","Quiero saber si Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España","¿Cómo se puede verificar Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","¿Hay evidencia sobre si Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","¿Es verdad que Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","¿Qué sabemos de Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?","¿Se sostiene la afirmación de que Qué está haciendo la industria tecnológica para hacer más asequible la vivienda digital en España?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-8f026df83d9d"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "que esta haciendo la industria tecnologica para hacer mas asequible la vivienda digital en espana"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-23324911da42"]
 ---
 
 ## Qué es cierto

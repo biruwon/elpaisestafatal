@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa594778d0b7",
+  "claimSlug": "\"modelo-los-recortes-en-sanidad-estan-haciendo-que-sea-mas-dificil-acceder-a-servicios-b\"",
+  "text": "Los recortes en sanidad están haciendo que sea más difícil acceder a servicios básicos de salud.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4b529a710d4f"
+  ]
+}

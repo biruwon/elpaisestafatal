@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a1a6a2d421c8",
+  "claimSlug": "\"modelo-las-carreteras-secundarias-en-el-interior-de-espana-estan-tan-mal-mantenidas-que\"",
+  "text": "Las carreteras secundarias en el interior de España están tan mal mantenidas que es un auténtico desafío circular sin peligro.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c951bfb72122"
+  ]
+}

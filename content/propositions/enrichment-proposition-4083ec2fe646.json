@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4083ec2fe646",
+  "claimSlug": "\"modelo-la-presencia-de-inmigrantes-ilegales-esta-erosionando-el-sistema-de-seguridad-so\"",
+  "text": "La presencia de inmigrantes ilegales está erosionando el sistema de seguridad social, con muchos sin cotizar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c83ea975fe18"
+  ]
+}

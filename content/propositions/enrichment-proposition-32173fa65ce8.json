@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-32173fa65ce8",
+  "claimSlug": "\"modelo-los-agricultores-de-espana-no-reciben-la-ayuda-financiera-suficiente-para-modern\"",
+  "text": "Los agricultores de España no reciben la ayuda financiera suficiente para modernizar sus instalaciones.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dfea501495a7"
+  ]
+}

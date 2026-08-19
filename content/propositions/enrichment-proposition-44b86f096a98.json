@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44b86f096a98",
+  "claimSlug": "\"modelo-es-normal-que-en-las-ciudades-de-espana-se-cometan-robos-con-violencia\"",
+  "text": "¿Es normal que en las ciudades de España se cometan robos con violencia?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-258daf36f3c0"
+  ]
+}

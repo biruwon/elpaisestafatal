@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-521af3b05dac",
+  "claimSlug": "\"modelo-la-inflacion-esta-arruinando-las-compras-basicas-en-espana\"",
+  "text": "La inflación está arruinando las compras básicas en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b86cc4c932bc"
+  ]
+}

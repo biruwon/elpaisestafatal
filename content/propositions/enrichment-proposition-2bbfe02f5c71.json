@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2bbfe02f5c71",
+  "claimSlug": "\"modelo-el-alquiler-en-madrid-es-un-verdadero-robo-no-me-da-ni-para-un-piso-decente\"",
+  "text": "El alquiler en Madrid es un verdadero robo, no me da ni para un piso decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-736b0f749aec"
+  ]
+}

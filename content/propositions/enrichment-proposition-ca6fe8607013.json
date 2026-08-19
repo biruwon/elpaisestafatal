@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca6fe8607013",
+  "claimSlug": "\"modelo-las-empresas-no-invierten-suficiente-en-teletrabajo-dejando-a-muchas-personas-at\"",
+  "text": "Las empresas no invierten suficiente en teletrabajo, dejando a muchas personas atrapadas en la oficina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-546190e86494"
+  ]
+}

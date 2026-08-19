@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f3efc61f3e54",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-mis-compras-diarias-sean-un-desafio-especialmente\"",
+  "text": "La inflación está haciendo que mis compras diarias sean un desafío, especialmente con los alimentos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-9413a33645de"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa7fc4df7e4a",
+  "claimSlug": "\"modelo-el-horario-escolar-en-primaria-y-secundaria-es-muy-temprano-lo-que-dificulta-la-\"",
+  "text": "El horario escolar en primaria y secundaria es muy temprano, lo que dificulta la conciliación familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ee335150bf0a"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a6cd55f36637",
+  "claimSlug": "\"modelo-la-falta-de-espacios-de-ocio-y-tiempo-libre-para-los-jovenes-en-los-barrios-pobr\"",
+  "text": "La falta de espacios de ocio y tiempo libre para los jóvenes en los barrios pobres es un problema evidente que no se resuelve.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-adfe5c916a50"
+  ]
+}

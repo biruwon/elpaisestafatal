@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cf09398350b6",
+  "claimSlug": "\"modelo-la-estabilidad-economica-es-un-espejismo-porque-las-primas-de-riesgo-siguen-alta\"",
+  "text": "La estabilidad económica es un espejismo, porque las primas de riesgo siguen altas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ce0c7445bb05"
+  ]
+}

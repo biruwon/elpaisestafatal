@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d6de060df4ab",
+  "claimSlug": "\"modelo-por-que-los-impuestos-sobre-la-electricidad-son-tan-altos-en-espana\"",
+  "text": "¿Por qué los impuestos sobre la electricidad son tan altos en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a4ec1161cadb"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7c263ef4ec41",
+  "claimSlug": "\"modelo-el-sistema-sanitario-espanol-esta-colapsado-por-las-listas-de-espera\"",
+  "text": "El sistema sanitario español está colapsado por las listas de espera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f02e101de444"
+  ]
+}

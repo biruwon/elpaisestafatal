@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9d2e7262cb09",
+  "claimSlug": "\"modelo-los-recortes-en-el-presupuesto-agrario-estan-perjudicando-mucho-a-los-agricultor\"",
+  "text": "Los recortes en el presupuesto agrario están perjudicando mucho a los agricultores, ¿se están tomando medidas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-db69c7e6e3a6"
+  ]
+}

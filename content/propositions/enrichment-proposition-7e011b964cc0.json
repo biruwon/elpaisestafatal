@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7e011b964cc0",
+  "claimSlug": "\"modelo-en-espana-la-contratacion-publica-a-menudo-se-realiza-sin-un-proceso-abierto-y-t\"",
+  "text": "En España, la contratación pública a menudo se realiza sin un proceso abierto y transparente, lo que favorece a unos pocos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3fcd978ddbd1"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5ee4193cdab7",
+  "claimSlug": "\"modelo-espana-es-el-pais-europeo-con-la-menor-presencia-de-la-bandera-de-la-union-europ\"",
+  "text": "España es el país europeo con la menor presencia de la bandera de la Unión Europea en las calles y edificios públicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ddc0517447da"
+  ]
+}

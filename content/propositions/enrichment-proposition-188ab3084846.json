@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-188ab3084846",
+  "claimSlug": "\"modelo-la-falta-de-recursos-en-las-escuelas-hace-que-los-estudiantes-no-tengan-acceso-a\"",
+  "text": "La falta de recursos en las escuelas hace que los estudiantes no tengan acceso a material didáctico básico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fd88c9b976b2"
+  ]
+}

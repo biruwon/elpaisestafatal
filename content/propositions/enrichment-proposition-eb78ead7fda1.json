@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-eb78ead7fda1",
+  "claimSlug": "\"modelo-espana-se-siente-olvidada-en-las-decisiones-de-la-ue-sobre-la-energia-renovable\"",
+  "text": "España se siente olvidada en las decisiones de la UE sobre la energía renovable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-feaa6c9ea23f"
+  ]
+}

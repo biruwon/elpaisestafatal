@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d4b6971d750f",
+  "claimSlug": "\"modelo-se-deberia-reducir-la-cantidad-de-listas-de-espera-para-mejorar-la-atencion\"",
+  "text": "Se debería reducir la cantidad de listas de espera para mejorar la atención.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-648c94fc975c"
+  ]
+}

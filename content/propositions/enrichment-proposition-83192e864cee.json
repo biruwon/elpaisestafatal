@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83192e864cee",
+  "claimSlug": "\"modelo-la-inmigracion-en-espana-esta-descontrolada-y-todos-los-dias-se-ven-mas-caras-de\"",
+  "text": "La inmigración en España está descontrolada y todos los días se ven más caras de tonos distintos en las calles, es como si no tuviéramos un control de quién entra y quién no.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-625e809da752"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a35f2ba17c60",
+  "claimSlug": "\"modelo-por-que-en-algunas-provincias-de-espana-se-exigen-permisos-para-cazar-en-territo\"",
+  "text": "¿Por qué en algunas provincias de España se exigen permisos para cazar en territorios propios, mientras que en otras se permite sin necesidad de permiso?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-64884b6ab0ae"
+  ]
+}

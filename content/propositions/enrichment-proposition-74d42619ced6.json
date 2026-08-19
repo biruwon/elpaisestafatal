@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-74d42619ced6",
+  "claimSlug": "\"modelo-el-alza-del-precio-de-la-gasolina-esta-haciendo-que-nuestras-facturas-de-electri\"",
+  "text": "El alza del precio de la gasolina está haciendo que nuestras facturas de electricidad se dispararan más rápido que nunca.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c564a3cb79ef"
+  ]
+}

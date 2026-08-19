@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-91f7c0acf04f",
+  "claimSlug": "\"modelo-el-juzgado-de-lo-contencioso-administrativo-no-se-encarga-de-todos-los-casos-de-\"",
+  "text": "El juzgado de lo contencioso- administrativo no se encarga de todos los casos de inconstitucionalidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-768840e2751c"
+  ]
+}

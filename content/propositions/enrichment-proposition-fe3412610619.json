@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe3412610619",
+  "claimSlug": "\"modelo-la-falta-de-oferta-de-productos-locales-autenticos-en-los-mercados-de-agricultur\"",
+  "text": "La falta de oferta de productos locales auténticos en los mercados de agricultura es un problema.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-12d02b995347"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e68505b338d6",
+  "claimSlug": "\"modelo-las-prisiones-espanolas-estan-superpobladas-y-los-reos-pasan-mas-tiempo-esperand\"",
+  "text": "Las prisiones españolas están superpobladas y los reos pasan más tiempo esperando su juicio que en libertad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-75a07dc68052"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca8283540c2f",
+  "claimSlug": "\"modelo-la-inmigracion-esta-cambiando-la-identidad-cultural-del-pais\"",
+  "text": "La inmigración está cambiando la identidad cultural del país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f2df7c369ede"
+  ]
+}

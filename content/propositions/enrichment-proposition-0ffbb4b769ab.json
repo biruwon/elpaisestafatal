@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ffbb4b769ab",
+  "claimSlug": "\"modelo-la-luz-y-el-gas-son-demasiado-caros-en-espana-cuando-van-a-bajar-los-precios\"",
+  "text": "¡La luz y el gas son demasiado caros en España! ¿Cuándo van a bajar los precios?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c99ba7918462"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a2b378d3339d",
+  "claimSlug": "\"modelo-la-inflacion-y-la-subida-de-precios-hacen-que-el-alquiler-sea-cada-vez-mas-inasu\"",
+  "text": "La inflación y la subida de precios hacen que el alquiler sea cada vez más inasumible, especialmente para los que están empezando a trabajar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-915740de2084"
+  ]
+}

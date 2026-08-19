@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-73c4f49a841c",
+  "claimSlug": "\"modelo-los-tribunales-son-tan-lentos-que-las-causas-pueden-llevar-decadas-sin-llegar-a-\"",
+  "text": "Los tribunales son tan lentos que las causas pueden llevar décadas sin llegar a juicio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0abaeae7fd6c"
+  ]
+}

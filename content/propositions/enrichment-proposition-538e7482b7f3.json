@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-538e7482b7f3",
+  "claimSlug": "\"modelo-las-listas-de-espera-en-espana-son-tan-largas-que-muchos-pacientes-prefieren-no-\"",
+  "text": "Las listas de espera en España son tan largas que muchos pacientes prefieren no ir al médico hasta que sea demasiado tarde.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-893350c16930"
+  ]
+}

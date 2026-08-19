@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-50509c6a5e84",
+  "claimSlug": "\"modelo-los-incendios-estan-causando-graves-danos-a-la-biodiversidad\"",
+  "text": "Los incendios están causando graves daños a la biodiversidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2608f3214dd2"
+  ]
+}

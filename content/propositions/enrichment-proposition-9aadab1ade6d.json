@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9aadab1ade6d",
+  "claimSlug": "\"modelo-la-inflacion-esta-matando-el-poder-adquisitivo-de-las-familias\"",
+  "text": "La inflación está matando el poder adquisitivo de las familias.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-56266b8aca7d"
+  ]
+}

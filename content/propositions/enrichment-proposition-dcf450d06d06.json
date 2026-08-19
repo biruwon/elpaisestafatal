@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dcf450d06d06",
+  "claimSlug": "\"modelo-los-jovenes-universitarios-a-menudo-tienen-que-trabajar-para-costear-sus-estudio\"",
+  "text": "Los jóvenes universitarios a menudo tienen que trabajar para costear sus estudios, lo que les impide centrarse únicamente en la formación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b2d97fd3d802"
+  ]
+}

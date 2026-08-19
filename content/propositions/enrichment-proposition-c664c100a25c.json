@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c664c100a25c",
+  "claimSlug": "\"modelo-los-impuestos-sobre-el-alquiler-son-muy-altos-haciendo-imposible-encontrar-un-pi\"",
+  "text": "Los impuestos sobre el alquiler son muy altos, haciendo imposible encontrar un piso asequible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-087edc4c48a4"
+  ]
+}

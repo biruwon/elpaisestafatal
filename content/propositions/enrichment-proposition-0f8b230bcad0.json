@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0f8b230bcad0",
+  "claimSlug": "\"modelo-la-atencion-sanitaria-en-espana-ha-empeorado-tanto-que-muchos-ciudadanos-prefier\"",
+  "text": "La atención sanitaria en España ha empeorado tanto que muchos ciudadanos prefieren pagar por atención privada aunque sea más cara",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7ed565c2553b"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0b9f9f9d84a8",
+  "claimSlug": "\"modelo-los-servicios-de-internet-en-las-viviendas-digitales-son-muy-inestables-lo-que-r\"",
+  "text": "Los servicios de internet en las viviendas digitales son muy inestables, lo que resulta en interrupciones constantes del servicio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e7573b63d0dd"
+  ]
+}

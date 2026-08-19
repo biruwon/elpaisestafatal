@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc1f9b87bff9",
+  "claimSlug": "\"modelo-la-inmigracion-esta-afectando-la-seguridad-publica-con-mas-incidentes-y-delitos\"",
+  "text": "La inmigración está afectando la seguridad pública, con más incidentes y delitos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a15ff4295880"
+  ]
+}

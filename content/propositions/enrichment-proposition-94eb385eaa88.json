@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-94eb385eaa88",
+  "claimSlug": "\"modelo-la-inmigracion-esta-agudizando-la-crisis-de-la-vivienda\"",
+  "text": "La inmigración está agudizando la crisis de la vivienda.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f760a84a07a0"
+  ]
+}

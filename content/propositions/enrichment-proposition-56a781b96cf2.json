@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-56a781b96cf2",
+  "claimSlug": "\"modelo-el-impuesto-de-vehiculos-se-esta-volviendo-cada-vez-mas-caro-y-los-coches-viejos\"",
+  "text": "El impuesto de vehículos se está volviendo cada vez más caro, y los coches viejos no valen nada.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-49b0d22ab287"
+  ]
+}

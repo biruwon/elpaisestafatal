@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-84f7db7a3954",
+  "claimSlug": "\"modelo-la-falta-de-formacion-en-habilidades-practicas-es-un-problema-grave-en-el-sistem\"",
+  "text": "La falta de formación en habilidades prácticas es un problema grave en el sistema educativo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f7435cc9f136"
+  ]
+}

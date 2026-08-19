@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bd925d489de1",
+  "claimSlug": "\"modelo-por-que-la-policia-no-actua-con-mas-celeridad-ante-delitos-graves\"",
+  "text": "¿Por qué la policía no actúa con más celeridad ante delitos graves?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f9f7e71596a5"
+  ]
+}

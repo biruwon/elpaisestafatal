@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e6406e0a1515",
+  "claimSlug": "\"modelo-espana-esta-llena-de-zonas-peligrosas-por-la-noche-especialmente-en-ciudades-cos\"",
+  "text": "España está llena de zonas peligrosas por la noche, especialmente en ciudades costeras.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ba898f3e7761"
+  ]
+}

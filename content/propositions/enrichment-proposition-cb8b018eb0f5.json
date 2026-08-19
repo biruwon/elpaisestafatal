@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cb8b018eb0f5",
+  "claimSlug": "\"modelo-como-es-que-en-espana-los-recursos-judiciales-son-tan-caros-que-la-gente-se-qued\"",
+  "text": "¿Cómo es que en España los recursos judiciales son tan caros que la gente se queda sin recursos para defenderse?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1798901af3fc"
+  ]
+}

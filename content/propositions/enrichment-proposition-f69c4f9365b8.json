@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f69c4f9365b8",
+  "claimSlug": "\"modelo-los-planes-de-emergencia-no-son-suficientemente-comprobados-y-podrian-ser-insufi\"",
+  "text": "Los planes de emergencia no son suficientemente comprobados y podrían ser insuficientes en caso de incendio.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c941b20889fe"
+  ]
+}

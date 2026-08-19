@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7486a07917ba",
+  "claimSlug": "\"modelo-la-inmigracion-esta-desplazando-a-los-jovenes-espanoles-de-sus-puestos-de-trabaj\"",
+  "text": "La inmigración está desplazando a los jóvenes españoles de sus puestos de trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bce6f863ff27"
+  ]
+}

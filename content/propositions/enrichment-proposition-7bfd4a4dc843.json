@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7bfd4a4dc843",
+  "claimSlug": "\"modelo-el-sistema-educativo-esta-saturado-y-los-recursos-se-reparten-de-manera-ineficie\"",
+  "text": "El sistema educativo está saturado y los recursos se reparten de manera ineficiente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-154ed26efa4c"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6939736723b6",
+  "claimSlug": "\"modelo-el-sistema-de-riego-en-las-zonas-de-agricultura-de-espana-es-ineficiente-y-despe\"",
+  "text": "El sistema de riego en las zonas de agricultura de España es ineficiente y desperdicia mucha agua.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-4e1369089d3f"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e81f3d9afd5a",
+  "claimSlug": "\"modelo-el-horario-de-las-escuelas-no-se-adapta-a-las-necesidades-de-los-trabajadores-jo\"",
+  "text": "El horario de las escuelas no se adapta a las necesidades de los trabajadores jóvenes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-45fce488f8e7"
+  ]
+}

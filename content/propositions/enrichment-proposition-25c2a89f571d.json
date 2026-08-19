@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-25c2a89f571d",
+  "claimSlug": "\"modelo-es-inaceptable-que-a-pesar-de-los-escandalos-de-corrupcion-las-empresas-locales-\"",
+  "text": "Es inaceptable que a pesar de los escándalos de corrupción, las empresas locales sigan perdiendo contratos importantes para obras públicas en favor de empresas de fuera del país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0dfa3426ab2c"
+  ]
+}

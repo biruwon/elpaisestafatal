@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad2fc2e8dc80",
+  "claimSlug": "\"modelo-el-sistema-de-pensiones-es-un-desastre-se-endeudan-demasiado-y-la-gente-no-se-ju\"",
+  "text": "El sistema de pensiones es un desastre, se endeudan demasiado y la gente no se jubila con lo necesario.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3c8d7ac991e0"
+  ]
+}

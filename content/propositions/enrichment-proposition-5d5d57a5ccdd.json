@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d5d57a5ccdd",
+  "claimSlug": "\"modelo-la-infraestructura-en-galicia-es-deficiente-y-no-mejora-suficientemente\"",
+  "text": "La infraestructura en Galicia es deficiente y no mejora suficientemente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fee296f5f866"
+  ]
+}

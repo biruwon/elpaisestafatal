@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9cc6407a40d7",
+  "claimSlug": "\"modelo-cuanto-porcentaje-de-la-poblacion-en-espana-se-ve-afectada-por-la-pobreza-energe\"",
+  "text": "¿Cuánto porcentaje de la población en España se ve afectada por la pobreza energética?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-414c911108bd"
+  ]
+}

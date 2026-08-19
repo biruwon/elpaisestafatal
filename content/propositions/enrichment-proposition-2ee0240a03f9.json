@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ee0240a03f9",
+  "claimSlug": "\"modelo-que-pasa-con-el-aumento-constante-del-precio-de-la-electricidad-en-espana\"",
+  "text": "¿Qué pasa con el aumento constante del precio de la electricidad en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-346d933f0f49"
+  ]
+}

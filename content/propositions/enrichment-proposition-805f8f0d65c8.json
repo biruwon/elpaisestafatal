@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-805f8f0d65c8",
+  "claimSlug": "\"modelo-la-ue-esta-pasando-por-alto-los-problemas-de-desempleo-juvenil-en-espana\"",
+  "text": "La UE está pasando por alto los problemas de desempleo juvenil en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1d473eda3222"
+  ]
+}

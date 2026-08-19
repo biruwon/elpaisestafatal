@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e02cd4a7fd6b",
+  "claimSlug": "\"modelo-las-paradas-de-autobus-en-muchas-ciudades-estan-mal-senalizadas-lo-que-puede-res\"",
+  "text": "Las paradas de autobús en muchas ciudades están mal señalizadas, lo que puede resultar frustrante para los usuarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-def9a682ec1f"
+  ]
+}

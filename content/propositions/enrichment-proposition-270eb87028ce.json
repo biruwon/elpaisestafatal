@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-270eb87028ce",
+  "claimSlug": "\"modelo-la-falta-de-parques-y-areas-de-juego-en-los-barrios-esta-dejando-a-los-ninos-sin\"",
+  "text": "La falta de parques y áreas de juego en los barrios está dejando a los niños sin espacios seguros para jugar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a7f5bd2e32b5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aac5daa37b16",
+  "claimSlug": "\"modelo-los-trabajadores-en-el-sector-servicios-cobran-menos-que-los-que-trabajan-en-la-\"",
+  "text": "Los trabajadores en el sector servicios cobran menos que los que trabajan en la construcción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4de600669e5"
+  ]
+}

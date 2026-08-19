@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e8388d04cc02",
+  "claimSlug": "\"modelo-en-espana-la-falta-de-control-sobre-las-decisiones-de-los-jueces-permite-que-se-\"",
+  "text": "En España, la falta de control sobre las decisiones de los jueces permite que se tomen sentencias injustas sin pruebas suficientes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-429015dc5cc6"
+  ]
+}

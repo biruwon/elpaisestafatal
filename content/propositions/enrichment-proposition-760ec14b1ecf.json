@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-760ec14b1ecf",
+  "claimSlug": "\"modelo-el-aumento-del-iva-esta-desangrando-mi-economia-familiar\"",
+  "text": "El aumento del IVA está desangrando mi economía familiar.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-eb42c1066f26"
+  ]
+}

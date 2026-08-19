@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ff5b8ba8885",
+  "claimSlug": "\"modelo-la-ue-esta-perjudicando-las-pequenas-empresas-en-espana\"",
+  "text": "La UE está perjudicando las pequeñas empresas en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-648078344534"
+  ]
+}

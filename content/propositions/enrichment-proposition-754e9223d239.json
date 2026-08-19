@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-754e9223d239",
+  "claimSlug": "\"modelo-cuantos-casos-de-corrupcion-se-resuelven-cada-ano-en-espana\"",
+  "text": "¿Cuántos casos de corrupción se resuelven cada año en España?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d418149ff925"
+  ]
+}

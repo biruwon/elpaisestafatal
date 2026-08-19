@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c8fd9020b4f6",
+  "claimSlug": "\"modelo-es-desesperante-que-la-prestacion-por-desempleo-se-agote-antes-de-encontrar-un-n\"",
+  "text": "Es desesperante que la prestación por desempleo se agote antes de encontrar un nuevo trabajo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86c3bba85a41"
+  ]
+}

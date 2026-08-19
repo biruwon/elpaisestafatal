@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5dd281cae866",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-frenar-la-inflacion\"",
+  "text": "El gobierno no hace nada para frenar la inflación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dfd4b2012756"
+  ]
+}

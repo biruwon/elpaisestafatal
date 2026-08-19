@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fa06cb52784e",
+  "claimSlug": "\"modelo-el-gobierno-no-hace-nada-para-frenar-la-inflacion-y-nos-esta-dejando-en-la-ruina\"",
+  "text": "El gobierno no hace nada para frenar la inflación y nos está dejando en la ruina.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-baaf4b0e8876"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f2a9870f6673",
+  "claimSlug": "\"modelo-la-presencia-de-viveros-en-galicia-es-un-aspecto-positivo-pero-se-esta-utilizand\"",
+  "text": "La presencia de viveros en Galicia es un aspecto positivo, pero ¿se está utilizando al máximo la potencialidad agrícola de la región?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b4e891609510"
+  ]
+}

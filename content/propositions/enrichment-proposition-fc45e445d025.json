@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fc45e445d025",
+  "claimSlug": "\"modelo-con-el-sueldo-actual-apenas-se-puede-cubrir-el-alquiler-sin-comer-ni-vestir\"",
+  "text": "Con el sueldo actual, apenas se puede cubrir el alquiler sin comer ni vestir.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-40f377c356bf"
+  ]
+}

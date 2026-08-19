@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-44bae5695f54",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llevando-a-la-segregacion-social-y-a-la-formacion-de-barrios\"",
+  "text": "La inmigración está llevando a la segregación social y a la formación de barrios segregados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3c0277c4c805"
+  ]
+}

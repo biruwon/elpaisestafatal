@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-25c6bb6afc77",
+  "claimSlug": "\"modelo-por-que-el-metro-de-madrid-no-cubre-todas-las-zonas-residenciales\"",
+  "text": "¿Por qué el metro de Madrid no cubre todas las zonas residenciales?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4168fa5b495d"
+  ]
+}

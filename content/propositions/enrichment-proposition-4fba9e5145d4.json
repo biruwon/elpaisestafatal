@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4fba9e5145d4",
+  "claimSlug": "\"modelo-espana-no-ha-logrado-unir-a-todos-sus-paises-miembros-de-la-ue-en-la-lucha-contr\"",
+  "text": "España no ha logrado unir a todos sus países miembros de la UE en la lucha contra el cambio climático.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-24663abb9d1b"
+  ]
+}

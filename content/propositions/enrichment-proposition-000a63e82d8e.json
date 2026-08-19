@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-000a63e82d8e",
+  "claimSlug": "\"modelo-las-huertas-de-la-comunidad-valenciana-estan-abandonadas-por-falta-de-mano-de-ob\"",
+  "text": "Las huertas de la Comunidad Valenciana están abandonadas por falta de mano de obra, ¡nadie quiere trabajar en agricultura!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-218ddf7de4dc"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d448eccea88a",
+  "claimSlug": "\"modelo-la-proliferacion-de-delitos-de-drogas-en-zonas-residenciales-es-tal-que-ya-es-un\"",
+  "text": "La proliferación de delitos de drogas en zonas residenciales es tal que ya es un problema generalizado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7b741c613568"
+  ]
+}

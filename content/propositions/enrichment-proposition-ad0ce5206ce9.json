@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad0ce5206ce9",
+  "claimSlug": "\"modelo-el-iva-se-ha-disparado-en-el-sector-de-la-alimentacion-poniendo-en-peligro-los-p\"",
+  "text": "El IVA se ha disparado en el sector de la alimentación, poniendo en peligro los pequeños comercios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-61c5ae15e284"
+  ]
+}

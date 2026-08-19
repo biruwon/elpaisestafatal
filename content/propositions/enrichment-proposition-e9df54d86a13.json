@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e9df54d86a13",
+  "claimSlug": "\"modelo-el-servicio-de-taxis-en-madrid-es-abusivo-y-muy-cara-la-carrera\"",
+  "text": "El servicio de taxis en Madrid es abusivo y muy cara la carrera.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ada1bce4ec12"
+  ]
+}

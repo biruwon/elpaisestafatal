@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bf4cd92139ae",
+  "claimSlug": "\"modelo-que-pasa-con-la-inflacion-si-los-sueldos-no-crecen-al-mismo-ritmo-que-los-costos\"",
+  "text": "¿Qué pasa con la inflación si los sueldos no crecen al mismo ritmo que los costos de vida?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e1e2c5075042"
+  ]
+}

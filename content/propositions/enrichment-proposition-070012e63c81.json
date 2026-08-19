@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-070012e63c81",
+  "claimSlug": "\"modelo-los-hurtos-en-supermercados-son-tan-frecuentes-que-ya-me-he-empezado-a-proteger-\"",
+  "text": "Los hurtos en supermercados son tan frecuentes que ya me he empezado a proteger con bolsas de plástico.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-556e41bdd651"
+  ]
+}

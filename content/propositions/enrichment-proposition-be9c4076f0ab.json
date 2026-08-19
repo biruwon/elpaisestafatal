@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-be9c4076f0ab",
+  "claimSlug": "\"modelo-la-espera-para-ver-a-un-psicologo-en-el-servicio-nacional-de-salud-sns-es-inacep\"",
+  "text": "La espera para ver a un psicólogo en el Servicio Nacional de Salud (SNS) es inaceptable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22586b946602"
+  ]
+}

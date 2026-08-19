@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-97b622c8ce45",
+  "claimSlug": "\"modelo-los-robos-en-tiendas-son-demasiado-frecuentes-y-la-seguridad-no-mejora\"",
+  "text": "Los robos en tiendas son demasiado frecuentes y la seguridad no mejora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0c879c171297"
+  ]
+}

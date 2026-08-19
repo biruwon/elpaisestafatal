@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-a61431d36846",
+  "claimSlug": "\"modelo-es-comun-encontrarse-con-delincuentes-en-el-metro-de-madrid\"",
+  "text": "¿Es común encontrarse con delincuentes en el metro de Madrid?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7eaa713037c5"
+  ]
+}

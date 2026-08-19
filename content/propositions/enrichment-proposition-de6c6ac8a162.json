@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-de6c6ac8a162",
+  "claimSlug": "\"modelo-el-agua-es-un-lujo-en-espana-no-puedo-ni-ducharme-como-se-debe\"",
+  "text": "El agua es un lujo en España, no puedo ni ducharme como se debe.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c23b23989c48"
+  ]
+}

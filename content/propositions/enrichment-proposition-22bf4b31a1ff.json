@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-22bf4b31a1ff",
+  "claimSlug": "\"modelo-en-espana-el-robo-de-coches-es-tan-comun-que-ya-ni-siquiera-me-pregunto-si-dejo-\"",
+  "text": "En España, el robo de coches es tan común que ya ni siquiera me pregunto si dejo el mío con el seguro encendido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d6e2a20ea247"
+  ]
+}

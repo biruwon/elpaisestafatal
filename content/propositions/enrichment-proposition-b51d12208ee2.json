@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b51d12208ee2",
+  "claimSlug": "\"modelo-por-que-la-flexibilidad-laboral-en-espana-es-tan-alta-que-los-trabajadores-se-ve\"",
+  "text": "¿Por qué la flexibilidad laboral en España es tan alta que los trabajadores se ven obligados a aceptar contratos a tiempo parcial o de temporalidad?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-62a9bf24f272"
+  ]
+}

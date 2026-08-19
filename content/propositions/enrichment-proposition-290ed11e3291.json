@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-290ed11e3291",
+  "claimSlug": "\"modelo-es-frecuente-que-el-personal-sanitario-en-espana-no-ofrezca-atencion-inmediata-a\"",
+  "text": "¿Es frecuente que el personal sanitario en España no ofrezca atención inmediata a los pacientes con urgencias?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-f60cadebef6b"
+  ]
+}

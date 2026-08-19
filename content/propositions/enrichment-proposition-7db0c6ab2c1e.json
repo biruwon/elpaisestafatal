@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7db0c6ab2c1e",
+  "claimSlug": "\"modelo-la-falta-de-formacion-y-oportunidades-de-mejora-en-el-trabajo-es-un-problema\"",
+  "text": "La falta de formación y oportunidades de mejora en el trabajo es un problema",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-06baf93b4ac9"
+  ]
+}

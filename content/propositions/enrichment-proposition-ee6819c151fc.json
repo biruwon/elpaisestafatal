@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ee6819c151fc",
+  "claimSlug": "\"modelo-el-coste-de-la-vivienda-en-espana-es-mas-bajo-que-en-los-paises-bajos\"",
+  "text": "El coste de la vivienda en España es más bajo que en los Países Bajos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-76ab0ee2b001"
+  ]
+}

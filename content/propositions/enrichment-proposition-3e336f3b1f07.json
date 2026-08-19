@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3e336f3b1f07",
+  "claimSlug": "\"modelo-la-inflacion-esta-matando-mis-ahorros-y-mis-compras-no-valen-lo-que-antes\"",
+  "text": "La inflación está matando mis ahorros y mis compras no valen lo que antes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e80c33afddc6"
+  ]
+}

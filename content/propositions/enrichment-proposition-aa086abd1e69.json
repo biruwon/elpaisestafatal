@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-aa086abd1e69",
+  "claimSlug": "\"modelo-la-conexion-entre-las-islas-baleares-y-la-peninsula-es-muy-lenta-y-costosa\"",
+  "text": "La conexión entre las Islas Baleares y la Península es muy lenta y costosa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d60001123b2f"
+  ]
+}

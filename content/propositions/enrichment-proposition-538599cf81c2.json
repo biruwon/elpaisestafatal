@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-538599cf81c2",
+  "claimSlug": "\"modelo-los-impuestos-a-las-empresas-estan-haciendo-que-los-precios-de-la-comida-suban-m\"",
+  "text": "Los impuestos a las empresas están haciendo que los precios de la comida suban más que los sueldos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e56fdcdb9cc9"
+  ]
+}

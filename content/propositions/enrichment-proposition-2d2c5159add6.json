@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2d2c5159add6",
+  "claimSlug": "\"modelo-el-precio-de-la-instalacion-de-fibra-optica-en-espana-es-un-robo\"",
+  "text": "El precio de la instalación de fibra óptica en España es un robo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8f293576e6a3"
+  ]
+}

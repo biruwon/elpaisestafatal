@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5ef69e4e06aa",
+  "claimSlug": "\"modelo-es-preocupante-la-falta-de-medidas-para-mejorar-la-seguridad-nocturna-en-los-bar\"",
+  "text": "Es preocupante la falta de medidas para mejorar la seguridad nocturna en los bares y discotecas de España.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-eaef98da2cbb"
+  ]
+}

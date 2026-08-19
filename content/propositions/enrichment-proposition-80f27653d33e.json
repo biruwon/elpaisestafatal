@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-80f27653d33e",
+  "claimSlug": "\"modelo-el-metro-en-mi-ciudad-se-retrasa-constantemente-y-es-muy-lento\"",
+  "text": "El metro en mi ciudad se retrasa constantemente y es muy lento.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-18b8478787a9"
+  ]
+}

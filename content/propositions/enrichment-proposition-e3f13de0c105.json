@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e3f13de0c105",
+  "claimSlug": "\"modelo-por-que-no-se-hacen-mas-controles-en-los-supermercados-para-que-no-se-quiten-los\"",
+  "text": "¿Por qué no se hacen más controles en los supermercados para que no se quiten los productos a precio de promoción?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5ace3fd0e458"
+  ]
+}

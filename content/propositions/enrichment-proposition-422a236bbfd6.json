@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-422a236bbfd6",
+  "claimSlug": "\"modelo-las-playas-de-la-costa-del-sol-estan-siempre-llenas-de-basura-no-pueden-hacer-al\"",
+  "text": "¡Las playas de la Costa del Sol están siempre llenas de basura! ¿No pueden hacer algo al respecto?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-84f0c83a9007"
+  ]
+}

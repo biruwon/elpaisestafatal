@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4cb1f7253f3b",
+  "claimSlug": "\"modelo-la-ue-no-apoya-lo-suficiente-a-las-pymes-espanolas-en-materia-de-innovacion\"",
+  "text": "La UE no apoya lo suficiente a las pymes españolas en materia de innovación.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dbda0d8a4154"
+  ]
+}

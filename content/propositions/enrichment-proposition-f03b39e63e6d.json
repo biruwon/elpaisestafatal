@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f03b39e63e6d",
+  "claimSlug": "\"modelo-el-crecimiento-economico-no-se-ve-en-el-bolsillo-del-ciudadano\"",
+  "text": "El crecimiento económico no se ve en el bolsillo del ciudadano.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-8d38cce81953"
+  ]
+}

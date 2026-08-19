@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-05842774c560",
+  "claimSlug": "\"modelo-se-esta-permitiendo-la-inmigracion-sin-control-el-pais-se-esta-llenando-de-gente\"",
+  "text": "Se está permitiendo la inmigración sin control, el país se está llenando de gente que no contribuye.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4d739b4e8275"
+  ]
+}

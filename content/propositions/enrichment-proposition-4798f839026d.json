@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4798f839026d",
+  "claimSlug": "\"modelo-el-sistema-de-impuestos-locales-es-muy-desigual-con-algunas-ciudades-sobrecargad\"",
+  "text": "El sistema de impuestos locales es muy desigual, con algunas ciudades sobrecargadas mientras otras tienen menos gasto público.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-07410e1c6e0b"
+  ]
+}

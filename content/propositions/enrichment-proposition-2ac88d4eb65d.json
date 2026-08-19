@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2ac88d4eb65d",
+  "claimSlug": "\"modelo-el-servicio-publico-es-malo-porque-los-trabajadores-son-inmigrantes-y-no-se-esfu\"",
+  "text": "El servicio público es malo porque los trabajadores son inmigrantes y no se esfuerzan.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c653e2f20984"
+  ]
+}

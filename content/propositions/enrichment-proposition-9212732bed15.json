@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9212732bed15",
+  "claimSlug": "\"modelo-la-sequia-y-el-clima-caluroso-hacen-que-los-incendios-forestales-sean-mas-frecue\"",
+  "text": "La sequía y el clima caluroso hacen que los incendios forestales sean más frecuentes y destructivos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f1995ffb76f6"
+  ]
+}

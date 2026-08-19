@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fd4acbc96cc1",
+  "claimSlug": "\"modelo-la-tasa-de-crecimiento-es-un-mero-numerito\"",
+  "text": "La tasa de crecimiento es un mero numerito",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f1dad32a4bad"
+  ]
+}

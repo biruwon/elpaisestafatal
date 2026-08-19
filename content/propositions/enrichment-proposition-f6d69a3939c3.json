@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f6d69a3939c3",
+  "claimSlug": "\"modelo-la-inmigracion-esta-aumentando-el-desempleo-entre-los-espanoles\"",
+  "text": "La inmigración está aumentando el desempleo entre los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fa16b5b9f019"
+  ]
+}

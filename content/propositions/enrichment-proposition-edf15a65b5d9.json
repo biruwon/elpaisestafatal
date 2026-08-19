@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-edf15a65b5d9",
+  "claimSlug": "\"modelo-como-es-que-a-pesar-de-la-inflacion-el-precio-de-la-vivienda-sigue-subiendo\"",
+  "text": "¿Cómo es que a pesar de la inflación, el precio de la vivienda sigue subiendo?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a9d430c7f643"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f6d3c5d31cf",
+  "claimSlug": "\"modelo-el-sistema-electrico-esta-disenado-para-enganar-a-los-consumidores\"",
+  "text": "El sistema eléctrico está diseñado para engañar a los consumidores.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-1338329c98fd"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1fda6f26b683",
+  "claimSlug": "\"modelo-la-falta-de-espacios-verdes-en-las-escuelas-esta-perjudicando-la-salud-mental-de\"",
+  "text": "La falta de espacios verdes en las escuelas está perjudicando la salud mental de los niños.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-042c437ab96b"
+  ]
+}

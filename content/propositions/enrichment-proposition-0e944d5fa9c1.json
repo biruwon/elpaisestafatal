@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0e944d5fa9c1",
+  "claimSlug": "\"modelo-las-listas-de-espera-en-espana-hacen-que-los-medicos-sean-menos-efectivos-y-mas-\"",
+  "text": "Las listas de espera en España hacen que los médicos sean menos efectivos y más frustrantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-78bb32dc1388"
+  ]
+}

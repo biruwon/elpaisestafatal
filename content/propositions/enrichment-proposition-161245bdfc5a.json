@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-161245bdfc5a",
+  "claimSlug": "\"modelo-los-autobuses-en-la-ciudad-de-sevilla-llegan-tarde-y-el-servicio-es-irregular\"",
+  "text": "Los autobuses en la ciudad de Sevilla llegan tarde y el servicio es irregular.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ee48a658c648"
+  ]
+}

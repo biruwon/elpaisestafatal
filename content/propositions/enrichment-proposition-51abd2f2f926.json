@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-51abd2f2f926",
+  "claimSlug": "\"modelo-la-ayuda-para-el-cuidado-de-los-mayores-en-el-hogar-es-muy-limitada-y-costosa\"",
+  "text": "La ayuda para el cuidado de los mayores en el hogar es muy limitada y costosa.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dcaca5273bb3"
+  ]
+}

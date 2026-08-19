@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c4110bab8c91",
+  "claimSlug": "\"modelo-la-inmigracion-esta-llenando-todos-los-puestos-de-trabajo-y-quitando-oportunidad\"",
+  "text": "La inmigración está llenando todos los puestos de trabajo y quitando oportunidades a los españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-353afdc770c1"
+  ]
+}

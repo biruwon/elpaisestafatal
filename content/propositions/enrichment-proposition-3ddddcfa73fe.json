@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3ddddcfa73fe",
+  "claimSlug": "\"modelo-los-robos-en-las-tiendas-son-comunes-y-los-comerciantes-se-sienten-inseguros-en-\"",
+  "text": "Los robos en las tiendas son comunes y los comerciantes se sienten inseguros en sus propios negocios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22f3d8809efa"
+  ]
+}

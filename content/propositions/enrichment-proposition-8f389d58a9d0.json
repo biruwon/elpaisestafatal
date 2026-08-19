@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8f389d58a9d0",
+  "claimSlug": "\"modelo-los-precios-de-los-productos-en-los-mercados-de-agricultura-son-abusivos\"",
+  "text": "Los precios de los productos en los mercados de agricultura son abusivos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2a3ff03561bb"
+  ]
+}

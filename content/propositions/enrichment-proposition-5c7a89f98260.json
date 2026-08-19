@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5c7a89f98260",
+  "claimSlug": "\"modelo-la-inmigracion-esta-creando-un-clima-de-incertidumbre-y-preocupacion-entre-los-c\"",
+  "text": "La inmigración está creando un clima de incertidumbre y preocupación entre los ciudadanos autóctonos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-778652f36afd"
+  ]
+}

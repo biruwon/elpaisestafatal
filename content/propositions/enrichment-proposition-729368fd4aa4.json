@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-729368fd4aa4",
+  "claimSlug": "\"modelo-la-corrupcion-en-espana-es-tan-comun-que-ya-no-se-sorprende-cuando-se-descubre\"",
+  "text": "La corrupción en España es tan común que ya no se sorprende cuando se descubre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e42c8a1f7647"
+  ]
+}

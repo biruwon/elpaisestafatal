@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-efbb974d260b",
+  "claimSlug": "\"modelo-la-ue-no-ha-garantizado-el-acceso-a-servicios-de-salud-de-calidad-en-espana\"",
+  "text": "La UE no ha garantizado el acceso a servicios de salud de calidad en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-87baaf97678d"
+  ]
+}

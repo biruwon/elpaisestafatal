@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d075c312ca56",
+  "claimSlug": "\"modelo-los-acuerdos-de-teletrabajo-no-se-respetan-y-los-empleados-tienen-que-estar-siem\"",
+  "text": "Los acuerdos de teletrabajo no se respetan y los empleados tienen que estar siempre disponibles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-cfd360a34545"
+  ]
+}

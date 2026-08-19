@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fecdbcd19fd1",
+  "claimSlug": "\"modelo-por-que-la-tasa-de-impuestos-sobre-el-alquiler-es-tan-alta-que-ni-siquiera-se-ve\"",
+  "text": "¿Por qué la tasa de impuestos sobre el alquiler es tan alta que ni siquiera se ven los servicios del ayuntamiento?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81346f6ace7e"
+  ]
+}

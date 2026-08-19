@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9dd7638d161e",
+  "claimSlug": "\"modelo-la-inmigracion-no-controlada-esta-haciendo-que-los-precios-de-la-vivienda-suban-\"",
+  "text": "La inmigración no controlada está haciendo que los precios de la vivienda suban demasiado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0fce86b0e7f4"
+  ]
+}

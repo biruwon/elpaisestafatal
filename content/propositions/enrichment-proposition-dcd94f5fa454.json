@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-dcd94f5fa454",
+  "claimSlug": "\"modelo-espana-ha-tenido-que-soportar-politicas-de-la-ue-que-perjudican-la-cultura\"",
+  "text": "España ha tenido que soportar políticas de la UE que perjudican la cultura.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e261e929380d"
+  ]
+}

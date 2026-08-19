@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ebbb302bc83",
+  "claimSlug": "\"modelo-la-inflacion-esta-haciendo-que-la-alimentacion-sea-un-autentico-mazazo-para-los-\"",
+  "text": "La inflación está haciendo que la alimentación sea un auténtico mazazo para los hogares.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-65051e133486"
+  ]
+}

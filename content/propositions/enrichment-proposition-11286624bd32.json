@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-11286624bd32",
+  "claimSlug": "\"modelo-espana-tiene-menos-autopistas-que-portugal\"",
+  "text": "España tiene menos autopistas que Portugal",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-36f3fed6f87d"
+  ]
+}

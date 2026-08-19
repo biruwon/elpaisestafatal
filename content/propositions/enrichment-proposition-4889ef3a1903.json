@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4889ef3a1903",
+  "claimSlug": "\"modelo-en-muchos-barrios-de-ciudades-espanolas-la-falta-de-servicios-basicos-es-palpabl\"",
+  "text": "En muchos barrios de ciudades españolas, la falta de servicios básicos es palpable.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-530b06108b40"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b51321f6af67",
+  "claimSlug": "\"modelo-por-que-la-ue-permite-que-las-normas-laborales-de-espana-sigan-siendo-tan-laxas-\"",
+  "text": "¿Por qué la UE permite que las normas laborales de España sigan siendo tan laxas, mientras que otros países tienen medidas más protectoras para los trabajadores?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-63984034b0a0"
+  ]
+}

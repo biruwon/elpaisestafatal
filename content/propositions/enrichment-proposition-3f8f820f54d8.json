@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3f8f820f54d8",
+  "claimSlug": "\"modelo-el-caso-gurtel-demostro-que-el-pp-contaba-con-un-extenso-red-de-corrupcion-en-el\"",
+  "text": "El caso Gürtel demostró que el PP contaba con un extenso red de corrupción en el ámbito de la contratación pública.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-dd932f0d38e3"
+  ]
+}

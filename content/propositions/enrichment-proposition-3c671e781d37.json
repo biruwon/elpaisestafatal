@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3c671e781d37",
+  "claimSlug": "\"modelo-la-subida-de-los-precios-del-gas-en-espana-es-insostenible\"",
+  "text": "La subida de los precios del gas en España es insostenible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-81a59ba73213"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c743aca4427a",
+  "claimSlug": "\"modelo-la-vivienda-en-espana-es-imposible-de-acceder-con-un-sueldo-medio\"",
+  "text": "¡La vivienda en España es imposible de acceder con un sueldo medio!",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-feef673e971c"
+  ]
+}

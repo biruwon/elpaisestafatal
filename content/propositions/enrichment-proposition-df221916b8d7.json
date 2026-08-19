@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-df221916b8d7",
+  "claimSlug": "\"modelo-los-jubilados-con-pensiones-bajas-sufren-mas-con-los-altos-precios-de-los-servic\"",
+  "text": "Los jubilados con pensiones bajas sufren más con los altos precios de los servicios básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e3caa53893ed"
+  ]
+}

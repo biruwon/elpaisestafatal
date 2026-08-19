@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-11bcedf9986e",
+  "claimSlug": "\"modelo-las-carceles-estan-sobrepobladas-y-hay-falta-de-personal-para-cuidar-a-los-reos\"",
+  "text": "Las cárceles están sobrepobladas y hay falta de personal para cuidar a los reos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-611b092cf230"
+  ]
+}

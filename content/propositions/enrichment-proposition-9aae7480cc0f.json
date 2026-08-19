@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-9aae7480cc0f",
+  "claimSlug": "\"modelo-la-inmigracion-esta-causando-un-desequilibrio-demografico-en-el-pais\"",
+  "text": "La inmigración está causando un desequilibrio demográfico en el país.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fddbb1bee714"
+  ]
+}

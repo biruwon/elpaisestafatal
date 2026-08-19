@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5d7b3ccc730c",
+  "claimSlug": "\"modelo-los-altos-costes-de-la-energia-estan-penalizando-a-las-empresas-y-autonomos\"",
+  "text": "Los altos costes de la energía están penalizando a las empresas y autónomos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-50fcd4a50204"
+  ]
+}

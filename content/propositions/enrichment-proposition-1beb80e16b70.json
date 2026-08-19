@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1beb80e16b70",
+  "claimSlug": "\"modelo-el-alquiler-de-un-piso-en-el-centro-de-madrid-es-mas-caro-que-en-la-periferia\"",
+  "text": "El alquiler de un piso en el centro de Madrid es más caro que en la periferia.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-118131598c87"
+  ]
+}

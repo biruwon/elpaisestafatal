@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cdedec60f30e",
+  "claimSlug": "\"modelo-la-desigualdad-en-la-distribucion-de-la-renta-es-tan-grande-que-incluso-en-ciuda\"",
+  "text": "La desigualdad en la distribución de la renta es tan grande que incluso en ciudades de primer nivel, hay personas que no pueden permitirse un piso decente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-38fcd91b9ae1"
+  ]
+}

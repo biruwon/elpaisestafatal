@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-20b7c3e30504",
+  "claimSlug": "\"modelo-la-inmigracion-esta-provocando-tensiones-entre-las-diferentes-culturas\"",
+  "text": "La inmigración está provocando tensiones entre las diferentes culturas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4105e0f79d44"
+  ]
+}

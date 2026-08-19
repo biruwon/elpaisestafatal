@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fbc4eda50195",
+  "claimSlug": "\"modelo-la-inmigracion-aumenta-el-crimen-y-la-delincuencia-en-las-ciudades\"",
+  "text": "La inmigración aumenta el crimen y la delincuencia en las ciudades.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-598c75fa48e5"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-237eeeff982d",
+  "claimSlug": "\"modelo-la-delincuencia-aumenta-en-las-fiestas-de-san-fermin-de-pamplona\"",
+  "text": "La delincuencia aumenta en las fiestas de San Fermín de Pamplona.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1c5711b975de"
+  ]
+}

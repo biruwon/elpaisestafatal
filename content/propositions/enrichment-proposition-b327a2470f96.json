@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b327a2470f96",
+  "claimSlug": "\"modelo-el-sistema-sanitario-publico-en-espana-tiene-colas-interminables-y-recursos-esca\"",
+  "text": "El sistema sanitario público en España tiene colas interminables y recursos escasos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1219a49d6b4d"
+  ]
+}

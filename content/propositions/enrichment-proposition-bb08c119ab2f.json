@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-bb08c119ab2f",
+  "claimSlug": "\"modelo-la-sanidad-publica-no-puede-garantizar-tratamientos-urgentes-solo-los-que-son-re\"",
+  "text": "La sanidad pública no puede garantizar tratamientos urgentes, solo los que son realmente necesarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-036957953861"
+  ]
+}

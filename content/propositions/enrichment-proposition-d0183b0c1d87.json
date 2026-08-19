@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d0183b0c1d87",
+  "claimSlug": "\"modelo-el-aumento-de-los-delitos-via-digital-ha-dejado-a-muchos-ciudadanos-sin-segurida\"",
+  "text": "El aumento de los delitos vía digital ha dejado a muchos ciudadanos sin seguridad en sus propias casas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-aa155d9ca0d7"
+  ]
+}

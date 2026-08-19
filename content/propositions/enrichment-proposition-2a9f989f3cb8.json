@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-2a9f989f3cb8",
+  "claimSlug": "\"modelo-la-ue-no-ha-tomado-medidas-para-combatir-el-aumento-del-precio-de-los-alimentos-\"",
+  "text": "La UE no ha tomado medidas para combatir el aumento del precio de los alimentos en España.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0ee88179c412"
+  ]
+}

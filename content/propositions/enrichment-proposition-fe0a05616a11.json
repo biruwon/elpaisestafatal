@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-fe0a05616a11",
+  "claimSlug": "\"modelo-la-ue-no-apoya-lo-suficiente-a-los-pequenos-agricultores-espanoles\"",
+  "text": "La UE no apoya lo suficiente a los pequeños agricultores españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-3bc556d8c987"
+  ]
+}

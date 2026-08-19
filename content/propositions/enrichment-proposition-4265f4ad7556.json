@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-4265f4ad7556",
+  "claimSlug": "\"modelo-los-metros-subterraneos-de-madrid-son-mas-extensos-que-los-de-barcelona\"",
+  "text": "Los metros subterráneos de Madrid son más extensos que los de Barcelona",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-98f17f4ba627"
+  ]
+}

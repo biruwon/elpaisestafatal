@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e2bb5bef206d",
+  "claimSlug": "\"modelo-los-tribunales-no-son-accesibles-para-todos-con-pocos-recursos-y-un-sistema-comp\"",
+  "text": "Los tribunales no son accesibles para todos, con pocos recursos y un sistema complejo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ee10b49db5d5"
+  ]
+}

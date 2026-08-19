@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1a90783e02d3",
+  "claimSlug": "\"modelo-la-inmigracion-de-baja-calidad-esta-ocupando-los-trabajos-de-los-nativos-con-emp\"",
+  "text": "La inmigración de baja calidad está ocupando los trabajos de los nativos, con empresas preferiendo contratar extranjeros a bajos sueldos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-bf347c9cd145"
+  ]
+}

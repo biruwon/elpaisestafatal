@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-69ce785fa392",
+  "claimSlug": "\"modelo-la-despoblacion-de-las-zonas-rurales-de-castilla-y-leon-esta-arruinando-el-campo\"",
+  "text": "La despoblación de las zonas rurales de Castilla y León está arruinando el campo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-a66206456fe2"
+  ]
+}

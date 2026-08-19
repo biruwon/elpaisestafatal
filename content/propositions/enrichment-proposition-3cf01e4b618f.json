@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-3cf01e4b618f",
+  "claimSlug": "\"modelo-en-espana-los-contratos-publicos-a-menudo-se-otorgan-a-empresas-con-conexiones-p\"",
+  "text": "En España, los contratos públicos a menudo se otorgan a empresas con conexiones políticas, en lugar de a las más competitivas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-fbeabe53fe84"
+  ]
+}

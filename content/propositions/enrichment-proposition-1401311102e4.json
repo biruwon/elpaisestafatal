@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1401311102e4",
+  "claimSlug": "\"modelo-los-incendios-forestales-en-espana-han-causado-danos-economicos-significativos\"",
+  "text": "Los incendios forestales en España han causado daños económicos significativos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d4f1a03d2db8"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e1449c4d461a",
+  "claimSlug": "\"modelo-en-los-ultimos-anos-el-alquiler-de-pisos-en-sevilla-ha-sido-mas-barato-que-en-ma\"",
+  "text": "En los últimos años, el alquiler de pisos en Sevilla ha sido más barato que en Madrid.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-4a84a20948a0"
+  ]
+}

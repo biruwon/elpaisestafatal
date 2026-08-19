@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5f37108348fc",
+  "claimSlug": "\"modelo-por-que-no-encuentro-viviendas-de-alquiler-que-valgan-el-sueldo-medio\"",
+  "text": "¿Por qué no encuentro viviendas de alquiler que valgan el sueldo medio?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e0ea0b966658"
+  ]
+}

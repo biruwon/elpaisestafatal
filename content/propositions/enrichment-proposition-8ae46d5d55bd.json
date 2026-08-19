@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8ae46d5d55bd",
+  "claimSlug": "\"modelo-la-conciliacion-entre-trabajo-y-familia-es-un-sueno-lejano-para-muchos-trabajado\"",
+  "text": "La conciliación entre trabajo y familia es un sueño lejano para muchos trabajadores.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7f29fce6712b"
+  ]
+}

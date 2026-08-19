@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-53e6f70019e1",
+  "claimSlug": "\"modelo-por-que-la-comunidad-valenciana-sigue-usando-el-termino-comunidad-valenciana-en-\"",
+  "text": "¿Por qué la Comunidad Valenciana sigue usando el término 'Comunidad Valenciana' en lugar de simplemente 'Valencia'?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e8d1caf2f270"
+  ]
+}

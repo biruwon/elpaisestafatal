@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b3c30b692b33",
+  "claimSlug": "\"modelo-la-inmigracion-esta-desplazando-a-los-ciudadanos-autoctonos-de-sus-trabajos\"",
+  "text": "La inmigración está desplazando a los ciudadanos autóctonos de sus trabajos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7145e1e4b62a"
+  ]
+}

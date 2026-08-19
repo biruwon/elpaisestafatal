@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e6f651f02848",
+  "claimSlug": "\"modelo-la-subida-de-la-edad-de-jubilacion-se-siente-como-un-castigo-para-quienes-trabaj\"",
+  "text": "La subida de la edad de jubilación se siente como un castigo para quienes trabajaron toda la vida.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-ac6feb55c90d"
+  ]
+}

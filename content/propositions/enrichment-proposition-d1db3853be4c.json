@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d1db3853be4c",
+  "claimSlug": "\"modelo-las-horas-extras-no-estan-bien-remuneradas-en-espana-a-menudo-no-se-les-paga-lo-\"",
+  "text": "Las horas extras no están bien remuneradas en España, a menudo no se les paga lo justo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-be81d87ca7ff"
+  ]
+}

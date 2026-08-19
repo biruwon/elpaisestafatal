@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-34252c48660c",
+  "claimSlug": "\"modelo-los-precios-de-la-gasolina-suben-por-las-nubes-cuando-bajara\"",
+  "text": "Los precios de la gasolina suben por las nubes, ¿cuándo bajará?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-8dac8bc0a91f"
+  ]
+}

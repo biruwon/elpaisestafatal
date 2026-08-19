@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-99ea17a7613a",
+  "claimSlug": "\"modelo-por-que-en-ciertas-areas-de-espana-se-han-incrementado-los-robos-con-violencia-e\"",
+  "text": "¿Por qué en ciertas áreas de España se han incrementado los robos con violencia en los últimos años, y no se toman medidas efectivas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d5307e1093bc"
+  ]
+}

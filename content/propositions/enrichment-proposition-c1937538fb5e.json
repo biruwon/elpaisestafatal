@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c1937538fb5e",
+  "claimSlug": "\"modelo-la-falta-de-politicas-efectivas-contra-el-paro-en-espana-ha-dejado-a-muchas-pers\"",
+  "text": "La falta de políticas efectivas contra el paro en España ha dejado a muchas personas en situación de precariedad laboral, con pocos derechos y un futuro incierto.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-d578fc990c43"
+  ]
+}

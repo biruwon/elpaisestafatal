@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-70aee94a9737",
+  "claimSlug": "\"modelo-la-tasa-de-incendios-forestales-en-espana-ha-disminuido-en-las-ultimas-decadas\"",
+  "text": "¿La tasa de incendios forestales en España ha disminuido en las últimas décadas?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b839c13d38f7"
+  ]
+}

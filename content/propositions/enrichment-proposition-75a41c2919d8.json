@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-75a41c2919d8",
+  "claimSlug": "\"modelo-el-alza-de-los-precios-esta-haciendo-que-el-ahorro-sea-casi-imposible\"",
+  "text": "El alza de los precios está haciendo que el ahorro sea casi imposible.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-0435cf00d560"
+  ]
+}

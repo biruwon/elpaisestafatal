@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d316aced30c1",
+  "claimSlug": "\"modelo-los-recortes-en-el-presupuesto-de-la-educacion-se-traducen-en-mas-aulas-con-mas-\"",
+  "text": "Los recortes en el presupuesto de la educación se traducen en más aulas con más alumnos, lo que perjudica el aprendizaje.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5f506107d577"
+  ]
+}

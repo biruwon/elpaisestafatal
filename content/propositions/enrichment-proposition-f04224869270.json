@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f04224869270",
+  "claimSlug": "\"modelo-los-subidos-continuos-del-precio-de-la-electricidad-son-un-lastre-para-la-econom\"",
+  "text": "Los subidos continuos del precio de la electricidad son un lastre para la economía doméstica.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e317b9901927"
+  ]
+}

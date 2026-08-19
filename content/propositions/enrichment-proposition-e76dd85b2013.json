@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e76dd85b2013",
+  "claimSlug": "\"modelo-en-algunas-ciudades-la-falta-de-parques-seguros-y-bien-cuidados-hace-que-los-nin\"",
+  "text": "En algunas ciudades, la falta de parques seguros y bien cuidados hace que los niños pasen el día en la calle, exponiéndose a peligros.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-efdaf63e50d3"
+  ]
+}

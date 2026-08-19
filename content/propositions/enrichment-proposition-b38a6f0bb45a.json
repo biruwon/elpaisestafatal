@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b38a6f0bb45a",
+  "claimSlug": "\"modelo-los-libros-de-texto-estan-llegando-rotos-a-muchas-escuelas-lo-que-genera-frustra\"",
+  "text": "Los libros de texto están llegando rotos a muchas escuelas, lo que genera frustración entre los profesores y alumnos.",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-973723c4cd7c"
+  ]
+}

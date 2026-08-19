@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-b1444f63bf16",
+  "claimSlug": "\"modelo-la-rioja-se-queda-con-el-vino-de-rioja-pero-el-resto-del-pais-no-puede-usar-ese-\"",
+  "text": "La Rioja se queda con el vino de Rioja, pero el resto del país no puede usar ese nombre.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6a8b7279fb18"
+  ]
+}

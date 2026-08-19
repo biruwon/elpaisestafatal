@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ae2ff7b1c62f",
+  "claimSlug": "\"modelo-en-muchas-ciudades-los-autobuses-escolares-son-insuficientes-y-llegan-tarde-lo-q\"",
+  "text": "En muchas ciudades, los autobuses escolares son insuficientes y llegan tarde, lo que hace que sea difícil para los padres y los estudiantes llegar a tiempo a clase.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-86cce076ee4f"
+  ]
+}

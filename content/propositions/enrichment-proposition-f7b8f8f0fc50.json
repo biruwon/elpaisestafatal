@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f7b8f8f0fc50",
+  "claimSlug": "\"modelo-el-aumento-de-robos-en-la-zona-peatonal-del-centro-historico-de-madrid-preocupa-\"",
+  "text": "El aumento de robos en la zona peatonal del centro histórico de Madrid preocupa a los comerciantes.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-08c0902dae9e"
+  ]
+}

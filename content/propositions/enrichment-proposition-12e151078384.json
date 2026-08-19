@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-12e151078384",
+  "claimSlug": "\"modelo-la-inseguridad-en-el-valle-del-ebro-es-un-problema-creciente\"",
+  "text": "La inseguridad en el valle del Ebro es un problema creciente.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-6474c59dfd83"
+  ]
+}

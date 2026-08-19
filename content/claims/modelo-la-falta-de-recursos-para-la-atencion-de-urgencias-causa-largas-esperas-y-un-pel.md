@@ -4,21 +4,22 @@ claim: "La falta de recursos para la atención de urgencias causa largas esperas
 assessment: uncertain
 topicSlugs: ["sanidad y listas de espera"]
 aliases: ["Largas esperas en urgencias","Colapso de urgencias","Falta de recursos para urgencias","Espera larga en emergencias","Urgencias con problemas","La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.","¿Es cierto que La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","¿Qué datos permiten comprobar si La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","Quiero saber si La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.","¿Cómo se puede verificar La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","¿Hay evidencia sobre si La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","¿Es verdad que La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","¿Qué sabemos de La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?","¿Se sostiene la afirmación de que La falta de recursos para la atención de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos críticos.?"]
-basis: model
+basis: sourced
 visibility: searchable
 claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
 reviewed: "2026-08-19"
-status: planned
-sourceRefs: []
-evidenceIds: []
+status: published
+sourceRefs: ["enrichment-source-e6d539b7a74e"]
+evidenceIds: ["enrichment-evidence-33b8ae759375"]
 limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "la falta de recursos para la atencion de urgencias causa largas esperas y un peligroso colapso del sistema sanitario en momentos criticos"
 generatedAt: "2026-08-19T06:33:15.933Z"
+propositionIds: ["enrichment-proposition-8e9e751794b0"]
 ---
 
 ## Qué es cierto

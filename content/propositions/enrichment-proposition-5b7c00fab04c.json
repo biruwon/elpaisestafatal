@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5b7c00fab04c",
+  "claimSlug": "\"modelo-que-ha-pasado-con-los-presupuestos-para-la-vivienda-tengo-que-alquilar-un-piso-q\"",
+  "text": "¿Qué ha pasado con los presupuestos para la vivienda? ¡Tengo que alquilar un piso que cuesta más que mi sueldo! Esto es un insulto a la clase trabajadora.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-22128bc0893e"
+  ]
+}

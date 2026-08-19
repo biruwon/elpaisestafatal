@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-83030cc239ba",
+  "claimSlug": "\"modelo-las-consultas-en-el-hospital-se-demoran-demasiado-y-el-personal-parece-agotado\"",
+  "text": "Las consultas en el hospital se demoran demasiado y el personal parece agotado.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-88389b8e7208"
+  ]
+}

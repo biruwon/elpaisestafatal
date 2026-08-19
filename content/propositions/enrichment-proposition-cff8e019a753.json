@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-cff8e019a753",
+  "claimSlug": "\"modelo-los-impuestos-sobre-la-electricidad-son-tan-altos-que-ya-no-podemos-permitirnos-\"",
+  "text": "Los impuestos sobre la electricidad son tan altos que ya no podemos permitirnos encender las luces por la noche.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7030495235b8"
+  ]
+}

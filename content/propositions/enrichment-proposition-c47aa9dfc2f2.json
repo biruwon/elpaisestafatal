@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-c47aa9dfc2f2",
+  "claimSlug": "\"modelo-la-ue-no-ha-invertido-lo-suficiente-en-la-modernizacion-de-las-infraestructuras-\"",
+  "text": "La UE no ha invertido lo suficiente en la modernización de las infraestructuras españolas.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-352626d5b3e4"
+  ]
+}

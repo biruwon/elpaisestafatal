@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-f46c2b5b15dc",
+  "claimSlug": "\"modelo-la-aportacion-minima-para-pensiones-es-demasiado-baja-y-no-cubre-los-gastos-basi\"",
+  "text": "La aportación mínima para pensiones es demasiado baja y no cubre los gastos básicos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-5a2e266b5c72"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7bbc045d13c7",
+  "claimSlug": "\"modelo-los-centros-educativos-estan-subfinanciados-y-no-tienen-suficientes-recursos\"",
+  "text": "Los centros educativos están subfinanciados y no tienen suficientes recursos.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-f0918a271027"
+  ]
+}

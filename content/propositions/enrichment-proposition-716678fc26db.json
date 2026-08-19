@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-716678fc26db",
+  "claimSlug": "\"modelo-se-ha-notado-un-incremento-en-el-robo-de-bicicletas-en-las-estaciones-de-metro-d\"",
+  "text": "Se ha notado un incremento en el robo de bicicletas en las estaciones de metro de Barcelona, lo cual es un problema para los usuarios.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1e65d1ee90e3"
+  ]
+}

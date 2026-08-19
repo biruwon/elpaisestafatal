@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-1582a0b38ad7",
+  "claimSlug": "\"modelo-en-espana-es-muy-dificil-encontrar-un-contrato-indefinido\"",
+  "text": "En España, es muy difícil encontrar un contrato indefinido.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-1f6e5e0ae062"
+  ]
+}

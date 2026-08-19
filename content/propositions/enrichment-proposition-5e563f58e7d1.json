@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-5e563f58e7d1",
+  "claimSlug": "\"modelo-los-productos-agroalimentarios-andaluces-son-mal-promocionados-en-el-extranjero\"",
+  "text": "Los productos agroalimentarios andaluces son mal promocionados en el extranjero.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-2fb57eb676d8"
+  ]
+}

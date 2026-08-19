@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ce2a0c04d342",
+  "claimSlug": "\"modelo-espana-se-siente-desatendida-en-el-marco-de-la-politica-de-investigacion-de-la-u\"",
+  "text": "España se siente desatendida en el marco de la política de investigación de la UE.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c98fe46e8173"
+  ]
+}

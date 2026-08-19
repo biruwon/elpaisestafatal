@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6b03e7258628",
+  "claimSlug": "\"modelo-por-que-los-precios-de-los-hoteles-en-el-interior-de-espana-son-tan-altos-durant\"",
+  "text": "¿Por qué los precios de los hoteles en el interior de España son tan altos durante el verano?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-79485db56700"
+  ]
+}

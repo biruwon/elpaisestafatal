@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-60d9d24e3ef0",
+  "claimSlug": "\"modelo-los-subsidios-de-paro-en-espana-son-insuficientes-para-cubrir-las-necesidades-ba\"",
+  "text": "Los subsidios de paro en España son insuficientes para cubrir las necesidades básicas de los desempleados.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-b9d7e201da66"
+  ]
+}

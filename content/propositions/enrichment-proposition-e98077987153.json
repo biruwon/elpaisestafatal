@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-e98077987153",
+  "claimSlug": "\"modelo-la-llegada-masiva-de-inmigrantes-ha-reducido-las-oportunidades-laborales-para-lo\"",
+  "text": "La llegada masiva de inmigrantes ha reducido las oportunidades laborales para los ciudadanos españoles.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c5760a7bd3d4"
+  ]
+}

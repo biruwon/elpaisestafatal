@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-6531f230ca34",
+  "claimSlug": "\"modelo-como-es-posible-que-los-pensionistas-sigan-con-problemas-si-se-gasta-tanto-en-el\"",
+  "text": "¿Cómo es posible que los pensionistas sigan con problemas si se gasta tanto en el sistema público?",
+  "type": "descriptive",
+  "status": "supported",
+  "evidenceIds": [
+    "enrichment-evidence-ea344cf1bb84"
+  ]
+}

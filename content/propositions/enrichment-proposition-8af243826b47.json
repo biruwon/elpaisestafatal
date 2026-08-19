@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-8af243826b47",
+  "claimSlug": "\"modelo-las-escuelas-no-ofrecen-suficiente-apoyo-a-la-alimentacion-de-los-ninos\"",
+  "text": "Las escuelas no ofrecen suficiente apoyo a la alimentación de los niños",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-168f2e8787b1"
+  ]
+}

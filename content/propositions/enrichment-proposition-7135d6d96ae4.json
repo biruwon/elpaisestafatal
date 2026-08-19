@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-7135d6d96ae4",
+  "claimSlug": "\"modelo-la-agricultura-espanola-sufre-mucho-con-la-sequia-y-el-cambio-climatico-poniendo\"",
+  "text": "La agricultura española sufre mucho con la sequía y el cambio climático, poniendo en peligro la producción.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-e7e10c92bbc1"
+  ]
+}

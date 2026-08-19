@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ca958437ad53",
+  "claimSlug": "\"modelo-los-autobuses-urbanos-en-muchas-ciudades-espanolas-son-muy-caros-y-poco-frecuent\"",
+  "text": "Los autobuses urbanos en muchas ciudades españolas son muy caros y poco frecuentes, lo que aumenta el coste de la movilidad.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-7cc66fe7e9e9"
+  ]
+}

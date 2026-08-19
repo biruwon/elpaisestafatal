@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-d5e03d4d11b2",
+  "claimSlug": "\"modelo-las-playas-de-espana-estan-llenas-de-basura-donde-se-mete-la-limpieza\"",
+  "text": "Las playas de España están llenas de basura, ¿dónde se mete la limpieza?",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c09d3cf87e67"
+  ]
+}

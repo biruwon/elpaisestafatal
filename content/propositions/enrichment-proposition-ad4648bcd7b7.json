@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-ad4648bcd7b7",
+  "claimSlug": "\"modelo-el-sistema-sanitario-no-tiene-suficientes-recursos-para-atender-a-todos-los-paci\"",
+  "text": "El sistema sanitario no tiene suficientes recursos para atender a todos los pacientes",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-c1c9a2605a35"
+  ]
+}

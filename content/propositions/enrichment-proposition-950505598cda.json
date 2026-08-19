@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-950505598cda",
+  "claimSlug": "\"modelo-no-hay-suficiente-empleo-para-los-inmigrantes-lo-que-provoca-que-se-formen-barri\"",
+  "text": "No hay suficiente empleo para los inmigrantes, lo que provoca que se formen barrios con altos niveles de desempleo.",
+  "type": "descriptive",
+  "status": "unreviewed",
+  "evidenceIds": [
+    "enrichment-evidence-beea18c0d52f"
+  ]
+}
