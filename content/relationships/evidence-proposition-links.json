@@ -22869,13 +22869,6 @@
       "reviewedAt": "2026-08-19"
     },
     {
-      "evidenceId": "enrichment-evidence-d007ab5c33c8",
-      "propositionId": "enrichment-proposition-e4369420a2f3",
-      "relationship": "context",
-      "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-19"
-    },
-    {
       "evidenceId": "enrichment-evidence-3fd243aa34c0",
       "propositionId": "enrichment-proposition-e43d854bc116",
       "relationship": "context",
