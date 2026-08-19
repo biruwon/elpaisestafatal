@@ -74,7 +74,11 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   try {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 15000 : 9000);
-    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 30; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, 500)); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000); }
+    // Local model interpretation and evidence planning can take a little
+    // longer on a cold worker. Keep the animated status visible while the
+    // request is still healthy instead of presenting a misleading timeout at
+    // fifteen seconds.
+    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, 500)); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000); }
     clarificationContext = undefined;
     if (response.state === 'processing') { renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return; }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
