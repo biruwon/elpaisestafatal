@@ -7,10 +7,10 @@ interface Props { item: ClaimVerification; sources: Array<{ title: string; url: 
 const { item, sources, related } = Astro.props;
 ---
 <header class="claim-header">
-  <div><p class="eyebrow">Afirmación comprobada</p><p class="claim-question">{item.claim.replace(/[“”]/g, '')}</p></div>
-  <div class={`claim-assessment claim-assessment-${item.assessment}`}><span>{assessmentLabels[item.assessment]}</span><strong>Veredicto revisado</strong></div>
+  <div><p class="eyebrow">Respaldada por fuentes</p><p class="claim-question">{item.claim.replace(/[“”]/g, '')}</p></div>
+  <div class={`claim-assessment claim-assessment-${item.assessment}`}><span>{assessmentLabels[item.assessment]}</span><strong>Evidencia contrastada</strong></div>
 </header>
-<p class="claim-scope">{item.geography} · {item.period} · Revisada {item.reviewed}</p>
+<p class="claim-scope">{item.geography} · {item.period} · Comprobada {item.reviewed}</p>
 <section class="claim-reply" aria-labelledby="claim-reply-title">
   <div><p class="eyebrow" id="claim-reply-title">Respuesta para enviar</p><p class="claim-reply-text">{item.shareable}</p></div>
   <button type="button" class="claim-copy" data-copy-response>Copiar respuesta</button><span class="claim-live" aria-live="polite"></span>
