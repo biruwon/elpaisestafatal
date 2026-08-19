@@ -65,7 +65,7 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { setMode(false); result.innerHTML = ''; clarificationContext = undefined; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();
 };
-const setLoading = (text: string): void => { if (result) { setMode(true); result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true"><span class="eyebrow">Comprobando</span><h2>Estamos leyendo la afirmación</h2><p>${escapeHtml(text)}</p></article>`; } };
+const setLoading = (text: string): void => { if (result) { setMode(true); result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow">Comprobando</span><h2>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note">Separamos lo que afirma, buscamos el contexto necesario y comprobamos si hay fuentes que respondan exactamente.</p></article>`; } };
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
   const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : /^https:\/\//i.test(original) ? 'url' : 'text';
