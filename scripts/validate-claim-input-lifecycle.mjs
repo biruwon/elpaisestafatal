@@ -4,7 +4,7 @@ const source = await readFile(new URL('../src/scripts/claim-checker.ts', import.
 const required = [
   "fetchJson('/api/check'",
   "fetchJson(`/api/check/${encodeURIComponent(response.id)}`",
-  "status: 'complete' | 'processing' | 'unavailable'",
+  "state: 'clarification'",
   'validateInputMetadata',
   "form?.addEventListener('submit', submit)",
   "if (file) form?.requestSubmit()",
@@ -12,12 +12,11 @@ const required = [
   'dataTransfer?.files',
   'localStorage',
   'data-recent-query',
-  'history.replaceState',
-  'navigator.share',
+  "state: 'processing'",
   'data-copy-answer',
 ];
 const missing = required.filter((item) => !source.includes(item));
 if (missing.length) throw new Error(`Claim checker lifecycle is missing: ${missing.join(', ')}`);
-if (!source.includes("response.status === 'processing'")) throw new Error('Claim checker must poll processing responses');
-if (!source.includes("status: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
+if (!source.includes("response.state === 'processing'")) throw new Error('Claim checker must poll processing responses');
+if (!source.includes("state: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
 console.log('Claim-checker lifecycle validation passed: unified submission, media, polling, recent checks, and terminal states are wired.');

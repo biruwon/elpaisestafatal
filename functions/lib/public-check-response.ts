@@ -1,101 +1,34 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
-import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
+import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
-const sourceLinks = (plan?: AnswerPlan): PublicCheckResponse['sources'] => (plan?.sourceLinks || []).map((source) => ({
-  id: source.id,
-  title: source.title,
-  publisher: source.publisher,
-  url: source.url,
-  publishedAt: source.publishedAt,
-  retrievedAt: source.retrievedAt,
-}));
-
-const replyFromPlan = (plan?: AnswerPlan): string => {
-  const reply = plan?.blocks?.find((block) => block.type === 'conversation_reply');
-  return reply?.type === 'conversation_reply' ? reply.text : plan?.summary || '';
-};
-
-const visualFromCatalogue = (entry: CatalogueEntry): PublicCheckResponse['visual'] => {
-  const visual = entry.visual;
-  if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length) return undefined;
-  if (visual.labels.length !== visual.values.length || !visual.evidenceIds.length) return undefined;
-  if (visual.evidenceIds.some((id) => !entry.evidenceIds.includes(id))) return undefined;
-  if (entry.basis === 'sourced' && !entry.sources.length) return undefined;
-  if (visual.values.some((value) => !Number.isFinite(value))) return undefined;
+const sourceLinks = (plan?: AnswerPlan): CheckSource[] => (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
+const replyFromPlan = (plan?: AnswerPlan): string => plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text || plan?.summary || '';
+const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
+  const visual = 'visual' in entry ? entry.visual : undefined;
+  if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length || visual.labels.length !== visual.values.length) return undefined;
+  if (!visual.evidenceIds.length || visual.evidenceIds.some((id: string) => !entry.evidenceIds.includes(id)) || visual.values.some((value: number) => !Number.isFinite(value))) return undefined;
   return { type: visual.type, title: visual.title, unit: visual.unit, labels: visual.labels, values: visual.values, evidenceIds: visual.evidenceIds };
 };
-
-export const checkFromCatalogue = (claim: string, entry: CatalogueEntry | RuntimeCatalogueEntry): PublicCheckResponse => ({
-  id: entry.slug,
-  status: 'complete',
-  claim,
-  answer: entry.answer,
-  basis: 'sources' in entry && entry.basis === 'sourced' && entry.sources.length > 0 ? 'sourced' : 'model',
-  explanation: entry.explanation,
-  limitations: 'limitations' in entry ? entry.limitations : ['La respuesta se ha seleccionado por similitud semántica; comprueba el periodo y territorio indicados.'],
-  reply: 'reply' in entry ? entry.reply : entry.answer,
-  sources: 'sources' in entry ? entry.sources.map((source) => ({
-    id: source.id,
-    title: source.title,
-    publisher: source.publisher,
-    url: source.url,
-    publishedAt: source.date,
-  })) : [],
-  visual: 'visual' in entry ? visualFromCatalogue(entry) : undefined,
-  catalogueEntry: { slug: entry.slug, href: `/afirmaciones/${entry.slug}` },
-  generatedAt: new Date().toISOString(),
+const assessmentFor = (entry: CatalogueEntry | RuntimeCatalogueEntry): ClaimAssessment | undefined => 'assessment' in entry ? entry.assessment : undefined;
+const scopeFor = (entry: CatalogueEntry | RuntimeCatalogueEntry) => ({ geography: entry.geography, period: entry.period, reviewedAt: 'evidenceVerifiedAt' in entry ? entry.evidenceVerifiedAt : undefined });
+const resultFor = (entry: CatalogueEntry | RuntimeCatalogueEntry, claim: string, reviewed: boolean): CheckResult => ({
+  claim, reply: 'reply' in entry ? entry.reply : entry.answer, answer: entry.answer, keyFact: entry.explanation,
+  whatWeKnow: [entry.explanation].filter(Boolean), limitations: 'limitations' in entry ? entry.limitations : [], scope: scopeFor(entry),
+  sources: 'sources' in entry ? entry.sources.map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.date })) : [],
+  assessment: reviewed ? assessmentFor(entry) : undefined, visual: visualFromCatalogue(entry), canonicalSlug: reviewed ? entry.slug : undefined, canonicalHref: reviewed ? `/comprobar/${entry.slug}` : undefined,
 });
-
-export const clarificationCheck = (claim: string, missingDimensions: string[] = []): PublicCheckResponse => ({
-  id: `clarify-${Date.now().toString(36)}`,
-  status: 'complete',
-  claim,
-  answer: 'La frase es demasiado amplia para dar un veredicto único con datos.',
-  basis: 'model',
-  explanation: `Para comprobarla hay que concretar ${missingDimensions.length ? missingDimensions.join(', ') : 'qué hecho o indicador'}; una valoración global no demuestra por sí sola una tendencia nacional.`,
-  limitations: ['Respuesta generada por IA · sin fuentes verificadas para la formulación general.'],
-  reply: 'No se puede comprobar en bloque: concreta el indicador, el periodo, el territorio o el caso y lo contrastamos con fuentes.',
-  sources: [],
-  generatedAt: new Date().toISOString(),
-});
-
-export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => ({
-  id: requestId || `check-${Date.now().toString(36)}`,
-  status: 'complete',
-  claim,
-  answer: plan.summary || plan.headline,
-  basis: plan.reviewed === true && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sourceLinks(plan).length > 0 ? 'sourced' : 'model',
-  explanation: plan.headline,
-  limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
-  reply: replyFromPlan(plan),
-  sources: sourceLinks(plan),
-  generatedAt: plan.asOf || new Date().toISOString(),
-});
-
-export const unavailableCheck = (claim: string, explanation: string): PublicCheckResponse => ({
-  id: `unavailable-${Date.now().toString(36)}`,
-  status: 'unavailable',
-  claim,
-  answer: 'No podemos completar esta comprobación ahora.',
-  basis: 'model',
-  explanation,
-  limitations: ['La respuesta no ha podido verificarse ni generarse con el modelo local.'],
-  reply: 'No puedo comprobarlo ahora con suficiente seguridad.',
-  sources: [],
-  generatedAt: new Date().toISOString(),
-});
-
-export const processingCheck = (claim: string, requestId: string): PublicCheckResponse => ({
-  id: requestId,
-  status: 'processing',
-  claim,
-  answer: 'Estamos preparando la comprobación.',
-  basis: 'model',
-  explanation: 'La solicitud necesita procesamiento adicional.',
-  limitations: ['La respuesta todavía no está lista.'],
-  reply: 'Estoy preparando una comprobación con las fuentes disponibles.',
-  sources: [],
-  generatedAt: new Date().toISOString(),
-});
+export const checkFromCatalogue = (claim: string, entry: CatalogueEntry | RuntimeCatalogueEntry): PublicCheckResponse => ({ state: 'reviewed', id: entry.slug, result: resultFor(entry, claim, true) });
+export const clarificationCheck = (claim: string, missingDimensions: string[] = []): PublicCheckResponse => ({ state: 'clarification', id: `clarify-${Date.now().toString(36)}`, claim, question: `¿Qué quieres comprobar exactamente? Concreta ${missingDimensions.length ? missingDimensions.join(', ') : 'el hecho o indicador'}.`, options: [
+  { id: 'national', label: 'La situación general en España', prompt: `${claim} en España` },
+  { id: 'period', label: 'Un periodo concreto', prompt: `${claim} en el periodo que indiques` },
+  { id: 'quality', label: 'La calidad o el impacto', prompt: `${claim}: calidad, impacto y límites` },
+] });
+export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
+  const reviewed = plan.reviewed === true && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sourceLinks(plan).length > 0;
+  const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, whatWeKnow: plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block) => 'points' in block ? block.points || [] : []), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { reviewedAt: plan.asOf }, sources: sourceLinks(plan) };
+  return { state: reviewed ? 'reviewed' : plan.resultState === 'unresolved' ? 'unresolved' : 'provisional', id: requestId || `check-${Date.now().toString(36)}`, result: reviewed ? result : { ...result, reply: `${result.reply}\n\nOrientación provisional; no es un veredicto revisado.` } };
+};
+export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
+export const processingCheck = (claim: string, requestId: string): PublicCheckResponse => ({ state: 'processing', id: requestId, claim });

@@ -1,18 +1,16 @@
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 
-type CheckResponse = {
-  id: string;
-  status: 'complete' | 'processing' | 'unavailable';
-  claim: string;
-  answer: string;
-  basis: 'sourced' | 'model';
-  explanation: string;
-  limitations: string[];
-  reply: string;
-  sources: Array<{ title: string; publisher?: string; url: string }>;
-  visual?: { title?: string; unit?: string; labels: string[]; values: number[] };
-  catalogueEntry?: { href: string };
+type CheckResult = {
+  claim: string; reply: string; answer: string; keyFact?: string; whatWeKnow: string[]; limitations: string[];
+  scope: { geography?: string; period?: string; reviewedAt?: string };
+  sources: Array<{ id: string; title: string; publisher?: string; url: string; publishedAt?: string }>;
+  assessment?: string; canonicalHref?: string; visual?: { title?: string; unit?: string; labels: string[]; values: number[] };
 };
+type CheckResponse =
+  | { state: 'clarification'; id: string; claim: string; question: string; options: Array<{ id: string; label: string; prompt: string }> }
+  | { state: 'reviewed' | 'provisional' | 'unresolved'; id: string; result: CheckResult }
+  | { state: 'processing'; id: string; claim: string }
+  | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
 
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
@@ -24,116 +22,59 @@ const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help'
 const dropzone = document.querySelector<HTMLElement>('[data-media-dropzone]');
 const recent = document.querySelector<HTMLElement>('#recent-checks');
 const recentList = document.querySelector<HTMLElement>('[data-recent-list]');
-const recentChecksStorageKey = 'elpaisestafatal:recent-checks:v1';
-let request: AbortController | undefined;
 const suggestions = document.querySelector<HTMLDetailsElement>('#checker-suggestions');
 const checker = document.querySelector<HTMLElement>('.hero-checker');
 const homepage = document.querySelector<HTMLElement>('.homepage');
+const recentChecksStorageKey = 'elpaisestafatal:recent-checks:v2';
+let request: AbortController | undefined;
+let clarificationContext: { id: string; prompt: string } | undefined;
 
 const escapeHtml = (value: string): string => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+const copyText = async (value: string): Promise<void> => { if (!navigator.clipboard) throw new Error('clipboard-unavailable'); await navigator.clipboard.writeText(value); };
 const fetchJson = async (url: string, init: RequestInit, timeout = 9000): Promise<CheckResponse> => {
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeout);
-  try {
-    const response = await fetch(url, { ...init, signal: controller.signal });
-    return await response.json() as CheckResponse;
-  } finally { window.clearTimeout(timer); }
+  const controller = new AbortController(); const timer = window.setTimeout(() => controller.abort(), timeout);
+  try { const response = await fetch(url, { ...init, signal: controller.signal }); return await response.json() as CheckResponse; }
+  finally { window.clearTimeout(timer); }
 };
-
-const readRecent = (): string[] => {
-  try { const value = JSON.parse(localStorage.getItem(recentChecksStorageKey) || '[]'); return Array.isArray(value) ? value.filter((item): item is { text: string } => typeof item?.text === 'string').map((item) => item.text).slice(0, 6) : []; } catch { return []; }
+const readRecent = (): string[] => { try { const value = JSON.parse(localStorage.getItem(recentChecksStorageKey) || '[]'); return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string').slice(0, 6) : []; } catch { return []; } };
+const writeRecent = (text: string): void => { try { localStorage.setItem(recentChecksStorageKey, JSON.stringify([text, ...readRecent().filter((item) => item !== text)].slice(0, 6))); } catch { /* optional */ } };
+const renderRecent = (): void => { if (!recent || !recentList) return; const values = readRecent(); recent.hidden = values.length === 0; recentList.innerHTML = values.map((value) => `<button type="button" data-recent-query="${escapeHtml(value)}">${escapeHtml(value)}</button>`).join(''); };
+const setMode = (active: boolean): void => { checker?.classList.toggle('has-result', active); homepage?.classList.toggle('has-result', active); if (active) suggestions?.removeAttribute('open'); else suggestions?.setAttribute('open', ''); };
+const focusResult = (): void => { if (!result) return; window.setTimeout(() => { result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); result.focus({ preventScroll: true }); }, 0); };
+const renderClarification = (response: Extract<CheckResponse, { state: 'clarification' }>): void => {
+  if (!result) return; setMode(true);
+  result.innerHTML = `<article class="claim-result claim-clarification"><span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-prompt="${escapeHtml(option.prompt)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">Otra precisión<textarea rows="2" data-clarification-custom placeholder="Añade periodo, lugar o indicador"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>Continuar</button></article>`;
+  result.querySelectorAll<HTMLButtonElement>('[data-clarification-id]').forEach((button) => button.addEventListener('click', () => { result.querySelectorAll('[data-clarification-id]').forEach((item) => item.removeAttribute('aria-pressed')); button.setAttribute('aria-pressed', 'true'); clarificationContext = { id: button.dataset.clarificationId || '', prompt: button.dataset.clarificationPrompt || '' }; }));
+  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const custom = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]')?.value.trim(); if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; form?.requestSubmit(); });
+  focusResult();
 };
-const writeRecent = (text: string): void => {
-  if (!text.trim()) return;
-  try { localStorage.setItem(recentChecksStorageKey, JSON.stringify([text, ...readRecent().filter((item) => item !== text)].slice(0, 6).map((item) => ({ text: item })))); } catch { /* optional */ }
+const renderUnavailable = (response: Extract<CheckResponse, { state: 'unavailable' }>): void => { if (!result) return; setMode(true); result.innerHTML = `<article class="claim-result claim-unavailable"><span class="eyebrow">No hemos podido comprobarla</span><h2>${escapeHtml(response.message)}</h2><button type="button" data-new-check>Volver a intentarlo</button></article>`; result.querySelector('[data-new-check]')?.addEventListener('click', () => { setMode(false); result.innerHTML = ''; input?.focus(); }); focusResult(); };
+const renderResult = (response: Extract<CheckResponse, { state: 'reviewed' | 'provisional' | 'unresolved' }>): void => {
+  if (!result) return; const item = response.result; setMode(true);
+  const reviewed = response.state === 'reviewed'; const stateLabel = reviewed ? 'Comprobación revisada' : response.state === 'unresolved' ? 'No hay un veredicto suficiente' : 'Orientación provisional';
+  const assessment = reviewed && item.assessment ? `<span class="claim-assessment claim-assessment-${escapeHtml(item.assessment)}">${escapeHtml(item.assessment)}</span>` : '';
+  const scope = [item.scope.geography, item.scope.period, item.scope.reviewedAt ? `Revisada ${item.scope.reviewedAt}` : ''].filter(Boolean).join(' · ');
+  const sources = item.sources.length ? `<section class="claim-sources"><h3>Fuentes originales</h3>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${escapeHtml(source.publishedAt)}` : ''} ↗</span></a>`).join('')}</section>` : '';
+  const know = item.whatWeKnow.length ? `<section class="claim-facts"><div><h3>Qué sabemos</h3><p>${escapeHtml(item.whatWeKnow[0])}</p></div><div><h3>Qué no demuestra</h3><p>${escapeHtml(item.limitations[0] || 'La evidencia tiene un alcance concreto y no permite generalizar más allá de él.')}</p></div></section>` : '';
+  const visual = item.visual && item.visual.labels.length === item.visual.values.length ? `<details class="claim-visual"><summary>${escapeHtml(item.visual.title || 'Ver datos')}</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${item.visual.labels.map((label, index) => `<tr><th scope="row">${escapeHtml(label)}</th><td>${escapeHtml(String(item.visual?.values[index]))}${item.visual?.unit ? ` ${escapeHtml(item.visual.unit)}` : ''}</td></tr>`).join('')}</tbody></table></details>` : '';
+  result.innerHTML = `<article class="claim-result" data-state="${response.state}"><div class="claim-result-heading"><div><span class="eyebrow">${stateLabel}</span><p class="claim-original">${escapeHtml(item.claim)}</p></div>${assessment}</div>${scope ? `<p class="claim-scope">${escapeHtml(scope)}</p>` : ''}<section class="claim-reply"><div><p class="eyebrow">Respuesta para enviar</p><p class="claim-reply-text">${escapeHtml(item.reply)}</p></div><button type="button" class="claim-copy" data-copy-answer>Copiar respuesta</button><span class="claim-live" aria-live="polite"></span></section>${item.keyFact ? `<section class="claim-key-fact"><span class="eyebrow">Dato decisivo</span><p>${escapeHtml(item.keyFact)}</p></section>` : ''}${know}${visual}${sources}<div class="claim-result-footer">${reviewed && item.canonicalHref ? `<a href="${escapeHtml(item.canonicalHref)}">Abrir explicación completa →</a>` : ''}<button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(item.reply); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
+  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { setMode(false); result.innerHTML = ''; clarificationContext = undefined; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  focusResult();
 };
-const recordQuestion = (text: string, details: Record<string, string | undefined>): void => {
-  if (!text.trim()) return;
-  void fetch('/api/questions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, canonical: text, inputType: details.inputType || 'text', status: details.status || 'received', resultState: details.resultState, researchOutcome: details.researchOutcome }) }).catch(() => {});
-};
-const renderRecent = (): void => {
-  const values = readRecent();
-  if (!recent || !recentList) return;
-  recent.hidden = values.length === 0;
-  recentList.innerHTML = values.map((value) => `<button type="button" class="recent-check-query" data-recent-query="${escapeHtml(value)}">${escapeHtml(value)}</button>`).join('');
-};
-
-const normalized = (value: string): string => value.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
-const copyText = async (value: string): Promise<void> => {
-  if (!navigator.clipboard) throw new Error('clipboard-unavailable');
-  await navigator.clipboard.writeText(value);
-};
-const announceResult = (): void => {
-  if (!result) return;
-  window.setTimeout(() => {
-    result.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-    result.focus({ preventScroll: true });
-  }, 0);
-};
-
-const render = (response: CheckResponse): void => {
-  if (!result) return;
-  const provenance = response.basis === 'sourced' ? 'Fuentes verificadas' : 'Respuesta generada por IA · sin fuentes verificadas';
-  const visual = response.visual && response.visual.labels.length === response.visual.values.length
-    ? `<details class="claim-result-details claim-result-visual"><summary>${escapeHtml(response.visual.title || 'Datos decisivos')}${response.visual.unit ? ` · ${escapeHtml(response.visual.unit)}` : ''}</summary><div>${response.visual.labels.map((label, index) => `<span><b>${escapeHtml(label)}</b><strong>${escapeHtml(String(response.visual?.values[index]))}${response.visual?.unit ? ` ${escapeHtml(response.visual.unit)}` : ''}</strong></span>`).join('')}</div><details><summary>Ver tabla de datos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${response.visual.labels.map((label, index) => `<tr><th scope="row">${escapeHtml(label)}</th><td>${escapeHtml(String(response.visual?.values[index]))}${response.visual?.unit ? ` ${escapeHtml(response.visual.unit)}` : ''}</td></tr>`).join('')}</tbody></table></details></details>` : '';
-  const sources = response.sources.length ? `<details class="claim-result-sources"><summary>Fuentes · ${response.sources.length}</summary>${response.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)}${source.publisher ? ` · ${escapeHtml(source.publisher)}` : ''} ↗</a>`).join('')}</details>` : '';
-  const catalogue = response.catalogueEntry?.href ? `<a class="claim-result-link" href="${escapeHtml(response.catalogueEntry.href)}">Abrir ficha completa →</a>` : '';
-  const explanation = normalized(response.explanation) !== normalized(response.answer) ? `<p class="claim-result-summary">${escapeHtml(response.explanation)}</p>` : '';
-  const limitations = response.limitations.length ? `<details class="claim-result-details"><summary>Matices y límites</summary><p>${escapeHtml(response.limitations.join(' '))}</p></details>` : '';
-  result.innerHTML = `<article class="claim-result-card unified-result-card" data-basis="${response.basis}"><span class="eyebrow">${provenance}</span><h2>${escapeHtml(response.answer)}</h2>${explanation}${limitations}${visual}<div class="claim-result-actions"><button type="button" class="claim-action-primary" data-share-result>Compartir</button><button type="button" data-copy-answer>Copiar respuesta</button><button type="button" data-new-check>Comprobar otra frase</button><span aria-live="polite"></span></div>${catalogue}${sources}</article>`;
-  result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => {
-    try { await copyText(response.reply || response.answer); result.querySelector('[aria-live]')!.textContent = 'Respuesta copiada'; }
-    catch { result.querySelector('[aria-live]')!.textContent = 'No se ha podido copiar la respuesta'; }
-  });
-  result.querySelector<HTMLButtonElement>('[data-share-result]')?.addEventListener('click', async () => {
-    try {
-      if (navigator.share) await navigator.share({ title: response.claim, text: response.reply || response.answer, url: location.href });
-      else { await copyText(location.href); result.querySelector('[aria-live]')!.textContent = 'Enlace copiado'; }
-    } catch { result.querySelector('[aria-live]')!.textContent = 'Compartir cancelado'; }
-  });
-  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => {
-    checker?.classList.remove('has-result');
-    homepage?.classList.remove('has-result');
-    suggestions?.setAttribute('open', '');
-    result.innerHTML = '';
-    input?.focus({ preventScroll: true });
-    input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
-  checker?.classList.add('has-result');
-  homepage?.classList.add('has-result');
-  suggestions?.removeAttribute('open');
-  announceResult();
-};
-
-const setLoading = (text: string): void => { if (result) result.innerHTML = `<article class="claim-result-card" aria-busy="true"><span class="eyebrow">Comprobando</span><p>${escapeHtml(text)}</p></article>`; };
+const setLoading = (text: string): void => { if (result) { setMode(true); result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true"><span class="eyebrow">Comprobando</span><h2>Estamos leyendo la afirmación</h2><p>${escapeHtml(text)}</p></article>`; } };
 const submit = async (event: SubmitEvent): Promise<void> => {
-  event.preventDefault();
-  const text = input?.value.trim() || '';
-  const file = fileInput?.files?.[0];
-  if (!text && !file) return;
-  const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : /^https:\/\//i.test(text) ? 'url' : 'text';
-  if (file) {
-    const valid = validateInputMetadata({ text, inputType, hasFile: true, fileSize: file.size, mimeType: file.type });
-    if (!valid.ok) { render({ id: `invalid-${Date.now()}`, status: 'unavailable', claim: file.name, answer: 'No podemos leer este archivo.', basis: 'model', explanation: valid.code, limitations: [], reply: 'Pega la frase directamente para comprobarla.', sources: [] }); return; }
-  }
-  request?.abort(); request = new AbortController();
-  window.history.replaceState({}, '', text ? `/?q=${encodeURIComponent(text)}#comprobar` : '/#comprobar');
-  if (text) writeRecent(text);
-  if (text) recordQuestion(text, { inputType, status: 'received' });
-  renderRecent(); setLoading(file?.name || text);
-  const body = file ? (() => { const value = new FormData(); value.set('text', text); value.set('inputType', inputType); value.set('file', file); return value; })() : JSON.stringify({ text, inputType });
+  event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
+  const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : /^https:\/\//i.test(original) ? 'url' : 'text';
+  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
+  request?.abort(); request = new AbortController(); if (!clarificationContext) writeRecent(original); setLoading(file?.name || original);
+  const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   try {
-    let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body, signal: request.signal }, file ? 15000 : 9000);
-    for (let attempt = 0; response.status === 'processing' && response.id && attempt < 30; attempt += 1) {
-      await new Promise((resolve) => window.setTimeout(resolve, 500));
-      response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { signal: request!.signal }, 2000);
-    }
-    if (text) recordQuestion(text, { inputType, status: response.status, resultState: response.basis === 'sourced' ? 'answered' : 'provisional', researchOutcome: response.basis === 'sourced' ? 'reviewed' : response.status === 'unavailable' ? 'unavailable' : 'warehouse' });
-    render(response);
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') return;
-    render({ id: `error-${Date.now()}`, status: 'unavailable', claim: text, answer: 'No podemos completar la comprobación ahora.', basis: 'model', explanation: 'El equipo local no está disponible o tardó demasiado.', limitations: ['Puedes intentarlo de nuevo más tarde.'], reply: 'No puedo comprobarlo ahora con suficiente seguridad.', sources: [] });
-  }
+    let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 15000 : 9000);
+    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 30; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, 500)); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000); }
+    clarificationContext = undefined;
+    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'reviewed' || response.state === 'provisional' || response.state === 'unresolved') { if (response.state === 'reviewed' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
+  } catch (error) { if (error instanceof DOMException && error.name === 'AbortError') return; renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };
 
 form?.addEventListener('submit', submit);
@@ -141,16 +82,7 @@ input?.addEventListener('input', () => { if (counter) counter.textContent = `${i
 fileInput?.addEventListener('change', () => { const file = fileInput.files?.[0]; if (fileName) fileName.textContent = file?.name || 'Sin archivo seleccionado.'; if (mediaHelp) mediaHelp.dataset.fileSelected = file ? 'true' : 'false'; if (file) form?.requestSubmit(); });
 dropzone?.addEventListener('dragover', (event) => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
 dropzone?.addEventListener('drop', (event) => { event.preventDefault(); dropzone.classList.remove('is-dragging'); const file = event.dataTransfer?.files?.[0]; if (!fileInput || !file) return; const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
-checker?.addEventListener('click', (event) => {
-  const target = event.target as HTMLElement;
-  const queryButton = target.closest<HTMLButtonElement>('[data-example], [data-recent-query]');
-  if (queryButton && input) { input.value = queryButton.dataset.example || queryButton.dataset.recentQuery || ''; form?.requestSubmit(); return; }
-  if (target.closest<HTMLButtonElement>('[data-clear-recent]')) {
-    try { localStorage.removeItem(recentChecksStorageKey); } catch { /* optional */ }
-    renderRecent();
-  }
-});
-document.querySelectorAll<HTMLElement>('[data-media-trigger]').forEach((button) => button.addEventListener('click', () => { if (fileInput) fileInput.accept = button.dataset.mediaTrigger === 'audio' ? 'audio/*' : 'image/*'; }));
+checker?.addEventListener('click', (event) => { const target = event.target as HTMLElement; const query = target.closest<HTMLButtonElement>('[data-example], [data-recent-query]'); if (query && input) { input.value = query.dataset.example || query.dataset.recentQuery || ''; form?.requestSubmit(); } if (target.closest('[data-clear-recent]')) { try { localStorage.removeItem(recentChecksStorageKey); } catch { /* optional */ } renderRecent(); } });
 renderRecent();
 if (counter && input) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
 const initial = new URLSearchParams(window.location.search).get('q')?.trim();

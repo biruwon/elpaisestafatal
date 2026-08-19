@@ -1,65 +1,18 @@
-export type CheckBasis = 'sourced' | 'model';
-export type CheckStatus = 'complete' | 'processing' | 'unavailable';
-
-export type CheckSource = {
-  id: string;
-  title: string;
-  publisher?: string;
-  url: string;
-  publishedAt?: string;
-  retrievedAt?: string;
-};
-
-export type CheckVisual = {
-  type: 'line' | 'bar' | 'comparison' | 'money-flow';
-  title?: string;
-  unit?: string;
-  labels: string[];
-  values: number[];
-  evidenceIds: string[];
-};
-
-export type PublicCheckResponse = {
-  id: string;
-  status: CheckStatus;
-  claim: string;
-  answer: string;
-  basis: CheckBasis;
-  explanation: string;
-  limitations: string[];
-  reply: string;
-  sources: CheckSource[];
-  visual?: CheckVisual;
-  catalogueEntry?: { slug: string; href: string };
-  generatedAt: string;
-};
-
+export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
+export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
+export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[] };
+export type CheckScope = { geography?: string; period?: string; reviewedAt?: string };
+export type CheckResult = { claim: string; reply: string; answer: string; keyFact?: string; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; canonicalHref?: string; canonicalSlug?: string };
+export type PublicCheckResponse =
+  | { state: 'clarification'; id: string; claim: string; question: string; options: Array<{ id: string; label: string; prompt: string }> }
+  | { state: 'reviewed' | 'provisional' | 'unresolved'; id: string; result: CheckResult }
+  | { state: 'processing'; id: string; claim: string }
+  | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
 export const checkResponse = (value: unknown): value is PublicCheckResponse => {
-  if (!value || typeof value !== 'object') return false;
-  const item = value as Partial<PublicCheckResponse>;
-  return typeof item.id === 'string'
-    && item.id.length > 0
-    && (item.status === 'complete' || item.status === 'processing' || item.status === 'unavailable')
-    && typeof item.claim === 'string'
-    && typeof item.answer === 'string'
-    && (item.basis === 'sourced' || item.basis === 'model')
-    && typeof item.explanation === 'string'
-    && Array.isArray(item.limitations)
-    && typeof item.reply === 'string'
-    && Array.isArray(item.sources)
-    && item.sources.every((source) => Boolean(source) && typeof source.id === 'string' && typeof source.title === 'string' && typeof source.url === 'string' && /^https?:\/\//.test(source.url))
-    && typeof item.generatedAt === 'string';
+  if (!value || typeof value !== 'object' || typeof (value as { state?: unknown }).state !== 'string') return false;
+  const item = value as { state: string; id?: unknown; result?: CheckResult; question?: unknown; options?: unknown };
+  if (typeof item.id !== 'string') return false;
+  if (item.state === 'clarification') return typeof item.question === 'string' && Array.isArray(item.options);
+  if (item.state === 'processing' || item.state === 'unavailable') return true;
+  return Boolean(item.result && typeof item.result.reply === 'string' && Array.isArray(item.result.sources));
 };
-
-export const modelCheck = (claim: string, answer: string, explanation: string, limitations: string[] = []): PublicCheckResponse => ({
-  id: `model-${Date.now().toString(36)}`,
-  status: 'complete',
-  claim,
-  answer,
-  basis: 'model',
-  explanation,
-  limitations,
-  reply: answer,
-  sources: [],
-  generatedAt: new Date().toISOString(),
-});

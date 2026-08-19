@@ -19,9 +19,9 @@ const circuitBreakAfter = 2;
 const circuitCooldownMs = 30_000;
 
 const semanticFingerprint = (text: string): string => text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
-const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File }, env: Env): string => {
+const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; clarification?: Clarification }, env: Env): string => {
   const media = body.file ? `${body.file.type}:${body.file.size}:${body.file.name}` : '';
-  return [semanticFingerprint(body.text), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
+  return [semanticFingerprint(body.text), semanticFingerprint(body.clarification?.prompt || ''), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -38,19 +38,27 @@ const linkedTimeout = (request: Request, milliseconds: number): { signal: AbortS
   return { signal: controller.signal, dispose: () => { clearTimeout(timer); request.signal.removeEventListener('abort', cancel); } };
 };
 
-const requestBody = async (request: Request): Promise<{ text: string; inputType: InputType; file?: File }> => {
+type Clarification = { id: string; prompt: string };
+const requestBody = async (request: Request): Promise<{ text: string; inputType: InputType; file?: File; clarification?: Clarification }> => {
   const contentType = request.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
-    const value = await request.json() as { text?: unknown; inputType?: unknown };
+    const value = await request.json() as { text?: unknown; inputType?: unknown; clarification?: unknown };
     const inputType = value.inputType === 'image' || value.inputType === 'audio' || value.inputType === 'url' ? value.inputType : 'text';
-    return { text: typeof value.text === 'string' ? value.text.trim() : '', inputType };
+    const clarification = value.clarification && typeof value.clarification === 'object' ? value.clarification as { id?: unknown; prompt?: unknown } : undefined;
+    return { text: typeof value.text === 'string' ? value.text.trim() : '', inputType, clarification: clarification && typeof clarification.prompt === 'string' ? { id: String(clarification.id || 'custom'), prompt: clarification.prompt.trim() } : undefined };
   }
   const form = await request.formData();
   const candidate = form.get('file');
+  const clarificationValue = form.get('clarification');
+  let clarification: Clarification | undefined;
+  if (typeof clarificationValue === 'string') {
+    try { const parsed = JSON.parse(clarificationValue) as { id?: unknown; prompt?: unknown }; if (typeof parsed.prompt === 'string' && parsed.prompt.trim()) clarification = { id: String(parsed.id || 'custom'), prompt: parsed.prompt.trim() }; } catch { /* ignore malformed optional context */ }
+  }
   return {
     text: String(form.get('text') || '').trim(),
     inputType: ['image', 'audio', 'url'].includes(String(form.get('inputType') || '')) ? String(form.get('inputType')) as InputType : 'text',
     file: candidate instanceof File ? candidate : undefined,
+    clarification,
   };
 };
 
@@ -68,7 +76,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const contentLength = Number(request.headers.get('content-length') || 0);
   if (contentLength > INPUT_LIMITS.maxRequestBytes) return json(unavailableCheck('', 'El archivo o texto supera el tamaño permitido.'), 413);
 
-  let body: { text: string; inputType: InputType; file?: File };
+  let body: { text: string; inputType: InputType; file?: File; clarification?: Clarification };
   try { body = await requestBody(request); } catch { return json(unavailableCheck('', 'No hemos podido leer la solicitud.'), 400); }
   const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
   if (!validation.ok) return json(validation.code === 'empty' ? fallbackResponse(body.text, body.inputType) : unavailableCheck(body.text, validation.code), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
@@ -79,8 +87,9 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (cached) cache.delete(cacheKey);
 
   if (body.inputType === 'text') {
-    const route = routeCatalogueQuery(body.text);
-    if (route.route === 'clarify') {
+    const routedText = body.clarification?.prompt ? `${body.text} ${body.clarification.prompt}` : body.text;
+    const route = routeCatalogueQuery(routedText, { skipClarification: Boolean(body.clarification) });
+    if (route.route === 'clarify' && !body.clarification) {
       const response = clarificationCheck(body.text, route.missingDimensions);
       cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
@@ -95,7 +104,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
     const response = fallbackResponse(body.text, body.inputType);
-    if (cacheKey && response.status === 'complete') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+    if (cacheKey && (response.state === 'reviewed' || response.state === 'provisional')) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
@@ -132,7 +141,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     }
     const plan = safe?.result;
     const response = plan ? checkFromPlan(body.text, plan, safe?.requestId) : fallbackResponse(body.text, body.inputType);
-    if (cacheKey && response.status === 'complete') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
+    if (cacheKey && (response.state === 'reviewed' || response.state === 'provisional')) cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
