@@ -34,4 +34,4 @@ El dato nacional no identifica la mezcla óptima de cualificaciones por sector, 
 
 ## Respuesta compartible
 
-La frase mezcla un problema real de encaje entre estudios y vacantes con una conclusión demasiado amplia. Puede faltar personal técnico en oficios concretos y existir sobrecualificación en algunos empleos, pero eso no demuestra que sobren los universitarios en general. Hay que comparar especialidad, vacantes, salarios y territorio.
+La frase mezcla un problema real de encaje entre estudios y vacantes con una conclusión demasiado amplia: puede faltar personal técnico en oficios concretos y existir sobrecualificación en algunos empleos, pero eso no demuestra que sobren los universitarios en general; hay que comparar especialidad, vacantes, salarios y territorio.

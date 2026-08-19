@@ -33,4 +33,4 @@ Para confirmar una cifra total habría que fijar si se habla de titulares, hogar
 
 ## Respuesta compartible
 
-La cifra viral mezcla poblaciones y periodos. El Ministerio informó en diciembre de 2024 de 2.047.755 personas en hogares del IMV y de una edad media de 45,3 años para los titulares; en marzo de 2026 registró 2.532.284 beneficiarios con una media de 28,46 años. Esos datos no demuestran que hubiera 1,2 millones de titulares ni que su edad media fuera 28,5 años.
+La cifra viral mezcla poblaciones y periodos: el Ministerio informó en diciembre de 2024 de 2.047.755 personas en hogares del IMV y de una edad media de 45,3 años para los titulares, mientras que en marzo de 2026 registró 2.532.284 beneficiarios con una media de 28,46 años; esos datos no demuestran que hubiera 1,2 millones de titulares ni que su edad media fuera 28,5 años.

@@ -18,6 +18,8 @@ const failures = [];
 const sourceIds = new Set();
 const evidenceIds = new Set();
 function parsedList(value) { try { const parsed = JSON.parse(value || '[]'); return Array.isArray(parsed) ? parsed : []; } catch { return []; } }
+function sectionBody(raw, heading) { const marker = `## ${heading}`; const start = raw.indexOf(marker); if (start < 0) return ''; const content = raw.slice(start + marker.length).replace(/^\s+/, ''); const end = content.search(/\n## /); return content.slice(0, end < 0 ? content.length : end).replace(/\s+/g, ' ').trim(); }
+function sentenceCount(value) { return value.split(/[!?]+|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚ¿¡])/u).map((part) => part.trim()).filter(Boolean).length; }
 let topicCount = 0; let claimCount = 0; let publishedClaims = 0; let plannedClaims = 0;
 for (const file of files) {
   const raw = await readFile(file, 'utf8');
@@ -63,6 +65,20 @@ for (const file of files) {
     if (!new Set(['descriptive','comparative','causal','predictive','legal','normative','mixed']).has(values.claimType)) failures.push(`${file}: invalid claimType ${values.claimType}`);
     if (!new Set(['high','medium','limited','insufficient']).has(values.evidenceStrength)) failures.push(`${file}: invalid evidenceStrength ${values.evidenceStrength}`);
     if (values.status === 'published' && !raw.includes('## Qué es cierto')) failures.push(`${file}: published claim missing evidence body`);
+    if (values.status === 'published') {
+      const truth = sectionBody(raw, 'Qué es cierto');
+      const limit = sectionBody(raw, 'Límite');
+      const reply = sectionBody(raw, 'Respuesta compartible');
+      if (!truth) failures.push(`${file}: published claim missing Qué es cierto content`);
+      if (!limit) failures.push(`${file}: published claim missing Límite content`);
+      if (!reply) failures.push(`${file}: published claim missing Respuesta compartible content`);
+      if (sentenceCount(reply) > 2) failures.push(`${file}: Respuesta compartible must be at most two sentences`);
+      const normalReply = reply.toLocaleLowerCase('es').replace(/\W+/g, ' ').trim();
+      for (const [label, value] of [['Qué es cierto', truth], ['Límite', limit]]) {
+        const normalValue = value.toLocaleLowerCase('es').replace(/\W+/g, ' ').trim();
+        if (normalReply && normalReply === normalValue) failures.push(`${file}: Respuesta compartible duplicates ${label}`);
+      }
+    }
     for (const sourceId of parsedList(values.sourceRefs)) if (!sourceIds.has(sourceId)) failures.push(`${file}: unknown source reference ${sourceId}`);
     for (const evidenceId of parsedList(values.evidenceIds)) if (!evidenceIds.has(evidenceId)) failures.push(`${file}: unknown evidence reference ${evidenceId}`);
   }

@@ -33,4 +33,4 @@ Esta proporción no demuestra por sí sola que haya que retrasar la jubilación 
 
 ## Respuesta compartible
 
-Sí: España está más envejecida que hace una década. La población de 65 años o más pasó del 18,4% al 20,7% entre 2015 y 2025. Eso describe un cambio demográfico; no decide por sí solo qué política de pensiones o cuidados es la mejor.
+Sí: España está más envejecida que hace una década, y la población de 65 años o más pasó del 18,4% al 20,7% entre 2015 y 2025; eso describe un cambio demográfico, pero no decide por sí solo qué política de pensiones o cuidados es la mejor.

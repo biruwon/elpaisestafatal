@@ -33,4 +33,4 @@ La decisión mayoritaria del Tribunal Constitucional no resuelve por sí sola si
 
 ## Respuesta compartible
 
-La amnistía sí crea una excepción legal para actos y fechas concretas, así que es razonable debatir si ese trato es justo. Pero decir sin más que “rompe la igualdad ante la ley” omite que la mayoría del Tribunal Constitucional la consideró compatible con ese principio. Hay una diferencia jurídica y un debate político, pero no una declaración mayoritaria de inconstitucionalidad por desigualdad.
+La amnistía sí crea una excepción legal para actos y fechas concretas, así que es razonable debatir si ese trato es justo, pero decir sin más que “rompe la igualdad ante la ley” omite que la mayoría del Tribunal Constitucional la consideró compatible con ese principio; hay una diferencia jurídica y un debate político, pero no una declaración mayoritaria de inconstitucionalidad por desigualdad.
