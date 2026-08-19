@@ -41,7 +41,35 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
   { id: 'access', label: 'Encontrar una oferta', interpretation: { kind: 'comparative', predicate: 'acceso al empleo', normalizedClaim: `${claim}: acceso a ofertas de empleo` } },
   { id: 'quality', label: 'Condiciones del trabajo', interpretation: { kind: 'quantitative', predicate: 'calidad del empleo', normalizedClaim: `${claim}: calidad del empleo` } },
 ] });
-export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
+const clarificationFromPlan = (claim: string, plan: AnswerPlan): PublicCheckResponse | undefined => {
+  const alternatives = plan.interpretation?.alternatives?.filter((item) => item.evidenceDifference === 'material' && item.normalizedClaim && item.interpretation).slice(0, 4) || [];
+  if (alternatives.length < 2) return undefined;
+  const interpretation = plan.interpretation;
+  return {
+    state: 'clarification',
+    id: `clarify-${Date.now().toString(36)}`,
+    claim,
+    interpretation: interpretation ? { ...interpretation, kind: interpretation.kind as ClaimInterpretation['kind'] } : undefined,
+    question: '¿Cuál de estas interpretaciones quieres comprobar?',
+    options: alternatives.map((item, index) => ({
+      id: `meaning-${index + 1}`,
+      label: item.interpretation,
+      interpretation: {
+        ...(interpretation || {}),
+        kind: (interpretation?.kind || 'specific_fact') as ClaimInterpretation['kind'],
+        normalizedClaim: item.normalizedClaim,
+        interpretation: item.interpretation,
+        confidence: item.confidence,
+        alternatives: [],
+      },
+    })),
+  };
+};
+export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string, allowClarification = true): PublicCheckResponse => {
+  if (allowClarification) {
+    const clarification = clarificationFromPlan(claim, plan);
+    if (clarification) return clarification;
+  }
   const criteria = criteriaFromPlan(plan);
   const attributedIds = new Set(criteria.flatMap((item) => item.sourceIds || []));
   const sources = sourceLinks(plan, claim).filter((source) => attributedIds.has(source.id));

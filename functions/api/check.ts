@@ -147,7 +147,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       return json(processingCheck(body.text, safe.requestId), 202);
     }
     const plan = safe?.result;
-    const response = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId) : fallbackResponse(effectiveClaim, body.inputType);
+    const response = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId, !body.clarification) : fallbackResponse(effectiveClaim, body.inputType);
     if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {

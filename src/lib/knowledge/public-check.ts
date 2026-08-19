@@ -6,7 +6,7 @@ export type ClaimKind = 'institutional_label' | 'factual_allegation' | 'evaluati
 export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
 export type ClaimSubjectType = 'person' | 'group' | 'institution' | 'country' | 'unknown';
 export type ClaimPolarity = 'affirmed' | 'negated' | 'uncertain';
-export type ClaimAlternative = { normalizedClaim: string; kind: ClaimKind; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number };
+export type ClaimAlternative = { normalizedClaim: string; kind?: ClaimKind; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number };
 export type ClaimInterpretation = {
   kind: ClaimKind;
   subject?: string;
