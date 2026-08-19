@@ -2624,6 +2624,24 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // or source work can see the submission.
   const privateInput = /(?:persona particular|persona concreta|nadie lo denuncio|reunion privada|concejal recibio dinero|\bmi (?:vecino|vecina|jefe|jefa|cunado|cunada|companero|amigo|amiga|familiar)\b|empresa de mi vecino)/i.test(normalise(text));
   if (privateInput) return toResolveResult(text, { ...classified, primary: undefined, status: 'uncovered' }, undefined, resultRequestId, []);
+  // A semantic allegation is not a metric request.  Stop it before generic
+  // discovery can attach an unrelated document (or ask for dimensions such
+  // as period and denominator).  The result remains deliberately
+  // insufficient until a concrete conduct, actor and attributable record
+  // are available; it must never infer a criminal case from loaded wording.
+  const interpretedKind = classified.compiler?.claimType;
+  const allegationProfile = classified.compiler?.criteriaProfile === 'public-corruption'
+    || classified.compiler?.criteriaProfile === 'specific-allegation';
+  if (allegationProfile || interpretedKind === 'factual_allegation' || interpretedKind === 'allegation') {
+    const safeClassified = {
+      ...classified,
+      primary: undefined,
+      alternatives: [],
+      status: 'uncovered',
+      compiler: { ...(classified.compiler || {}), clarificationRequired: false },
+    };
+    return toResolveResult(text, safeClassified, undefined, resultRequestId, []);
+  }
   const eventFrame = detectCurrentEvent(text);
   if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
     const eventSources = [];
