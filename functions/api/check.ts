@@ -103,6 +103,11 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
+    if (body.clarification) {
+      const response = fallbackResponse(effectiveClaim, body.inputType);
+      if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+      return json(response);
+    }
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
