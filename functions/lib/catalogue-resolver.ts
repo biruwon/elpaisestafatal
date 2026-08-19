@@ -41,7 +41,8 @@ const missingDimensions = (query: string): string[] => {
   return missing;
 };
 
-export const routeCatalogueQuery = (query: string): CatalogueRoute => {
+export const routeCatalogueQuery = (query: string, options: { skipClarification?: boolean } = {}): CatalogueRoute => {
+  if (!options.skipClarification && /\b(no hay trabajo|no encuentro trabajo|es imposible encontrar trabajo)\b/i.test(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['qué quieres medir: acceso, paro o calidad', 'periodo', 'territorio'] };
   if (broadClaim(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['indicador', 'periodo', 'territorio'] };
   const ranked = runtimeCatalogue.entries
     .map((entry) => ({ entry, score: score(query, entry) }))

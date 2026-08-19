@@ -6,12 +6,11 @@ const required = [
   ['id="conversation-result"', 'result region'],
   ['id="recent-checks"', 'recent checks'],
   ['id="checker-suggestions"', 'suggestions disclosure'],
-  ['class="homepage"', 'homepage state container'],
+  ['class="checker-page"', 'checker page container'],
   ['data-example="Los inmigrantes crean inseguridad"', 'example one'],
-  ['data-example="España va fatal"', 'example two'],
-  ['data-example="La vivienda se ha triplicado"', 'example three'],
-  ['data-example="El paro está manipulado"', 'example four'],
-  ['Datos, límites y fuentes.', 'trust explanation'],
+  ['data-example="La vivienda se ha triplicado"', 'example two'],
+  ['data-example="El paro está manipulado"', 'example three'],
+  ['Una respuesta breve.', 'trust explanation'],
 ];
 const failures = required.filter(([fragment]) => !source.includes(fragment)).map(([, label]) => `homepage is missing ${label}`);
 if (source.includes('claim-catalog.json') || source.includes('claimIndexData')) failures.push('homepage must not embed or fetch the full catalogue');
