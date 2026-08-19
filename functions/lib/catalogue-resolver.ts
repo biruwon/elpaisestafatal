@@ -34,6 +34,8 @@ const score = (query: string, entry: CatalogueEntry): number => {
 };
 
 const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal|cobra demasiados impuestos|paga demasiados impuestos/i.test(query);
+const exactIndex = new Map<string, CatalogueEntry>();
+for (const entry of runtimeCatalogue.entries) for (const phrase of [entry.claim, ...entry.aliases]) exactIndex.set(normaliseClaimText(phrase), entry);
 const missingDimensions = (query: string): string[] => {
   const missing = [];
   if (!/\b(19|20)\d{2}\b|año|anos|mes|trimestre|periodo|últim/i.test(query)) missing.push('periodo');
@@ -44,6 +46,8 @@ const missingDimensions = (query: string): string[] => {
 export const routeCatalogueQuery = (query: string, options: { skipClarification?: boolean } = {}): CatalogueRoute => {
   if (!options.skipClarification && /\b(no hay trabajo|no encuentro trabajo|es imposible encontrar trabajo)\b/i.test(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['qué quieres medir: acceso, paro o calidad', 'periodo', 'territorio'] };
   if (broadClaim(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['indicador', 'periodo', 'territorio'] };
+  const exact = exactIndex.get(normaliseClaimText(query));
+  if (exact) return { entry: exact, route: 'exact', family: exact.family, confidence: 1, missingDimensions: missingDimensions(query) };
   const ranked = runtimeCatalogue.entries
     .map((entry) => ({ entry, score: score(query, entry) }))
     .filter((item) => item.score >= 0.58)
