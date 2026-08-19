@@ -12,7 +12,7 @@ for (const file of (await readdir(claimsDir)).filter((name) => name.endsWith('.m
   if (field('basis') !== 'model' || field('status') !== 'planned') continue;
   const claim = field('claim').replace(/^['"]|['"]$/g, '');
   const topics = (() => { try { return JSON.parse(field('topicSlugs')); } catch { return []; } })();
-  queue.push({ slug: field('slug') || file.replace(/\.md$/, ''), claim, topics, priority: topics.some((topic) => /vivienda|empleo|salario|sanidad|corrup|inmigr/i.test(topic)) ? 'high' : 'normal', state: 'needs-source-research', sourceRefs: [], evidenceIds: [] });
+  queue.push({ slug: field('slug') || file.replace(/\.md$/, ''), claim, topics, priority: topics.some((topic) => /vivienda|empleo|salario|sanidad|corrup|inmigr/i.test(topic)) ? 'high' : 'normal' });
 }
 queue.sort((left, right) => (left.priority === 'high' ? -1 : 1) - (right.priority === 'high' ? -1 : 1) || left.slug.localeCompare(right.slug));
 await writeFile(output, JSON.stringify({ generatedAt: new Date().toISOString(), total: queue.length, policy: 'Research and deterministic evidence gates are required before upgrading basis from model to sourced.', queue }, null, 2));

@@ -5,12 +5,13 @@ import { enrichTrustedWebResults, searchTrustedWeb } from './trusted-web-discove
 const input = process.env.CATALOGUE_ENRICHMENT_INPUT || '.local/catalogue-enrichment-queue.json';
 const output = process.env.CATALOGUE_ENRICHMENT_OUTPUT || '.local/catalogue-enrichment-results.json';
 const limit = Math.max(1, Number(process.env.CATALOGUE_ENRICHMENT_LIMIT || 25));
+const concurrency = Math.max(1, Math.min(8, Number(process.env.CATALOGUE_ENRICHMENT_CONCURRENCY || 4)));
 const queue = JSON.parse(await readFile(input, 'utf8'));
 const previous = await readFile(output, 'utf8').then(JSON.parse).catch(() => ({ results: [] }));
 const completed = new Set((previous.results || []).map((item) => item.slug));
 const pending = (queue.queue || []).filter((item) => !completed.has(item.slug)).slice(0, limit);
 const results = [...(previous.results || [])];
-for (const item of pending) {
+const enrich = async (item) => {
   const query = `${item.claim} España datos oficiales ${item.topics.join(' ')}`.trim();
   const official = await discoverOfficialDocuments(query, 3);
   let trusted = [];
@@ -19,8 +20,12 @@ for (const item of pending) {
     trusted = await enrichTrustedWebResults(trusted, { query, max: 3 });
   }
   const sources = [...official.map((entry) => ({ url: entry.url, title: entry.title, publisher: entry.source?.publisher || 'Fuente oficial', excerpt: entry.excerpt || '', kind: 'official-lead' })), ...trusted.map((entry) => ({ url: entry.url, title: entry.title, publisher: entry.publisher, excerpt: entry.excerpt || '', kind: 'trusted-lead' }))];
-  results.push({ slug: item.slug, claim: item.claim, state: sources.some((source) => source.excerpt) ? 'sourced' : 'model', query, sources, note: 'A sourced state is only eligible for promotion after proposition/evidence materialization gates pass.' });
+  return { slug: item.slug, claim: item.claim, state: sources.some((source) => source.excerpt) ? 'sourced' : 'model', query, sources, note: 'A sourced state is only eligible for promotion after proposition/evidence materialization gates pass.' };
+};
+for (let offset = 0; offset < pending.length; offset += concurrency) {
+  const batch = await Promise.all(pending.slice(offset, offset + concurrency).map(enrich));
+  results.push(...batch);
   await writeFile(output, JSON.stringify({ generatedAt: new Date().toISOString(), results }, null, 2));
-  console.log(`${item.slug}: ${sources.length ? 'source leads found' : 'no source lead'}`);
+  for (const item of batch) console.log(`${item.slug}: ${item.sources.length ? 'source leads found' : 'no source lead'}`);
 }
 console.log(`Enrichment run complete: processed ${pending.length}, total results ${results.length}.`);
