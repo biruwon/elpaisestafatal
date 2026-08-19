@@ -439,11 +439,10 @@ const extractCurrentEventEvidence = async (frame, sources) => {
 
 const normalizeAnswerPlan = (plan) => {
   if (!plan || !Array.isArray(plan.blocks)) return plan;
-  const { reviewed: _reviewed, resultState: _resultState, answerMode: _answerMode, ...planWithoutLegacyStates } = plan;
   const statusMap = { known: 'available', observed: 'available', supported: 'available', strong: 'available', qualified: 'context', partial: 'context', context: 'context', unknown: 'missing', unresolved: 'missing', insufficient: 'missing', missing: 'missing' };
   return {
-    ...planWithoutLegacyStates,
-    evidenceLevel: plan.evidenceLevel || (plan.resultState === 'answered' ? 'supported' : plan.resultState === 'provisional' ? 'limited' : 'insufficient'),
+    ...plan,
+    evidenceLevel: plan.evidenceLevel || 'insufficient',
     blocks: plan.blocks.map((block) => {
       if (block?.type && ['line_chart', 'bar_chart', 'comparison_chart'].includes(block.type) && !block.visualId) {
         return { ...block, visualId: 'warehouse-observation' };
@@ -2495,10 +2494,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
-    answerMode: primary ? 'reviewed_claim' : broadConditionRequested ? 'scorecard' : currentEvent ? 'current_event' : observations.length ? 'provisional_evidence' : 'guidance',
-    resultState: primary || broadConditionRequested || warehouseSeries ? 'answered' : currentEvent || observations.length ? 'provisional' : 'unresolved',
     evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
-    reviewed: Boolean(primary),
+    evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,
     headline: scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: scorecardRequested ? `Comparamos seis indicadores con el último dato anterior al periodo de ${latestGovernmentPeriod.start}. No calculamos una nota global ni atribuimos causalidad al Gobierno.` : currentEvent ? 'Hemos separado el hecho, las posibles agresiones y la atribución de responsabilidad. El estado indica qué está reportado, no qué queda probado.' : compoundClaim ? (compoundSummary || 'Hemos separado las partes comprobables y mantenemos sus datos independientes para no convertirlas en una conclusión que la evidencia no demuestra.') : primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : usableSource ? 'Hemos localizado una fuente potencialmente relevante, pero no hemos encontrado todavía una coincidencia revisada que permita convertirla en una respuesta factual.' : answer),
@@ -2518,7 +2515,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     knowledgeVersion: observations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
-  if (result.resultState === 'unresolved' && !result.blocks.some((block) => block.type === 'evidence_gap')) {
+  if (result.evidenceLevel === 'insufficient' && !result.blocks.some((block) => block.type === 'evidence_gap')) {
     result.blocks = [...result.blocks, evidenceGapForCompiler(classified.compiler, handlerId)];
   }
   const normalizedResult = normalizeAnswerPlan(result);
@@ -2527,8 +2524,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
-    resultState: 'unresolved',
-    reviewed: false,
+    evidenceLevel: 'insufficient',
     headline: 'Todavía no podemos sostener una respuesta completa.',
     summary: 'Hemos encontrado una pista, pero no ha pasado todos los controles necesarios para presentarla como una respuesta fiable.',
     coverage: 'insufficient',
