@@ -15,6 +15,8 @@ export const compilerSchema = {
   properties: {
     normalized: { type: 'string', maxLength: 300 },
     claimType: { type: 'string', enum: [...compilerTypes] },
+    interpretation: { type: 'string', maxLength: 320 },
+    interpretationConfidence: { type: 'number', minimum: 0, maximum: 1 },
     propositions: {
       type: 'array',
       maxItems: 6,
@@ -27,8 +29,11 @@ export const compilerSchema = {
           type: { type: 'string', enum: [...compilerTypes] },
           explicit: { type: 'boolean' },
           subject: { type: 'string', maxLength: 120 },
+          subjectType: { type: 'string', enum: ['person', 'group', 'institution', 'country', 'unknown'] },
           predicate: { type: 'string', maxLength: 80 },
+          action: { type: 'string', maxLength: 120 },
           object: { type: 'string', maxLength: 120 },
+          polarity: { type: 'string', enum: ['affirmed', 'negated', 'uncertain'] },
           // Ollama may map unfamiliar wording to a reviewed concept ID. The
           // normalizer filters this against the shared registry below.
           concepts: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 80 } },
@@ -46,6 +51,7 @@ export const compilerSchema = {
     metricIds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     retrievalHints: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     evidenceNeeds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
+    alternatives: { type: 'array', maxItems: 4, items: { type: 'object', additionalProperties: false, required: ['normalizedClaim', 'interpretation', 'evidenceDifference', 'confidence'], properties: { normalizedClaim: { type: 'string', maxLength: 300 }, interpretation: { type: 'string', maxLength: 240 }, evidenceDifference: { type: 'string', enum: ['same', 'material'] }, confidence: { type: 'number', minimum: 0, maximum: 1 } } } },
     // The model may return this for inspection, but signatures are always
     // derived below so it cannot manufacture a cluster or bypass polarity
     // and claim-type boundaries.
@@ -149,8 +155,11 @@ export const normalizeCompilerOutput = (value, text) => {
         type: compilerTypes.has(item.type) ? item.type : 'mixed',
         explicit: item.explicit !== false,
         subject: bounded(item.subject, 120) || shape.subject,
+        subjectType: ['person', 'group', 'institution', 'country', 'unknown'].includes(item.subjectType) ? item.subjectType : 'unknown',
         predicate: bounded(item.predicate, 80) || shape.predicate,
+        action: bounded(item.action, 120),
         object: bounded(item.object, 120) || shape.object,
+        polarity: ['affirmed', 'negated', 'uncertain'].includes(item.polarity) ? item.polarity : 'affirmed',
         concepts: safeConcepts(item.concepts),
       };
     })
@@ -217,6 +226,8 @@ export const normalizeCompilerOutput = (value, text) => {
   return {
     normalized: bounded(value.normalized, 300) || deterministic.normalized,
     claimType,
+    interpretation: bounded(value.interpretation, 320) || normalizedPropositions[0]?.text || deterministic.normalized,
+    interpretationConfidence: Number.isFinite(value.interpretationConfidence) ? Math.max(0, Math.min(1, Number(value.interpretationConfidence))) : 0.5,
     propositions: normalizedPropositions,
     entities,
     numbers,
@@ -231,6 +242,7 @@ export const normalizeCompilerOutput = (value, text) => {
       ...evidenceNeedsList(deterministic.evidenceNeeds),
       ...evidenceNeedsList(value.evidenceNeeds),
     ])].slice(0, 8),
+    alternatives: Array.isArray(value.alternatives) ? value.alternatives.slice(0, 4).filter((item) => item && typeof item === 'object' && typeof item.normalizedClaim === 'string' && typeof item.interpretation === 'string').map((item) => ({ normalizedClaim: bounded(item.normalizedClaim, 300), interpretation: bounded(item.interpretation, 240), evidenceDifference: item.evidenceDifference === 'same' ? 'same' : 'material', confidence: Number.isFinite(item.confidence) ? Math.max(0, Math.min(1, Number(item.confidence))) : 0.5 })) : [],
     // Never trust the model's signature. The deterministic compiler owns
     // polarity, direction, relation and metric-family boundaries.
     semanticSignature,

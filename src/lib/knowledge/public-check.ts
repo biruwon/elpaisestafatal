@@ -2,9 +2,26 @@ export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupport
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
 export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[] };
 export type CheckScope = { geography?: string; period?: string; checkedAt?: string };
-export type ClaimKind = 'institutional_label' | 'factual_allegation' | 'evaluative_judgment' | 'quantitative' | 'comparative' | 'causal' | 'specific_fact';
+export type ClaimKind = 'institutional_label' | 'factual_allegation' | 'evaluative_judgment' | 'quantitative' | 'comparative' | 'causal' | 'specific_fact' | 'normative';
 export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
-export type ClaimInterpretation = { kind: ClaimKind; subject?: string; predicate?: string; normalizedClaim: string; criteriaProfile?: string };
+export type ClaimSubjectType = 'person' | 'group' | 'institution' | 'country' | 'unknown';
+export type ClaimPolarity = 'affirmed' | 'negated' | 'uncertain';
+export type ClaimAlternative = { normalizedClaim: string; kind: ClaimKind; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number };
+export type ClaimInterpretation = {
+  kind: ClaimKind;
+  subject?: string;
+  subjectType?: ClaimSubjectType;
+  predicate?: string;
+  action?: string;
+  object?: string;
+  polarity?: ClaimPolarity;
+  normalizedClaim: string;
+  interpretation?: string;
+  criteriaProfile?: string;
+  confidence?: number;
+  evidenceNeeds?: string[];
+  alternatives?: ClaimAlternative[];
+};
 export type CheckCriterion = { id: string; label: string; finding: string; sourceIds?: string[] };
 export type CheckResult = { claim: string; interpretation?: ClaimInterpretation; reply: string; answer: string; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; canonicalHref?: string; canonicalSlug?: string };
 export type PublicCheckResponse =
