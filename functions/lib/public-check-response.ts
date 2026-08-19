@@ -19,6 +19,11 @@ const sourceLinks = (plan?: AnswerPlan, claim = ''): CheckSource[] => {
   });
 };
 const replyFromPlan = (plan?: AnswerPlan): string => plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text || plan?.summary || '';
+const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
+  const points = 'points' in block ? block.points || [] : [];
+  const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
+  return points.slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
+});
 const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
   const visual = 'visual' in entry ? entry.visual : undefined;
   if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length || visual.labels.length !== visual.values.length) return undefined;
@@ -48,7 +53,7 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
 export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
   const sources = sourceLinks(plan, claim);
   const reviewed = plan.reviewed === true && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0;
-  const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, whatWeKnow: plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block) => 'points' in block ? block.points || [] : []), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
+  const criteria = criteriaFromPlan(plan); const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
   const state = reviewed ? 'supported' : plan.resultState === 'unresolved' ? 'insufficient' : 'limited'; return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
