@@ -2,7 +2,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-cont
 
 type CheckResult = {
   claim: string; reply: string; answer: string; keyFact?: string; whatWeKnow: string[]; limitations: string[];
-  scope: { geography?: string; period?: string; reviewedAt?: string };
+  scope: { geography?: string; period?: string; checkedAt?: string };
   criteria?: Array<{ id: string; label: string; finding: string }>;
   sources: Array<{ id: string; title: string; publisher?: string; url: string; publishedAt?: string }>;
   assessment?: string; canonicalHref?: string; visual?: { title?: string; unit?: string; labels: string[]; values: number[] };
@@ -54,7 +54,7 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   if (!result) return; const item = response.result; setMode(true);
   const stateLabel = response.state === 'supported' ? 'Respaldada por fuentes' : response.state === 'limited' ? 'Evidencia limitada' : 'Evidencia insuficiente';
   const assessment = `<span class="claim-assessment">${escapeHtml(stateLabel)}</span>`;
-  const scope = [item.scope.geography, item.scope.period, item.scope.reviewedAt ? `Revisada ${item.scope.reviewedAt}` : ''].filter(Boolean).join(' · ');
+  const scope = [item.scope.geography, item.scope.period, item.scope.checkedAt ? `Comprobada ${item.scope.checkedAt}` : ''].filter(Boolean).join(' · ');
   const sources = item.sources.length ? `<section class="claim-sources"><h3>Fuentes originales</h3>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${escapeHtml(source.publishedAt)}` : ''} ↗</span></a>`).join('')}</section>` : '';
   const know = item.whatWeKnow.length ? `<section class="claim-facts"><div><h3>Qué sabemos</h3><p>${escapeHtml(item.whatWeKnow[0])}</p></div><div><h3>Qué no demuestra</h3><p>${escapeHtml(item.limitations[0] || 'La evidencia tiene un alcance concreto y no permite generalizar más allá de él.')}</p></div></section>` : '';
   const visual = item.visual && item.visual.labels.length === item.visual.values.length ? `<details class="claim-visual"><summary>${escapeHtml(item.visual.title || 'Ver datos')}</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${item.visual.labels.map((label, index) => `<tr><th scope="row">${escapeHtml(label)}</th><td>${escapeHtml(String(item.visual?.values[index]))}${item.visual?.unit ? ` ${escapeHtml(item.visual.unit)}` : ''}</td></tr>`).join('')}</tbody></table></details>` : '';

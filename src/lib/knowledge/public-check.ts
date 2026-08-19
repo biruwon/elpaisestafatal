@@ -1,7 +1,7 @@
 export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
 export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[] };
-export type CheckScope = { geography?: string; period?: string; reviewedAt?: string };
+export type CheckScope = { geography?: string; period?: string; checkedAt?: string };
 export type ClaimKind = 'institutional_label' | 'factual_allegation' | 'evaluative_judgment' | 'quantitative' | 'comparative' | 'causal' | 'specific_fact';
 export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
 export type ClaimInterpretation = { kind: ClaimKind; subject?: string; predicate?: string; normalizedClaim: string; criteriaProfile?: string };

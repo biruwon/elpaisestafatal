@@ -29,7 +29,7 @@ const assessmentFor = (entry: CatalogueEntry | RuntimeCatalogueEntry): ClaimAsse
   const value = 'assessment' in entry ? entry.assessment : undefined;
   return typeof value === 'string' && ['true', 'mostly-true', 'misleading', 'unsupported', 'uncertain', 'false'].includes(value) ? value as ClaimAssessment : undefined;
 };
-const scopeFor = (entry: CatalogueEntry | RuntimeCatalogueEntry) => ({ geography: entry.geography, period: entry.period, reviewedAt: 'evidenceVerifiedAt' in entry ? entry.evidenceVerifiedAt : undefined });
+const scopeFor = (entry: CatalogueEntry | RuntimeCatalogueEntry) => ({ geography: entry.geography, period: entry.period, checkedAt: 'evidenceVerifiedAt' in entry ? entry.evidenceVerifiedAt : undefined });
 const resultFor = (entry: CatalogueEntry | RuntimeCatalogueEntry, claim: string, stable: boolean): CheckResult => ({
   claim, reply: 'reply' in entry ? entry.reply : entry.answer, answer: entry.answer, keyFact: entry.explanation,
   whatWeKnow: [entry.explanation].filter(Boolean), limitations: 'limitations' in entry ? entry.limitations : [], scope: scopeFor(entry),
@@ -48,7 +48,7 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
 export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
   const sources = sourceLinks(plan, claim);
   const reviewed = plan.reviewed === true && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0;
-  const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, whatWeKnow: plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block) => 'points' in block ? block.points || [] : []), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { reviewedAt: plan.asOf }, sources };
+  const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, whatWeKnow: plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block) => 'points' in block ? block.points || [] : []), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
   const state = reviewed ? 'supported' : plan.resultState === 'unresolved' ? 'insufficient' : 'limited'; return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
