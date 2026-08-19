@@ -2494,6 +2494,20 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
+    interpretation: classified.compiler ? {
+      normalizedClaim: classified.compiler.normalized || text,
+      kind: classified.compiler.claimType || 'mixed',
+      subject: classified.compiler.propositions?.[0]?.subject,
+      subjectType: classified.compiler.propositions?.[0]?.subjectType || 'unknown',
+      predicate: classified.compiler.propositions?.[0]?.predicate,
+      action: classified.compiler.propositions?.[0]?.action,
+      object: classified.compiler.propositions?.[0]?.object,
+      polarity: classified.compiler.propositions?.[0]?.polarity || 'affirmed',
+      interpretation: classified.compiler.interpretation,
+      confidence: classified.compiler.interpretationConfidence,
+      evidenceNeeds: classified.compiler.evidenceNeeds || [],
+      alternatives: classified.compiler.alternatives || [],
+    } : undefined,
     evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     evidenceLevel: primary || broadConditionRequested || warehouseSeries ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,

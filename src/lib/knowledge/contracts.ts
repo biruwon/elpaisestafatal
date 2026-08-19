@@ -147,6 +147,20 @@ export type AnswerPlan = {
   asOf?: string;
   knowledgeVersion: string;
   evidenceLevel?: EvidenceLevel;
+  interpretation?: {
+    normalizedClaim: string;
+    kind: ClaimType | 'institutional_label' | 'factual_allegation' | 'evaluative_judgment' | 'specific_fact';
+    subject?: string;
+    subjectType?: 'person' | 'group' | 'institution' | 'country' | 'unknown';
+    predicate?: string;
+    action?: string;
+    object?: string;
+    polarity?: 'affirmed' | 'negated' | 'uncertain';
+    interpretation?: string;
+    confidence?: number;
+    evidenceNeeds?: string[];
+    alternatives?: Array<{ normalizedClaim: string; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number }>;
+  };
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
   researchPlan?: ResearchPlan;
 };

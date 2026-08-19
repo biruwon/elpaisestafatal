@@ -1,7 +1,7 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
-import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, CheckCriterion } from '../../src/lib/knowledge/public-check';
+import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion } from '../../src/lib/knowledge/public-check';
 
 const normalise = (value: string): string[] => String(value).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter((token) => token.length > 3);
 type CriteriaProfile = { kind: 'institutional_label' | 'factual_allegation' | 'evaluative_judgment'; definition: string; criteria: string[]; defaultLimitation: string };
@@ -51,7 +51,7 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
 export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: string): PublicCheckResponse => {
   const sources = sourceLinks(plan, claim);
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
-  const criteria = criteriaFromPlan(plan); const result: CheckResult = { claim, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
+  const criteria = criteriaFromPlan(plan); const interpretation = plan.interpretation ? plan.interpretation as ClaimInterpretation : undefined; const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
   const state = plan.evidenceLevel || (supported ? 'supported' : 'limited'); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
