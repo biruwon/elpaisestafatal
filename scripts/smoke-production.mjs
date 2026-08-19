@@ -14,8 +14,8 @@ for (const input of checks) {
     });
     const body = await response.json().catch(() => undefined);
     if (![200, 202, 400, 429].includes(response.status)) failures.push(`unexpected HTTP status ${response.status}`);
-    if (!body || typeof body.id !== 'string' || !['complete', 'processing', 'unavailable'].includes(body.status)) failures.push('response does not match the unified check contract');
-    if (body?.basis === 'sourced' && (!Array.isArray(body.sources) || body.sources.length === 0)) failures.push('sourced response has no sources');
+    if (!body || typeof body.id !== 'string' || !['clarification', 'reviewed', 'provisional', 'unresolved', 'processing', 'unavailable'].includes(body.state)) failures.push('response does not match the current check contract');
+    if (body?.state === 'reviewed' && (!body.result?.canonicalHref || !Array.isArray(body.result?.sources) || body.result.sources.length === 0)) failures.push('reviewed response has no canonical URL or sources');
     if (body && /ollama|127\.0\.0\.1|localhost|cloudflare.*token/i.test(JSON.stringify(body))) failures.push('response leaked implementation details');
   } catch (error) {
     failures.push(error instanceof Error ? error.message : String(error));
