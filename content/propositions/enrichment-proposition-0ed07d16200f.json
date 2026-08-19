@@ -1,0 +1,10 @@
+{
+  "id": "enrichment-proposition-0ed07d16200f",
+  "claimSlug": "modelo-aumento-de-inmigrantes-ilegales-ha-generado-un-problema-de-seguridad-en-zonas-co",
+  "text": "Aumento de inmigrantes ilegales ha generado un problema de seguridad en zonas costeras, y la policía no tiene suficiente personal para controlar todo.",
+  "type": "unverified-enrichment",
+  "status": "lead",
+  "evidenceIds": [
+    "enrichment-evidence-3e0ca108470d"
+  ]
+}

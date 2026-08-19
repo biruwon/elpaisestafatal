@@ -28,6 +28,8 @@ const appendId = (raw, key, id) => {
 let materialized = 0;
 for (const result of data.results || []) {
   if (materialized >= limit || result.state !== 'sourced') continue;
+  result.slug = String(result.slug || '').replace(/^['"]|['"]$/g, '');
+  if (!result.slug) continue;
   const source = (result.sources || []).find((entry) => entry.url && entry.excerpt);
   if (!source) continue;
   const sourceId = idFor('enrichment-source', source.url);
