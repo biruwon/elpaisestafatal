@@ -76,6 +76,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 15000 : 9000);
     for (let attempt = 0; response.state === 'processing' && response.id && attempt < 30; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, 500)); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000); }
     clarificationContext = undefined;
+    if (response.state === 'processing') { renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return; }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
   } catch (error) { if (error instanceof DOMException && error.name === 'AbortError') return; renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };
