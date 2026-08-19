@@ -33,9 +33,13 @@ const score = (query: string, entry: CatalogueEntry): number => {
   return Math.max(lexical, cosine(vectorFor(query), entry.vector));
 };
 
+// Model-generated gap records are private research candidates, never public
+// answers. They must not win routing merely because their generated wording
+// resembles the submitted phrase.
+const publicEntries = runtimeCatalogue.entries.filter((entry) => entry.status === 'published' && entry.basis !== 'model' && !entry.slug.startsWith('modelo-'));
 const exactIndex = new Map<string, CatalogueEntry>();
 const tokenIndex = new Map<string, Set<CatalogueEntry>>();
-for (const entry of runtimeCatalogue.entries) {
+for (const entry of publicEntries) {
   for (const phrase of [entry.claim, ...entry.aliases]) {
     exactIndex.set(normaliseClaimText(phrase), entry);
     for (const token of tokens(phrase)) {
@@ -48,7 +52,7 @@ for (const entry of runtimeCatalogue.entries) {
 const candidatesFor = (query: string): CatalogueEntry[] => {
   const candidates = new Set<CatalogueEntry>();
   for (const token of tokens(query)) for (const entry of tokenIndex.get(token) || []) candidates.add(entry);
-  return candidates.size ? [...candidates] : runtimeCatalogue.entries;
+  return candidates.size ? [...candidates] : publicEntries;
 };
 const missingDimensions = (query: string): string[] => {
   const missing = [];
