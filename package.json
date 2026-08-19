@@ -7,6 +7,7 @@
     "catalogue:compile": "node scripts/knowledge/compile-runtime-catalogue.mjs",
     "catalogue:runtime:validate": "node scripts/knowledge/validate-runtime-catalogue.mjs",
     "catalogue:enrichment:prepare": "node scripts/knowledge/prepare-catalogue-enrichment.mjs",
+    "catalogue:enrichment:run": "node scripts/knowledge/run-catalogue-enrichment.mjs",
     "catalogue:routing:fixtures": "node scripts/knowledge/validate-semantic-routing-fixtures.mjs",
     "precheck": "npm run catalogue:compile",
     "prebuild": "npm run catalogue:compile",
