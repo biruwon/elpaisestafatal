@@ -40,7 +40,7 @@ const checkCanonicalHealth = async () => {
 const main = async () => {
   console.log(`Building and deploying ${project}…`);
   await run('npm', ['run', 'build']);
-  await run('npx', ['wrangler', 'pages', 'deploy', 'dist', '--project-name', project]);
+  await run('./node_modules/.bin/wrangler', ['pages', 'deploy', 'dist', '--project-name', project]);
 
   let lastError;
   let healthVerified = false;
