@@ -6,6 +6,7 @@ const publicTypes = await readFile(new URL('../src/lib/knowledge/public-check.ts
 const client = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 const compiler = await readFile(new URL('../scripts/knowledge/local-compiler-contract.mjs', import.meta.url), 'utf8');
 const profiles = await readFile(new URL('../scripts/knowledge/criteria-profiles.mjs', import.meta.url), 'utf8');
+const handlers = await readFile(new URL('../scripts/knowledge/handlers.mjs', import.meta.url), 'utf8');
 const required = ['interpretation?.normalizedClaim', "state: 'supported'", 'data-clarification-kind'];
 const missing = required.filter((fragment) => !api.includes(fragment) && !response.includes(fragment) && !client.includes(fragment) && !publicTypes.includes(fragment));
 if (missing.length) throw new Error(`Claim interpretation contract is missing: ${missing.join(', ')}`);
@@ -17,4 +18,5 @@ if (api.includes('directClaimCheck') || response.includes('directClaimCheck') ||
 for (const fragment of ['interpretationConfidence', 'alternatives', 'subjectType', 'evidenceDifference']) if (!compiler.includes(fragment)) throw new Error(`Semantic compiler contract is missing ${fragment}`);
 if (!response.includes('attributedIds.has(source.id)')) throw new Error('Public sources must be filtered by criterion attribution');
 if (!response.includes('clarificationFromPlan') || !response.includes("evidenceDifference === 'material'")) throw new Error('Material interpretation alternatives must become structured clarification');
+if (!handlers.includes('handlerForSemanticProfile') || !handlers.includes("'public-corruption': 'allegation'")) throw new Error('Semantic criteria profiles must control evidence handler selection');
 console.log('Claim interpretation validation passed: semantic profiles and structured interpretation routing are present.');

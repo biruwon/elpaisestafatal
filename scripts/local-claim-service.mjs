@@ -5,7 +5,7 @@ import { appendFile, mkdtemp, open, readFile, readdir, rm, writeFile } from 'nod
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { handlerForInput, visualBlockForHandler } from './knowledge/handlers.mjs';
+import { handlerForInput, handlerForSemanticProfile, visualBlockForHandler } from './knowledge/handlers.mjs';
 import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
 import { approvedSourceHosts } from './knowledge/source-registry.mjs';
 import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
@@ -344,7 +344,8 @@ const modelTasks = createModelTasks({
 
 const planAnswerWithLocalModel = async (text, classified, result, observations) => {
   if (!answerPlannerEnabled || !result?.result) return result?.result;
-  const handlerId = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const fallbackHandler = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
+  const handlerId = handlerForSemanticProfile(classified.compiler?.criteriaProfile, fallbackHandler);
   const packet = buildEvidencePacket({ text, compiler: classified.compiler, handlerId, plan: result.result, observations });
   if (!validateEvidencePacket(packet).ok) return result.result;
   const cacheKey = digest(JSON.stringify({
@@ -1789,7 +1790,8 @@ const classify = async (text) => {
   const routing = deterministicCompiler.routing?.primarySlug
     ? { ...modelRouting, primarySlug: deterministicCompiler.routing.primarySlug, status: deterministicCompiler.routing.status }
     : { ...modelRouting, primarySlug: '' };
-  const handlerId = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
+  const fallbackHandler = handlerForInput(compiled || { retrievalHints: [text] }, compiled?.claimType || '');
+  const handlerId = handlerForSemanticProfile(compiled?.criteriaProfile, fallbackHandler);
   // The local compiler may map an unfamiliar phrase to a reviewed concept
   // family even when lexical ranking did not surface the published claim.
   // Re-enter that family into candidate selection, but only when exactly one
@@ -1961,7 +1963,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? { kind: 'topic', slug: fallbackTopicSlug, title: fallbackTopicSlug, href: `/preocupaciones/${fallbackTopicSlug}`, confidence: 0.3 }
     : undefined;
   const broadTopicGuidance = classified.status === 'related' && !classified.primary && (classified.alternatives?.some((item) => item.kind === 'topic') || fallbackTopic);
-  const requestedHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const requestedFallbackHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const requestedHandler = handlerForSemanticProfile(classified.compiler?.criteriaProfile, requestedFallbackHandler);
   const domainSpecific = new Set(['legal_rule', 'budget_transfer', 'government_event']);
   const relatedClaims = [...(classified.alternatives || []), ...(fallbackTopic ? [fallbackTopic] : [])].filter((item, index, items) => items.findIndex((candidate) => candidate.slug === item.slug) === index).filter((item) => {
     if (broadTopicGuidance && item.kind !== 'topic' && !(item.kind === 'claim' && item.validated === false && item.confidence <= 0.25)) return false;
@@ -1992,7 +1995,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const answer = primary?.answer || primary?.reason || classified.guidance?.limitation || 'La formulación no coincide con una evidencia publicada suficientemente directa.';
   const visualBlock = primary ? visualBlockForHandler(primary.handlerId || 'quantity', primary.slug, primary.evidenceIds || []) : null;
   const metricRouteIds = metricIdsForInput(text, classified.compiler || {});
-  const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || ''));
+  const fallbackHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const handlerId = primary?.handlerId || (metricRouteIds.size && observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)) ? 'quantity' : handlerForSemanticProfile(classified.compiler?.criteriaProfile, fallbackHandler));
   const requestedYear = broadTopicText.match(/\b(20(?:1[0-9]|2[0-9]))\b/)?.[1];
   const requestedRegion = broadTopicText.match(/\b(?:andalucia|aragon|asturias|baleares|canarias|cantabria|castilla y leon|castilla la mancha|cataluna|comunidad valenciana|extremadura|galicia|madrid|murcia|navarra|pais vasco|la rioja|ceuta|melilla)\b/)?.[0];
   const requestedPopulation = broadTopicText.match(/\b(?:joven(?:es)?|juventud|mujer(?:es)?|hombre(?:s)?|mayor(?:es)?|pensionista(?:s)?|familia(?:s)?|hogar(?:es)?)\b/)?.[0];
@@ -2693,7 +2697,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   if (authoritativeMetricIds.size) {
     retrievalClassified.compiler = { ...retrievalClassified.compiler, metricIds: [...authoritativeMetricIds] };
   }
-  const handlerId = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const fallbackHandler = handlerForInput({ ...(classified.compiler || {}), retrievalHints: [text, ...(classified.compiler?.retrievalHints || [])] }, classified.compiler?.claimType || '');
+  const handlerId = handlerForSemanticProfile(classified.compiler?.criteriaProfile, fallbackHandler);
   const discoveryText = discoveryQueryTextFor({ text, compiler: classified.compiler, handlerId });
   const publishedComposite = await buildPublishedCompositeResult(text, retrievalClassified);
   if (publishedComposite) return publishedComposite;

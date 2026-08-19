@@ -42,6 +42,21 @@ export const handlerForInput = (input, claimType = '') => {
   return 'quantity';
 };
 
+// Once the semantic compiler has selected a criteria profile, that profile is
+// authoritative for evidence routing. The lexical handler remains only as a
+// deterministic fallback when interpretation is unavailable.
+export const handlerForSemanticProfile = (profile, fallback = 'quantity') => {
+  const mapping = {
+    'democratic-power': 'definition',
+    'public-corruption': 'allegation',
+    'specific-allegation': 'allegation',
+    'performance-judgment': 'evaluation',
+    'quantitative-measure': 'quantity',
+    'causal-effect': 'causal',
+  };
+  return mapping[profile] || fallback;
+};
+
 export const visualBlockForHandler = (handler, visualId, evidenceIds = []) => {
   if (!visualId || !evidenceIds.length) return null;
   if (visualId === 'precios-hoteles-sube-junio-2026') return { type: 'comparison_chart', visualId, evidenceIds };
