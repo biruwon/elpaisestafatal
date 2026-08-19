@@ -3,7 +3,7 @@ slug: empleo-record-calidad
 claim: "“Tener más personas ocupadas demuestra que todo el empleo es de calidad.”"
 assessment: false
 topicSlugs: ["empleo", "economia"]
-aliases: ["más empleo significa empleo de calidad","récord de ocupados y precariedad","si hay más trabajo todo va bien","más ocupados demuestra mejores empleos","hay más trabajo pero es peor","el récord de empleo no significa empleo de calidad","tener más ocupados no quiere decir que se cobre bien","más ocupados mejor trabajo"]
+aliases: ["más empleo significa empleo de calidad","récord de ocupados y precariedad","si hay más trabajo todo va bien","más ocupados demuestra mejores empleos","hay más trabajo pero es peor","el récord de empleo no significa empleo de calidad","tener más ocupados no quiere decir que se cobre bien","más ocupados mejor trabajo","no hay trabajo","no encuentro trabajo","es imposible encontrar trabajo"]
 claimType: mixed
 evidenceStrength: medium
 geography: España
