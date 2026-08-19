@@ -1,0 +1,22 @@
+---
+import type { ClaimVerification } from '../data/claimCatalog';
+import { assessmentLabels } from '../data/claimCatalog';
+import { sourceTypeLabel } from '../data/sourceTitle';
+
+interface Props { item: ClaimVerification; sources: Array<{ title: string; url: string; date?: string; type: string }>; related: ClaimVerification[] }
+const { item, sources, related } = Astro.props;
+---
+<header class="claim-header">
+  <div><p class="eyebrow">Afirmación comprobada</p><p class="claim-question">{item.claim.replace(/[“”]/g, '')}</p></div>
+  <div class={`claim-assessment claim-assessment-${item.assessment}`}><span>{assessmentLabels[item.assessment]}</span><strong>Veredicto revisado</strong></div>
+</header>
+<p class="claim-scope">{item.geography} · {item.period} · Revisada {item.reviewed}</p>
+<section class="claim-reply" aria-labelledby="claim-reply-title">
+  <div><p class="eyebrow" id="claim-reply-title">Respuesta para enviar</p><p class="claim-reply-text">{item.shareable}</p></div>
+  <button type="button" class="claim-copy" data-copy-response>Copiar respuesta</button><span class="claim-live" aria-live="polite"></span>
+</section>
+<section class="claim-key-fact"><span class="eyebrow">Dato decisivo</span><p>{item.scale || item.decisiveEvidence}</p></section>
+<section class="claim-facts"><div><h2>Qué sabemos</h2><p>{item.whatIsTrue}</p></div><div><h2>Qué no demuestra</h2><p>{item.cannotProve}</p></div></section>
+<section class="claim-sources"><h2>Fuentes originales</h2>{sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer"><strong>{source.title}</strong><span>{source.date || 'Consulta'} · {sourceTypeLabel(source.type)} ↗</span></a>)}</section>
+<details class="claim-more"><summary>Más contexto <span aria-hidden="true">+</span></summary><div><h2>Qué falta para entenderla mejor</h2><p>{item.whatIsMissing}</p><p>{item.unknowns}</p><p><strong>Qué cambiaría la conclusión:</strong> {item.evidenceCouldChange}</p></div></details>
+{related.length ? <section class="claim-related"><p class="eyebrow">Relacionado</p><div>{related.map((claim) => <a href={`/comprobar/${claim.slug}`}><span>{claim.claim}</span><strong>{assessmentLabels[claim.assessment]} →</strong></a>)}</div></section> : null}
