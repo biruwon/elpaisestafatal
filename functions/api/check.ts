@@ -85,6 +85,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const cached = cacheKey ? cache.get(cacheKey) : undefined;
   if (cached && cached.expiresAt > Date.now()) return json(cached.response);
   if (cached) cache.delete(cacheKey);
+  const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
 
   if (body.inputType === 'text') {
     const direct = body.clarification ? undefined : directClaimCheck(body.text);
@@ -105,12 +106,12 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
-    const response = fallbackResponse(body.text, body.inputType);
+    const response = fallbackResponse(effectiveClaim, body.inputType);
     if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
-  if (localCircuitOpenUntil > Date.now()) return json(fallbackResponse(body.text, body.inputType));
+  if (localCircuitOpenUntil > Date.now()) return json(fallbackResponse(effectiveClaim, body.inputType));
 
   try {
     const isMultipart = Boolean(body.file);
@@ -133,7 +134,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     if (!upstreamResponse.ok) {
       localFailureCount += 1;
       if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-      return json(fallbackResponse(body.text, body.inputType));
+      return json(fallbackResponse(effectiveClaim, body.inputType));
     }
     localFailureCount = 0;
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
@@ -143,13 +144,13 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       return json(processingCheck(body.text, safe.requestId), 202);
     }
     const plan = safe?.result;
-    const response = plan ? checkFromPlan(body.text, plan, safe?.requestId) : fallbackResponse(body.text, body.inputType);
+    const response = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId) : fallbackResponse(effectiveClaim, body.inputType);
     if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
     if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-    return json(fallbackResponse(body.text, body.inputType));
+    return json(fallbackResponse(effectiveClaim, body.inputType));
   }
 };
 
