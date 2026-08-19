@@ -12,10 +12,8 @@ const evidenceDir = path.join(root, 'content/evidence');
 const propositionsDir = path.join(root, 'content/propositions');
 await Promise.all([mkdir(sourcesDir, { recursive: true }), mkdir(evidenceDir, { recursive: true }), mkdir(propositionsDir, { recursive: true })]);
 
-const slugify = (value) => String(value).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70);
 const idFor = (prefix, value) => `${prefix}-${crypto.createHash('sha1').update(value).digest('hex').slice(0, 12)}`;
 const quote = (value) => JSON.stringify(String(value || ''));
-const frontmatterValue = (raw, key) => raw.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'))?.[1]?.trim() || '';
 const appendId = (raw, key, id) => {
   const match = raw.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
   if (!match) return raw.replace(/\n---\n/, `\n${key}: [${quote(id)}]\n---\n`);
