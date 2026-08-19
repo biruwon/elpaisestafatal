@@ -82,11 +82,14 @@ const variantsFor = (entry) => {
 
 const records = [];
 const seen = new Set();
+const seenFormulations = new Map();
 for (const entry of catalogueEntries) {
   for (const formulation of variantsFor(entry)) {
     const fingerprint = normaliseClaimText(formulation);
     if (!fingerprint || seen.has(`${entry.slug}:${fingerprint}`)) continue;
+    if (seenFormulations.has(fingerprint) && seenFormulations.get(fingerprint) !== entry.slug) continue;
     seen.add(`${entry.slug}:${fingerprint}`);
+    seenFormulations.set(fingerprint, entry.slug);
     records.push({ canonicalId: entry.id, slug: entry.slug, formulation, fingerprint, basis: entry.basis, visibility: entry.visibility });
   }
 }

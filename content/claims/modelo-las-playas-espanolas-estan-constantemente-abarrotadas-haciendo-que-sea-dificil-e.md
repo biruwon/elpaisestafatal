@@ -10,7 +10,7 @@ claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
-reviewed: "2026-08-18"
+reviewed: "2026-08-19"
 status: planned
 sourceRefs: []
 evidenceIds: []
@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "las playas espanolas estan constantemente abarrotadas haciendo que sea dificil encontrar un espacio en los dias de sol"
-generatedAt: "2026-08-18T21:05:27.953Z"
+generatedAt: "2026-08-19T06:33:15.933Z"
 ---
 
 ## Qué es cierto

@@ -10,7 +10,7 @@ claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
-reviewed: "2026-08-18"
+reviewed: "2026-08-19"
 status: planned
 sourceRefs: []
 evidenceIds: []
@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "el coste de la electricidad y el gas es tan alto que apenas se puede pagar la calefaccion en invierno"
-generatedAt: "2026-08-18T21:05:27.953Z"
+generatedAt: "2026-08-19T06:33:15.933Z"
 ---
 
 ## Qué es cierto

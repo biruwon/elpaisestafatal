@@ -1,0 +1,38 @@
+---
+slug: "modelo-por-que-en-espana-los-contratos-temporales-son-tan-comunes-y-no-se-promueven-mas"
+claim: "¿Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?"
+assessment: uncertain
+topicSlugs: ["derechos laborales y conciliación"]
+aliases: ["¿Cómo es que se permite tanta precariedad laboral?","¿Por qué no se reduce la tasa de contratos temporales?","¿Cómo se justifica la alta proporción de contratos temporales?","¿Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos","¿Es cierto que Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","¿Qué datos permiten comprobar si Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","Quiero saber si Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos","¿Cómo se puede verificar Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","¿Hay evidencia sobre si Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","¿Es verdad que Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","¿Qué sabemos de Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?","¿Se sostiene la afirmación de que Por qué en España los contratos temporales son tan comunes y no se promueven más los indefinidos?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "por que en espana los contratos temporales son tan comunes y no se promueven mas los indefinidos"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

@@ -10,7 +10,7 @@ claimType: descriptive
 evidenceStrength: insufficient
 geography: España
 period: sin periodo especificado
-reviewed: "2026-08-18"
+reviewed: "2026-08-19"
 status: planned
 sourceRefs: []
 evidenceIds: []
@@ -18,7 +18,7 @@ limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de t
 generatedBy: "qwen2.5:7b"
 generationPromptVersion: "catalogue-neutral-v2"
 semanticFingerprint: "por que se dedican tanta energia a promocionar el turismo en el extranjero si no se invierte en mejorar el servicio publico en casa"
-generatedAt: "2026-08-18T21:05:27.953Z"
+generatedAt: "2026-08-19T06:33:15.933Z"
 ---
 
 ## Qué es cierto

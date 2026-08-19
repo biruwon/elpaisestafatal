@@ -1,0 +1,38 @@
+---
+slug: "modelo-en-muchas-zonas-la-falta-de-transporte-publico-regular-hace-que-sea-dificil-move"
+claim: "En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad."
+assessment: uncertain
+topicSlugs: ["pobreza y desigualdad"]
+aliases: ["transporte público deficiente","falta de autobuses","public transport inadecuado","mala movilidad","transporte irregular","En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.","¿Es cierto que En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","¿Qué datos permiten comprobar si En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","Quiero saber si En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.","¿Cómo se puede verificar En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","¿Hay evidencia sobre si En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","¿Es verdad que En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","¿Qué sabemos de En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?","¿Se sostiene la afirmación de que En muchas zonas, la falta de transporte público regular hace que sea difícil moverse por la ciudad.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "en muchas zonas la falta de transporte publico regular hace que sea dificil moverse por la ciudad"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

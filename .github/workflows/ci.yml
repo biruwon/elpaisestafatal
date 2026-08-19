@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Compile the Pages runtime catalogue
-        run: npm run catalogue:compile
+        run: npm run catalogue:compile && npm run knowledge:runtime-catalogue && npm run catalogue:runtime:validate
 
       - name: Type and Astro checks
         run: npm run check

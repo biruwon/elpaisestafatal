@@ -1,0 +1,38 @@
+---
+slug: "modelo-el-sistema-de-proteccion-social-es-un-fraude-solo-beneficia-a-los-politicos"
+claim: "El sistema de protección social es un fraude, solo beneficia a los políticos."
+assessment: uncertain
+topicSlugs: ["pensiones y protección social"]
+aliases: ["protección social no funciona","sistema de protección social corrupto","sistema de protección social solo sirve para politiquería","El sistema de protección social es un fraude, solo beneficia a los políticos.","¿Es cierto que El sistema de protección social es un fraude, solo beneficia a los políticos.?","¿Qué datos permiten comprobar si El sistema de protección social es un fraude, solo beneficia a los políticos.?","Quiero saber si El sistema de protección social es un fraude, solo beneficia a los políticos.","¿Cómo se puede verificar El sistema de protección social es un fraude, solo beneficia a los políticos.?","¿Hay evidencia sobre si El sistema de protección social es un fraude, solo beneficia a los políticos.?","¿Es verdad que El sistema de protección social es un fraude, solo beneficia a los políticos.?","¿Qué sabemos de El sistema de protección social es un fraude, solo beneficia a los políticos.?","¿Se sostiene la afirmación de que El sistema de protección social es un fraude, solo beneficia a los políticos.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "el sistema de proteccion social es un fraude solo beneficia a los politicos"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

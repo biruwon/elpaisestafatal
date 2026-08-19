@@ -1,0 +1,38 @@
+---
+slug: "modelo-la-falta-de-personal-en-los-tribunales-esta-causando-largas-filas-y-demoras-inne"
+claim: "La falta de personal en los tribunales está causando largas filas y demoras innecesarias."
+assessment: uncertain
+topicSlugs: ["instituciones y justicia"]
+aliases: ["Falta de personal en tribunales","Tiempo excesivo en espera","Demoras innecesarias","Falta de personal judicial","La falta de personal en los tribunales está causando largas filas y demoras innecesarias.","¿Es cierto que La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","¿Qué datos permiten comprobar si La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","Quiero saber si La falta de personal en los tribunales está causando largas filas y demoras innecesarias.","¿Cómo se puede verificar La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","¿Hay evidencia sobre si La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","¿Es verdad que La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","¿Qué sabemos de La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?","¿Se sostiene la afirmación de que La falta de personal en los tribunales está causando largas filas y demoras innecesarias.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "la falta de personal en los tribunales esta causando largas filas y demoras innecesarias"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

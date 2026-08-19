@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "catalogue:compile": "node scripts/knowledge/compile-runtime-catalogue.mjs",
+    "catalogue:runtime:validate": "node scripts/knowledge/validate-runtime-catalogue.mjs",
     "precheck": "npm run catalogue:compile",
     "prebuild": "npm run catalogue:compile",
     "dev": "astro dev",

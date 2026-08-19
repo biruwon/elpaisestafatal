@@ -1,0 +1,38 @@
+---
+slug: "modelo-la-policia-no-responde-a-los-casos-de-delitos-de-alto-nivel-dejando-a-la-ciudada"
+claim: "La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro."
+assessment: uncertain
+topicSlugs: ["instituciones y justicia"]
+aliases: ["policía ineficaz","omisión policial","descuido en delitos graves","falta de seguridad","inacción policial","protección insuficiente","negligencia policial","descuido en crímenes graves","policía negligente","La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.","¿Es cierto que La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","¿Qué datos permiten comprobar si La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","Quiero saber si La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.","¿Cómo se puede verificar La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","¿Hay evidencia sobre si La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","¿Es verdad que La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","¿Qué sabemos de La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?","¿Se sostiene la afirmación de que La policía no responde a los casos de delitos de alto nivel, dejando a la ciudadanía en peligro.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "la policia no responde a los casos de delitos de alto nivel dejando a la ciudadania en peligro"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.

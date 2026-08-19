@@ -1,0 +1,38 @@
+---
+slug: "modelo-las-colas-en-los-hospitales-estan-aumentando-porque-hay-demasiados-inmigrantes-s"
+claim: "Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico."
+assessment: uncertain
+topicSlugs: ["inmigración y demografía"]
+aliases: ["colas en hospitales","demora en atención médica","inmigrantes agotan el sistema sanitario","esperas largas en atención primaria","Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.","¿Es cierto que Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","¿Qué datos permiten comprobar si Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","Quiero saber si Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.","¿Cómo se puede verificar Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","¿Hay evidencia sobre si Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","¿Es verdad que Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","¿Qué sabemos de Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?","¿Se sostiene la afirmación de que Las colas en los hospitales están aumentando porque hay demasiados inmigrantes sin seguro médico.?"]
+basis: model
+visibility: searchable
+claimType: descriptive
+evidenceStrength: insufficient
+geography: España
+period: sin periodo especificado
+reviewed: "2026-08-19"
+status: planned
+sourceRefs: []
+evidenceIds: []
+limitations: "Respuesta generada por IA; requiere fuentes verificadas antes de tratarse como evidencia."
+generatedBy: "qwen2.5:7b"
+generationPromptVersion: "catalogue-neutral-v2"
+semanticFingerprint: "las colas en los hospitales estan aumentando porque hay demasiados inmigrantes sin seguro medico"
+generatedAt: "2026-08-19T06:33:15.933Z"
+---
+
+## Qué es cierto
+
+Esta entrada está generada por IA y todavía no tiene fuentes verificadas; no establece que la afirmación sea verdadera.
+
+## Qué falta
+
+Hay que localizar fuentes primarias y comprobar el periodo, territorio, población y definición antes de convertirla en una respuesta respaldada por datos.
+
+## Límite
+
+No debe interpretarse como un hecho probado ni como una conclusión general sobre España.
+
+## Respuesta compartible
+
+Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.
