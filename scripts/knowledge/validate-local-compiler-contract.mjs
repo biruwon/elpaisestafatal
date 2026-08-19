@@ -133,4 +133,15 @@ assert(fraction.evidenceNeeds.includes('tasa') && fraction.evidenceNeeds.include
 const invalid = normalizeCompilerOutput({ claimType: 'not-a-type', propositions: [] }, 'España está destruida');
 assert(invalid.semanticSignature === deterministicFallbackCompiler('España está destruida').semanticSignature, 'Malformed model output did not fall back deterministically');
 
+const semanticFixtures = [
+  ['Los políticos nos roban', 'factual_allegation'],
+  ['Pedro Sánchez es un dictador', 'institutional_label'],
+  ['La sanidad está cada vez peor', 'evaluative_judgment'],
+];
+for (const [text, expectedKind] of semanticFixtures) {
+  const parsed = normalizeCompilerOutput({ normalized: text, claimType: 'descriptive', interpretation: text, interpretationConfidence: 0.82, propositions: [{ text, type: 'descriptive', explicit: true, subjectType: 'group', predicate: expectedKind, polarity: 'affirmed' }], alternatives: [] }, text);
+  assert(parsed.interpretation === text && parsed.interpretationConfidence >= 0.8, `Semantic interpretation was not retained for ${text}`);
+  assert(typeof parsed.propositions[0]?.subjectType === 'string' && parsed.propositions[0]?.polarity === 'affirmed', `Structured proposition fields were lost for ${text}`);
+}
+
 console.log('Local compiler contract validation passed: bounded extraction, deterministic numbers/signatures, and no answer/evidence injection.');

@@ -187,7 +187,12 @@ export const normalizeCompilerOutput = (value, text) => {
     || modelConflictsWithDeterministicStructure
     ? deterministic.explicitPropositions
     : modelExplicitPropositions;
-  const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 6);
+  const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 6).map((item) => ({
+    ...item,
+    subjectType: ['person', 'group', 'institution', 'country', 'unknown'].includes(item.subjectType) ? item.subjectType : 'unknown',
+    action: typeof item.action === 'string' ? item.action : '',
+    polarity: ['affirmed', 'negated', 'uncertain'].includes(item.polarity) ? item.polarity : 'affirmed',
+  }));
   const claimType = deterministicStructuralTypes.has(deterministic.claimType)
     ? deterministic.claimType
     : (compilerTypes.has(value.claimType) ? value.claimType : deterministic.claimType);
