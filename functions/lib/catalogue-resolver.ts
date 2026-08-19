@@ -35,7 +35,22 @@ const score = (query: string, entry: CatalogueEntry): number => {
 
 const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal|cobra demasiados impuestos|paga demasiados impuestos/i.test(query);
 const exactIndex = new Map<string, CatalogueEntry>();
-for (const entry of runtimeCatalogue.entries) for (const phrase of [entry.claim, ...entry.aliases]) exactIndex.set(normaliseClaimText(phrase), entry);
+const tokenIndex = new Map<string, Set<CatalogueEntry>>();
+for (const entry of runtimeCatalogue.entries) {
+  for (const phrase of [entry.claim, ...entry.aliases]) {
+    exactIndex.set(normaliseClaimText(phrase), entry);
+    for (const token of tokens(phrase)) {
+      const bucket = tokenIndex.get(token) || new Set<CatalogueEntry>();
+      bucket.add(entry);
+      tokenIndex.set(token, bucket);
+    }
+  }
+}
+const candidatesFor = (query: string): CatalogueEntry[] => {
+  const candidates = new Set<CatalogueEntry>();
+  for (const token of tokens(query)) for (const entry of tokenIndex.get(token) || []) candidates.add(entry);
+  return candidates.size ? [...candidates] : runtimeCatalogue.entries;
+};
 const missingDimensions = (query: string): string[] => {
   const missing = [];
   if (!/\b(19|20)\d{2}\b|año|anos|mes|trimestre|periodo|últim/i.test(query)) missing.push('periodo');
@@ -48,7 +63,7 @@ export const routeCatalogueQuery = (query: string, options: { skipClarification?
   if (broadClaim(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['indicador', 'periodo', 'territorio'] };
   const exact = exactIndex.get(normaliseClaimText(query));
   if (exact) return { entry: exact, route: 'exact', family: exact.family, confidence: 1, missingDimensions: missingDimensions(query) };
-  const ranked = runtimeCatalogue.entries
+  const ranked = candidatesFor(query)
     .map((entry) => ({ entry, score: score(query, entry) }))
     .filter((item) => item.score >= 0.58)
     .sort((left, right) => right.score - left.score);
