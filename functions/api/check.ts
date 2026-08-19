@@ -116,9 +116,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       const form = new FormData();
       form.set('text', body.text);
       form.set('inputType', body.inputType);
+      if (body.clarification) form.set('clarification', JSON.stringify(body.clarification));
       if (body.file) form.set('file', body.file, body.file.name || 'upload');
       return form;
-    })() : JSON.stringify({ text: body.text, inputType: body.inputType });
+    })() : JSON.stringify({ text: body.text, inputType: body.inputType, clarification: body.clarification });
     const headers = new Headers();
     if (!isMultipart) headers.set('content-type', 'application/json');
     headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);
