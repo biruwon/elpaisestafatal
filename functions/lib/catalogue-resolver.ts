@@ -33,7 +33,6 @@ const score = (query: string, entry: CatalogueEntry): number => {
   return Math.max(lexical, cosine(vectorFor(query), entry.vector));
 };
 
-const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal|cobra demasiados impuestos|paga demasiados impuestos|\b(traidor|corrupto|dictador|vendido|incompetente)\b/i.test(query);
 const exactIndex = new Map<string, CatalogueEntry>();
 const tokenIndex = new Map<string, Set<CatalogueEntry>>();
 for (const entry of runtimeCatalogue.entries) {
@@ -60,7 +59,6 @@ const missingDimensions = (query: string): string[] => {
 
 export const routeCatalogueQuery = (query: string, options: { skipClarification?: boolean } = {}): CatalogueRoute => {
   if (!options.skipClarification && /\b(no hay trabajo|no encuentro trabajo|es imposible encontrar trabajo)\b/i.test(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['qué quieres medir: acceso, paro o calidad', 'periodo', 'territorio'] };
-  if (broadClaim(query)) return { route: 'clarify', confidence: 1, missingDimensions: ['indicador', 'periodo', 'territorio'] };
   const exact = exactIndex.get(normaliseClaimText(query));
   if (exact) return { entry: exact, route: 'exact', family: exact.family, confidence: 1, missingDimensions: missingDimensions(query) };
   const ranked = candidatesFor(query)
