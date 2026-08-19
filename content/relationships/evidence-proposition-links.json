@@ -2051,13 +2051,6 @@
       "reviewedAt": "2026-08-19"
     },
     {
-      "evidenceId": "enrichment-evidence-70e2bfa6ba84",
-      "propositionId": "enrichment-proposition-04245d052237",
-      "relationship": "context",
-      "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-19"
-    },
-    {
       "evidenceId": "enrichment-evidence-a0f3f50c9131",
       "propositionId": "enrichment-proposition-0441fc23cfa2",
       "relationship": "context",
@@ -17054,13 +17047,6 @@
     {
       "evidenceId": "enrichment-evidence-f33a641b8c7a",
       "propositionId": "enrichment-proposition-a5900076e4c3",
-      "relationship": "context",
-      "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-19"
-    },
-    {
-      "evidenceId": "enrichment-evidence-651852b8dcff",
-      "propositionId": "enrichment-proposition-a594ed2a02d2",
       "relationship": "context",
       "reviewStatus": "reviewed",
       "reviewedAt": "2026-08-19"

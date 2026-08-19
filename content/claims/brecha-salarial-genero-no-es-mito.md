@@ -3,7 +3,7 @@ slug: brecha-salarial-genero-no-es-mito
 claim: "La brecha salarial de género es un mito."
 assessment: misleading
 topicSlugs: ["desigualdad", "empleo"]
-aliases: ["la brecha salarial de género no existe","la brecha salarial es un invento","mujeres y hombres cobran lo mismo","brecha salarial de genero mito","no hay brecha salarial entre hombres y mujeres"]
+aliases: ["la brecha salarial de género no existe","la brecha salarial es un invento","mujeres y hombres cobran lo mismo","brecha salarial de genero mito","no hay brecha salarial entre hombres y mujeres","La brecha salarial de género es un mito."]
 claimType: comparative
 evidenceStrength: high
 geography: España
