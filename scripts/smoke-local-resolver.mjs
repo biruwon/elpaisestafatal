@@ -42,6 +42,8 @@ const cases = [
   { text: 'No hay trabajo', state: 'clarification' },
   { text: 'España va fatal', state: 'clarification' },
   { text: 'España cobra demasiados impuestos', state: 'clarification' },
+  { text: 'Pedro Sánchez traidor', state: 'clarification' },
+  { text: 'Pedro Sánchez corrupto', state: 'clarification' },
   { text: 'Cómo ha cambiado la situación de una cuestión que no tiene fuentes', state: 'clarification' },
 ];
 for (const test of cases) await check(test);

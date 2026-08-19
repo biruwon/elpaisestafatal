@@ -33,7 +33,7 @@ const score = (query: string, entry: CatalogueEntry): number => {
   return Math.max(lexical, cosine(vectorFor(query), entry.vector));
 };
 
-const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal|cobra demasiados impuestos|paga demasiados impuestos/i.test(query);
+const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal|cobra demasiados impuestos|paga demasiados impuestos|\b(traidor|corrupto|dictador|vendido|incompetente)\b/i.test(query);
 const exactIndex = new Map<string, CatalogueEntry>();
 const tokenIndex = new Map<string, Set<CatalogueEntry>>();
 for (const entry of runtimeCatalogue.entries) {
