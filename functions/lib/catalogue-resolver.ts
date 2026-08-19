@@ -33,7 +33,7 @@ const score = (query: string, entry: CatalogueEntry): number => {
   return Math.max(lexical, cosine(vectorFor(query), entry.vector));
 };
 
-const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal/i.test(query);
+const broadClaim = (query: string): boolean => /destruy|hund|todo el pais|nos roban|todos los politicos|gobierno no hace nada|pais va mal|españa va fatal|espana va fatal|pais va fatal/i.test(query);
 const missingDimensions = (query: string): string[] => {
   const missing = [];
   if (!/\b(19|20)\d{2}\b|año|anos|mes|trimestre|periodo|últim/i.test(query)) missing.push('periodo');
