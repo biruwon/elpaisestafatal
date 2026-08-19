@@ -104,7 +104,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
     const response = fallbackResponse(body.text, body.inputType);
-    if (cacheKey && (response.state === 'reviewed' || response.state === 'provisional')) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+    if (cacheKey && response.state === 'reviewed') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
@@ -141,7 +141,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     }
     const plan = safe?.result;
     const response = plan ? checkFromPlan(body.text, plan, safe?.requestId) : fallbackResponse(body.text, body.inputType);
-    if (cacheKey && (response.state === 'reviewed' || response.state === 'provisional')) cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
+    if (cacheKey && response.state === 'reviewed') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;

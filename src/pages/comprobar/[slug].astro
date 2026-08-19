@@ -8,6 +8,7 @@ export function getStaticPaths() { return claims.filter((claim) => claim.publish
 const item = getClaim(Astro.params.slug!);
 if (!item || !item.published) return Astro.redirect('/');
 const sources = item.sourceRefs.map(getSource).filter((source): source is NonNullable<typeof source> => Boolean(source));
+const related = item.relatedSlugs.map(getClaim).filter((claim): claim is NonNullable<typeof claim> => Boolean(claim)).filter((claim) => claim.published).slice(0, 2);
 ---
 <BaseLayout title={`${item.claim} — El país está fatal`} description={item.shareable} image={`/cards/${item.slug}.png`} pageType="article">
   <main class="claim-page" id="claim-page">
@@ -25,6 +26,7 @@ const sources = item.sourceRefs.map(getSource).filter((source): source is NonNul
     <section class="claim-facts"><div><h2>Qué sabemos</h2><p>{item.whatIsTrue}</p></div><div><h2>Qué no demuestra</h2><p>{item.cannotProve}</p></div></section>
     <section class="claim-sources"><h2>Fuentes originales</h2>{sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer"><strong>{source.title}</strong><span>{source.date || 'Consulta'} · {sourceTypeLabel(source.type)} ↗</span></a>)}</section>
     <details class="claim-more"><summary>Más contexto <span aria-hidden="true">+</span></summary><div><h2>Qué falta para entenderla mejor</h2><p>{item.whatIsMissing}</p><p>{item.unknowns}</p><p><strong>Qué cambiaría la conclusión:</strong> {item.evidenceCouldChange}</p></div></details>
+    {related.length ? <section class="claim-related"><p class="eyebrow">Relacionado</p><div>{related.map((claim) => <a href={`/comprobar/${claim.slug}`}><span>{claim.claim}</span><strong>{assessmentLabels[claim.assessment]} →</strong></a>)}</div></section> : null}
     <section class="claim-next"><p class="eyebrow">Siguiente paso</p><h2>¿Qué más te han dicho?</h2><a href="/#comprobar">Comprobar otra frase <span aria-hidden="true">→</span></a></section>
   </main>
 </BaseLayout>
