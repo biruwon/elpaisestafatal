@@ -8,7 +8,7 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
 import { publishedEntryFor, routeCatalogueQuery } from '../lib/catalogue-resolver';
-import { checkFromCatalogue, checkFromPlan, clarificationCheck, processingCheck, unavailableCheck } from '../lib/public-check-response';
+import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } from '../lib/public-check-response';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
@@ -89,12 +89,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
 
   if (body.inputType === 'text') {
     const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
-    const route = routeCatalogueQuery(routedText, { skipClarification: Boolean(body.clarification) });
-    if (route.route === 'clarify' && !body.clarification) {
-      const response = clarificationCheck(body.text, route.missingDimensions);
-      cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
-      return json(response);
-    }
+    const route = routeCatalogueQuery(routedText, { skipClarification: true });
     const entry = route.entry || publishedEntryFor(body.text);
     if (entry) {
       const response = checkFromCatalogue(body.text, entry);
