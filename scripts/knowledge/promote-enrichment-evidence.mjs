@@ -27,16 +27,16 @@ for (const result of data.results || []) {
   const sourceId = idFor('enrichment-source', source.url);
   const evidenceId = idFor('enrichment-evidence', `${slug}:${source.url}`);
   const propositionId = idFor('enrichment-proposition', slug);
+  const sourcePath = path.join(root, 'content/sources', `${sourceId}.md`);
+  const evidencePath = path.join(root, 'content/evidence', `${evidenceId}.md`);
+  const propositionPath = path.join(root, 'content/propositions', `${propositionId}.json`);
+  try { await Promise.all([readFile(sourcePath), readFile(evidencePath), readFile(propositionPath)]); } catch { continue; }
   claim = replaceFrontmatter(claim, 'basis', 'sourced');
   claim = replaceFrontmatter(claim, 'status', 'published');
   claim = replaceFrontmatter(claim, 'sourceRefs', JSON.stringify([sourceId]));
   claim = replaceFrontmatter(claim, 'evidenceIds', JSON.stringify([evidenceId]));
   claim = replaceFrontmatter(claim, 'propositionIds', JSON.stringify([propositionId]));
   await writeFile(claimPath, claim);
-  const sourcePath = path.join(root, 'content/sources', `${sourceId}.md`);
-  const evidencePath = path.join(root, 'content/evidence', `${evidenceId}.md`);
-  const propositionPath = path.join(root, 'content/propositions', `${propositionId}.json`);
-  try { await Promise.all([readFile(sourcePath), readFile(evidencePath), readFile(propositionPath)]); } catch { continue; }
   for (const [file, key, value] of [[sourcePath, 'reviewStatus', 'verified'], [evidencePath, 'kind', 'verified-source-excerpt']]) {
     const raw = await readFile(file, 'utf8');
     await writeFile(file, replaceFrontmatter(raw, key, value));
