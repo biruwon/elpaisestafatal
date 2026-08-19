@@ -7,7 +7,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/inp
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
-import { publishedEntryFor, routeCatalogueQuery } from '../lib/catalogue-resolver';
+import { routeCatalogueQuery } from '../lib/catalogue-resolver';
 import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } from '../lib/public-check-response';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
@@ -90,7 +90,12 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (body.inputType === 'text') {
     const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: true });
-    const entry = route.entry || publishedEntryFor(body.text);
+    // Canonical catalogue entries are safe to serve only when the submitted
+    // text is their exact published claim. Aliases and semantic neighbours
+    // must pass through the interpretation/evidence pipeline first; otherwise
+    // a broad allegation can inherit an unrelated sourced answer.
+    const normalize = (value: string) => value.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+    const entry = route.entry && normalize(route.entry.claim) === normalize(routedText) ? route.entry : undefined;
     if (entry) {
       const response = checkFromCatalogue(body.text, entry);
       cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
