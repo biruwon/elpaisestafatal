@@ -12,7 +12,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
   if (!classify.includes(fragment)) failures.push(`/api/check is missing required boundary behavior: ${fragment}`);
 }
 if (!classify.includes('unavailableCheck')) failures.push('/api/check must retain deterministic guidance when the optional origin is unavailable');
-if (!classify.includes('publishedEntryFor')) failures.push('/api/check must resolve catalogue text before optional enrichment');
+if (!classify.includes('routeCatalogueQuery') || !classify.includes('normalize(route.entry.claim)')) failures.push('/api/check must gate catalogue answers behind exact claim interpretation');
 if (!publishedFallback.includes('publishedEntryFor')) failures.push('catalogue resolver is missing publishedEntryFor');
 for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'RUNTIME_VERSIONS.fallbackKnowledge']) {
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
