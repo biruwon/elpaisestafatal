@@ -439,14 +439,11 @@ const extractCurrentEventEvidence = async (frame, sources) => {
 
 const normalizeAnswerPlan = (plan) => {
   if (!plan || !Array.isArray(plan.blocks)) return plan;
+  const { reviewed: _reviewed, resultState: _resultState, answerMode: _answerMode, ...planWithoutLegacyStates } = plan;
   const statusMap = { known: 'available', observed: 'available', supported: 'available', strong: 'available', qualified: 'context', partial: 'context', context: 'context', unknown: 'missing', unresolved: 'missing', insufficient: 'missing', missing: 'missing' };
-  const answerMode = plan.answerMode || (plan.blocks?.some((block) => block?.type === 'scorecard') ? 'scorecard' : plan.blocks?.some((block) => block?.type === 'event_status') ? 'current_event' : plan.sourceLinks?.length ? 'provisional_evidence' : 'guidance');
   return {
-    ...plan,
+    ...planWithoutLegacyStates,
     evidenceLevel: plan.evidenceLevel || (plan.resultState === 'answered' ? 'supported' : plan.resultState === 'provisional' ? 'limited' : 'insufficient'),
-    resultState: plan.resultState || (answerMode === 'guidance' ? 'unresolved' : answerMode === 'current_event' || answerMode === 'provisional_evidence' ? 'provisional' : 'answered'),
-    reviewed: plan.reviewed === true || answerMode === 'reviewed_claim',
-    answerMode,
     blocks: plan.blocks.map((block) => {
       if (block?.type && ['line_chart', 'bar_chart', 'comparison_chart'].includes(block.type) && !block.visualId) {
         return { ...block, visualId: 'warehouse-observation' };
@@ -2526,7 +2523,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   }
   const normalizedResult = normalizeAnswerPlan(result);
   const validation = validateAnswerPlan(normalizedResult, { provisional: status === 'draft' });
-  if (validation.ok) return { status: broadConditionRequested || normalizedResult.reviewed === true ? 'complete' : (safetyUnresolved ? 'uncovered' : status), requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: safetyUnresolved || broadPoliticalComplaint ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
+  if (validation.ok) return { status: broadConditionRequested || normalizedResult.evidenceLevel === 'supported' ? 'complete' : (safetyUnresolved ? 'uncovered' : status), requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: normalizedResult, relatedClaims: safetyUnresolved || broadPoliticalComplaint ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? relatedClaims.filter((item) => item.kind !== 'topic') : source && !primary && !broadTopicGuidance && !hasValidatedRelatedClaim ? [] : isGroupComparison && primary ? relatedClaims.filter((item) => item.kind !== 'topic') : relatedClaims };
   console.error('Answer plan downgraded:', validation.errors.join('; '));
   const safeResult = {
     ...result,
