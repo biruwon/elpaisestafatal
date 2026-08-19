@@ -1,7 +1,7 @@
 ---
 id: enrichment-source-e6d539b7a74e
 title: "Referencia Consejo de Ministros"
-url: "https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2026/20260728-referencia-rueda-de-prensa-ministros.aspx?qfr=16"
+url: https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2026/20260728-referencia-rueda-de-prensa-ministros.aspx?qfr=16
 date: "2026-08-19"
 type: official-lead
 retrievedAt: "2026-08-19T07:51:24.400Z"
