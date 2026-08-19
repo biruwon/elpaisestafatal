@@ -15,7 +15,7 @@ const [searchPage, searchSource, inputSource, investigationsPage, sourcesPage, a
   read('src/scripts/claim-checker.ts'),
   read('dist/investigaciones/index.html'),
   read('dist/fuentes/index.html'),
-  read('dist/afirmaciones/inmigrantes-ayudas/index.html'),
+  read('dist/comprobar/inmigrantes-ayudas/index.html'),
 ]);
 
 requireText('Legacy search redirect', searchPage, ['url=/#comprobar', 'Redirigiendo al comprobador']);
@@ -23,7 +23,7 @@ requireText('Legacy search source', searchSource, ['window.location.replace', 'h
 requireText('Claim checker handoff', inputSource, ['URLSearchParams(window.location.search)', 'requestSubmit()']);
 requireText('Investigation index', investigationsPage, ['investigation-index-actions', 'primary-index-action', 'planned-disclosure', '<details']);
 requireText('Sources page', sourcesPage, ['source-search', 'source-status', 'source-list', 'data-source-card']);
-requireText('Canonical affirmation page', affirmationPage, ['claim-answer', 'claim-data', 'claim-evidence', 'claim-sources']);
+requireText('Canonical checker page', affirmationPage, ['claim-question', 'Respuesta para enviar', 'Dato decisivo', 'Fuentes originales']);
 
 const publishedLinks = (investigationsPage.match(/href="\/preocupaciones\//g) || []).length;
 if (publishedLinks < 10) failures.push(`Investigation index exposes only ${publishedLinks} published topics`);

@@ -17,7 +17,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <textarea id="conversation-input" name="q" rows="3" maxlength="1200" autocomplete="off" placeholder="Pega una frase, un titular o un enlace…" aria-describedby="conversation-help"></textarea>
             <button type="submit">Comprobar <span aria-hidden="true">→</span></button>
           </div>
-          <p id="conversation-help" class="conversation-help"><span>También puede ser una captura o un audio.</span><span id="conversation-counter" aria-live="polite">0/1200</span></p>
+          <p id="conversation-help" class="conversation-help"><span>Las capturas se leen automáticamente; el audio se transcribe si está disponible.</span><span id="conversation-counter" aria-live="polite">0/1200</span></p>
           <div class="conversation-input-actions" data-media-dropzone role="group" aria-label="Adjuntar una captura o un audio">
             <span>Adjuntar</span><label for="conversation-file">Captura</label><label for="conversation-file">Audio</label><input id="conversation-file" name="file" type="file" accept="image/*,audio/*" />
           </div>
