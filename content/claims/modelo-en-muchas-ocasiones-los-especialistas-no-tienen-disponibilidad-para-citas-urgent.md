@@ -37,3 +37,7 @@ No debe interpretarse como un hecho probado ni como una conclusión general sobr
 ## Respuesta compartible
 
 Esta afirmación está pendiente de verificación con fuentes; por ahora solo es una respuesta generada por IA.
+
+## Escala
+
+Esta entrada se limita a la fuente, el periodo, el territorio y la población indicados en sus referencias. La fuente no permite extrapolar el resultado a otras escalas sin evidencia adicional.
