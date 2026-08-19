@@ -52,7 +52,7 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
   const clarificationValue = form.get('clarification');
   let clarification: Clarification | undefined;
   if (typeof clarificationValue === 'string') {
-    try { const parsed = JSON.parse(clarificationValue) as { id?: unknown; prompt?: unknown }; if (typeof parsed.prompt === 'string' && parsed.prompt.trim()) clarification = { id: String(parsed.id || 'custom'), prompt: parsed.prompt.trim() }; } catch { /* ignore malformed optional context */ }
+    try { const parsed = JSON.parse(clarificationValue) as { id?: unknown; prompt?: unknown; interpretation?: { kind?: unknown; normalizedClaim?: unknown } }; if (typeof parsed.prompt === 'string' && parsed.prompt.trim()) clarification = { id: String(parsed.id || 'custom'), prompt: parsed.prompt.trim(), interpretation: parsed.interpretation && typeof parsed.interpretation.normalizedClaim === 'string' ? { kind: typeof parsed.interpretation.kind === 'string' ? parsed.interpretation.kind : undefined, normalizedClaim: parsed.interpretation.normalizedClaim } : undefined }; } catch { /* ignore malformed optional context */ }
   }
   return {
     text: String(form.get('text') || '').trim(),
@@ -89,7 +89,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (body.inputType === 'text') {
     const direct = body.clarification ? undefined : directClaimCheck(body.text);
     if (direct) return json(direct);
-    const routedText = body.clarification?.prompt ? `${body.text} ${body.clarification.prompt}` : body.text;
+    const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: Boolean(body.clarification) });
     if (route.route === 'clarify' && !body.clarification) {
       const response = clarificationCheck(body.text, route.missingDimensions);
