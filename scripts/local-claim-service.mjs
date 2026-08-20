@@ -957,17 +957,15 @@ const getIndex = async () => {
     // recognizes equivalent Spanish claim structure before embeddings or a
     // local model are needed, while preserving the existing compatibility and
     // evidence gates before any published result is returned.
+    // Do not compile every catalogue alias while the resolver is starting.
+    // The catalogue contains thousands of entries; eagerly running the
+    // deterministic compiler for each one can monopolise the event loop for
+    // minutes and make the public API appear unavailable. Query-time routing
+    // computes the submitted claim signature instead.
     const entries = rawEntries.map((entry) => ({
       ...entry,
-      semanticSignatures: entry.published && entry.kind === 'claim'
-        ? [...new Set([entry.title, ...(entry.aliases || [])]
-          .map((phrase) => fallbackCompiler(phrase).semanticSignature)
-          .filter(Boolean))].slice(0, 32)
-        : [],
-      semanticFamilyKeys: entry.published && entry.kind === 'claim'
-        ? [...new Set([entry.title, ...(entry.aliases || [])]
-          .flatMap((phrase) => semanticFamilyKeys(fallbackCompiler(phrase).semanticSignature)))]
-        : [],
+      semanticSignatures: Array.isArray(entry.semanticSignatures) ? entry.semanticSignatures : [],
+      semanticFamilyKeys: Array.isArray(entry.semanticFamilyKeys) ? entry.semanticFamilyKeys : [],
     }));
     const signature = digest(JSON.stringify({
       entries,
