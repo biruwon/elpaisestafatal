@@ -5,12 +5,12 @@ import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicChec
 
 const normalise = (value: string): string[] => String(value).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter((token) => token.length > 3);
 const sourceLinks = (plan?: AnswerPlan, claim = ''): CheckSource[] => {
-  const claimTokens = new Set(normalise(claim));
-  return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt })).filter((source) => {
-    if (!claimTokens.size) return false;
-    const sourceTokens = new Set(normalise(`${source.title} ${source.publisher || ''} ${source.url}`));
-    return [...claimTokens].some((token) => sourceTokens.has(token));
-  });
+  // Relevance is established by criterion-to-source attribution in the
+  // answer plan. Requiring a shared claim token here rejects valid primary
+  // sources (for example the Constitution does not need to mention the
+  // politician named in the claim) and collapses supported fallbacks into
+  // “insufficient”.
+  return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
 };
 const replyFromPlan = (plan?: AnswerPlan): string => plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text || plan?.summary || '';
 const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
