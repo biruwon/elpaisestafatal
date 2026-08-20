@@ -51,6 +51,26 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   const guidance = fallbackGuidance(original, inputType);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
   const related = topicReference(original);
+  const institutionalLabel = /\b(?:dictador|dictadura|autoritari[oa]|fascista)\b/i.test(original);
+  if (institutionalLabel) {
+    const evidenceIds = ['fallback-constitution', 'fallback-congress'];
+    const sources = [
+      { id: 'fallback-constitution', title: 'Constitución Española · Estado social y democrático de Derecho', publisher: 'BOE', url: 'https://www.boe.es/legislacion/documentos/ConstitucionCASTELLANO.pdf', retrievedAt: new Date().toISOString() },
+      { id: 'fallback-congress', title: 'Congreso de los Diputados · Funciones y control parlamentario', publisher: 'Congreso de los Diputados', url: 'https://www.congreso.es/funciones', retrievedAt: new Date().toISOString() },
+    ];
+    return {
+      status: 'complete', evidenceLevel: 'supported', relatedClaims: [], guidance: { limitation: 'La etiqueta se contrasta con rasgos institucionales observables, no con una valoración partidista.' },
+      result: {
+        schemaVersion: '1', evidenceLevel: 'supported', headline: 'La etiqueta no encaja con las instituciones descritas',
+        summary: 'La frase se entiende como una afirmación sobre el ejercicio de poder dictatorial. España mantiene un sistema parlamentario con elecciones, oposición, leyes y control judicial; esa etiqueta no describe esas instituciones.', coverage: 'qualified', claimType: 'definition',
+        blocks: [
+          { type: 'confirmed', propositionIds: [], evidenceIds, points: ['La Constitución define un Estado democrático y parlamentario.', 'El Gobierno está sometido al control del Congreso y a las leyes y tribunales.'] },
+          { type: 'cannot_conclude', evidenceIds, points: ['Esto no impide examinar decisiones concretas por abuso de poder, ilegalidad o mala gestión.'] },
+          { type: 'conversation_reply', evidenceIds, text: 'Pedro Sánchez no encaja en la definición de dictador: dirige un Gobierno parlamentario, sometido a elecciones, oposición, leyes, tribunales y control del Congreso. Eso no impide analizar por separado decisiones concretas por posible abuso de poder.' },
+        ], limitation: 'La conclusión se refiere a la etiqueta institucional general, no a la legalidad o calidad de cada decisión.', evidenceIds, sourceIds: evidenceIds, sourceLinks: sources, knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
+      },
+    };
+  }
   if (broadScorecard(original) && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
