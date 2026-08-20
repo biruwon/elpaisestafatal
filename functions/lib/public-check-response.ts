@@ -3,8 +3,7 @@ import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion } from '../../src/lib/knowledge/public-check';
 
-const normalise = (value: string): string[] => String(value).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter((token) => token.length > 3);
-const sourceLinks = (plan?: AnswerPlan, claim = ''): CheckSource[] => {
+const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   // Relevance is established by criterion-to-source attribution in the
   // answer plan. Requiring a shared claim token here rejects valid primary
   // sources (for example the Constitution does not need to mention the
@@ -72,7 +71,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   }
   const criteria = criteriaFromPlan(plan);
   const attributedIds = new Set(criteria.flatMap((item) => item.sourceIds || []));
-  const sources = sourceLinks(plan, claim).filter((source) => attributedIds.has(source.id));
+  const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = plan.interpretation ? plan.interpretation as ClaimInterpretation : undefined;
   const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
