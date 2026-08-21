@@ -721,6 +721,16 @@
     "supports": ["descriptive", "trend", "comparison"],
     "limitations": ["Es una actuación o registro policial, no una condena ni una medida directa de delitos cometidos; puede incluir personas no residentes y una misma persona puede aparecer en más de un registro. No debe convertirse en una tasa de criminalidad residente sin un denominador y una definición compatibles."]
   },
+  "crime_standardised_conviction_offence_rate_by_nationality": {
+    "name": "Age- and sex-standardised conviction-offence rate by nationality",
+    "aliases": ["tasa estandarizada de delincuencia por nacionalidad", "delitos estandarizados por edad y sexo", "tasa condenas ajustada edad sexo extranjeros españoles", "brecha delincuencia estandarizada"],
+    "unit": "conviction offences per 100,000 adults",
+    "population": "adult conviction offences, standardised by age and sex to make nationality groups comparable",
+    "notEquivalentTo": ["crime_detentions_investigations_by_nationality", "crime_conviction_rate_by_nationality", "recorded_offences"],
+    "dimensions": ["period", "geography", "offence_category", "group", "sex", "measure", "legal_stage", "age_sex_standardisation", "denominator"],
+    "supports": ["descriptive", "comparison"],
+    "limitations": ["Es un resultado agregado 2007-2023 de un estudio revisado por pares basado en datos del INE, no una serie anual dinámica del INE. Estandariza edad y sexo, pero no demuestra causalidad, no identifica inmigración irregular y no conecta cada persona entre detención, investigación y condena."]
+  },
   "crime_convictions_by_nationality": {
     "name": "Recorded convictions by nationality",
     "aliases": ["condenas registradas por nacionalidad", "personas condenadas por nacionalidad", "condenas de españoles y extranjeros"],
