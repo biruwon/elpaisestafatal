@@ -65,7 +65,7 @@
       "id": "public-housing-allocation-by-nationality",
       "domain": "public_housing_allocation",
       "missingFields": ["applicants_by_group", "allocations_by_group", "period"],
-      "resolvedFields": ["programme-level-applications", "programme-level-allocations", "housing-actions-by-territory-and-period", "household-tenure-by-nationality-composition"],
+      "resolvedFields": ["programme-level-applications", "programme-level-allocations", "current-regional-documentation-breakdown", "housing-actions-by-territory-and-period", "household-tenure-by-nationality-composition"],
       "irreducibleFields": ["general-nationality-by-applicant-and-allocation-table"],
       "status": "not_published_in_extractable_source",
       "officialSourcesChecked": [
@@ -87,12 +87,12 @@
         "protected-housing actions can be reported by territory, month, typology, and administrative status",
         "Catalonia's official applicant register reports 129,157 registered protected-housing applications at 31 December 2025 and its official nationality chart reports 99,056 Spanish, 29,954 non-EU, and 147 EU applications; this is demand, not allocation",
         "INE ECEPOV 2021 reports national household tenure by composition: Spanish-only, mixed-nationality, and foreign-only households, separated into ownership, mortgage, rent, and other tenure",
-        "Euskadi's 2026 official housing report provides 2025 protected-housing allocation totals split by DNI versus NIE/passport; this is current regional evidence about documentation, not nationality",
+        "Euskadi's 2026 official housing report provides 2025 protected-housing allocation totals split by DNI versus NIE/passport: 1,237/1,473 rental allocations and 1,454/1,483 purchase allocations carry DNI; this is current regional evidence about documentation, not nationality",
         "Galicia's IGVS publishes official award and lottery resolutions by municipality, programme, access regime, and status, but the catalogue is not an aggregated nationality-by-applicant/adjudication dataset",
         "official response identifies an Excel nº 1 with AVS adjudicatarios by sex and nationality, while stating that several application and allocation breakdowns are not directly extractable"
       ],
       "permittedConclusion": "The system may report protected-housing actions, programme-specific application/allocation ratios, and explicit rules such as the Plan Vive Alcorcón source states; the currently accessible records still do not provide a nationality-by-applicant/adjudication table or establish a Spain-wide allocation pattern.",
-      "nextEvidence": "Obtain and validate the referenced Excel nº 1 and nº 3 attachments, then compare programme-level applicants, adjudications, rules, geography, and periods without generalising Madrid to Spain.",
+      "nextEvidence": "Attempt retrieval of the referenced Excel nº 1 and nº 3 attachments when the Madrid transparency portal exposes them; until then, use the validated Euskadi documentation split and Catalonia demand profile as regional evidence without generalising either to Spain.",
       "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data", "Excel nº 1 and Excel nº 3 attached to Madrid AVS transparency resolution 10-OPEN-00039.7/2022"],
       "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions", "the attached Excel files are checked for years, missing fields, and whether adjudications are directly extractable"]
     }
