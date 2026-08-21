@@ -1,0 +1,67 @@
+{
+  "source": {
+    "id": "research-ine-ecv-selected-social-transfers-2025",
+    "title": "INE ECV 2025 selected social-transfer receipt by nationality",
+    "publisher": "Instituto Nacional de Estadística (INE)",
+    "url": "https://www.ine.es/ftp/microdatos/ecv/ecv_b2013/datos_2025.zip",
+    "landingUrl": "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176807&idp=1254735976608&menu=resultados&secc=1254736195153",
+    "domain": "immigration_benefits",
+    "contentType": "application/zip",
+    "snapshot": true,
+    "asOf": "2025",
+    "retrievedAt": "2026-08-21T19:09:00.000Z",
+    "validationStatus": "derived-from-official-microdata",
+    "sourceDefinition": "Weighted adult ECV respondents. Recipient means any positive value in PY090N, PY100N, PY110N, PY120N, PY130N, HY050N, or HY070N. Nationality is grouped from RB290: Spanish, other EU foreign, and rest-of-world foreign. Weight PB040.",
+    "recordCount": 3
+  },
+  "records": [
+    {
+      "metricId": "survey_selected_social_transfer_rate_by_nationality",
+      "period": "2025",
+      "geography": "España",
+      "population": "ECV adults aged 16+",
+      "group": "Spanish nationality",
+      "value": 38.63,
+      "unit": "percent",
+      "dimensions": {
+        "surveyScope": "ECV 2025",
+        "measure": "selected social-transfer receipt",
+        "denominator": "weighted adults aged 16+",
+        "benefitComponents": ["unemployment", "retirement", "survivor", "sickness", "disability", "family_or_children", "housing"],
+        "sourceDefinition": "PB040, PY090N/PY100N/PY110N/PY120N/PY130N, HY050N, HY070N"
+      }
+    },
+    {
+      "metricId": "survey_selected_social_transfer_rate_by_nationality",
+      "period": "2025",
+      "geography": "España",
+      "population": "ECV adults aged 16+",
+      "group": "Other EU foreign nationality",
+      "value": 22.37,
+      "unit": "percent",
+      "dimensions": {
+        "surveyScope": "ECV 2025",
+        "measure": "selected social-transfer receipt",
+        "denominator": "weighted adults aged 16+",
+        "benefitComponents": ["unemployment", "retirement", "survivor", "sickness", "disability", "family_or_children", "housing"],
+        "sourceDefinition": "PB040, PY090N/PY100N/PY110N/PY120N/PY130N, HY050N, HY070N"
+      }
+    },
+    {
+      "metricId": "survey_selected_social_transfer_rate_by_nationality",
+      "period": "2025",
+      "geography": "España",
+      "population": "ECV adults aged 16+",
+      "group": "Rest-of-world foreign nationality",
+      "value": 21.47,
+      "unit": "percent",
+      "dimensions": {
+        "surveyScope": "ECV 2025",
+        "measure": "selected social-transfer receipt",
+        "denominator": "weighted adults aged 16+",
+        "benefitComponents": ["unemployment", "retirement", "survivor", "sickness", "disability", "family_or_children", "housing"],
+        "sourceDefinition": "PB040, PY090N/PY100N/PY110N/PY120N/PY130N, HY050N, HY070N"
+      }
+    }
+  ]
+}

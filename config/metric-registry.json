@@ -693,6 +693,16 @@
     "supports": ["descriptive", "trend"],
     "limitations": ["Es la cobertura publicada por SEPE entre demandantes de empleo extranjeros registrados, no una tasa EPA de desempleo, no incluye todas las ayudas y no ofrece por sí sola el equivalente español para una comparación entre nacionalidades."]
   },
+  "survey_selected_social_transfer_rate_by_nationality": {
+    "name": "Survey-selected social-transfer receipt rate by nationality",
+    "aliases": ["personas que reciben prestaciones por nacionalidad", "tasa ayudas sociales por nacionalidad", "prestaciones sociales encuesta nacionalidad", "ayudas extranjeras encuesta condiciones de vida"],
+    "unit": "adults receiving selected social transfers per 100 adults",
+    "population": "adults in the INE Living Conditions Survey; numerator is any positive reported unemployment, retirement, survivor, sickness, disability, family/child, or housing transfer",
+    "notEquivalentTo": ["benefit_recipients_by_group", "imv_title_holder_rate_by_nationality", "unemployment_benefit_coverage_by_nationality"],
+    "dimensions": ["period", "geography", "group", "measure", "denominator", "survey_scope", "benefit_components"],
+    "supports": ["descriptive", "comparison"],
+    "limitations": ["Es una estimación derivada de microdatos ECV 2025 y cubre solo los componentes declarados; no es un recuento administrativo, no identifica por separado el IMV y no representa todas las prestaciones ni la probabilidad de concesión de un programa concreto."]
+  },
   "unemployment_beneficiaries_by_programme_nationality": {
     "name": "Foreign unemployment-benefit recipients by programme",
     "aliases": ["extranjeros por tipo de prestación de desempleo", "paro extranjero contributiva subsidio RAI"],

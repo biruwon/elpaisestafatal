@@ -3,8 +3,8 @@
     {
       "id": "benefits-by-comparable-population",
       "domain": "immigration_benefits",
-      "missingFields": ["comparable_denominator"],
-      "resolvedFields": ["programme_scope", "same-period-beneficiary-counts", "imv-adult-same-nationality-rate", "foreign-jobseeker-benefit-coverage"],
+      "missingFields": ["complete_administrative_coverage_across_programmes"],
+      "resolvedFields": ["programme_scope", "same-period-beneficiary-counts", "imv-adult-same-nationality-rate", "foreign-jobseeker-benefit-coverage", "survey-comparable-selected-transfer-rate"],
       "irreducibleFields": ["single-denominator-across-all-benefit-programmes"],
       "status": "partial_programme_coverage",
       "officialSourcesChecked": [
@@ -22,10 +22,10 @@
         "SEPE unemployment-benefit recipients and the foreign-recipient share can be reported for November 2025 with the total-recipient denominator",
         "SEPE also publishes foreign-benefit coverage among foreign registered jobseekers for the same monthly publication; this is a valid group-specific denominator but only for unemployment benefits",
         "OBERAXE publishes IMV title holders by Spanish/foreign nationality and an IMV rate against same-nationality residents aged 18+ for January, nationally and provincially",
-        "no single comparable denominator across all benefits and resident groups"
+        "INE ECV 2025 provides a weighted comparable adult denominator for a defined set of selected transfer components by nationality, but not a complete administrative measure for every programme"
       ],
       "permittedConclusion": "The system may report IMV composition, SEPE unemployment-benefit counts/shares, and SEPE foreign-benefit coverage among foreign registered jobseekers for their named programme and period. These programme-specific measures cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens across all benefits.",
-      "nextEvidence": "Extend the same denominator pattern to each additional benefit programme; IMV and unemployment-benefit denominators are now separately available.",
+      "nextEvidence": "Extend the administrative denominator pattern to each additional benefit programme; the ECV snapshot now supplies a comparable survey measure for selected components, while complete all-programme administrative coverage remains unavailable.",
       "sourceTargets": ["Ministerio de Inclusión: IMV and benefit microdata", "INE population by nationality and residence", "regional benefit administrators"],
       "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date", "IMV rates use the OBERAXE/INE 18+ same-nationality denominator"]
     },

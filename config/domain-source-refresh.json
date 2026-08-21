@@ -89,6 +89,14 @@
       "title": "SEPE unemployment-benefit recipients by nationality, November 2025"
     },
     {
+      "id": "ine-ecv-selected-social-transfers-nationality-2025",
+      "domain": "immigration_benefits",
+      "url": "https://www.ine.es/ftp/microdatos/ecv/ecv_b2013/datos_2025.zip",
+      "schedule": "yearly",
+      "mode": "discovery",
+      "title": "INE ECV 2025 microdata: selected social-transfer receipt by nationality (derived snapshot)"
+    },
+    {
       "id": "social-housing-programmes",
       "domain": "public_housing_allocation",
       "url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP007_01.csv",
