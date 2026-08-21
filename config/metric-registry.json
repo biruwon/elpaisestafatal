@@ -623,6 +623,86 @@
     "notEquivalentTo": ["imv_title_holders_by_nationality", "benefit_recipients_by_group"],
     "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility"]
   },
+  "imv_title_holder_share_by_nationality": {
+    "name": "IMV title-holder composition by nationality",
+    "aliases": ["porcentaje de titulares del IMV por nacionalidad", "composición del IMV por nacionalidad", "proporción extranjeros titulares IMV"],
+    "unit": "percent of IMV title holders",
+    "population": "people holding the IMV in the named source month; denominator is all IMV title holders in that month",
+    "notEquivalentTo": ["foreign_citizenship_population", "benefit_recipients_by_group", "social_protection_benefits_per_capita"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility", "denominator"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Es una composición interna del IMV, no una tasa de acceso ni una comparación de probabilidad entre nacionalidades."]
+  },
+  "imv_comparable_population_by_nationality": {
+    "name": "Comparable adult resident population by nationality for IMV coverage",
+    "aliases": ["población censada para tasa IMV", "denominador IMV por nacionalidad", "residentes adultos para IMV"],
+    "unit": "people aged 18 or over",
+    "population": "residents aged 18 or over of the same nationality used as the denominator for the OBERAXE IMV rate",
+    "notEquivalentTo": ["foreign_citizenship_population", "resident_population", "imv_title_holders_by_nationality"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility", "denominator", "age"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Es el denominador metodológico de la tasa IMV de OBERAXE; no representa por sí solo personas elegibles ni necesidad económica."]
+  },
+  "imv_title_holder_rate_by_nationality": {
+    "name": "IMV title-holder coverage rate by nationality",
+    "aliases": ["tasa de titulares IMV por nacionalidad", "cobertura IMV españoles extranjeros", "porcentaje IMV sobre población extranjera"],
+    "unit": "percent of residents aged 18 or over",
+    "population": "IMV title holders divided by residents aged 18 or over of the same nationality, as defined by OBERAXE",
+    "notEquivalentTo": ["imv_title_holder_share_by_nationality", "unemployment_benefit_coverage_by_nationality", "benefit_recipients_by_group"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility", "denominator", "age"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Mide cobertura de titulares del IMV, no probabilidad de concesión, fraude, pobreza ni todas las prestaciones. La tasa relativa publicada por OBERAXE corresponde a enero y usa residentes de 18 años o más del mismo grupo de nacionalidad."]
+  },
+  "unemployment_beneficiaries_by_nationality": {
+    "name": "Unemployment-benefit recipients by nationality",
+    "aliases": ["beneficiarios de paro extranjeros", "prestaciones por desempleo por nacionalidad", "extranjeros que cobran el paro"],
+    "unit": "people",
+    "population": "people receiving unemployment benefits under the SEPE monthly definition, separated by foreign nationality and total",
+    "notEquivalentTo": ["benefit_recipients_by_group", "imv_title_holders_by_nationality"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Mide prestaciones por desempleo del SEPE, no todas las ayudas públicas ni una comparación de necesidad o fraude."]
+  },
+  "unemployment_rate_by_nationality": {
+    "name": "Unemployment rate by nationality",
+    "aliases": ["tasa de paro por nacionalidad", "paro extranjeros españoles EPA", "desempleo por nacionalidad"],
+    "unit": "percent",
+    "population": "active population aged 16 and over in the EPA nationality group",
+    "notEquivalentTo": ["unemployment_beneficiaries_by_nationality", "unemployment_rate"],
+    "dimensions": ["period", "geography", "group", "measure", "denominator", "age"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Es la tasa EPA dentro de la población activa del grupo definido por INE; no equivale al paro registrado ni a la proporción de beneficiarios de prestaciones."]
+  },
+  "unemployment_benefit_share_by_nationality": {
+    "name": "Share of unemployment-benefit recipients who are foreign nationals",
+    "aliases": ["porcentaje de extranjeros beneficiarios del paro", "proporción de extranjeros que cobran prestaciones por desempleo"],
+    "unit": "percent of unemployment-benefit recipients",
+    "population": "SEPE unemployment-benefit recipients; denominator is all recipients in the same month",
+    "notEquivalentTo": ["unemployment_rate", "benefit_recipients_by_group", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility", "denominator"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Es la proporción del conjunto de beneficiarios, no la probabilidad de recibir una prestación dentro de cada población ni una medida de todas las ayudas."]
+  },
+  "unemployment_benefit_coverage_by_nationality": {
+    "name": "Unemployment-benefit coverage among foreign registered jobseekers",
+    "aliases": ["cobertura prestaciones extranjeros", "extranjeros demandantes que cobran el paro", "cobertura del paro por nacionalidad", "beneficiarios sobre demandantes extranjeros"],
+    "unit": "percent of foreign registered jobseekers",
+    "population": "foreign registered jobseekers in the SEPE monthly series; numerator is foreign unemployment-benefit recipients in the same publication",
+    "notEquivalentTo": ["unemployment_benefit_share_by_nationality", "unemployment_rate_by_nationality", "benefit_recipients_by_group", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility", "denominator"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Es la cobertura publicada por SEPE entre demandantes de empleo extranjeros registrados, no una tasa EPA de desempleo, no incluye todas las ayudas y no ofrece por sí sola el equivalente español para una comparación entre nacionalidades."]
+  },
+  "unemployment_beneficiaries_by_programme_nationality": {
+    "name": "Foreign unemployment-benefit recipients by programme",
+    "aliases": ["extranjeros por tipo de prestación de desempleo", "paro extranjero contributiva subsidio RAI"],
+    "unit": "people",
+    "population": "foreign-nationality people receiving the named SEPE unemployment programme",
+    "notEquivalentTo": ["benefit_recipients_by_group", "unemployment_benefit_share_by_nationality"],
+    "dimensions": ["period", "geography", "benefit_programme", "group", "eligibility"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Desglosa beneficiarios extranjeros por programa; no proporciona por sí solo el total español equivalente ni la probabilidad de acceso por nacionalidad."]
+  },
   "crime_rate_by_group": {
     "name": "Crime, suspects, or convictions by group",
     "aliases": ["delitos por grupo", "tasa de delitos por nacionalidad", "condenas por nacionalidad", "criminalidad por grupo"],
@@ -630,6 +710,76 @@
     "population": "the source-defined suspects, convicted persons, or residents used for the comparison",
     "notEquivalentTo": ["recorded_offences"],
     "dimensions": ["period", "geography", "offence_category", "group", "measure", "denominator"]
+  },
+  "crime_detentions_investigations_by_nationality": {
+    "name": "Police detentions and investigations by nationality",
+    "aliases": ["detenciones por nacionalidad", "investigados por nacionalidad", "detenidos extranjeros", "investigados extranjeros", "detenciones e investigados por delito"],
+    "unit": "detentions or investigations",
+    "population": "persons recorded as detained or investigated by the Interior Statistical Crime System, classified by offence, sex, and nationality",
+    "notEquivalentTo": ["crime_convictions_by_nationality", "crime_conviction_rate_by_nationality", "recorded_offences", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "offence_category", "group", "sex", "measure", "legal_stage"],
+    "supports": ["descriptive", "trend", "comparison"],
+    "limitations": ["Es una actuación o registro policial, no una condena ni una medida directa de delitos cometidos; puede incluir personas no residentes y una misma persona puede aparecer en más de un registro. No debe convertirse en una tasa de criminalidad residente sin un denominador y una definición compatibles."]
+  },
+  "crime_convictions_by_nationality": {
+    "name": "Recorded convictions by nationality",
+    "aliases": ["condenas registradas por nacionalidad", "personas condenadas por nacionalidad", "condenas de españoles y extranjeros"],
+    "unit": "convicted persons",
+    "population": "adult persons with a final conviction in the source-defined nationality series",
+    "notEquivalentTo": ["crime_rate_by_group", "recorded_offences", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "offence_category", "group", "measure", "legal_stage"],
+    "supports": ["descriptive"],
+    "limitations": ["Son recuentos de personas condenadas y no una tasa de criminalidad ni una medida de causalidad; la comparación exige que la fuente publique ambos grupos y un denominador compatible."]
+  },
+  "crime_convictions_by_sex_nationality": {
+    "name": "Convictions by sex and nationality",
+    "aliases": ["condenados por sexo y nacionalidad", "hombres mujeres condenas extranjeros españoles", "delitos por sexo y nacionalidad"],
+    "unit": "convicted persons",
+    "population": "adult persons with a final conviction, classified by sex and nationality in the INE series",
+    "notEquivalentTo": ["crime_convictions_by_nationality", "crime_rate_by_group", "recorded_offences"],
+    "dimensions": ["period", "geography", "offence_category", "group", "sex", "measure", "legal_stage"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Son recuentos de personas adultas condenadas por sentencia firme; el desglose por sexo y nacionalidad no equivale a delitos registrados ni prueba causalidad. Para tasas se necesita el denominador correspondiente por sexo, edad, territorio y nacionalidad."]
+  },
+  "resident_population_18_plus_by_sex_nationality": {
+    "name": "Residents aged 18 and over by sex and nationality",
+    "aliases": ["población adulta por sexo y nacionalidad", "denominador condenados sexo nacionalidad", "residentes mayores de edad españoles extranjeros"],
+    "unit": "people",
+    "population": "residents aged 18 and over, classified by sex and nationality",
+    "notEquivalentTo": ["foreign_citizenship_population", "crime_convictions_by_sex_nationality", "crime_rate_by_group"],
+    "dimensions": ["period", "geography", "group", "sex", "age", "measure", "denominator"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Denominador demográfico exacto de residentes de 18 y más años; debe combinarse con la misma definición temporal, territorial y de nacionalidad de la serie de condenas antes de calcular una tasa."]
+  },
+  "crime_conviction_rate_by_sex_nationality": {
+    "name": "Adult conviction rate by sex and nationality",
+    "aliases": ["tasa condenados sexo nacionalidad", "condenas por mil sexo extranjeros españoles", "tasa de condenados hombres mujeres nacionalidad"],
+    "unit": "convicted persons per 1,000 residents aged 18 and over",
+    "population": "adults with a final conviction per residents aged 18 and over, classified by sex and nationality",
+    "notEquivalentTo": ["crime_conviction_rate_by_nationality", "crime_rate_by_group", "recorded_offences"],
+    "dimensions": ["period", "geography", "offence_category", "group", "sex", "measure", "denominator", "legal_stage", "age"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Tasa derivada con recuentos INE de condenas y denominador INE de residentes de 18 y más años del mismo año, sexo y nacionalidad; mide condenas firmes, no todos los delitos, y no prueba causalidad ni elimina otros factores de composición."]
+  },
+  "crime_conviction_rate_by_nationality": {
+    "name": "Adult conviction rate by nationality",
+    "aliases": ["tasa de condenados por nacionalidad", "tasa de condenas de extranjeros", "condenados por cada mil habitantes nacionalidad"],
+    "unit": "convicted persons per 1,000 residents aged 18 and over",
+    "population": "adult residents aged 18 and over, using the INE annual conviction definition and nationality groups",
+    "notEquivalentTo": ["recorded_offences", "crime_rate_by_group", "crime_convictions_by_nationality"],
+    "dimensions": ["period", "geography", "offence_category", "group", "measure", "denominator", "legal_stage", "age"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Mide personas adultas con sentencia firme por 1.000 residentes adultos; no equivale a todos los delitos registrados, no prueba causalidad y no ajusta por edad, sexo u otras diferencias de composición."]
+  },
+  "crime_conviction_rate_minor_by_nationality": {
+    "name": "Minor conviction rate by nationality",
+    "aliases": ["tasa de menores condenados por nacionalidad", "delincuencia juvenil por nacionalidad", "condenados de 14 a 17 años extranjeros españoles"],
+    "unit": "convicted persons aged 14-17 per 1,000 residents aged 14-17",
+    "population": "people aged 14 to 17 with a final conviction under the INE annual conviction definition and nationality groups",
+    "notEquivalentTo": ["crime_conviction_rate_by_nationality", "recorded_offences", "crime_rate_by_group"],
+    "dimensions": ["period", "geography", "offence_category", "group", "measure", "denominator", "legal_stage", "age"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Mide personas condenadas de 14 a 17 años por 1.000 residentes del mismo grupo de edad; no equivale a denuncias, detenciones ni criminalidad general y no prueba causalidad."]
   },
   "public_housing_allocations_by_group": {
     "name": "Public-housing allocations by programme and group",
@@ -639,6 +789,46 @@
     "notEquivalentTo": ["foreign_citizenship_population"],
     "dimensions": ["period", "geography", "programme", "group", "eligibility"]
   },
+  "public_housing_allocations_by_programme": {
+    "name": "Public-housing allocations by programme",
+    "aliases": ["adjudicaciones vivienda pública por programa", "vivienda pública especial necesidad", "adjudicaciones AVS"],
+    "unit": "allocations",
+    "population": "allocations made under the named public-housing programme",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_applications", "public_housing_actions"],
+    "dimensions": ["period", "geography", "programme", "eligibility", "measure"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Mide adjudicaciones del programa y territorio publicados por la fuente; no desglosa nacionalidad ni permite inferir la composición de las personas adjudicatarias."]
+  },
+  "public_housing_allocation_rate_by_programme": {
+    "name": "Public-housing allocation-to-application ratio by programme",
+    "aliases": ["porcentaje adjudicaciones solicitudes vivienda", "tasa adjudicación vivienda pública", "solicitudes frente a viviendas adjudicadas", "presión demanda vivienda pública"],
+    "unit": "percent of applications",
+    "population": "applications and allocations reported for the same named promotion or programme, with the source's delivery phase preserved",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_allocations_by_group", "housing_cost_overburden_rate"],
+    "dimensions": ["period", "geography", "programme", "promotion", "measure", "denominator", "eligibility"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Es una ratio de adjudicaciones y solicitudes de una promoción/fase concreta; no mide probabilidad de adjudicación por nacionalidad, no equivale a cobertura de toda la vivienda pública y no prueba discriminación."]
+  },
+  "public_housing_allocations_by_nationality": {
+    "name": "Protected-housing allocations by nationality in Euskadi",
+    "aliases": ["adjudicatarios extranjeros vivienda Euskadi", "adjudicaciones Etxebide por nacionalidad", "vivienda protegida País Vasco nacionalidad"],
+    "unit": "allocations",
+    "population": "protected-housing adjudicatees with contracts certified by Basque housing delegations",
+    "notEquivalentTo": ["public_housing_allocations_by_group", "public_housing_applications", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "programme", "group", "eligibility", "denominator"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Serie administrativa histórica de Euskadi (2006-2015), no España ni actualidad; mide adjudicatarios/contratos visados, no solicitudes ni causalidad."]
+  },
+  "public_housing_allocations_by_documentation": {
+    "name": "Protected-housing allocations by applicant documentation",
+    "aliases": ["adjudicaciones vivienda Euskadi DNI NIE", "vivienda protegida por documentación", "adjudicatarios DNI NIE País Vasco"],
+    "unit": "allocations",
+    "population": "protected-housing allocations reported by applicant identification document",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_allocations_by_group", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "programme", "documentation", "eligibility", "denominator"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Fuente oficial actual de Euskadi; DNI frente a NIE/pasaporte describe documentación identificativa, no nacionalidad, origen ni situación migratoria. No permite inferir qué grupo nacional recibe vivienda y no es España completa."]
+  },
   "public_housing_actions": {
     "name": "Protected-housing actions by territory and status",
     "aliases": ["vivienda protegida", "viviendas protegidas", "actuaciones de vivienda", "viviendas calificadas", "vivienda pública construida"],
@@ -646,6 +836,46 @@
     "population": "protected-housing actions recorded by the official source, classified by territory, typology, and administrative status",
     "notEquivalentTo": ["public_housing_allocations_by_group", "foreign_citizenship_population"],
     "dimensions": ["period", "geography", "typology", "status"]
+  },
+  "public_housing_applications": {
+    "name": "Registered applications for protected housing",
+    "aliases": ["solicitudes de vivienda protegida", "demandantes de vivienda pública", "registro de solicitantes de vivienda protegida"],
+    "unit": "applications",
+    "population": "applications registered in the named protected-housing applicant register",
+    "notEquivalentTo": ["public_housing_allocations_by_group", "public_housing_actions"],
+    "dimensions": ["period", "geography", "programme", "group", "eligibility", "status"],
+    "supports": ["descriptive", "trend"],
+    "limitations": ["Es demanda registrada en Catalunya, no adjudicaciones y no permite inferir la nacionalidad de las personas adjudicatarias."]
+  },
+  "public_housing_applications_by_nationality": {
+    "name": "Registered protected-housing applications by nationality",
+    "aliases": ["solicitudes vivienda protegida por nacionalidad", "demandantes HPO nacionales no comunitarios", "registro vivienda protegida Catalunya nacionalidad"],
+    "unit": "applications",
+    "population": "applications registered in the Catalan protected-housing applicant register, classified by applicant nationality group",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_applications", "foreign_citizenship_population"],
+    "dimensions": ["period", "geography", "programme", "group", "eligibility", "status", "denominator"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Mide solicitudes inscritas, no adjudicaciones ni personas únicas; el alcance es Catalunya y el gráfico oficial de 4T 2025 agrupa nacionalidad española, no comunitaria y comunitaria. No permite inferir prioridad de adjudicación ni extrapolar a España."]
+  },
+  "housing_tenure_by_household_nationality": {
+    "name": "Housing tenure by household nationality",
+    "aliases": ["alquiler hogares extranjeros", "vivienda en propiedad por nacionalidad", "régimen de tenencia nacionalidad"],
+    "unit": "percent of households",
+    "population": "Spanish-only, mixed-nationality, or foreign-only households in the INE ECEPOV",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_applications", "housing_cost_overburden_rate"],
+    "dimensions": ["period", "geography", "group", "tenure", "measure", "denominator"],
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["Describe régimen de tenencia residencial en 2021, no adjudicaciones de vivienda pública ni causalidad; los hogares mixtos y extranjeros no son categorías equivalentes a ciudadanía individual."]
+  },
+  "housing_tenure_by_reference_nationality": {
+    "name": "Housing tenure by reference-person nationality",
+    "aliases": ["alquiler por nacionalidad", "propiedad por nacionalidad", "tenencia vivienda nacionalidad persona de referencia", "INE tabla 9995 vivienda"],
+    "unit": "percent of households",
+    "population": "households classified by the nationality of the reference person",
+    "notEquivalentTo": ["public_housing_allocations_by_nationality", "public_housing_applications", "housing_tenure_by_household_nationality"],
+    "dimensions": ["period", "geography", "group", "tenure", "measure", "denominator", "referenceNationality"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": ["Serie anual nacional del INE sobre régimen de tenencia general; la nacionalidad corresponde a la persona de referencia del hogar, no a todas las personas del hogar. No mide vivienda pública, adjudicaciones, demanda ni causalidad."]
   },
   "wildfire_incidents": {
     "name": "Wildfire incidents in Spain",

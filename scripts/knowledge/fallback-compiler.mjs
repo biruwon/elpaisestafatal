@@ -59,7 +59,7 @@ const semanticConceptAliases = [
   ['hotel_tourism', ['hotel', 'hoteles', 'hotelero', 'hoteleros', 'pernoctacion', 'pernoctaciones', 'noches de hotel', 'turismo hotelero', 'turistas']],
   ['benefits', ['ayudas', 'ayuditas', 'paguita', 'paguitas', 'prestacion', 'prestaciones', 'pension', 'pensiones', 'subsidio', 'beneficio', 'beneficios sociales', 'ventajas sociales']],
   ['budget', ['presupuesto', 'presupuestos', 'millones', 'transferencia', 'gasto', 'gastos', 'recorta', 'recorte', 'quita']],
-  ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política']],
+  ['politics', ['gobierno', 'ministerio', 'presidencia', 'sanchez', 'sánchez', 'partido', 'politica', 'política', 'cuesta abajo', 'destruyendo', 'destruye', 'fatal', 'desastre', 'ruina', 'arruinado', 'arruinada']],
   ['vote_purchase', ['compra votos', 'compra votos dando ayudas', 'compra votos con ayudas', 'compra de votos', 'compran votos', 'pagan votos', 'pagar votos', 'paga a la gente para que le vote', 'pagar a la gente para que vote', 'comprar el voto']],
   ['cost_of_living', ['coste de vida', 'llegar a fin de mes', 'no llega para vivir', 'no alcanza para vivir', 'cesta de la compra', 'poder adquisitivo', 'encarecido', 'encarecida', 'caro', 'cara']],
   ['public_finance', ['deuda publica', 'deuda', 'endeudado', 'endeudada', 'quebrada', 'quiebra', 'bancarrota', 'impagable', 'no puede pagar', 'debe mas de lo que produce', 'deficit publico', 'presupuesto publico', 'recaudacion', 'gasto publico', 'presion fiscal', 'fiscalidad', 'gasta mas de lo que ingresa', 'gasto supera ingresos', 'ingresa menos de lo que gasta']],
@@ -99,7 +99,7 @@ const semanticConceptAliases = [
   ['pension_financing', ['pagan nuestras pensiones', 'pagaran nuestras pensiones', 'pagar nuestras pensiones', 'paga nuestras pensiones', 'sostiene nuestras pensiones', 'financia nuestras pensiones', 'sirve para pagar las pensiones']],
   ['pension_dependency', ['sin inmigracion', 'imprescindible para pagar', 'quebraria las pensiones', 'se hunden las pensiones', 'depende de que sigan llegando inmigrantes', 'dependen de que sigan llegando inmigrantes']],
   ['normative', ['deberia', 'deberian', 'deberia recuperar', 'deberia reducir']],
-  ['environment', ['emisiones', 'contaminando']],
+  ['environment', ['medio ambiente', 'medioambiental', 'clima', 'cambio climatico', 'emisiones', 'contaminando', 'contaminacion', 'agua', 'rios', 'energia', 'incendios forestales']],
   ['justice', ['prision', 'prision preventiva']],
 ];
 
@@ -143,6 +143,27 @@ const semanticConcepts = (value) => {
   if (concepts.includes('public_debt_ratio')) concepts = concepts.filter((concept) => !['public_finance', 'public_debt_stock'].includes(concept));
   if (concepts.includes('health_access') && !concepts.includes('healthcare')) concepts.push('healthcare');
   return concepts;
+};
+
+// Rhetorical framing is orthogonal to the subject metric.  Keeping it in the
+// compiler lets every unseen wording follow the same evidence contract: data
+// can test the measurable part, but not an accusation of intent or a slogan's
+// implied global conclusion.
+export const rhetoricalProfileFor = (value) => {
+  const text = normalise(value);
+  const intent = /\b(?:mienten|miente|enganan|engañan|manipulan|manipula|ocultan|oculta|falsean|falsea|maquillan|maquilla|con\s+los\s+datos)\b/.test(text);
+  const loaded = /\b(?:invaden|invade|destruyendo|destruye|arruinando|arruina|todo\s+va\s+peor|cuesta\s+abajo|lo\s+ocupa\s+todo|ocupa\s+todo|no\s+se\s+puede\s+salir|imposible\s+salir|no\s+se\s+puede\s+pasear|pasear\s+por\s+la\s+calle|da\s+miedo|peligro)\b/.test(text);
+  const experience = /\b(?:calle|salir|pasear|miedo|victima|victimizacion|barrio|zona|estacion)\b/.test(text) && /\b(?:seguridad|inseguridad|delincuenc|delito|peligro|salir|pasear|miedo)\b/.test(text);
+  const acts = [...(intent ? ['alleged_manipulation'] : []), ...(loaded ? ['loaded_global_judgement'] : []), ...(experience ? ['collective_safety_experience'] : [])];
+  return {
+    intent,
+    loaded,
+    experience,
+    acts,
+    measurablePropositions: intent ? ['definition_and_value_of_the_named_metric', 'comparability_of_period_population_and_denominator'] : experience ? ['recorded_offences', 'victimisation_or_perception', 'local_scope_and_period'] : ['domain_indicators_and_trends'],
+    untestableImplications: [...(intent ? ['deliberate_deception_or_intention'] : []), ...(loaded ? ['global_verdict_or_collective_label'] : []), ...(experience ? ['universal_inability_to_use_public_space'] : [])],
+    requiresQualification: acts.length > 0,
+  };
 };
 
 const semanticTermFallback = (value) => tokens(value).filter((token) => !['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas'].includes(token)).slice(0, 4);
@@ -525,6 +546,9 @@ export const deterministicFallbackCompiler = (text) => {
     ...impliedPropositions,
   ];
   const evidenceNeeds = evidenceNeedsFor(routingText, claimType, propositions);
+  const concepts = [...new Set(propositions.flatMap((item) => semanticConcepts(item.text)))].slice(0, 12);
+  const rhetoricalProfile = rhetoricalProfileFor(routingText);
+  if (rhetoricalProfile.loaded && /\b(?:calle|salir|peligro|miedo|inseguridad|seguridad)\b/.test(normalized) && !concepts.includes('crime')) concepts.push('crime');
   const signaturePropositions = causalConnector
     ? [...propositions, { text: routingText, type: 'causal', explicit: true }]
     : propositions;
@@ -537,6 +561,8 @@ export const deterministicFallbackCompiler = (text) => {
     geography,
     period,
     population,
+    concepts,
+    rhetoricalProfile,
     explicitPropositions,
     impliedPropositions,
     retrievalHints,

@@ -14,6 +14,7 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 const textOf = (cluster) => [cluster?.text, cluster?.canonicalText, cluster?.canonical, cluster?.normalized, cluster?.signature].filter(Boolean).join(' ');
 const localPattern = /(?:mi barrio|mi municipio|en la zona|edificio|portal|municipio|pueblo|barrio|familia concreta|persona concreta)/i;
 const operationalPattern = /(?:ollama|transcri|runtime|provider|fetch failed|no disponible|audio input)/i;
+const nonFactualPattern = /(?:tertulian|colapso|sabemos significa|ministro sabia|mayoria de mis companeros|mayoria de mis companer)/i;
 // Broad evaluative claims are answered by the fixed, reviewed scorecard
 // registry. They are not missing source families just because they do not
 // name one metric explicitly.
@@ -35,6 +36,8 @@ const clustersPath = args.get('clusters') || (await readJson(join(root, '.local/
 const clustersDoc = await readJson(clustersPath, { clusters: [] });
 const gapContracts = await readJson(pathArg('gap-contracts', 'config/domain-source-gaps.json'), { gaps: [] });
 const refreshReport = await readJson(pathArg('refresh-report', '.local/domain-refresh-report.json'), { attempted: 0, succeeded: 0, failed: 0, failures: [] });
+const llmResearch = await readJson(pathArg('llm-research', '.local/research-evidence.json'), { results: [] });
+const llmByCluster = new Map((llmResearch.results || []).map((item) => [item.id, item]).filter(([, item]) => ['covered_by_llm', 'partially_covered_by_llm', 'unsupported_after_llm_review'].includes(item.status)));
 const recordsDir = pathArg('records', '.local/source-warehouse/records');
 let recordFiles = [];
 try { recordFiles = (await readdir(recordsDir)).filter((file) => file.endsWith('.json')); } catch { /* first refresh may not have run */ }
@@ -56,13 +59,13 @@ for (const record of records) if (record.metricId) recordByMetric.set(record.met
 const configByMetric = new Map();
 for (const feed of configured) if (feed.metricId) configByMetric.set(feed.metricId, [...(configByMetric.get(feed.metricId) || []), feed]);
 const domainMetricIds = {
-  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_beneficiary_average_age'],
-  immigration_crime: ['crime_rate_by_group'],
-  public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_actions'],
+  immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'imv_comparable_population_by_nationality', 'imv_title_holder_rate_by_nationality', 'unemployment_rate_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality', 'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality', 'imv_beneficiary_average_age'],
+  immigration_crime: ['crime_rate_by_group', 'crime_detentions_investigations_by_nationality', 'crime_convictions_by_nationality', 'crime_convictions_by_sex_nationality', 'resident_population_18_plus_by_sex_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_conviction_rate_minor_by_nationality'],
+  public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_allocations_by_programme', 'public_housing_allocation_rate_by_programme', 'public_housing_allocations_by_nationality', 'public_housing_allocations_by_documentation', 'public_housing_actions', 'public_housing_applications', 'public_housing_applications_by_nationality', 'housing_tenure_by_household_nationality', 'housing_tenure_by_reference_nationality'],
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
   health_emergency_wait: ['emergency_wait_declared'],
 };
-const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
+const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
 for (const feed of domainFeeds) for (const id of domainMetricIds[feed.domain] || []) {
   if (!recordByMetric.has(id)) recordByMetric.set(id, [feed]);
   configByMetric.set(id, [...(configByMetric.get(id) || []), feed]);
@@ -91,6 +94,9 @@ const metricAudit = Object.entries(registry).map(([id, metric]) => {
 const metricById = new Map(metricAudit.map((item) => [item.id, item]));
 const classifyCluster = (cluster) => {
   const text = textOf(cluster);
+  const llm = llmByCluster.get(`cluster:${cluster.id}`) || llmByCluster.get(cluster.id);
+  if (llm) return { auditClass: llm.status === 'partially_covered_by_llm' ? 'partial_llm_evidence' : 'covered_by_llm_evidence', action: 'auto_route', metricIds: [], domain: llm.domain || '', sourceIds: [llm.source?.id || llm.source?.url].filter(Boolean), llmEvidenceStatus: llm.status };
+  if (nonFactualPattern.test(normalise(text))) return { auditClass: 'unsupported_claim', action: 'answer_with_limits', metricIds: [], domain: '' };
   const ids = [...preferredMetricIdsForQuery(text)].filter((id) => metricById.has(id));
   const domain = domainPattern(text);
   const sourceIds = directSources(cluster.sourceIds);
@@ -119,12 +125,12 @@ const clusterAudit = (clustersDoc.clusters || []).map((cluster) => ({
   clusterId: String(cluster.id || ''), canonicalText: String(cluster.text || cluster.canonicalText || '').slice(0, 400), count: Number(cluster.count || 0), count7d: Number(cluster.count7d || 0), priorityScore: Number(cluster.priorityScore || 0), coverageStatus: cluster.coverageStatus || 'uncovered', newlyCovered: Boolean(cluster.newlyCovered), linkedClaimSlug: cluster.linkedClaimSlug || null, sourceIds: cluster.sourceIds || [], ...classifyCluster(cluster),
 }));
 const counts = (items, field) => Object.fromEntries([...new Set(items.map((item) => item[field]))].map((key) => [key, items.filter((item) => item[field] === key).length]));
-const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass)).reduce((map, item) => {
+const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidence', 'covered_by_llm_evidence', 'partial_llm_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass)).reduce((map, item) => {
   const key = `${item.auditClass}:${item.domain || 'general'}`;
   const current = map.get(key) || { id: key, auditClass: item.auditClass, domain: item.domain || null, action: item.action, recurrence: 0, recentVelocity: 0, priorityScore: 0, examples: [] };
   current.recurrence += item.count; current.recentVelocity += item.count7d; current.priorityScore = Math.max(current.priorityScore, item.priorityScore); if (current.examples.length < 5) current.examples.push(item.canonicalText); map.set(key, current); return map;
 }, new Map()).values()];
-for (const gap of gapContracts.gaps || []) sourceWork.push({ id: `gap:${gap.id}`, auditClass: 'partial_domain_evidence', domain: gap.domain, action: 'find_source', recurrence: 0, recentVelocity: 0, priorityScore: 0, examples: [gap.permittedConclusion || gap.nextEvidence || gap.id] });
+for (const gap of gapContracts.gaps || []) sourceWork.push({ id: `gap:${gap.id}`, auditClass: 'partial_domain_evidence', domain: gap.domain, action: gap.irreducibleFields?.length && !gap.missingFields?.length ? 'document_limitation' : 'find_source', recurrence: 0, recentVelocity: 0, priorityScore: 0, examples: [gap.permittedConclusion || gap.nextEvidence || gap.id] });
 sourceWork.sort((a, b) => b.recurrence - a.recurrence || b.priorityScore - a.priorityScore);
 const requiredDimensionsFor = (item) => {
   const dimensions = new Set(['geography', 'period', 'source_role']);
@@ -136,7 +142,7 @@ const requiredDimensionsFor = (item) => {
   return [...dimensions];
 };
 const clusterSourceWorkItems = clusterAudit
-  .filter((item) => !['covered_existing_evidence', 'operational_failure'].includes(item.auditClass))
+  .filter((item) => !['covered_existing_evidence', 'covered_by_llm_evidence', 'partial_llm_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass))
   .map((item) => ({
     id: `cluster:${item.clusterId}`,
     clusterId: item.clusterId,
@@ -169,6 +175,8 @@ const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({
   sourceTargets: gap.sourceTargets || [],
   acceptanceCriteria: gap.acceptanceCriteria || [],
   missingFields: gap.missingFields || [],
+  resolvedFields: gap.resolvedFields || [],
+  irreducibleFields: gap.irreducibleFields || [],
   nextEvidence: gap.nextEvidence || null,
   permittedConclusion: gap.permittedConclusion || null,
   requiredDimensions: gap.missingFields || [],

@@ -6,6 +6,12 @@ const forbidden = /ollama|localhost|127\.0\.0\.1|host\.docker\.internal|whisper_
 
 const string = (value) => typeof value === 'string' ? value : undefined;
 const strings = (value) => Array.isArray(value) && value.every((item) => typeof item === 'string') ? value : undefined;
+const validEvidenceSummary = (value) => !value || (typeof value === 'object'
+  && ['dynamic', 'snapshot', 'mixed', 'none'].includes(value.mode)
+  && Array.isArray(value.families)
+  && value.families.every((family) => family && typeof family.label === 'string' && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string'))
+  && (!value.missingDimensions || strings(value.missingDimensions))
+  && (!value.fallbackReason || typeof value.fallbackReason === 'string'));
 
 const isReference = (value) => Boolean(value && typeof value === 'object'
   && kinds.has(value.kind)
@@ -48,7 +54,8 @@ const cleanPlan = (value) => {
     || !Array.isArray(value.blocks) || !Array.isArray(value.evidenceIds)
     || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string'
     || (value.evidenceLevel !== undefined && !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel))
-    || !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel)) return undefined;
+    || !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel)
+    || !validEvidenceSummary(value.evidenceSummary)) return undefined;
   return value;
 };
 

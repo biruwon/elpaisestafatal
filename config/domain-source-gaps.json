@@ -3,61 +3,93 @@
     {
       "id": "benefits-by-comparable-population",
       "domain": "immigration_benefits",
-      "missingFields": ["programme", "eligibility_rule", "beneficiary_group", "comparable_denominator", "period"],
+      "missingFields": ["comparable_denominator"],
+      "resolvedFields": ["programme_scope", "same-period-beneficiary-counts", "imv-adult-same-nationality-rate", "foreign-jobseeker-benefit-coverage"],
+      "irreducibleFields": ["single-denominator-across-all-benefit-programmes"],
       "status": "partial_programme_coverage",
       "officialSourcesChecked": [
-        "https://www.inclusion.gob.es/documents/20121/0/202603+COMPLETO+Dossier+comunidad+aut%C3%B3noma+y+provincia.xlsx/2705108c-6abc-4f48-9a61-e806347838f6?t=1775804649231",
+        "https://www.inclusion.gob.es/documents/20121/0/202607%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.xlsx/4baf880a-e093-adb0-5728-c4e32b7232e3?t=1786084827072",
         "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
         "https://www.inclusion.gob.es/web/guest/estadisticas/observatorio-permanente-de-la-inmigracion"
+        ,"https://www.sepe.es/SiteSepe/contenidos/que_es_el_sepe/estadisticas/datos_avance/datos/datos_2025/AV_SISPE_2512.pdf",
+        "https://public.tableau.com/views/Oberaxe_MarcoIndicadores_B03/L11?:showVizHome=no&:embed=true"
       ],
       "availableEvidence": [
-        "IMV March 2026 workbook with total beneficiaries, title-holder nationality, and average beneficiary age",
+        "IMV July 2026 workbook with total beneficiaries, title-holder nationality, and average beneficiary age",
         "selected programme totals and some title-holder nationality breakdowns",
         "programme-specific eligibility rules",
+        "the within-IMV nationality composition can be reported for the named month",
+        "SEPE unemployment-benefit recipients and the foreign-recipient share can be reported for November 2025 with the total-recipient denominator",
+        "SEPE also publishes foreign-benefit coverage among foreign registered jobseekers for the same monthly publication; this is a valid group-specific denominator but only for unemployment benefits",
+        "OBERAXE publishes IMV title holders by Spanish/foreign nationality and an IMV rate against same-nationality residents aged 18+ for January, nationally and provincially",
         "no single comparable denominator across all benefits and resident groups"
       ],
-      "permittedConclusion": "A breakdown for one programme cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens.",
-      "nextEvidence": "A programme-by-programme extract with eligibility, beneficiaries, amounts, comparable population denominators, geography, and period.",
+      "permittedConclusion": "The system may report IMV composition, SEPE unemployment-benefit counts/shares, and SEPE foreign-benefit coverage among foreign registered jobseekers for their named programme and period. These programme-specific measures cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens across all benefits.",
+      "nextEvidence": "Extend the same denominator pattern to each additional benefit programme; IMV and unemployment-benefit denominators are now separately available.",
       "sourceTargets": ["Ministerio de Inclusión: IMV and benefit microdata", "INE population by nationality and residence", "regional benefit administrators"],
-      "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date"]
+      "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date", "IMV rates use the OBERAXE/INE 18+ same-nationality denominator"]
     },
     {
       "id": "crime-by-offence-stage-and-denominator",
       "domain": "immigration_crime",
-      "missingFields": ["offence_definition", "suspects_arrests_convictions_stage", "group_denominator", "territory", "period", "age_sex_adjustment"],
+      "missingFields": ["offence_definition", "suspects_arrests_convictions_stage", "age_sex_adjustment"],
+      "resolvedFields": ["recorded-offence-definition", "conviction-legal-stage", "adult-group-denominator", "sex-and-nationality-breakdown"],
+      "irreducibleFields": ["same-offence-suspect-arrest-conviction-link", "fully-standardised-rate-without-official-standard-population"],
       "status": "partial_official_statistics",
       "officialSourcesChecked": [
         "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",
         "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM",
         "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/25698?nult=1"
+        ,"https://www.ine.es/dyngs/Prensa/EPCAEPCM2025.htm",
+        "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_bd/Datos3/l0/03003.px"
       ],
       "availableEvidence": [
         "recorded-offence totals by category and period",
         "population denominators by nationality and country of birth",
         "adult conviction counts by nationality for the latest available year, with the legal stage preserved as conviction",
-        "no universal national series linking the same group definition to convictions for every offence"
+        "Interior SEC table 03003 counts detentions and investigations by offence, sex, and nationality, with the police stage preserved separately",
+        "INE conviction tables preserve sex and nationality together, with national and provincial result tables; age/nationality tables are also published separately",
+        "conviction counts can be reported as counts and shares of the recorded conviction series when the source contains both groups",
+        "INE 2025 adult conviction rates by nationality are directly reported per 1,000 residents aged 18 and over for both Spanish and foreign nationality",
+        "INE table 67217 provides exact 18+ resident denominators by sex and nationality; the warehouse now derives aligned 2025 conviction rates per 1,000 for each sex and nationality",
+        "no universal national series linking suspects, arrests, and convictions for the same offence and group definition, with a fully age/sex-standardised rate"
       ],
-      "permittedConclusion": "Recorded offences, arrests, suspects, and convictions are different measures; national totals cannot by themselves prove that immigrants are more criminal or cause insecurity.",
-      "nextEvidence": "A matched offence-level dataset with a fixed group definition, legal stage, territory, period, denominator, and appropriate age/sex adjustment.",
+      "permittedConclusion": "The system may report the aligned INE adult conviction rate by nationality, or recorded offences and conviction counts with their legal stage. These measures describe convictions rather than all criminality and cannot by themselves prove that immigrants cause insecurity or are inherently more criminal.",
+      "nextEvidence": "Add offence-level suspect and arrest stages, then add age/sex-standardised rates where the official tables support them; the adult conviction denominator, territory, and period are already aligned.",
       "sourceTargets": ["Interior crime statistics", "INE convictions and population tables", "regional judicial statistics"],
-      "acceptanceCriteria": ["offence definition and legal stage are preserved", "suspects, arrests, and convictions remain separate", "group denominator, territory, period, and age/sex adjustment are aligned"]
+      "acceptanceCriteria": ["offence definition and legal stage are preserved", "suspects, arrests, and convictions remain separate", "adult conviction rates retain aligned group denominator, territory, and period", "age/sex adjustment is explicit when available"]
     },
     {
       "id": "public-housing-allocation-by-nationality",
       "domain": "public_housing_allocation",
       "missingFields": ["applicants_by_group", "allocations_by_group", "period"],
+      "resolvedFields": ["programme-level-applications", "programme-level-allocations", "housing-actions-by-territory-and-period", "household-tenure-by-nationality-composition"],
+      "irreducibleFields": ["general-nationality-by-applicant-and-allocation-table"],
       "status": "not_published_in_extractable_source",
       "officialSourcesChecked": [
         "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP007_01.csv",
         "https://www.comunidad.madrid/docs/2026-06/avs-informe-gestion-2025.pdf",
-        "https://www.comunidad.madrid/transparencia/sites/default/files/servicios/documentos/resoluciones/10-open-00039.7-2022.pdf"
+        "https://www.comunidad.madrid/gobierno/estadistica/estadisticas-direccion-general-ayudas-acceso-vivienda",
+        "https://www.comunidad.madrid/docs/2026-07/adj_esp_necesidad_2026_2trim.pdf?VersionId=U25KsYch4FoIqTkKrRt7KDmX7IOpTSGo",
+        "https://www.comunidad.madrid/transparencia/sites/default/files/servicios/documentos/resoluciones/10-open-00039.7-2022.pdf",
+        "https://habitatge.gencat.cat/ca/dades/indicadors_estadistiques/estadistiques-de-la-politica-dhabitatge-/demanda-dhabitatge-protegit/",
+        "https://www.ine.es/prensa/ecepov_2021_feb.pdf",
+        "https://www.euskadi.eus/noticia/2026/el-84-adjudicaciones-vivienda-protegida-alquiler-euskadi-corresponden-solicitantes-identificados-dni/web01-a2etxebi/es/",
+        "https://igvs.xunta.gal/es/vivienda-protegida/adjudicaciones-sorteos-de-vivienda-protegida"
       ],
       "availableEvidence": [
         "protected-housing actions by province, month, typology, and status",
+        "Madrid's official second-quarter 2026 special-need allocation bulletin reports 21 AVS allocations for the quarter, by programme and territory, but no nationality field",
+        "Madrid's official Plan Vive report for Alcorcón records nearly 11,000 applications for the first 140 delivered homes and states the programme's nationality eligibility rule; this is a programme-specific rule and selection ratio, not a nationality allocation table",
         "total Madrid Social Housing Agency deliveries and second allocations",
+        "protected-housing actions can be reported by territory, month, typology, and administrative status",
+        "Catalonia's official applicant register reports 129,157 registered protected-housing applications at 31 December 2025 and its official nationality chart reports 99,056 Spanish, 29,954 non-EU, and 147 EU applications; this is demand, not allocation",
+        "INE ECEPOV 2021 reports national household tenure by composition: Spanish-only, mixed-nationality, and foreign-only households, separated into ownership, mortgage, rent, and other tenure",
+        "Euskadi's 2026 official housing report provides 2025 protected-housing allocation totals split by DNI versus NIE/passport; this is current regional evidence about documentation, not nationality",
+        "Galicia's IGVS publishes official award and lottery resolutions by municipality, programme, access regime, and status, but the catalogue is not an aggregated nationality-by-applicant/adjudication dataset",
         "official response identifies an Excel nº 1 with AVS adjudicatarios by sex and nationality, while stating that several application and allocation breakdowns are not directly extractable"
       ],
-      "permittedConclusion": "The Madrid transparency response indicates that an attachment may contain AVS adjudicatarios by nationality, but the currently accessible record does not establish a nationality-based priority rule or a Spain-wide allocation pattern.",
+      "permittedConclusion": "The system may report protected-housing actions, programme-specific application/allocation ratios, and explicit rules such as the Plan Vive Alcorcón source states; the currently accessible records still do not provide a nationality-by-applicant/adjudication table or establish a Spain-wide allocation pattern.",
       "nextEvidence": "Obtain and validate the referenced Excel nº 1 and nº 3 attachments, then compare programme-level applicants, adjudications, rules, geography, and periods without generalising Madrid to Spain.",
       "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data", "Excel nº 1 and Excel nº 3 attached to Madrid AVS transparency resolution 10-OPEN-00039.7/2022"],
       "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions", "the attached Excel files are checked for years, missing fields, and whether adjudications are directly extractable"]

@@ -1,6 +1,22 @@
 {
   "feeds": [
     {
+      "id": "euskadi-protected-housing-allocations-documentation-2025",
+      "domain": "public_housing_allocation",
+      "url": "https://www.euskadi.eus/noticia/2026/el-84-adjudicaciones-vivienda-protegida-alquiler-euskadi-corresponden-solicitantes-identificados-dni/web01-a2etxebi/es/",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Euskadi protected-housing allocations by applicant documentation, 2025"
+    },
+    {
+      "id": "euskadi-protected-housing-awards-nationality-2015",
+      "domain": "public_housing_allocation",
+      "url": "https://www.euskadi.eus/contenidos/informacion/ovv_extranjeros16/es_ovv_ana/adjuntos/Extranjeros_2016.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Euskadi protected-housing awards by nationality, 2006-2015"
+    },
+    {
       "id": "ine-foreign-citizenship-denominator",
       "domain": "immigration_crime",
       "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/55204?tip=AM",
@@ -17,6 +33,30 @@
       "title": "INE adult convictions by nationality and offence stage"
     },
     {
+      "id": "ine-adult-population-by-sex-nationality-2025",
+      "domain": "immigration_crime",
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/67217?nult=1",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE adult population by sex and nationality, table 67217"
+    },
+    {
+      "id": "ine-unemployment-rate-by-nationality",
+      "domain": "immigration_benefits",
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/69559?tip=AM",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE EPA unemployment rate by nationality"
+    },
+    {
+      "id": "ine-conviction-rates-by-nationality",
+      "domain": "immigration_crime",
+      "url": "https://www.ine.es/dyngs/Prensa/EPCAEPCM2025.htm",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE adult convicted population rates by nationality, 2025"
+    },
+    {
       "id": "interior-crime-downloads",
       "domain": "immigration_crime",
       "url": "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_sc/Datos1/l0/01001.csv_sc",
@@ -25,12 +65,28 @@
       "title": "Interior annual recorded offences by category and period"
     },
     {
+      "id": "interior-detentions-investigations-by-nationality",
+      "domain": "immigration_crime",
+      "url": "https://estadisticasdecriminalidad.ses.mir.es/sec/jaxiPx/files/_px/es/csv_bd/Datos3/l0/03003.px",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Interior detentions and investigations by offence, sex, and nationality"
+    },
+    {
       "id": "social-security-benefits",
       "domain": "immigration_benefits",
-      "url": "https://www.inclusion.gob.es/documents/20121/0/202603+COMPLETO+Dossier+comunidad+aut%C3%B3noma+y+provincia.xlsx/2705108c-6abc-4f48-9a61-e806347838f6?t=1775804649231",
+      "url": "https://www.inclusion.gob.es/documents/20121/0/202607%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.xlsx/4baf880a-e093-adb0-5728-c4e32b7232e3?t=1786084827072",
       "schedule": "monthly",
       "mode": "active",
       "title": "IMV beneficiaries, title holders by nationality, and age by province"
+    },
+    {
+      "id": "sepe-unemployment-benefits-by-nationality-2025",
+      "domain": "immigration_benefits",
+      "url": "https://www.sepe.es/SiteSepe/contenidos/que_es_el_sepe/estadisticas/datos_avance/datos/datos_2025/AV_SISPE_2512.pdf",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "SEPE unemployment-benefit recipients by nationality, November 2025"
     },
     {
       "id": "social-housing-programmes",
@@ -55,6 +111,54 @@
       "schedule": "monthly",
       "mode": "discovery",
       "title": "Madrid Social Housing Agency statistics and downloadable assets"
+    },
+    {
+      "id": "madrid-plan-vive-alcorcon-first-delivery-2024",
+      "domain": "public_housing_allocation",
+      "url": "https://www.comunidad.madrid/noticias/2024/03/15/comunidad-madrid-entrega-alcorcon-llaves-primeras-140-viviendas-alquiler-precio-asequible-plan-vive",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Madrid Plan Vive Alcorcón applications, first allocations, and eligibility rule, 2024"
+    },
+    {
+      "id": "madrid-special-need-housing-allocations-2026-q2",
+      "domain": "public_housing_allocation",
+      "url": "https://www.comunidad.madrid/docs/2026-07/adj_esp_necesidad_2026_2trim.pdf?VersionId=U25KsYch4FoIqTkKrRt7KDmX7IOpTSGo",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "Madrid AVS special-need public-housing allocations, 2026 Q2"
+    },
+    {
+      "id": "gencat-protected-housing-demand-2025",
+      "domain": "public_housing_allocation",
+      "url": "https://habitatge.gencat.cat/web/.content/home/dades/estadistiques/02_Estadistiques_de_la_politica_d_habitatge/03_Demanda_d_habitatge_protegit/docs2/INFORME-RSHPO-4T-2025.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Catalonia protected-housing applicant register, 2025"
+    },
+    {
+      "id": "ine-housing-tenure-nationality-2021",
+      "domain": "public_housing_allocation",
+      "url": "https://www.ine.es/prensa/ecepov_2021_feb.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE housing tenure by household nationality, ECEPOV 2021"
+    },
+    {
+      "id": "ine-housing-tenure-reference-nationality",
+      "domain": "public_housing_allocation",
+      "url": "https://servicios.ine.es/wstempus/js/es/DATOS_TABLA/9995?tip=AM",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "INE housing tenure by reference-person nationality, annual table 9995"
+    },
+    {
+      "id": "igvs-protected-housing-awards",
+      "domain": "public_housing_allocation",
+      "url": "https://igvs.xunta.gal/es/vivienda-protegida/adjudicaciones-sorteos-de-vivienda-protegida",
+      "schedule": "weekly",
+      "mode": "discovery",
+      "title": "Galicia official protected-housing awards and lottery resolutions"
     },
     {
       "id": "miteco-wildfire-advance-2025",

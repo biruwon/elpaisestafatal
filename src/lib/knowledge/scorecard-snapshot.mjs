@@ -2,6 +2,13 @@
 // Values are frozen from the national Eurostat series refreshed 2026-07-31.
 export const GOVERNMENT_SCORECARD_SNAPSHOT = {
   schemaVersion: '1',
+  owner: 'knowledge-review',
+  createdAt: '2026-07-31',
+  expiresAt: '2026-10-31',
+  refreshCommand: 'npm run knowledge:scorecard:refresh',
+  validationStatus: 'reviewed',
+  supportedScope: 'España, población general y periodos definidos en periods',
+  unsupportedScope: 'territorios regionales, grupos de población y causalidad partidista',
   asOf: '2026-07-31',
   warehouseVersion: 'eurostat-es-2026-07-31',
   periods: {

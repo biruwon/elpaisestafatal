@@ -55,21 +55,31 @@ const claims = [
   ['serious-crime', 'Los delitos graves han aumentado el doble o el triple aunque se camuflen'],
   ['unemployment-stats', 'El desempleo está manipulado porque los fijos discontinuos se cuentan como ocupados'],
   ['unemployment-stats-typo', 'El desempleo está manipado porque los fijos discontinuos se cuentan como ocupados'],
+  ['open-ended-sanchez', 'Pedro Sánchez está destruyendo el país'],
+  ['open-ended-unemployment', 'Nos mienten con los datos del paro'],
+  ['open-ended-immigration', 'Los inmigrantes nos invaden'],
+  ['open-ended-security', 'No se puede salir a la calle de cómo está el país'],
 ];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const resolveClaim = async (text) => {
-  const response = await fetch(`${endpoint}/api/check`, {
+  const response = await fetch(`${endpoint}/v1/classify`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ text, inputType: 'text' }),
   });
   let result = await response.json();
-  for (let attempt = 0; result.status === 'processing' && attempt < 160; attempt += 1) {
+  // A cold local model can take longer than the ordinary request budget while
+  // the deterministic answer is being enriched. Keep the contract test
+  // patient enough to distinguish slow processing from a malformed response.
+  for (let attempt = 0; result.status === 'processing' && attempt < 480; attempt += 1) {
     await sleep(250);
-    result = await (await fetch(`${endpoint}/api/check/${result.id}`)).json();
+    const requestId = result.requestId || result.id;
+    if (!requestId) throw new Error(`Processing response has no request id: ${JSON.stringify(result)}`);
+    result = await (await fetch(`${endpoint}/v1/classify/${requestId}`)).json();
   }
+  if (result.status === 'processing') throw new Error(`Claim remained processing after polling: ${text}`);
   return result;
 };
 
@@ -88,9 +98,10 @@ for (const [id, text] of claims) {
     coverage: result.coverage || '',
     headline: result.headline || '',
     blocks: (result.blocks || []).map((block) => block.type),
+    evidenceMode: result.evidenceSummary?.mode || 'none',
     seriesLength: result.warehouseSeries?.values?.length || 0,
   });
-  if (!result.headline || !result.summary) throw new Error(`Missing user-facing answer fields for ${id}`);
+  if (!result.headline || !result.summary) throw new Error(`Missing user-facing answer fields for ${id}: ${JSON.stringify(response).slice(0, 1200)}`);
   if (genericHeadlines.includes(result.headline)) throw new Error(`Generic headline remains for ${id}: ${result.headline}`);
   console.log(JSON.stringify(results.at(-1)));
 }
@@ -100,7 +111,7 @@ const counts = results.reduce((summary, item) => {
   return summary;
 }, {});
 
-const expectedStrong = new Set(['eviction-delay', 'unemployment', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'unemployment-stats-typo', 'fiscal', 'fiscal-paraphrase', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
+const expectedStrong = new Set(['eviction-delay', 'fixed-discontinuous', 'health-wait', 'unemployment-stats', 'unemployment-stats-typo', 'fiscal', 'fiscal-paraphrase', 'housing-price', 'imv', 'benefits', 'occupation-law', 'immigration-crime', 'residence-day', 'work-one-year', 'regularization', 'grandchildren', 'middle-class', 'residence-pending', 'no-expulsions', 'family-reunification', 'universal-health', 'fire-aircraft', 'immigration-open', 'fires-record', 'crime-stats', 'emergency-wait', 'ela', 'primary-sector', 'external', 'education', 'infrastructure', 'infrastructure-decay', 'industry', 'schools', 'fires-field', 'morocco-expulsion', 'prison-regularization', 'support', 'ministers-prison', 'prosecutor', 'supreme', 'tax-agency', 'institutions', 'corruption', 'housing-rent', 'repeat-detainees', 'resignations', 'police', 'votes', 'serious-crime']);
 const strongResults = new Set(results.filter((item) => item.status === 'complete' && item.coverage === 'strong').map((item) => item.id));
 for (const id of expectedStrong) {
   if (!strongResults.has(id)) throw new Error(`Expected a strong direct answer for ${id}, got ${JSON.stringify(results.find((item) => item.id === id))}`);
@@ -109,6 +120,13 @@ for (const id of expectedStrong) {
 const mustRemainNonStrong = new Set();
 for (const id of mustRemainNonStrong) {
   if (strongResults.has(id)) throw new Error(`Unsafe adjacent evidence was promoted to strong for ${id}`);
+}
+
+const openEnded = new Map(results.filter((item) => item.id.startsWith('open-ended-')).map((item) => [item.id, item]));
+for (const id of ['open-ended-sanchez', 'open-ended-unemployment', 'open-ended-immigration', 'open-ended-security']) {
+  const item = openEnded.get(id);
+  if (!item || !item.blocks.includes('cannot_conclude')) throw new Error(`Open-ended claim lost its explicit limitation: ${id}`);
+  if (id !== 'open-ended-sanchez' && item.evidenceMode !== 'snapshot') throw new Error(`Open-ended domain claim did not use its reviewed context packet: ${id} (${item.evidenceMode})`);
 }
 
 console.error(JSON.stringify({ total: results.length, counts }));

@@ -71,6 +71,27 @@ const fallbackResponse = (claim: string, inputType: InputType): PublicCheckRespo
   return unavailableCheck(claim, fallback.guidance?.limitation || 'La comprobación no está disponible en este momento.');
 };
 
+const rhetoricalClaim = (claim: string): boolean => {
+  const text = semanticFingerprint(claim);
+  return /\b(?:mienten|miente|engañan|enganan|manipulan|manipula|ocultan|oculta|falsean|falsea|maquillan|maquilla|invaden|invade|destruyendo|destruye|no se puede salir|imposible salir|da miedo)\b/.test(text);
+};
+
+// A related warehouse hit is not automatically better than a reviewed
+// contextual answer. For rhetorical claims, require the dynamic plan to
+// explicitly carry qualification; otherwise use the domain packet, which
+// preserves the distinction between measurable facts and the slogan.
+const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+  if (!model || model.state === 'insufficient') return contextual.state !== 'insufficient' ? contextual : model || contextual;
+  if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
+  const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
+  const summary = plan?.evidenceSummary;
+  const hasQualification = Boolean(plan?.limitation || plan?.blocks?.some((block) => block.type === 'cannot_conclude') || summary?.missingDimensions?.length);
+  const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
+  const contextualFamilies = contextualPlan?.evidenceSummary?.families?.length || 0;
+  if (!hasQualification || (summary?.mode === 'none' && contextualFamilies >= 2)) return contextual;
+  return model;
+};
+
 export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
   if (!(await allowRateLimitedRequest(request, env, { scope: 'check', limit: 30 }))) return json(unavailableCheck('', 'Has alcanzado el límite temporal de comprobaciones.'), 429);
   const contentLength = Number(request.headers.get('content-length') || 0);
@@ -147,7 +168,13 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       return json(processingCheck(body.text, safe.requestId), 202);
     }
     const plan = safe?.result;
-    const response = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId, !body.clarification) : fallbackResponse(effectiveClaim, body.inputType);
+    const modelResponse = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId, !body.clarification) : undefined;
+    // A local model may correctly reject the slogan as too broad while the
+    // deterministic knowledge layer can still provide scoped, sourced
+    // context. Prefer that context only when it improves an insufficient
+    // model result; never replace a supported or clarification response.
+    const contextualFallback = fallbackResponse(effectiveClaim, body.inputType);
+    const response = chooseResponse(effectiveClaim, modelResponse, contextualFallback);
     if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {

@@ -74,7 +74,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = plan.interpretation ? plan.interpretation as ClaimInterpretation : undefined;
-  const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources };
+  const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
   const state = (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : (plan.evidenceLevel || (supported ? 'supported' : 'limited')); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });

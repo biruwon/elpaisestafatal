@@ -11,8 +11,10 @@ for (const contract of report.gapDetail?.domainContracts || []) if (!contract.id
 const coverageFields = ['metrics', 'configuredFeeds', 'configuredMetrics', 'reviewedLanguageExamples', 'ready', 'partial', 'clusters', 'newlyCovered', 'trueGaps', 'sourceWorkItems'];
 if (!coverageFields.every((field) => Number.isInteger(Number(report.coverage?.[field])) && Number(report.coverage[field]) >= 0)) errors.push('coverage status fields are invalid');
 if (Number(report.coverage?.metrics) === 0) errors.push('coverage audit did not load the metric registry');
+// A single domain feed can legitimately materialize several metric families;
+// compare the metric count with the derived configured-metric count, not the
+// raw number of source endpoints.
 if (Number(report.coverage?.configuredMetrics) > Number(report.coverage?.metrics)) errors.push('configured metric count exceeds registry metric count');
-if (Number(report.coverage?.configuredMetrics) > Number(report.coverage?.configuredFeeds)) errors.push('configured metric count exceeds configured feed count');
 if (!['qualified', 'rejected', 'not_run'].includes(report.model?.status)) errors.push('model qualification status is invalid');
 if (!Array.isArray(report.model?.candidates)) errors.push('model candidates are missing');
 if (!Array.isArray(report.model?.unavailable)) errors.push('model unavailable list is missing');

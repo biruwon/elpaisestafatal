@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parsePdfText, parsePublicHousingActionsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
+import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -29,7 +29,7 @@ const extractLinkedDataUrls = (html, baseUrl) => [...String(html).matchAll(/(?:h
   .filter((candidate, index, all) => all.findIndex((item) => item.href === candidate.href) === index)
   .slice(0, 12);
 let fetched = await fetchSource(sourceUrl);
-if (fetched.contentType.includes('html')) {
+if (fetched.contentType.includes('html') && !(domain === 'public_housing_allocation' && /euskadi|documentation|identification|plan vive/i.test(title))) {
   const linked = extractLinkedDataUrls(fetched.bytes.toString('utf8'), sourceUrl);
   let selected = null;
   for (const candidate of linked) {
@@ -47,7 +47,8 @@ const bytes = response.bytes;
 const text = bytes.toString('utf8');
 let payload;
 try {
-  if (domain === 'immigration_benefits' && (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname))) payload = { __records: await parseImvWorkbookBuffer(bytes, { id: 'pending', title, url: response.url.toString() }) };
+  if (domain === 'public_housing_allocation' && /plan vive/i.test(title) && contentType.includes('html')) payload = { __records: parseMadridPlanViveText(text, { id: 'pending', title, url: response.url.toString() }) };
+  else if (domain === 'immigration_benefits' && (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname))) payload = { __records: await parseImvWorkbookBuffer(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname)) payload = await parseSpreadsheetBuffer(bytes);
   else if (contentType.includes('pdf') || /\.pdf(?:$|[?#])/i.test(response.url.pathname)) {
     const { PDFParse } = await import('pdf-parse');
@@ -56,8 +57,18 @@ try {
     await parser.destroy();
     if (domain === 'wildfire_statistics') payload = { __records: parseWildfireReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else if (domain === 'health_emergency_wait') payload = { __records: parseHealthEmergencyReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'immigration_crime' && /población condenada|poblacion condenada|convict/i.test(title)) payload = { __records: parseIneConvictionPressText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'immigration_benefits' && /beneficiarios.*desempleo|sepe/i.test(title)) payload = { __records: parseSepeForeignBenefitsText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'public_housing_allocation' && /catalunya|catalonia|protected-housing applicant|sol·licitants|sol.licitants/i.test(title)) payload = { __records: parseGencatHousingDemandText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'public_housing_allocation' && /madrid.*special.need|especial necesidad/i.test(title)) payload = { __records: parseMadridSpecialNeedHousingText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'public_housing_allocation' && /euskadi|etxebide|adjudicataria.*nacionalidad/i.test(title)) payload = { __records: parseEuskadiHousingNationalityText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'public_housing_allocation' && /tenure|tenencia|ecepo[vb]/i.test(title)) payload = { __records: parseIneHousingTenureNationalityText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else payload = parsePdfText(extracted.text);
 } else if (domain === 'immigration_crime' && /Series anuales|Hechos conocidos por comunidades/i.test(text)) payload = parseCrimeSeriesText(text);
+  else if (domain === 'immigration_benefits' && /Tasa de paro por nacionalidad|unemployment.*nationality/i.test(title)) payload = { __records: parseIneUnemploymentRateTable(JSON.parse(text), { id: 'pending', title, url: response.url.toString() }) };
+  else if (domain === 'immigration_crime' && /adult population.*sex|population.*18.*nationality|67217/i.test(title)) payload = { __records: parseIneAdultPopulationBySexNationality(JSON.parse(text), { id: 'pending', title, url: response.url.toString() }) };
+  else if (domain === 'public_housing_allocation' && /tenure.*reference|referencia.*nacionalidad|table 9995/i.test(title)) payload = { __records: parseIneHousingTenureReferenceTable(JSON.parse(text), { id: 'pending', title, url: response.url.toString() }) };
+  else if (domain === 'public_housing_allocation' && /euskadi|documentation|identification/i.test(title)) payload = { __records: parseEuskadiHousingDocumentationText(text, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'public_housing_allocation' && /Número de viviendas|Numero de viviendas/i.test(text)) payload = parsePublicHousingActionsText(text);
   else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }

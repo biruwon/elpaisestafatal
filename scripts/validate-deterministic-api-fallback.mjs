@@ -20,6 +20,19 @@ if (broadPolitical.result?.evidenceIds?.length || broadPolitical.result?.sourceI
 const broadPositive = deterministicApiFallback({ text: 'España está mejorando', inputType: 'text' });
 if (broadPositive.result?.evidenceLevel !== 'supported') throw new Error('positive broad political fallback did not produce a supported scorecard');
 
+for (const [input, expected] of [
+  ['Pedro Sánchez está destruyendo el país', 'supported'],
+  ['Nos mienten con los datos del paro', 'limited'],
+  ['Los inmigrantes nos invaden', 'limited'],
+  ['No se puede salir a la calle de cómo está el país', 'limited'],
+]) {
+  const result = deterministicApiFallback({ text: input, inputType: 'text' });
+  if (result.result?.evidenceLevel !== expected || !result.result?.sourceLinks?.length) throw new Error(`broad claim did not receive scoped evidence: ${input}`);
+  if (result.result?.blocks?.some((block) => block.type === 'evidence_gap')) throw new Error(`broad claim fell through to generic evidence gap: ${input}`);
+}
+const immigrationCrime = deterministicApiFallback({ text: 'Los inmigrantes crean inseguridad en España', inputType: 'text' });
+if (!/causa colectiva|diferencia descriptiva/i.test(JSON.stringify(immigrationCrime.result))) throw new Error('immigration/crime causal claim lost its causal limitation');
+
 const media = deterministicApiFallback({ inputType: 'audio' });
 if (media.status !== 'uncovered' || media.result || !/audio/i.test(media.guidance.limitation)) throw new Error('file-only fallback did not provide a generic retry path');
 

@@ -163,6 +163,13 @@ export type AnswerPlan = {
   };
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
   researchPlan?: ResearchPlan;
+  evidenceSummary?: {
+    mode: 'dynamic' | 'snapshot' | 'mixed' | 'none';
+    families: Array<{ label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; evidenceIds: string[] }>;
+    missingDimensions?: string[];
+    fallbackReason?: string;
+  };
+  snapshotPolicy?: { owner: string; createdAt: string; expiresAt: string; refreshCommand: string; validationStatus: string; supportedScope: string; unsupportedScope: string };
 };
 
 export type ResolveResult = {

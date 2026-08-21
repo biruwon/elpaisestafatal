@@ -1,5 +1,7 @@
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from './scorecard-snapshot.mjs';
+import { answerPlanForBroadDomain } from './broad-domain-snapshot.mjs';
+import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -28,7 +30,7 @@ const broadScorecard = (text) => {
   return /\b(?:gobernando|gobierno)\b[\s\w]{0,32}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,32}\b(?:peor|mal|fatal)\b/.test(value)
     || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina|mejorando?|progresa?|avanza?)\b/.test(value)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(value)
-    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\bespana\b/.test(value)
+    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\b(?:espana|pais|este pais|el pais)\b/.test(value)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(value);
 };
 
@@ -71,7 +73,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       },
     };
   }
-  if (broadScorecard(original) && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
+  if (broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
       evidenceLevel: 'supported',
@@ -91,8 +93,24 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
         sourceIds: GOVERNMENT_SCORECARD_SNAPSHOT.sources.map((source) => source.id),
         asOf: GOVERNMENT_SCORECARD_SNAPSHOT.asOf,
         sourceLinks: GOVERNMENT_SCORECARD_SNAPSHOT.sources,
+        snapshotPolicy: { owner: GOVERNMENT_SCORECARD_SNAPSHOT.owner, createdAt: GOVERNMENT_SCORECARD_SNAPSHOT.createdAt, expiresAt: GOVERNMENT_SCORECARD_SNAPSHOT.expiresAt, refreshCommand: GOVERNMENT_SCORECARD_SNAPSHOT.refreshCommand, validationStatus: GOVERNMENT_SCORECARD_SNAPSHOT.validationStatus, supportedScope: GOVERNMENT_SCORECARD_SNAPSHOT.supportedScope, unsupportedScope: GOVERNMENT_SCORECARD_SNAPSHOT.unsupportedScope },
+        evidenceSummary: {
+          mode: 'snapshot',
+          families: GOVERNMENT_SCORECARD_SNAPSHOT.metrics.map((metric) => ({ label: metric.label, direction: 'qualifies', evidenceIds: metric.sourceIds })),
+          fallbackReason: 'Este cuadro es un snapshot revisado para ofrecer contexto cuando no se está respondiendo con una única serie dinámica.',
+        },
         knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
       },
+    };
+  }
+  const broadDomainPlan = answerPlanForBroadDomain(original);
+  if (broadDomainPlan) {
+    return {
+      status: 'complete',
+      evidenceLevel: broadDomainPlan.evidenceLevel,
+      relatedClaims: related ? [related] : [],
+      guidance: { limitation: broadDomainPlan.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] },
+      result: broadDomainPlan,
     };
   }
   return {
@@ -115,6 +133,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       limitation: guidance.limitation,
       evidenceIds: [],
       sourceIds: [],
+      evidenceSummary: { mode: 'none', families: [], missingDimensions: ['indicador compatible', 'periodo comparable'], fallbackReason: 'No se encontró una fuente dinámica ni un snapshot compatible.' },
       knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
     },
   };

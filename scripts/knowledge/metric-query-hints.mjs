@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { metricPolicyFor } from './metric-evidence-policy.mjs';
 
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
@@ -31,6 +32,117 @@ const registryMetricIdsForQuery = (normalized) => {
     .filter((candidate) => candidate.tokens.length === strongest)
     .map((candidate) => candidate.id));
 };
+
+// Broad claims need a small, reviewed bridge from the semantic ontology to
+// metric families. This is deliberately many-to-many: “healthcare is
+// collapsing” may require access, waiting-list, capacity and spending data.
+// It is not a claim catalogue and contains no wording-specific answer.
+const conceptMetricFamilies = {
+  healthcare: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate', 'health_expenditure_per_capita', 'hospital_beds', 'physicians_density', 'emergency_wait_declared'],
+  health_access: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_distance_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate'],
+  healthcare_collapse: ['unmet_healthcare_waiting_list_rate', 'emergency_wait_declared', 'hospital_beds', 'physicians_density', 'health_expenditure_per_capita'],
+  health_spending: ['health_expenditure_per_capita', 'health_expenditure_per_capita_europe'],
+  education: ['government_education_expenditure_ratio', 'education_personnel', 'early_school_leaving_rate', 'tertiary_education_attainment_rate', 'neet_rate'],
+  education_outcomes: ['early_school_leaving_rate', 'tertiary_education_attainment_rate', 'neet_rate', 'education_personnel'],
+  housing: ['house_price_index', 'rental_price_index', 'housing_cost_overburden_rate', 'housing_overcrowding_rate', 'housing_payment_arrears_rate', 'public_housing_actions', 'public_housing_applications', 'public_housing_applications_by_nationality', 'public_housing_allocations_by_programme', 'public_housing_allocation_rate_by_programme', 'public_housing_allocations_by_nationality', 'public_housing_allocations_by_documentation', 'housing_tenure_by_household_nationality', 'housing_tenure_by_reference_nationality'],
+  rental_housing: ['rental_price_index', 'housing_cost_overburden_rate', 'housing_payment_arrears_rate', 'housing_overcrowding_rate'],
+  immigration: ['foreign_born_population', 'foreign_citizenship_population', 'immigration_flows', 'asylum_applications', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality'],
+  benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality'],
+  crime: ['recorded_offences', 'standardised_homicide_rate', 'crime_detentions_investigations_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality'],
+  crime_reporting: ['recorded_offences'],
+  employment: ['employment_rate', 'unemployment_rate', 'job_vacancy_rate', 'temporary_employment_rate', 'part_time_employment_rate', 'median_hourly_earnings'],
+  unemployment: ['unemployment_rate', 'unemployment_rate_europe', 'urban_unemployment_rate'],
+  employment_record: ['employment_rate', 'employment_rate_europe'],
+  prices: ['inflation_rate', 'cpi_index', 'household_electricity_price'],
+  cost_of_living: ['inflation_rate', 'cpi_index', 'median_equivalised_income', 'housing_cost_overburden_rate'],
+  income: ['median_equivalised_income', 'median_hourly_earnings', 'gini_coefficient', 'arope_rate'],
+  taxes: ['government_revenue_ratio', 'government_expenditure_ratio', 'government_current_taxes_income_wealth_europe'],
+  public_finance: ['government_revenue_ratio', 'government_expenditure_ratio', 'government_deficit_ratio', 'government_debt_ratio'],
+  public_debt_stock: ['government_debt_current_prices', 'government_debt_ratio'],
+  public_debt_ratio: ['government_debt_ratio', 'government_debt_ratio_europe'],
+  demography: ['resident_population', 'foreign_born_population', 'foreign_citizenship_population', 'population_change_rate', 'older_population_share', 'young_population_share'],
+  environment: ['net_greenhouse_gas_emissions', 'renewable_energy_share', 'water_body_quality', 'water_resources', 'wildfire_incidents', 'wildfire_surface_affected'],
+};
+
+export const metricCandidatesForQuery = (query, concepts = [], limit = 8) => {
+  const normalized = normalise(query);
+  const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(normalized) ? 'benefits'
+    : /(?:delincu|delito|conden|criminal|insegur|seguridad)/.test(normalized) ? 'crime'
+      : /(?:viviend|alquiler|piso|adjudic|casa)/.test(normalized) ? 'housing' : null;
+  const excluded = domain === 'benefits'
+    ? new Set(['crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_minor_by_nationality', 'crime_rate_by_group', 'recorded_offences', 'standardised_homicide_rate', 'public_housing_actions', 'public_housing_allocations_by_group'])
+    : domain === 'crime'
+      ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality', 'unemployment_benefit_share_by_nationality', 'public_housing_actions', 'public_housing_allocations_by_group'])
+      : domain === 'housing'
+        ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_minor_by_nationality', 'crime_rate_by_group', 'recorded_offences'])
+        : new Set();
+  const conceptIds = [...new Set(concepts.map((item) => normalise(item)).filter((item) => conceptMetricFamilies[item]))];
+  // Interleave families so a multi-topic sentence keeps at least one route
+  // for each concept instead of exhausting the limit on the first concept.
+  const conceptLists = conceptIds.map((concept) => conceptMetricFamilies[concept] || []);
+  const conceptCandidates = [];
+  for (let index = 0; conceptCandidates.length < limit && conceptLists.some((list) => list[index]); index += 1) {
+    for (const list of conceptLists) {
+      if (list[index]) conceptCandidates.push(list[index]);
+      if (conceptCandidates.length >= limit) break;
+    }
+  }
+  const lexicalCandidates = registryMetricIdsForQuery(normalized);
+  const ordered = [...new Set([...conceptCandidates, ...lexicalCandidates])].filter((id) => registry[id] && !excluded.has(id));
+  return new Set(ordered.slice(0, limit));
+};
+
+const metricFamilyForId = (metricId) => String(metricId || '').replace(/_(?:europe|quarterly|monthly|annual)$/, '');
+
+// Structured candidates are the public boundary between interpretation and
+// retrieval. Keep the legacy Set helper above for callers that only need an
+// allow-list, while new callers can preserve why each metric was proposed.
+export const metricCandidatesDetailedForQuery = (query, concepts = [], limit = 8) => {
+  const normalized = normalise(query);
+  const conceptIds = [...new Set(concepts.map((item) => normalise(item)).filter((item) => conceptMetricFamilies[item]))];
+  const conceptIdsForMetric = new Map();
+  for (const concept of conceptIds) for (const metricId of conceptMetricFamilies[concept] || []) {
+    if (!conceptIdsForMetric.has(metricId)) conceptIdsForMetric.set(metricId, []);
+    conceptIdsForMetric.get(metricId).push(concept);
+  }
+  const lexicalIds = registryMetricIdsForQuery(normalized);
+  const ids = [...new Set([...metricCandidatesForQuery(query, concepts, limit), ...lexicalIds])]
+    .filter((metricId) => registry[metricId]).slice(0, limit);
+  return ids.map((metricId, index) => {
+    const definition = registry[metricId] || {};
+    const policy = metricPolicyFor(metricId) || {};
+    const conceptsForMetric = conceptIdsForMetric.get(metricId) || [];
+    const lexical = lexicalIds.has(metricId);
+    return {
+      metricId,
+      family: policy.family || definition.family || metricFamilyForId(metricId),
+      reason: conceptsForMetric.length ? 'ontology' : lexical ? 'alias' : 'proposition',
+      confidence: Number(Math.max(0.35, 0.92 - index * 0.06).toFixed(2)),
+      requiredDimensions: policy.requiredDimensions || (Array.isArray(definition.dimensions) ? definition.dimensions : ['period', 'geography']),
+      concepts: conceptsForMetric,
+      unit: definition.unit,
+      population: definition.population,
+      limitations: policy.limitations || [],
+      supports: policy.supports || ['descriptive', 'trend'],
+    };
+  });
+};
+
+export const metricCandidatesForIds = (ids = []) => [...new Set(ids)].filter((metricId) => registry[metricId]).map((metricId) => {
+  const definition = registry[metricId] || {};
+  const policy = metricPolicyFor(metricId) || {};
+  return {
+    metricId,
+    family: policy.family || definition.family || metricFamilyForId(metricId),
+    reason: 'proposition',
+    confidence: 0.8,
+    requiredDimensions: policy.requiredDimensions || (Array.isArray(definition.dimensions) ? definition.dimensions : ['period', 'geography']),
+    unit: definition.unit,
+    population: definition.population,
+    limitations: policy.limitations || [],
+    supports: policy.supports || ['descriptive', 'trend'],
+  };
+});
 
 const comparisonStopwords = new Set([
   'espana', 'espanol', 'espanola', 'pais', 'paises', 'frente', 'comparado',

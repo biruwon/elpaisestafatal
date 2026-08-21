@@ -4,12 +4,14 @@ const valid = publicResolveResponse({
   status: 'partial',
   requestId: 'request-1',
   relatedClaims: [{ kind: 'topic', slug: 'politica', title: 'Política', href: '/preocupaciones/politica', confidence: 0.4 }],
-  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' },
+  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', blocks: [], evidenceIds: [], sourceIds: [], evidenceSummary: { mode: 'dynamic', families: [{ label: 'Empleo', direction: 'qualifies', evidenceIds: ['e1'] }] }, knowledgeVersion: 'test' },
 });
 if (!valid || valid.relatedClaims?.[0]?.slug !== 'politica') throw new Error('Valid public response was rejected');
+if (valid.result?.evidenceSummary?.mode !== 'dynamic') throw new Error('Evidence summary was not preserved at the public boundary');
 
 if (publicResolveResponse({ status: 'complete', result: { schemaVersion: '1', headline: 'Bad state', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', resultState: 'unknown', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' } })) throw new Error('Unknown public result state crossed the boundary');
 if (publicResolveResponse({ status: 'complete', result: { schemaVersion: '1', headline: 'Bad review flag', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', reviewed: 'yes', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' } })) throw new Error('Malformed reviewed flag crossed the boundary');
+if (publicResolveResponse({ status: 'complete', result: { schemaVersion: '1', headline: 'Bad evidence summary', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', evidenceSummary: { mode: 'dynamic', families: [{ label: 'Empleo', direction: 'unknown', evidenceIds: [] }] }, blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' } })) throw new Error('Malformed evidence summary crossed the public boundary');
 
 const malformed = publicResolveResponse({ status: 'complete', result: { headline: 'Missing contract' } });
 if (malformed) throw new Error('Malformed provider response crossed the public boundary');

@@ -1,6 +1,7 @@
 export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
 export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[] };
+export type PublicEvidenceSummary = { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: Array<{ label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; evidenceIds: string[] }>; missingDimensions?: string[]; fallbackReason?: string };
 export type CheckScope = { geography?: string; period?: string; checkedAt?: string };
 export type ClaimKind = 'institutional_label' | 'factual_allegation' | 'evaluative_judgment' | 'quantitative' | 'comparative' | 'causal' | 'specific_fact' | 'normative';
 export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
@@ -23,7 +24,7 @@ export type ClaimInterpretation = {
   alternatives?: ClaimAlternative[];
 };
 export type CheckCriterion = { id: string; label: string; finding: string; sourceIds?: string[] };
-export type CheckResult = { claim: string; interpretation?: ClaimInterpretation; reply: string; answer: string; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; canonicalHref?: string; canonicalSlug?: string };
+export type CheckResult = { claim: string; interpretation?: ClaimInterpretation; reply: string; answer: string; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; canonicalHref?: string; canonicalSlug?: string; evidenceSummary?: PublicEvidenceSummary };
 export type PublicCheckResponse =
   | { state: 'clarification'; id: string; claim: string; question: string; interpretation?: ClaimInterpretation; options: Array<{ id: string; label: string; interpretation: ClaimInterpretation }> }
   | { state: 'supported' | 'limited' | 'insufficient'; id: string; result: CheckResult }

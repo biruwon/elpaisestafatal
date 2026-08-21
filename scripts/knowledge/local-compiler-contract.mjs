@@ -49,6 +49,7 @@ export const compilerSchema = {
     period: { type: ['string', 'null'], maxLength: 120 },
     population: { type: ['string', 'null'], maxLength: 120 },
     metricIds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
+    concepts: { type: 'array', maxItems: 12, items: { type: 'string', maxLength: 80 } },
     retrievalHints: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     evidenceNeeds: { type: 'array', maxItems: 8, items: { type: 'string', maxLength: 120 } },
     alternatives: { type: 'array', maxItems: 4, items: { type: 'object', additionalProperties: false, required: ['normalizedClaim', 'interpretation', 'evidenceDifference', 'confidence'], properties: { normalizedClaim: { type: 'string', maxLength: 300 }, interpretation: { type: 'string', maxLength: 240 }, evidenceDifference: { type: 'string', enum: ['same', 'material'] }, confidence: { type: 'number', minimum: 0, maximum: 1 } } } },
@@ -209,6 +210,10 @@ export const normalizeCompilerOutput = (value, text) => {
   // resolving only the full sentence lets one clause hide the other from the
   // warehouse. The resulting IDs are still bounded and registry-controlled.
   const metricIds = metricIdsForPropositions(text, explicitPropositions);
+  const concepts = [...new Set([
+    ...(Array.isArray(deterministic.concepts) ? deterministic.concepts : []),
+    ...normalizedPropositions.flatMap((item) => Array.isArray(item.concepts) ? item.concepts : []),
+  ].filter((item) => knownSemanticConceptIds.has(item)))].slice(0, 12);
   const modelSemanticSignature = semanticSignatureFor({
     claimType,
     propositions: normalizedPropositions,
@@ -240,6 +245,7 @@ export const normalizeCompilerOutput = (value, text) => {
     period,
     population,
     metricIds,
+    concepts,
     explicitPropositions,
     impliedPropositions,
     retrievalHints: safeRelatedList(value.retrievalHints, deterministic.retrievalHints, text, 8, 120),
@@ -264,7 +270,7 @@ export const normalizeCompilerOutput = (value, text) => {
 };
 
 export const compilerContractFacts = {
-  modelMayProvide: ['normalized', 'claimType', 'propositions', 'proposition concepts', 'entities', 'geography', 'period', 'population', 'metricIds', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
+  modelMayProvide: ['normalized', 'claimType', 'propositions', 'proposition concepts', 'entities', 'geography', 'period', 'population', 'metricIds', 'concepts', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   deterministicOnly: ['numbers', 'semanticSignature'],
   maxPropositions: 6,
   maxRetrievalHints: 8,
