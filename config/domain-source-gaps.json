@@ -22,6 +22,7 @@
         "SEPE unemployment-benefit recipients and the foreign-recipient share can be reported for November 2025 with the total-recipient denominator",
         "SEPE also publishes foreign-benefit coverage among foreign registered jobseekers for the same monthly publication; this is a valid group-specific denominator but only for unemployment benefits",
         "OBERAXE publishes IMV title holders by Spanish/foreign nationality and an IMV rate against same-nationality residents aged 18+ for January, nationally and provincially",
+        "INE ECV 2025 microdata supports a weighted adult rate for receipt of selected unemployment, retirement, survivor, sickness, disability, family/child, and housing transfers by Spanish, EU-foreign, and non-EU-foreign nationality",
         "INE ECV 2025 provides a weighted comparable adult denominator for a defined set of selected transfer components by nationality, but not a complete administrative measure for every programme"
       ],
       "permittedConclusion": "The system may report IMV composition, SEPE unemployment-benefit counts/shares, and SEPE foreign-benefit coverage among foreign registered jobseekers for their named programme and period. These programme-specific measures cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens across all benefits.",
