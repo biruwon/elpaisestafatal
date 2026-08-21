@@ -16,6 +16,9 @@
   },
   "records": [
     {
+      "id": "research-ine-ecv-selected-social-transfers-2025-spanish",
+      "kind": "observation",
+      "sourceId": "research-ine-ecv-selected-social-transfers-2025",
       "metricId": "survey_selected_social_transfer_rate_by_nationality",
       "period": "2025",
       "geography": "España",
@@ -32,6 +35,9 @@
       }
     },
     {
+      "id": "research-ine-ecv-selected-social-transfers-2025-eu-foreign",
+      "kind": "observation",
+      "sourceId": "research-ine-ecv-selected-social-transfers-2025",
       "metricId": "survey_selected_social_transfer_rate_by_nationality",
       "period": "2025",
       "geography": "España",
@@ -48,6 +54,9 @@
       }
     },
     {
+      "id": "research-ine-ecv-selected-social-transfers-2025-non-eu-foreign",
+      "kind": "observation",
+      "sourceId": "research-ine-ecv-selected-social-transfers-2025",
       "metricId": "survey_selected_social_transfer_rate_by_nationality",
       "period": "2025",
       "geography": "España",
