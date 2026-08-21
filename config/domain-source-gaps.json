@@ -32,7 +32,7 @@
     {
       "id": "crime-by-offence-stage-and-denominator",
       "domain": "immigration_crime",
-      "missingFields": ["offence_definition", "suspects_arrests_convictions_stage", "age_sex_adjustment"],
+      "missingFields": ["same_offence_suspect_arrest_conviction_link", "age_sex_adjustment"],
       "resolvedFields": ["recorded-offence-definition", "conviction-legal-stage", "adult-group-denominator", "sex-and-nationality-breakdown"],
       "irreducibleFields": ["same-offence-suspect-arrest-conviction-link", "fully-standardised-rate-without-official-standard-population"],
       "status": "partial_official_statistics",
@@ -55,7 +55,7 @@
         "no universal national series linking suspects, arrests, and convictions for the same offence and group definition, with a fully age/sex-standardised rate"
       ],
       "permittedConclusion": "The system may report the aligned INE adult conviction rate by nationality, or recorded offences and conviction counts with their legal stage. These measures describe convictions rather than all criminality and cannot by themselves prove that immigrants cause insecurity or are inherently more criminal.",
-      "nextEvidence": "Add offence-level suspect and arrest stages, then add age/sex-standardised rates where the official tables support them; the adult conviction denominator, territory, and period are already aligned.",
+      "nextEvidence": "Link the offence-level suspect/detention series to the corresponding conviction series without conflating legal stages, then add age/sex-standardised rates where an official standard population is available; the adult conviction denominator, territory, and period are already aligned.",
       "sourceTargets": ["Interior crime statistics", "INE convictions and population tables", "regional judicial statistics"],
       "acceptanceCriteria": ["offence definition and legal stage are preserved", "suspects, arrests, and convictions remain separate", "adult conviction rates retain aligned group denominator, territory, and period", "age/sex adjustment is explicit when available"]
     },
