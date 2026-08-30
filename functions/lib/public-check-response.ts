@@ -110,7 +110,11 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const argumentsList = argumentsFromPlan(plan);
   const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
   const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
-  const state = (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : (plan.evidenceLevel || (supported ? 'supported' : 'limited')); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
+  const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
+  const state = argumentsList.length && argumentEvidence === 0
+    ? 'insufficient'
+    : (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : (plan.evidenceLevel || (supported ? 'supported' : 'limited'));
+  return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
 export const processingCheck = (claim: string, requestId: string): PublicCheckResponse => ({ state: 'processing', id: requestId, claim });
