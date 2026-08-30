@@ -1,8 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 
-const inputPath = process.argv[2] || 'elpaisestafatal-web-observed-claims-300.json';
 const resolveMode = process.argv.includes('--resolve');
+const inputPath = process.argv.slice(2).find((arg) => !arg.startsWith('--')) || 'elpaisestafatal-web-observed-claims-300.json';
 const data = JSON.parse(await readFile(inputPath, 'utf8'));
 const candidates = data.candidates;
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
