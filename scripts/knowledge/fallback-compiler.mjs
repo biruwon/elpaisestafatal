@@ -414,6 +414,11 @@ const splitExplicitClauses = (value) => {
   // This deliberately avoids splitting every "y": lists such as "empleo,
   // vivienda y sanidad" are context, not three independent propositions.
   let clauses = original
+    // Sentence boundaries and pasted bullet lines are independent claims in
+    // social posts. Split them before discourse parsing so a long paragraph
+    // cannot collapse into one broad proposition.
+    .replace(/\.(?=\s+[A-ZÁÉÍÓÚÑ])/g, '. | ')
+    .replace(/\n\s*[-•]\s*/g, ' | ')
     .replace(/\s*;\s*/g, ' | ')
     .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras(?: que)?|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
     .replace(/\s+(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\s+/gi, ' | ')
@@ -431,7 +436,7 @@ const splitExplicitClauses = (value) => {
     }
   }
 
-  return clauses.length > 1 ? clauses.slice(0, 4) : [original];
+  return clauses.length > 1 ? clauses.slice(0, 24) : [original];
 };
 
 const impliedFor = (claimType, value) => {
