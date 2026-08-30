@@ -15,6 +15,7 @@ const cases = [
   ['Los inmigrantes nos invaden', ['immigration']],
   ['Los inmigrantes crean inseguridad', ['immigration', 'crime']],
   ['Nos mienten con los datos del paro', ['unemployment']],
+  ['El sistema de pensiones es insostenible', ['pension_system']],
 ];
 
 for (const [text, expectedConcepts] of cases) {
@@ -27,6 +28,10 @@ for (const [text, expectedConcepts] of cases) {
   if (text === 'Los inmigrantes crean inseguridad') {
     assert(candidates.has('foreign_born_population'), `${text}: immigration family was dropped`);
     assert([...candidates].some((metricId) => ['recorded_offences', 'standardised_homicide_rate'].includes(metricId)), `${text}: crime family was dropped`);
+  }
+  if (text === 'El sistema de pensiones es insostenible') {
+    assert(candidates.has('old_age_dependency_ratio'), `${text}: pension dependency family was dropped`);
+    assert(!candidates.has('imv_title_holders_by_nationality'), `${text}: benefits-by-nationality metric leaked into pensions claim`);
   }
 }
 
