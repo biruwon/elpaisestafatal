@@ -2700,7 +2700,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const interpretedKind = classified.compiler?.claimType;
   const allegationProfile = classified.compiler?.criteriaProfile === 'public-corruption'
     || classified.compiler?.criteriaProfile === 'specific-allegation';
-  if (allegationProfile || interpretedKind === 'factual_allegation' || interpretedKind === 'allegation') {
+  const publicActorContext = /\b(?:s[aá]nchez|presidente|gobierno|ministro|ministra|diputad[oa]|partido|administraci[oó]n p[uú]blica)\b/i.test(normalise(text));
+  if ((allegationProfile || interpretedKind === 'factual_allegation' || interpretedKind === 'allegation') && !publicActorContext) {
     const safeClassified = {
       ...classified,
       primary: undefined,
@@ -2944,7 +2945,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // because the compiler also flagged an implied impact. Causal, legal,
   // predictive, group, and normative claims remain gated from generic source
   // discovery and use their dedicated evidence paths instead.
-  const discoveryEligible = new Set(['budget_transfer', 'government_event', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
+  const discoveryEligible = new Set(['budget_transfer', 'government_event', 'factual_allegation', 'allegation', 'quantity', 'proportion', 'ranking', 'trend', 'definition']);
   const allowDiscovery = !classified.compiler?.clarificationRequired || discoveryEligible.has(handlerId);
   const indexedSourceCandidate = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride
     ? await findBestWarehouseSource([retrievalText, ...propositionQueries])
