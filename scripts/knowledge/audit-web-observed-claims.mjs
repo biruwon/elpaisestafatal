@@ -5,12 +5,14 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 const resolveMode = process.argv.includes('--resolve');
 const deterministicMode = process.argv.includes('--deterministic');
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
+const offsetArg = process.argv.find((arg) => arg.startsWith('--offset='));
 const timeoutArg = process.argv.find((arg) => arg.startsWith('--timeout='));
 const resolveTimeoutMs = timeoutArg ? Math.max(1000, Number.parseInt(timeoutArg.slice(10), 10) || 1000) : 30000;
 const inputPath = process.argv.slice(2).find((arg) => !arg.startsWith('--')) || 'elpaisestafatal-web-observed-claims-300.json';
 const data = JSON.parse(await readFile(inputPath, 'utf8'));
 const candidates = data.candidates;
 const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 10) || 1) : candidates.length;
+const resolveOffset = offsetArg ? Math.max(0, Number.parseInt(offsetArg.slice(9), 10) || 0) : 0;
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
 const normalizeText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const publicPhrases = new Set(runtimeCatalogue.filter((entry) => entry.status === 'published' && entry.basis !== 'model').flatMap((entry) => [entry.claim, ...(entry.aliases || [])]).map(normalizeText));
@@ -53,7 +55,7 @@ if (deterministicMode) {
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
   const outcomes = [];
-  const resolveCandidates = candidates.slice(0, resolveLimit);
+  const resolveCandidates = candidates.slice(resolveOffset, resolveOffset + resolveLimit);
   let cursor = 0;
   const resolveOne = async (candidate) => {
     const started = Date.now();
@@ -68,7 +70,7 @@ if (resolveMode) {
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
