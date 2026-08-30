@@ -123,7 +123,8 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);
   const argumentsList = argumentsFromPlan(plan);
   const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
-  const evaluative = String(plan.claimType) === 'evaluative' || String(plan.claimType) === 'evaluative_judgment' || plan.interpretation?.kind === 'evaluative_judgment' || /\b(?:peor|mejor)\s+presidente\b/i.test(claim);
+  const evaluativeWording = /\b(?:peor|mejor|mejores|peores|mejor[ae]s)\b/i.test(claim) && /\b(?:presidente|gobierno|partido|gesti[oó]n|administraci[oó]n|pol[ií]tica)\b/i.test(claim);
+  const evaluative = String(plan.claimType) === 'evaluative' || String(plan.claimType) === 'evaluative_judgment' || plan.interpretation?.kind === 'evaluative_judgment' || evaluativeWording;
   const scorecardItems = plan.blocks.find((block) => block.type === 'scorecard');
   const improved = scorecardItems && 'items' in scorecardItems ? scorecardItems.items.filter((item) => item.direction === 'improved').length : 0;
   const worsened = scorecardItems && 'items' in scorecardItems ? scorecardItems.items.filter((item) => item.direction === 'worsened').length : 0;
