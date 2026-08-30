@@ -66,8 +66,20 @@ const planFrom = (value: ResolveResult): AnswerPlan | undefined => value.result;
 const fallbackResponse = (claim: string, inputType: InputType): PublicCheckResponse => {
   const fallback = deterministicApiFallback({ text: claim, inputType }) as ResolveResult & { guidance?: { limitation?: string; questions?: string[] } };
   const plan = planFrom(fallback);
-  if (plan) return checkFromPlan(claim, plan, fallback.requestId);
+  if (plan) {
+    const response = checkFromPlan(claim, plan, fallback.requestId);
+    // Keep the internal packet identifier available to routing decisions; it
+    // is never rendered as machine provenance in the public response.
+    const internal = response as PublicCheckResponse & { result?: Record<string, unknown> };
+    return { ...response, result: internal.result ? { ...internal.result, id: (plan as AnswerPlan & { id?: string }).id } : internal.result } as unknown as PublicCheckResponse;
+  }
   return unavailableCheck(claim, fallback.guidance?.limitation || 'La comprobación no está disponible en este momento.');
+};
+
+const usefulPreview = (response: PublicCheckResponse): Extract<PublicCheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined => {
+  if (response.state === 'supported') return response;
+  if (response.state !== 'limited') return undefined;
+  return response.result.criteria?.length && response.result.sources?.length ? response : undefined;
 };
 
 const rhetoricalClaim = (claim: string): boolean => {
@@ -178,7 +190,11 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
     const safe = publicResolveResponse(upstreamPayload) as ResolveResult | undefined;
     if (safe?.status === 'processing' && safe.requestId) {
-      return json(processingCheck(body.text, safe.requestId), 202);
+      // The local resolver has already accepted the job. Expose a deterministic
+      // answer when it is sufficiently grounded so the user gets useful
+      // context while optional model enrichment continues in the background.
+      const preview = usefulPreview(fallbackResponse(effectiveClaim, body.inputType));
+      return json(processingCheck(body.text, safe.requestId, preview), 202);
     }
     const plan = safe?.result;
     const modelResponse = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId, !body.clarification) : undefined;
