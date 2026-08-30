@@ -28,7 +28,9 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
   const items = breakdown.items;
   return items.map((item, index) => {
-    const evidenceIds = (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index);
+    const evidenceIds = item.evidenceIds?.length
+      ? item.evidenceIds
+      : (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index);
     const verdict = evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient';
     return {
     id: breakdown.propositionIds[index] || `argument-${index + 1}`,

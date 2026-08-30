@@ -2491,6 +2491,20 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       })
     : [];
   const compoundEvidenceCount = compoundFamilyBlocks.length;
+  if (compilerBreakdown?.items?.length && observations.length) {
+    const words = (value) => new Set(normalise(value).split(' ').filter((word) => word.length > 3));
+    compilerBreakdown.items = compilerBreakdown.items.map((item) => {
+      const claimWords = words(item.text);
+      const scored = observations.map((observation) => {
+        const metricWords = words(`${observation.metricId || ''} ${observation.metric || ''} ${displayMetric(observation)} ${observation.dimensionLabels?.category || ''}`);
+        const score = [...claimWords].filter((word) => metricWords.has(word)).length;
+        return { observation, score };
+      }).filter((entry) => entry.score > 0).sort((a, b) => b.score - a.score);
+      const bestScore = scored[0]?.score || 0;
+      const evidenceIds = bestScore ? scored.filter((entry) => entry.score === bestScore).slice(0, 24).map((entry) => entry.observation.id) : [];
+      return { ...item, evidenceIds };
+    });
+  }
   const compoundSummary = compoundEvidenceCount > 1
     ? `La frase contiene ${compoundEvidenceCount} afirmaciones comprobables. Cada una se ha contrastado con su propia familia de datos para no mezclar indicadores.`
     : undefined;
