@@ -34,7 +34,10 @@ const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.fil
   const points = 'points' in block ? block.points || [] : [];
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
   return points.slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
-});
+}).concat(plan.blocks.filter((block) => block.type === 'scorecard').flatMap((block, index) => {
+  if (!('items' in block) || !Array.isArray(block.items)) return [];
+  return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: item.evidenceIds || [] }));
+}));
 const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
   if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
@@ -121,7 +124,13 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const argumentsList = argumentsFromPlan(plan);
   const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
   const evaluative = String(plan.claimType) === 'evaluative' || String(plan.claimType) === 'evaluative_judgment' || plan.interpretation?.kind === 'evaluative_judgment' || /\b(?:peor|mejor)\s+presidente\b/i.test(claim);
-  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: 'No existe un veredicto objetivo sin definir los criterios y el periodo de comparación.', criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
+  const scorecardItems = plan.blocks.find((block) => block.type === 'scorecard');
+  const improved = scorecardItems && 'items' in scorecardItems ? scorecardItems.items.filter((item) => item.direction === 'improved').length : 0;
+  const worsened = scorecardItems && 'items' in scorecardItems ? scorecardItems.items.filter((item) => item.direction === 'worsened').length : 0;
+  const thesisConclusion = scorecardItems && 'items' in scorecardItems && scorecardItems.items.length
+    ? `El cuadro de datos compara ${scorecardItems.baseline.period} con ${scorecardItems.comparison.period}: ${improved} indicadores mejoran y ${worsened} empeoran. Esa evidencia permite valorar resultados concretos, pero no convierte por sí sola la comparación en una clasificación histórica objetiva.`
+    : 'La tesis se evalúa mejor separando sus argumentos y comparando resultados concretos con un periodo y criterios definidos.';
+  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
   const state = argumentsList.length && argumentEvidence === 0
     ? 'insufficient'

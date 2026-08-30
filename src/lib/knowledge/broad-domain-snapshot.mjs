@@ -60,7 +60,7 @@ const packets = [
   },
   {
     id: 'broad-employment',
-    matches: /\b(paro|desemple|empleo|trabaj|ocupad|salari|datos del paro|mercado laboral)\b/i,
+    matches: /\b(paro\w*|desemple\w*|empleo\w*|trabaj\w*|ocupad\w*|salari\w*|datos del paro|mercado laboral)\b/i,
     interpretation: { kind: 'quantitative', subject: 'mercado laboral español', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'situación del empleo y el desempleo en España', interpretation: 'La frase puede referirse a empleo, desempleo, registro administrativo o calidad del trabajo.', confidence: 0.76, evidenceNeeds: ['métrica', 'población', 'periodo', 'definición'] },
     headline: 'El paro y el empleo se pueden medir, pero no son una sola cifra',
     summary: 'España combina ocupación récord con una tasa de paro todavía elevada. La EPA y el paro registrado no cuentan exactamente lo mismo, así que una diferencia entre cifras no demuestra por sí sola que alguien esté mintiendo.',
