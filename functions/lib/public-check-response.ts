@@ -3,6 +3,18 @@ import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment } from '../../src/lib/knowledge/public-check';
 
+// Interpretation confidence, model metadata and extraction provenance are
+// internal quality signals. Public answers describe the meaning in plain
+// language and expose sources/limitations, but never leak those internals.
+const publicInterpretation = (interpretation?: ClaimInterpretation): ClaimInterpretation | undefined => {
+  if (!interpretation) return undefined;
+  const { confidence: _confidence, alternatives, ...visible } = interpretation;
+  return {
+    ...visible,
+    alternatives: alternatives?.map(({ confidence: _alternativeConfidence, ...alternative }) => alternative),
+  };
+};
+
 const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   // Relevance is established by criterion-to-source attribution in the
   // answer plan. Requiring a shared claim token here rejects valid primary
@@ -76,7 +88,7 @@ export const clarificationCheck = (claim: string, _missingDimensions: string[] =
 const clarificationFromPlan = (claim: string, plan: AnswerPlan): PublicCheckResponse | undefined => {
   const alternatives = plan.interpretation?.alternatives?.filter((item) => item.evidenceDifference === 'material' && item.normalizedClaim && item.interpretation).slice(0, 4) || [];
   if (alternatives.length < 2) return undefined;
-  const interpretation = plan.interpretation;
+  const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);
   return {
     state: 'clarification',
     id: `clarify-${Date.now().toString(36)}`,
@@ -91,7 +103,6 @@ const clarificationFromPlan = (claim: string, plan: AnswerPlan): PublicCheckResp
         kind: (interpretation?.kind || 'specific_fact') as ClaimInterpretation['kind'],
         normalizedClaim: item.normalizedClaim,
         interpretation: item.interpretation,
-        confidence: item.confidence,
         alternatives: [],
       },
     })),
@@ -106,7 +117,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const attributedIds = new Set(criteria.flatMap((item) => item.sourceIds || []));
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
-  const interpretation = plan.interpretation ? plan.interpretation as ClaimInterpretation : undefined;
+  const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);
   const argumentsList = argumentsFromPlan(plan);
   const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
   const evaluative = String(plan.claimType) === 'evaluative' || String(plan.claimType) === 'evaluative_judgment' || plan.interpretation?.kind === 'evaluative_judgment' || /\b(?:peor|mejor)\s+presidente\b/i.test(claim);
