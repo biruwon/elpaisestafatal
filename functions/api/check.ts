@@ -126,11 +126,21 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
-    if (body.clarification) {
+  if (body.clarification) {
       const response = fallbackResponse(effectiveClaim, body.inputType);
       if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
       return json(response);
     }
+  }
+
+  // Broad-domain packets are already reviewed and deterministic. Return them
+  // immediately instead of queueing a slow local-model job; this keeps common
+  // open-ended claims answerable even when the provider is saturated.
+  const immediateContext = fallbackResponse(effectiveClaim, body.inputType);
+  const immediatePlan = (immediateContext as PublicCheckResponse & { result?: AnswerPlan }).result;
+  if (immediatePlan && (immediatePlan as ({ id?: string })).id?.startsWith('broad-')) {
+    if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
+    return json(immediateContext);
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
