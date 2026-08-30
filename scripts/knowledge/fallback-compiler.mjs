@@ -436,6 +436,16 @@ const splitExplicitClauses = (value) => {
     }
   }
 
+  // Political posts frequently enumerate independently checkable events in a
+  // comma list ("Ceuta, la DANA, el apagón, los trenes"). Split only when
+  // the list contains clear event/policy markers; ordinary noun lists remain
+  // attached to their surrounding proposition.
+  clauses = clauses.flatMap((clause) => {
+    const normalizedClause = normalise(clause);
+    const eventList = /\b(?:corrupcion|ceuta|dana|apagon|trenes|amnistia|imv|ley de vivienda|bono joven|regularizacion masiva|pensiones revalorizadas|mas impuestos)\b/.test(normalizedClause);
+    if (!eventList || clause.split(',').length < 3) return [clause];
+    return clause.split(',').map(cleanClause).filter((item) => item.length >= 4);
+  });
   return clauses.length > 1 ? clauses.slice(0, 24) : [original];
 };
 
