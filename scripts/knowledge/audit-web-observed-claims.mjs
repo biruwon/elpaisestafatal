@@ -70,7 +70,7 @@ if (resolveMode) {
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
