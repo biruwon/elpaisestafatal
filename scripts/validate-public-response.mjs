@@ -4,10 +4,11 @@ const valid = publicResolveResponse({
   status: 'partial',
   requestId: 'request-1',
   relatedClaims: [{ kind: 'topic', slug: 'politica', title: 'Política', href: '/preocupaciones/politica', confidence: 0.4 }],
-  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', blocks: [], evidenceIds: [], sourceIds: [], evidenceSummary: { mode: 'dynamic', families: [{ label: 'Empleo', direction: 'qualifies', evidenceIds: ['e1'] }] }, knowledgeVersion: 'test' },
+  result: { schemaVersion: '1', headline: 'Aclaración', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', evidenceLevel: 'limited', thesis: { text: 'La mejor presidencia', kind: 'evaluative', conclusion: 'Depende de los criterios', criteria: ['economía'] }, blocks: [], evidenceIds: [], sourceIds: [], evidenceSummary: { mode: 'dynamic', families: [{ label: 'Empleo', direction: 'qualifies', evidenceIds: ['e1'] }] }, knowledgeVersion: 'test' },
 });
 if (!valid || valid.relatedClaims?.[0]?.slug !== 'politica') throw new Error('Valid public response was rejected');
 if (valid.result?.evidenceSummary?.mode !== 'dynamic') throw new Error('Evidence summary was not preserved at the public boundary');
+if (valid.result?.thesis?.kind !== 'evaluative' || valid.result?.thesis?.criteria?.[0] !== 'economía') throw new Error('Evaluative thesis was not preserved at the public boundary');
 
 if (publicResolveResponse({ status: 'complete', result: { schemaVersion: '1', headline: 'Bad state', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', resultState: 'unknown', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' } })) throw new Error('Unknown public result state crossed the boundary');
 if (publicResolveResponse({ status: 'complete', result: { schemaVersion: '1', headline: 'Bad review flag', summary: 'Resumen', coverage: 'partial', claimType: 'mixed', reviewed: 'yes', blocks: [], evidenceIds: [], sourceIds: [], knowledgeVersion: 'test' } })) throw new Error('Malformed reviewed flag crossed the boundary');
