@@ -1890,6 +1890,31 @@ const startResolveJob = (text, origin = 'runtime') => {
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
     const resolved = await enrichResolve(text, safeClassified, undefined, id);
+    // Compound posts need proposition-level retrieval. Resolve each explicit
+    // clause independently so one successful metric family cannot masquerade
+    // as evidence for every argument in the bundle.
+    const propositions = (safeClassified.compiler?.explicitPropositions || safeClassified.compiler?.propositions || [])
+      .filter((item) => item?.explicit !== false && item.text && item.text.trim() !== text.trim())
+      .slice(0, 24);
+    if (propositions.length > 1 && resolved?.result) {
+      const parts = await Promise.allSettled(propositions.map(async (item, index) => {
+        const partText = String(item.text).trim();
+        const partClassified = await classify(partText);
+        return enrichResolve(partText, partClassified, undefined, `${id}-${index + 1}`);
+      }));
+      const successful = parts.filter((part) => part.status === 'fulfilled').map((part) => part.value).filter((part) => part?.result);
+      const breakdown = resolved.result.blocks.find((block) => block.type === 'claim_breakdown');
+      if (breakdown && 'items' in breakdown && breakdown.items?.length) {
+        breakdown.items = breakdown.items.map((item, index) => {
+          const part = successful[index];
+          return part?.result ? { ...item, evidenceIds: part.result.evidenceIds || [], sourceIds: part.result.sourceIds || [], finding: part.result.summary || part.result.headline } : item;
+        });
+      }
+      const mergedBlocks = successful.flatMap((part) => part.result.blocks.filter((block) => block.type === 'data_finding' || block.type === 'confirmed' || block.type === 'cannot_conclude'));
+      resolved.result.blocks = resolved.result.blocks.concat(mergedBlocks).slice(0, 80);
+      resolved.result.evidenceIds = [...new Set([...(resolved.result.evidenceIds || []), ...successful.flatMap((part) => part.result.evidenceIds || [])])];
+      resolved.result.sourceIds = [...new Set([...(resolved.result.sourceIds || []), ...successful.flatMap((part) => part.result.sourceIds || [])])];
+    }
     const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
