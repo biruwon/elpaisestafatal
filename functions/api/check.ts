@@ -81,6 +81,7 @@ const rhetoricalClaim = (claim: string): boolean => {
 // preserves the distinction between measurable facts and the slogan.
 const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
   if (!model || model.state === 'insufficient') return contextual.state !== 'insufficient' ? contextual : model || contextual;
+  if (contextual.state === 'supported' && model.state === 'limited' && !(model.result?.sources?.length) && !(model.result?.criteria?.length)) return contextual;
   if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
   const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
   const summary = plan?.evidenceSummary;

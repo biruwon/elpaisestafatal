@@ -31,7 +31,8 @@ const broadScorecard = (text) => {
     || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina|mejorando?|progresa?|avanza?)\b/.test(value)
     || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(value)
     || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\b(?:espana|pais|este pais|el pais)\b/.test(value)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(value);
+    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(value)
+    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,32}\b(?:peor|mejor|mejores|peores)\b/.test(value);
 };
 
 const fallbackGuidance = (text, inputType) => {
