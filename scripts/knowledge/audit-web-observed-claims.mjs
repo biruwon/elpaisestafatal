@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 
 const inputPath = process.argv[2] || 'elpaisestafatal-web-observed-claims-300.json';
+const resolveMode = process.argv.includes('--resolve');
 const data = JSON.parse(await readFile(inputPath, 'utf8'));
 const candidates = data.candidates;
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
@@ -31,6 +32,24 @@ for (const candidate of candidates || []) {
   else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
 const report = { inputPath, claims: candidates?.length || 0, requiredFields: required, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+if (resolveMode) {
+  const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
+  const outcomes = [];
+  let cursor = 0;
+  const resolveOne = async (candidate) => {
+    const started = Date.now();
+    try {
+      const response = await fetch(`${base}/v1/classify`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-knowledge-gap-origin': 'web-observed-audit' }, body: JSON.stringify({ text: candidate.claim, inputType: 'text' }), signal: AbortSignal.timeout(30000) });
+      let payload = await response.json();
+      for (let attempt = 0; attempt < 120 && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(10000) }).then((item) => item.json()); }
+      const result = payload.result;
+      return { id: candidate.id, status: payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started };
+    } catch (error) { return { id: candidate.id, status: 'error', error: error instanceof Error ? error.message : String(error), latencyMs: Date.now() - started }; }
+  };
+  const worker = async () => { while (cursor < candidates.length) { const candidate = candidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
+  await Promise.all(Array.from({ length: Math.min(3, candidates.length) }, worker));
+  report.resolve = { base, outcomes, completed: outcomes.filter((item) => item.status !== 'error').length, errors: outcomes.filter((item) => item.status === 'error').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+}
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
 console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches; all remain explicitly unverified discovery inputs.`);
