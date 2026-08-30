@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
 const report = JSON.parse(await readFile(process.env.COVERAGE_REPORT_INPUT || join(root, '.local/coverage-report.json'), 'utf8'));
+const requireMaterialized = process.argv.includes('--require-materialized');
 const errors = [];
 if (!report.generatedAt || !report.summary || !Array.isArray(report.metrics) || !Array.isArray(report.feeds)) errors.push('coverage report header is malformed');
 const ids = new Set();
@@ -32,10 +33,14 @@ try {
       }
     } catch { errors.push(`${file}: warehouse record is not valid JSON`); }
   }
-  for (const metric of report.metrics || []) {
-    if (metric.status !== 'fed' || metric.id.startsWith('official_')) continue;
-    if (!materialized.has(metric.id) && !['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group', 'public_housing_actions', 'wildfire_incidents', 'wildfire_surface_affected', 'emergency_wait_declared'].includes(metric.id)) errors.push(`${metric.id}: configured feed has no materialized warehouse record`);
+  if (requireMaterialized) {
+    for (const metric of report.metrics || []) {
+      if (metric.status !== 'fed' || metric.id.startsWith('official_')) continue;
+      if (!materialized.has(metric.id) && !['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group', 'public_housing_actions', 'wildfire_incidents', 'wildfire_surface_affected', 'emergency_wait_declared'].includes(metric.id)) errors.push(`${metric.id}: configured feed has no materialized warehouse record`);
+    }
   }
-} catch { /* CI may run the report before a refresh; the refresh workflow enforces this when records exist. */ }
+} catch (error) {
+  if (requireMaterialized) errors.push(`materialized warehouse cannot be read: ${error.message}`);
+}
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
-console.log(`Coverage report valid: ${report.summary.fedMetrics}/${report.summary.metrics} metrics fed and ${report.summary.ontologyOnlyMetrics} ontology-only gaps identified.`);
+console.log(`Coverage report valid (${requireMaterialized ? 'materialized' : 'structural'}): ${report.summary.fedMetrics}/${report.summary.metrics} metrics fed and ${report.summary.ontologyOnlyMetrics} ontology-only gaps identified.`);

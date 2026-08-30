@@ -85,19 +85,8 @@ jobs:
             .local/coverage-audit.md
           if-no-files-found: warn
 
-      - name: Build public site and audit public surface
-        run: |
-          # Claim/knowledge contracts and release validation already ran
-          # above. Keep this step focused on the static build and its
-          # post-build public-surface checks so CI does not repeat the entire
-          # release chain a second time.
-          ./node_modules/.bin/astro build
-          npm run knowledge:runtime-catalogue
-          npm run claims:routing:validate
-          npm run ux:static
-          npm run knowledge:family-index
-          npm run knowledge:family-collisions
-          npm run audit:public-surface
+      - name: Build with the Cloudflare Pages command
+        run: npm run build
 
       - name: Smoke-test the built Pages Functions boundary
         run: npm run smoke:pages

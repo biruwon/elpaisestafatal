@@ -41,12 +41,15 @@ jobs:
       - name: Validate domain refresh report
         run: npm run knowledge:domain-refresh:validate
 
+      - name: Materialize derived crime rates
+        run: npm run knowledge:crime:rates
+
       - name: Validate the derived warehouse
         run: |
           npm run knowledge:warehouse
           npm run knowledge:freshness
           npm run knowledge:warehouse:sql
-          npm run knowledge:coverage:validate
+          npm run knowledge:coverage:validate:materialized
           npm run knowledge:coverage:audit
           npm run knowledge:coverage:audit:validate
           npm run knowledge:coverage:promote
