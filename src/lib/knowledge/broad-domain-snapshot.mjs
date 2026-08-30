@@ -123,7 +123,23 @@ export const broadDomainPacketFor = (text) => {
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
   if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return undefined;
-  return packets.find((packet) => packet.matches.test(value));
+  const direct = packets.find((packet) => packet.matches.test(value));
+  if (direct) return direct;
+  // Long-form claims often omit the domain noun (for example, “specialist
+  // waiting lists” or “rail maintenance”). Route those phrases to the same
+  // reviewed context packet instead of leaving them uncovered.
+  const supplemental = [
+    ['taxes', /pequeños comercios|carga regulatoria|contratos públicos|proveedores pequeños|burocracia y costes/i],
+    ['health', /lista[s]? de espera|especialistas|terapia|enfermedad|profesionales sanitarios|sobrecarga/i],
+    ['education', /rendimiento escolar|notas medias|demanda laboral|talento|burocracia universitaria|credenciales|barrio donde se vive|centros educativos/i],
+    ['pensions', /prestaciones contributivas|prestaciones no contributivas|obligaciones futuras|ahorrar de forma privada/i],
+    ['economy', /cesta de la compra|ipc general|capacidad de ahorro|gastos? antes|apoyo familiar|coste de vida|datos macroeconom|empeoramiento econom/i],
+    ['tourism', /tasas turísticas|mano de obra barata|ciudades receptoras/i],
+    ['transport', /mantenimiento ferroviario|renfe|adif|pasajeros|retrasos ferroviarios|vivir sin coche|fibra óptica|servicios/i],
+    ['energy', /precio mayorista|contratos de consumidores|apagones|red y la gestión/i],
+  ];
+  const match = supplemental.find(([, pattern]) => pattern.test(value));
+  return match ? packets.find((packet) => packet.id === `broad-${match[0]}`) : undefined;
 };
 
 export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
