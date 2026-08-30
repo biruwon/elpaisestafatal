@@ -90,6 +90,7 @@
     "knowledge:d1-semantic": "node scripts/knowledge/validate-d1-semantic-clusters.mjs",
     "knowledge:evaluate": "node scripts/knowledge/validate-evaluation.mjs && node scripts/knowledge/validate-acceptance-cases.mjs",
     "knowledge:audit:web-claims": "node scripts/knowledge/audit-web-observed-claims.mjs",
+    "knowledge:audit:web-claims:deterministic": "node scripts/knowledge/audit-web-observed-claims.mjs --deterministic",
     "knowledge:evaluate:metrics": "node scripts/knowledge/validate-evaluation-metrics.mjs",
     "knowledge:family-index": "node scripts/knowledge/validate-claim-family-index.mjs",
     "knowledge:family-collisions": "node scripts/knowledge/validate-family-collision-guard.mjs",
