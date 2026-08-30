@@ -420,6 +420,7 @@ const splitExplicitClauses = (value) => {
     .replace(/\.(?=\s+[A-ZÁÉÍÓÚÑ])/g, '. | ')
     .replace(/\n\s*[-•]\s*/g, ' | ')
     .replace(/\s*;\s*/g, ' | ')
+    .replace(/\s+por\s+(?=(?:ceuta|la\s+amnist[ií]a|los?\s+trenes|corrupci[oó]n)\b)/gi, ' | ')
     .replace(/\s*,?\s+(?:pero|aunque|sin embargo|mientras(?: que)?|por eso|por tanto|por ello|así que)\s+/gi, ' | ')
     .replace(/\s+(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\s+/gi, ' | ')
     .split('|')
