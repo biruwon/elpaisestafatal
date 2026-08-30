@@ -2232,10 +2232,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const compilerBreakdown = classified.compiler?.propositions?.length ? {
     type: 'claim_breakdown',
     propositionIds: [],
+    evidenceIds: observations.map((item) => item.id),
     items: classified.compiler.propositions.slice(0, 24).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
   } : requestedHandler === 'government_event' || vagueTaxJudgement(text) ? {
     type: 'claim_breakdown',
     propositionIds: [],
+    evidenceIds: observations.map((item) => item.id),
     items: [{ text, type: requestedHandler === 'government_event' ? 'event' : 'value', explicit: true }],
   } : null;
   // A broad topic route is useful only when no more specific claim structure
