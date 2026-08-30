@@ -194,6 +194,9 @@ export const onRequestGet = async ({ request, env }: Context): Promise<Response>
     const response = safe?.result ? checkFromPlan(claim, safe.result, id) : unavailableCheck(claim, 'La comprobación no pudo completarse.');
     return json(response);
   } catch {
-    return json(unavailableCheck('', 'El equipo local no está disponible ahora.'));
+    // A slow local resolver is still working; preserve the job state so the
+    // client can continue polling instead of converting a transient 2s edge
+    // timeout into a terminal unavailable result.
+    return json(processingCheck('', id), 202);
   }
 };
