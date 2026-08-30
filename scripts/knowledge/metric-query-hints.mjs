@@ -80,7 +80,7 @@ const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(nor
         : domain === 'pensions'
           ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'recorded_offences'])
           : new Set();
-  const conceptIds = [...new Set(concepts.map((item) => normalise(item)).filter((item) => conceptMetricFamilies[item]))];
+  const conceptIds = [...new Set([...concepts.map((item) => normalise(item)), ...(domain ? [domain] : [])].filter((item) => conceptMetricFamilies[item]))];
   // Interleave families so a multi-topic sentence keeps at least one route
   // for each concept instead of exhausting the limit on the first concept.
   const conceptLists = conceptIds.map((concept) => conceptMetricFamilies[concept] || []);
