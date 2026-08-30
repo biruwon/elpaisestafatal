@@ -1897,11 +1897,18 @@ const startResolveJob = (text, origin = 'runtime') => {
       .filter((item) => item?.explicit !== false && item.text && item.text.trim() !== text.trim())
       .slice(0, 24);
     if (propositions.length > 1 && resolved?.result) {
-      const parts = await Promise.allSettled(propositions.map(async (item, index) => {
-        const partText = String(item.text).trim();
-        const partClassified = await classify(partText);
-        return enrichResolve(partText, partClassified, undefined, `${id}-${index + 1}`);
-      }));
+      const parts = [];
+      // Ollama is local and model memory is shared; bound concurrent
+      // proposition work so a long social post does not overload the model
+      // and turn every clause into an operational failure.
+      for (let offset = 0; offset < propositions.length; offset += 3) {
+        const batch = propositions.slice(offset, offset + 3).map(async (item, batchIndex) => {
+          const partText = String(item.text).trim();
+          const partClassified = await classify(partText);
+          return enrichResolve(partText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`);
+        });
+        parts.push(...await Promise.allSettled(batch));
+      }
       const successful = parts.filter((part) => part.status === 'fulfilled').map((part) => part.value).filter((part) => part?.result);
       const breakdown = resolved.result.blocks.find((block) => block.type === 'claim_breakdown');
       if (breakdown && 'items' in breakdown && breakdown.items?.length) {
