@@ -5,31 +5,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <main class="checker-page" id="comprobar">
     <section class="checker-hero" aria-labelledby="checker-title">
       <div class="checker-intro">
-        <p class="eyebrow">El país está fatal · comprobador</p>
-        <h1 id="checker-title">Pega lo que<br /><em>te han enviado.</em></h1>
-        <p class="checker-lead">Te damos una respuesta clara para compartir, qué sabemos y de dónde sale.</p>
+        <p class="eyebrow">Comprueba antes de compartir</p>
+        <h1 id="checker-title">¿Es verdad<br /><em>lo que te llega?</em></h1>
+        <p class="checker-lead">Envíanos cualquier afirmación sobre España. La contrastamos con datos y fuentes; si no se puede demostrar, te explicamos qué sabemos y qué no.</p>
       </div>
       <div class="hero-checker">
-        <div class="checker-kicker"><span>Texto · enlace · captura · audio</span><span>Fuentes visibles</span></div>
-        <form class="conversation-form" id="conversation-form" role="search">
-          <label for="conversation-input">¿Qué quieres comprobar?</label>
+        <form class="conversation-form" id="conversation-form" role="search" data-media-dropzone>
+          <fieldset class="input-modes" aria-label="Cómo quieres enviar la afirmación">
+            <legend>Envíala como</legend>
+            <button type="button" class="is-active" data-input-mode="text" aria-pressed="true"><span aria-hidden="true">Aa</span> Texto</button>
+            <button type="button" data-input-mode="url" aria-pressed="false"><span aria-hidden="true">↗</span> Enlace</button>
+            <button type="button" data-attach="image"><span aria-hidden="true">▧</span> Imagen</button>
+            <button type="button" data-attach="audio"><span aria-hidden="true">◖</span> Audio</button>
+          </fieldset>
+          <label class="sr-only" for="conversation-input">¿Qué quieres comprobar?</label>
           <div class="conversation-input-wrap">
-            <textarea id="conversation-input" name="q" rows="3" maxlength="1200" autocomplete="off" placeholder="Pega una frase, un titular o un enlace…" aria-describedby="conversation-help"></textarea>
+            <textarea id="conversation-input" name="q" rows="4" maxlength="12000" autocomplete="off" placeholder="Escribe o pega aquí la afirmación…" aria-describedby="conversation-help"></textarea>
+            <div class="drop-hint" aria-hidden="true">Suelta aquí una imagen o un audio</div>
             <button type="submit">Comprobar <span aria-hidden="true">→</span></button>
           </div>
-          <p id="conversation-help" class="conversation-help"><span>Las capturas se leen automáticamente; el audio se transcribe si está disponible.</span><span id="conversation-counter" aria-live="polite">0/1200</span></p>
-          <div class="conversation-input-actions" data-media-dropzone role="group" aria-label="Adjuntar una captura o un audio">
-            <span>Adjuntar</span><label for="conversation-file">Captura</label><label for="conversation-file">Audio</label><input id="conversation-file" name="file" type="file" accept="image/*,audio/*" />
-          </div>
-          <p id="conversation-media-help" class="conversation-media-help" aria-live="polite"><span data-file-name>Sin archivo seleccionado.</span></p>
+          <input id="conversation-file" name="file" type="file" accept="image/*,audio/*" />
+          <p id="conversation-help" class="conversation-help"><span data-input-help>Puedes pegar una frase, un titular o el texto de un mensaje.</span><span id="conversation-counter" aria-live="polite">0/12000</span></p>
+          <p id="conversation-media-help" class="conversation-media-help" aria-live="polite"><strong data-file-name></strong><span> Las imágenes se leen automáticamente y el audio se transcribe en el equipo local.</span></p>
         </form>
         <details class="checker-suggestions" id="checker-suggestions">
-          <summary><span>Probar otra frase</span><span aria-hidden="true">+</span></summary>
+          <summary><span>¿No sabes qué probar? Mira ejemplos</span><span aria-hidden="true">+</span></summary>
           <div class="recent-checks" id="recent-checks" hidden><div><span>Recientes</span><button type="button" data-clear-recent>Limpiar</button></div><div data-recent-list></div></div>
           <div class="conversation-examples" aria-label="Ejemplos"><span>Prueba una frase</span><div class="example-prompts"><button type="button" data-example="Los inmigrantes crean inseguridad">Los inmigrantes crean inseguridad</button><button type="button" data-example="La vivienda se ha triplicado">La vivienda se ha triplicado</button><button type="button" data-example="El paro está manipulado">El paro está manipulado</button></div></div>
         </details>
         <div class="conversation-result" id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="polite" tabindex="-1"></div>
       </div>
+      <ol class="checker-how" aria-label="Cómo funciona">
+        <li><span>1</span><div><strong>Envíala</strong><p>Texto, enlace, imagen o audio.</p></div></li>
+        <li><span>2</span><div><strong>La contrastamos</strong><p>Primero con datos; después con análisis.</p></div></li>
+        <li><span>3</span><div><strong>Decide con contexto</strong><p>Respuesta, fuentes y límites claros.</p></div></li>
+      </ol>
     </section>
   </main>
 </BaseLayout>

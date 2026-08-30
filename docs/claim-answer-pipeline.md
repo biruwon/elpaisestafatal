@@ -31,6 +31,10 @@ The system has five product-level stages. Internal modules remain separate where
 
 The five stages are the public architecture. The individual modules should not be merged when doing so would remove a boundary—for example, interpretation must remain separate from evidence selection, and evidence selection must remain separate from synthesis.
 
+The model-selection and fine-tuning decision is documented in
+[`model-strategy.md`](./model-strategy.md). In short: models interpret and
+synthesize supplied evidence; reviewed sources remain the factual authority.
+
 ## Core vocabulary
 
 - A **metric** is a reusable measurement definition, such as unemployment rate or recorded offences.

@@ -11,7 +11,13 @@ const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   // “insufficient”.
   return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
 };
-const replyFromPlan = (plan?: AnswerPlan): string => plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text || plan?.summary || '';
+const replyFromPlan = (plan?: AnswerPlan): string => {
+  const composed = plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text;
+  if (composed) return composed;
+  const finding = plan?.blocks?.find((block) => block.type === 'confirmed' || block.type === 'data_finding');
+  const firstPoint = finding && 'points' in finding ? finding.points?.[0] : undefined;
+  return [firstPoint, plan?.summary].filter(Boolean).join(' ');
+};
 const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
   const points = 'points' in block ? block.points || [] : [];
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
