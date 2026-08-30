@@ -61,21 +61,25 @@ const conceptMetricFamilies = {
   public_debt_stock: ['government_debt_current_prices', 'government_debt_ratio'],
   public_debt_ratio: ['government_debt_ratio', 'government_debt_ratio_europe'],
   demography: ['resident_population', 'foreign_born_population', 'foreign_citizenship_population', 'population_change_rate', 'older_population_share', 'young_population_share'],
+  pensions: ['old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe', 'old_age_dependency_ratio', 'older_population_share', 'government_deficit_ratio', 'government_debt_ratio'],
   environment: ['net_greenhouse_gas_emissions', 'renewable_energy_share', 'water_body_quality', 'water_resources', 'wildfire_incidents', 'wildfire_surface_affected'],
 };
 
 export const metricCandidatesForQuery = (query, concepts = [], limit = 8) => {
   const normalized = normalise(query);
-  const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(normalized) ? 'benefits'
+const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(normalized) ? 'benefits'
     : /(?:delincu|delito|conden|criminal|insegur|seguridad)/.test(normalized) ? 'crime'
-      : /(?:viviend|alquiler|piso|adjudic|casa)/.test(normalized) ? 'housing' : null;
+      : /(?:viviend|alquiler|piso|adjudic|casa)/.test(normalized) ? 'housing'
+        : /(?:pension|jubilacion|jubilado|vejez|cotizacion|retiro|dependencia demografica|envejec)/.test(normalized) ? 'pensions' : null;
   const excluded = domain === 'benefits'
     ? new Set(['crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_minor_by_nationality', 'crime_rate_by_group', 'recorded_offences', 'standardised_homicide_rate', 'public_housing_actions', 'public_housing_allocations_by_group'])
     : domain === 'crime'
       ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality', 'unemployment_benefit_share_by_nationality', 'public_housing_actions', 'public_housing_allocations_by_group'])
       : domain === 'housing'
         ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_minor_by_nationality', 'crime_rate_by_group', 'recorded_offences'])
-        : new Set();
+        : domain === 'pensions'
+          ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'recorded_offences'])
+          : new Set();
   const conceptIds = [...new Set(concepts.map((item) => normalise(item)).filter((item) => conceptMetricFamilies[item]))];
   // Interleave families so a multi-topic sentence keeps at least one route
   // for each concept instead of exhausting the limit on the first concept.
