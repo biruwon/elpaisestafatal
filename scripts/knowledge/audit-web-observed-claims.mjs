@@ -1,7 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
+import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 
 const resolveMode = process.argv.includes('--resolve');
+const deterministicMode = process.argv.includes('--deterministic');
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
 const timeoutArg = process.argv.find((arg) => arg.startsWith('--timeout='));
 const resolveTimeoutMs = timeoutArg ? Math.max(1000, Number.parseInt(timeoutArg.slice(10), 10) || 1000) : 30000;
@@ -41,6 +43,13 @@ for (const candidate of candidates || []) {
   else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
 const report = { inputPath, claims: candidates?.length || 0, requiredFields: required, fieldUsage, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+if (deterministicMode) {
+  const outcomes = candidates.map((candidate) => {
+    const result = deterministicApiFallback({ text: candidate.claim, inputType: 'text' });
+    return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0 };
+  });
+  report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+}
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
   const outcomes = [];
@@ -63,4 +72,4 @@ if (resolveMode) {
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
-console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}` : ''}; all remain explicitly unverified discovery inputs.`);
+console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered` : ''}; all remain explicitly unverified discovery inputs.`);
