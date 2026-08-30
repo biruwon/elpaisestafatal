@@ -4,7 +4,7 @@ export const researchPlanSchema = {
   type: 'object', additionalProperties: false,
   required: ['propositions', 'metricCandidates', 'neutralQueries', 'requiredDimensions'],
   properties: {
-    propositions: { type: 'array', maxItems: 6, items: { type: 'object', additionalProperties: false, required: ['id', 'evidenceNeeds'], properties: { id: { type: 'string', maxLength: 120 }, evidenceNeeds: stringArray(8, 80) } } },
+    propositions: { type: 'array', maxItems: 24, items: { type: 'object', additionalProperties: false, required: ['id', 'evidenceNeeds'], properties: { id: { type: 'string', maxLength: 120 }, evidenceNeeds: stringArray(8, 80) } } },
     metricCandidates: stringArray(8, 120),
     neutralQueries: stringArray(3, 240),
     requiredDimensions: stringArray(8, 80),

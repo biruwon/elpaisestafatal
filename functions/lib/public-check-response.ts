@@ -1,7 +1,7 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
-import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion } from '../../src/lib/knowledge/public-check';
+import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment } from '../../src/lib/knowledge/public-check';
 
 const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   // Relevance is established by criterion-to-source attribution in the
@@ -23,6 +23,20 @@ const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.fil
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
   return points.slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
 });
+const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
+  const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
+  if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
+  return breakdown.items.map((item, index) => ({
+    id: breakdown.propositionIds[index] || `argument-${index + 1}`,
+    claim: item.text,
+    kind: item.type as ArgumentAssessment['kind'],
+    verdict: plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient',
+    evidenceLevel: plan.evidenceLevel === 'supported' ? 'strong' : plan.evidenceLevel === 'limited' ? 'limited' : 'none',
+    finding: plan.summary || plan.headline,
+    sourceIds: plan.sourceIds || [],
+    limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
+  }));
+};
 const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
   const visual = 'visual' in entry ? entry.visual : undefined;
   if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length || visual.labels.length !== visual.values.length) return undefined;
@@ -80,7 +94,9 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = plan.interpretation ? plan.interpretation as ClaimInterpretation : undefined;
-  const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
+  const argumentsList = argumentsFromPlan(plan);
+  const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
+  const result: CheckResult = { claim, interpretation, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary };
   const state = (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : (plan.evidenceLevel || (supported ? 'supported' : 'limited')); return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });

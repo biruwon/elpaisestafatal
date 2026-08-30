@@ -73,7 +73,7 @@ assert(bounded.propositions.length <= compilerContractFacts.maxPropositions, 'Co
 assert(bounded.retrievalHints.length <= compilerContractFacts.maxRetrievalHints, 'Compiler accepted too many retrieval hints');
 
 assert(compilerSchema.additionalProperties === false, 'Compiler schema allows undeclared top-level model fields');
-assert(compilerSchema.properties.propositions.maxItems === 6, 'Compiler schema does not bound proposition output');
+assert(compilerSchema.properties.propositions.maxItems === 24, 'Compiler schema does not bound proposition output');
 assert(compilerSchema.properties.retrievalHints.maxItems === 8, 'Compiler schema does not bound retrieval hints');
 assert(compilerSchema.properties.evidenceNeeds.maxItems === 8, 'Compiler schema does not bound evidence needs');
 assert(compilerContractFacts.deterministicOnly.includes('numbers') && compilerContractFacts.deterministicOnly.includes('semanticSignature'), 'Deterministic-only compiler fields are not documented');

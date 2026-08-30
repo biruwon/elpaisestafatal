@@ -34,7 +34,7 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
     input: boundedString(text, 1200),
     claimType: boundedString(compiler?.claimType || 'mixed', 40),
     handlerId: boundedString(handlerId, 40),
-    propositions: Array.isArray(compiler?.propositions) ? compiler.propositions.slice(0, 6).map((item) => ({
+    propositions: Array.isArray(compiler?.propositions) ? compiler.propositions.slice(0, 24).map((item) => ({
       text: boundedString(item.text, 300),
       type: boundedString(item.type, 40),
       explicit: item.explicit !== false,

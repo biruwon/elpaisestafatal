@@ -19,7 +19,7 @@ export const compilerSchema = {
     interpretationConfidence: { type: 'number', minimum: 0, maximum: 1 },
     propositions: {
       type: 'array',
-      maxItems: 6,
+      maxItems: 24,
       items: {
         type: 'object',
         additionalProperties: false,
@@ -149,7 +149,7 @@ export const normalizeCompilerOutput = (value, text) => {
   });
   if (!value || typeof value !== 'object') return withRegistryMetrics(deterministic);
   const propositions = Array.isArray(value.propositions)
-    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 6).map((item) => {
+    ? value.propositions.filter((item) => item && typeof item.text === 'string' && item.text.trim()).slice(0, 24).map((item) => {
       const shape = propositionShapeFor(item.text);
       return {
         text: bounded(item.text, 300),
@@ -188,7 +188,7 @@ export const normalizeCompilerOutput = (value, text) => {
     || modelConflictsWithDeterministicStructure
     ? deterministic.explicitPropositions
     : modelExplicitPropositions;
-  const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 6).map((item) => ({
+  const normalizedPropositions = [...explicitPropositions, ...impliedPropositions].slice(0, 24).map((item) => ({
     ...item,
     subjectType: ['person', 'group', 'institution', 'country', 'unknown'].includes(item.subjectType) ? item.subjectType : 'unknown',
     action: typeof item.action === 'string' ? item.action : '',
@@ -272,7 +272,7 @@ export const normalizeCompilerOutput = (value, text) => {
 export const compilerContractFacts = {
   modelMayProvide: ['normalized', 'claimType', 'propositions', 'proposition concepts', 'entities', 'geography', 'period', 'population', 'metricIds', 'concepts', 'retrievalHints', 'evidenceNeeds', 'clarificationRequired', 'routing'],
   deterministicOnly: ['numbers', 'semanticSignature'],
-  maxPropositions: 6,
+  maxPropositions: 24,
   maxRetrievalHints: 8,
 };
 

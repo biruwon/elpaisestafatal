@@ -12,7 +12,6 @@ import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } 
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
-const pending = new Map<string, { claim: string; endpoint: string; token: string; expiresAt: number }>();
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -164,7 +163,6 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
     const safe = publicResolveResponse(upstreamPayload) as ResolveResult | undefined;
     if (safe?.status === 'processing' && safe.requestId) {
-      pending.set(safe.requestId, { claim: body.text, endpoint: env.LOCAL_CLASSIFIER_ENDPOINT, token: env.LOCAL_CLASSIFIER_TOKEN, expiresAt: Date.now() + 2 * 60_000 });
       return json(processingCheck(body.text, safe.requestId), 202);
     }
     const plan = safe?.result;
@@ -184,22 +182,18 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   }
 };
 
-export const onRequestGet = async ({ request }: Context): Promise<Response> => {
+export const onRequestGet = async ({ request, env }: Context): Promise<Response> => {
   const id = new URL(request.url).pathname.split('/').filter(Boolean).pop() || '';
-  const job = pending.get(id);
-  if (!job || job.expiresAt <= Date.now()) {
-    pending.delete(id);
-    return json(unavailableCheck('', 'Esta comprobación ya no está disponible.'));
-  }
+  if (!id || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return json(unavailableCheck('', 'El análisis local no está disponible ahora.'));
   try {
-    const upstream = await fetch(`${job.endpoint}/v1/classify/${encodeURIComponent(id)}`, { headers: { authorization: `Bearer ${job.token}` }, signal: AbortSignal.timeout(1500) });
+    const upstream = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/classify/${encodeURIComponent(id)}`, { headers: { authorization: `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}` }, signal: AbortSignal.timeout(2000) });
     const payload = await upstream.json().catch(() => undefined);
     const safe = publicResolveResponse(payload) as ResolveResult | undefined;
-    if (safe?.status === 'processing') return json(processingCheck(job.claim, id), 202);
-    pending.delete(id);
-    const response = safe?.result ? checkFromPlan(job.claim, safe.result, id) : unavailableCheck(job.claim, 'La comprobación no pudo completarse.');
+    const claim = typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim : '';
+    if (safe?.status === 'processing') return json(processingCheck(claim, id), 202);
+    const response = safe?.result ? checkFromPlan(claim, safe.result, id) : unavailableCheck(claim, 'La comprobación no pudo completarse.');
     return json(response);
   } catch {
-    return json(unavailableCheck(job.claim, 'El equipo local no está disponible ahora.'));
+    return json(unavailableCheck('', 'El equipo local no está disponible ahora.'));
   }
 };

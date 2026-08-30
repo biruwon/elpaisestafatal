@@ -401,7 +401,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
 
 const planResearchWithModel = async (text, classified) => {
   if (!answerPlannerEnabled || !classified?.compiler || classified.primary) return null;
-  const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most three neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 1200), propositions: classified.compiler.propositions?.slice(0, 6), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 8) })}`;
+const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most six neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 2400), propositions: classified.compiler.propositions?.slice(0, 24), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 24) })}`;
   try {
     const plan = await modelTasks.planResearch({ schema: undefined, options: { temperature: 0, num_predict: 280, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 12000 });
     if (!plan || !Array.isArray(plan.propositions) || !Array.isArray(plan.neutralQueries) || !Array.isArray(plan.requiredDimensions)) return null;
@@ -413,13 +413,13 @@ const planResearchWithModel = async (text, classified) => {
       const clarification = await modelTasks.chooseClarification({ options: { temperature: 0, num_predict: 120, num_ctx: 4096 }, messages: [{ role: 'user', content: `Elige una sola pregunta de aclaración de alto valor para esta afirmación. Solo pregunta por una dimensión necesaria: ${requiredDimensions.join(', ')}. No respondas la afirmación ni inventes datos.\n${text.slice(0, 800)}` }], timeoutMs: 8000 });
       clarificationQuestion = typeof clarification?.question === 'string' ? clarification.question.trim().slice(0, 300) : '';
     } catch { /* Clarification is optional; deterministic guidance remains available. */ }
-    return { propositions: plan.propositions.slice(0, 6), metricCandidates: plan.metricCandidates?.slice(0, 8) || [], neutralQueries, requiredDimensions, clarificationQuestion };
+    return { propositions: plan.propositions.slice(0, 24), metricCandidates: plan.metricCandidates?.slice(0, 24) || [], neutralQueries, requiredDimensions, clarificationQuestion };
   } catch {
     // Research planning must remain useful when Ollama is cold, unavailable,
     // or times out. Keep this deterministic fallback deliberately modest: it
     // describes the missing dimensions and a neutral query, but never adds a
     // fact, source, number, or verdict.
-    const propositions = (classified.compiler.propositions || classified.compiler.explicitPropositions || []).slice(0, 6).map((item, index) => ({
+    const propositions = (classified.compiler.propositions || classified.compiler.explicitPropositions || []).slice(0, 24).map((item, index) => ({
       id: String(item.id || `prop-${index + 1}`),
       text: String(item.text || text).slice(0, 500),
       evidenceNeeded: ['fuente primaria atribuible', 'periodo', 'geografía', 'población y denominador'],
@@ -1880,7 +1880,7 @@ const startResolveJob = (text, origin = 'runtime') => {
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
-  const job = { status: 'processing', requestId: id, canonicalSignature: signature, createdAt: Date.now() };
+  const job = { status: 'processing', requestId: id, claim: text, canonicalSignature: signature, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void classify(text).then(async (classified) => {
     // A broad tax judgement must never inherit a precise published tax
@@ -1909,7 +1909,7 @@ const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
-  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  const job = { status: 'processing', requestId: id, claim: text, inputType, createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
     if (inputType !== 'image' && inputType !== 'audio') throw new Error('Unsupported media input');
@@ -1952,7 +1952,7 @@ const startUrlResolveJob = (url) => {
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
-  const job = { status: 'processing', requestId: id, createdAt: Date.now() };
+  const job = { status: 'processing', requestId: id, claim: url, inputType: 'url', createdAt: Date.now() };
   resolveJobs.set(id, job);
   void (async () => {
     const extracted = await extractPageText(url);
@@ -2232,7 +2232,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const compilerBreakdown = classified.compiler?.propositions?.length ? {
     type: 'claim_breakdown',
     propositionIds: [],
-    items: classified.compiler.propositions.slice(0, 6).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
+    items: classified.compiler.propositions.slice(0, 24).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
   } : requestedHandler === 'government_event' || vagueTaxJudgement(text) ? {
     type: 'claim_breakdown',
     propositionIds: [],
