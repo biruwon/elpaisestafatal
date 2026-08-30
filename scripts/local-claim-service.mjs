@@ -1764,7 +1764,7 @@ const classify = async (text) => {
     const popularBroadClaims = index.entries
       .filter((entry) => entry.kind === 'claim' && entry.published && (entry.topic === 'Política' || (entry.keywords || []).some((keyword) => broadEntryKeywords.has(normalise(keyword)))))
       .filter((entry) => entry.evidenceStrength !== 'insufficient' && (entry.evidenceIds?.length || entry.sourceRefs?.length))
-      .slice(0, 4)
+      .slice(0, 24)
       .map((entry) => ({ kind: 'claim', slug: entry.slug, title: entry.title, href: entry.href, confidence: 0.2, handlerId: handlerForEntry(entry), validated: false }));
     return {
       status: 'related',
@@ -2475,7 +2475,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         return families;
       }, new Map())]
       .filter(([, items]) => items.length > 0)
-      .slice(0, 4)
+      .slice(0, 24)
       .map(([metricId, items]) => {
         const latest = items.at(-1);
         const first = items[0];
@@ -2522,7 +2522,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   for (const item of [usableSource, ...evidenceObservations.map((observation) => observation.source)].filter((candidate) => candidate?.url)) {
     if (!sourceLinkMap.has(item.url)) sourceLinkMap.set(item.url, { id: item.id || item.url, title: item.title || item.url, url: item.url, publisher: item.publisher, publishedAt: item.publishedAt, retrievedAt: item.retrievedAt || new Date().toISOString(), role: item.role || (item.sourceType === 'official' ? 'primary' : item.sourceType === 'media' ? 'corroboration' : undefined), originPublisher: item.originPublisher });
   }
-  const sourceLinks = [...sourceLinkMap.values()].slice(0, 5);
+  const sourceLinks = [...sourceLinkMap.values()].slice(0, 24);
   const relatedTopic = !primary ? classified.alternatives?.find((item) => item.kind === 'topic') : undefined;
   const primaryAssessmentHeadline = {
     false: 'La afirmación no coincide con los datos disponibles',

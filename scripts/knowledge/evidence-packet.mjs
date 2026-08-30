@@ -49,7 +49,7 @@ export const buildEvidencePacket = ({ text, compiler, handlerId, plan, observati
       blocks: Array.isArray(plan?.blocks) ? plan.blocks.map((block) => ({ type: block.type, evidenceIds: block.evidenceIds || (block.evidenceId ? [block.evidenceId] : []) })) : [],
     },
     evidence,
-    sourceLinks: Array.isArray(plan?.sourceLinks) ? plan.sourceLinks.slice(0, 5).map((source) => ({ title: boundedString(source.title, 180), url: source.url })) : [],
+    sourceLinks: Array.isArray(plan?.sourceLinks) ? plan.sourceLinks.slice(0, 24).map((source) => ({ title: boundedString(source.title, 180), url: source.url })) : [],
   };
 };
 
