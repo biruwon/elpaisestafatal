@@ -111,7 +111,7 @@ export type StaticClaimReference = {
 };
 
 export type AnswerBlock =
-  | { type: 'claim_breakdown'; propositionIds: string[]; evidenceIds?: string[]; items?: Array<{ text: string; type: ClaimType; explicit: boolean; evidenceIds?: string[] }> }
+  | { type: 'claim_breakdown'; propositionIds: string[]; evidenceIds?: string[]; items?: Array<{ text: string; type: ClaimType; explicit: boolean; evidenceIds?: string[]; verdict?: 'supported' | 'contradicted' | 'mixed' | 'insufficient' | 'not_verifiable'; evidenceLevel?: 'strong' | 'moderate' | 'limited' | 'none'; finding?: string }> }
   | { type: 'key_number'; evidenceId: string; label: string; value: string; caveat?: string }
   | { type: 'line_chart' | 'bar_chart' | 'comparison_chart'; visualId: string; evidenceIds: string[] }
   | { type: 'money_flow'; evidenceIds: string[]; amount?: string; origin?: string; destination?: string; purpose?: string }

@@ -1914,7 +1914,7 @@ const startResolveJob = (text, origin = 'runtime') => {
       if (breakdown && 'items' in breakdown && breakdown.items?.length) {
         breakdown.items = breakdown.items.map((item, index) => {
           const part = successful[index];
-          return part?.result ? { ...item, evidenceIds: part.result.evidenceIds || [], sourceIds: part.result.sourceIds || [], finding: part.result.summary || part.result.headline } : item;
+          return part?.result ? { ...item, evidenceIds: part.result.evidenceIds || [], sourceIds: part.result.sourceIds || [], verdict: part.result.evidenceLevel === 'supported' ? 'supported' : part.result.evidenceLevel === 'limited' ? 'mixed' : 'insufficient', evidenceLevel: part.result.evidenceLevel === 'supported' ? 'strong' : part.result.evidenceLevel === 'limited' ? 'limited' : 'none', finding: part.result.summary || part.result.headline } : item;
         });
       }
       const mergedBlocks = successful.flatMap((part) => part.result.blocks.filter((block) => block.type === 'data_finding' || block.type === 'confirmed' || block.type === 'cannot_conclude'));

@@ -32,7 +32,7 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
     const evidenceIds = item.evidenceIds?.length
       ? item.evidenceIds
       : (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index);
-    const verdict = evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient';
+    const verdict = item.verdict || (evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient');
     const matchingBlock = evidenceBlocks.find((block) => 'evidenceIds' in block && evidenceIds.some((id) => block.evidenceIds?.includes(id)));
     const finding = matchingBlock && 'points' in matchingBlock && matchingBlock.points?.length
       ? matchingBlock.points.join(' ')
@@ -42,8 +42,8 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
     claim: item.text,
     kind: item.type as ArgumentAssessment['kind'],
     verdict,
-    evidenceLevel: verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none',
-    finding,
+    evidenceLevel: item.evidenceLevel || (verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none'),
+    finding: item.finding || finding,
     evidenceIds,
     sourceIds: plan.sourceIds || [],
     limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
