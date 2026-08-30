@@ -131,6 +131,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
   const evidenceIds = packet.criteria.flatMap((item) => item.sourceIds);
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   return {
+    id: packet.id,
     schemaVersion: '1',
     evidenceLevel: 'limited',
     headline: packet.headline,

@@ -109,7 +109,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       status: 'complete',
       evidenceLevel: broadDomainPlan.evidenceLevel,
       relatedClaims: related ? [related] : [],
-      guidance: { limitation: broadDomainPlan.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] },
+      guidance: { limitation: broadDomainPlan.limitation, questions: [broadDomainPlan.id === 'broad-housing' ? '¿Hablas de precios, alquileres, vivienda pública o disponibilidad?' : '¿Quieres concretar el periodo, territorio o indicador?'] },
       result: broadDomainPlan,
     };
   }
