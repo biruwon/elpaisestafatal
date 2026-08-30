@@ -9,6 +9,11 @@ const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'u
 const normalizeText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const publicPhrases = new Set(runtimeCatalogue.filter((entry) => entry.status === 'published' && entry.basis !== 'model').flatMap((entry) => [entry.claim, ...(entry.aliases || [])]).map(normalizeText));
 const required = ['id', 'claim', 'aliases', 'topicKey', 'claimType', 'geography', 'period', 'basis', 'visibility', 'researchStatus', 'status', 'evidenceStrength', 'sourceRefs', 'evidenceIds', 'provenanceNote'];
+const fieldUsage = {
+  runtime: ['claim', 'aliases', 'claimType', 'geography', 'period', 'basis', 'visibility', 'status', 'sourceRefs', 'evidenceIds'],
+  routingOrReview: ['id', 'topicKey', 'polarity', 'fingerprint', 'evidenceStrength', 'researchStatus'],
+  discoveryOnly: ['discoverySourceIds', 'observedPlatforms', 'recurrenceSignal', 'provenanceNote'],
+};
 const errors = [];
 if (data.schemaVersion !== 'web-observed-catalogue-v1') errors.push(`unexpected schemaVersion: ${data.schemaVersion}`);
 if (!Array.isArray(candidates) || candidates.length !== data.candidateCount) errors.push('candidateCount does not match candidates array');
@@ -31,7 +36,7 @@ for (const candidate of candidates || []) {
   if (publicPhrases.has(normalizeText(candidate.claim))) exactCatalogue += 1;
   else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
-const report = { inputPath, claims: candidates?.length || 0, requiredFields: required, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+const report = { inputPath, claims: candidates?.length || 0, requiredFields: required, fieldUsage, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
   const outcomes = [];
