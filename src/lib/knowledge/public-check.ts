@@ -25,7 +25,7 @@ export type ClaimInterpretation = {
 };
 export type CheckCriterion = { id: string; label: string; finding: string; sourceIds?: string[] };
 export type ArgumentVerdict = 'supported' | 'contradicted' | 'mixed' | 'insufficient' | 'not_verifiable';
-export type ArgumentAssessment = { id: string; claim: string; kind: ClaimKind; verdict: ArgumentVerdict; evidenceLevel: 'strong' | 'moderate' | 'limited' | 'none'; finding: string; sourceIds: string[]; limitations: string[] };
+export type ArgumentAssessment = { id: string; claim: string; kind: ClaimKind; verdict: ArgumentVerdict; evidenceLevel: 'strong' | 'moderate' | 'limited' | 'none'; finding: string; evidenceIds: string[]; sourceIds: string[]; limitations: string[] };
 export type CheckResult = { claim: string; interpretation?: ClaimInterpretation; reply: string; answer: string; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; arguments?: ArgumentAssessment[]; coverageSummary?: { total: number; supported: number; contradicted: number; mixed: number; insufficient: number; notVerifiable: number }; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; canonicalHref?: string; canonicalSlug?: string; evidenceSummary?: PublicEvidenceSummary };
 export type PublicCheckResponse =
   | { state: 'clarification'; id: string; claim: string; question: string; interpretation?: ClaimInterpretation; options: Array<{ id: string; label: string; interpretation: ClaimInterpretation }> }

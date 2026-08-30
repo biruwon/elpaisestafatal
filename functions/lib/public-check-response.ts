@@ -26,13 +26,15 @@ const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.fil
 const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
   if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
-  return breakdown.items.map((item, index) => ({
+  const items = breakdown.items;
+  return items.map((item, index) => ({
     id: breakdown.propositionIds[index] || `argument-${index + 1}`,
     claim: item.text,
     kind: item.type as ArgumentAssessment['kind'],
     verdict: plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient',
     evidenceLevel: plan.evidenceLevel === 'supported' ? 'strong' : plan.evidenceLevel === 'limited' ? 'limited' : 'none',
     finding: plan.summary || plan.headline,
+    evidenceIds: (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index),
     sourceIds: plan.sourceIds || [],
     limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
   }));
