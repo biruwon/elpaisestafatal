@@ -30,7 +30,7 @@ export type CheckResult = { claim: string; interpretation?: ClaimInterpretation;
 export type PublicCheckResponse =
   | { state: 'clarification'; id: string; claim: string; question: string; interpretation?: ClaimInterpretation; options: Array<{ id: string; label: string; interpretation: ClaimInterpretation }> }
   | { state: 'supported' | 'limited' | 'insufficient'; id: string; result: CheckResult }
-  | { state: 'processing'; id: string; claim: string }
+  | { state: 'processing'; id: string; claim: string; preview?: Extract<PublicCheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> }
   | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
 export const checkResponse = (value: unknown): value is PublicCheckResponse => {
   if (!value || typeof value !== 'object' || typeof (value as { state?: unknown }).state !== 'string') return false;

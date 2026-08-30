@@ -144,4 +144,4 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   return { state, id: requestId || `check-${Date.now().toString(36)}`, result: { ...result, evidenceLevel: state } };
 };
 export const unavailableCheck = (claim: string, message: string): PublicCheckResponse => ({ state: 'unavailable', id: `unavailable-${Date.now().toString(36)}`, claim, message, retryable: true });
-export const processingCheck = (claim: string, requestId: string): PublicCheckResponse => ({ state: 'processing', id: requestId, claim });
+export const processingCheck = (claim: string, requestId: string, preview?: Extract<PublicCheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>): PublicCheckResponse => ({ state: 'processing', id: requestId, claim, ...(preview ? { preview } : {}) });

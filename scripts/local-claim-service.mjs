@@ -95,7 +95,7 @@ const compilerInflight = new Map();
 const plannerCache = new Map();
 const plannerInflight = new Map();
 const resolveJobs = new Map();
-const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], statusCounts: {}, evidenceModes: {}, staleEvidence: 0, unresolvedCandidates: 0 };
+const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], stageLatencies: {}, statusCounts: {}, evidenceModes: {}, staleEvidence: 0, unresolvedCandidates: 0 };
 const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
@@ -310,6 +310,17 @@ const recordCompletion = (startedAt, status) => {
   telemetry.latencies.push(latency);
   if (telemetry.latencies.length > 200) telemetry.latencies.shift();
 };
+const recordStage = (stage, startedAt) => {
+  const values = telemetry.stageLatencies[stage] || [];
+  values.push(Math.max(0, Date.now() - startedAt));
+  if (values.length > 200) values.shift();
+  telemetry.stageLatencies[stage] = values;
+};
+const stagePercentile = (values, fraction) => {
+  if (!values?.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
+};
 
 const percentile = (values, fraction) => {
   if (!values.length) return 0;
@@ -361,6 +372,12 @@ const modelTasks = createModelTasks({
 
 const planAnswerWithLocalModel = async (text, classified, result, observations) => {
   if (!answerPlannerEnabled || !result?.result) return result?.result;
+  // A deterministic supported plan already has the required evidence,
+  // sources, and public reply. Avoid spending another model turn rewriting a
+  // result that is safe to show as-is.
+  if (result.result.evidenceLevel === 'supported'
+    && result.result.blocks?.some((block) => block.type === 'conversation_reply')
+    && result.result.sourceLinks?.length) return result.result;
   const fallbackHandler = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
   const handlerId = handlerForSemanticProfile(classified.compiler?.criteriaProfile, fallbackHandler);
   const packet = buildEvidencePacket({ text, compiler: classified.compiler, handlerId, plan: result.result, observations });
@@ -1882,14 +1899,18 @@ const startResolveJob = (text, origin = 'runtime') => {
   telemetry.received += 1;
   const job = { status: 'processing', requestId: id, claim: text, canonicalSignature: signature, createdAt: Date.now() };
   resolveJobs.set(id, job);
+  const classifyStartedAt = Date.now();
   void classify(text).then(async (classified) => {
+    recordStage('classification', classifyStartedAt);
     // A broad tax judgement must never inherit a precise published tax
     // verdict from an approximate alias match. It needs a definition or
     // comparison before any tax metric can be presented as the answer.
     const safeClassified = vagueTaxJudgement(text)
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
+    const enrichmentStartedAt = Date.now();
     const resolved = await enrichResolve(text, safeClassified, undefined, id);
+    recordStage('retrieval_and_answer', enrichmentStartedAt);
     // Compound posts need proposition-level retrieval. Resolve each explicit
     // clause independently so one successful metric family cannot masquerade
     // as evidence for every argument in the bundle.
@@ -3023,7 +3044,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }
-  if (deterministic.result && !retrievalClassified.primary) {
+  if (deterministic.result && !retrievalClassified.primary
+    && (!deterministic.result.evidenceIds?.length || deterministic.result.evidenceLevel !== 'supported')) {
     const researchPlan = await planResearchWithModel(text, classified);
     if (researchPlan) {
       deterministic.result.researchPlan = researchPlan;
@@ -3079,7 +3101,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), statusCounts: telemetry.statusCounts, evidenceModes: telemetry.evidenceModes, staleEvidence: telemetry.staleEvidence, unresolvedCandidates: telemetry.unresolvedCandidates } }));
+    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), stageP95LatencyMs: Object.fromEntries(Object.entries(telemetry.stageLatencies).map(([stage, values]) => [stage, stagePercentile(values, 0.95)])), statusCounts: telemetry.statusCounts, evidenceModes: telemetry.evidenceModes, staleEvidence: telemetry.staleEvidence, unresolvedCandidates: telemetry.unresolvedCandidates } }));
     return;
   }
   if (!request.url?.startsWith('/api/check') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }

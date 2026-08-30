@@ -13,7 +13,7 @@ type CheckResult = {
 type CheckResponse =
   | { state: 'clarification'; id: string; claim: string; question: string; options: Array<{ id: string; label: string; interpretation: { kind?: string; normalizedClaim: string } }> }
   | { state: 'supported' | 'limited' | 'insufficient'; id: string; result: CheckResult & { evidenceLevel?: string; interpretation?: { kind: string; normalizedClaim: string } } }
-  | { state: 'processing'; id: string; claim: string }
+  | { state: 'processing'; id: string; claim: string; preview?: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> }
   | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
 
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
@@ -34,6 +34,8 @@ const modeButtons = document.querySelectorAll<HTMLButtonElement>('[data-input-mo
 const attachButtons = document.querySelectorAll<HTMLButtonElement>('[data-attach]');
 const inputHelp = document.querySelector<HTMLElement>('[data-input-help]');
 const recentChecksStorageKey = 'elpaisestafatal:recent-checks:v2';
+let loadingTicker: number | undefined;
+let loadingStartedAt = 0;
 let request: AbortController | undefined;
 let clarificationContext: { id: string; prompt: string; interpretation?: { kind: string; normalizedClaim: string } } | undefined;
 let selectedInputMode: 'text' | 'url' = 'text';
@@ -63,6 +65,14 @@ const selectInputMode = (mode: 'text' | 'url'): void => {
   if (inputHelp) inputHelp.textContent = mode === 'url' ? 'Leeremos el contenido del enlace para identificar la afirmación.' : 'Puedes pegar una frase, un titular o el texto de un mensaje.';
 };
 const focusResult = (): void => { if (!result) return; window.setTimeout(() => { result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); result.focus({ preventScroll: true }); }, 0); };
+const submitButton = (): HTMLButtonElement | null => form?.querySelector<HTMLButtonElement>('button[type="submit"]') || null;
+const finishLoading = (): void => {
+  if (loadingTicker) window.clearInterval(loadingTicker);
+  loadingTicker = undefined;
+  if (form) form.removeAttribute('aria-busy');
+  const button = submitButton();
+  if (button) { button.disabled = false; button.removeAttribute('aria-label'); }
+};
 const renderClarification = (response: Extract<CheckResponse, { state: 'clarification' }>): void => {
   if (!result) return; setMode(true);
   result.innerHTML = `<article class="claim-result claim-clarification"><span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">Otra precisión<textarea rows="2" data-clarification-custom placeholder="Añade una precisión"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>Continuar</button></article>`;
@@ -113,10 +123,40 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   const sources = item.sources.length ? `<section class="claim-sources result-sources"><div class="result-section-heading"><span class="eyebrow">Trazabilidad</span><h3>Fuentes y fecha</h3></div>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${escapeHtml(source.publishedAt)}` : ''} ↗</span></a>`).join('')}</section>` : '';
   result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><span class="eyebrow">${stateLabel}</span><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(stateConclusion(response.state, item.answer))}</h2></div>${assessment}</header>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}<section class="claim-reply result-share"><div><p class="eyebrow">Respuesta para enviar</p><p class="claim-reply-text">${escapeHtml(item.reply)}</p></div><button type="button" class="claim-copy" data-copy-answer>Copiar respuesta</button><span class="claim-live" aria-live="polite"></span></section>${item.keyFact ? `<section class="claim-key-fact result-key-fact"><span class="eyebrow">Dato clave</span><p>${escapeHtml(item.keyFact)}</p></section>` : ''}${visual}${families}${known}${argumentsView}${criteria}${sources}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(item.reply); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
-  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();
 };
-const setLoading = (text: string): void => { if (result) { setMode(true); result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow">Comprobando</span><h2>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note">Separamos lo que afirma, buscamos el contexto necesario y comprobamos si hay fuentes que respondan exactamente.</p></article>`; } };
+const setLoading = (text: string): void => {
+  finishLoading();
+  loadingStartedAt = Date.now();
+  if (form) form.setAttribute('aria-busy', 'true');
+  const button = submitButton();
+  if (button) { button.disabled = true; button.setAttribute('aria-label', 'Comprobación en curso'); }
+  if (result) {
+    setMode(true);
+    result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobando</span><h2 data-loading-title>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>Separamos lo que afirma, buscamos el contexto necesario y comprobamos si hay fuentes que respondan exactamente.</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
+    result.querySelector<HTMLButtonElement>('[data-cancel-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; input?.focus(); });
+  }
+  const update = (): void => {
+    const elapsed = Math.round((Date.now() - loadingStartedAt) / 1000);
+    const stage = result?.querySelector<HTMLElement>('[data-loading-stage]');
+    const title = result?.querySelector<HTMLElement>('[data-loading-title]');
+    const note = result?.querySelector<HTMLElement>('[data-loading-note]');
+    const elapsedNode = result?.querySelector<HTMLElement>('[data-loading-elapsed]');
+    if (elapsed < 3) return;
+    if (elapsed < 8) { if (stage) stage.textContent = 'Analizando'; if (title) title.textContent = 'Estamos identificando qué afirma'; if (note) note.textContent = 'Buscamos una comprobación compatible con la frase y su periodo, lugar y medida.'; }
+    else if (elapsed < 15) { if (stage) stage.textContent = 'Contrastando'; if (title) title.textContent = 'Estamos buscando datos y fuentes'; if (note) note.textContent = 'La respuesta sigue en curso. El modelo solo ayuda a interpretar y ordenar evidencia comprobable.'; }
+    else { if (stage) stage.textContent = 'Preparando fuentes'; if (title) title.textContent = 'Estamos terminando la comprobación'; if (note) note.textContent = 'Está tardando un poco más de lo habitual; puedes esperar o cancelar y volver a intentarlo.'; }
+    if (elapsedNode) elapsedNode.textContent = `${elapsed} s · La comprobación sigue en curso`;
+  };
+  loadingTicker = window.setInterval(update, 1000);
+};
+const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'processing' }>): void => {
+  if (!response.preview) return;
+  renderResult(response.preview);
+  const article = result?.querySelector<HTMLElement>('.claim-result');
+  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta inicial disponible · estamos comprobando si podemos añadir más contexto y fuentes.</p>');
+};
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
   const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
@@ -125,15 +165,17 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   try {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, request.signal);
+    if (response.state === 'processing') renderProcessingPreview(response);
     // Local model interpretation and evidence planning can take a little
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
     // the short network budget used by the hosted deterministic path.
-    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, 500)); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal); }
+    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100))); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal); }
+    finishLoading();
     clarificationContext = undefined;
     if (response.state === 'processing') { renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return; }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
-  } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) return; renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
+  } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) { finishLoading(); return; } finishLoading(); renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };
 
 form?.addEventListener('submit', submit);
