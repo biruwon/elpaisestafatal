@@ -1904,8 +1904,11 @@ const startResolveJob = (text, origin = 'runtime') => {
       for (let offset = 0; offset < propositions.length; offset += 3) {
         const batch = propositions.slice(offset, offset + 3).map(async (item, batchIndex) => {
           const partText = String(item.text).trim();
-          const partClassified = await classify(partText);
-          return enrichResolve(partText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`);
+          const researchText = partText.length < 48
+            ? `${partText}. Contexto de la publicación: ${text.slice(0, 900)}`
+            : partText;
+          const partClassified = await classify(researchText);
+          return enrichResolve(researchText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`);
         });
         parts.push(...await Promise.allSettled(batch));
       }
