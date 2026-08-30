@@ -1921,6 +1921,10 @@ const startResolveJob = (text, origin = 'runtime') => {
       resolved.result.blocks = resolved.result.blocks.concat(mergedBlocks).slice(0, 80);
       resolved.result.evidenceIds = [...new Set([...(resolved.result.evidenceIds || []), ...successful.flatMap((part) => part.result.evidenceIds || [])])];
       resolved.result.sourceIds = [...new Set([...(resolved.result.sourceIds || []), ...successful.flatMap((part) => part.result.sourceIds || [])])];
+      resolved.result.sourceLinks = [...new Map([
+        ...(resolved.result.sourceLinks || []),
+        ...successful.flatMap((part) => part.result.sourceLinks || []),
+      ].filter((source) => source?.url).map((source) => [source.url, source])).values()].slice(0, 24);
     }
     const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
