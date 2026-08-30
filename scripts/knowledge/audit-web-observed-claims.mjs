@@ -10,7 +10,20 @@ const timeoutArg = process.argv.find((arg) => arg.startsWith('--timeout='));
 const resolveTimeoutMs = timeoutArg ? Math.max(1000, Number.parseInt(timeoutArg.slice(10), 10) || 1000) : 30000;
 const inputPath = process.argv.slice(2).find((arg) => !arg.startsWith('--')) || 'elpaisestafatal-web-observed-claims-300.json';
 const data = JSON.parse(await readFile(inputPath, 'utf8'));
-const candidates = data.candidates;
+// Discovery imports may provide only runtime fields; fill non-runtime review
+// metadata with explicit safe defaults so schema drift does not block a
+// benchmark. The defaults keep candidates unverified and never publish them.
+const candidates = data.candidates.map((candidate) => ({
+  ...candidate,
+  aliases: candidate.aliases || [],
+  geography: candidate.geography || 'España',
+  period: candidate.period || 'reciente',
+  visibility: candidate.visibility || data.visibility || 'searchable',
+  researchStatus: candidate.researchStatus || data.researchStatus || 'unverified',
+  evidenceStrength: candidate.evidenceStrength || 'unverified',
+  evidenceIds: candidate.evidenceIds || [],
+  provenanceNote: candidate.provenanceNote || 'AI-assisted discovery input; requires independent evidence.'
+}));
 const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 10) || 1) : candidates.length;
 const resolveOffset = offsetArg ? Math.max(0, Number.parseInt(offsetArg.slice(9), 10) || 0) : 0;
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));

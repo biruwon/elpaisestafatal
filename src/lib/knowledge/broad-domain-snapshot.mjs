@@ -129,6 +129,13 @@ export const broadDomainPacketFor = (text) => {
   // waiting lists” or “rail maintenance”). Route those phrases to the same
   // reviewed context packet instead of leaving them uncovered.
   const supplemental = [
+    ['economy', /poblaci[oó]n|hogares|nacimientos|provincias|municipios rurales|fondos europeos|inflaci[oó]n general|deuda de los hogares|tipo impositivo|saldo contributivo/i],
+    ['economy', /nacionalidad|pa[ií]s de nacimiento|regularizaci[oó]n|papeles|flujo migratorio|fragmentaci[oó]n regulatoria|operar en varias comunidades|servicios digitales|interoperabilidad|contaminaci[oó]n atmosf[eé]rica|zonas de bajas emisiones|adaptaci[oó]n clim[aá]tica|sequ[ií]a|calidad del aire|episodios locales/i],
+    ['taxes', /inundaciones extraordinarias|d[eé]ficit|operaciones extraordinarias/i],
+    ['education', /conectividad|habilidades digitales|diferencias educativas/i],
+    ['energy', /almacenamiento energ[eé]tico|capacidad de red/i],
+    ['transport', /puntualidad ferroviaria|accidentes graves|inversi[oó]n ferroviaria|operadores y gestores|retraso concreto/i],
+    ['agriculture', /relevo generacional agrario|pol[ií]tica agraria com[uú]n/i],
     ['taxes', /pequeños comercios|carga regulatoria|contratos públicos|proveedores pequeños|burocracia y costes/i],
     ['health', /lista[s]? de espera|especialistas|terapia|enfermedad|profesionales sanitarios|sobrecarga/i],
     ['education', /rendimiento escolar|notas medias|demanda laboral|talento|burocracia universitaria|credenciales|barrio donde se vive|centros educativos/i],
