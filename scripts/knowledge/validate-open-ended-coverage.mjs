@@ -51,7 +51,7 @@ for (const [text, concept, profileKey] of rhetoricalCases) {
   assert(compiler.rhetoricalProfile?.[profileKey], `${text}: rhetorical profile missing ${profileKey}`);
 }
 
-for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos invaden', 'No se puede salir a la calle de cómo está el país']) {
+for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos invaden', 'No se puede salir a la calle de cómo está el país', 'El alquiler es imposible para los jóvenes']) {
   const plan = answerPlanForBroadDomain(text);
   assert(plan?.evidenceSummary?.mode === 'snapshot', `${text}: no reviewed broad-domain fallback`);
   assert((plan.evidenceSummary.families || []).length >= 2, `${text}: snapshot did not preserve independent families`);
