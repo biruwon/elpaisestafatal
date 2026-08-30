@@ -53,12 +53,13 @@ if (resolveMode) {
       let payload = await response.json();
       for (let attempt = 0; attempt < Math.ceil(resolveTimeoutMs / 1000) && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(Math.min(10000, resolveTimeoutMs)) }).then((item) => item.json()); }
       const result = payload.result;
-      return { id: candidate.id, status: payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started };
+      const timedOut = payload.status === 'processing';
+      return { id: candidate.id, status: timedOut ? 'timeout' : payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started };
     } catch (error) { return { id: candidate.id, status: 'error', error: error instanceof Error ? error.message : String(error), latencyMs: Date.now() - started }; }
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => item.status !== 'error').length, errors: outcomes.filter((item) => item.status === 'error').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = { base, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
