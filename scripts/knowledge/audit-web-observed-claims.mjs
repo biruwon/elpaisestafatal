@@ -51,6 +51,13 @@ if (deterministicMode) {
     return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0 };
   });
   report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  const candidateById = new Map(candidates.map((candidate) => [candidate.id, candidate]));
+  report.deterministic.uncoveredByTopic = {};
+  report.deterministic.uncoveredExamples = outcomes.filter((item) => item.status === 'uncovered').slice(0, 50).map((item) => ({ id: item.id, claim: candidateById.get(item.id)?.claim, claimType: candidateById.get(item.id)?.claimType }));
+  for (const item of outcomes.filter((item) => item.status === 'uncovered')) {
+    const topic = candidateById.get(item.id)?.topicKey || 'unknown';
+    report.deterministic.uncoveredByTopic[topic] = (report.deterministic.uncoveredByTopic[topic] || 0) + 1;
+  }
 }
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
@@ -70,7 +77,7 @@ if (resolveMode) {
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
