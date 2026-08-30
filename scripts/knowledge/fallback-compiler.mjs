@@ -444,7 +444,7 @@ const splitExplicitClauses = (value) => {
   clauses = clauses.flatMap((clause) => {
     const normalizedClause = normalise(clause);
     const eventList = /\b(?:corrupcion|ceuta|dana|apagon|trenes|amnistia|imv|ley de vivienda|bono joven|regularizacion masiva|pensiones revalorizadas|mas impuestos)\b/.test(normalizedClause);
-    if (!eventList || clause.split(',').length < 3) return [clause];
+    if (!eventList || clause.split(',').length < 2) return [clause];
     return clause.split(',').map(cleanClause).filter((item) => item.length >= 4);
   });
   return clauses.length > 1 ? clauses.slice(0, 24) : [original];
