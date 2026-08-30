@@ -2,9 +2,13 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 
 const resolveMode = process.argv.includes('--resolve');
+const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
+const timeoutArg = process.argv.find((arg) => arg.startsWith('--timeout='));
+const resolveTimeoutMs = timeoutArg ? Math.max(1000, Number.parseInt(timeoutArg.slice(10), 10) || 1000) : 30000;
 const inputPath = process.argv.slice(2).find((arg) => !arg.startsWith('--')) || 'elpaisestafatal-web-observed-claims-300.json';
 const data = JSON.parse(await readFile(inputPath, 'utf8'));
 const candidates = data.candidates;
+const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 10) || 1) : candidates.length;
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
 const normalizeText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const publicPhrases = new Set(runtimeCatalogue.filter((entry) => entry.status === 'published' && entry.basis !== 'model').flatMap((entry) => [entry.claim, ...(entry.aliases || [])]).map(normalizeText));
@@ -40,21 +44,22 @@ const report = { inputPath, claims: candidates?.length || 0, requiredFields: req
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
   const outcomes = [];
+  const resolveCandidates = candidates.slice(0, resolveLimit);
   let cursor = 0;
   const resolveOne = async (candidate) => {
     const started = Date.now();
     try {
-      const response = await fetch(`${base}/v1/classify`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-knowledge-gap-origin': 'web-observed-audit' }, body: JSON.stringify({ text: candidate.claim, inputType: 'text' }), signal: AbortSignal.timeout(30000) });
+      const response = await fetch(`${base}/v1/classify`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-knowledge-gap-origin': 'web-observed-audit' }, body: JSON.stringify({ text: candidate.claim, inputType: 'text' }), signal: AbortSignal.timeout(resolveTimeoutMs) });
       let payload = await response.json();
-      for (let attempt = 0; attempt < 120 && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(10000) }).then((item) => item.json()); }
+      for (let attempt = 0; attempt < Math.ceil(resolveTimeoutMs / 1000) && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(Math.min(10000, resolveTimeoutMs)) }).then((item) => item.json()); }
       const result = payload.result;
       return { id: candidate.id, status: payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started };
     } catch (error) { return { id: candidate.id, status: 'error', error: error instanceof Error ? error.message : String(error), latencyMs: Date.now() - started }; }
   };
-  const worker = async () => { while (cursor < candidates.length) { const candidate = candidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
-  await Promise.all(Array.from({ length: Math.min(3, candidates.length) }, worker));
-  report.resolve = { base, outcomes, completed: outcomes.filter((item) => item.status !== 'error').length, errors: outcomes.filter((item) => item.status === 'error').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
+  await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
+  report.resolve = { base, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => item.status !== 'error').length, errors: outcomes.filter((item) => item.status === 'error').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
-console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches; all remain explicitly unverified discovery inputs.`);
+console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}` : ''}; all remain explicitly unverified discovery inputs.`);
