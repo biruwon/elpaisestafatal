@@ -80,13 +80,17 @@ const rhetoricalClaim = (claim: string): boolean => {
 // explicitly carry qualification; otherwise use the domain packet, which
 // preserves the distinction between measurable facts and the slogan.
 const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+  const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
+  // A reviewed broad-domain packet is an answerable, sourced fallback. Never
+  // let a malformed or empty provider response hide it, regardless of whether
+  // the provider labelled that response limited or insufficient.
+  if ((contextualPlan as ({ id?: string } | undefined))?.id?.startsWith('broad-') && model?.state !== 'supported') return contextual;
   if (!model || model.state === 'insufficient') return contextual.state !== 'insufficient' ? contextual : model || contextual;
   if (contextual.state === 'supported' && model.state === 'limited' && !(model.result?.sources?.length) && !(model.result?.criteria?.length)) return contextual;
   if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
   const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
   const summary = plan?.evidenceSummary;
   const hasQualification = Boolean(plan?.limitation || plan?.blocks?.some((block) => block.type === 'cannot_conclude') || summary?.missingDimensions?.length);
-  const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
   const contextualFamilies = contextualPlan?.evidenceSummary?.families?.length || 0;
   if (!hasQualification || (summary?.mode === 'none' && contextualFamilies >= 2)) return contextual;
   return model;
