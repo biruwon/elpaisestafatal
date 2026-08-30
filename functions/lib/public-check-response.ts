@@ -27,17 +27,21 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
   if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
   const items = breakdown.items;
-  return items.map((item, index) => ({
+  return items.map((item, index) => {
+    const evidenceIds = (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index);
+    const verdict = evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient';
+    return {
     id: breakdown.propositionIds[index] || `argument-${index + 1}`,
     claim: item.text,
     kind: item.type as ArgumentAssessment['kind'],
-    verdict: plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient',
-    evidenceLevel: plan.evidenceLevel === 'supported' ? 'strong' : plan.evidenceLevel === 'limited' ? 'limited' : 'none',
+    verdict,
+    evidenceLevel: verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none',
     finding: plan.summary || plan.headline,
-    evidenceIds: (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index),
+    evidenceIds,
     sourceIds: plan.sourceIds || [],
     limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
-  }));
+    };
+  });
 };
 const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
   const visual = 'visual' in entry ? entry.visual : undefined;
