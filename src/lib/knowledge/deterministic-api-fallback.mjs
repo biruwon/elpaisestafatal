@@ -132,6 +132,12 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       ],
       clarificationQuestion: guidance.questions[0],
       limitation: guidance.limitation,
+      researchPlan: {
+        claim: original,
+        queries: [original, `${original} España datos oficiales`, `${original} estudio evidencia`].map((query) => query.slice(0, 240)),
+        dimensions: ['definición del indicador', 'periodo', 'territorio', 'población', 'fuente primaria'],
+        evidenceTarget: 'Buscar una fuente primaria o un estudio metodológicamente compatible antes de emitir un veredicto.',
+      },
       evidenceIds: [],
       sourceIds: [],
       evidenceSummary: { mode: 'none', families: [], missingDimensions: ['indicador compatible', 'periodo comparable'], fallbackReason: 'No se encontró una fuente dinámica ni un snapshot compatible.' },
