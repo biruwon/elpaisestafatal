@@ -44,6 +44,11 @@ assert(publicAdministration?.summary.includes('No existe una cifra oficial'), 'p
 assert(publicAdministration?.summary.includes('obligaciones de rendimiento'), 'public-administration packet omitted the distinction between tenure and accountability');
 assert(publicAdministration?.evidenceSummary?.families.some((family) => family.finding?.includes('empleados públicos')), 'public-administration packet did not expose concrete criterion findings');
 
+const emergencyElection = answerPlanForBroadDomain('Me preocupa que un estado de emergencia permita no convocar elecciones y perpetuarse en el poder');
+assert(emergencyElection?.headline.includes('estado excepcional'), 'emergency-election wording was routed to a generic compound response');
+assert(emergencyElection?.summary.includes('calendario electoral'), 'emergency-election packet omitted the relevant legal checks');
+assert(emergencyElection?.evidenceSummary?.families.some((family) => family.finding?.includes('declaración concreta')), 'emergency-election packet did not expose its legal evidence criterion');
+
 for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
   const plan = answerPlanForBroadDomain(text);
   assert(plan?.headline.includes('Regularización'), `${text}: wording was routed to an unrelated immigration packet`);
