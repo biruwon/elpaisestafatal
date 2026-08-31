@@ -234,7 +234,12 @@ export const broadDomainPacketFor = (text) => {
 
 const formatObservation = (observation) => {
   const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(observation.value) : String(observation.value || '').trim();
-  const unit = observation.displayUnit || observation.unit || '';
+  const rawUnit = observation.displayUnit || observation.unit || '';
+  const unit = ({
+    'Euro per inhabitant': '€ por habitante',
+    'Percentage of gross domestic product (GDP)': '% del PIB',
+    'Percentage': '%',
+  })[rawUnit] || rawUnit;
   const period = observation.period ? ` (${observation.period})` : '';
   return `${value}${unit ? ` ${unit}` : ''}${period}`;
 };
@@ -266,7 +271,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
   } : undefined;
   const conversationReply = [
-    packet.headline,
+    `${packet.headline}.`,
     quantitativeFindings.length ? `Valores observados: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
     evidenceGap ? `Queda pendiente cuantificar: ${missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')).join('; ')}.` : undefined,
     packet.limitations[0],

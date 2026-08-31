@@ -150,7 +150,11 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   // open-ended claims answerable even when the provider is saturated.
   const immediateContext = fallbackResponse(effectiveClaim, body.inputType);
   const immediatePlan = (immediateContext as PublicCheckResponse & { result?: AnswerPlan }).result;
-  if (immediatePlan && (immediatePlan as ({ id?: string })).id?.startsWith('broad-')) {
+  // When the warehouse-backed resolver is configured, let it enrich broad
+  // packets with actual observations before returning. The packet remains a
+  // safe fallback for deployments without the optional resolver.
+  if (immediatePlan && (immediatePlan as ({ id?: string })).id?.startsWith('broad-')
+    && (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN)) {
     if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
     return json(immediateContext);
   }

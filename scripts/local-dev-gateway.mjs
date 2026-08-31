@@ -22,7 +22,7 @@ const publicCheckResponse = (payload, claim = '') => {
   const composedReply = (Array.isArray(plan.blocks) ? plan.blocks : []).find((block) => block?.type === 'conversation_reply')?.text;
   const reply = composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
   const evidenceLevel = plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  return { state: evidenceLevel, id: payload.requestId || `local-${Date.now().toString(36)}`, result: { claim, interpretation: plan.interpretation, reply, answer: plan.summary || plan.headline || reply, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter(Boolean), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary, evidenceLevel } };
+  return { state: evidenceLevel, id: payload.requestId || `local-${Date.now().toString(36)}`, result: { claim, interpretation: plan.interpretation, reply, answer: reply || plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter(Boolean), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary, evidenceLevel } };
 };
 
 const forwardCheck = (request, response, targetPath) => {

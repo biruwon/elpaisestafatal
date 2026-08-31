@@ -137,6 +137,7 @@ const compoundMetricIdsForInput = (text) => {
   const hasDemography = /\b(?:arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|cotizantes|poblaci[oó]n en edad de trabajar)\b/.test(normalized);
   const hasPensions = /\b(?:pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b/.test(normalized);
   if (hasDemography && hasPensions) ids.add('old_age_dependency_ratio');
+  if (hasPensions) ids.add('old_age_survivors_benefits_per_capita');
   if (hasPensions && /\b(?:arcas p[uú]blicas|d[eé]ficit|deuda|finan(?:ciaci[oó]n|zas?)|presupuest)\w*\b/.test(normalized)) {
     ids.add('government_deficit_ratio');
     ids.add('government_debt_ratio');
@@ -2995,6 +2996,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       ? { ...retrievalClassified.compiler, metricIds: [...fallbackMetricIds] }
       : retrievalClassified.compiler));
   }
+  // Compound claims need one bounded lookup per explicitly inferred family;
+  // otherwise the first broad query can consume the row budget and hide a
+  // valid demographic or pension series behind an unrelated result.
+  const compoundMetricIds = [...compoundMetricIdsForInput(text)];
+  if (!retrievalClassified.primary && !suppressUnrelatedContext && compoundMetricIds.length) {
+    const explicitCompoundResults = await Promise.all(compoundMetricIds.map((metricId) => findWarehouseEvidence(`${metricId} España`, { ...retrievalClassified.compiler, metricIds: [metricId] })));
+    warehouseResults.unshift(...explicitCompoundResults);
+  }
   const warehouseObservationRows = warehouseQueries.length > 1
     ? (() => {
       // Keep bounded breadth across explicit clauses. A single broad query
@@ -3087,9 +3096,13 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const broadContextPlan = answerPlanForBroadDomain(text, { observations });
   // A qualifying tone must not erase measurements that were successfully
   // retrieved. Broad packets explain how to evaluate a claim when data is
-  // missing; they are not a replacement for a data-bearing result.
+  // missing. When even one compatible observation exists, however, the
+  // packet is the correct envelope: it keeps that value attached to its
+  // dimension and makes the remaining gaps visible instead of burying the
+  // value in a generic compound answer.
   const hasConcreteMetricEvidence = observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value));
-  if (broadContextPlan && !hasConcreteMetricEvidence && !evidenceSelection.selected.length) {
+  const broadPlanHasData = broadContextPlan?.evidenceSummary?.families?.some((family) => family.data?.length) === true;
+  if (broadContextPlan && (broadPlanHasData || (!hasConcreteMetricEvidence && !evidenceSelection.selected.length))) {
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }
