@@ -1,7 +1,7 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
-import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment } from '../../src/lib/knowledge/public-check';
+import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment, CheckScorecard } from '../../src/lib/knowledge/public-check';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
 
 // Interpretation confidence, model metadata and extraction provenance are
@@ -87,6 +87,25 @@ const publicEvidenceSummary = (summary: AnswerPlan['evidenceSummary']) => summar
   ...summary,
   families: summary.families.map((family) => ({ ...family, label: publicMetricLabel(family.label) })),
 } : undefined;
+const scorecardFromPlan = (plan: AnswerPlan, sources: CheckSource[]): CheckScorecard | undefined => {
+  const block = plan.blocks.find((item) => item.type === 'scorecard');
+  if (!block || block.type !== 'scorecard' || !block.items.length) return undefined;
+  const sourceById = new Map(sources.map((source) => [source.id, source]));
+  return {
+    title: 'Indicadores nacionales revisados',
+    baselinePeriod: block.baseline.period,
+    comparisonPeriod: block.comparison.period,
+    snapshotDate: plan.asOf,
+    scope: block.geography,
+    explanation: plan.limitation || 'No existe una única serie estadística que mida una valoración política tan amplia. Este cuadro reúne indicadores distintos y no calcula una nota global.',
+    items: block.items.slice(0, 12).map((item) => ({
+      label: publicMetricLabel(item.label), unit: item.unit || 'valor',
+      baseline: item.baseline, comparison: item.comparison, change: item.change,
+      direction: item.direction, caveat: item.caveat,
+      sources: item.evidenceIds.map((id) => sourceById.get(id)).filter((source): source is CheckSource => Boolean(source)),
+    })),
+  };
+};
 export const checkFromCatalogue = (claim: string, entry: CatalogueEntry | RuntimeCatalogueEntry): PublicCheckResponse => ({ state: 'supported', id: entry.slug, result: { ...resultFor(entry, claim, true), evidenceLevel: 'supported' } });
 export const clarificationCheck = (claim: string, _missingDimensions: string[] = []): PublicCheckResponse => ({ state: 'clarification', id: `clarify-${Date.now().toString(36)}`, claim, question: `¿Qué quieres medir con «${claim}»?`, options: [
   { id: 'unemployment', label: 'Personas sin empleo', interpretation: { kind: 'quantitative', predicate: 'desempleo', normalizedClaim: `${claim}: tasa de desempleo` } },
@@ -136,7 +155,8 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const thesisConclusion = scorecardItems && 'items' in scorecardItems && scorecardItems.items.length
     ? `El cuadro de datos compara ${scorecardItems.baseline.period} con ${scorecardItems.comparison.period}: ${improved} indicadores mejoran y ${worsened} empeoran. Esa evidencia permite valorar resultados concretos, pero no convierte por sí sola la comparación en una clasificación histórica objetiva.`
     : 'La tesis se evalúa mejor separando sus argumentos y comparando resultados concretos con un periodo y criterios definidos.';
-  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
+  const scorecard = scorecardFromPlan(plan, sources);
+  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: replyFromPlan(plan), answer: plan.summary || plan.headline, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
   const state = argumentsList.length && argumentEvidence === 0
     ? 'insufficient'

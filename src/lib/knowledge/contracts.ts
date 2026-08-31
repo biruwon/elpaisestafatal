@@ -80,6 +80,7 @@ export type EvidenceLevel = 'supported' | 'limited' | 'insufficient';
 export type ScorecardItem = {
   metricId: string;
   label: string;
+  unit?: string;
   baseline?: { value: string; period: string };
   comparison?: { value: string; period: string };
   direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable';
@@ -128,7 +129,7 @@ export type AnswerBlock =
   | { type: 'cannot_conclude'; evidenceIds: string[]; points: string[] }
   | { type: 'conversation_reply'; text: string; evidenceIds?: string[] }
   | { type: 'sources'; sourceIds: string[] }
-  | { type: 'scorecard'; baseline: { label: string; period: string }; comparison: { label: string; period: string }; items: ScorecardItem[] }
+  | { type: 'scorecard'; baseline: { label: string; period: string }; comparison: { label: string; period: string }; items: ScorecardItem[]; geography?: string }
   | { type: 'event_status'; event: { label: string; geography?: string; period?: string }; propositions: Array<{ text: string; status: EventPropositionStatus; evidenceIds: string[]; detail?: string }> };
 
 

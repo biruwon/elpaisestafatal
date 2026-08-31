@@ -84,7 +84,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
         schemaVersion: '1',
         evidenceLevel: 'supported',
         headline: 'La mayoría de indicadores mejoran, pero no hay una nota partidista',
-        summary: `Desde junio de 2018, ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'improved').length} de ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.length} indicadores mejoran y ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'worsened').length} empeora. Esto describe cambios observados; no demuestra qué políticas los causaron.`,
+        summary: `No se puede concluir que ${original} a partir de este cuadro. Entre 2017 y 2025, ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'improved').length} de ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.length} indicadores mejoran y ${GOVERNMENT_SCORECARD_SNAPSHOT.metrics.filter((metric) => metric.direction === 'worsened').length} empeora. El cuadro describe cambios observados, pero no identifica qué políticas los causaron ni establece una medida única de “destrucción del país”.`,
         coverage: 'qualified',
         claimType: 'comparative',
         blocks: [snapshotScorecard(), { type: 'cannot_conclude', evidenceIds: [], points: ['Estos indicadores no producen una calificación global de la izquierda o la derecha.', 'La coincidencia temporal no demuestra causalidad gubernamental.'] }],
