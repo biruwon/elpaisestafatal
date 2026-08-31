@@ -43,6 +43,8 @@ assert(publicAdministration?.headline.includes('administración pública'), 'pub
 assert(publicAdministration?.summary.includes('No existe una cifra oficial'), 'public-administration packet did not answer the request for a count');
 assert(publicAdministration?.summary.includes('obligaciones de rendimiento'), 'public-administration packet omitted the distinction between tenure and accountability');
 assert(publicAdministration?.evidenceSummary?.families.some((family) => family.finding?.includes('empleados públicos')), 'public-administration packet did not expose concrete criterion findings');
+assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no se ha localizado un dato concreto'), 'public-administration response did not disclose its missing measurements');
+assert(publicAdministration?.blocks.some((block) => block.type === 'evidence_gap'), 'public-administration fallback did not declare its missing data');
 
 const emergencyElection = answerPlanForBroadDomain('Me preocupa que un estado de emergencia permita no convocar elecciones y perpetuarse en el poder');
 assert(emergencyElection?.headline.includes('estado excepcional'), 'emergency-election wording was routed to a generic compound response');

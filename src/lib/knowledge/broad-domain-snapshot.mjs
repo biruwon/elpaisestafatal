@@ -222,9 +222,16 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
     .map((item) => item.finding)
     .filter((finding) => /\d/.test(finding))
     .slice(0, 2);
+  const evidenceGap = quantitativeFindings.length ? undefined : {
+    type: 'evidence_gap',
+    missing: packet.criteria.map((item) => `dato concreto sobre ${item.label.toLocaleLowerCase('es')}`),
+    needed: ['una fuente primaria con valores, periodo y ámbito definidos', 'una comparación compatible con la afirmación'],
+    nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
+  };
   const conversationReply = [
     packet.summary,
     quantitativeFindings.length ? `Datos localizados: ${quantitativeFindings.join(' ')}` : undefined,
+    evidenceGap ? 'En esta comprobación no se ha localizado un dato concreto que permita cuantificar esas dimensiones.' : undefined,
     packet.limitations[0],
   ].filter(Boolean).join(' ');
   return {
@@ -239,7 +246,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
     blocks: [
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item) => `${item.label}: ${item.finding}`) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
-      { type: 'evidence_gap', missing: ['serie comparable de dependencia demográfica', 'balance de ingresos y gastos de pensiones', 'efecto sobre déficit y deuda pública'], needed: ['datos oficiales con el mismo periodo, cobertura y definición', 'serie temporal que permita distinguir presión, déficit y sostenibilidad'], nextAction: 'Consultar las series oficiales y mostrar sus valores antes de concluir que el sistema es insostenible o que arruina las arcas públicas.' },
+      ...(evidenceGap ? [evidenceGap] : []),
       { type: 'conversation_reply', evidenceIds, text: conversationReply },
     ],
     limitation: packet.limitations[0],
