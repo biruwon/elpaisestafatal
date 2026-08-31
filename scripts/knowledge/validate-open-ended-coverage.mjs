@@ -60,6 +60,7 @@ for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una
   assert(plan?.headline.includes('Regularización'), `${text}: wording was routed to an unrelated immigration packet`);
   assert(plan?.summary.includes('solicitudes'), `${text}: regularization packet omitted the key distinction between process counts`);
   assert(plan?.evidenceSummary?.families.some((family) => family.finding?.includes('1.174.978')), `${text}: regularization packet did not expose the official process figures`);
+  assert(plan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), `${text}: response text omitted the figures already present in the evidence packet`);
 }
 
 const rhetoricalCases = [

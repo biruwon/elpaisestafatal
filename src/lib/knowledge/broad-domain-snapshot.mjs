@@ -218,6 +218,15 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
   if (!lifecycle.usable) return undefined;
   const evidenceIds = packet.criteria.flatMap((item) => item.sourceIds);
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
+  const quantitativeFindings = packet.criteria
+    .map((item) => item.finding)
+    .filter((finding) => /\d/.test(finding))
+    .slice(0, 2);
+  const conversationReply = [
+    packet.summary,
+    quantitativeFindings.length ? `Datos localizados: ${quantitativeFindings.join(' ')}` : undefined,
+    packet.limitations[0],
+  ].filter(Boolean).join(' ');
   return {
     id: packet.id,
     schemaVersion: '1',
@@ -231,7 +240,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item) => `${item.label}: ${item.finding}`) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
       { type: 'evidence_gap', missing: ['serie comparable de dependencia demográfica', 'balance de ingresos y gastos de pensiones', 'efecto sobre déficit y deuda pública'], needed: ['datos oficiales con el mismo periodo, cobertura y definición', 'serie temporal que permita distinguir presión, déficit y sostenibilidad'], nextAction: 'Consultar las series oficiales y mostrar sus valores antes de concluir que el sistema es insostenible o que arruina las arcas públicas.' },
-      { type: 'conversation_reply', evidenceIds, text: `${packet.summary} ${packet.limitations[0]}` },
+      { type: 'conversation_reply', evidenceIds, text: conversationReply },
     ],
     limitation: packet.limitations[0],
     evidenceIds,
