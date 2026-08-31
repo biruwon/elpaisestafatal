@@ -107,7 +107,8 @@ const regularizationFamily = compoundFamilies.find((family) => family.familyId =
 assert(regularizationFamily?.data?.includes('Solicitudes: 1.174.978 (2026-07-02)') && regularizationFamily?.data?.includes('Expedientes tramitados: 609.737 (2026-07-02)'), 'regularisation values are not atomic or period-labelled');
 assert(regularizationFamily?.missingDimensions?.includes('autorizaciones concedidas'), 'regularisation result does not expose the missing legal outcome');
 assert(compoundFamilies.find((family) => family.familyId === 'broad-public-services')?.missingDimensions?.includes('servicio concreto'), 'service gap is not scoped to a concrete missing field');
-assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('norma o programa'), 'compound reply did not surface scoped missing fields');
+assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('norma o programa')), 'compound evidence did not preserve scoped missing fields');
+assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('Quedan abiertos estos datos:'), 'compound reply still contains the raw aggregate gap checklist');
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');

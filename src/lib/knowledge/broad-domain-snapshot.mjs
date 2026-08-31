@@ -409,16 +409,15 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   });
   const evidenceIds = [...new Set(familyPlans.flatMap((plan) => plan.evidenceIds || []))];
   const sourceIds = [...new Set(familyPlans.flatMap((plan) => plan.sourceIds || []))];
-  const gaps = [...new Set(familyPlans.flatMap((plan) => plan.evidenceSummary?.missingDimensions || []))];
+  const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
   const observed = families.flatMap((family) => family.data || []);
   const reply = [
     'La frase mezcla tres afirmaciones distintas: regularización migratoria, capacidad de los servicios públicos y prestaciones.',
-    observed.length ? `Valores observados: ${observed.join('; ').replace(/\.{2,}/g, '.')}` : undefined,
+    observed.length ? `En el balance oficial localizado constan ${observed.join(' y ').replace(/\.{2,}/g, '.')}.` : undefined,
     'No se ha localizado una medición compatible para “colapso total” ni para “incremento exponencial” de una categoría de prestaciones no especificada.',
-    gaps.length ? `Quedan abiertos estos datos: ${gaps.join('; ')}.` : undefined,
-    'Las cifras disponibles no demuestran por sí solas que una regularización provoque un colapso de los servicios o un aumento de las prestaciones; la simultaneidad temporal no prueba causalidad.',
+    'Las cifras disponibles no demuestran por sí solas que una regularización provoque un colapso de los servicios o un aumento de las prestaciones. La simultaneidad temporal no prueba causalidad.',
   ].filter(Boolean).join(' ');
   return {
     id: 'broad-compound-claim',
