@@ -294,6 +294,14 @@ const familyLabelForPacket = (packet) => ({
   'broad-public-services': 'Servicios públicos',
   'broad-benefits-recipients': 'Prestaciones',
 }[packet.id] || packet.headline);
+const evidenceStatusFor = (data, missingDimensions) => data?.length ? (missingDimensions?.length ? 'partial' : 'available') : 'missing';
+const dimensionsFor = (packet, criterion, data) => ({
+  subject: packet.interpretation?.subject,
+  geography: 'España',
+  period: data?.map((value) => String(value).match(/\(([^)]+)\)/)?.[1]).find(Boolean),
+  unit: criterion.unit,
+  causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,
+});
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
@@ -311,6 +319,10 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item)}`));
+  const criterionDataFor = (item, index) => {
+    const matched = matchedObservations[index]?.observations || [];
+    return matched.length ? latestObservations(matched).map(formatObservation) : item.fallbackData?.length ? item.fallbackData : /\d/.test(item.finding) ? [item.finding] : [];
+  };
   matchedObservations.forEach(({ criterion, observations: items }) => {
     if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${value}`));
   });
@@ -361,6 +373,8 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     evidenceSummary: {
       mode: 'snapshot',
       families: packet.criteria.map((item, index) => ({
+        status: evidenceStatusFor(criterionDataFor(item, index), item.missingDimensions),
+        dimensions: dimensionsFor(packet, item, criterionDataFor(item, index)),
         familyId: packet.id,
         familyLabel: familyLabelForPacket(packet),
         criterionId: item.id,
@@ -370,10 +384,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
         sourceIds: item.sourceIds,
         ...(item.missingDimensions?.length ? { missingDimensions: item.missingDimensions } : {}),
         finding: item.finding,
-        ...(matchedObservations[index]?.observations?.length
-          ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) }
-          : item.fallbackData?.length ? { data: item.fallbackData }
-          : /\d/.test(item.finding) ? { data: [item.finding] } : {}),
+        ...(criterionDataFor(item, index).length ? { data: criterionDataFor(item, index) } : {}),
       })),
       ...(missingCriteria.length ? { missingDimensions: missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
@@ -393,7 +404,8 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones' };
   const families = familyPlans.map((plan) => {
     const entries = plan.evidenceSummary?.families || [];
-    const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
+    const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', status: family.status || evidenceStatusFor(family.data, family.missingDimensions), dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
+    const status = criteria.some((criterion) => criterion.status === 'partial') || (criteria.some((criterion) => criterion.status === 'available') && criteria.some((criterion) => criterion.status === 'missing')) ? 'partial' : criteria.every((criterion) => criterion.status === 'available') ? 'available' : 'missing';
     return {
       familyId: plan.id,
       familyLabel: familyNames[plan.id] || plan.headline,
@@ -401,7 +413,10 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
       direction: 'qualifies',
       evidenceIds: [...new Set(entries.flatMap((family) => family.evidenceIds || []))],
       sourceIds: [...new Set(entries.flatMap((family) => family.sourceIds || []))],
+      status,
+      dimensions: { subject: plan.interpretation?.subject, geography: 'España', causalRequirement: /caus|provoc|efecto/i.test(plan.summary || '') ? 'comparación o diseño causal compatible' : undefined },
       finding: plan.summary,
+      limitation: plan.limitation,
       criteria,
       data: [...new Set(entries.flatMap((family) => family.data || []))],
       missingDimensions: [...new Set(entries.filter((family) => !family.data?.length).flatMap((family) => family.missingDimensions || [family.label]))],

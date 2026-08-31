@@ -50,6 +50,7 @@ const emergencyElection = answerPlanForBroadDomain('Me preocupa que un estado de
 assert(emergencyElection?.headline.includes('estado excepcional'), 'emergency-election wording was routed to a generic compound response');
 assert(emergencyElection?.summary.includes('calendario electoral'), 'emergency-election packet omitted the relevant legal checks');
 assert(emergencyElection?.evidenceSummary?.families.some((family) => family.finding?.includes('declaración concreta')), 'emergency-election packet did not expose its legal evidence criterion');
+assert(emergencyElection?.evidenceSummary?.families.every((family) => family.status && family.dimensions?.subject && family.dimensions?.geography), 'emergency-election packet did not expose family status and dimensions');
 
 const demographicPension = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas');
 assert(demographicPension?.headline.includes('pensiones'), 'demography-pension wording was routed to a generic pensions response');
@@ -57,6 +58,7 @@ assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pens
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
 assert(demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('29,5'), 'demography-pension fallback did not render its reviewed demographic snapshot');
 assert(demographicPension?.evidenceSummary?.families.every((family) => family.data?.length), 'demography-pension fallback did not attach snapshot values to every evidence family');
+assert(demographicPension?.evidenceSummary?.families.every((family) => family.status === 'available'), 'demography-pension snapshot did not mark observed families as available');
 const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'dependency-2024', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2024' },
@@ -72,6 +74,7 @@ assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim co
 assert(youthLiving?.summary.includes('coste de vida') && youthLiving?.summary.includes('ingresos'), 'youth living packet omitted cost-of-living or income dimensions');
 assert(youthLiving?.evidenceSummary?.families.some((family) => family.label === 'Ingresos y empleo'), 'youth living packet omitted employment and wage evidence family');
 assert(youthLiving?.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => item.includes('apoyo familiar'))), 'youth living packet did not disclose the counterfactual evidence gap');
+assert(youthLiving?.evidenceSummary?.families.every((family) => family.status && family.dimensions?.subject && family.dimensions?.geography), 'youth living packet did not expose family status and dimensions');
 const youthLivingWithData = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?', {
   observations: [
     { id: 'cpi-2025', metricId: 'cpi_index', value: 118.4, unit: 'índice', period: '2025' },
@@ -102,6 +105,8 @@ assert(compoundFamilies.some((family) => family.familyId === 'broad-immigration-
 assert(compoundFamilies.some((family) => family.familyId === 'broad-public-services' && family.familyLabel === 'Servicios públicos'), 'compound claim lost public-services evidence family');
 assert(compoundFamilies.some((family) => family.familyId === 'broad-benefits-recipients' && family.familyLabel === 'Prestaciones'), 'compound claim lost benefits evidence family');
 assert(compoundFamilies.every((family) => family.criteria?.length === 3 && family.sourceIds?.length), 'compound claim did not preserve grouped criteria and source attribution');
+assert(compoundFamilies.every((family) => ['available', 'partial', 'missing'].includes(family.status)), 'compound claim did not assign an evidence status to every family');
+assert(compoundFamilies.every((family) => family.criteria?.every((criterion) => criterion.status && criterion.dimensions?.subject && criterion.dimensions?.geography)), 'compound claim did not preserve criterion status and dimensions');
 assert(compoundFamilies.map((family) => family.familyId).join(',') === 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients', 'compound claim families are not ordered as submitted');
 const regularizationFamily = compoundFamilies.find((family) => family.familyId === 'broad-immigration-regularization');
 assert(regularizationFamily?.data?.includes('Solicitudes: 1.174.978 (2026-07-02)') && regularizationFamily?.data?.includes('Expedientes tramitados: 609.737 (2026-07-02)'), 'regularisation values are not atomic or period-labelled');

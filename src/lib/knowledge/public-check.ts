@@ -1,8 +1,10 @@
 export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
 export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[] };
-export type PublicEvidenceCriterion = { id: string; label: string; finding: string; evidenceIds?: string[]; sourceIds?: string[]; data?: string[]; missingDimensions?: string[] };
-export type PublicEvidenceFamily = { familyId: string; familyLabel: string; label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; evidenceIds: string[]; sourceIds: string[]; finding?: string; limitation?: string; period?: string; data?: string[]; missingDimensions?: string[]; criteria?: PublicEvidenceCriterion[] };
+export type EvidenceStatus = 'available' | 'partial' | 'missing';
+export type EvidenceDimensions = { subject?: string; population?: string; period?: string; geography?: string; denominator?: string; unit?: string; causalRequirement?: string };
+export type PublicEvidenceCriterion = { id: string; label: string; finding: string; status?: EvidenceStatus; dimensions?: EvidenceDimensions; evidenceIds?: string[]; sourceIds?: string[]; data?: string[]; missingDimensions?: string[] };
+export type PublicEvidenceFamily = { familyId: string; familyLabel: string; label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; status?: EvidenceStatus; dimensions?: EvidenceDimensions; evidenceIds: string[]; sourceIds: string[]; finding?: string; limitation?: string; period?: string; data?: string[]; missingDimensions?: string[]; criteria?: PublicEvidenceCriterion[] };
 export type PublicEvidenceSummary = { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: PublicEvidenceFamily[]; missingDimensions?: string[]; fallbackReason?: string };
 export type CheckScope = { geography?: string; period?: string; checkedAt?: string };
 export type CheckScorecardItem = { label: string; unit: string; baseline?: { value: string; period: string }; comparison?: { value: string; period: string }; change?: string; direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable'; caveat?: string; sources: CheckSource[] };
