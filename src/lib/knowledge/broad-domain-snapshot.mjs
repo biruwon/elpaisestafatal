@@ -53,6 +53,27 @@ const packets = [
     sources: [source('public-administration-source', 'Government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
   },
   {
+    id: 'broad-youth-living-housing',
+    matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
+    interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
+    headline: 'La situación joven exige separar precios, salarios, empleo, vivienda y apoyo familiar',
+    summary: 'La precariedad o la falta de oportunidades de la población joven no se pueden medir con el precio de la vivienda por sí solo. Hay que comprobar por separado el coste de vida, la evolución de los ingresos, el empleo juvenil, los precios y el esfuerzo de vivienda, la construcción y la emancipación; la pregunta sobre cuántas personas emigrarían sin ayuda familiar es contrafactual y no tiene una cifra observada equivalente.',
+    criteria: [
+      { id: 'youth-cost-of-living', label: 'Coste de vida', finding: 'El IPC mide la evolución de los precios de consumo, no cuánto puede pagar cada joven ni el coste específico de una vivienda.', metricIds: ['cpi_index'], sourceIds: ['youth-living-eurostat'] },
+      { id: 'youth-income-employment', label: 'Ingresos y empleo', finding: 'La evolución salarial y el desempleo juvenil deben medirse con series separadas y con su población, unidad y periodo definidos.', metricIds: ['median_hourly_earnings', 'youth_unemployment_rate'], sourceIds: ['youth-labour-eurostat'] },
+      { id: 'youth-housing-access', label: 'Vivienda', finding: 'El precio de la vivienda y la sobrecarga de costes describen presión residencial, pero no prueban por sí solos que nadie pueda comprar ni explican el papel de cada territorio.', metricIds: ['house_price_index', 'housing_cost_overburden_rate'], sourceIds: ['youth-housing-eurostat'] },
+      { id: 'youth-supply', label: 'Oferta', finding: 'La construcción puede medirse con su índice de producción, pero no equivale automáticamente a viviendas disponibles para jóvenes ni a precios asequibles.', metricIds: ['construction_output_index'], sourceIds: ['youth-housing-eurostat'] },
+      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', sourceIds: ['youth-emancipation-source'] },
+    ],
+    limitations: ['Sin edad, ciudad o territorio, periodo y definición de “precariedad” no se puede estimar la imposibilidad de comprar una vivienda. Tampoco se puede convertir la convivencia con los padres en un número de emigraciones evitadas sin una hipótesis identificable.'],
+    sources: [
+      source('youth-living-eurostat', 'Consumer prices and cost of living indicators', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Consumer_prices_-_inflation', '2025-10-01'),
+      source('youth-labour-eurostat', 'Youth labour market statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Youth_statistics_-_employment', '2025-10-01'),
+      source('youth-housing-eurostat', 'Housing in Europe — statistics on housing conditions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_in_Europe', '2025-10-01'),
+      source('youth-emancipation-source', 'Observatorio de Emancipación', 'Consejo de la Juventud de España', 'https://www.cje.org/', '2025-10-01'),
+    ],
+  },
+  {
     id: 'broad-immigration-regularization',
     matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
@@ -217,6 +238,7 @@ const formatObservation = (observation) => {
   const period = observation.period ? ` (${observation.period})` : '';
   return `${value}${unit ? ` ${unit}` : ''}${period}`;
 };
+const latestObservations = (items) => items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-1);
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
@@ -229,21 +251,24 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
   }));
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
-  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => items.slice(0, 2).map((item) => `${criterion.label}: ${formatObservation(item)}`));
+  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item)}`));
   const reviewedQuantitativeFindings = packet.criteria
     .map((item) => item.finding)
     .filter((finding) => /\d/.test(finding));
   quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
-  const evidenceGap = quantitativeFindings.length ? undefined : {
+  const missingCriteria = matchedObservations
+    .filter(({ criterion, observations: items }) => !items.length && !/\d/.test(criterion.finding))
+    .map(({ criterion }) => `dato concreto sobre ${criterion.label.toLocaleLowerCase('es')}`);
+  const evidenceGap = missingCriteria.length ? {
     type: 'evidence_gap',
-    missing: packet.criteria.map((item) => `dato concreto sobre ${item.label.toLocaleLowerCase('es')}`),
+    missing: missingCriteria,
     needed: ['una fuente primaria con valores, periodo y ámbito definidos', 'una comparación compatible con la afirmación'],
     nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
-  };
+  } : undefined;
   const conversationReply = [
     packet.summary,
     quantitativeFindings.length ? `Datos localizados: ${quantitativeFindings.join(' ')}` : undefined,
-    evidenceGap ? 'En esta comprobación no se ha localizado un dato concreto que permita cuantificar esas dimensiones.' : undefined,
+    evidenceGap ? `En esta comprobación no se ha localizado un dato concreto para: ${missingCriteria.join('; ')}.` : undefined,
     packet.limitations[0],
   ].filter(Boolean).join(' ');
   return {
@@ -257,7 +282,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     interpretation: packet.interpretation,
     blocks: [
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item, index) => {
-        const found = matchedObservations[index]?.observations?.slice(0, 2) || [];
+        const found = latestObservations(matchedObservations[index]?.observations || []);
         return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map(formatObservation).join('; ')}.` : ''}`;
       }) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
@@ -271,7 +296,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     asOf: '2026-08-20',
     evidenceSummary: {
       mode: 'snapshot',
-      families: packet.criteria.map((item, index) => ({ label: item.label, direction: 'qualifies', evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)], finding: item.finding, ...(matchedObservations[index]?.observations?.length ? { data: matchedObservations[index].observations.slice(0, 2).map(formatObservation) } : {}) })),
+      families: packet.criteria.map((item, index) => ({ label: item.label, direction: 'qualifies', evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)], finding: item.finding, ...(matchedObservations[index]?.observations?.length ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) } : {}) })),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,

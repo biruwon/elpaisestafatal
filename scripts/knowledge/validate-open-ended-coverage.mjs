@@ -66,6 +66,25 @@ const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico
 assert(demographicPensionWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2'), 'demography-pension packet did not render available measurements');
 assert(!demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet declared a gap despite available measurements');
 
+const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
+assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');
+assert(youthLiving?.summary.includes('coste de vida') && youthLiving?.summary.includes('ingresos'), 'youth living packet omitted cost-of-living or income dimensions');
+assert(youthLiving?.evidenceSummary?.families.some((family) => family.label === 'Ingresos y empleo'), 'youth living packet omitted employment and wage evidence family');
+assert(youthLiving?.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => item.includes('apoyo familiar'))), 'youth living packet did not disclose the counterfactual evidence gap');
+const youthLivingWithData = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?', {
+  observations: [
+    { id: 'cpi-2025', metricId: 'cpi_index', value: 118.4, unit: 'índice', period: '2025' },
+    { id: 'wage-2022', metricId: 'median_hourly_earnings', value: 12.1, unit: '€ por hora', period: '2022' },
+    { id: 'youth-unemployment-2025', metricId: 'youth_unemployment_rate', value: 24.9, unit: '%', period: '2025' },
+    { id: 'house-price-2025', metricId: 'house_price_index', value: 154.2, unit: 'índice', period: '2025' },
+    { id: 'housing-burden-2024', metricId: 'housing_cost_overburden_rate', value: 9.1, unit: '%', period: '2024' },
+    { id: 'construction-2025', metricId: 'construction_output_index', value: 109.3, unit: 'índice', period: '2025' },
+  ],
+});
+const youthReply = youthLivingWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
+assert(youthReply.includes('118,4') && youthReply.includes('24,9') && youthReply.includes('154,2'), 'youth living packet did not render available cross-domain measurements');
+assert(youthReply.includes('apoyo familiar y emigración'), 'youth living packet hid the unavailable counterfactual dimension');
+
 for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
   const plan = answerPlanForBroadDomain(text);
   assert(plan?.headline.includes('Regularización'), `${text}: wording was routed to an unrelated immigration packet`);
