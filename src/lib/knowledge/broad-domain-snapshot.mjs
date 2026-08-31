@@ -22,6 +22,23 @@ const packets = [
     sources: [source('constitutional-emergency-powers', 'Constitución Española · artículo 116', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', '1978-12-29')],
   },
   {
+    id: 'broad-demography-pension-finance',
+    matches: /\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b[\s\S]{0,180}\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b|\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*[\s\S]{0,180}\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b/i,
+    interpretation: { kind: 'mixed', subject: 'demografía y sistema de pensiones', subjectType: 'country', predicate: 'puts_pressure_on', object: 'financiación pública', normalizedClaim: 'cambio demográfico, sostenibilidad de las pensiones y efecto sobre las cuentas públicas', interpretation: 'La frase combina una descripción demográfica, una predicción sobre sostenibilidad y una acusación sobre las cuentas públicas. Cada parte requiere una medida distinta.' },
+    headline: 'El envejecimiento presiona las pensiones, pero no demuestra por sí solo una quiebra pública',
+    summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones.',
+    criteria: [
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', sourceIds: ['demography-pension-finance'] },
+      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', sourceIds: ['demography-pension-finance'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', sourceIds: ['public-finance-pension'] },
+    ],
+    limitations: ['Sin un año, una serie de dependencia, un balance de ingresos y gastos y una definición de “insostenible”, no se puede cuantificar el problema ni confirmar que las arcas públicas estén siendo arruinadas. La presión demográfica y la quiebra inmediata son afirmaciones diferentes.'],
+    sources: [
+      source('demography-pension-finance', 'Población y estructura demográfica', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_structure_and_ageing', '2025-10-01'),
+      source('public-finance-pension', 'Social protection statistics · pensions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
+    ],
+  },
+  {
     id: 'broad-public-administration',
     matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
     interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
