@@ -266,9 +266,9 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
   } : undefined;
   const conversationReply = [
-    packet.summary,
-    quantitativeFindings.length ? `Datos localizados: ${quantitativeFindings.join(' ')}` : undefined,
-    evidenceGap ? `En esta comprobación no se ha localizado un dato concreto para: ${missingCriteria.join('; ')}.` : undefined,
+    packet.headline,
+    quantitativeFindings.length ? `Valores observados: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
+    evidenceGap ? `Queda pendiente cuantificar: ${missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')).join('; ')}.` : undefined,
     packet.limitations[0],
   ].filter(Boolean).join(' ');
   return {
@@ -297,6 +297,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     evidenceSummary: {
       mode: 'snapshot',
       families: packet.criteria.map((item, index) => ({ label: item.label, direction: 'qualifies', evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)], finding: item.finding, ...(matchedObservations[index]?.observations?.length ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) } : {}) })),
+      ...(missingCriteria.length ? { missingDimensions: missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
