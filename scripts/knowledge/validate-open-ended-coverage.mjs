@@ -43,6 +43,13 @@ assert(publicAdministration?.headline.includes('administración pública'), 'pub
 assert(publicAdministration?.summary.includes('plantilla'), 'public-administration packet omitted the relevant evidence dimensions');
 assert(publicAdministration?.evidenceSummary?.families.some((family) => family.finding?.includes('empleados públicos')), 'public-administration packet did not expose concrete criterion findings');
 
+for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
+  const plan = answerPlanForBroadDomain(text);
+  assert(plan?.headline.includes('Regularización'), `${text}: wording was routed to an unrelated immigration packet`);
+  assert(plan?.summary.includes('solicitudes'), `${text}: regularization packet omitted the key distinction between process counts`);
+  assert(plan?.evidenceSummary?.families.some((family) => family.finding?.includes('1.174.978')), `${text}: regularization packet did not expose the official process figures`);
+}
+
 const rhetoricalCases = [
   ['Se maquillan las cifras del desempleo', 'unemployment', 'intent'],
   ['La llegada de extranjeros lo ocupa todo', 'immigration', 'loaded'],
