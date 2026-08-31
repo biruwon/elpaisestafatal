@@ -53,6 +53,7 @@ const demographicPension = answerPlanForBroadDomain('Árbol demográfico complet
 assert(demographicPension?.headline.includes('pensiones'), 'demography-pension wording was routed to a generic pensions response');
 assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pension packet omitted the public-finance part of the claim');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
+assert(demographicPension?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension fallback did not declare its missing data');
 
 for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
   const plan = answerPlanForBroadDomain(text);

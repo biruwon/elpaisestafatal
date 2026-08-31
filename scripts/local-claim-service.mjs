@@ -13,7 +13,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../src/lib/knowledge/input-
 import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
-import { deterministicFallbackCompiler, rhetoricalProfileFor } from './knowledge/fallback-compiler.mjs';
+import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { criteriaProfiles, profileText } from './knowledge/criteria-profiles.mjs';
 import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
@@ -3072,8 +3072,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // still wins for a concrete, dimension-compatible proposition; the packet
   // is the safe route for loaded language or an empty compatible selection.
   const broadContextPlan = answerPlanForBroadDomain(text);
-  const rhetoricalProfile = rhetoricalProfileFor(text);
-  if (broadContextPlan && (!evidenceSelection.selected.length || rhetoricalProfile.requiresQualification)) {
+  // A qualifying tone must not erase measurements that were successfully
+  // retrieved. Broad packets explain how to evaluate a claim when data is
+  // missing; they are not a replacement for a data-bearing result.
+  const hasConcreteMetricEvidence = observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value));
+  if (broadContextPlan && !hasConcreteMetricEvidence && !evidenceSelection.selected.length) {
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }
