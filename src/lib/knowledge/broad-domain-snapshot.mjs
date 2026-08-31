@@ -53,6 +53,34 @@ const packets = [
     sources: [source('public-administration-source', 'Government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
   },
   {
+    id: 'broad-public-services',
+    matches: /\b(servicios? p[uú]blicos?|colapso(?:\s+total)?[^.]{0,80}servicios?|sanidad|educaci[oó]n|atenci[oó]n p[uú]blica)\b/i,
+    interpretation: { kind: 'quantitative', subject: 'capacidad y resultados de los servicios públicos', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'capacidad, uso y resultados de los servicios públicos', interpretation: '“Colapso total” es una conclusión extrema: hay que identificar el servicio, el territorio, el periodo y el umbral observable que la definiría.' },
+    headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
+    summary: 'La expresión “colapso total” no es un indicador estadístico. Para comprobarla hay que medir capacidad, demanda, tiempos de atención, cobertura y resultados del servicio afectado, con periodo y territorio definidos.',
+    criteria: [
+      { id: 'public-service-capacity', label: 'Capacidad y demanda', finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', sourceIds: ['public-services-source'] },
+      { id: 'public-service-outcomes', label: 'Resultados y atención', finding: 'Tiempos de espera, cobertura y resultados pueden mostrar presión o deterioro en un servicio, pero no equivalen automáticamente a un colapso total de todos los servicios públicos.', sourceIds: ['public-services-source'] },
+      { id: 'public-service-scope', label: 'Alcance', finding: 'Una experiencia local o una subida de demanda no permite generalizar a toda España sin una serie comparable y un umbral explícito.', sourceIds: ['public-services-source'] },
+    ],
+    limitations: ['No se ha localizado aquí una medición compatible que permita cuantificar un “colapso total” de los servicios públicos en conjunto. La inmigración y la presión sobre un servicio tampoco prueban por sí solas una relación causal.'],
+    sources: [source('public-services-source', 'Government finance and public service statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
+  },
+  {
+    id: 'broad-benefits-recipients',
+    matches: /\b(paguitas?|ayudas? para vivir|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
+    interpretation: { kind: 'quantitative', subject: 'personas perceptoras de prestaciones', subjectType: 'group', predicate: 'has_multiple_measures', normalizedClaim: 'alcance y evolución de las prestaciones sociales', interpretation: '“Paguitas” no identifica un programa oficial ni demuestra dependencia, abuso o inactividad. Hay que especificar la prestación, la población, el periodo y el denominador.' },
+    headline: 'Las prestaciones deben identificarse por programa, población y periodo',
+    summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
+    criteria: [
+      { id: 'benefit-programme', label: 'Programa y alcance', finding: 'No se puede cuantificar “esa parte de la población” sin indicar qué prestación o programa se está contando y qué personas cumplen sus requisitos.', sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-recipients', label: 'Perceptores', finding: 'El dato compatible debe indicar perceptores, población de referencia, periodo, territorio y si cuenta personas, hogares, altas o pagos; no se ha localizado una cifra común para todas las ayudas.', sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', sourceIds: ['benefits-statistics-source'] },
+    ],
+    limitations: ['No se ha localizado una medición compatible para la categoría coloquial “paguitas”. Sin programa, población, periodo y denominador no se puede cuantificar el supuesto aumento ni atribuir dependencia o causalidad.'],
+    sources: [source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
+  },
+  {
     id: 'broad-youth-living-housing',
     matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
     interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
@@ -201,39 +229,50 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 
 export const BROAD_SNAPSHOT_POLICY = Object.freeze({ owner: 'knowledge-review', createdAt: '2026-08-20', expiresAt: '2026-11-20', refreshCommand: 'npm run knowledge:domain-refresh', validationStatus: 'reviewed', supportedScope: 'España, contexto nacional y fuentes citadas en cada packet', unsupportedScope: 'atribución causal, barrios concretos y generalizaciones no medidas' });
 
-export const broadDomainPacketFor = (text) => {
+const supplementalRoutes = [
+  ['economy', /poblaci[oó]n|hogares|nacimientos|provincias|municipios rurales|fondos europeos|inflaci[oó]n general|deuda de los hogares|tipo impositivo|saldo contributivo/i],
+  ['economy', /nacionalidad|pa[ií]s de nacimiento|regularizaci[oó]n|papeles|flujo migratorio|fragmentaci[oó]n regulatoria|operar en varias comunidades|servicios digitales|interoperabilidad|contaminaci[oó]n atmosf[eé]rica|zonas de bajas emisiones|adaptaci[oó]n clim[aá]tica|sequ[ií]a|calidad del aire|episodios locales/i],
+  ['taxes', /inundaciones extraordinarias|d[eé]ficit|operaciones extraordinarias/i],
+  ['education', /conectividad|habilidades digitales|diferencias educativas/i],
+  ['energy', /almacenamiento energ[eé]tico|capacidad de red/i],
+  ['transport', /puntualidad ferroviaria|accidentes graves|inversi[oó]n ferroviaria|operadores y gestores|retraso concreto/i],
+  ['agriculture', /relevo generacional agrario|pol[ií]tica agraria com[uú]n/i],
+  ['taxes', /pequeños comercios|carga regulatoria|contratos públicos|proveedores pequeños|burocracia y costes/i],
+  ['health', /lista[s]? de espera|especialistas|terapia|enfermedad|profesionales sanitarios|sobrecarga/i],
+  ['education', /rendimiento escolar|notas medias|demanda laboral|talento|burocracia universitaria|credenciales|barrio donde se vive|centros educativos/i],
+  ['pensions', /prestaciones contributivas|prestaciones no contributivas|obligaciones futuras|ahorrar de forma privada/i],
+  ['economy', /cesta de la compra|ipc general|capacidad de ahorro|gastos? antes|apoyo familiar|coste de vida|datos macroeconom|empeoramiento econom/i],
+  ['tourism', /tasas turísticas|mano de obra barata|ciudades receptoras/i],
+  ['transport', /mantenimiento ferroviario|renfe|adif|pasajeros|retrasos ferroviarios|vivir sin coche|fibra óptica|servicios/i],
+  ['energy', /precio mayorista|contratos de consumidores|apagones|red y la gestión/i],
+];
+
+export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
-  if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return undefined;
-  const direct = packets.find((packet) => packet.matches.test(value));
-  if (direct) return direct;
+  if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
+  const direct = packets.filter((packet) => packet.matches.test(value));
+  const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|empleo p[uú]blico/i.test(value);
+  const filteredDirect = direct.filter((packet) => packet.id !== 'broad-public-administration' || administrationSignal);
+  const families = [...filteredDirect];
+  // A regularisation claim should not be replaced by the broader migration
+  // stock/flow packet merely because it also contains “inmigrantes”.
+  if (families.some((packet) => packet.id === 'broad-immigration-regularization')) {
+    return families.filter((packet) => packet.id !== 'broad-immigration');
+  }
+  if (families.length) return families;
   // Long-form claims often omit the domain noun (for example, “specialist
   // waiting lists” or “rail maintenance”). Route those phrases to the same
   // reviewed context packet instead of leaving them uncovered.
-  const supplemental = [
-    ['economy', /poblaci[oó]n|hogares|nacimientos|provincias|municipios rurales|fondos europeos|inflaci[oó]n general|deuda de los hogares|tipo impositivo|saldo contributivo/i],
-    ['economy', /nacionalidad|pa[ií]s de nacimiento|regularizaci[oó]n|papeles|flujo migratorio|fragmentaci[oó]n regulatoria|operar en varias comunidades|servicios digitales|interoperabilidad|contaminaci[oó]n atmosf[eé]rica|zonas de bajas emisiones|adaptaci[oó]n clim[aá]tica|sequ[ií]a|calidad del aire|episodios locales/i],
-    ['taxes', /inundaciones extraordinarias|d[eé]ficit|operaciones extraordinarias/i],
-    ['education', /conectividad|habilidades digitales|diferencias educativas/i],
-    ['energy', /almacenamiento energ[eé]tico|capacidad de red/i],
-    ['transport', /puntualidad ferroviaria|accidentes graves|inversi[oó]n ferroviaria|operadores y gestores|retraso concreto/i],
-    ['agriculture', /relevo generacional agrario|pol[ií]tica agraria com[uú]n/i],
-    ['taxes', /pequeños comercios|carga regulatoria|contratos públicos|proveedores pequeños|burocracia y costes/i],
-    ['health', /lista[s]? de espera|especialistas|terapia|enfermedad|profesionales sanitarios|sobrecarga/i],
-    ['education', /rendimiento escolar|notas medias|demanda laboral|talento|burocracia universitaria|credenciales|barrio donde se vive|centros educativos/i],
-    ['pensions', /prestaciones contributivas|prestaciones no contributivas|obligaciones futuras|ahorrar de forma privada/i],
-    ['economy', /cesta de la compra|ipc general|capacidad de ahorro|gastos? antes|apoyo familiar|coste de vida|datos macroeconom|empeoramiento econom/i],
-    ['tourism', /tasas turísticas|mano de obra barata|ciudades receptoras/i],
-    ['transport', /mantenimiento ferroviario|renfe|adif|pasajeros|retrasos ferroviarios|vivir sin coche|fibra óptica|servicios/i],
-    ['energy', /precio mayorista|contratos de consumidores|apagones|red y la gestión/i],
-  ];
-  const match = supplemental.find(([, pattern]) => pattern.test(value));
-  return match ? packets.find((packet) => packet.id === `broad-${match[0]}`) : undefined;
+  const match = supplementalRoutes.find(([, pattern]) => pattern.test(value));
+  return match ? [packets.find((packet) => packet.id === `broad-${match[0]}`)].filter(Boolean) : [];
 };
 
+export const broadDomainPacketFor = (text) => broadDomainPacketsFor(text)[0];
+
 export const broadMetricIdsFor = (text) => new Set(
-  broadDomainPacketFor(text)?.criteria.flatMap((criterion) => criterion.metricIds || []) || [],
+  broadDomainPacketsFor(text).flatMap((packet) => packet.criteria.flatMap((criterion) => criterion.metricIds || [])),
 );
 
 const formatObservation = (observation) => {
@@ -251,6 +290,10 @@ const latestObservations = (items) => items.slice().sort((left, right) => String
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
+  return answerPlanForPacket(packet, { now, observations });
+};
+
+const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {}) => {
   if (!packet) return undefined;
   const lifecycle = snapshotLifecycle(BROAD_SNAPSHOT_POLICY, now);
   if (!lifecycle.usable) return undefined;
@@ -323,6 +366,61 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
       ...(missingCriteria.length ? { missingDimensions: missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },
+    snapshotPolicy: BROAD_SNAPSHOT_POLICY,
+    knowledgeVersion: 'broad-domain-snapshot-1',
+  };
+};
+
+export const answerPlanForBroadDomains = (text, { now = Date.now(), observations = [] } = {}) => {
+  const familyPlans = broadDomainPacketsFor(text)
+    .map((packet) => answerPlanForPacket(packet, { now, observations }))
+    .filter(Boolean);
+  if (!familyPlans.length) return undefined;
+  if (familyPlans.length === 1) return familyPlans[0];
+
+  const familyNames = {
+    'broad-immigration-regularization': 'Regularización',
+    'broad-public-services': 'Servicios públicos',
+    'broad-benefits-recipients': 'Prestaciones',
+  };
+  const families = familyPlans.flatMap((plan) => (plan.evidenceSummary?.families || []).map((family) => ({
+    ...family,
+    label: `${familyNames[plan.id] || plan.headline.split(' ').slice(0, 3).join(' ')} · ${family.label}`,
+  })));
+  const evidenceIds = [...new Set(familyPlans.flatMap((plan) => plan.evidenceIds || []))];
+  const sourceIds = [...new Set(familyPlans.flatMap((plan) => plan.sourceIds || []))];
+  const gaps = [...new Set(familyPlans.flatMap((plan) => plan.evidenceSummary?.missingDimensions || []))];
+  const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
+  const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
+  const observed = families.flatMap((family) => family.data || []);
+  const reply = [
+    'La frase mezcla tres afirmaciones distintas: regularización migratoria, capacidad de los servicios públicos y prestaciones.',
+    observed.length ? `Valores observados: ${observed.join('; ').replace(/\.{2,}/g, '.')}` : undefined,
+    'No se ha localizado una medición compatible para “colapso total” ni para “incremento exponencial” de una categoría de prestaciones no especificada.',
+    gaps.length ? `Quedan abiertos estos datos: ${gaps.join('; ')}.` : undefined,
+    'Las cifras disponibles no demuestran por sí solas que una regularización provoque un colapso de los servicios o un aumento de las prestaciones; la simultaneidad temporal no prueba causalidad.',
+  ].filter(Boolean).join(' ');
+  return {
+    id: 'broad-compound-claim',
+    schemaVersion: '1',
+    evidenceLevel: 'limited',
+    headline: 'La frase mezcla regularización, servicios públicos y prestaciones; cada parte requiere su propia evidencia',
+    summary: 'Las tres partes deben comprobarse con poblaciones, periodos, denominadores y unidades compatibles. Un dato sobre una familia no sustituye al de otra.',
+    coverage: 'qualified',
+    claimType: 'mixed',
+    interpretation: { kind: 'mixed', subject: 'regularización, servicios públicos y prestaciones', subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: 'efectos de una regularización sobre servicios públicos y prestaciones', interpretation: 'La frase contiene una medida migratoria, dos resultados extremos y una relación causal; se mantienen separados.' },
+    blocks: [
+      { type: 'data_finding', evidenceIds, points: dataPoints },
+      { type: 'cannot_conclude', evidenceIds, points: [...limitations, 'La simultaneidad de dos series no demuestra que una medida migratoria cause el resultado observado.'] },
+      ...(gaps.length ? [{ type: 'evidence_gap', missing: gaps, needed: ['programa, población, periodo, denominador y unidad compatibles'], nextAction: 'Localizar una serie específica para cada familia antes de cuantificar la afirmación.' }] : []),
+      { type: 'conversation_reply', evidenceIds, text: reply },
+    ],
+    limitation: 'Los datos deben mantenerse separados por familia y no prueban por sí solos colapso, crecimiento exponencial ni causalidad.',
+    evidenceIds,
+    sourceIds,
+    sourceLinks: familyPlans.flatMap((plan) => plan.sourceLinks || []).filter((source, index, all) => all.findIndex((item) => item.id === source.id) === index),
+    asOf: '2026-08-20',
+    evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-1',
   };

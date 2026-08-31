@@ -88,6 +88,14 @@ const stateConclusion = (state: 'supported' | 'limited' | 'insufficient', answer
     ? 'La evidencia aporta contexto, pero no permite dar por demostrada la afirmación completa.'
     : 'No hay evidencia directa suficiente para confirmar esta afirmación.');
 const formatNumber = (value: number): string => value.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const loadingStagesFor = (text: string): string[] => {
+  const value = text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const stages = ['Separando las afirmaciones'];
+  if (/legaliz|regulariz|inmigr|migrant|extranj/.test(value)) stages.push('Comprobando la regularización');
+  if (/servicios? publicos?|colapso|sanidad|educacion|hospital|escuela/.test(value)) stages.push('Buscando indicadores de servicios públicos');
+  if (/paguitas?|prestacion|ayuda|subsidio|renta minima|ingreso minimo|benefici/.test(value)) stages.push('Revisando prestaciones');
+  return stages;
+};
 const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckResult['sources'][number] | undefined, scope: CheckResult['scope']): string => {
   const entries = visual.labels.map((label, index) => ({ label, value: Number(visual.values[index]) })).filter((entry) => Number.isFinite(entry.value)).slice(0, 8);
   if (!entries.length) return '';
@@ -151,12 +159,13 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
 const setLoading = (text: string): void => {
   finishLoading();
   loadingStartedAt = Date.now();
+  const loadingStages = loadingStagesFor(text);
   if (form) form.setAttribute('aria-busy', 'true');
   const button = submitButton();
   if (button) { button.disabled = true; button.setAttribute('aria-label', 'Comprobación en curso'); }
   if (result) {
     setMode(true);
-    result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobando</span><h2 data-loading-title>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>Separamos lo que afirma, buscamos el contexto necesario y comprobamos si hay fuentes que respondan exactamente.</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
+    result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobando</span><h2 data-loading-title>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>${escapeHtml(loadingStages[0])}. La comprobación sigue en curso.</p><p class="claim-loading-family" data-loading-family>${escapeHtml(loadingStages.join(' · '))}</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
     result.querySelector<HTMLButtonElement>('[data-cancel-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; input?.focus(); });
   }
   const update = (): void => {
@@ -164,8 +173,18 @@ const setLoading = (text: string): void => {
     const stage = result?.querySelector<HTMLElement>('[data-loading-stage]');
     const title = result?.querySelector<HTMLElement>('[data-loading-title]');
     const note = result?.querySelector<HTMLElement>('[data-loading-note]');
+    const family = result?.querySelector<HTMLElement>('[data-loading-family]');
     const elapsedNode = result?.querySelector<HTMLElement>('[data-loading-elapsed]');
-    if (elapsed < 3) return;
+    if (elapsed < 2) return;
+    if (loadingStages.length > 1) {
+      const index = Math.min(loadingStages.length - 1, Math.floor((elapsed - 2) / 3) + 1);
+      if (stage) stage.textContent = `Paso ${index + 1} de ${loadingStages.length}`;
+      if (title) title.textContent = loadingStages[index];
+      if (note) note.textContent = 'Comprobación en curso; todavía no se marca ninguna fase como completada.';
+      if (family) family.textContent = loadingStages.join(' · ');
+      if (elapsedNode) elapsedNode.textContent = `${elapsed} s · La comprobación sigue en curso`;
+      return;
+    }
     if (elapsed < 8) { if (stage) stage.textContent = 'Analizando'; if (title) title.textContent = 'Estamos identificando qué afirma'; if (note) note.textContent = 'Buscamos una comprobación compatible con la frase y su periodo, lugar y medida.'; }
     else if (elapsed < 15) { if (stage) stage.textContent = 'Contrastando'; if (title) title.textContent = 'Estamos buscando datos y fuentes'; if (note) note.textContent = 'La respuesta sigue en curso. El modelo solo ayuda a interpretar y ordenar evidencia comprobable.'; }
     else { if (stage) stage.textContent = 'Preparando fuentes'; if (title) title.textContent = 'Estamos terminando la comprobación'; if (note) note.textContent = 'Está tardando un poco más de lo habitual; puedes esperar o cancelar y volver a intentarlo.'; }

@@ -1,6 +1,6 @@
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from './scorecard-snapshot.mjs';
-import { answerPlanForBroadDomain } from './broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomains } from './broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 
 const topicQuestion = (text) => {
@@ -104,7 +104,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       },
     };
   }
-  const broadDomainPlan = answerPlanForBroadDomain(original);
+  const broadDomainPlan = answerPlanForBroadDomains(original);
   if (broadDomainPlan) {
     return {
       status: 'complete',

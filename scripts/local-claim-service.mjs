@@ -37,7 +37,7 @@ import { createModelTasks } from './model-tasks.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
-import { answerPlanForBroadDomain, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -2805,7 +2805,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // insufficient until a concrete conduct, actor and attributable record
   // are available; it must never infer a criminal case from loaded wording.
   const interpretedKind = classified.compiler?.claimType;
-  const broadPacketAvailable = Boolean(answerPlanForBroadDomain(text));
+  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0;
   const allegationProfile = classified.compiler?.criteriaProfile === 'public-corruption'
     || classified.compiler?.criteriaProfile === 'specific-allegation';
   const publicActorContext = /\b(?:s[aá]nchez|presidente|gobierno|ministro|ministra|diputad[oa]|partido|administraci[oó]n p[uú]blica)\b/i.test(normalise(text));
@@ -2824,7 +2824,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // inferred series (for example asylum applications for a legalisation
   // claim) cannot displace the packet's own figures or declared gap.
   if (broadPacketAvailable && broadMetricIdsFor(text).size === 0) {
-    const plan = answerPlanForBroadDomain(text);
+    const plan = answerPlanForBroadDomains(text);
     if (plan) return { status: 'complete', requestId: resultRequestId, canonicalSignature: canonicalSignatureFor(text), result: plan, relatedClaims: [] };
   }
   const eventFrame = detectCurrentEvent(text);
@@ -3105,7 +3105,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // the warehouse only found a narrow or unrelated series. Dynamic evidence
   // still wins for a concrete, dimension-compatible proposition; the packet
   // is the safe route for loaded language or an empty compatible selection.
-  const broadContextPlan = answerPlanForBroadDomain(text, { observations });
+  const broadContextPlan = answerPlanForBroadDomains(text, { observations });
   // A qualifying tone must not erase measurements that were successfully
   // retrieved. Broad packets explain how to evaluate a claim when data is
   // missing. When even one compatible observation exists, however, the

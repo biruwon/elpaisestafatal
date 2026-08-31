@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const source = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 const page = await readFile(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
-const required = ['renderResult', 'Respuesta con fuentes', 'Evidencia limitada', 'data-copy-answer', 'claim-sources', 'result-redesigned', 'result-scorecard', 'scorecard-grid', 'scorecard-values', 'scorecard-methodology', 'result-visual', 'result-chart', 'result-data-table', 'result-evidence', 'result-limit', 'result-details', 'claim-reply', 'claim-reply-text', 'item.keyFact || stateConclusion', 'publicMetricLabel', 'stateConclusion', 'prefers-reduced-motion'];
+const required = ['renderResult', 'Respuesta con fuentes', 'Evidencia limitada', 'data-copy-answer', 'claim-sources', 'result-redesigned', 'result-scorecard', 'scorecard-grid', 'scorecard-values', 'scorecard-methodology', 'result-visual', 'result-chart', 'result-data-table', 'result-evidence', 'result-limit', 'result-details', 'claim-reply', 'claim-reply-text', 'item.keyFact || stateConclusion', 'publicMetricLabel', 'stateConclusion', 'prefers-reduced-motion', 'loadingStagesFor', 'Comprobando la regularización', 'Buscando indicadores de servicios públicos', 'Revisando prestaciones', 'no se marca ninguna fase como completada'];
 const missing = required.filter((item) => !source.includes(item) && !page.includes(item));
 if (missing.length) throw new Error(`Unified result UX is missing: ${missing.join(', ')}`);
 if (source.includes('Los datos no apoyan') || page.includes('Los datos no apoyan')) throw new Error('Unified result must not publish a global scorecard verdict');

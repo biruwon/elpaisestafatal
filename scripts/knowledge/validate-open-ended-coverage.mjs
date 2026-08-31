@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { metricCandidatesForQuery } from './metric-query-hints.mjs';
-import { answerPlanForBroadDomain } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomain, answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 
 const registry = createRequire(import.meta.url)('../../config/metric-registry.json');
 
@@ -93,6 +93,20 @@ for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una
   assert(plan?.evidenceSummary?.families.some((family) => family.finding?.includes('1.174.978')), `${text}: regularization packet did not expose the official process figures`);
   assert(plan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), `${text}: response text omitted the figures already present in the evidence packet`);
 }
+
+const compoundClaim = 'Legalización masiva de inmigrantes, provocando un colapso total de los servicios públicos y un incremento exponencial en esa parte de la población que necesita las paguitas para vivir.';
+const compoundPlan = answerPlanForBroadDomains(compoundClaim);
+const compoundFamilies = compoundPlan?.evidenceSummary?.families || [];
+assert(compoundPlan?.id === 'broad-compound-claim', 'compound claim did not use the composed evidence plan');
+assert(compoundFamilies.some((family) => family.label.startsWith('Regularización ·')), 'compound claim lost regularisation evidence family');
+assert(compoundFamilies.some((family) => family.label.startsWith('Servicios públicos ·')), 'compound claim lost public-services evidence family');
+assert(compoundFamilies.some((family) => family.label.startsWith('Prestaciones ·')), 'compound claim lost benefits evidence family');
+assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
+assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
+assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('capacidad y demanda')), 'compound claim did not expose missing service measurements');
+assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('perceptores')), 'compound claim did not expose missing benefits measurements');
+assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
+assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueba causalidad'), 'compound claim omitted the causal limitation');
 
 const rhetoricalCases = [
   ['Se maquillan las cifras del desempleo', 'unemployment', 'intent'],
