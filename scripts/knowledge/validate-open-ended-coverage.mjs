@@ -102,9 +102,15 @@ assert(compoundFamilies.some((family) => family.familyId === 'broad-immigration-
 assert(compoundFamilies.some((family) => family.familyId === 'broad-public-services' && family.familyLabel === 'Servicios públicos'), 'compound claim lost public-services evidence family');
 assert(compoundFamilies.some((family) => family.familyId === 'broad-benefits-recipients' && family.familyLabel === 'Prestaciones'), 'compound claim lost benefits evidence family');
 assert(compoundFamilies.every((family) => family.criteria?.length === 3 && family.sourceIds?.length), 'compound claim did not preserve grouped criteria and source attribution');
+assert(compoundFamilies.map((family) => family.familyId).join(',') === 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients', 'compound claim families are not ordered as submitted');
+const regularizationFamily = compoundFamilies.find((family) => family.familyId === 'broad-immigration-regularization');
+assert(regularizationFamily?.data?.includes('Solicitudes: 1.174.978 (2026-07-02)') && regularizationFamily?.data?.includes('Expedientes tramitados: 609.737 (2026-07-02)'), 'regularisation values are not atomic or period-labelled');
+assert(regularizationFamily?.missingDimensions?.includes('autorizaciones concedidas'), 'regularisation result does not expose the missing legal outcome');
+assert(compoundFamilies.find((family) => family.familyId === 'broad-public-services')?.missingDimensions?.includes('servicio concreto'), 'service gap is not scoped to a concrete missing field');
+assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('norma o programa'), 'compound reply did not surface scoped missing fields');
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
-assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('capacidad y demanda')), 'compound claim did not expose missing service measurements');
+assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('perceptores')), 'compound claim did not expose missing benefits measurements');
 assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueba causalidad'), 'compound claim omitted the causal limitation');

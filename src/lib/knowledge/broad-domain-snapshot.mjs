@@ -59,9 +59,9 @@ const packets = [
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
     summary: 'La expresión “colapso total” no es un indicador estadístico. Para comprobarla hay que medir capacidad, demanda, tiempos de atención, cobertura y resultados del servicio afectado, con periodo y territorio definidos.',
     criteria: [
-      { id: 'public-service-capacity', label: 'Capacidad y demanda', finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', sourceIds: ['public-services-source'] },
-      { id: 'public-service-outcomes', label: 'Resultados y atención', finding: 'Tiempos de espera, cobertura y resultados pueden mostrar presión o deterioro en un servicio, pero no equivalen automáticamente a un colapso total de todos los servicios públicos.', sourceIds: ['public-services-source'] },
-      { id: 'public-service-scope', label: 'Alcance', finding: 'Una experiencia local o una subida de demanda no permite generalizar a toda España sin una serie comparable y un umbral explícito.', sourceIds: ['public-services-source'] },
+      { id: 'public-service-capacity', label: 'Capacidad y demanda', finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source'] },
+      { id: 'public-service-outcomes', label: 'Resultados y atención', finding: 'Tiempos de espera, cobertura y resultados pueden mostrar presión o deterioro en un servicio, pero no equivalen automáticamente a un colapso total de todos los servicios públicos.', missingDimensions: ['indicador de resultados', 'serie comparable'], sourceIds: ['public-services-source'] },
+      { id: 'public-service-scope', label: 'Alcance', finding: 'Una experiencia local o una subida de demanda no permite generalizar a toda España sin una serie comparable y un umbral explícito.', missingDimensions: ['ámbito nacional comparable'], sourceIds: ['public-services-source'] },
     ],
     limitations: ['No se ha localizado aquí una medición compatible que permita cuantificar un “colapso total” de los servicios públicos en conjunto. La inmigración y la presión sobre un servicio tampoco prueban por sí solas una relación causal.'],
     sources: [source('public-services-source', 'Government finance and public service statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
@@ -73,9 +73,9 @@ const packets = [
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
     summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
     criteria: [
-      { id: 'benefit-programme', label: 'Programa y alcance', finding: 'No se puede cuantificar “esa parte de la población” sin indicar qué prestación o programa se está contando y qué personas cumplen sus requisitos.', sourceIds: ['benefits-statistics-source'] },
-      { id: 'benefit-recipients', label: 'Perceptores', finding: 'El dato compatible debe indicar perceptores, población de referencia, periodo, territorio y si cuenta personas, hogares, altas o pagos; no se ha localizado una cifra común para todas las ayudas.', sourceIds: ['benefits-statistics-source'] },
-      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-programme', label: 'Programa y alcance', finding: 'No se puede cuantificar “esa parte de la población” sin indicar qué prestación o programa se está contando y qué personas cumplen sus requisitos.', missingDimensions: ['programa de prestaciones', 'población de referencia', 'requisitos'], sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-recipients', label: 'Perceptores', finding: 'El dato compatible debe indicar perceptores, población de referencia, periodo, territorio y si cuenta personas, hogares, altas o pagos; no se ha localizado una cifra común para todas las ayudas.', missingDimensions: ['perceptores', 'periodo', 'territorio', 'denominador', 'unidad de conteo'], sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', missingDimensions: ['serie temporal', 'tasa de crecimiento', 'diseño causal'], sourceIds: ['benefits-statistics-source'] },
     ],
     limitations: ['No se ha localizado una medición compatible para la categoría coloquial “paguitas”. Sin programa, población, periodo y denominador no se puede cuantificar el supuesto aumento ni atribuir dependencia o causalidad.'],
     sources: [source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
@@ -108,9 +108,9 @@ const packets = [
     headline: 'Regularización y legalización no son una sola cifra',
     summary: 'Para comprobar una supuesta legalización masiva hay que identificar la norma o programa, su fecha y sus requisitos. Una regularización puede admitir solicitudes extraordinarias para personas que ya residen en España, pero las solicitudes, los expedientes tramitados y las autorizaciones concedidas son cifras distintas.',
     criteria: [
-      { id: 'regularization-measure', label: 'Medida concreta', finding: 'El término “legalización masiva” no identifica por sí solo una ley, decreto o programa; hace falta localizar la norma y comprobar su alcance, requisitos y exclusiones.', sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
-      { id: 'regularization-counts', label: 'Cifras del proceso', finding: 'El balance oficial localizado registra 1.174.978 solicitudes y 609.737 expedientes tramitados; ninguna de esas cifras equivale automáticamente a autorizaciones concedidas.', sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
-      { id: 'legal-status', label: 'Resultado jurídico', finding: 'Para saber cuántas personas obtuvieron autorización hay que consultar resoluciones concedidas, denegadas y pendientes, además del tipo y duración del permiso.', sourceIds: ['regularizacion-requisitos-antecedentes-2026'] },
+      { id: 'regularization-measure', label: 'Medida concreta', finding: 'El término “legalización masiva” no identifica por sí solo una ley, decreto o programa; hace falta localizar la norma y comprobar su alcance, requisitos y exclusiones.', missingDimensions: ['norma o programa', 'fecha', 'requisitos y exclusiones'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
+      { id: 'regularization-counts', label: 'Cifras del proceso', finding: 'El balance oficial localizado registra 1.174.978 solicitudes y 609.737 expedientes tramitados; ninguna de esas cifras equivale automáticamente a autorizaciones concedidas.', fallbackData: ['Solicitudes: 1.174.978 (2026-07-02)', 'Expedientes tramitados: 609.737 (2026-07-02)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
+      { id: 'legal-status', label: 'Resultado jurídico', finding: 'Para saber cuántas personas obtuvieron autorización hay que consultar resoluciones concedidas, denegadas y pendientes, además del tipo y duración del permiso.', missingDimensions: ['autorizaciones concedidas', 'denegaciones', 'expedientes pendientes', 'tipo y duración del permiso'], sourceIds: ['regularizacion-requisitos-antecedentes-2026'] },
     ],
     limitations: ['Sin una norma, fecha o cifra concreta no se puede afirmar que haya una “legalización masiva” ni cuantificar cuántas personas obtuvieron un permiso. La palabra puede mezclar una propuesta, un proceso de regularización y sus resultados.'],
     sources: [
@@ -255,18 +255,20 @@ export const broadDomainPacketsFor = (text) => {
   const direct = packets.filter((packet) => packet.matches.test(value));
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|empleo p[uú]blico/i.test(value);
   const filteredDirect = direct.filter((packet) => packet.id !== 'broad-public-administration' || administrationSignal);
-  const families = [...filteredDirect];
+  const familyOrder = { 'broad-immigration-regularization': 1, 'broad-public-services': 2, 'broad-benefits-recipients': 3 };
+  const sortFamilies = (items) => items.slice().sort((left, right) => (familyOrder[left.id] || 50) - (familyOrder[right.id] || 50));
+  const families = sortFamilies(filteredDirect);
   // A regularisation claim should not be replaced by the broader migration
   // stock/flow packet merely because it also contains “inmigrantes”.
   if (families.some((packet) => packet.id === 'broad-immigration-regularization')) {
-    return families.filter((packet) => packet.id !== 'broad-immigration');
+    return sortFamilies(families.filter((packet) => packet.id !== 'broad-immigration'));
   }
   if (families.length) return families;
   // Long-form claims often omit the domain noun (for example, “specialist
   // waiting lists” or “rail maintenance”). Route those phrases to the same
   // reviewed context packet instead of leaving them uncovered.
   const match = supplementalRoutes.find(([, pattern]) => pattern.test(value));
-  return match ? [packets.find((packet) => packet.id === `broad-${match[0]}`)].filter(Boolean) : [];
+  return match ? sortFamilies([packets.find((packet) => packet.id === `broad-${match[0]}`)].filter(Boolean)) : [];
 };
 
 export const broadDomainPacketFor = (text) => broadDomainPacketsFor(text)[0];
@@ -319,7 +321,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
   const missingCriteria = matchedObservations
     .filter(({ criterion, observations: items }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding))
-    .map(({ criterion }) => `dato concreto sobre ${criterion.label.toLocaleLowerCase('es')}`);
+    .flatMap(({ criterion }) => (criterion.missingDimensions?.length ? criterion.missingDimensions : [criterion.label.toLocaleLowerCase('es')]).map((dimension) => `dato concreto sobre ${dimension}`));
   const evidenceGap = missingCriteria.length ? {
     type: 'evidence_gap',
     missing: missingCriteria,
@@ -361,10 +363,12 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
       families: packet.criteria.map((item, index) => ({
         familyId: packet.id,
         familyLabel: familyLabelForPacket(packet),
+        criterionId: item.id,
         label: item.label,
         direction: 'qualifies',
         evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)],
         sourceIds: item.sourceIds,
+        ...(item.missingDimensions?.length ? { missingDimensions: item.missingDimensions } : {}),
         finding: item.finding,
         ...(matchedObservations[index]?.observations?.length
           ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) }
@@ -389,7 +393,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones' };
   const families = familyPlans.map((plan) => {
     const entries = plan.evidenceSummary?.families || [];
-    const criteria = entries.map((family) => ({ id: family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data }));
+    const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
     return {
       familyId: plan.id,
       familyLabel: familyNames[plan.id] || plan.headline,
@@ -400,7 +404,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
       finding: plan.summary,
       criteria,
       data: [...new Set(entries.flatMap((family) => family.data || []))],
-      missingDimensions: [...new Set(entries.filter((family) => !family.data?.length).map((family) => family.label))],
+      missingDimensions: [...new Set(entries.filter((family) => !family.data?.length).flatMap((family) => family.missingDimensions || [family.label]))],
     };
   });
   const evidenceIds = [...new Set(familyPlans.flatMap((plan) => plan.evidenceIds || []))];
