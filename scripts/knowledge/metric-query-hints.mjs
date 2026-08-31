@@ -601,6 +601,19 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('health_expenditure_per_capita');
     preferred.delete('median_equivalised_income');
   }
+  // A compound pension claim must retain the independent demographic and
+  // public-finance dimensions. The pension-spending family alone cannot
+  // answer whether ageing is increasing dependency or whether the public
+  // accounts are deteriorating.
+  const hasDemographicPensionContext = hasAny('arbol demografico', 'estructura demografica', 'demografia', 'envejecimiento', 'cotizantes', 'edad de trabajar')
+    && hasAny('pension', 'jubilacion', 'cotizacion', 'arcas publicas', 'sostenible', 'insostenible', 'deficit');
+  if (hasDemographicPensionContext) {
+    preferred.add('old_age_dependency_ratio');
+    if (hasAny('arcas publicas', 'deficit', 'deuda', 'presupuesto')) {
+      preferred.add('government_deficit_ratio');
+      preferred.add('government_debt_ratio');
+    }
+  }
   if (preferred.has('old_age_survivors_benefits_per_capita_europe')) {
     preferred.delete('old_age_survivors_benefits_per_capita');
     preferred.delete('social_protection_benefits_per_capita');

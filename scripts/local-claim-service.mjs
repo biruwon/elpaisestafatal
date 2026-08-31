@@ -131,9 +131,22 @@ const broadComplaintText = (value) => {
 // Metric routing is proposition-aware. A compound sentence must preserve the
 // union of registry families found in each explicit clause; checking only the
 // original sentence can hide one metric behind another clause.
+const compoundMetricIdsForInput = (text) => {
+  const normalized = normalise(text);
+  const ids = new Set();
+  const hasDemography = /\b(?:arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|cotizantes|poblaci[oó]n en edad de trabajar)\b/.test(normalized);
+  const hasPensions = /\b(?:pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b/.test(normalized);
+  if (hasDemography && hasPensions) ids.add('old_age_dependency_ratio');
+  if (hasPensions && /\b(?:arcas p[uú]blicas|d[eé]ficit|deuda|finan(?:ciaci[oó]n|zas?)|presupuest)\w*\b/.test(normalized)) {
+    ids.add('government_deficit_ratio');
+    ids.add('government_debt_ratio');
+  }
+  return ids;
+};
 const metricIdsForInput = (text, compiler = {}) => new Set([
   ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
   ...preferredMetricIdsForQuery(text),
+  ...compoundMetricIdsForInput(text),
   ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
     .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
 ]);

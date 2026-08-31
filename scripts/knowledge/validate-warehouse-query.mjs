@@ -117,6 +117,10 @@ if (preferredMetricIdsForQuery('¿Tiene España menos hijos por mujer que la Uni
 if (preferredMetricIdsForQuery('¿Cuánto gasta España en prestaciones de protección social por habitante?').has('government_expenditure_ratio')) throw new Error('Metric hints confused social protection benefits with total government spending');
 if (!preferredMetricIdsForQuery('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?').has('old_age_survivors_benefits_per_capita')) throw new Error('Metric hints did not prefer old-age and survivors benefits');
 if (preferredMetricIdsForQuery('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?').has('social_protection_benefits_per_capita')) throw new Error('Metric hints confused old-age benefits with total social protection spending');
+const compoundPension = preferredMetricIdsForQuery('Árbol demográfico completamente invertido: el sistema de pensiones es completamente insostenible y arruina las arcas públicas');
+for (const metricId of ['old_age_survivors_benefits_per_capita', 'old_age_dependency_ratio', 'government_deficit_ratio', 'government_debt_ratio']) {
+  if (!compoundPension.has(metricId)) throw new Error(`Compound pension wording did not preserve ${metricId}`);
+}
 if (!preferredMetricIdsForQuery('¿España gasta más por habitante en pensiones que la Unión Europea?').has('old_age_survivors_benefits_per_capita_europe')) throw new Error('Metric hints did not prefer Spain/EU pension spending');
 if (preferredMetricIdsForQuery('¿España gasta más por habitante en pensiones que la Unión Europea?').has('old_age_survivors_benefits_per_capita')) throw new Error('Metric hints kept Spain-only pension spending alongside the Spain/EU comparison');
 if (!preferredMetricIdsForQuery('¿Está la inflación de España por encima de la Unión Europea?').has('inflation_rate_europe')) throw new Error('Metric hints did not prefer the Spain/EU inflation comparison family');
