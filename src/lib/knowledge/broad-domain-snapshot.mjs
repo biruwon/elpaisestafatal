@@ -7,6 +7,20 @@ import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-08-20', role: 'primary' });
 
 const packets = [
+  {
+    id: 'broad-public-administration',
+    matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
+    interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
+    headline: 'La administración pública requiere medir plantilla, desempeño y calidad del servicio',
+    summary: '“Administración degradada”, “puesto prescindible” o “funcionario vago” son valoraciones que no se pueden confirmar con el número de empleados ni con el gasto. Hay que separar plantilla, vacantes, absentismo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
+    criteria: [
+      { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El número de empleados públicos y el gasto describen recursos, pero no indican cuántos puestos son sustituibles ni si una persona concreta trabaja o no.', sourceIds: ['public-administration-source'] },
+      { id: 'public-service-performance', label: 'Desempeño', finding: 'Para evaluar la administración hacen falta tiempos de tramitación, cargas de trabajo, vacantes, absentismo, productividad y resultados del servicio, con una comparación compatible.', sourceIds: ['public-administration-source'] },
+      { id: 'individual-conduct', label: 'Conducta individual', finding: 'Una oposición otorga una relación de empleo regulada; no demuestra por sí sola rendimiento, absentismo o derecho a permanecer sin cumplir sus obligaciones.', sourceIds: ['public-administration-source'] },
+    ],
+    limitations: ['La frase no aporta un servicio, puesto, territorio, periodo ni indicador. Sin esos datos no se puede estimar cuántos empleos son prescindibles ni atribuir vagancia a un colectivo entero.'],
+    sources: [source('public-administration-source', 'Government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
+  },
   ...[
     ['health', /\b(sanidad|hospital|m[eé]dic|lista de espera|salud p[uú]blica|cita|psic[oó]log|odontolog|tratamiento)\w*\b/i, 'La sanidad se mide con acceso, resultados, recursos y gasto', 'La salud pública no se puede resumir en una experiencia o una cifra. Hay que separar listas de espera, personal, camas, gasto, resultados y diferencias territoriales.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Healthcare_expenditure_statistics', 'Eurostat'],
     ['education', /\b(educaci[oó]n|escuela|colegio|universidad|abandono escolar|formaci[oó]n|m[aá]ster|t[ií]tulo|fp|academia|clases particulares|estudiante)\w*\b/i, 'La educación requiere separar recursos, acceso y resultados', 'El gasto o el número de docentes no demuestra por sí solo la calidad educativa. Hay que comparar resultados, composición del alumnado, recursos y territorio.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Education_and_training_statistics', 'Eurostat'],
@@ -177,7 +191,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
     asOf: '2026-08-20',
     evidenceSummary: {
       mode: 'snapshot',
-      families: packet.criteria.map((item) => ({ label: item.label, direction: 'qualifies', evidenceIds: item.sourceIds })),
+      families: packet.criteria.map((item) => ({ label: item.label, direction: 'qualifies', evidenceIds: item.sourceIds, finding: item.finding })),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,

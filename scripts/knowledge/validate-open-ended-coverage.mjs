@@ -38,6 +38,11 @@ for (const [text, expectedConcepts] of cases) {
 const broadPolitical = deterministicFallbackCompiler('El país está fatal');
 assert(metricCandidatesForQuery('El país está fatal', broadPolitical.concepts || []).size === 0, 'political scorecard wording was incorrectly assigned arbitrary metric families');
 
+const publicAdministration = answerPlanForBroadDomain('Administración pública completamente degradada: hay puestos prescindibles ocupados por funcionarios que no trabajan');
+assert(publicAdministration?.headline.includes('administración pública'), 'public-administration wording was routed to an unrelated broad packet');
+assert(publicAdministration?.summary.includes('plantilla'), 'public-administration packet omitted the relevant evidence dimensions');
+assert(publicAdministration?.evidenceSummary?.families.some((family) => family.finding?.includes('empleados públicos')), 'public-administration packet did not expose concrete criterion findings');
+
 const rhetoricalCases = [
   ['Se maquillan las cifras del desempleo', 'unemployment', 'intent'],
   ['La llegada de extranjeros lo ocupa todo', 'immigration', 'loaded'],
