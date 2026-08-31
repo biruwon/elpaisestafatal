@@ -3071,7 +3071,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // the warehouse only found a narrow or unrelated series. Dynamic evidence
   // still wins for a concrete, dimension-compatible proposition; the packet
   // is the safe route for loaded language or an empty compatible selection.
-  const broadContextPlan = answerPlanForBroadDomain(text);
+  const broadContextPlan = answerPlanForBroadDomain(text, { observations });
   // A qualifying tone must not erase measurements that were successfully
   // retrieved. Broad packets explain how to evaluate a claim when data is
   // missing; they are not a replacement for a data-bearing result.

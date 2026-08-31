@@ -56,6 +56,15 @@ assert(demographicPension?.headline.includes('pensiones'), 'demography-pension w
 assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pension packet omitted the public-finance part of the claim');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
 assert(demographicPension?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension fallback did not declare its missing data');
+const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
+  observations: [
+    { id: 'dependency-2024', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2024' },
+    { id: 'pension-2024', metricId: 'old_age_survivors_benefits_per_capita', value: 4194.66, unit: '€ por habitante', period: '2024' },
+    { id: 'deficit-2024', metricId: 'government_deficit_ratio', value: -3.2, unit: '% del PIB', period: '2024' },
+  ],
+});
+assert(demographicPensionWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2'), 'demography-pension packet did not render available measurements');
+assert(!demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet declared a gap despite available measurements');
 
 for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
   const plan = answerPlanForBroadDomain(text);

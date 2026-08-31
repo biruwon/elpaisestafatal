@@ -26,11 +26,11 @@ const packets = [
     matches: /\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b[\s\S]{0,180}\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b|\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*[\s\S]{0,180}\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b/i,
     interpretation: { kind: 'mixed', subject: 'demografía y sistema de pensiones', subjectType: 'country', predicate: 'puts_pressure_on', object: 'financiación pública', normalizedClaim: 'cambio demográfico, sostenibilidad de las pensiones y efecto sobre las cuentas públicas', interpretation: 'La frase combina una descripción demográfica, una predicción sobre sostenibilidad y una acusación sobre las cuentas públicas. Cada parte requiere una medida distinta.' },
     headline: 'El envejecimiento presiona las pensiones, pero no demuestra por sí solo una quiebra pública',
-    summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas. En esta comprobación contextual no se ha localizado una tabla compatible que cuantifique todas esas dimensiones; por eso hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
+    summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', sourceIds: ['demography-pension-finance'] },
-      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', sourceIds: ['demography-pension-finance'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', sourceIds: ['public-finance-pension'] },
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], sourceIds: ['demography-pension-finance'] },
+      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], sourceIds: ['demography-pension-finance'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], sourceIds: ['public-finance-pension'] },
     ],
     limitations: ['Sin un año, una serie de dependencia, un balance de ingresos y gastos y una definición de “insostenible”, no se puede cuantificar el problema ni confirmar que las arcas públicas estén siendo arruinadas. La presión demográfica y la quiebra inmediata son afirmaciones diferentes.'],
     sources: [
@@ -211,17 +211,29 @@ export const broadDomainPacketFor = (text) => {
   return match ? packets.find((packet) => packet.id === `broad-${match[0]}`) : undefined;
 };
 
-export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
+const formatObservation = (observation) => {
+  const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(observation.value) : String(observation.value || '').trim();
+  const unit = observation.displayUnit || observation.unit || '';
+  const period = observation.period ? ` (${observation.period})` : '';
+  return `${value}${unit ? ` ${unit}` : ''}${period}`;
+};
+
+export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
   if (!packet) return undefined;
   const lifecycle = snapshotLifecycle(BROAD_SNAPSHOT_POLICY, now);
   if (!lifecycle.usable) return undefined;
-  const evidenceIds = packet.criteria.flatMap((item) => item.sourceIds);
+  const matchedObservations = packet.criteria.map((criterion) => ({
+    criterion,
+    observations: observations.filter((observation) => criterion.metricIds?.includes(observation.metricId) && typeof observation.value === 'number' && Number.isFinite(observation.value)),
+  }));
+  const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
-  const quantitativeFindings = packet.criteria
+  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => items.slice(0, 2).map((item) => `${criterion.label}: ${formatObservation(item)}`));
+  const reviewedQuantitativeFindings = packet.criteria
     .map((item) => item.finding)
-    .filter((finding) => /\d/.test(finding))
-    .slice(0, 2);
+    .filter((finding) => /\d/.test(finding));
+  quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
   const evidenceGap = quantitativeFindings.length ? undefined : {
     type: 'evidence_gap',
     missing: packet.criteria.map((item) => `dato concreto sobre ${item.label.toLocaleLowerCase('es')}`),
@@ -244,7 +256,10 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
     claimType: 'mixed',
     interpretation: packet.interpretation,
     blocks: [
-      { type: 'data_finding', evidenceIds, points: packet.criteria.map((item) => `${item.label}: ${item.finding}`) },
+      { type: 'data_finding', evidenceIds, points: packet.criteria.map((item, index) => {
+        const found = matchedObservations[index]?.observations?.slice(0, 2) || [];
+        return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map(formatObservation).join('; ')}.` : ''}`;
+      }) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
       ...(evidenceGap ? [evidenceGap] : []),
       { type: 'conversation_reply', evidenceIds, text: conversationReply },
@@ -256,7 +271,7 @@ export const answerPlanForBroadDomain = (text, { now = Date.now() } = {}) => {
     asOf: '2026-08-20',
     evidenceSummary: {
       mode: 'snapshot',
-      families: packet.criteria.map((item) => ({ label: item.label, direction: 'qualifies', evidenceIds: item.sourceIds, finding: item.finding })),
+      families: packet.criteria.map((item, index) => ({ label: item.label, direction: 'qualifies', evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)], finding: item.finding, ...(matchedObservations[index]?.observations?.length ? { data: matchedObservations[index].observations.slice(0, 2).map(formatObservation) } : {}) })),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
