@@ -7,12 +7,23 @@ const checks = [
 const failures = [];
 for (const input of checks) {
   try {
-    const response = await fetch(`${base}/api/check`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(input),
-      signal: AbortSignal.timeout(5000),
-    });
+    let response;
+    let lastError;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        response = await fetch(`${base}/api/check`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(input),
+          signal: AbortSignal.timeout(5000),
+        });
+        break;
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+      }
+    }
+    if (!response) throw lastError || new Error('request failed');
     const body = await response.json().catch(() => undefined);
     if (![200, 202, 400, 429].includes(response.status)) failures.push(`unexpected HTTP status ${response.status}`);
     if (!body || typeof body.id !== 'string' || !['clarification', 'supported', 'limited', 'insufficient', 'processing', 'unavailable'].includes(body.state)) failures.push('response does not match the current check contract');
