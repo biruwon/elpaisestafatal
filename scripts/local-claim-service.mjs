@@ -37,7 +37,7 @@ import { createModelTasks } from './model-tasks.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
-import { answerPlanForBroadDomain } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomain, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -2805,10 +2805,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // insufficient until a concrete conduct, actor and attributable record
   // are available; it must never infer a criminal case from loaded wording.
   const interpretedKind = classified.compiler?.claimType;
+  const broadPacketAvailable = Boolean(answerPlanForBroadDomain(text));
   const allegationProfile = classified.compiler?.criteriaProfile === 'public-corruption'
     || classified.compiler?.criteriaProfile === 'specific-allegation';
   const publicActorContext = /\b(?:s[aá]nchez|presidente|gobierno|ministro|ministra|diputad[oa]|partido|administraci[oó]n p[uú]blica)\b/i.test(normalise(text));
-  if ((allegationProfile || interpretedKind === 'factual_allegation' || interpretedKind === 'allegation') && !publicActorContext) {
+  if ((allegationProfile || interpretedKind === 'factual_allegation' || interpretedKind === 'allegation') && !publicActorContext && !broadPacketAvailable) {
     const safeClassified = {
       ...classified,
       primary: undefined,
@@ -2817,6 +2818,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       compiler: { ...(classified.compiler || {}), clarificationRequired: false },
     };
     return toResolveResult(text, safeClassified, undefined, resultRequestId, []);
+  }
+  // Some reviewed broad packets are document/count questions rather than
+  // warehouse metric questions. Serve those packets directly so a nearby
+  // inferred series (for example asylum applications for a legalisation
+  // claim) cannot displace the packet's own figures or declared gap.
+  if (broadPacketAvailable && broadMetricIdsFor(text).size === 0) {
+    const plan = answerPlanForBroadDomain(text);
+    if (plan) return { status: 'complete', requestId: resultRequestId, canonicalSignature: canonicalSignatureFor(text), result: plan, relatedClaims: [] };
   }
   const eventFrame = detectCurrentEvent(text);
   if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
@@ -2857,7 +2866,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     return eventResult;
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
-  const explicitMetricIds = metricIdsForInput(text, classified.compiler || {});
+  const explicitMetricIds = broadPacketAvailable
+    ? broadMetricIdsFor(text)
+    : metricIdsForInput(text, classified.compiler || {});
   const broadMetricIds = explicitMetricIds.size ? new Set() : metricIdsForBroadInput(text, classified.compiler || {});
   const hintedMetricIds = vagueTaxJudgement(text) ? new Set() : (explicitMetricIds.size ? explicitMetricIds : broadMetricIds);
   const explicitMetricRoute = explicitMetricIds.size > 0 && !vagueTaxJudgement(text);
@@ -2876,9 +2887,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // adjacent editorial page instead of using its own warehouse family.
   const preservePublishedClaim = classified.primary?.kind === 'claim'
     && classified.status === 'published'
+    && !broadPacketAvailable
     && (!explicitMetricRoute || classified.compiler?.claimType === 'causal')
     && !predictionLike;
-  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text) || predictionLike) && !preservePublishedClaim
+  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text) || predictionLike || broadPacketAvailable) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right

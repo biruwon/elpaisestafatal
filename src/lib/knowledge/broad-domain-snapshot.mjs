@@ -28,11 +28,11 @@ const packets = [
     headline: 'El envejecimiento presiona las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], sourceIds: ['demography-pension-finance'] },
-      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], sourceIds: ['demography-pension-finance'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], sourceIds: ['public-finance-pension'] },
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], fallbackData: ['29,5 personas mayores por cada 100 en edad de trabajar (2020)'], sourceIds: ['demography-pension-finance'] },
+      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], sourceIds: ['demography-pension-finance'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], fallbackData: ['119,3 % del PIB de deuda pública (2020)'], sourceIds: ['public-finance-pension'] },
     ],
-    limitations: ['Sin un año, una serie de dependencia, un balance de ingresos y gastos y una definición de “insostenible”, no se puede cuantificar el problema ni confirmar que las arcas públicas estén siendo arruinadas. La presión demográfica y la quiebra inmediata son afirmaciones diferentes.'],
+    limitations: ['El snapshot aporta indicadores de 2020, pero no un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirma que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
     sources: [
       source('demography-pension-finance', 'Población y estructura demográfica', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_structure_and_ageing', '2025-10-01'),
       source('public-finance-pension', 'Social protection statistics · pensions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
@@ -232,6 +232,10 @@ export const broadDomainPacketFor = (text) => {
   return match ? packets.find((packet) => packet.id === `broad-${match[0]}`) : undefined;
 };
 
+export const broadMetricIdsFor = (text) => new Set(
+  broadDomainPacketFor(text)?.criteria.flatMap((criterion) => criterion.metricIds || []) || [],
+);
+
 const formatObservation = (observation) => {
   const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(observation.value) : String(observation.value || '').trim();
   const rawUnit = observation.displayUnit || observation.unit || '';
@@ -257,12 +261,16 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item)}`));
+  matchedObservations.forEach(({ criterion, observations: items }) => {
+    if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${value}`));
+  });
   const reviewedQuantitativeFindings = packet.criteria
     .map((item) => item.finding)
-    .filter((finding) => /\d/.test(finding));
+    .filter((finding) => /\d/.test(finding))
+    .map((finding) => finding.replace(/[.。]+$/, ''));
   quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
   const missingCriteria = matchedObservations
-    .filter(({ criterion, observations: items }) => !items.length && !/\d/.test(criterion.finding))
+    .filter(({ criterion, observations: items }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding))
     .map(({ criterion }) => `dato concreto sobre ${criterion.label.toLocaleLowerCase('es')}`);
   const evidenceGap = missingCriteria.length ? {
     type: 'evidence_gap',
@@ -288,7 +296,8 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     blocks: [
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item, index) => {
         const found = latestObservations(matchedObservations[index]?.observations || []);
-        return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map(formatObservation).join('; ')}.` : ''}`;
+        const fallback = item.fallbackData || [];
+        return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map(formatObservation).join('; ')}.` : fallback.length ? ` Dato del snapshot: ${fallback.join('; ')}.` : ''}`;
       }) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
       ...(evidenceGap ? [evidenceGap] : []),
@@ -301,7 +310,16 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
     asOf: '2026-08-20',
     evidenceSummary: {
       mode: 'snapshot',
-      families: packet.criteria.map((item, index) => ({ label: item.label, direction: 'qualifies', evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)], finding: item.finding, ...(matchedObservations[index]?.observations?.length ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) } : {}) })),
+      families: packet.criteria.map((item, index) => ({
+        label: item.label,
+        direction: 'qualifies',
+        evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)],
+        finding: item.finding,
+        ...(matchedObservations[index]?.observations?.length
+          ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) }
+          : item.fallbackData?.length ? { data: item.fallbackData }
+          : /\d/.test(item.finding) ? { data: [item.finding] } : {}),
+      })),
       ...(missingCriteria.length ? { missingDimensions: missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
       fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
     },

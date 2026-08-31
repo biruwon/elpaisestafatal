@@ -55,7 +55,8 @@ const demographicPension = answerPlanForBroadDomain('Árbol demográfico complet
 assert(demographicPension?.headline.includes('pensiones'), 'demography-pension wording was routed to a generic pensions response');
 assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pension packet omitted the public-finance part of the claim');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
-assert(demographicPension?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension fallback did not declare its missing data');
+assert(demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('29,5'), 'demography-pension fallback did not render its reviewed demographic snapshot');
+assert(demographicPension?.evidenceSummary?.families.every((family) => family.data?.length), 'demography-pension fallback did not attach snapshot values to every evidence family');
 const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'dependency-2024', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2024' },
