@@ -98,9 +98,10 @@ const compoundClaim = 'Legalización masiva de inmigrantes, provocando un colaps
 const compoundPlan = answerPlanForBroadDomains(compoundClaim);
 const compoundFamilies = compoundPlan?.evidenceSummary?.families || [];
 assert(compoundPlan?.id === 'broad-compound-claim', 'compound claim did not use the composed evidence plan');
-assert(compoundFamilies.some((family) => family.label.startsWith('Regularización ·')), 'compound claim lost regularisation evidence family');
-assert(compoundFamilies.some((family) => family.label.startsWith('Servicios públicos ·')), 'compound claim lost public-services evidence family');
-assert(compoundFamilies.some((family) => family.label.startsWith('Prestaciones ·')), 'compound claim lost benefits evidence family');
+assert(compoundFamilies.some((family) => family.familyId === 'broad-immigration-regularization' && family.familyLabel === 'Inmigración y regularización'), 'compound claim lost regularisation evidence family');
+assert(compoundFamilies.some((family) => family.familyId === 'broad-public-services' && family.familyLabel === 'Servicios públicos'), 'compound claim lost public-services evidence family');
+assert(compoundFamilies.some((family) => family.familyId === 'broad-benefits-recipients' && family.familyLabel === 'Prestaciones'), 'compound claim lost benefits evidence family');
+assert(compoundFamilies.every((family) => family.criteria?.length === 3 && family.sourceIds?.length), 'compound claim did not preserve grouped criteria and source attribution');
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('capacidad y demanda')), 'compound claim did not expose missing service measurements');

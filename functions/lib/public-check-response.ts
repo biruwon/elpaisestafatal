@@ -85,7 +85,14 @@ const resultFor = (entry: CatalogueEntry | RuntimeCatalogueEntry, claim: string,
 });
 const publicEvidenceSummary = (summary: AnswerPlan['evidenceSummary']) => summary ? {
   ...summary,
-  families: summary.families.map((family) => ({ ...family, label: publicMetricLabel(family.label) })),
+  families: summary.families.map((family, index) => ({
+    ...family,
+    familyId: family.familyId || `evidence-family-${index + 1}`,
+    familyLabel: publicMetricLabel(family.familyLabel || family.label),
+    label: publicMetricLabel(family.label),
+    sourceIds: family.sourceIds || [],
+    criteria: family.criteria?.map((criterion) => ({ ...criterion, sourceIds: criterion.sourceIds || [] })),
+  })),
 } : undefined;
 const scorecardFromPlan = (plan: AnswerPlan, sources: CheckSource[]): CheckScorecard | undefined => {
   const block = plan.blocks.find((item) => item.type === 'scorecard');

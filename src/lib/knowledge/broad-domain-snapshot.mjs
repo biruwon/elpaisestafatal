@@ -287,6 +287,11 @@ const formatObservation = (observation) => {
   return `${value}${unit ? ` ${unit}` : ''}${period}`;
 };
 const latestObservations = (items) => items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-1);
+const familyLabelForPacket = (packet) => ({
+  'broad-immigration-regularization': 'Inmigración y regularización',
+  'broad-public-services': 'Servicios públicos',
+  'broad-benefits-recipients': 'Prestaciones',
+}[packet.id] || packet.headline);
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
@@ -354,9 +359,12 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     evidenceSummary: {
       mode: 'snapshot',
       families: packet.criteria.map((item, index) => ({
+        familyId: packet.id,
+        familyLabel: familyLabelForPacket(packet),
         label: item.label,
         direction: 'qualifies',
         evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)],
+        sourceIds: item.sourceIds,
         finding: item.finding,
         ...(matchedObservations[index]?.observations?.length
           ? { data: latestObservations(matchedObservations[index].observations).map(formatObservation) }
@@ -378,15 +386,23 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   if (!familyPlans.length) return undefined;
   if (familyPlans.length === 1) return familyPlans[0];
 
-  const familyNames = {
-    'broad-immigration-regularization': 'Regularización',
-    'broad-public-services': 'Servicios públicos',
-    'broad-benefits-recipients': 'Prestaciones',
-  };
-  const families = familyPlans.flatMap((plan) => (plan.evidenceSummary?.families || []).map((family) => ({
-    ...family,
-    label: `${familyNames[plan.id] || plan.headline.split(' ').slice(0, 3).join(' ')} · ${family.label}`,
-  })));
+  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones' };
+  const families = familyPlans.map((plan) => {
+    const entries = plan.evidenceSummary?.families || [];
+    const criteria = entries.map((family) => ({ id: family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data }));
+    return {
+      familyId: plan.id,
+      familyLabel: familyNames[plan.id] || plan.headline,
+      label: familyNames[plan.id] || plan.headline,
+      direction: 'qualifies',
+      evidenceIds: [...new Set(entries.flatMap((family) => family.evidenceIds || []))],
+      sourceIds: [...new Set(entries.flatMap((family) => family.sourceIds || []))],
+      finding: plan.summary,
+      criteria,
+      data: [...new Set(entries.flatMap((family) => family.data || []))],
+      missingDimensions: [...new Set(entries.filter((family) => !family.data?.length).map((family) => family.label))],
+    };
+  });
   const evidenceIds = [...new Set(familyPlans.flatMap((plan) => plan.evidenceIds || []))];
   const sourceIds = [...new Set(familyPlans.flatMap((plan) => plan.sourceIds || []))];
   const gaps = [...new Set(familyPlans.flatMap((plan) => plan.evidenceSummary?.missingDimensions || []))];

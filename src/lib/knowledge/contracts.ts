@@ -166,7 +166,7 @@ export type AnswerPlan = {
   researchPlan?: ResearchPlan;
   evidenceSummary?: {
     mode: 'dynamic' | 'snapshot' | 'mixed' | 'none';
-    families: Array<{ label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; evidenceIds: string[]; finding?: string; limitation?: string; period?: string }>;
+    families: Array<{ familyId?: string; familyLabel?: string; label: string; direction: 'supports' | 'qualifies' | 'contradicts' | 'neutral'; evidenceIds: string[]; sourceIds?: string[]; finding?: string; limitation?: string; period?: string; data?: string[]; missingDimensions?: string[]; criteria?: Array<{ id: string; label: string; finding: string; evidenceIds?: string[]; sourceIds?: string[]; data?: string[]; missingDimensions?: string[] }> }>;
     missingDimensions?: string[];
     fallbackReason?: string;
   };
