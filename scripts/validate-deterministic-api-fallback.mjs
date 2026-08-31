@@ -28,7 +28,13 @@ for (const [input, expected] of [
 ]) {
   const result = deterministicApiFallback({ text: input, inputType: 'text' });
   if (result.result?.evidenceLevel !== expected || !result.result?.sourceLinks?.length) throw new Error(`broad claim did not receive scoped evidence: ${input}`);
-  if (result.result?.blocks?.some((block) => block.type === 'evidence_gap')) throw new Error(`broad claim fell through to generic evidence gap: ${input}`);
+  const evidenceGap = result.result?.blocks?.find((block) => block.type === 'evidence_gap');
+  if (evidenceGap && (result.result?.knowledgeVersion !== 'broad-domain-snapshot-1'
+    || !Array.isArray(evidenceGap.missing) || !evidenceGap.missing.length
+    || !Array.isArray(evidenceGap.needed) || !evidenceGap.needed.length
+    || typeof evidenceGap.nextAction !== 'string' || !evidenceGap.nextAction.trim())) {
+    throw new Error(`broad claim fell through to an unstructured evidence gap: ${input}`);
+  }
 }
 const immigrationCrime = deterministicApiFallback({ text: 'Los inmigrantes crean inseguridad en España', inputType: 'text' });
 if (!/causa colectiva|diferencia descriptiva/i.test(JSON.stringify(immigrationCrime.result))) throw new Error('immigration/crime causal claim lost its causal limitation');
