@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { metricCandidatesDetailedForQuery } from './metric-query-hints.mjs';
-import { selectEvidence } from './evidence-selection.mjs';
+import { evidenceSummaryForPublic, selectEvidence } from './evidence-selection.mjs';
 
 const corpus = JSON.parse(await readFile(new URL('../../config/open-ended-coverage.json', import.meta.url), 'utf8'));
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -28,6 +28,9 @@ for (const item of corpus.cases) {
 const stale = selectEvidence({ query: 'La tasa de paro', observations: [syntheticObservation('unemployment_rate', 0, 'stale')], candidateIds: ['unemployment_rate'], claimType: 'descriptive' });
 assert(stale.selected[0]?.freshness === 'stale', 'stale evidence was not retained as limited context');
 assert(stale.selected[0]?.limitation?.includes('fuente está stale'), 'stale evidence was not labelled');
+const publicSummary = evidenceSummaryForPublic(stale);
+assert(publicSummary.families[0]?.finding?.includes('unemployment_rate'), 'public evidence summary dropped the concrete finding');
+assert(publicSummary.families[0]?.limitation?.includes('fuente está stale'), 'public evidence summary dropped the evidence limitation');
 const fallbackObservation = syntheticObservation('unemployment_rate');
 delete fallbackObservation.freshness;
 fallbackObservation.source = { ...fallbackObservation.source, schedule: 'monthly', retrievedAt: '2024-01-01T00:00:00Z' };

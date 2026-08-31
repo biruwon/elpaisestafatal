@@ -9,7 +9,10 @@ const strings = (value) => Array.isArray(value) && value.every((item) => typeof 
 const validEvidenceSummary = (value) => !value || (typeof value === 'object'
   && ['dynamic', 'snapshot', 'mixed', 'none'].includes(value.mode)
   && Array.isArray(value.families)
-  && value.families.every((family) => family && typeof family.label === 'string' && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string'))
+  && value.families.every((family) => family && typeof family.label === 'string' && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string')
+    && (family.finding === undefined || typeof family.finding === 'string')
+    && (family.limitation === undefined || typeof family.limitation === 'string')
+    && (family.period === undefined || typeof family.period === 'string'))
   && (!value.missingDimensions || strings(value.missingDimensions))
   && (!value.fallbackReason || typeof value.fallbackReason === 'string'));
 

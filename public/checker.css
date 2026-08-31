@@ -29,8 +29,9 @@
 .result-section{margin-top:30px;padding-top:22px;border-top:1px solid var(--ink)}
 .result-section-heading h3{margin:8px 0 0;font:400 clamp(1.5rem,2.5vw,2.25rem)/1 var(--serif);letter-spacing:-.03em}
 .result-evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;margin-top:18px;background:var(--line)}
-.result-evidence-grid article{display:grid;gap:16px;min-height:115px;padding:17px;background:var(--paper-deep)}
+.result-evidence-grid article{display:grid;align-content:start;gap:10px;min-height:145px;padding:17px;background:var(--paper-deep)}
 .result-evidence-grid strong{font:1.08rem/1.15 var(--serif)}
+.evidence-finding{margin:0;font:.9rem/1.35 var(--sans)}.evidence-finding-missing{color:var(--muted);font-style:italic}.evidence-period,.evidence-limitation{color:var(--muted);font:.63rem/1.4 var(--mono)}.evidence-limitation{margin-top:2px}
 .evidence-direction{align-self:end;font:600 .63rem var(--mono);text-transform:uppercase;color:var(--muted)}
 .evidence-direction-supports{color:var(--green)}.evidence-direction-contradicts{color:var(--red)}.evidence-direction-qualifies{color:var(--amber)}
 .result-note,.result-visual-note{margin:16px 0 0;color:var(--muted);font:.72rem/1.45 var(--mono)}

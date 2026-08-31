@@ -132,7 +132,14 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
 
 export const evidenceSummaryForPublic = (selection, { mode = 'dynamic', fallbackReason } = {}) => ({
   mode,
-  families: (selection?.selected || []).map((item) => ({ label: item.title, direction: item.direction, evidenceIds: item.evidenceIds })),
+  families: (selection?.selected || []).map((item) => ({
+    label: item.title,
+    direction: item.direction,
+    evidenceIds: item.evidenceIds,
+    finding: item.finding,
+    limitation: item.limitation,
+    period: item.items?.at(-1)?.period,
+  })),
   ...(selection?.missingDimensions?.length ? { missingDimensions: selection.missingDimensions } : {}),
   ...(fallbackReason ? { fallbackReason } : {}),
 });
