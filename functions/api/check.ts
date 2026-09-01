@@ -99,6 +99,10 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
   const dataCount = (plan: AnswerPlan | undefined): number => plan?.evidenceSummary?.families?.reduce((total, family) => total + (family.data?.length || 0), 0) || 0;
+  const criterionDataCount = (plan: AnswerPlan | undefined): Map<string, number> => new Map((plan?.evidenceSummary?.families || []).map((family) => {
+    const criterion = family as typeof family & { criterionId?: string };
+    return [criterion.criterionId || criterion.label, criterion.data?.length || 0];
+  }));
   // A reviewed broad-domain packet is an answerable, sourced fallback. Never
   // let a malformed or empty provider response hide it, regardless of whether
   // the provider labelled that response limited or insufficient.
@@ -115,7 +119,12 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   // result that genuinely contains more compatible observations still wins.
   const contextualPlanId = (contextualPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
   const modelPlanId = (modelPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
-  if (contextualPlanId && contextualPlanId === modelPlanId && dataCount(contextualPlan) > dataCount(modelPlan)) return contextual;
+  if (contextualPlanId && contextualPlanId === modelPlanId) {
+    const contextualCriteria = criterionDataCount(contextualPlan);
+    const modelCriteria = criterionDataCount(modelPlan);
+    const hasRicherCriterion = [...contextualCriteria].some(([criterionId, count]) => count > (modelCriteria.get(criterionId) || 0));
+    if (hasRicherCriterion || dataCount(contextualPlan) > dataCount(modelPlan)) return contextual;
+  }
   if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
   const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
   const summary = plan?.evidenceSummary;
