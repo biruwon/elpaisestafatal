@@ -96,6 +96,7 @@ assert(demographicPensionWithSeries?.limitation.includes('2015–2025'), 'demogr
 assert(!seriesMissing.includes('serie temporal de dependencia') && !seriesMissing.includes('saldo presupuestario del periodo') && !seriesMissing.includes('serie temporal de deuda'), 'demography-pension series left resolved dimensions in the pending list');
 assert(seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('ingresos por cotizaciones') && seriesMissing.includes('transferencias al sistema'), 'demography-pension series discarded genuine pension-specific gaps');
 assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.label === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.label === 'Demografía')?.dimensions?.period === '2015–2025', 'demography-pension evidence exposed only the first observation period');
 
 const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');
