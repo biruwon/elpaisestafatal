@@ -144,6 +144,54 @@ const renderEvidenceGroups = (groups: EvidenceFamily[], sources: CheckResult['so
   const statusLabel = group.status === 'available' ? 'Datos disponibles' : group.status === 'partial' ? 'Evidencia parcial' : 'Datos pendientes';
   return `<section class="evidence-family" data-family-id="${escapeHtml(group.familyId || group.label)}"><header><span class="eyebrow">Familia de evidencia · ${escapeHtml(statusLabel)}</span><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><p>${escapeHtml(group.finding || 'Esta familia se evalúa con sus propias medidas.')}</p></header><div class="result-evidence-grid">${criteria.map((criterion) => { const dimensions = formatEvidenceDimensions(criterion.dimensions, criterion.data); return `<article class="evidence-criterion"><strong>${escapeHtml(publicMetricLabel(criterion.label))}</strong><p class="evidence-finding">${escapeHtml(criterion.finding || 'Esta dimensión queda sin una medición compatible localizada.')}</p>${criterion.data?.length ? `<p class="evidence-data"><span>Valores observados</span>${criterion.data.map((value) => escapeHtml(value)).join(' · ')}</p>` : ''}${dimensions ? `<small class="evidence-dimensions">${escapeHtml(dimensions)}</small>` : ''}</article>`; }).join('')}</div>${renderMissingList('Qué queda pendiente en esta familia', group.missingDimensions || [], 'result-note evidence-missing-note')}${group.limitation ? `<p class="result-note evidence-family-limitation">${escapeHtml(group.limitation)}</p>` : ''}${sourceLinks.length ? `<div class="evidence-family-sources"><span class="eyebrow">Fuentes de esta familia</span>${sourceLinks.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</div>` : ''}</section>`;
 }).join('');
+const answerLeadFor = (answer: string): string => {
+  const lead = answer.split(/Valores observados:/i)[0]?.trim() || answer.trim();
+  return lead || 'La evidencia disponible no permite una conclusión completa.';
+};
+const parseSeries = (value: string): { start: string; end: string; startNumber: number; endNumber: number; years: string[] } | undefined => {
+  const match = value.match(/:\s*(-?[\d.]+(?:,\d+)?)\D+→\s*(-?[\d.]+(?:,\d+)?)/);
+  if (!match) return undefined;
+  const toNumber = (token: string): number => Number(token.replace(/\./g, '').replace(',', '.'));
+  const years = [...value.matchAll(/\b(?:19|20|21)\d{2}\b/g)].map((item) => item[0]);
+  const startNumber = toNumber(match[1]);
+  const endNumber = toNumber(match[2]);
+  if (!Number.isFinite(startNumber) || !Number.isFinite(endNumber)) return undefined;
+  return { start: match[1], end: match[2], startNumber, endNumber, years: [...new Set(years)].slice(0, 2) };
+};
+const demographicSeriesLabel = (value: string, fallback: string): string => {
+  if (/65 años o más/i.test(value)) return 'Población de 65 años o más';
+  if (/20 a 64/i.test(value)) return 'Población de 20 a 64 años';
+  return fallback;
+};
+const renderClaimMap = (groups: EvidenceFamily[]): string => {
+  if (groups.length < 2) return '';
+  const cards = groups.map((group, index) => {
+    const status = group.status === 'available' ? 'Medido' : group.status === 'partial' ? 'Parcial' : 'Pendiente';
+    const statusClass = group.status === 'available' ? 'is-available' : group.status === 'partial' ? 'is-partial' : 'is-missing';
+    const finding = group.finding || (group.status === 'available' ? 'Hay una medida compatible localizada.' : 'No hay una medida compatible suficiente para esta parte.');
+    return `<article class="claim-map-card ${statusClass}"><div class="claim-map-top"><span>0${index + 1}</span><strong>${escapeHtml(status)}</strong></div><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><p>${escapeHtml(finding)}</p></article>`;
+  }).join('');
+  return `<section class="result-section result-claim-map" aria-labelledby="claim-map-title"><div class="result-section-heading"><span class="eyebrow">La frase contiene varias preguntas</span><h3 id="claim-map-title">Una parte sí; el resto necesita más prueba.</h3></div><div class="claim-map-grid">${cards}</div></section>`;
+};
+const renderDemographicVisual = (groups: EvidenceFamily[]): string => {
+  const demographic = groups.find((group) => /demograf/i.test(group.familyLabel || group.label));
+  if (!demographic) return '';
+  const series = (demographic.criteria || []).flatMap((criterion) => (criterion.data || []).map((value) => {
+    const parsed = parseSeries(value);
+    if (!parsed) return undefined;
+    return { ...parsed, label: demographicSeriesLabel(value, criterion.label), unit: criterion.dimensions?.unit || '' };
+  })).filter((item): item is NonNullable<typeof item> => Boolean(item)).filter((item, index, all) => all.findIndex((candidate) => candidate.label === item.label) === index).slice(0, 3);
+  if (series.length < 2) return '';
+  const max = Math.max(...series.flatMap((item) => [item.startNumber, item.endNumber]));
+  const rows = series.map((item) => {
+    const startWidth = Math.max(4, Math.round((item.startNumber / max) * 100));
+    const endWidth = Math.max(4, Math.round((item.endNumber / max) * 100));
+    const years = item.years.length === 2 ? `${item.years[0]} → ${item.years[1]}` : '';
+    return `<div class="demography-row"><div class="demography-row-heading"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(years)}</span></div><div class="demography-track"><span class="demography-bar demography-bar-start" style="--bar-width:${startWidth}%"></span><span class="demography-bar demography-bar-end" style="--bar-width:${endWidth}%"></span></div><div class="demography-values"><span>${escapeHtml(item.start)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</span><strong>→ ${escapeHtml(item.end)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</strong></div></div>`;
+  }).join('');
+  const years = series.find((item) => item.years.length === 2)?.years || [];
+  return `<section class="result-visual result-demography-visual" aria-labelledby="demography-visual-title"><div class="result-section-heading"><span class="eyebrow">La demografía, en una mirada</span><h3 id="demography-visual-title">Más mayores; menos población en edad de trabajar</h3></div><div class="demography-legend"><span><i class="demography-dot demography-dot-start"></i>${escapeHtml(years[0] || 'Inicio')}</span><span><i class="demography-dot demography-dot-end"></i>${escapeHtml(years[1] || 'Final')}</span></div><div class="demography-chart" role="img" aria-label="Evolución de los principales grupos de edad proyectados y de la dependencia demográfica">${rows}</div><p class="result-visual-interpretation">Esto sí muestra presión demográfica. No es, por sí solo, el balance de ingresos y gastos de las pensiones.</p><p class="result-visual-note">Las proyecciones son un escenario demográfico, no una predicción financiera.</p></section>`;
+};
 const loadingStagesFor = (text: string): string[] => {
   const value = text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const stages = ['Separando las afirmaciones'];
@@ -212,7 +260,13 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   const sources = item.sources.length && evidenceGroups.length < 2 ? `<section class="claim-sources result-sources"><div class="result-section-heading"><span class="eyebrow">Trazabilidad</span><h3>Fuentes y fecha</h3></div>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${source.publishedAt}` : ''} ↗</span></a>`).join('')}</section>` : '';
   const answer = item.answer.trim() || item.reply;
   const responseText = answer || 'No hay una respuesta redactada para esta comprobación.';
-  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(item.keyFact || stateConclusion(response.state, responseText))}</h2><button type="button" class="claim-copy result-copy" data-copy-answer>Copiar respuesta</button><span class="claim-live" aria-live="polite"></span></div>${assessment}</header><section class="claim-reply result-section" aria-labelledby="claim-reply-title"><div class="result-section-heading"><span class="eyebrow">Respuesta</span><h3 id="claim-reply-title">Qué se puede decir con la evidencia disponible</h3></div><p class="claim-reply-text">${escapeHtml(responseText)}</p></section>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${scorecard}${groupedFamilies || families}${compoundKnown || known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  const claimMap = renderClaimMap(evidenceGroups);
+  const demographicVisual = renderDemographicVisual(evidenceGroups);
+  const shareLead = answerLeadFor(responseText);
+  const resultHeading = item.keyFact || stateConclusion(response.state, shareLead);
+  const hasDemography = evidenceGroups.some((group) => /demograf/i.test(group.familyLabel || group.label));
+  const readableHeading = hasDemography && evidenceGroups.length > 1 ? 'El envejecimiento añade presión; la quiebra no está demostrada' : resultHeading;
+  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(readableHeading)}</h2></div>${assessment}</header><section class="result-outcome" aria-labelledby="result-outcome-title"><span class="eyebrow">En una línea</span><h3 id="result-outcome-title">${escapeHtml(shareLead)}</h3><p>La conclusión distingue el envejecimiento, el equilibrio de las pensiones y el estado de las cuentas públicas.</p></section><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Texto para compartir</span><h3 id="claim-reply-title">La respuesta corta</h3></div><button type="button" class="claim-copy" data-copy-answer>Copiar respuesta</button></div><p class="claim-reply-text">${escapeHtml(shareLead)}</p><details class="result-share-details"><summary>Ver el texto completo</summary><p>${escapeHtml(responseText)}</p></details><span class="claim-live" aria-live="polite"></span></section>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${claimMap}${demographicVisual}${scorecard}${groupedFamilies || families}${compoundKnown || known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();

@@ -137,3 +137,58 @@
   .checker-page.has-result .checker-hero{padding:20px 16px 45px}
 }
  .claim-arguments{margin-top:30px;border-top:1px solid var(--ink)}.claim-arguments h3{margin:0;padding:17px 0;font:600 .7rem var(--mono);text-transform:uppercase}.claim-arguments details{border-top:1px solid var(--line);padding:13px 0}.claim-arguments summary{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font:1rem/1.35 var(--serif)}.argument-verdict{flex:none;font:600 .62rem var(--mono);text-transform:uppercase;color:var(--muted)}.argument-supported{color:var(--green)}.argument-mixed{color:var(--amber)}.argument-insufficient{color:var(--muted)}.claim-arguments details p{margin:10px 0 4px 78px;font:1rem/1.45 var(--sans)}.claim-arguments details small{display:block;margin:5px 0 0 78px;color:var(--muted);font:.68rem/1.4 var(--mono)}.argument-sources{display:grid;gap:4px;margin:8px 0 0 78px}.argument-sources a{color:var(--red);font:.7rem/1.35 var(--mono)}
+
+/* Make compound claims readable before exposing the full evidence packet. */
+.result-outcome{margin-top:28px;padding:24px 24px 25px;border-left:6px solid var(--red);background:var(--ink);color:var(--paper)}
+.result-outcome .eyebrow{margin-bottom:10px;color:var(--yellow)}
+.result-outcome h3{max-width:720px;margin:0;font:400 clamp(1.75rem,3.4vw,3rem)/1.03 var(--serif);letter-spacing:-.04em}
+.result-outcome p{max-width:650px;margin:14px 0 0;color:#d8d1c4;font:.82rem/1.45 var(--sans)}
+.result-share{display:block;padding:22px 22px 18px;background:var(--paper-deep);border:0;border-left:5px solid var(--red)}
+.result-share-heading{display:flex;justify-content:space-between;gap:20px;align-items:start}
+.result-share .result-section-heading h3{font-size:1.45rem}
+.result-share .claim-copy{margin-top:1px}
+.result-share .claim-reply-text{max-width:790px;margin-top:16px;font-size:clamp(1.25rem,2.2vw,1.75rem)}
+.result-share-details{margin-top:17px;border-top:1px solid var(--line);border-bottom:0}
+.result-share-details summary{display:flex;justify-content:space-between;align-items:center;min-height:42px;cursor:pointer;color:var(--red);font:600 .68rem var(--mono);text-transform:uppercase}
+.result-share-details summary::after{content:'＋';font-size:1rem}
+.result-share-details[open] summary::after{content:'−'}
+.result-share-details p{max-width:790px;margin:4px 0 5px;color:var(--muted);font:1rem/1.5 var(--sans)}
+.result-claim-map{margin-top:38px}
+.claim-map-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:18px;background:var(--line)}
+.claim-map-card{min-width:0;min-height:215px;padding:18px;background:var(--paper-deep);border-top:5px solid var(--amber)}
+.claim-map-card.is-available{border-top-color:var(--green)}
+.claim-map-card.is-missing{border-top-color:var(--muted)}
+.claim-map-top{display:flex;justify-content:space-between;gap:10px;color:var(--red);font:600 .62rem var(--mono);text-transform:uppercase}
+.claim-map-card.is-available .claim-map-top strong{color:var(--green)}
+.claim-map-card.is-missing .claim-map-top strong{color:var(--muted)}
+.claim-map-card h4{margin:30px 0 0;font:400 1.45rem/1 var(--serif);letter-spacing:-.03em}
+.claim-map-card p{margin:12px 0 0;color:var(--muted);font:.82rem/1.42 var(--sans)}
+.result-demography-visual{margin-top:38px;padding:24px;background:var(--paper-deep)}
+.result-demography-visual .result-section-heading h3{max-width:620px}
+.demography-legend{display:flex;gap:18px;margin:22px 0 18px;color:var(--muted);font:600 .64rem var(--mono);text-transform:uppercase}
+.demography-legend span{display:inline-flex;align-items:center;gap:7px}
+.demography-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.demography-dot-end{background:var(--red)}
+.demography-chart{display:grid;gap:23px;padding:4px 0 3px}
+.demography-row-heading,.demography-values{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+.demography-row-heading strong{font:1rem/1.2 var(--serif)}
+.demography-row-heading span,.demography-values{color:var(--muted);font:.64rem var(--mono)}
+.demography-track{display:grid;gap:5px;margin-top:9px;padding:1px 0;border-bottom:1px solid var(--line)}
+.demography-bar{display:block;width:var(--bar-width);height:10px;background:var(--line)}
+.demography-bar-end{background:var(--red)}
+.demography-values{margin-top:7px}
+.demography-values strong{color:var(--ink);font-weight:600}
+.result-demography-visual .result-visual-interpretation{max-width:680px;margin-top:22px}
+.result-demography-visual .result-visual-note{margin-top:8px}
+@media(max-width:760px){
+  .result-outcome{padding:20px 16px 21px}
+  .result-share-heading{display:block}
+  .result-share .claim-copy{width:auto;margin-top:16px}
+  .claim-map-grid{grid-template-columns:1fr}
+  .claim-map-card{min-height:0}
+  .result-demography-visual{padding:19px 15px}
+  .demography-row-heading{display:block}
+  .demography-row-heading span{display:block;margin-top:5px}
+  .demography-values{display:block;line-height:1.6}
+  .demography-values strong{display:block}
+}
