@@ -59,7 +59,7 @@ const main = async () => {
   }
   if (!healthVerified) throw new Error(`Canonical deployment did not become verifiable: ${lastError?.message || 'unknown error'}`);
   console.log(`Canonical deployment is serving the new build: ${productionUrl}`);
-  await run('npm', ['run', 'smoke:production']);
+  await run('npm', ['run', 'smoke:production'], { env: { ...process.env, SMOKE_BASE_URL: productionUrl } });
 };
 
 main().catch((error) => {
