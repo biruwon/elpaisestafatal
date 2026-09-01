@@ -12,6 +12,9 @@ import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } 
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
+// Bump this when response-selection semantics change so a warm Worker isolate
+// cannot serve a result produced by an older precedence rule.
+const responseCacheVersion = 'evidence-precedence-2';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -20,7 +23,7 @@ const circuitCooldownMs = 30_000;
 const semanticFingerprint = (text: string): string => text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; clarification?: Clarification }, env: Env): string => {
   const media = body.file ? `${body.file.type}:${body.file.size}:${body.file.name}` : '';
-  return [semanticFingerprint(body.text), semanticFingerprint(body.clarification?.prompt || ''), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
+  return [responseCacheVersion, semanticFingerprint(body.text), semanticFingerprint(body.clarification?.prompt || ''), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -93,10 +96,15 @@ const rhetoricalClaim = (claim: string): boolean => {
 // preserves the distinction between measurable facts and the slogan.
 const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
+  const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
+  const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
   // A reviewed broad-domain packet is an answerable, sourced fallback. Never
   // let a malformed or empty provider response hide it, regardless of whether
   // the provider labelled that response limited or insufficient.
-  if ((contextualPlan as ({ id?: string } | undefined))?.id?.startsWith('broad-') && model?.state !== 'supported') return contextual;
+  // A validated limited result with family data is different: it is the
+  // warehouse-backed answer for the same packet, and must retain its newer
+  // observations instead of being replaced by the older snapshot fallback.
+  if ((contextualPlan as ({ id?: string } | undefined))?.id?.startsWith('broad-') && model?.state !== 'supported' && !modelHasFamilyData) return contextual;
   if (!model || model.state === 'insufficient') return contextual.state !== 'insufficient' ? contextual : model || contextual;
   if (contextual.state === 'supported' && model.state === 'limited' && !(model.result?.sources?.length) && !(model.result?.criteria?.length)) return contextual;
   if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
