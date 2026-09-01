@@ -555,11 +555,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     return [...byFamily.values()].flatMap((group) => group.length <= perFamily ? group : [group[0], group.at(-1)]).map((entry) => entry.text);
   };
   const observedFindings = quantitativeEntries.filter((entry) => entry.dataKind === 'observed').map((entry) => entry.text);
-  const projectedFindings = compactFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'projected'));
+  const projectedFindings = compactFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'projected'), 8);
   const snapshotFindings = compactFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'snapshot' || entry.dataKind === 'context'), 8);
   const findingSections = [
     observedFindings.length ? `Datos observados: ${observedFindings.join('; ')}.` : undefined,
-    projectedFindings.length ? `Proyecciones: ${projectedFindings.slice(0, 3).join('; ')}.` : undefined,
+    projectedFindings.length ? `Proyecciones: ${projectedFindings.join('; ')}.` : undefined,
     snapshotFindings.length ? `Datos de referencia revisados: ${snapshotFindings.join('; ')}.` : undefined,
   ].filter(Boolean);
   const observedPeriods = [...new Set(matchedObservations.filter(({ criterion }) => criterion.dataKind !== 'projected').flatMap(({ observations: items }) => observationsByMetric(items).map((item) => String(item.period || '')).filter(Boolean)))].sort();
