@@ -61,6 +61,42 @@
       "metricId": "old_age_survivors_benefits_per_capita"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&spdeps=SPR&spfunc=OLD_SRV&unit=MIO_EUR&sinceTimePeriod=2015",
+      "title": "Gasto total en prestaciones de vejez y supervivencia en España · Eurostat",
+      "aliases": ["gasto total en pensiones", "gasto total de vejez y supervivencia", "prestaciones de vejez y supervivencia totales"],
+      "metricId": "old_age_survivors_benefits_total"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_pns_ben?geo=ES&spdepm=TOTAL&spscheme=TOTAL&spdepb=OLD_SRV&sex=T&unit=PER&sinceTimePeriod=2015",
+      "title": "Beneficiarios de pensiones de vejez y supervivencia en España · Eurostat",
+      "aliases": ["pensionistas", "beneficiarios de pensiones", "número de pensionistas"],
+      "metricId": "old_age_survivors_pension_beneficiaries"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_rec_sumt?geo=ES&sptype=SCO&unit=MIO_EUR&sinceTimePeriod=2015",
+      "title": "Ingresos de protección social procedentes de cotizaciones en España · Eurostat",
+      "aliases": ["ingresos por cotizaciones sociales", "cotizaciones de protección social", "cotizaciones sociales totales"],
+      "metricId": "social_protection_contributions_total"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_rec_sumt?geo=ES&sptype=GOV_GEN&unit=MIO_EUR&sinceTimePeriod=2015",
+      "title": "Aportaciones generales del gobierno a protección social en España · Eurostat",
+      "aliases": ["aportaciones públicas a la protección social", "transferencias públicas a protección social", "financiación pública de protección social"],
+      "metricId": "social_protection_government_contributions_total"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_23np?geo=ES&projection=BSL&sex=T&age=Y_GE65&unit=PER&sinceTimePeriod=2022",
+      "title": "Proyección de población de 65 años o más en España · Eurostat",
+      "aliases": ["proyección de población mayor", "proyección de mayores de 65", "mayores de 65 proyectados"],
+      "metricId": "projected_population_65_plus"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_23np?geo=ES&projection=BSL&sex=T&age=Y20-64&unit=PER&sinceTimePeriod=2022",
+      "title": "Proyección de población de 20 a 64 años en España · Eurostat",
+      "aliases": ["proyección de población en edad laboral", "proyección de población de 20 a 64", "edad laboral proyectada"],
+      "metricId": "projected_population_20_64"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&geo=EU27_2020&spdeps=SPR&spfunc=OLD_SRV&unit=EUR_HAB&sinceTimePeriod=2015",
       "title": "Gasto en prestaciones de vejez y supervivencia: España y Unión Europea · Eurostat",
       "aliases": ["gasto en pensiones frente a Europa", "pensiones de España frente a Europa", "España gasta más en pensiones que Europa", "España gasta menos en pensiones que Europa", "pensiones y supervivencia frente a la Unión Europea"],

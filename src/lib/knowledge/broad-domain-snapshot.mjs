@@ -28,14 +28,23 @@ const packets = [
     headline: 'El envejecimiento puede aumentar la presión sobre las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['serie temporal de dependencia', 'relación entre cotizantes y pensionistas', 'proyección demográfica'], resolvesMissing: [{ dimension: 'serie temporal de dependencia', metricId: 'old_age_dependency_ratio', minimumObservations: 2 }], sourceIds: ['demography-pension-finance'] },
-      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], population: 'gasto en prestaciones de protección social para vejez y supervivencia', denominator: 'población residente', unit: '€ por habitante en prestaciones de vejez y supervivencia', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], missingDimensions: ['ingresos por cotizaciones', 'gasto contributivo total', 'transferencias públicas', 'saldo del sistema', 'proyección de ingresos y gastos'], sourceIds: ['pension-spending-source'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['saldo presupuestario del periodo', 'serie temporal de deuda', 'gasto e ingreso atribuible a pensiones', 'transferencias al sistema', 'criterio medible para “arruinando”'], resolvesMissing: [{ dimension: 'saldo presupuestario del periodo', metricId: 'government_deficit_ratio', minimumObservations: 1 }, { dimension: 'serie temporal de deuda', metricId: 'government_debt_ratio', minimumObservations: 2 }], sourceIds: ['public-finance-source'] },
+      { id: 'demographic-structure', familyId: 'demography', familyLabel: 'Demografía', label: 'Dependencia demográfica', finding: 'La dependencia de mayores mide una relación demográfica, no la relación efectiva entre cotizantes y pensionistas. “Árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['relación entre cotizantes y pensionistas'], sourceIds: ['demography-pension-finance', 'pension-beneficiaries-source'] },
+      { id: 'projected-demography', familyId: 'demography', familyLabel: 'Demografía', label: 'Proyección demográfica', finding: 'La proyección de Eurostat es un escenario de referencia: muestra qué ocurriría bajo sus supuestos, no una predicción segura ni una proyección financiera del sistema.', metricIds: ['projected_population_65_plus', 'projected_population_20_64'], population: 'población proyectada de 65 años o más y de 20 a 64 años', denominator: 'personas proyectadas en cada grupo de edad', unit: 'personas proyectadas', missingDimensions: ['proyección demográfica'], resolvesMissing: [{ dimension: 'proyección demográfica', metricIds: ['projected_population_65_plus', 'projected_population_20_64'], minimumObservations: 2, requireAllMetricIds: true }], sourceIds: ['demography-projections-source'] },
+      { id: 'pension-balance', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Gasto por habitante', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], population: 'gasto en prestaciones de protección social para vejez y supervivencia', denominator: 'población residente', unit: '€ por habitante en prestaciones de vejez y supervivencia', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], missingDimensions: ['saldo del sistema', 'proyección de ingresos y gastos'], sourceIds: ['pension-spending-source'] },
+      { id: 'pension-beneficiaries', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Personas beneficiarias', finding: 'El recuento de Eurostat cubre personas que reciben pensiones de vejez y supervivencia en todos los esquemas; no equivale por sí solo a cotizantes ni a pensionistas del sistema contributivo español.', metricIds: ['old_age_survivors_pension_beneficiaries'], population: 'personas beneficiarias de pensiones de vejez y supervivencia', denominator: 'personas', unit: 'personas', sourceIds: ['pension-beneficiaries-source'] },
+      { id: 'pension-expenditure-total', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Gasto total de vejez y supervivencia', finding: 'El gasto total localizado cubre prestaciones de vejez y supervivencia de todos los esquemas. No es un desglose del gasto contributivo neto ni un saldo del sistema de pensiones.', metricIds: ['old_age_survivors_benefits_total'], population: 'gasto total en prestaciones de protección social para vejez y supervivencia', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['gasto contributivo neto'], sourceIds: ['pension-expenditure-total-source'] },
+      { id: 'social-contributions', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Cotizaciones sociales', finding: 'Eurostat registra las cotizaciones recibidas por los esquemas de protección social en conjunto. La serie no atribuye esos ingresos exclusivamente a las pensiones.', metricIds: ['social_protection_contributions_total'], population: 'ingresos de los esquemas de protección social procedentes de cotizaciones', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['ingresos exclusivamente imputables a pensiones'], sourceIds: ['social-protection-receipts-source'] },
+      { id: 'government-financing', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Aportaciones públicas', finding: 'Eurostat registra aportaciones generales de las administraciones a la protección social. No permite tratarlas como transferencias específicas al sistema de pensiones.', metricIds: ['social_protection_government_contributions_total'], population: 'ingresos de los esquemas de protección social procedentes de las administraciones públicas', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['transferencias específicas al sistema de pensiones'], sourceIds: ['social-protection-receipts-source'] },
+      { id: 'public-finance-effect', familyId: 'public-finance', familyLabel: 'Arcas públicas', label: 'Saldo y deuda pública', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['gasto e ingreso atribuible exclusivamente a pensiones', 'criterio medible para “arruinando”'], resolvesMissing: [{ dimension: 'saldo presupuestario del periodo', metricId: 'government_deficit_ratio', minimumObservations: 1 }, { dimension: 'serie temporal de deuda', metricId: 'government_debt_ratio', minimumObservations: 2 }], sourceIds: ['public-finance-source'] },
     ],
-    limitations: ['Los indicadores disponibles son de 2020, pero no incluyen un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirman que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
+    limitations: ['Las series muestran demografía, beneficiarios, gasto y financiación de la protección social, déficit y deuda, pero no un balance pensionista completo ni una proyección financiera. Por eso no confirman que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
     sources: [
       source('demography-pension-finance', 'Población y estructura demográfica', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_structure_and_ageing', '2025-10-01'),
+      source('demography-projections-source', 'Proyecciones de población EUROPOP2023', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_23np?geo=ES&projection=BSL&sex=T&unit=PER&sinceTimePeriod=2022', '2024-03-01'),
       source('pension-spending-source', 'Social protection statistics · old-age and survivors benefits', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
+      source('pension-beneficiaries-source', 'Pension beneficiaries by type · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_pns_ben?geo=ES&spdepm=TOTAL&spscheme=TOTAL&spdepb=OLD_SRV&sex=T&unit=PER&sinceTimePeriod=2015', '2025-10-01'),
+      source('pension-expenditure-total-source', 'Total old-age and survivors benefits expenditure · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&spdeps=SPR&spfunc=OLD_SRV&unit=MIO_EUR&sinceTimePeriod=2015', '2025-10-01'),
+      source('social-protection-receipts-source', 'Social protection receipts by type · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_rec_sumt?geo=ES&unit=MIO_EUR&sinceTimePeriod=2015', '2025-10-01'),
       source('public-finance-source', 'Government finance statistics · debt and deficit', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01'),
     ],
   },
@@ -339,6 +348,12 @@ const formatObservation = (observation, fallbackUnit) => {
   const unit = ({
     old_age_dependency_ratio: 'personas de 65 años o más por cada 100 de 15 a 64 años',
     old_age_survivors_benefits_per_capita: '€ por habitante en prestaciones de vejez y supervivencia',
+    old_age_survivors_benefits_total: 'millones de euros',
+    old_age_survivors_pension_beneficiaries: 'personas beneficiarias',
+    social_protection_contributions_total: 'millones de euros',
+    social_protection_government_contributions_total: 'millones de euros',
+    projected_population_65_plus: 'personas proyectadas',
+    projected_population_20_64: 'personas proyectadas',
     government_deficit_ratio: '% del PIB de déficit o superávit público',
     government_debt_ratio: '% del PIB de deuda pública',
   }[observation.metricId]) || ({
@@ -346,6 +361,8 @@ const formatObservation = (observation, fallbackUnit) => {
     'Percentage of gross domestic product (GDP)': '% del PIB',
     'Percentage of population in the labour force': '% de población activa',
     'Percentage': '%',
+    'Person': 'personas',
+    'People': 'personas',
     'Number': 'personas',
     'Euro': '€',
     'INE unit 133': 'índice',
@@ -369,11 +386,12 @@ const preferredSeriesForMetric = (items) => {
     group.push(item);
     groups.set(key, group);
   }
-  return [...groups.values()].sort((left, right) => {
+  const selected = [...groups.values()].sort((left, right) => {
     const leftGeneral = left.some((item) => /general government|administraciones p[uú]blicas/i.test(JSON.stringify(item.dimensionLabels || {}))) ? 1 : 0;
     const rightGeneral = right.some((item) => /general government|administraciones p[uú]blicas/i.test(JSON.stringify(item.dimensionLabels || {}))) ? 1 : 0;
     return rightGeneral - leftGeneral || right.length - left.length || String(right.at(-1)?.period || '').localeCompare(String(left.at(-1)?.period || ''));
   })[0] || [];
+  return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
 };
 const observationsByMetric = (items) => [...new Set(items.map((item) => item.metricId).filter(Boolean))].flatMap((metricId) => preferredSeriesForMetric(items.filter((item) => item.metricId === metricId)));
 const latestObservationsByMetric = (items) => observationsByMetric(items).reduce((latest, item) => {
@@ -384,6 +402,8 @@ const latestObservationsByMetric = (items) => observationsByMetric(items).reduce
 const observationMetricLabel = (metricId) => ({
   government_deficit_ratio: 'Saldo presupuestario',
   government_debt_ratio: 'Deuda pública',
+  projected_population_65_plus: 'Población de 65 años o más proyectada',
+  projected_population_20_64: 'Población de 20 a 64 años proyectada',
 }[metricId] || '');
 const formatSeriesData = (items, fallbackUnit) => {
   const selected = observationsByMetric(items);
@@ -404,17 +424,15 @@ const unresolvedMissingDimensionsFor = (criterion, items) => {
   return (criterion.missingDimensions || []).filter((dimension) => {
     const resolution = (criterion.resolvesMissing || []).find((candidate) => candidate.dimension === dimension);
     if (!resolution) return true;
-    return observations.filter((item) => item.metricId === resolution.metricId).length < (resolution.minimumObservations || 1);
+    const metricIds = Array.isArray(resolution.metricIds) ? resolution.metricIds : [resolution.metricId];
+    const minimum = resolution.minimumObservations || 1;
+    if (resolution.requireAllMetricIds) return metricIds.some((metricId) => observations.filter((item) => item.metricId === metricId).length < minimum);
+    return observations.filter((item) => metricIds.includes(item.metricId)).length < minimum;
   });
 };
-const familyLabelForPacket = (packet) => ({
-  'broad-immigration-regularization': 'Inmigración y regularización',
-  'broad-public-services': 'Servicios públicos',
-  'broad-benefits-recipients': 'Prestaciones',
-}[packet.id] || packet.headline);
 const evidenceStatusFor = (data, missingDimensions, snapshotOnly = false) => data?.length ? (missingDimensions?.length || snapshotOnly ? 'partial' : 'available') : 'missing';
 const periodRangeFromData = (data) => {
-  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
+  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b(?:19|20|21)\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
   if (!periods.length) return undefined;
   return periods[0] === periods.at(-1) ? periods[0] : `${periods[0]}–${periods.at(-1)}`;
 };
@@ -479,7 +497,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   } : undefined;
   const observedPeriods = [...new Set(matchedObservations.flatMap(({ observations: items }) => observationsByMetric(items).map((item) => String(item.period || '')).filter(Boolean)))].sort();
   const limitation = observedPeriods.length > 1
-    ? packet.limitations[0].replace(/^Los indicadores disponibles son de 2020, pero/, `Los indicadores disponibles abarcan ${observedPeriods[0]}–${observedPeriods.at(-1)}, pero`)
+    ? `Las series observadas abarcan ${observedPeriods[0]}–${observedPeriods.at(-1)}. ${packet.limitations[0]}`
     : packet.limitations[0];
   const conversationReply = [
     `${packet.headline}.`,
@@ -516,8 +534,13 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
       families: packet.criteria.map((item, index) => ({
         status: evidenceStatusFor(criterionDataFor(item, index), unresolvedDimensions[index], !matchedObservations[index]?.observations?.length && Boolean(item.fallbackData?.length)),
         dimensions: dimensionsFor(packet, item, criterionDataFor(item, index)),
-        familyId: packet.id,
-        familyLabel: familyLabelForPacket(packet),
+        // A broad packet can contain several substantive evidence families
+        // (for example demography, pensions, and public finance). Keep each
+        // criterion stable on its own so the result view can render separate
+        // sections; compound packets aggregate these entries back into their
+        // packet-level family while preserving the criterion metadata.
+        familyId: item.familyId || item.id,
+        familyLabel: item.familyLabel || item.label,
         criterionId: item.id,
         label: item.label,
         direction: 'qualifies',

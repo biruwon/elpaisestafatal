@@ -105,7 +105,7 @@ const evidenceDimensionLabels: Record<string, string> = {
   unit: 'Unidad',
 };
 const periodRangeFromData = (data?: string[]): string | undefined => {
-  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
+  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b(?:19|20|21)\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
   if (!periods.length) return undefined;
   return periods[0] === periods.at(-1) ? periods[0] : `${periods[0]}–${periods.at(-1)}`;
 };

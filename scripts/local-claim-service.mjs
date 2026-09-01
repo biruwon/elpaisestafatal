@@ -166,6 +166,9 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'imv_beneficiary_average_age') return 'años';
   if (metricId === 'fertility_rate' || metricId === 'fertility_rate_europe') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas de 65 años o más por cada 100 de 15 a 64 años';
+  if (metricId === 'old_age_survivors_pension_beneficiaries') return 'personas beneficiarias de pensiones de vejez y supervivencia';
+  if (metricId === 'projected_population_65_plus' || metricId === 'projected_population_20_64') return 'personas proyectadas';
+  if (metricId === 'old_age_survivors_benefits_total' || metricId === 'social_protection_contributions_total' || metricId === 'social_protection_government_contributions_total') return 'millones de euros';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'wildfire_incidents') return 'siniestros';
@@ -743,6 +746,15 @@ const observationSeriesKey = (item) => {
   return [item.source?.id, item.datasetId, item.metricId, item.metric, item.unit, dimensions].join('::');
 };
 
+// Keep the beginning of a series together with its latest periods. This lets
+// downstream evidence packets report the real covered range without making
+// the bounded runtime payload unreasonably large.
+const boundedSeries = (items, limit = 12) => {
+  const ordered = items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
+  if (ordered.length <= limit) return ordered;
+  return [ordered[0], ...ordered.slice(-(limit - 1))];
+};
+
 const selectCompatibleWarehouseSeries = (query, observations) => {
   if (observations.length < 2) return observations;
   const wantsChange = includesAny(normalise(query), ['aumenta', 'aumento', 'sube', 'subida', 'crece', 'crecimiento', 'cae', 'baja', 'variacion', 'cambio', 'rate', 'change', 'growth']);
@@ -765,7 +777,7 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
     return { group, score: unitPreference + geographyPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000 };
   }).sort((left, right) => right.score - left.score);
   const selected = ranked[0]?.group || observations;
-  return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-12);
+  return boundedSeries(selected);
 };
 
 const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
@@ -3052,10 +3064,22 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
         groups.set(key, group);
       }
     }
-    return [...groups.values()].flatMap((group) => group
-      .slice()
-      .sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')))
-      .slice(-12));
+    const groupedByMetric = new Map();
+    for (const group of groups.values()) {
+      const metricId = group[0]?.metricId || group[0]?.metric || 'unknown';
+      const metricGroups = groupedByMetric.get(metricId) || [];
+      metricGroups.push(group.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))));
+      groupedByMetric.set(metricId, metricGroups);
+    }
+    const metricRows = [...groupedByMetric.values()].map((metricGroups) => metricGroups.flatMap((group) => boundedSeries(group)));
+    // Reserve two recent observations for every requested metric before
+    // filling the remaining bounded payload. Without this breadth pass, the
+    // first high-volume series can consume all 72 rows and hide later
+    // families in a compound claim.
+    const requiredRows = metricRows.flatMap((rows) => rows.length > 1 ? [rows[0], rows.at(-1)] : rows);
+    const requiredIds = new Set(requiredRows.map((item) => item.id));
+    const remainingRows = metricRows.flatMap((rows) => rows.filter((item) => !requiredIds.has(item.id)));
+    return [...requiredRows, ...remainingRows].slice(0, 72);
   })();
   const warehouse = {
     observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 72),

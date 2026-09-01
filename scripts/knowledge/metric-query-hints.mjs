@@ -61,7 +61,7 @@ const conceptMetricFamilies = {
   public_debt_stock: ['government_debt_current_prices', 'government_debt_ratio'],
   public_debt_ratio: ['government_debt_ratio', 'government_debt_ratio_europe'],
   demography: ['resident_population', 'foreign_born_population', 'foreign_citizenship_population', 'population_change_rate', 'older_population_share', 'young_population_share'],
-  pensions: ['old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe', 'old_age_dependency_ratio', 'older_population_share', 'government_deficit_ratio', 'government_debt_ratio'],
+  pensions: ['old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe', 'old_age_dependency_ratio', 'older_population_share', 'government_deficit_ratio', 'government_debt_ratio', 'old_age_survivors_benefits_total', 'old_age_survivors_pension_beneficiaries', 'social_protection_contributions_total', 'social_protection_government_contributions_total', 'projected_population_65_plus', 'projected_population_20_64'],
   environment: ['net_greenhouse_gas_emissions', 'renewable_energy_share', 'water_body_quality', 'water_resources', 'wildfire_incidents', 'wildfire_surface_affected'],
 };
 

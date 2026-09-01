@@ -37,6 +37,12 @@ const metricLabels = {
   social_protection_benefits_per_capita: 'Gasto en prestaciones de protección social por habitante en España',
   social_protection_benefits_per_capita_europe: 'Gasto en prestaciones de protección social por habitante: España y la Unión Europea',
   old_age_survivors_benefits_per_capita: 'Gasto en prestaciones de vejez y supervivencia por habitante en España',
+  old_age_survivors_benefits_total: 'Gasto total en prestaciones de vejez y supervivencia en España',
+  old_age_survivors_pension_beneficiaries: 'Personas beneficiarias de pensiones de vejez y supervivencia en España',
+  social_protection_contributions_total: 'Cotizaciones recibidas por la protección social en España',
+  social_protection_government_contributions_total: 'Aportaciones públicas a la protección social en España',
+  projected_population_65_plus: 'Población proyectada de 65 años o más en España',
+  projected_population_20_64: 'Población proyectada de 20 a 64 años en España',
   old_age_survivors_benefits_per_capita_europe: 'Gasto en prestaciones de vejez y supervivencia por habitante: España y la Unión Europea',
   government_current_taxes_income_wealth_europe: 'Impuestos corrientes sobre renta y riqueza: España y la Unión Europea',
   government_revenue_ratio_europe: 'Ingresos públicos sobre el PIB: España y la Unión Europea',
@@ -109,6 +115,8 @@ const displayUnit = (item) => {
   if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
   if (metricId === 'social_protection_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante';
+  if (metricId === 'old_age_survivors_benefits_total' || metricId === 'social_protection_contributions_total' || metricId === 'social_protection_government_contributions_total') return 'millones de euros';
+  if (metricId === 'old_age_survivors_pension_beneficiaries' || metricId === 'projected_population_65_plus' || metricId === 'projected_population_20_64') return 'personas';
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_current_taxes_income_wealth_europe') return '% del PIB';
   if (metricId === 'government_deficit_ratio_europe') return '% del PIB';

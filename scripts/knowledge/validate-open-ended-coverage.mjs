@@ -61,13 +61,15 @@ assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pens
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
 const demographicPensionReply = demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
 assert(demographicPensionReply.includes('29,5') && demographicPensionReply.includes('personas de 65 años o más por cada 100') && demographicPensionReply.includes('prestaciones de vejez y supervivencia') && demographicPensionReply.includes('deuda pública'), 'demography-pension fallback did not render precisely labelled context values');
-assert(demographicPension?.evidenceSummary?.families.every((family) => family.data?.length), 'demography-pension fallback did not attach snapshot values to every evidence family');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Demografía' && family.data?.length), 'demography-pension fallback did not attach its demographic snapshot value');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Pensiones' && family.data?.length), 'demography-pension fallback did not attach its pension snapshot value');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Arcas públicas' && family.data?.length), 'demography-pension fallback did not attach its public-finance snapshot value');
 assert(demographicPension?.evidenceSummary?.mode === 'snapshot', 'demography-pension fallback did not identify itself as snapshot evidence');
-assert(demographicPension?.evidenceSummary?.families.every((family) => family.status === 'partial'), 'demography-pension snapshot was presented as complete evidence');
-assert(demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('ingresos por cotizaciones')) && demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('saldo del sistema')), 'demography-pension response did not preserve concrete pension-balance gaps');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.status === 'missing'), 'demography-pension snapshot did not identify unmeasured evidence families');
+assert(demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('ingresos exclusivamente imputables a pensiones')) && demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('saldo del sistema')), 'demography-pension response did not preserve scoped pension-balance gaps');
 assert(demographicPension?.evidenceSummary?.families.every((family) => family.dimensions?.population && family.dimensions?.denominator), 'demography-pension response omitted population or denominator metadata');
-assert(demographicPension?.evidenceSummary?.families.some((family) => family.label === 'Pensiones' && family.sourceIds?.includes('pension-spending-source')), 'demography-pension response did not attach the pension-spending source');
-assert(demographicPension?.evidenceSummary?.families.some((family) => family.label === 'Arcas públicas' && family.sourceIds?.includes('public-finance-source')), 'demography-pension response did not attach the public-finance source');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Pensiones' && family.sourceIds?.includes('pension-spending-source')), 'demography-pension response did not attach the pension-spending source');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Arcas públicas' && family.sourceIds?.includes('public-finance-source')), 'demography-pension response did not attach the public-finance source');
 const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'dependency-2024', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2024' },
@@ -76,8 +78,8 @@ const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico
   ],
 });
 assert(demographicPensionWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2'), 'demography-pension packet did not render available measurements');
-assert(!demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet declared a gap despite available measurements');
-assert(demographicPensionWithData?.evidenceSummary?.families.every((family) => family.status === 'partial'), 'demography-pension dynamic context ignored unresolved balance dimensions');
+assert(demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet hid unresolved pension dimensions');
+assert(demographicPensionWithData?.evidenceSummary?.families.some((family) => family.status === 'missing'), 'demography-pension dynamic context did not identify unmeasured evidence families');
 const demographicPensionWithSeries = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'dependency-2015', metricId: 'old_age_dependency_ratio', value: 27.8, unit: 'personas por cada 100 en edad de trabajar', period: '2015' },
@@ -94,9 +96,27 @@ const seriesMissing = demographicPensionWithSeries?.evidenceSummary?.missingDime
 assert(demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2') && demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('100,7'), 'demography-pension series response omitted latest compatible values');
 assert(demographicPensionWithSeries?.limitation.includes('2015–2025'), 'demography-pension series response did not describe its observed period');
 assert(!seriesMissing.includes('serie temporal de dependencia') && !seriesMissing.includes('saldo presupuestario del periodo') && !seriesMissing.includes('serie temporal de deuda'), 'demography-pension series left resolved dimensions in the pending list');
-assert(seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('ingresos por cotizaciones') && seriesMissing.includes('transferencias al sistema'), 'demography-pension series discarded genuine pension-specific gaps');
-assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.label === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
-assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.label === 'Demografía')?.dimensions?.period === '2015–2025', 'demography-pension evidence exposed only the first observation period');
+assert(seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('saldo del sistema') && seriesMissing.includes('proyección de ingresos y gastos'), 'demography-pension series discarded genuine pension-specific gaps');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.dimensions?.period === '2015–2025', 'demography-pension evidence exposed only the first observation period');
+const demographicPensionWithExpandedEvidence = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
+  observations: [
+    { id: 'projected-older-2022', metricId: 'projected_population_65_plus', value: 9526631, unit: 'Person', period: '2022' },
+    { id: 'projected-older-2100', metricId: 'projected_population_65_plus', value: 15564375, unit: 'Person', period: '2100' },
+    { id: 'projected-working-2022', metricId: 'projected_population_20_64', value: 28789376, unit: 'Person', period: '2022' },
+    { id: 'projected-working-2100', metricId: 'projected_population_20_64', value: 22247813, unit: 'Person', period: '2100' },
+    { id: 'pensioners-2024', metricId: 'old_age_survivors_pension_beneficiaries', value: 9259549, unit: 'Person', period: '2024' },
+    { id: 'pension-spend-2024', metricId: 'old_age_survivors_benefits_total', value: 205009.77, unit: 'Million euro', period: '2024' },
+    { id: 'social-contributions-2024', metricId: 'social_protection_contributions_total', value: 224466.22, unit: 'Million euro', period: '2024' },
+    { id: 'government-contributions-2024', metricId: 'social_protection_government_contributions_total', value: 179973.5, unit: 'Million euro', period: '2024' },
+  ],
+});
+const expandedReply = demographicPensionWithExpandedEvidence?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
+assert(expandedReply.includes('Población de 65 años o más proyectada') && expandedReply.includes('Población de 20 a 64 años proyectada'), 'expanded pension response did not distinguish projected age groups');
+assert(expandedReply.includes('205.009,77 millones de euros') && expandedReply.includes('224.466,22 millones de euros'), 'expanded pension response omitted total expenditure or contributions');
+assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Proyección demográfica' && family.status === 'available'), 'expanded pension evidence did not mark the complete demographic projection available');
+assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Cotizaciones sociales' && family.missingDimensions?.includes('ingresos exclusivamente imputables a pensiones')), 'expanded pension evidence lost the scope gap on social contributions');
+assert(!expandedReply.includes('dato concreto sobre'), 'expanded pension response still used generic missing-data wording');
 
 const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');
