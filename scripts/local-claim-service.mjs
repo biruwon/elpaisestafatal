@@ -798,7 +798,8 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // periods for the chart.
   const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('tertiary_education_attainment_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('life_expectancy_at_birth_europe') || hintedMetricIds.has('fertility_rate_europe') || hintedMetricIds.has('unmet_healthcare_waiting_list_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('government_education_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe') || hintedMetricIds.has('social_protection_benefits_per_capita_europe') || hintedMetricIds.has('government_deficit_ratio_europe') || hintedMetricIds.has('government_debt_ratio_europe') || hintedMetricIds.has('gini_coefficient_europe') || hintedMetricIds.has('household_electricity_price_europe');
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
-  const candidates = (await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds })).filter((item) => {
+  const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds });
+  const candidates = rawCandidates.filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     // Stale observations remain available as explicitly limited context; an
@@ -2998,7 +2999,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       // series before the results can be combined.
       const queryMetricIds = preferredMetricIdsForQuery(query);
       const queryCompiler = queryMetricIds.size
-        ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds] }
+        ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds], retrievalMetricIds: [...queryMetricIds] }
         : retrievalClassified.compiler;
       return findWarehouseEvidence(query, queryCompiler, index === 0 ? queryEmbedding : undefined);
     }))
@@ -3029,22 +3030,35 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     // hide the other compatible series (for example housing hiding wages and
     // prices). Independent lookups keep each observation attached to its
     // proposition while the later de-duplication still bounds the payload.
-    const explicitCompoundResults = await Promise.all(independentMetricIds.map((metricId) => findWarehouseEvidence(`${metricQueryTextForIds(new Set([metricId]))} España`, { ...retrievalClassified.compiler, metricIds: [metricId] })));
+    const explicitCompoundResults = await Promise.all(independentMetricIds.map(async (metricId) => {
+      const query = `${metricQueryTextForIds(new Set([metricId]))} España`;
+      const result = await findWarehouseEvidence(query, { ...retrievalClassified.compiler, metricIds: [metricId], retrievalMetricIds: [metricId] });
+      return result;
+    }));
     warehouseResults.unshift(...explicitCompoundResults);
   }
-  const warehouseObservationRows = warehouseQueries.length > 1
-    ? (() => {
-      // Keep bounded breadth across explicit clauses. A single broad query
-      // can return a full 24-row series and crowd every later proposition out
-      // before the resolver has a chance to render its evidence family.
-      const rows = [];
-      const perQuery = Math.max(4, Math.floor(24 / warehouseQueries.length));
-      for (const item of warehouseResults) rows.push(...(item.observations || []).slice(0, perQuery));
-      return rows;
-    })()
-    : warehouseResults.flatMap((item) => item.observations || []);
+  const warehouseObservationRows = (() => {
+    // Keep the latest compatible periods for every metric series. Taking the
+    // first rows from each clause is unsafe: warehouse results are ordered by
+    // period, so a compound pension claim could lose its recent observations
+    // before the evidence packet saw them. Grouping by the series dimensions
+    // preserves breadth without replacing one metric with another.
+    const groups = new Map();
+    for (const item of warehouseResults) {
+      for (const observation of item.observations || []) {
+        const key = observationSeriesKey(observation);
+        const group = groups.get(key) || [];
+        if (!group.some((candidate) => candidate.id === observation.id || candidate.period === observation.period && candidate.value === observation.value)) group.push(observation);
+        groups.set(key, group);
+      }
+    }
+    return [...groups.values()].flatMap((group) => group
+      .slice()
+      .sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')))
+      .slice(-12));
+  })();
   const warehouse = {
-    observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 24),
+    observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 72),
     source: warehouseResults.find((item) => item.source)?.source,
   };
   const evidenceCandidateIds = Array.isArray(retrievalClassified.compiler?.metricIds) && retrievalClassified.compiler.metricIds.length
@@ -3113,8 +3127,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     ? (await enrichTrustedWebResults(trustedWebLeads, { query: discoveryText || retrievalText, max: 6 })).map(trustedWebObservation)
     : [];
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source || trustedWeb[0]?.source;
-  const observations = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text))
-    ? [...new Map([...scorecardObservations, ...warehouse.observations].map((item) => [item.id, item])).values()].slice(0, 72)
+  const broadComplaint = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text));
+  const observations = broadComplaint
+    ? [...new Map([...(broadPacketAvailable ? warehouse.observations : scorecardObservations), ...(broadPacketAvailable ? scorecardObservations : warehouse.observations)].map((item) => [item.id, item])).values()].slice(0, 96)
     : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   // Broad rhetorical claims need a reviewed multi-family context packet when

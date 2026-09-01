@@ -28,9 +28,9 @@ const packets = [
     headline: 'El envejecimiento puede aumentar la presión sobre las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['serie temporal de dependencia', 'relación entre cotizantes y pensionistas', 'proyección demográfica'], sourceIds: ['demography-pension-finance'] },
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['serie temporal de dependencia', 'relación entre cotizantes y pensionistas', 'proyección demográfica'], resolvesMissing: [{ dimension: 'serie temporal de dependencia', metricId: 'old_age_dependency_ratio', minimumObservations: 2 }], sourceIds: ['demography-pension-finance'] },
       { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], population: 'gasto en prestaciones de protección social para vejez y supervivencia', denominator: 'población residente', unit: '€ por habitante en prestaciones de vejez y supervivencia', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], missingDimensions: ['ingresos por cotizaciones', 'gasto contributivo total', 'transferencias públicas', 'saldo del sistema', 'proyección de ingresos y gastos'], sourceIds: ['pension-spending-source'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['saldo presupuestario del periodo', 'serie temporal de deuda', 'gasto e ingreso atribuible a pensiones', 'transferencias al sistema', 'criterio medible para “arruinando”'], sourceIds: ['public-finance-source'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['saldo presupuestario del periodo', 'serie temporal de deuda', 'gasto e ingreso atribuible a pensiones', 'transferencias al sistema', 'criterio medible para “arruinando”'], resolvesMissing: [{ dimension: 'saldo presupuestario del periodo', metricId: 'government_deficit_ratio', minimumObservations: 1 }, { dimension: 'serie temporal de deuda', metricId: 'government_debt_ratio', minimumObservations: 2 }], sourceIds: ['public-finance-source'] },
     ],
     limitations: ['Los indicadores disponibles son de 2020, pero no incluyen un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirman que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
     sources: [
@@ -47,8 +47,8 @@ const packets = [
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
       { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.037.432 empleados públicos; 1.634.510 funcionarios de carrera (enero de 2025)'], sourceIds: ['public-administration-source'] },
-      { id: 'public-service-performance', label: 'Desempeño', finding: 'Para evaluar la administración hacen falta tiempos de tramitación, cargas de trabajo, vacantes, absentismo, productividad y resultados del servicio, con una comparación compatible.', sourceIds: ['public-administration-source'] },
-      { id: 'individual-conduct', label: 'Conducta individual', finding: 'Una oposición otorga una relación de empleo regulada; no demuestra por sí sola rendimiento, absentismo o derecho a permanecer sin cumplir sus obligaciones.', sourceIds: ['public-administration-source'] },
+      { id: 'public-service-performance', label: 'Desempeño', finding: 'Para evaluar la administración hacen falta tiempos de tramitación, cargas de trabajo, vacantes, absentismo, productividad y resultados del servicio, con una comparación compatible.', missingDimensions: ['tiempos de tramitación', 'carga de trabajo', 'vacantes', 'absentismo', 'productividad', 'resultados comparables por servicio y territorio'], sourceIds: ['public-administration-source'] },
+      { id: 'individual-conduct', label: 'Conducta individual', finding: 'Una oposición otorga una relación de empleo regulada; no demuestra por sí sola rendimiento, absentismo o derecho a permanecer sin cumplir sus obligaciones.', missingDimensions: ['persona o puesto concreto', 'registro de desempeño', 'absentismo individual', 'expediente o resultado disciplinario'], sourceIds: ['public-administration-source'] },
     ],
     limitations: ['La frase no aporta un servicio, puesto, territorio, periodo ni indicador. Sin esos datos no se puede estimar cuántos empleos son prescindibles. Una acusación individual exigiría además expedientes de desempeño o absentismo; no puede atribuirse vagancia a un colectivo entero.'],
     sources: [source('public-administration-source', 'Estadística del personal al servicio de las Administraciones Públicas', 'Ministerio para la Transformación Digital y de la Función Pública', 'https://digital.gob.es/funcion-publica/dgfp/registro-central-personal/evolucion-administraciones-publicas', '2025-07-01')],
@@ -356,7 +356,57 @@ const formatObservation = (observation, fallbackUnit) => {
   const period = observation.period ? ` (${observation.period})` : '';
   return `${value}${contextualUnit ? ` ${contextualUnit}` : ''}${period}`;
 };
-const latestObservations = (items) => items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-1);
+const comparableObservationDimensions = (item) => Object.entries(item?.dimensions || {})
+  .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
+  .sort(([left], [right]) => left.localeCompare(right));
+const observationSeriesKey = (item) => JSON.stringify({ metricId: item?.metricId || '', dimensions: comparableObservationDimensions(item) });
+const uniqueObservations = (items) => [...new Map(items.map((item) => [`${observationSeriesKey(item)}|${item.period || ''}`, item])).values()];
+const preferredSeriesForMetric = (items) => {
+  const groups = new Map();
+  for (const item of uniqueObservations(items)) {
+    const key = observationSeriesKey(item);
+    const group = groups.get(key) || [];
+    group.push(item);
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((left, right) => {
+    const leftGeneral = left.some((item) => /general government|administraciones p[uú]blicas/i.test(JSON.stringify(item.dimensionLabels || {}))) ? 1 : 0;
+    const rightGeneral = right.some((item) => /general government|administraciones p[uú]blicas/i.test(JSON.stringify(item.dimensionLabels || {}))) ? 1 : 0;
+    return rightGeneral - leftGeneral || right.length - left.length || String(right.at(-1)?.period || '').localeCompare(String(left.at(-1)?.period || ''));
+  })[0] || [];
+};
+const observationsByMetric = (items) => [...new Set(items.map((item) => item.metricId).filter(Boolean))].flatMap((metricId) => preferredSeriesForMetric(items.filter((item) => item.metricId === metricId)));
+const latestObservationsByMetric = (items) => observationsByMetric(items).reduce((latest, item) => {
+  const current = latest.get(item.metricId);
+  if (!current || String(item.period || '') > String(current.period || '')) latest.set(item.metricId, item);
+  return latest;
+}, new Map()).values();
+const observationMetricLabel = (metricId) => ({
+  government_deficit_ratio: 'Saldo presupuestario',
+  government_debt_ratio: 'Deuda pública',
+}[metricId] || '');
+const formatSeriesData = (items, fallbackUnit) => {
+  const selected = observationsByMetric(items);
+  const seenMetrics = new Set();
+  return selected.flatMap((item) => {
+    if (seenMetrics.has(item.metricId)) return [];
+    seenMetrics.add(item.metricId);
+    const metricItems = selected.filter((candidate) => candidate.metricId === item.metricId);
+    const first = metricItems[0];
+    const latest = metricItems.at(-1);
+    const label = observationMetricLabel(latest.metricId);
+    const prefix = label ? `${label}: ` : '';
+    return [metricItems.length > 1 ? `Serie localizada: ${prefix}${formatObservation(first, fallbackUnit)} → ${formatObservation(latest, fallbackUnit)}` : `${prefix}${formatObservation(latest, fallbackUnit)}`];
+  });
+};
+const unresolvedMissingDimensionsFor = (criterion, items) => {
+  const observations = observationsByMetric(items);
+  return (criterion.missingDimensions || []).filter((dimension) => {
+    const resolution = (criterion.resolvesMissing || []).find((candidate) => candidate.dimension === dimension);
+    if (!resolution) return true;
+    return observations.filter((item) => item.metricId === resolution.metricId).length < (resolution.minimumObservations || 1);
+  });
+};
 const familyLabelForPacket = (packet) => ({
   'broad-immigration-regularization': 'Inmigración y regularización',
   'broad-public-services': 'Servicios públicos',
@@ -388,13 +438,17 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   }));
   const hasDynamicObservations = matchedObservations.some(({ observations: items }) => items.length > 0);
   const hasSnapshotData = matchedObservations.some(({ criterion, observations: items }) => items.length === 0 && criterion.fallbackData?.length);
+  const unresolvedDimensions = matchedObservations.map(({ criterion, observations: items }) => unresolvedMissingDimensionsFor(criterion, items));
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   const cleanQuantitative = (value) => String(value).trim().replace(/[.;]\s*$/, '');
-  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item, criterion.unit)}`));
+  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => [...latestObservationsByMetric(items)].map((item) => {
+    const metricLabel = observationMetricLabel(item.metricId);
+    return `${criterion.label}${metricLabel ? ` · ${metricLabel}` : ''}: ${formatObservation(item, criterion.unit)}`;
+  }));
   const criterionDataFor = (item, index) => {
     const matched = matchedObservations[index]?.observations || [];
-    return matched.length ? latestObservations(matched).map((observation) => formatObservation(observation, item.unit)) : item.fallbackData?.length ? item.fallbackData : [];
+    return matched.length ? formatSeriesData(matched, item.unit) : item.fallbackData?.length ? item.fallbackData : [];
   };
   matchedObservations.forEach(({ criterion, observations: items }) => {
     if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${cleanQuantitative(value)}`));
@@ -405,10 +459,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     .map(cleanQuantitative);
   quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
   const missingCriteria = matchedObservations
-    .filter(({ criterion, observations: items }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding))
-    .flatMap(({ criterion }) => (criterion.missingDimensions?.length ? criterion.missingDimensions : [criterion.label.toLocaleLowerCase('es')]).map((dimension) => `dato concreto sobre ${dimension}`));
+    .map(({ criterion, observations: items }, index) => ({ criterion, items, missing: unresolvedDimensions[index] }))
+    .filter(({ criterion, items, missing }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding) && missing.length)
+    .flatMap(({ missing }) => missing.map((dimension) => `dato concreto sobre ${dimension}`));
   const scopedMissingDimensions = [...new Set([
-    ...packet.criteria.flatMap((item) => item.missingDimensions || []),
+    ...unresolvedDimensions.flat(),
     ...missingCriteria,
   ])];
   const evidenceGap = missingCriteria.length ? {
@@ -417,11 +472,15 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     needed: ['una fuente primaria con valores, periodo y ámbito definidos', 'una comparación compatible con la afirmación'],
     nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
   } : undefined;
+  const observedPeriods = [...new Set(matchedObservations.flatMap(({ observations: items }) => observationsByMetric(items).map((item) => String(item.period || '')).filter(Boolean)))].sort();
+  const limitation = observedPeriods.length > 1
+    ? packet.limitations[0].replace(/^Los indicadores disponibles son de 2020, pero/, `Los indicadores disponibles abarcan ${observedPeriods[0]}–${observedPeriods.at(-1)}, pero`)
+    : packet.limitations[0];
   const conversationReply = [
     `${packet.headline}.`,
     quantitativeFindings.length ? `${hasDynamicObservations ? 'Valores observados' : 'Indicadores contextuales observados'}: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
     evidenceGap ? 'Quedan sin resolver varias dimensiones de esta afirmación; se detallan en las secciones de evidencia.' : undefined,
-    packet.limitations[0],
+    limitation,
   ].filter(Boolean).join(' ');
   return {
     id: packet.id,
@@ -434,15 +493,15 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     interpretation: packet.interpretation,
     blocks: [
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item, index) => {
-        const found = latestObservations(matchedObservations[index]?.observations || []);
+        const found = [...latestObservationsByMetric(matchedObservations[index]?.observations || [])];
         const fallback = item.fallbackData || [];
         return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map((observation) => formatObservation(observation, item.unit)).join('; ')}.` : fallback.length ? ` Dato del snapshot: ${fallback.join('; ')}.` : ''}`;
       }) },
-      { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
+      { type: 'cannot_conclude', evidenceIds, points: [limitation] },
       ...(evidenceGap ? [evidenceGap] : []),
       { type: 'conversation_reply', evidenceIds, text: conversationReply },
     ],
-    limitation: packet.limitations[0],
+    limitation,
     evidenceIds,
     sourceIds,
     sourceLinks: packet.sources,
@@ -450,7 +509,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     evidenceSummary: {
       mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
       families: packet.criteria.map((item, index) => ({
-        status: evidenceStatusFor(criterionDataFor(item, index), item.missingDimensions, !matchedObservations[index]?.observations?.length && Boolean(item.fallbackData?.length)),
+        status: evidenceStatusFor(criterionDataFor(item, index), unresolvedDimensions[index], !matchedObservations[index]?.observations?.length && Boolean(item.fallbackData?.length)),
         dimensions: dimensionsFor(packet, item, criterionDataFor(item, index)),
         familyId: packet.id,
         familyLabel: familyLabelForPacket(packet),
@@ -459,7 +518,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
         direction: 'qualifies',
         evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)],
         sourceIds: item.sourceIds,
-        ...(item.missingDimensions?.length ? { missingDimensions: item.missingDimensions } : {}),
+        ...(unresolvedDimensions[index].length ? { missingDimensions: unresolvedDimensions[index] } : {}),
         finding: item.finding,
         ...(criterionDataFor(item, index).length ? { data: criterionDataFor(item, index) } : {}),
       })),

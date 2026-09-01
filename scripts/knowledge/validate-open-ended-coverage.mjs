@@ -78,6 +78,24 @@ const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico
 assert(demographicPensionWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2'), 'demography-pension packet did not render available measurements');
 assert(!demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet declared a gap despite available measurements');
 assert(demographicPensionWithData?.evidenceSummary?.families.every((family) => family.status === 'partial'), 'demography-pension dynamic context ignored unresolved balance dimensions');
+const demographicPensionWithSeries = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
+  observations: [
+    { id: 'dependency-2015', metricId: 'old_age_dependency_ratio', value: 27.8, unit: 'personas por cada 100 en edad de trabajar', period: '2015' },
+    { id: 'dependency-2025', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2025' },
+    { id: 'pension-2015', metricId: 'old_age_survivors_benefits_per_capita', value: 2803.07, unit: '€ por habitante', period: '2015' },
+    { id: 'pension-2024', metricId: 'old_age_survivors_benefits_per_capita', value: 4194.66, unit: '€ por habitante', period: '2024' },
+    { id: 'deficit-2015', metricId: 'government_deficit_ratio', value: -5.3, unit: '% del PIB', period: '2015' },
+    { id: 'deficit-2025', metricId: 'government_deficit_ratio', value: -2.4, unit: '% del PIB', period: '2025' },
+    { id: 'debt-2015', metricId: 'government_debt_ratio', value: 102.5, unit: '% del PIB', period: '2015' },
+    { id: 'debt-2025', metricId: 'government_debt_ratio', value: 100.7, unit: '% del PIB', period: '2025' },
+  ],
+});
+const seriesMissing = demographicPensionWithSeries?.evidenceSummary?.missingDimensions || [];
+assert(demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2') && demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('100,7'), 'demography-pension series response omitted latest compatible values');
+assert(demographicPensionWithSeries?.limitation.includes('2015–2025'), 'demography-pension series response did not describe its observed period');
+assert(!seriesMissing.includes('serie temporal de dependencia') && !seriesMissing.includes('saldo presupuestario del periodo') && !seriesMissing.includes('serie temporal de deuda'), 'demography-pension series left resolved dimensions in the pending list');
+assert(seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('ingresos por cotizaciones') && seriesMissing.includes('transferencias al sistema'), 'demography-pension series discarded genuine pension-specific gaps');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.label === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
 
 const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');

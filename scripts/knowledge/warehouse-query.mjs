@@ -7,7 +7,7 @@ const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname
 const recordCacheTtlMs = 60 * 1000;
 const maxCachedRecords = 50_000;
 let recordCache = { expiresAt: 0, key: '', records: [] };
-let recordLoadPromise;
+const recordLoadPromises = new Map();
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
@@ -109,8 +109,9 @@ export const populationEvidenceFit = (requestedPopulation, record) => {
 const readRecords = async ({ query = '', metricIds } = {}) => {
   const cacheKey = `${query}|${metricIds ? [...metricIds].sort().join(',') : ''}`;
   if (recordCache.key === cacheKey && recordCache.expiresAt > Date.now()) return recordCache.records;
-  if (recordLoadPromise) return recordLoadPromise;
-  recordLoadPromise = (async () => {
+  const existingLoad = recordLoadPromises.get(cacheKey);
+  if (existingLoad) return existingLoad;
+  const load = (async () => {
     let files;
     try { files = (await readdir(join(root, 'records'))).filter((file) => file.endsWith('.json')); } catch { return []; }
     if (!metricIds?.size && query) {
@@ -149,10 +150,11 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
     recordCache = { expiresAt: Date.now() + recordCacheTtlMs, key: cacheKey, records };
     return records;
   })();
-  try { return await recordLoadPromise; } finally { recordLoadPromise = undefined; }
+  recordLoadPromises.set(cacheKey, load);
+  try { return await load; } finally { if (recordLoadPromises.get(cacheKey) === load) recordLoadPromises.delete(cacheKey); }
 };
 
-export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordLoadPromise = undefined; };
+export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordLoadPromises.clear(); };
 
 const recordText = (record) => [
   record.datasetId,
