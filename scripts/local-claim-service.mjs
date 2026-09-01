@@ -165,7 +165,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'life_expectancy_at_birth' || metricId === 'life_expectancy_at_birth_europe') return 'años';
   if (metricId === 'imv_beneficiary_average_age') return 'años';
   if (metricId === 'fertility_rate' || metricId === 'fertility_rate_europe') return 'hijos por mujer';
-  if (metricId === 'old_age_dependency_ratio') return 'personas mayores por cada 100 en edad de trabajar';
+  if (metricId === 'old_age_dependency_ratio') return 'personas de 65 años o más por cada 100 de 15 a 64 años';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'wildfire_incidents') return 'siniestros';
@@ -177,9 +177,11 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'minimum_wage_monthly') return '€ al mes';
   if (metricId === 'social_protection_benefits_per_capita') return '€ por habitante';
   if (metricId === 'social_protection_benefits_per_capita_europe') return '€ por habitante';
-  if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante';
+  if (metricId === 'old_age_survivors_benefits_per_capita') return '€ por habitante en prestaciones de vejez y supervivencia';
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
+  if (metricId === 'government_deficit_ratio') return '% del PIB de déficit o superávit público';
+  if (metricId === 'government_debt_ratio') return '% del PIB de deuda pública';
   if (metricId === 'government_deficit_ratio_europe' || metricId === 'government_debt_ratio_europe') return '% del PIB';
   if (metricId === 'cpi_index') return 'índice';
   if (metricId === 'inflation_rate') return '% interanual';

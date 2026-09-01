@@ -56,11 +56,18 @@ assert(emergencyElection?.blocks.find((block) => block.type === 'conversation_re
 
 const demographicPension = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas');
 assert(demographicPension?.headline.includes('pensiones'), 'demography-pension wording was routed to a generic pensions response');
+assert(demographicPension?.headline.includes('puede aumentar'), 'demography-pension response stated pressure too definitively');
 assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pension packet omitted the public-finance part of the claim');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
-assert(demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('29,5'), 'demography-pension fallback did not render its reviewed demographic snapshot');
+const demographicPensionReply = demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
+assert(demographicPensionReply.includes('29,5') && demographicPensionReply.includes('personas de 65 años o más por cada 100') && demographicPensionReply.includes('prestaciones de vejez y supervivencia') && demographicPensionReply.includes('deuda pública'), 'demography-pension fallback did not render precisely labelled context values');
 assert(demographicPension?.evidenceSummary?.families.every((family) => family.data?.length), 'demography-pension fallback did not attach snapshot values to every evidence family');
-assert(demographicPension?.evidenceSummary?.families.every((family) => family.status === 'available'), 'demography-pension snapshot did not mark observed families as available');
+assert(demographicPension?.evidenceSummary?.mode === 'snapshot', 'demography-pension fallback did not identify itself as snapshot evidence');
+assert(demographicPension?.evidenceSummary?.families.every((family) => family.status === 'partial'), 'demography-pension snapshot was presented as complete evidence');
+assert(demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('ingresos por cotizaciones')) && demographicPension?.evidenceSummary?.missingDimensions?.some((item) => item.includes('saldo del sistema')), 'demography-pension response did not preserve concrete pension-balance gaps');
+assert(demographicPension?.evidenceSummary?.families.every((family) => family.dimensions?.population && family.dimensions?.denominator), 'demography-pension response omitted population or denominator metadata');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.label === 'Pensiones' && family.sourceIds?.includes('pension-spending-source')), 'demography-pension response did not attach the pension-spending source');
+assert(demographicPension?.evidenceSummary?.families.some((family) => family.label === 'Arcas públicas' && family.sourceIds?.includes('public-finance-source')), 'demography-pension response did not attach the public-finance source');
 const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'dependency-2024', metricId: 'old_age_dependency_ratio', value: 31.2, unit: 'personas por cada 100 en edad de trabajar', period: '2024' },
@@ -70,6 +77,7 @@ const demographicPensionWithData = answerPlanForBroadDomain('Árbol demográfico
 });
 assert(demographicPensionWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2'), 'demography-pension packet did not render available measurements');
 assert(!demographicPensionWithData?.blocks.some((block) => block.type === 'evidence_gap'), 'demography-pension packet declared a gap despite available measurements');
+assert(demographicPensionWithData?.evidenceSummary?.families.every((family) => family.status === 'partial'), 'demography-pension dynamic context ignored unresolved balance dimensions');
 
 const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');

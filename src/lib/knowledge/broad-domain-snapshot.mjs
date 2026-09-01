@@ -25,17 +25,18 @@ const packets = [
     id: 'broad-demography-pension-finance',
     matches: /\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b[\s\S]{0,180}\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b|\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*[\s\S]{0,180}\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b/i,
     interpretation: { kind: 'mixed', subject: 'demografía y sistema de pensiones', subjectType: 'country', predicate: 'puts_pressure_on', object: 'financiación pública', normalizedClaim: 'cambio demográfico, sostenibilidad de las pensiones y efecto sobre las cuentas públicas', interpretation: 'La frase combina una descripción demográfica, una predicción sobre sostenibilidad y una acusación sobre las cuentas públicas. Cada parte requiere una medida distinta.' },
-    headline: 'El envejecimiento presiona las pensiones, pero no demuestra por sí solo una quiebra pública',
+    headline: 'El envejecimiento puede aumentar la presión sobre las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], unit: 'personas mayores por cada 100 en edad de trabajar', fallbackData: ['29,5 personas mayores por cada 100 en edad de trabajar (2020)'], sourceIds: ['demography-pension-finance'] },
-      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], unit: '€ por habitante', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], sourceIds: ['demography-pension-finance'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], sourceIds: ['public-finance-pension'] },
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['serie temporal de dependencia', 'relación entre cotizantes y pensionistas', 'proyección demográfica'], sourceIds: ['demography-pension-finance'] },
+      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], population: 'gasto en prestaciones de protección social para vejez y supervivencia', denominator: 'población residente', unit: '€ por habitante en prestaciones de vejez y supervivencia', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], missingDimensions: ['ingresos por cotizaciones', 'gasto contributivo total', 'transferencias públicas', 'saldo del sistema', 'proyección de ingresos y gastos'], sourceIds: ['pension-spending-source'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['saldo presupuestario del periodo', 'serie temporal de deuda', 'gasto e ingreso atribuible a pensiones', 'transferencias al sistema', 'criterio medible para “arruinando”'], sourceIds: ['public-finance-source'] },
     ],
-    limitations: ['El snapshot aporta indicadores de 2020, pero no un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirma que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
+    limitations: ['Los indicadores disponibles son de 2020, pero no incluyen un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirman que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
     sources: [
       source('demography-pension-finance', 'Población y estructura demográfica', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_structure_and_ageing', '2025-10-01'),
-      source('public-finance-pension', 'Social protection statistics · pensions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
+      source('pension-spending-source', 'Social protection statistics · old-age and survivors benefits', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
+      source('public-finance-source', 'Government finance statistics · debt and deficit', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01'),
     ],
   },
   {
@@ -336,7 +337,12 @@ const formatObservation = (observation, fallbackUnit) => {
   const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(observation.value) : String(observation.value || '').trim();
   const rawUnit = observation.displayUnit || observation.unit || fallbackUnit || '';
   const unit = ({
-    'Euro per inhabitant': '€ por habitante',
+    old_age_dependency_ratio: 'personas de 65 años o más por cada 100 de 15 a 64 años',
+    old_age_survivors_benefits_per_capita: '€ por habitante en prestaciones de vejez y supervivencia',
+    government_deficit_ratio: '% del PIB de déficit o superávit público',
+    government_debt_ratio: '% del PIB de deuda pública',
+  }[observation.metricId]) || ({
+    'Euro per inhabitant': observation.metricId === 'old_age_survivors_benefits_per_capita' ? '€ por habitante en prestaciones de vejez y supervivencia' : '€ por habitante',
     'Percentage of gross domestic product (GDP)': '% del PIB',
     'Percentage of population in the labour force': '% de población activa',
     'Percentage': '%',
@@ -344,8 +350,11 @@ const formatObservation = (observation, fallbackUnit) => {
     'Euro': '€',
     'INE unit 133': 'índice',
   })[rawUnit] || rawUnit;
+  const contextualUnit = observation.metricId === 'government_debt_ratio' && unit === '% del PIB' ? '% del PIB de deuda pública'
+    : observation.metricId === 'government_deficit_ratio' && unit === '% del PIB' ? '% del PIB de déficit o superávit público'
+      : unit;
   const period = observation.period ? ` (${observation.period})` : '';
-  return `${value}${unit ? ` ${unit}` : ''}${period}`;
+  return `${value}${contextualUnit ? ` ${contextualUnit}` : ''}${period}`;
 };
 const latestObservations = (items) => items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))).slice(-1);
 const familyLabelForPacket = (packet) => ({
@@ -353,11 +362,13 @@ const familyLabelForPacket = (packet) => ({
   'broad-public-services': 'Servicios públicos',
   'broad-benefits-recipients': 'Prestaciones',
 }[packet.id] || packet.headline);
-const evidenceStatusFor = (data, missingDimensions) => data?.length ? (missingDimensions?.length ? 'partial' : 'available') : 'missing';
+const evidenceStatusFor = (data, missingDimensions, snapshotOnly = false) => data?.length ? (missingDimensions?.length || snapshotOnly ? 'partial' : 'available') : 'missing';
 const dimensionsFor = (packet, criterion, data) => ({
   subject: packet.interpretation?.subject,
+  population: criterion.population,
   geography: 'España',
   period: data?.map((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/)?.[0]).find(Boolean),
+  denominator: criterion.denominator,
   unit: criterion.unit,
   causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,
 });
@@ -375,6 +386,8 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     criterion,
     observations: observations.filter((observation) => criterion.metricIds?.includes(observation.metricId) && typeof observation.value === 'number' && Number.isFinite(observation.value)),
   }));
+  const hasDynamicObservations = matchedObservations.some(({ observations: items }) => items.length > 0);
+  const hasSnapshotData = matchedObservations.some(({ criterion, observations: items }) => items.length === 0 && criterion.fallbackData?.length);
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   const cleanQuantitative = (value) => String(value).trim().replace(/[.;]\s*$/, '');
@@ -394,6 +407,10 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   const missingCriteria = matchedObservations
     .filter(({ criterion, observations: items }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding))
     .flatMap(({ criterion }) => (criterion.missingDimensions?.length ? criterion.missingDimensions : [criterion.label.toLocaleLowerCase('es')]).map((dimension) => `dato concreto sobre ${dimension}`));
+  const scopedMissingDimensions = [...new Set([
+    ...packet.criteria.flatMap((item) => item.missingDimensions || []),
+    ...missingCriteria,
+  ])];
   const evidenceGap = missingCriteria.length ? {
     type: 'evidence_gap',
     missing: missingCriteria,
@@ -402,7 +419,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   } : undefined;
   const conversationReply = [
     `${packet.headline}.`,
-    quantitativeFindings.length ? `Valores observados: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
+    quantitativeFindings.length ? `${hasDynamicObservations ? 'Valores observados' : 'Indicadores contextuales observados'}: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
     evidenceGap ? 'Quedan sin resolver varias dimensiones de esta afirmación; se detallan en las secciones de evidencia.' : undefined,
     packet.limitations[0],
   ].filter(Boolean).join(' ');
@@ -419,7 +436,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
       { type: 'data_finding', evidenceIds, points: packet.criteria.map((item, index) => {
         const found = latestObservations(matchedObservations[index]?.observations || []);
         const fallback = item.fallbackData || [];
-        return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map(formatObservation).join('; ')}.` : fallback.length ? ` Dato del snapshot: ${fallback.join('; ')}.` : ''}`;
+        return `${item.label}: ${item.finding}${found.length ? ` Datos localizados: ${found.map((observation) => formatObservation(observation, item.unit)).join('; ')}.` : fallback.length ? ` Dato del snapshot: ${fallback.join('; ')}.` : ''}`;
       }) },
       { type: 'cannot_conclude', evidenceIds, points: packet.limitations },
       ...(evidenceGap ? [evidenceGap] : []),
@@ -431,9 +448,9 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     sourceLinks: packet.sources,
     asOf: '2026-08-20',
     evidenceSummary: {
-      mode: 'snapshot',
+      mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
       families: packet.criteria.map((item, index) => ({
-        status: evidenceStatusFor(criterionDataFor(item, index), item.missingDimensions),
+        status: evidenceStatusFor(criterionDataFor(item, index), item.missingDimensions, !matchedObservations[index]?.observations?.length && Boolean(item.fallbackData?.length)),
         dimensions: dimensionsFor(packet, item, criterionDataFor(item, index)),
         familyId: packet.id,
         familyLabel: familyLabelForPacket(packet),
@@ -446,8 +463,8 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
         finding: item.finding,
         ...(criterionDataFor(item, index).length ? { data: criterionDataFor(item, index) } : {}),
       })),
-      ...(missingCriteria.length ? { missingDimensions: missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
-      fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; se muestra un paquete revisado y fechado como contexto provisional.',
+      ...(scopedMissingDimensions.length ? { missingDimensions: scopedMissingDimensions.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
+      ...(hasSnapshotData ? { fallbackReason: 'No se encontró una serie dinámica suficientemente compatible; los indicadores mostrados son contexto revisado y fechado, no un balance completo.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-1',
