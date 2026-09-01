@@ -38,9 +38,9 @@ const registryMetricIdsForQuery = (normalized) => {
 // collapsing” may require access, waiting-list, capacity and spending data.
 // It is not a claim catalogue and contains no wording-specific answer.
 const conceptMetricFamilies = {
-  healthcare: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate', 'health_expenditure_per_capita', 'hospital_beds', 'physicians_density', 'emergency_wait_declared'],
+  healthcare: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate', 'health_expenditure_per_capita', 'hospital_beds', 'hospital_beds_per_100k', 'physicians_density', 'emergency_wait_declared'],
   health_access: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_distance_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate'],
-  healthcare_collapse: ['unmet_healthcare_waiting_list_rate', 'emergency_wait_declared', 'hospital_beds', 'physicians_density', 'health_expenditure_per_capita'],
+  healthcare_collapse: ['unmet_healthcare_waiting_list_rate', 'emergency_wait_declared', 'hospital_beds', 'hospital_beds_per_100k', 'physicians_density', 'health_expenditure_per_capita'],
   health_spending: ['health_expenditure_per_capita', 'health_expenditure_per_capita_europe'],
   education: ['government_education_expenditure_ratio', 'education_personnel', 'early_school_leaving_rate', 'tertiary_education_attainment_rate', 'neet_rate'],
   education_outcomes: ['early_school_leaving_rate', 'tertiary_education_attainment_rate', 'neet_rate', 'education_personnel'],
@@ -205,7 +205,8 @@ const metricHints = [
   { ids: ['net_greenhouse_gas_emissions'], terms: ['emisiones netas de gases de efecto invernadero', 'emisiones netas gei', 'emisiones climaticas netas', 'emisiones netas'] },
   { ids: ['standardised_homicide_rate'], terms: ['tasa de homicidios', 'homicidios por poblacion', 'muertes por homicidio', 'tasa estandarizada de homicidios'] },
   { ids: ['renewable_energy_share'], terms: ['energias renovables', 'cuota de renovables', 'energia renovable', 'porcentaje de renovables'] },
-  { ids: ['hospital_beds'], terms: ['camas hospitalarias', 'camas de hospital', 'numero de camas sanitarias', 'plazas hospitalarias'] },
+  { ids: ['hospital_beds', 'hospital_beds_per_100k'], terms: ['camas hospitalarias', 'camas de hospital', 'numero de camas sanitarias', 'plazas hospitalarias'] },
+  { ids: ['hospital_beds_per_100k'], terms: ['camas hospitalarias por 100.000 habitantes', 'camas por 100.000 habitantes', 'densidad de camas hospitalarias'] },
   { ids: ['physicians_density'], terms: ['medicos por habitante', 'densidad de medicos', 'numero de medicos', 'facultativos por poblacion'] },
   { ids: ['asylum_applications'], terms: ['solicitudes de asilo', 'peticiones de asilo', 'solicitantes de proteccion internacional', 'asilo en espana'] },
   { ids: ['road_fatality_rate'], terms: ['muertes en carretera', 'mortalidad vial', 'accidentes de trafico mortales', 'victimas mortales de trafico'] },

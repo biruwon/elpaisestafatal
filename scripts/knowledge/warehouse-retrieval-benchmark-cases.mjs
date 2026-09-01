@@ -408,6 +408,7 @@ export const warehouseRetrievalBenchmarkCases = [
   ['coverage-standardised_homicide_rate', 'Tasa estandarizada de homicidios en España', 'standardised_homicide_rate'],
   ['coverage-renewable_energy_share', 'Porcentaje de energía renovable en España', 'renewable_energy_share'],
   ['coverage-hospital_beds', 'Camas hospitalarias por población en España', 'hospital_beds'],
+  ['coverage-hospital_beds_per_100k', 'Camas hospitalarias por 100.000 habitantes en España', 'hospital_beds_per_100k'],
   ['coverage-physicians_density', 'Densidad de médicos en España', 'physicians_density'],
   ['coverage-asylum_applications', 'Solicitudes de asilo en España', 'asylum_applications'],
   ['coverage-road_fatality_rate', 'Mortalidad en carretera en España', 'road_fatality_rate'],

@@ -28,13 +28,15 @@ const packets = [
     headline: 'El envejecimiento puede aumentar la presión sobre las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', familyId: 'demography', familyLabel: 'Demografía', label: 'Dependencia demográfica', finding: 'La dependencia de mayores mide una relación demográfica, no la relación efectiva entre cotizantes y pensionistas. “Árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], missingDimensions: ['relación entre cotizantes y pensionistas'], sourceIds: ['demography-pension-finance', 'pension-beneficiaries-source'] },
+      { id: 'demographic-structure', familyId: 'demography', familyLabel: 'Demografía', label: 'Dependencia demográfica', finding: 'La dependencia de mayores mide una relación demográfica, no la relación efectiva entre cotizantes y pensionistas. “Árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], population: 'residentes de 65 años o más en relación con residentes de 15 a 64 años', denominator: 'personas de 15 a 64 años', unit: 'personas de 65 años o más por cada 100 de 15 a 64 años', fallbackData: ['29,5 personas de 65 años o más por cada 100 personas de 15 a 64 años (2020)'], sourceIds: ['demography-pension-finance', 'pension-beneficiaries-source'] },
       { id: 'projected-demography', familyId: 'demography', familyLabel: 'Demografía', label: 'Proyección demográfica', finding: 'La proyección de Eurostat es un escenario de referencia: muestra qué ocurriría bajo sus supuestos, no una predicción segura ni una proyección financiera del sistema.', metricIds: ['projected_population_65_plus', 'projected_population_20_64'], population: 'población proyectada de 65 años o más y de 20 a 64 años', denominator: 'personas proyectadas en cada grupo de edad', unit: 'personas proyectadas', missingDimensions: ['proyección demográfica'], resolvesMissing: [{ dimension: 'proyección demográfica', metricIds: ['projected_population_65_plus', 'projected_population_20_64'], minimumObservations: 2, requireAllMetricIds: true }], sourceIds: ['demography-projections-source'] },
+      { id: 'contributor-pensioner-ratio', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Cotizantes por pensionista', finding: 'La Seguridad Social publicó una ratio de 2,5 afiliados por pensionista en julio de 2026, máximo desde 2011. Es una medida del momento y no sustituye a una proyección actuarial.', population: 'personas afiliadas y pensionistas incluidos en la ratio publicada', denominator: 'pensionistas', unit: 'cotizantes por pensionista', fallbackData: ['2,5 cotizantes por pensionista (julio de 2026; máximo desde 2011)'], sourceIds: ['social-security-affiliation-source'] },
       { id: 'pension-balance', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Gasto por habitante', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], population: 'gasto en prestaciones de protección social para vejez y supervivencia', denominator: 'población residente', unit: '€ por habitante en prestaciones de vejez y supervivencia', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], missingDimensions: ['saldo del sistema', 'proyección de ingresos y gastos'], sourceIds: ['pension-spending-source'] },
       { id: 'pension-beneficiaries', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Personas beneficiarias', finding: 'El recuento de Eurostat cubre personas que reciben pensiones de vejez y supervivencia en todos los esquemas; no equivale por sí solo a cotizantes ni a pensionistas del sistema contributivo español.', metricIds: ['old_age_survivors_pension_beneficiaries'], population: 'personas beneficiarias de pensiones de vejez y supervivencia', denominator: 'personas', unit: 'personas', sourceIds: ['pension-beneficiaries-source'] },
       { id: 'pension-expenditure-total', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Gasto total de vejez y supervivencia', finding: 'El gasto total localizado cubre prestaciones de vejez y supervivencia de todos los esquemas. No es un desglose del gasto contributivo neto ni un saldo del sistema de pensiones.', metricIds: ['old_age_survivors_benefits_total'], population: 'gasto total en prestaciones de protección social para vejez y supervivencia', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['gasto contributivo neto'], sourceIds: ['pension-expenditure-total-source'] },
       { id: 'social-contributions', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Cotizaciones sociales', finding: 'Eurostat registra las cotizaciones recibidas por los esquemas de protección social en conjunto. La serie no atribuye esos ingresos exclusivamente a las pensiones.', metricIds: ['social_protection_contributions_total'], population: 'ingresos de los esquemas de protección social procedentes de cotizaciones', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['ingresos exclusivamente imputables a pensiones'], sourceIds: ['social-protection-receipts-source'] },
       { id: 'government-financing', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Aportaciones públicas', finding: 'Eurostat registra aportaciones generales de las administraciones a la protección social. No permite tratarlas como transferencias específicas al sistema de pensiones.', metricIds: ['social_protection_government_contributions_total'], population: 'ingresos de los esquemas de protección social procedentes de las administraciones públicas', denominator: 'ninguno; importe agregado', unit: 'millones de euros', missingDimensions: ['transferencias específicas al sistema de pensiones'], sourceIds: ['social-protection-receipts-source'] },
+      { id: 'pension-financial-outlook', familyId: 'pensions', familyLabel: 'Pensiones', label: 'Proyección financiera', finding: 'La AIReF proyecta un gasto bruto público en pensiones equivalente al 14,6 % del PIB de media entre 2022 y 2050, medidas de ingresos del 1,6 % y transferencias implícitas que llegarían al 3,0 % del PIB. Es un escenario de proyección, no una quiebra observada.', population: 'gasto bruto público en pensiones, medidas de ingresos y transferencias implícitas proyectadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['Gasto bruto público en pensiones: 14,6 % del PIB de media (2022–2050)', 'Medidas de ingresos: 1,6 % del PIB de media (2022–2050)', 'Transferencias implícitas del resto de fondos o de la Administración Central: hasta el 3,0 % del PIB en la proyección (2022–2050)'], missingDimensions: ['saldo anual completo del sistema de pensiones'], sourceIds: ['airef-pension-sustainability-source'] },
       { id: 'public-finance-effect', familyId: 'public-finance', familyLabel: 'Arcas públicas', label: 'Saldo y deuda pública', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], population: 'administraciones públicas consolidadas', denominator: 'PIB', unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], missingDimensions: ['gasto e ingreso atribuible exclusivamente a pensiones', 'criterio medible para “arruinando”'], resolvesMissing: [{ dimension: 'saldo presupuestario del periodo', metricId: 'government_deficit_ratio', minimumObservations: 1 }, { dimension: 'serie temporal de deuda', metricId: 'government_debt_ratio', minimumObservations: 2 }], sourceIds: ['public-finance-source'] },
     ],
     limitations: ['Las series muestran demografía, beneficiarios, gasto y financiación de la protección social, déficit y deuda, pero no un balance pensionista completo ni una proyección financiera. Por eso no confirman que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
@@ -45,6 +47,8 @@ const packets = [
       source('pension-beneficiaries-source', 'Pension beneficiaries by type · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_pns_ben?geo=ES&spdepm=TOTAL&spscheme=TOTAL&spdepb=OLD_SRV&sex=T&unit=PER&sinceTimePeriod=2015', '2025-10-01'),
       source('pension-expenditure-total-source', 'Total old-age and survivors benefits expenditure · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_func?geo=ES&spdeps=SPR&spfunc=OLD_SRV&unit=MIO_EUR&sinceTimePeriod=2015', '2025-10-01'),
       source('social-protection-receipts-source', 'Social protection receipts by type · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_rec_sumt?geo=ES&unit=MIO_EUR&sinceTimePeriod=2015', '2025-10-01'),
+      source('social-security-affiliation-source', 'España supera por primera vez los 22,5 millones de afiliados', 'Ministerio de Inclusión, Seguridad Social y Migraciones', 'https://www.inclusion.gob.es/es/w/espana-supera-por-primera-vez-los-22-5-millones-de-afiliados-medios-tras-crear-mas-de-642.500-empleos-en-el-ultimo-ano', '2026-07-31'),
+      source('airef-pension-sustainability-source', 'La regla de gasto de pensiones se cumple formalmente, pero no garantiza la sostenibilidad', 'AIReF', 'https://www.airef.es/es/noticias/la-airef-ratifica-el-resultado-de-2025-la-regla-de-gasto-de-pensiones-se-cumple-formalmente-pero-no-garantiza-la-sostenibilidad/', '2026-05-13'),
       source('public-finance-source', 'Government finance statistics · debt and deficit', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01'),
     ],
   },
@@ -69,12 +73,14 @@ const packets = [
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
     summary: 'La expresión “colapso total” no es un indicador estadístico. Para comprobarla hay que medir capacidad, demanda, tiempos de atención, cobertura y resultados del servicio afectado, con periodo y territorio definidos.',
     criteria: [
-      { id: 'public-service-capacity', label: 'Capacidad y demanda', finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source'] },
-      { id: 'public-service-outcomes', label: 'Resultados y atención', finding: 'Tiempos de espera, cobertura y resultados pueden mostrar presión o deterioro en un servicio, pero no equivalen automáticamente a un colapso total de todos los servicios públicos.', missingDimensions: ['indicador de resultados', 'serie comparable'], sourceIds: ['public-services-source'] },
+      { id: 'public-service-capacity', label: 'Capacidad y demanda', metricIds: ['hospital_beds_per_100k', 'emergency_wait_declared'], finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', population: 'camas hospitalarias para atención con ingreso y tiempo declarado de espera en urgencias', denominator: 'población residente para camas; minutos de espera para urgencias', unit: 'camas por 100.000 habitantes; minutos', fallbackData: ['294,6 camas hospitalarias por 100.000 habitantes (2019)', '216,69 minutos de espera declarada en urgencias (2025)'], missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source', 'public-services-hospital-source', 'public-services-emergency-source'] },
+      { id: 'public-service-outcomes', label: 'Resultados y atención', metricIds: ['unmet_healthcare_waiting_list_rate'], finding: 'La Encuesta Europea de Salud registra necesidades médicas no atendidas por listas de espera; es un indicador de acceso sanitario y no equivale automáticamente a un colapso total de todos los servicios públicos.', population: 'personas de 16 años o más en España', denominator: 'población de 16 años o más', unit: '% de población', fallbackData: ['1,5 % de la población de 16 años o más declaró una necesidad médica no atendida por lista de espera (2025)'], missingDimensions: ['serie comparable de resultados de otros servicios'], sourceIds: ['public-services-health-access-source'] },
+      { id: 'public-service-waiting-list', label: 'Lista de espera hospitalaria', finding: 'El informe del Sistema de Información de Listas de Espera del SNS registró una espera media de 102 días para primera consulta externa hospitalaria a 31 de diciembre de 2025 y 84 personas por cada 1.000 en esa lista; estos datos describen una espera concreta, no todos los servicios públicos.', population: 'personas en lista de espera para primera consulta externa hospitalaria del SNS', denominator: 'personas de la población protegida por el SNS', unit: 'días y personas por 1.000', fallbackData: ['102 días de espera media para primera consulta externa hospitalaria (31-12-2025)', '84 personas por cada 1.000 en lista de espera para primera consulta (31-12-2025)'], missingDimensions: ['comparación causal con inmigración'], sourceIds: ['public-services-waiting-list-source'] },
+      { id: 'public-service-education-resources', label: 'Recursos educativos', metricIds: ['government_education_expenditure_ratio'], finding: 'El gasto público en educación fue del 4,1 % del PIB en 2024. Es un indicador de recursos presupuestarios y no una medida suficiente de capacidad, calidad o colapso.', population: 'gasto de las administraciones públicas en educación', denominator: 'PIB', unit: '% del PIB', fallbackData: ['4,1 % del PIB de gasto público en educación (2024)'], missingDimensions: ['resultados y capacidad por nivel educativo y territorio'], sourceIds: ['public-services-education-source'] },
       { id: 'public-service-scope', label: 'Alcance', finding: 'Una experiencia local o una subida de demanda no permite generalizar a toda España sin una serie comparable y un umbral explícito.', missingDimensions: ['ámbito nacional comparable'], sourceIds: ['public-services-source'] },
     ],
     limitations: ['No se ha localizado aquí una medición compatible que permita cuantificar un “colapso total” de los servicios públicos en conjunto. La inmigración y la presión sobre un servicio tampoco prueban por sí solas una relación causal.'],
-    sources: [source('public-services-source', 'Government finance and public service statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
+    sources: [source('public-services-source', 'Government finance and public service statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01'), source('public-services-hospital-source', 'Hospital beds per 100000 inhabitants in Spain · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_bds?geo=ES&unit=P_HTHAB&facility=HBEDT&sinceTimePeriod=2015', '2026-08-20'), source('public-services-health-access-source', 'Unmet health care needs by reason · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_08?geo=ES&sinceTimePeriod=2015', '2026-08-20'), source('public-services-waiting-list-source', 'Informe de situación de las listas de espera del SNS · diciembre de 2025', 'Ministerio de Sanidad', 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Informe_situacion_listas_de_espera_dic_2025_V1.pdf', '2026-04-27'), source('public-services-emergency-source', 'Informe de situación de las listas de espera del SNS · diciembre de 2025', 'Ministerio de Sanidad', 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Informe_situacion_listas_de_espera_dic_2025_V1.pdf', '2026-04-27'), source('public-services-education-source', 'Government expenditure on education · Eurostat', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_exp?geo=ES&cofog99=GF09&na_item=TE&unit=PC_GDP&sector=S13&sinceTimePeriod=2015', '2026-08-20')],
   },
   {
     id: 'broad-tax-burden-purchasing-power',
@@ -117,12 +123,13 @@ const packets = [
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
     summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
     criteria: [
-      { id: 'benefit-programme', label: 'Programa y alcance', finding: 'No se puede cuantificar “esa parte de la población” sin indicar qué prestación o programa se está contando y qué personas cumplen sus requisitos.', missingDimensions: ['programa de prestaciones', 'población de referencia', 'requisitos'], sourceIds: ['benefits-statistics-source'] },
-      { id: 'benefit-recipients', label: 'Perceptores', finding: 'El dato compatible debe indicar perceptores, población de referencia, periodo, territorio y si cuenta personas, hogares, altas o pagos; no se ha localizado una cifra común para todas las ayudas.', missingDimensions: ['perceptores', 'periodo', 'territorio', 'denominador', 'unidad de conteo'], sourceIds: ['benefits-statistics-source'] },
-      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', missingDimensions: ['serie temporal', 'tasa de crecimiento', 'diseño causal'], sourceIds: ['benefits-statistics-source'] },
+      { id: 'benefit-programme', label: 'Programa y alcance', finding: '“Paguitas” no es una categoría oficial. El Ingreso Mínimo Vital (IMV) ofrece un programa concreto que puede medirse, pero no representa automáticamente todas las prestaciones.', population: 'hogares y personas beneficiarias del IMV', denominator: 'hogares perceptores y personas beneficiarias', unit: 'hogares y personas', fallbackData: ['Programa identificado para la comprobación: Ingreso Mínimo Vital (IMV), julio de 2026'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source', 'benefits-statistics-source'] },
+      { id: 'benefit-recipients', label: 'Perceptores', metricIds: ['benefit_recipients_by_group'], preferFallbackWhenNewer: true, finding: 'El balance oficial del IMV de julio de 2026 registra 879.225 hogares y 2.682.646 personas beneficiarias. Son cifras del IMV, no del conjunto de ayudas ni una medida de dependencia económica.', population: 'personas y hogares beneficiarios del IMV en España', denominator: 'hogares perceptores y personas beneficiarias', unit: 'personas y hogares', fallbackData: ['2.682.646 personas beneficiarias en 879.225 hogares (IMV, 2026-07; julio de 2026)'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source'] },
+      { id: 'benefit-composition', label: 'Composición del IMV', metricIds: ['imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality'], finding: 'En el dossier oficial del IMV de julio de 2026, el 82,53 % de los titulares tenía nacionalidad española y el 17,47 % extranjera. La composición de titulares no demuestra por sí sola necesidad, abuso o causalidad.', population: 'titulares del IMV por nacionalidad', denominator: 'total de titulares del IMV', unit: '% de titulares del IMV y personas titulares', missingDimensions: ['comparación con la población elegible de cada grupo'], sourceIds: ['benefits-imv-source'] },
+      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', metricIds: ['benefit_recipients_by_group'], combineFallbackAsSeries: true, finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', fallbackData: ['2.682.646 personas beneficiarias en 879.225 hogares (IMV, 2026-07; julio de 2026)'], missingDimensions: ['tasa de crecimiento comparable entre programas', 'diseño causal'], resolvesMissing: [{ dimension: 'serie temporal', metricId: 'benefit_recipients_by_group', minimumObservations: 2 }], sourceIds: ['benefits-imv-source'] },
     ],
-    limitations: ['No se ha localizado una medición compatible para la categoría coloquial “paguitas”. Sin programa, población, periodo y denominador no se puede cuantificar el supuesto aumento ni atribuir dependencia o causalidad.'],
-    sources: [source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
+    limitations: ['El IMV aporta una medición concreta de personas y hogares, pero no cubre automáticamente todas las prestaciones. Sin una serie comparable y un diseño causal no se puede afirmar un incremento exponencial, dependencia económica ni que una regularización lo haya provocado.'],
+    sources: [source('benefits-imv-source', 'El Ingreso Mínimo Vital llega en julio a cerca de 2,7 millones de personas', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-llega-en-julio-a-cerca-de-2-7-millones-de-personas-que-residen-en-879.225-hogares?redirect=%2F', '2026-07-01'), source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
   },
   {
     id: 'broad-youth-living-housing',
@@ -347,6 +354,7 @@ const formatObservation = (observation, fallbackUnit) => {
   const rawUnit = observation.displayUnit || observation.unit || fallbackUnit || '';
   const unit = ({
     old_age_dependency_ratio: 'personas de 65 años o más por cada 100 de 15 a 64 años',
+    hospital_beds_per_100k: 'camas por 100.000 habitantes',
     old_age_survivors_benefits_per_capita: '€ por habitante en prestaciones de vejez y supervivencia',
     old_age_survivors_benefits_total: 'millones de euros',
     old_age_survivors_pension_beneficiaries: 'personas beneficiarias',
@@ -374,7 +382,7 @@ const formatObservation = (observation, fallbackUnit) => {
   return `${value}${contextualUnit ? ` ${contextualUnit}` : ''}${period}`;
 };
 const comparableObservationDimensions = (item) => Object.entries(item?.dimensions || {})
-  .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha'].includes(normalise(key)))
+  .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha', 'averageage', 'average_age'].includes(normalise(key)))
   .sort(([left], [right]) => left.localeCompare(right));
 const observationSeriesKey = (item) => JSON.stringify({ metricId: item?.metricId || '', dimensions: comparableObservationDimensions(item) });
 const uniqueObservations = (items) => [...new Map(items.map((item) => [`${observationSeriesKey(item)}|${item.period || ''}`, item])).values()];
@@ -402,6 +410,7 @@ const latestObservationsByMetric = (items) => observationsByMetric(items).reduce
 const observationMetricLabel = (metricId) => ({
   government_deficit_ratio: 'Saldo presupuestario',
   government_debt_ratio: 'Deuda pública',
+  hospital_beds_per_100k: 'Camas hospitalarias',
   projected_population_65_plus: 'Población de 65 años o más proyectada',
   projected_population_20_64: 'Población de 20 a 64 años proyectada',
 }[metricId] || '');
@@ -465,16 +474,41 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
   const cleanQuantitative = (value) => String(value).trim().replace(/[.;]\s*$/, '');
-  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => [...latestObservationsByMetric(items)].map((item) => {
+  const latestPeriodIn = (values) => periodRangeFromData(values)?.split('–').at(-1) || '';
+  const fallbackIsNewer = (item, index) => {
+    const matched = matchedObservations[index]?.observations || [];
+    const fallback = item.fallbackData || [];
+    if (!matched.length || !fallback.length) return false;
+    const dynamic = formatSeriesData(matched, item.unit);
+    return (item.preferFallbackWhenNewer === true || item.combineFallbackAsSeries === true) && latestPeriodIn(fallback) > latestPeriodIn(dynamic);
+  };
+  const criterionDataFor = (item, index) => {
+    const matched = matchedObservations[index]?.observations || [];
+    if (!matched.length) return item.fallbackData?.length ? item.fallbackData : [];
+    const dynamic = formatSeriesData(matched, item.unit);
+    const fallback = item.fallbackData || [];
+    // A warehouse may contain an older release while the reviewed packet has
+    // a newer official snapshot. Preserve both only when the snapshot really
+    // extends the observed period; never replace a compatible live series
+    // with a stale fallback.
+    if (item.combineFallbackAsSeries && fallbackIsNewer(item, index)) return [`Serie localizada: ${dynamic.at(-1)} → ${fallback.at(-1)}`];
+    if (fallbackIsNewer(item, index)) return fallback;
+    return fallback.length && latestPeriodIn(fallback) > latestPeriodIn(dynamic)
+      ? [...dynamic, ...fallback]
+      : dynamic;
+  };
+  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }, index) => fallbackIsNewer(criterion, index)
+    ? criterionDataFor(criterion, index).map((value) => `${criterion.label}: ${cleanQuantitative(value)}`)
+    : [...latestObservationsByMetric(items)].map((item) => {
     const metricLabel = observationMetricLabel(item.metricId);
     return `${criterion.label}${metricLabel ? ` · ${metricLabel}` : ''}: ${formatObservation(item, criterion.unit)}`;
   }));
-  const criterionDataFor = (item, index) => {
-    const matched = matchedObservations[index]?.observations || [];
-    return matched.length ? formatSeriesData(matched, item.unit) : item.fallbackData?.length ? item.fallbackData : [];
-  };
-  matchedObservations.forEach(({ criterion, observations: items }) => {
-    if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${cleanQuantitative(value)}`));
+  matchedObservations.forEach(({ criterion, observations: items }, index) => {
+    const data = criterionDataFor(criterion, index);
+    const dynamic = items.length ? formatSeriesData(items, criterion.unit) : [];
+    const dynamicText = new Set(dynamic);
+    const additional = data.filter((value) => !dynamicText.has(value));
+    if (!fallbackIsNewer(criterion, index) && additional.length) quantitativeFindings.push(...additional.map((value) => `${criterion.label}: ${cleanQuantitative(value)}`));
   });
   const reviewedQuantitativeFindings = packet.criteria
     .map((item) => item.finding)
@@ -583,7 +617,11 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
       limitation: plan.limitation,
       criteria,
       data: [...new Set(entries.flatMap((family) => family.data || []))],
-      missingDimensions: [...new Set(entries.filter((family) => !family.data?.length).flatMap((family) => family.missingDimensions || [family.label]))],
+      // A criterion can have useful values and still leave a scoped question
+      // unresolved (for example, waiting-list data without a collapse
+      // threshold). Keep those gaps in the family summary instead of hiding
+      // them merely because another value is available in the same family.
+      missingDimensions: [...new Set(entries.flatMap((family) => family.missingDimensions || []))],
     };
   });
   const evidenceIds = [...new Set(familyPlans.flatMap((plan) => plan.evidenceIds || []))];

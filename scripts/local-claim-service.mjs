@@ -166,6 +166,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'imv_beneficiary_average_age') return 'años';
   if (metricId === 'fertility_rate' || metricId === 'fertility_rate_europe') return 'hijos por mujer';
   if (metricId === 'old_age_dependency_ratio') return 'personas de 65 años o más por cada 100 de 15 a 64 años';
+  if (metricId === 'hospital_beds_per_100k') return 'camas por 100.000 habitantes';
   if (metricId === 'old_age_survivors_pension_beneficiaries') return 'personas beneficiarias de pensiones de vejez y supervivencia';
   if (metricId === 'projected_population_65_plus' || metricId === 'projected_population_20_64') return 'personas proyectadas';
   if (metricId === 'old_age_survivors_benefits_total' || metricId === 'social_protection_contributions_total' || metricId === 'social_protection_government_contributions_total') return 'millones de euros';
@@ -739,11 +740,25 @@ const findBestWarehouseSource = async (queries = []) => {
 
 const observationSeriesKey = (item) => {
   const dimensions = Object.entries(item.dimensions || {})
-    .filter(([key]) => !['time', 'period', 'year'].includes(normalise(key)))
+    .filter(([key]) => !['time', 'period', 'year', 'averageage', 'average_age'].includes(normalise(key)))
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([key, value]) => `${key}:${value}`)
     .join('|');
   return [item.source?.id, item.datasetId, item.metricId, item.metric, item.unit, dimensions].join('::');
+};
+
+// Some official snapshots publish the same national metric in separate
+// workbooks (for example March and July IMV releases). They are compatible
+// observations when the metric, unit, and dimensions match; the source file
+// identity must not make the older snapshot win by tie-break alone.
+const comparableObservationSeriesKey = (item) => {
+  if (item.metricId !== 'benefit_recipients_by_group') return observationSeriesKey(item);
+  const dimensions = Object.entries(item.dimensions || {})
+    .filter(([key]) => !['time', 'period', 'year', 'averageage', 'average_age'].includes(normalise(key)))
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}:${value}`)
+    .join('|');
+  return [item.metricId, item.metric, item.unit, dimensions].join('::');
 };
 
 // Keep the beginning of a series together with its latest periods. This lets
@@ -760,7 +775,7 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
   const wantsChange = includesAny(normalise(query), ['aumenta', 'aumento', 'sube', 'subida', 'crece', 'crecimiento', 'cae', 'baja', 'variacion', 'cambio', 'rate', 'change', 'growth']);
   const grouped = new Map();
   for (const observation of observations) {
-    const key = observationSeriesKey(observation);
+    const key = comparableObservationSeriesKey(observation);
     const group = grouped.get(key) || [];
     group.push(observation);
     grouped.set(key, group);
@@ -3058,7 +3073,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     const groups = new Map();
     for (const item of warehouseResults) {
       for (const observation of item.observations || []) {
-        const key = observationSeriesKey(observation);
+        const key = comparableObservationSeriesKey(observation);
         const group = groups.get(key) || [];
         if (!group.some((candidate) => candidate.id === observation.id || candidate.period === observation.period && candidate.value === observation.value)) group.push(observation);
         groups.set(key, group);

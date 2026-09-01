@@ -60,7 +60,7 @@ assert(demographicPension?.headline.includes('puede aumentar'), 'demography-pens
 assert(demographicPension?.summary.includes('arcas públicas'), 'demography-pension packet omitted the public-finance part of the claim');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.finding?.includes('cotizantes')), 'demography-pension packet did not expose demographic evidence');
 const demographicPensionReply = demographicPension?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
-assert(demographicPensionReply.includes('29,5') && demographicPensionReply.includes('personas de 65 años o más por cada 100') && demographicPensionReply.includes('prestaciones de vejez y supervivencia') && demographicPensionReply.includes('deuda pública'), 'demography-pension fallback did not render precisely labelled context values');
+assert(demographicPensionReply.includes('29,5') && demographicPensionReply.includes('personas de 65 años o más por cada 100') && demographicPensionReply.includes('prestaciones de vejez y supervivencia') && demographicPensionReply.includes('deuda pública') && demographicPensionReply.includes('2,5 cotizantes por pensionista') && demographicPensionReply.includes('14,6 % del PIB'), 'demography-pension fallback did not render precisely labelled context values');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Demografía' && family.data?.length), 'demography-pension fallback did not attach its demographic snapshot value');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Pensiones' && family.data?.length), 'demography-pension fallback did not attach its pension snapshot value');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Arcas públicas' && family.data?.length), 'demography-pension fallback did not attach its public-finance snapshot value');
@@ -96,7 +96,7 @@ const seriesMissing = demographicPensionWithSeries?.evidenceSummary?.missingDime
 assert(demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('31,2') && demographicPensionWithSeries?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('100,7'), 'demography-pension series response omitted latest compatible values');
 assert(demographicPensionWithSeries?.limitation.includes('2015–2025'), 'demography-pension series response did not describe its observed period');
 assert(!seriesMissing.includes('serie temporal de dependencia') && !seriesMissing.includes('saldo presupuestario del periodo') && !seriesMissing.includes('serie temporal de deuda'), 'demography-pension series left resolved dimensions in the pending list');
-assert(seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('saldo del sistema') && seriesMissing.includes('proyección de ingresos y gastos'), 'demography-pension series discarded genuine pension-specific gaps');
+assert(!seriesMissing.includes('relación entre cotizantes y pensionistas') && seriesMissing.includes('saldo del sistema') && seriesMissing.includes('proyección de ingresos y gastos'), 'demography-pension series discarded genuine pension-specific gaps');
 assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
 assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.dimensions?.period === '2015–2025', 'demography-pension evidence exposed only the first observation period');
 const demographicPensionWithExpandedEvidence = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
@@ -175,7 +175,7 @@ assert(compoundPlan?.id === 'broad-compound-claim', 'compound claim did not use 
 assert(compoundFamilies.some((family) => family.familyId === 'broad-immigration-regularization' && family.familyLabel === 'Inmigración y regularización'), 'compound claim lost regularisation evidence family');
 assert(compoundFamilies.some((family) => family.familyId === 'broad-public-services' && family.familyLabel === 'Servicios públicos'), 'compound claim lost public-services evidence family');
 assert(compoundFamilies.some((family) => family.familyId === 'broad-benefits-recipients' && family.familyLabel === 'Prestaciones'), 'compound claim lost benefits evidence family');
-assert(compoundFamilies.every((family) => family.criteria?.length === 3 && family.sourceIds?.length), 'compound claim did not preserve grouped criteria and source attribution');
+assert(compoundFamilies.every((family) => family.criteria?.length >= 3 && family.sourceIds?.length), 'compound claim did not preserve grouped criteria and source attribution');
 assert(compoundFamilies.every((family) => ['available', 'partial', 'missing'].includes(family.status)), 'compound claim did not assign an evidence status to every family');
 assert(compoundFamilies.every((family) => family.criteria?.every((criterion) => criterion.status && criterion.dimensions?.subject && criterion.dimensions?.geography)), 'compound claim did not preserve criterion status and dimensions');
 assert(compoundFamilies.map((family) => family.familyId).join(',') === 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients', 'compound claim families are not ordered as submitted');
@@ -188,7 +188,18 @@ assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');
-assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('perceptores')), 'compound claim did not expose missing benefits measurements');
+assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('cobertura de todos los programas')), 'compound claim did not expose the scoped benefits coverage gap');
+const servicesFamily = compoundFamilies.find((family) => family.familyId === 'broad-public-services');
+const benefitsFamily = compoundFamilies.find((family) => family.familyId === 'broad-benefits-recipients');
+assert(servicesFamily?.data?.some((item) => item.includes('294,6') && item.includes('100.000')), 'compound service family did not expose compatible hospital-bed data');
+assert(benefitsFamily?.data?.some((item) => item.includes('2.682.646') && item.includes('879.225')), 'compound benefits family did not expose the latest compatible IMV data');
+assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('138.368'), 'compound response used an incompatible total hospital-bed count');
+const staleBenefitPlan = answerPlanForBroadDomain('¿Cuántas personas reciben el Ingreso Mínimo Vital en España?', {
+  observations: [{ id: 'stale-imv', metricId: 'benefit_recipients_by_group', value: 2532284, unit: 'personas', period: '2026-03' }],
+});
+const staleBenefitReply = staleBenefitPlan?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
+assert(staleBenefitReply.includes('2.682.646') && !staleBenefitReply.includes('Perceptores: 2.532.284'), 'newer reviewed IMV snapshot did not supersede the stale recipient figure');
+assert(staleBenefitReply.includes('Serie localizada: 2.532.284 personas (2026-03) → 2.682.646 personas beneficiarias'), 'IMV trend did not present stale and current snapshots as a labelled series');
 assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueba causalidad'), 'compound claim omitted the causal limitation');
 

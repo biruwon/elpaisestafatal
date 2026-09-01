@@ -1225,6 +1225,14 @@
     "notEquivalentTo": ["health_expenditure_per_capita"],
     "dimensions": ["period", "geography", "care_type"]
   },
+  "hospital_beds_per_100k": {
+    "name": "Hospital beds per 100000 inhabitants",
+    "aliases": ["camas hospitalarias por 100.000 habitantes", "camas por 100.000 habitantes", "densidad de camas hospitalarias"],
+    "unit": "beds per 100000 inhabitants",
+    "population": "hospital beds available for inpatient care per 100000 inhabitants",
+    "notEquivalentTo": ["hospital_beds", "health_expenditure_per_capita"],
+    "dimensions": ["period", "geography", "care_type"]
+  },
   "physicians_density": {
     "name": "Physicians density",
     "aliases": ["médicos por habitante", "densidad de médicos", "número de médicos", "facultativos por población"],

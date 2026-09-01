@@ -697,10 +697,10 @@
       "metricId": "renewable_energy_share"
     },
     {
-      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_bds?geo=ES&sinceTimePeriod=2015",
-      "title": "Camas hospitalarias en España · Eurostat",
-      "aliases": ["camas hospitalarias", "camas de hospital", "plazas hospitalarias"],
-      "metricId": "hospital_beds"
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_bds?geo=ES&unit=P_HTHAB&facility=HBEDT&sinceTimePeriod=2015",
+      "title": "Camas hospitalarias por 100.000 habitantes en España · Eurostat",
+      "aliases": ["camas hospitalarias por 100.000 habitantes", "camas por 100.000 habitantes", "densidad de camas hospitalarias"],
+      "metricId": "hospital_beds_per_100k"
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_rs_phys?geo=ES&sinceTimePeriod=2015",
