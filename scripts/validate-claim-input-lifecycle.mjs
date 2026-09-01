@@ -18,6 +18,9 @@ const required = [
 const missing = required.filter((item) => !source.includes(item));
 if (missing.length) throw new Error(`Claim checker lifecycle is missing: ${missing.join(', ')}`);
 if (!source.includes("response.state === 'processing'")) throw new Error('Claim checker must poll processing responses');
-if (!source.includes("response.state === 'processing') { renderUnavailable")) throw new Error('Claim checker must end a timed-out processing state visibly');
+const retainsPreviewAfterTimeout = source.includes("if (response.state === 'processing') {\n      if (initialPreview)")
+  && source.includes('Contexto inicial disponible')
+  && source.includes('la ampliación de fuentes sigue en segundo plano');
+if (!retainsPreviewAfterTimeout && !source.includes("response.state === 'processing') { renderUnavailable")) throw new Error('Claim checker must retain a timed-out preview or end the processing state visibly');
 if (!source.includes("state: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
 console.log('Claim-checker lifecycle validation passed: unified submission, media, polling, recent checks, and terminal states are wired.');
