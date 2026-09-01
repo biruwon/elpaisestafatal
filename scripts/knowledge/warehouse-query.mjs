@@ -1,5 +1,5 @@
 import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 
@@ -8,6 +8,8 @@ const recordCacheTtlMs = 60 * 1000;
 const maxCachedRecords = 50_000;
 let recordCache = { expiresAt: 0, key: '', records: [] };
 const recordLoadPromises = new Map();
+const recordFileLoadPromises = new Map();
+let recordFileIndex = { expiresAt: 0, key: '', entries: [] };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
@@ -106,6 +108,37 @@ export const populationEvidenceFit = (requestedPopulation, record) => {
   return requested.terms.some((term) => actual.includes(normalise(term))) ? 'direct' : 'mismatch';
 };
 
+const loadRecordFileIndex = async (files) => {
+  const key = files.join('|');
+  if (recordFileIndex.key === key && recordFileIndex.expiresAt > Date.now()) return recordFileIndex.entries;
+  const entriesByFile = new Map();
+  let manifestFiles = [];
+  try { manifestFiles = (await readdir(join(root, '../manifests'))).filter((file) => file.endsWith('.json')); } catch { /* The warehouse may only contain records in a degraded local setup. */ }
+  for (const file of manifestFiles) {
+    try {
+      const manifest = JSON.parse(await readFile(join(root, '../manifests', file), 'utf8'));
+      const recordFile = manifest.recordPath ? basename(manifest.recordPath) : '';
+      if (!recordFile) continue;
+      const entry = entriesByFile.get(recordFile) || { file: recordFile, metricIds: new Set(), sourceTokens: new Set() };
+      if (manifest.metricId) entry.metricIds.add(manifest.metricId);
+      for (const metricId of manifest.metricIds || []) entry.metricIds.add(metricId);
+      for (const token of tokens([manifest.metricId, manifest.title, ...(manifest.aliases || [])].join(' '))) entry.sourceTokens.add(token);
+      entriesByFile.set(recordFile, entry);
+    } catch { /* Malformed manifests are handled by warehouse validation. */ }
+  }
+  const entries = files.map((file) => entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set() });
+  recordFileIndex = { expiresAt: Date.now() + recordCacheTtlMs * 5, key, entries };
+  return entries;
+};
+
+const readRecordPayload = async (file) => {
+  const existing = recordFileLoadPromises.get(file);
+  if (existing) return existing;
+  const load = readFile(join(root, 'records', file), 'utf8').then((value) => JSON.parse(value));
+  recordFileLoadPromises.set(file, load);
+  try { return await load; } finally { if (recordFileLoadPromises.get(file) === load) recordFileLoadPromises.delete(file); }
+};
+
 const readRecords = async ({ query = '', metricIds } = {}) => {
   const cacheKey = `${query}|${metricIds ? [...metricIds].sort().join(',') : ''}`;
   if (recordCache.key === cacheKey && recordCache.expiresAt > Date.now()) return recordCache.records;
@@ -114,17 +147,21 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
   const load = (async () => {
     let files;
     try { files = (await readdir(join(root, 'records'))).filter((file) => file.endsWith('.json')); } catch { return []; }
+    const fileIndex = await loadRecordFileIndex(files);
+    if (metricIds?.size) {
+      // Metric-specific queries should not parse the complete warehouse. The
+      // manifests are tiny and already map most record files to their metric;
+      // keep unindexed domain files as a compatibility fallback because a
+      // single domain payload can contain several metric families.
+      const scoped = fileIndex.filter(({ file, metricIds: fileMetricIds }) => file.startsWith('domain-') || !fileMetricIds.size || [...fileMetricIds].some((metricId) => metricIds.has(metricId)));
+      if (scoped.length) files = scoped.map((entry) => entry.file);
+    }
     if (!metricIds?.size && query) {
       const wanted = tokens(query);
       const candidates = [];
-      for (const file of files) {
-        try {
-          const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
-          const source = payload.source || {};
-          const sourceTokens = new Set(tokens([source.metricId, source.title, ...(source.aliases || [])].join(' ')));
-          const overlap = wanted.filter((token) => sourceTokens.has(token)).length;
-          if (overlap >= Math.min(2, wanted.length)) candidates.push(file);
-        } catch { /* malformed records are reported by warehouse validation */ }
+      for (const entry of fileIndex) {
+        const overlap = wanted.filter((token) => entry.sourceTokens.has(token)).length;
+        if (overlap >= Math.min(2, wanted.length)) candidates.push(entry.file);
       }
       if (candidates.length) files = candidates;
     }
@@ -132,7 +169,7 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
     for (const file of files.slice(0, 5000)) {
       if (records.length >= maxCachedRecords) break;
       try {
-        const payload = JSON.parse(await readFile(join(root, 'records', file), 'utf8'));
+        const payload = await readRecordPayload(file);
         const sourceMetricId = payload.source?.metricId;
         // A domain feed can materialise several metric families in one file;
         // the payload-level metricId is therefore not sufficient to prune it.
@@ -154,7 +191,7 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
   try { return await load; } finally { if (recordLoadPromises.get(cacheKey) === load) recordLoadPromises.delete(cacheKey); }
 };
 
-export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordLoadPromises.clear(); };
+export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordFileIndex = { expiresAt: 0, key: '', entries: [] }; recordLoadPromises.clear(); recordFileLoadPromises.clear(); };
 
 const recordText = (record) => [
   record.datasetId,

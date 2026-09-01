@@ -54,6 +54,7 @@
     "deploy:pages": "node scripts/deploy-pages.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",
     "smoke:local-http": "node scripts/smoke-local-http.mjs",
+    "fast-response:validate": "node scripts/validate-fast-response-path.mjs",
     "claims:post:test": "node scripts/test-post-claims.mjs",
     "claims:post:test:local": "node scripts/run-local-claim-test.mjs",
     "claims:quality:validate": "node scripts/validate-published-claim-quality.mjs && node scripts/validate-priority-claim-quality.mjs",

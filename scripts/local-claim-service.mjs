@@ -57,6 +57,8 @@ const compilerTimeoutMs = Math.min(60000, Math.max(1800, Number(process.env.LOCA
 const embedModel = process.env.OLLAMA_EMBED_MODEL || 'bge-m3';
 const visionModel = process.env.OLLAMA_VISION_MODEL || routerModel;
 const ollamaKeepAliveSeconds = Math.min(3600, Math.max(60, Number(process.env.OLLAMA_KEEP_ALIVE_SECONDS || 600)));
+const broadPacketMetricQueryLimit = 12;
+const broadPacketEvidenceRowLimit = 72;
 // Local development should use the installed Ollama model automatically for
 // structured answer enrichment. Set LOCAL_ANSWER_PLANNER=0 to benchmark the
 // deterministic path in isolation. Every planner failure still returns the
@@ -424,11 +426,13 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
   const work = (async () => {
     const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
     let planned = result.result;
+    const plannerStartedAt = Date.now();
     try {
       const draft = await modelTasks.composeGroundedAnswer({ schema: plannerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 15000 });
       const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
       if (validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok) planned = upgraded;
     } catch { /* The deterministic plan remains the safe presentation fallback. */ }
+    recordStage('answer_planner', plannerStartedAt);
     plannerCache.set(cacheKey, { value: planned, expiresAt: Date.now() + cacheTtlMs });
     while (plannerCache.size > maxPlannerCacheEntries) plannerCache.delete(plannerCache.keys().next().value);
     return planned;
@@ -440,6 +444,7 @@ const planAnswerWithLocalModel = async (text, classified, result, observations) 
 const planResearchWithModel = async (text, classified) => {
   if (!answerPlannerEnabled || !classified?.compiler || classified.primary) return null;
 const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most six neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 2400), propositions: classified.compiler.propositions?.slice(0, 24), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 24) })}`;
+  const researchStartedAt = Date.now();
   try {
     const plan = await modelTasks.planResearch({ schema: undefined, options: { temperature: 0, num_predict: 280, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 12000 });
     if (!plan || !Array.isArray(plan.propositions) || !Array.isArray(plan.neutralQueries) || !Array.isArray(plan.requiredDimensions)) return null;
@@ -477,6 +482,8 @@ const prompt = `Plan research for this Spanish claim without deciding whether it
       requiredDimensions,
       clarificationQuestion: '¿Qué periodo y lugar concretos quieres comprobar?',
     };
+  } finally {
+    recordStage('research_planner', researchStartedAt);
   }
 };
 
@@ -554,6 +561,7 @@ const compileClaim = async (text, candidates = []) => {
     const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
     const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
     let value;
+    const compilerStartedAt = Date.now();
     try {
       // This is background enrichment: the deterministic result is already
       // available to the user. Allow one bounded cold-start model load, while
@@ -566,6 +574,7 @@ const compileClaim = async (text, candidates = []) => {
     } catch (error) {
       if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
     }
+    recordStage('compiler', compilerStartedAt);
     const result = await criteriaProfileFor(value ? normalizeCompilerOutput(value, text) : fallbackCompiler(text));
     compilerCache.set(cacheKey, { value: result, expiresAt: Date.now() + cacheTtlMs });
     while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
@@ -1217,6 +1226,7 @@ const classify = async (text) => {
   const key = normalise(text);
   const broadComplaintInput = broadComplaintText(text)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
+  const broadPacketInput = broadDomainPacketsFor(text).length > 0;
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
     answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
@@ -1428,8 +1438,10 @@ const classify = async (text) => {
   // useful when the input has a plausible relation to the published index.
   // Deterministic CI and degraded deployments must not probe the embedding
   // provider after compiler/planner inference has been explicitly disabled.
-  if ((localCompilerEnabled || answerPlannerEnabled) && (lexicalRanked[0]?.lexical || 0) >= 0.1) {
+  if (!broadPacketInput && (localCompilerEnabled || answerPlannerEnabled) && (lexicalRanked[0]?.lexical || 0) >= 0.1) {
+    const embeddingStartedAt = Date.now();
     try { vector = (await modelTasks.embed({ input: text.slice(0, 4000), timeoutMs: 3000 })).embeddings?.[0] || null; } catch { /* Keep lexical matching. */ }
+    recordStage('embedding', embeddingStartedAt);
   }
   const querySemanticSignature = deterministicCompiler.semanticSignature;
   // Keep both compiler views in the routing set. The fast deterministic
@@ -1856,7 +1868,7 @@ const classify = async (text) => {
   // from proposition parsing or candidate disambiguation.
   const needsModelCompilation = shouldUseLocalCompiler({ text, deterministic: deterministicCompiler, hasPlausibleCandidate })
     || (!deterministicCompiler.clarificationRequired && compilerNeedsStructure);
-  const compiledCandidate = localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
+  const compiledCandidate = !broadPacketInput && localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
   const reconciledCompiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
@@ -1924,7 +1936,8 @@ const classify = async (text) => {
   return result;
 };
 
-const requestId = (text) => digest(normalise(text)).slice(0, 24);
+const resolveCacheVersion = [RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
+const requestId = (text) => digest(`${resolveCacheVersion}|${normalise(text)}`).slice(0, 24);
 
 const startResolveJob = (text, origin = 'runtime') => {
   const id = requestId(text);
@@ -2800,7 +2813,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // again at this boundary because this is where dynamic retrieval can
   // otherwise overwrite a valid published classification.
   const enrichmentIndex = await getIndex();
-  if (!classified.primary && answerPlannerEnabled) {
+  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0;
+  if (!classified.primary && answerPlannerEnabled && !broadPacketAvailable) {
     const candidates = (classified.alternatives || []).filter((item) => item.kind === 'claim' && item.validated === true).slice(0, 4);
     if (candidates.length > 1) {
       try {
@@ -2842,7 +2856,6 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // insufficient until a concrete conduct, actor and attributable record
   // are available; it must never infer a criminal case from loaded wording.
   const interpretedKind = classified.compiler?.claimType;
-  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0;
   const allegationProfile = classified.compiler?.criteriaProfile === 'public-corruption'
     || classified.compiler?.criteriaProfile === 'specific-allegation';
   const publicActorContext = /\b(?:s[aá]nchez|presidente|gobierno|ministro|ministra|diputad[oa]|partido|administraci[oó]n p[uú]blica)\b/i.test(normalise(text));
@@ -2959,10 +2972,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const suppressUnrelatedContext = vagueTaxJudgement(text) || localSpecificClaim(text) || evidenceUnavailableSignal(text) || (recordedOffenceRoute && !recordedOffenceCategory);
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
+    const embeddingStartedAt = Date.now();
     try {
       const embedded = await modelTasks.embed({ input: warehouseQuery.slice(0, 4000), timeoutMs: 1800 });
       queryEmbedding = embedded.embeddings?.[0];
     } catch { /* Hybrid retrieval falls back to lexical search. */ }
+    recordStage('embedding', embeddingStartedAt);
   }
   // Compound inputs need proposition-level retrieval. Searching only the full
   // sentence can bury each metric behind unrelated clauses (for example,
@@ -3009,22 +3024,30 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     const clauseMetricIds = preferredMetricIdsForQuery(cleanQuery);
     return clauseMetricIds.size ? `${cleanQuery} ${metricQueryTextForIds(clauseMetricIds)} España` : cleanQuery;
   });
-  const warehouseQueries = [...new Set([
-    // Explicit clauses come first so the bounded packet is representative of
-    // the claim, not merely of the full sentence's highest-scoring topic.
-    ...clauseQueries,
-    warehouseQuery,
-    metricFallbackQuery,
-    recordedOffenceQuery,
-    counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '',
-  ])].filter(Boolean).slice(0, 5);
-  const warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
+  const packetMetricIds = broadPacketAvailable
+    ? [...broadMetricIdsFor(text)].slice(0, broadPacketMetricQueryLimit)
+    : [];
+  const warehouseQueries = broadPacketAvailable
+    ? packetMetricIds.map((metricId) => `${metricQueryTextForIds(new Set([metricId]))} España`)
+    : [...new Set([
+      // Explicit clauses come first so the bounded packet is representative of
+      // the claim, not merely of the full sentence's highest-scoring topic.
+      ...clauseQueries,
+      warehouseQuery,
+      metricFallbackQuery,
+      recordedOffenceQuery,
+      counterpartTerms ? `${warehouseQuery} ${counterpartTerms}` : '',
+    ])].filter(Boolean).slice(0, 5);
+  const warehouseRetrievalStartedAt = Date.now();
+  let warehouseResults = !retrievalClassified.primary && !suppressUnrelatedContext
     ? await Promise.all(warehouseQueries.map((query, index) => {
       // Proposition queries must carry only their own metric contract. The
       // full compound union is useful for the overall request, but passing it
       // into every clause lets the first metric monopolize the returned
       // series before the results can be combined.
-      const queryMetricIds = preferredMetricIdsForQuery(query);
+      const queryMetricIds = broadPacketAvailable
+        ? new Set([packetMetricIds[index]])
+        : preferredMetricIdsForQuery(query);
       const queryCompiler = queryMetricIds.size
         ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds], retrievalMetricIds: [...queryMetricIds] }
         : retrievalClassified.compiler;
@@ -3035,7 +3058,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // extracted by the classifier. Retry the canonical metric query directly so
   // a new claim such as “the rent has exploded” can use the existing series
   // even when its conversational wording mentions several unrelated causes.
-  if (!retrievalClassified.primary && !suppressUnrelatedContext && metricFallbackQuery) {
+  if (!broadPacketAvailable && !retrievalClassified.primary && !suppressUnrelatedContext && metricFallbackQuery) {
     // Put the explicitly requested metric first. A broad first query can
     // legitimately find contextual observations (for example crime terms in
     // a housing claim); those must not crowd the direct series out of the
@@ -3048,9 +3071,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // Compound claims need one bounded lookup per explicitly inferred family;
   // otherwise the first broad query can consume the row budget and hide a
   // valid demographic or pension series behind an unrelated result.
-  const compoundMetricIds = [...compoundMetricIdsForInput(text)];
-  const packetMetricIds = broadPacketAvailable ? [...broadMetricIdsFor(text)] : [];
-  const independentMetricIds = [...new Set([...compoundMetricIds, ...packetMetricIds])];
+  const compoundMetricIds = broadPacketAvailable ? [] : [...compoundMetricIdsForInput(text)];
+  const independentMetricIds = [...new Set([...compoundMetricIds])];
   if (!retrievalClassified.primary && !suppressUnrelatedContext && independentMetricIds.length) {
     // Query every metric declared by the selected evidence packet separately.
     // A single full-sentence lookup is allowed to rank one topic first and
@@ -3064,6 +3086,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     }));
     warehouseResults.unshift(...explicitCompoundResults);
   }
+  recordStage('warehouse_retrieval', warehouseRetrievalStartedAt);
   const warehouseObservationRows = (() => {
     // Keep the latest compatible periods for every metric series. Taking the
     // first rows from each clause is unsafe: warehouse results are ordered by
@@ -3094,10 +3117,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     const requiredRows = metricRows.flatMap((rows) => rows.length > 1 ? [rows[0], rows.at(-1)] : rows);
     const requiredIds = new Set(requiredRows.map((item) => item.id));
     const remainingRows = metricRows.flatMap((rows) => rows.filter((item) => !requiredIds.has(item.id)));
-    return [...requiredRows, ...remainingRows].slice(0, 72);
+    return [...requiredRows, ...remainingRows].slice(0, broadPacketAvailable ? broadPacketEvidenceRowLimit : 72);
   })();
   const warehouse = {
-    observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, 72),
+    observations: [...new Map(warehouseObservationRows.map((item) => [item.id, item])).values()].slice(0, broadPacketAvailable ? broadPacketEvidenceRowLimit : 72),
     source: warehouseResults.find((item) => item.source)?.source,
   };
   const evidenceCandidateIds = Array.isArray(retrievalClassified.compiler?.metricIds) && retrievalClassified.compiler.metricIds.length
@@ -3113,7 +3136,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   });
   retrievalClassified.compiler = { ...retrievalClassified.compiler, evidenceSelection };
   let scorecardObservations = [];
-  if (process.env.BROAD_SCORECARD !== '0' && (broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text)))) {
+  if (!broadPacketAvailable && process.env.BROAD_SCORECARD !== '0' && (broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text)))) {
     const region = normalise(text).match(/\b(?:andalucia|aragon|asturias|baleares|canarias|cantabria|castilla y leon|castilla la mancha|cataluna|comunidad valenciana|extremadura|galicia|madrid|murcia|navarra|pais vasco|la rioja|ceuta|melilla)\b/)?.[0];
     const geography = region || 'España';
     const packets = await Promise.all(scorecardMetrics.map((metric) => findWarehouseEvidence(`${metric.aliases} ${geography}`, { metricIds: [metric.id], claimType: 'trend', geography })));
@@ -3168,7 +3191,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source || trustedWeb[0]?.source;
   const broadComplaint = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text));
   const observations = broadComplaint
-    ? [...new Map([...(broadPacketAvailable ? warehouse.observations : scorecardObservations), ...(broadPacketAvailable ? scorecardObservations : warehouse.observations)].map((item) => [item.id, item])).values()].slice(0, 96)
+    ? [...new Map([...(broadPacketAvailable ? warehouse.observations : scorecardObservations), ...(broadPacketAvailable ? scorecardObservations : warehouse.observations)].map((item) => [item.id, item])).values()].slice(0, broadPacketAvailable ? broadPacketEvidenceRowLimit : 96)
     : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   // Broad rhetorical claims need a reviewed multi-family context packet when
@@ -3188,6 +3211,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }
+  // Reviewed broad packets already contain the safe conclusion, scoped
+  // evidence families, and declared gaps. Do not spend another local-model
+  // turn rewriting or researching a packet that can be rendered directly;
+  // the warehouse observations above are the optional background enrichment.
+  if (broadPacketAvailable) return deterministic;
   if (deterministic.result && !retrievalClassified.primary
     && (!deterministic.result.evidenceIds?.length || deterministic.result.evidenceLevel !== 'supported')) {
     const researchPlan = await planResearchWithModel(text, classified);

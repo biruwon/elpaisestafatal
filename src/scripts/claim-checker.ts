@@ -312,7 +312,7 @@ const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'proc
   if (!response.preview) return;
   renderResult(response.preview);
   const article = result?.querySelector<HTMLElement>('.claim-result');
-  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta inicial disponible · estamos comprobando si podemos añadir más contexto y fuentes.</p>');
+  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Contexto inicial revisado · estamos comprobando si podemos añadir más datos y fuentes.</p>');
 };
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
@@ -322,12 +322,14 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   try {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, request.signal);
+    const initialPreview = response.state === 'processing' ? response.preview : undefined;
     if (response.state === 'processing') renderProcessingPreview(response);
     // Local model interpretation and evidence planning can take a little
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
     // the short network budget used by the hosted deterministic path.
-    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) {
+    const enrichmentDeadline = Date.now() + 30_000;
+    for (let attempt = 0; response.state === 'processing' && response.id && Date.now() < enrichmentDeadline; attempt += 1) {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
       try {
         response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal);
@@ -341,7 +343,17 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     }
     finishLoading();
     clarificationContext = undefined;
-    if (response.state === 'processing') { renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return; }
+    if (response.state === 'processing') {
+      if (initialPreview) {
+        const status = result?.querySelector<HTMLElement>('.claim-enrichment-status');
+        if (status) {
+          status.classList.add('is-stalled');
+          status.innerHTML = '<span class="claim-enrichment-dot" aria-hidden="true"></span>Contexto inicial disponible · la ampliación de fuentes sigue en segundo plano.';
+        }
+        return;
+      }
+      renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
+    }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
   } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) { finishLoading(); return; } finishLoading(); renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };

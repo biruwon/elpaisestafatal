@@ -206,14 +206,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
       // answer when it is sufficiently grounded so the user gets useful
       // context while optional model enrichment continues in the background.
       const previewResponse = fallbackResponse(effectiveClaim, body.inputType);
-      const previewPlan = (previewResponse as PublicCheckResponse & { result?: AnswerPlan }).result;
-      // Broad packets use dated snapshot context as a safe fallback, but that
-      // snapshot is not the warehouse-backed result the resolver is about to
-      // produce. Do not render it as a second answer while the fresh request
-      // is still processing; otherwise users can mistake the old context for
-      // the completed result.
-      const previewId = (previewPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
-      const preview = previewId?.startsWith('broad-') ? undefined : usefulPreview(previewResponse);
+      const preview = usefulPreview(previewResponse);
       return json(processingCheck(body.text, safe.requestId, preview), 202);
     }
     const plan = safe?.result;
