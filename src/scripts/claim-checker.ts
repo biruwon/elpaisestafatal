@@ -149,7 +149,7 @@ const answerLeadFor = (answer: string): string => {
   return lead || 'La evidencia disponible no permite una conclusión completa.';
 };
 const parseSeries = (value: string): { start: string; end: string; startNumber: number; endNumber: number; years: string[] } | undefined => {
-  const match = value.match(/:\s*(-?[\d.]+(?:,\d+)?)\D+→\s*(-?[\d.]+(?:,\d+)?)/);
+  const match = value.match(/:\s*(-?[\d.]+(?:,\d+)?)[^→]+→\s*(-?[\d.]+(?:,\d+)?)/);
   if (!match) return undefined;
   const toNumber = (token: string): number => Number(token.replace(/\./g, '').replace(',', '.'));
   const years = [...value.matchAll(/\b(?:19|20|21)\d{2}\b/g)].map((item) => item[0]);
@@ -159,6 +159,7 @@ const parseSeries = (value: string): { start: string; end: string; startNumber: 
   return { start: match[1], end: match[2], startNumber, endNumber, years: [...new Set(years)].slice(0, 2) };
 };
 const demographicSeriesLabel = (value: string, fallback: string): string => {
+  if (/dependencia/i.test(fallback)) return 'Dependencia de mayores';
   if (/65 años o más/i.test(value)) return 'Población de 65 años o más';
   if (/20 a 64/i.test(value)) return 'Población de 20 a 64 años';
   return fallback;
@@ -168,7 +169,7 @@ const renderClaimMap = (groups: EvidenceFamily[]): string => {
   const cards = groups.map((group, index) => {
     const status = group.status === 'available' ? 'Medido' : group.status === 'partial' ? 'Parcial' : 'Pendiente';
     const statusClass = group.status === 'available' ? 'is-available' : group.status === 'partial' ? 'is-partial' : 'is-missing';
-    const finding = group.finding || (group.status === 'available' ? 'Hay una medida compatible localizada.' : 'No hay una medida compatible suficiente para esta parte.');
+    const finding = group.finding || group.criteria?.[0]?.finding || (group.status === 'available' ? 'Hay una medida compatible localizada.' : 'No hay una medida compatible suficiente para esta parte.');
     return `<article class="claim-map-card ${statusClass}"><div class="claim-map-top"><span>0${index + 1}</span><strong>${escapeHtml(status)}</strong></div><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><p>${escapeHtml(finding)}</p></article>`;
   }).join('');
   return `<section class="result-section result-claim-map" aria-labelledby="claim-map-title"><div class="result-section-heading"><span class="eyebrow">La frase contiene varias preguntas</span><h3 id="claim-map-title">Una parte sí; el resto necesita más prueba.</h3></div><div class="claim-map-grid">${cards}</div></section>`;
