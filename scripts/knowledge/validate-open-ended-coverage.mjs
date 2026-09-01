@@ -117,6 +117,10 @@ assert(expandedReply.includes('205.009,77 millones de euros') && expandedReply.i
 assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Proyección demográfica' && family.status === 'available'), 'expanded pension evidence did not mark the complete demographic projection available');
 assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Cotizaciones sociales' && family.missingDimensions?.includes('ingresos exclusivamente imputables a pensiones')), 'expanded pension evidence lost the scope gap on social contributions');
 assert(!expandedReply.includes('dato concreto sobre'), 'expanded pension response still used generic missing-data wording');
+assert(expandedReply.includes('Gasto reconocido en pensiones contributivas') && expandedReply.includes('Resultado presupuestario total de la Seguridad Social'), 'expanded pension response omitted the official Social Security account labels');
+assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Cuenta presupuestaria de la Seguridad Social' && family.dataKind === 'observed' && family.data?.some((item) => item.includes('172.653,50'))), 'expanded pension evidence did not expose the official 2024 account as observed data');
+assert(demographicPensionWithExpandedEvidence?.evidenceSummary?.families.some((family) => family.label === 'Proyección financiera' && family.dataKind === 'projected'), 'expanded pension evidence did not distinguish the financial forecast from observed data');
+assert(!expandedReply.includes('Las series dinámicas observadas abarcan 2015–2100'), 'expanded pension response merged observed and projected periods');
 
 const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?');
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');

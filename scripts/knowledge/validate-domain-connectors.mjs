@@ -1,4 +1,4 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
+import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText, parseSocialSecurityPensionFinanceText } from './domain-connectors.mjs';
 import * as XLSX from 'xlsx';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
@@ -38,6 +38,7 @@ const fixtures = {
   public_housing_allocation: [{ periodo: '2025', municipio: 'Madrid', grupo: 'solicitantes extranjeros', adjudicaciones: '120' }],
   wildfire_statistics: [{ periodo: '2025', territorio: 'España', superficie: '354746.67' }],
   health_emergency_wait: [{ periodo: '2025', territorio: 'España', minutos: '216.69' }],
+  pension_finance: [{ periodo: '2024', territorio: 'España', valor: '-2900.90' }],
 };
 for (const domain of domainConnectorIds()) {
   const records = parseDomainPayload(domain, fixtures[domain], source);
@@ -64,6 +65,8 @@ const wildfireRows = parseWildfireReportText('Total siniestros 9.171 8.199\nS. F
 if (wildfireRows.length !== 4 || wildfireRows[0].metricId !== 'wildfire_incidents' || wildfireRows[2].value !== 354746.67) throw new Error('Wildfire report parsing failed');
 const healthRows = parseHealthEmergencyReportText('Tiempo medio declarado: 216,69 minutos', source);
 if (healthRows.length !== 1 || healthRows[0].metricId !== 'emergency_wait_declared' || healthRows[0].value !== 216.69) throw new Error('Health emergency report parsing failed');
+const pensionRows = parseSocialSecurityPensionFinanceText('481 PENSIONES 1,00 2,00 3,00 4,00 172.653.504.701,48\n1. Cotizaciones Sociales 146.148,70\n4. Transferencias corrientes 48.151,75\nINGRESOS OPERACIONES CORRIENTES 195.891,23\nGASTOS POR OPERACIONES CORRIENTES 205.201,38\nDEFICIT/SUPERAVIT -9.310,15\nRESULTADO PRESUPUESTARIO TOTAL -2.900,90', { ...source, id: 'account-source' });
+if (pensionRows.length !== 7 || pensionRows.find((row) => row.metricId === 'social_security_contributory_pension_expenditure')?.value !== 172653.504701 || pensionRows.find((row) => row.metricId === 'social_security_current_balance')?.value !== -9310.15 || !pensionRows.every((row) => row.period === '2024' && row.geography === 'España')) throw new Error('Social Security account parser did not preserve pension expenditure, budget results, and dimensions');
 const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
 if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;

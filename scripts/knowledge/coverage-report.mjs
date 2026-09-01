@@ -18,6 +18,7 @@ const domainMetricIds = {
   public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_allocations_by_programme', 'public_housing_allocation_rate_by_programme', 'public_housing_allocations_by_nationality', 'public_housing_allocations_by_documentation', 'public_housing_actions', 'public_housing_applications', 'public_housing_applications_by_nationality', 'housing_tenure_by_household_nationality', 'housing_tenure_by_reference_nationality'],
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
   health_emergency_wait: ['emergency_wait_declared'],
+  pension_finance: ['social_security_contributory_pension_expenditure', 'social_security_current_revenue', 'social_security_current_expenditure', 'social_security_current_balance', 'social_security_contributions', 'social_security_current_transfers', 'social_security_budget_total_balance'],
 };
 for (const feed of domainFeeds) for (const metricId of domainMetricIds[feed.domain] || []) metricFeedMap.set(metricId, [...(metricFeedMap.get(metricId) || []), feed]);
 const aliases = (metric) => new Set([metric.name, ...(metric.aliases || [])].map((value) => String(value).toLocaleLowerCase('es')));

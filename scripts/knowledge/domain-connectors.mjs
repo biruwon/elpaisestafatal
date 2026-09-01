@@ -43,6 +43,9 @@ const parsers = {
   health_emergency_wait: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: row.metricId || 'emergency_wait_declared', metric: row.metric || 'Tiempo de espera declarado en urgencias', value: numberFor(valueFor(row, ['value', 'valor', 'minutes', 'minutos'])), unit: valueFor(row, ['unit', 'unidad']) || 'minutos',
   })),
+  pension_finance: (rows, source) => rows.map((row, index) => ({
+    ...common(row, source, index), metricId: row.metricId || 'social_security_current_balance', metric: row.metric || 'Resultado presupuestario de la Seguridad Social', value: numberFor(valueFor(row, ['value', 'valor', 'amount', 'importe'])), unit: valueFor(row, ['unit', 'unidad']) || 'millones de euros',
+  })),
 };
 
 export const domainConnectorFor = (domain) => parsers[domain];
@@ -215,6 +218,63 @@ export const parseWildfireReportText = (text, source) => {
 export const parseHealthEmergencyReportText = (text, source) => {
   const match = String(text || '').match(/216[,.]69\s*minutos/i);
   return match ? [{ id: `${source.id}-emergency-wait-2025`, kind: 'observation', sourceId: source.id, datasetId: source.title, period: '2025', geography: 'España', population: 'personas encuestadas que acudieron a urgencias', metricId: 'emergency_wait_declared', metric: 'Tiempo medio declarado de espera en urgencias', value: 216.69, unit: 'minutos', url: source.url }] : [];
+};
+
+const socialSecurityAmount = (text, label) => {
+  const match = String(text || '').replace(/[ÁÉÍÓÚÜ]/gi, (value) => ({ Á: 'A', É: 'E', Í: 'I', Ó: 'O', Ú: 'U', Ü: 'U', á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u', ü: 'u' }[value] || value)).replace(/\s+/g, ' ').match(label);
+  return match ? numberFor(match[1]) : null;
+};
+
+const socialSecurityAccountRecord = (source, metricId, metric, value, population, dimensions) => ({
+  id: `${source.id}-${metricId}-2024`,
+  kind: 'observation',
+  sourceId: source.id,
+  datasetId: source.title,
+  period: '2024',
+  geography: 'España',
+  population,
+  dimensions,
+  metricId,
+  metric,
+  value,
+  unit: 'millones de euros',
+  url: source.url,
+});
+
+// The Cuenta General PDF contains two compatible but non-interchangeable
+// scopes: the contributory-pensions programme and the consolidated current
+// budget of Social Security management entities/common services. Preserve
+// both scopes so a budget result is never presented as a pension-only balance.
+export const parseSocialSecurityPensionFinanceText = (text, source) => {
+  const normalisedLines = String(text || '').split(/\r?\n/).map((line) => line.replace(/[ÁÉÍÓÚÜ]/gi, (value) => ({ Á: 'A', É: 'E', Í: 'I', Ó: 'O', Ú: 'U', Ü: 'U', á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u', ü: 'u' }[value] || value)).replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const amountsInLine = (line) => [...String(line || '').matchAll(/-?[\d.]+,\d{2}/g)].map((match) => numberFor(match[0]));
+  const amountFromLine = (pattern, index = 0, required) => {
+    const line = normalisedLines.find((candidate) => pattern.test(candidate) && (!required || required.test(candidate)));
+    const amounts = amountsInLine(line);
+    const amount = amounts[index] ?? amounts.at(-1);
+    return amount === undefined ? null : Math.abs(amount) >= 1e6 ? amount / 1e6 : amount;
+  };
+  const value = (pattern) => socialSecurityAmount(text, pattern);
+  const records = [];
+  const pensionSection = String(text || '').match(/481\s+PENSIONES([^\r\n]{0,600})/i);
+  const pensionValues = pensionSection ? [...pensionSection[1].matchAll(/-?[\d.]+,\d{2}/g)].map((match) => numberFor(match[0])) : [];
+  const pensionAmount = pensionValues[4] ?? pensionValues.at(-1);
+  const pensionExpenditure = pensionAmount === undefined ? null : Number((pensionAmount / 1e6).toFixed(6));
+  const dimensions = { budgetScope: 'entidades gestoras y servicios comunes consolidados', currency: 'euros', periodDefinition: 'ejercicio presupuestario 2024' };
+  const population = 'entidades gestoras y servicios comunes de la Seguridad Social; programa de pensiones contributivas cuando se indica';
+  if (pensionExpenditure !== null && Number.isFinite(pensionExpenditure)) records.push(socialSecurityAccountRecord(source, 'social_security_contributory_pension_expenditure', 'Gasto reconocido en pensiones contributivas', pensionExpenditure, 'obligaciones reconocidas netas del programa 1101 Pensiones contributivas', { ...dimensions, programme: '1101 Pensiones contributivas', budgetMeasure: 'obligaciones reconocidas netas' }));
+  const currentResultLine = normalisedLines.find((line) => /^a\.\s*OPERACIONES\s+CORRIENTES\b/i.test(line) && /195\.891\.232\.847,44/.test(line)) || normalisedLines.find((line) => /^a\.\s*OPERACIONES\s+CORRIENTES\b/i.test(line));
+  const currentResult = amountsInLine(currentResultLine);
+  const entries = [
+    ['social_security_current_revenue', 'Ingresos corrientes de la Seguridad Social', amountFromLine(/^TOTAL\s+OPERACIONES\s+CORRIENTES\b/i, 6, /195\.891\.232\.847,44/) ?? value(/INGRESOS\s+OPERACIONES\s+CORRIENTES\s+(-?[\d.]+,\d{2})/i), 'ingresos corrientes', 'ingresos por operaciones corrientes'],
+    ['social_security_current_expenditure', 'Gastos corrientes de la Seguridad Social', currentResult[1] === undefined ? value(/GASTOS\s+POR\s+OPERACIONES\s+CORRIENTES\s+(-?[\d.]+,\d{2})/i) : Math.abs(currentResult[1]) >= 1e6 ? currentResult[1] / 1e6 : currentResult[1], 'gastos corrientes', 'gastos por operaciones corrientes'],
+    ['social_security_current_balance', 'Resultado corriente de la Seguridad Social', currentResult[2] === undefined ? value(/DEFICIT\s*\/\s*SUPERAVIT\s+(-?[\d.]+,\d{2})/i) : Math.abs(currentResult[2]) >= 1e6 ? currentResult[2] / 1e6 : currentResult[2], 'resultado corriente', 'déficit o superávit por operaciones corrientes'],
+    ['social_security_contributions', 'Cotizaciones sociales del presupuesto de la Seguridad Social', amountFromLine(/^1\.?\s+COTIZACIONES\s+SOCIALES\b/i, 5, /146\.148\.696\.796,28/) ?? value(/1\.?\s*COTIZACIONES\s+SOCIALES\s+(-?[\d.]+,\d{2})/i), 'cotizaciones sociales', 'cotizaciones'],
+    ['social_security_current_transfers', 'Transferencias corrientes de la Seguridad Social', amountFromLine(/^4\.?\s+TRANSFERENCIAS\s+CORRIENTES\b/i, 6, /48\.151\.747\.653,80/) ?? value(/4\.?\s*TRANSFERENCIAS\s+CORRIENTES\s+(-?[\d.]+,\d{2})/i), 'transferencias corrientes', 'transferencias corrientes'],
+    ['social_security_budget_total_balance', 'Resultado presupuestario total de la Seguridad Social', amountFromLine(/^I\.?\s+RESULTADO\s+PRESUPUESTARIO\s+DEL\s+EJERCICIO\b/i, 2, /-2\.900\.895\.898,80/) ?? value(/RESULTADO\s+PRESUPUESTARIO\s+TOTAL\s+(-?[\d.]+,\d{2})/i), 'resultado presupuestario total', 'resultado presupuestario total'],
+  ];
+  for (const [metricId, metric, amount, populationLabel, budgetMeasure] of entries) if (amount !== null) records.push(socialSecurityAccountRecord(source, metricId, metric, amount, `${population}; ${populationLabel}`, { ...dimensions, budgetMeasure }));
+  return records;
 };
 
 export const parseIneTempusSnapshot = (rows, source) => rows.flatMap((row, index) => {

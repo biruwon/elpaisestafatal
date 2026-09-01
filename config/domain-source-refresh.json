@@ -1,6 +1,14 @@
 {
   "feeds": [
     {
+      "id": "social-security-general-account-2024",
+      "domain": "pension_finance",
+      "url": "https://www.seg-social.es/descarga/es/01_TOMO%20I_Cuenta_General_Parlamento.pdf",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Seguridad Social Cuenta General 2024: pensiones contributivas y resultados presupuestarios"
+    },
+    {
       "id": "euskadi-protected-housing-allocations-documentation-2025",
       "domain": "public_housing_allocation",
       "url": "https://www.euskadi.eus/noticia/2026/el-84-adjudicaciones-vivienda-protegida-alquiler-euskadi-corresponden-solicitantes-identificados-dni/web01-a2etxebi/es/",

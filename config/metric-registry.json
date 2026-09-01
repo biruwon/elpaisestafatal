@@ -327,6 +327,62 @@
     "notEquivalentTo": ["old_age_survivors_benefits_total", "government_revenue_ratio", "social_protection_contributions_total"],
     "dimensions": ["period", "geography", "receipt_type", "currency"]
   },
+  "social_security_contributory_pension_expenditure": {
+    "name": "Contributory pension expenditure in the Social Security budget",
+    "aliases": ["gasto reconocido en pensiones contributivas", "gasto contributivo de pensiones", "gasto presupuestario en pensiones contributivas", "obligaciones reconocidas pensiones contributivas"],
+    "unit": "million euro",
+    "population": "net recognised obligations for the contributory pensions programme in the Social Security budget",
+    "notEquivalentTo": ["old_age_survivors_benefits_total", "social_protection_contributions_total", "social_security_current_expenditure"],
+    "dimensions": ["period", "geography", "programme", "budget_measure", "currency"]
+  },
+  "social_security_current_revenue": {
+    "name": "Current-budget revenue of Social Security management entities and common services",
+    "aliases": ["ingresos corrientes de la Seguridad Social", "ingresos operaciones corrientes Seguridad Social", "resultado corriente Seguridad Social ingresos"],
+    "unit": "million euro",
+    "population": "current-budget revenue of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["social_protection_contributions_total", "government_revenue_ratio", "social_security_contributions"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_current_expenditure": {
+    "name": "Current-budget expenditure of Social Security management entities and common services",
+    "aliases": ["gastos corrientes de la Seguridad Social", "gastos operaciones corrientes Seguridad Social", "resultado corriente Seguridad Social gastos"],
+    "unit": "million euro",
+    "population": "current-budget expenditure of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["old_age_survivors_benefits_total", "social_security_contributory_pension_expenditure"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_current_balance": {
+    "name": "Current-budget balance of Social Security management entities and common services",
+    "aliases": ["resultado corriente de la Seguridad Social", "déficit corriente Seguridad Social", "superávit corriente Seguridad Social"],
+    "unit": "million euro",
+    "population": "current-budget balance of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["government_deficit_ratio", "social_security_budget_total_balance", "old_age_survivors_benefits_total"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_contributions": {
+    "name": "Social Security budget contributions",
+    "aliases": ["cotizaciones del presupuesto de la Seguridad Social", "cotizaciones presupuesto Seguridad Social", "ingresos por cotizaciones Seguridad Social"],
+    "unit": "million euro",
+    "population": "social contributions in the current budget of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["social_protection_contributions_total", "social_security_current_revenue"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_current_transfers": {
+    "name": "Current transfers in the Social Security budget",
+    "aliases": ["transferencias corrientes Seguridad Social", "transferencias del presupuesto de la Seguridad Social", "ingresos por transferencias Seguridad Social"],
+    "unit": "million euro",
+    "population": "current transfers in the budget of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["social_protection_government_contributions_total", "social_security_current_revenue"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_budget_total_balance": {
+    "name": "Total budget result of Social Security management entities and common services",
+    "aliases": ["resultado presupuestario total Seguridad Social", "saldo presupuestario total Seguridad Social", "déficit presupuestario Seguridad Social"],
+    "unit": "million euro",
+    "population": "total budget result of consolidated Social Security management entities and common services",
+    "notEquivalentTo": ["government_deficit_ratio", "social_security_current_balance", "old_age_survivors_benefits_total"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
   "projected_population_65_plus": {
     "name": "Projected population aged 65 years or more",
     "aliases": ["proyección de población mayor", "proyección de mayores de 65", "población de 65 años proyectada", "mayores de 65 proyectados"],

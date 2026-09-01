@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
+import { parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText, parseSocialSecurityPensionFinanceText } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
@@ -57,6 +57,7 @@ try {
     await parser.destroy();
     if (domain === 'wildfire_statistics') payload = { __records: parseWildfireReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else if (domain === 'health_emergency_wait') payload = { __records: parseHealthEmergencyReportText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
+    else if (domain === 'pension_finance') payload = { __records: parseSocialSecurityPensionFinanceText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else if (domain === 'immigration_crime' && /población condenada|poblacion condenada|convict/i.test(title)) payload = { __records: parseIneConvictionPressText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else if (domain === 'immigration_benefits' && /beneficiarios.*desempleo|sepe/i.test(title)) payload = { __records: parseSepeForeignBenefitsText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
     else if (domain === 'public_housing_allocation' && /catalunya|catalonia|protected-housing applicant|sol·licitants|sol.licitants/i.test(title)) payload = { __records: parseGencatHousingDemandText(extracted.text, { id: 'pending', title, url: response.url.toString() }) };
