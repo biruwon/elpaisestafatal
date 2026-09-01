@@ -251,7 +251,18 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
     // the short network budget used by the hosted deterministic path.
-    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) { await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100))); response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal); }
+    for (let attempt = 0; response.state === 'processing' && response.id && attempt < 60; attempt += 1) {
+      await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
+      try {
+        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal);
+      } catch (error) {
+        // A status check can time out while the resolver is still working.
+        // Keep the processing response so a transient timeout cannot replace
+        // an already-rendered preview with a terminal error.
+        if (error instanceof Error && error.message === 'request-timeout') continue;
+        throw error;
+      }
+    }
     finishLoading();
     clarificationContext = undefined;
     if (response.state === 'processing') { renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return; }
