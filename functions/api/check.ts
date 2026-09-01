@@ -14,7 +14,7 @@ import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'evidence-precedence-5-broad-packet-precedence';
+const responseCacheVersion = 'evidence-precedence-6-broad-criterion-precedence';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -119,7 +119,11 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   // result that genuinely contains more compatible observations still wins.
   const contextualPlanId = (contextualPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
   const modelPlanId = (modelPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
-  if (contextualPlanId && contextualPlanId === modelPlanId) {
+  const sameBroadPacket = Boolean(contextualPlanId?.startsWith('broad-')
+    && modelPlan
+    && (!modelPlanId || contextualPlanId === modelPlanId)
+    && modelPlan.headline === contextualPlan?.headline);
+  if (sameBroadPacket) {
     const contextualCriteria = criterionDataCount(contextualPlan);
     const modelCriteria = criterionDataCount(modelPlan);
     const hasRicherCriterion = [...contextualCriteria].some(([criterionId, count]) => count > (modelCriteria.get(criterionId) || 0));
