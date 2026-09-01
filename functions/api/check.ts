@@ -14,7 +14,7 @@ import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'evidence-precedence-4-pension-finance';
+const responseCacheVersion = 'evidence-precedence-5-broad-packet-precedence';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -98,6 +98,7 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
   const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
+  const dataCount = (plan: AnswerPlan | undefined): number => plan?.evidenceSummary?.families?.reduce((total, family) => total + (family.data?.length || 0), 0) || 0;
   // A reviewed broad-domain packet is an answerable, sourced fallback. Never
   // let a malformed or empty provider response hide it, regardless of whether
   // the provider labelled that response limited or insufficient.
@@ -107,6 +108,14 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   if ((contextualPlan as ({ id?: string } | undefined))?.id?.startsWith('broad-') && model?.state !== 'supported' && !modelHasFamilyData) return contextual;
   if (!model || model.state === 'insufficient') return contextual.state !== 'insufficient' ? contextual : model || contextual;
   if (contextual.state === 'supported' && model.state === 'limited' && !(model.result?.sources?.length) && !(model.result?.criteria?.length)) return contextual;
+  // The optional resolver can return a same-packet result built from an older
+  // warehouse snapshot. Prefer the reviewed packet when it contains more
+  // family-scoped values; otherwise a sparse provider result can silently
+  // hide newly added official projections or account figures. A provider
+  // result that genuinely contains more compatible observations still wins.
+  const contextualPlanId = (contextualPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
+  const modelPlanId = (modelPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
+  if (contextualPlanId && contextualPlanId === modelPlanId && dataCount(contextualPlan) > dataCount(modelPlan)) return contextual;
   if (contextual.state === 'insufficient' || !rhetoricalClaim(claim)) return model;
   const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
   const summary = plan?.evidenceSummary;
