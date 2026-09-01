@@ -14,7 +14,7 @@ import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'evidence-precedence-3';
+const responseCacheVersion = 'evidence-precedence-4-pension-finance';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
