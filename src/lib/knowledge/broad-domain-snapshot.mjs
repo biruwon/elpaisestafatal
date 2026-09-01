@@ -413,11 +413,16 @@ const familyLabelForPacket = (packet) => ({
   'broad-benefits-recipients': 'Prestaciones',
 }[packet.id] || packet.headline);
 const evidenceStatusFor = (data, missingDimensions, snapshotOnly = false) => data?.length ? (missingDimensions?.length || snapshotOnly ? 'partial' : 'available') : 'missing';
+const periodRangeFromData = (data) => {
+  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
+  if (!periods.length) return undefined;
+  return periods[0] === periods.at(-1) ? periods[0] : `${periods[0]}–${periods.at(-1)}`;
+};
 const dimensionsFor = (packet, criterion, data) => ({
   subject: packet.interpretation?.subject,
   population: criterion.population,
   geography: 'España',
-  period: data?.map((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/)?.[0]).find(Boolean),
+  period: periodRangeFromData(data),
   denominator: criterion.denominator,
   unit: criterion.unit,
   causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,

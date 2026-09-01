@@ -97,20 +97,41 @@ const evidenceGroupStatus = (criteria: EvidenceCriterion[]): EvidenceStatus => c
   : criteria.length > 0 && criteria.every((criterion) => criterion.status === 'available')
     ? 'available'
     : 'missing';
+const evidenceDimensionLabels: Record<string, string> = {
+  population: 'Población',
+  geography: 'Territorio',
+  period: 'Periodo',
+  denominator: 'Denominador',
+  unit: 'Unidad',
+};
+const periodRangeFromData = (data?: string[]): string | undefined => {
+  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
+  if (!periods.length) return undefined;
+  return periods[0] === periods.at(-1) ? periods[0] : `${periods[0]}–${periods.at(-1)}`;
+};
+const formatEvidenceDimensions = (dimensions?: EvidenceDimensions, data?: string[]): string => {
+  if (!dimensions) return '';
+  return Object.entries(dimensions)
+    .filter(([key, value]) => Boolean(value) && key in evidenceDimensionLabels)
+    .map(([key, value]) => `${evidenceDimensionLabels[key]}: ${key === 'period' ? periodRangeFromData(data) || value : value}`)
+    .join(' · ');
+};
 const evidenceGroupsFor = (families: EvidenceFamily[]): EvidenceFamily[] => {
   const groups = new Map<string, EvidenceFamily>();
   families.forEach((family, index) => {
     const familyId = family.familyId || `evidence-family-${index + 1}`;
     const existing = groups.get(familyId);
     const criterion: EvidenceCriterion = { id: family.label, label: family.label, finding: family.finding, status: family.status, dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions };
-    if (!existing) groups.set(familyId, { ...family, familyId, familyLabel: family.familyLabel || family.label, criteria: family.criteria?.length ? family.criteria : [criterion], sourceIds: family.sourceIds || [], data: family.data || [], missingDimensions: family.missingDimensions || [] });
+    const criteria = family.criteria?.length ? family.criteria : [criterion];
+    const missingDimensions = [...new Set([...(family.missingDimensions || []), ...criteria.flatMap((item) => item.missingDimensions || [])])];
+    if (!existing) groups.set(familyId, { ...family, familyId, familyLabel: family.familyLabel || family.label, criteria, sourceIds: family.sourceIds || [], data: family.data || [], missingDimensions });
     else {
-      existing.criteria = [...(existing.criteria || []), ...(family.criteria?.length ? family.criteria : [criterion])];
+      existing.criteria = [...(existing.criteria || []), ...criteria];
       existing.status = evidenceGroupStatus(existing.criteria);
       existing.evidenceIds = [...new Set([...existing.evidenceIds, ...family.evidenceIds])];
       existing.sourceIds = [...new Set([...(existing.sourceIds || []), ...(family.sourceIds || [])])];
       existing.data = [...new Set([...(existing.data || []), ...(family.data || [])])];
-      existing.missingDimensions = [...new Set([...(existing.missingDimensions || []), ...(family.missingDimensions || [])])];
+      existing.missingDimensions = [...new Set([...(existing.missingDimensions || []), ...missingDimensions])];
     }
   });
   return [...groups.values()];
@@ -121,7 +142,7 @@ const renderEvidenceGroups = (groups: EvidenceFamily[], sources: CheckResult['so
   const criteria = group.criteria || [];
   const sourceLinks = (group.sourceIds || []).map((id) => sources.find((source) => source.id === id)).filter((source): source is CheckResult['sources'][number] => Boolean(source));
   const statusLabel = group.status === 'available' ? 'Datos disponibles' : group.status === 'partial' ? 'Evidencia parcial' : 'Datos pendientes';
-  return `<section class="evidence-family" data-family-id="${escapeHtml(group.familyId || group.label)}"><header><span class="eyebrow">Familia de evidencia · ${escapeHtml(statusLabel)}</span><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><p>${escapeHtml(group.finding || 'Esta familia se evalúa con sus propias medidas.')}</p></header><div class="result-evidence-grid">${criteria.map((criterion) => { const dimensions = criterion.dimensions ? Object.entries(criterion.dimensions).filter(([, value]) => Boolean(value)).map(([key, value]) => `${key}: ${value}`).join(' · ') : ''; return `<article class="evidence-criterion"><strong>${escapeHtml(publicMetricLabel(criterion.label))}</strong><p class="evidence-finding">${escapeHtml(criterion.finding || 'Esta dimensión queda sin una medición compatible localizada.')}</p>${criterion.data?.length ? `<p class="evidence-data"><span>Valores observados</span>${criterion.data.map((value) => escapeHtml(value)).join(' · ')}</p>` : ''}${dimensions ? `<small class="evidence-dimensions">${escapeHtml(dimensions)}</small>` : ''}${renderMissingList('Datos pendientes', criterion.missingDimensions || [], 'evidence-gap-inline')}</article>`; }).join('')}</div>${renderMissingList('Qué queda pendiente en esta familia:', group.missingDimensions || [], 'result-note evidence-missing-note')}${group.limitation ? `<p class="result-note evidence-family-limitation">${escapeHtml(group.limitation)}</p>` : ''}${sourceLinks.length ? `<div class="evidence-family-sources"><span class="eyebrow">Fuentes de esta familia</span>${sourceLinks.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</div>` : ''}</section>`;
+  return `<section class="evidence-family" data-family-id="${escapeHtml(group.familyId || group.label)}"><header><span class="eyebrow">Familia de evidencia · ${escapeHtml(statusLabel)}</span><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><p>${escapeHtml(group.finding || 'Esta familia se evalúa con sus propias medidas.')}</p></header><div class="result-evidence-grid">${criteria.map((criterion) => { const dimensions = formatEvidenceDimensions(criterion.dimensions, criterion.data); return `<article class="evidence-criterion"><strong>${escapeHtml(publicMetricLabel(criterion.label))}</strong><p class="evidence-finding">${escapeHtml(criterion.finding || 'Esta dimensión queda sin una medición compatible localizada.')}</p>${criterion.data?.length ? `<p class="evidence-data"><span>Valores observados</span>${criterion.data.map((value) => escapeHtml(value)).join(' · ')}</p>` : ''}${dimensions ? `<small class="evidence-dimensions">${escapeHtml(dimensions)}</small>` : ''}</article>`; }).join('')}</div>${renderMissingList('Qué queda pendiente en esta familia', group.missingDimensions || [], 'result-note evidence-missing-note')}${group.limitation ? `<p class="result-note evidence-family-limitation">${escapeHtml(group.limitation)}</p>` : ''}${sourceLinks.length ? `<div class="evidence-family-sources"><span class="eyebrow">Fuentes de esta familia</span>${sourceLinks.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</div>` : ''}</section>`;
 }).join('');
 const loadingStagesFor = (text: string): string[] => {
   const value = text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
