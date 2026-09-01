@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { metricCandidatesForQuery } from './metric-query-hints.mjs';
-import { answerPlanForBroadDomain, answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomain, answerPlanForBroadDomains, broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 
 const registry = createRequire(import.meta.url)('../../config/metric-registry.json');
 
@@ -42,8 +42,9 @@ const publicAdministration = answerPlanForBroadDomain('Administración pública 
 assert(publicAdministration?.headline.includes('administración pública'), 'public-administration wording was routed to an unrelated broad packet');
 assert(publicAdministration?.summary.includes('No existe una cifra oficial'), 'public-administration packet did not answer the request for a count');
 assert(publicAdministration?.summary.includes('obligaciones de rendimiento'), 'public-administration packet omitted the distinction between tenure and accountability');
-assert(publicAdministration?.evidenceSummary?.families.some((family) => family.finding?.includes('empleados públicos')), 'public-administration packet did not expose concrete criterion findings');
-assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('No se localizaron valores compatibles'), 'public-administration response did not disclose its missing measurements');
+assert(publicAdministration?.evidenceSummary?.families.some((family) => family.data?.some((item) => item.includes('empleados públicos'))), 'public-administration packet did not expose concrete staffing data');
+assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('3.037.432'), 'public-administration response omitted the available staffing count');
+assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('Quedan sin resolver varias dimensiones'), 'public-administration response did not point to its missing performance measurements');
 assert(publicAdministration?.blocks.some((block) => block.type === 'evidence_gap'), 'public-administration fallback did not declare its missing data');
 
 const emergencyElection = answerPlanForBroadDomain('Me preocupa que un estado de emergencia permita no convocar elecciones y perpetuarse en el poder');
@@ -51,6 +52,7 @@ assert(emergencyElection?.headline.includes('estado excepcional'), 'emergency-el
 assert(emergencyElection?.summary.includes('calendario electoral'), 'emergency-election packet omitted the relevant legal checks');
 assert(emergencyElection?.evidenceSummary?.families.some((family) => family.finding?.includes('declaración concreta')), 'emergency-election packet did not expose its legal evidence criterion');
 assert(emergencyElection?.evidenceSummary?.families.every((family) => family.status && family.dimensions?.subject && family.dimensions?.geography), 'emergency-election packet did not expose family status and dimensions');
+assert(emergencyElection?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('15 días'), 'emergency-election response omitted the concrete constitutional time limit');
 
 const demographicPension = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas');
 assert(demographicPension?.headline.includes('pensiones'), 'demography-pension wording was routed to a generic pensions response');
@@ -73,7 +75,7 @@ const youthLiving = answerPlanForBroadDomain('Precariedad de la población joven
 assert(youthLiving?.id === 'broad-youth-living-housing', 'youth housing claim collapsed into a single generic domain packet');
 assert(youthLiving?.summary.includes('coste de vida') && youthLiving?.summary.includes('ingresos'), 'youth living packet omitted cost-of-living or income dimensions');
 assert(youthLiving?.evidenceSummary?.families.some((family) => family.label === 'Ingresos y empleo'), 'youth living packet omitted employment and wage evidence family');
-assert(youthLiving?.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => item.includes('apoyo familiar'))), 'youth living packet did not disclose the counterfactual evidence gap');
+assert(youthLiving?.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => item.includes('encuesta o modelo contrafactual'))), 'youth living packet did not disclose the counterfactual evidence gap');
 assert(youthLiving?.evidenceSummary?.families.every((family) => family.status && family.dimensions?.subject && family.dimensions?.geography), 'youth living packet did not expose family status and dimensions');
 const youthLivingWithData = answerPlanForBroadDomain('Precariedad de la población joven: suben los costes de vida, los salarios se estancan y no pueden comprar vivienda; ¿cuántos emigrarían sin la ayuda de sus padres?', {
   observations: [
@@ -87,7 +89,29 @@ const youthLivingWithData = answerPlanForBroadDomain('Precariedad de la poblaci�
 });
 const youthReply = youthLivingWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
 assert(youthReply.includes('118,4') && youthReply.includes('24,9') && youthReply.includes('154,2'), 'youth living packet did not render available cross-domain measurements');
-assert(youthReply.includes('apoyo familiar y emigración'), 'youth living packet hid the unavailable counterfactual dimension');
+assert(youthLivingWithData?.evidenceSummary?.families.some((family) => family.label === 'Apoyo familiar y emigración' && family.missingDimensions?.length), 'youth living packet hid the unavailable counterfactual dimension');
+
+const securityClaim = 'La seguridad en España se ha ido a la mierda. Los nuevos españoles son los que acuchillan, roban, violan y pegan palizas, pero nadie hace nada porque no hay policía ni justicia, con tanto wokismo.';
+const securityPlan = answerPlanForBroadDomain(securityClaim);
+assert(broadDomainPacketsFor(securityClaim).map((packet) => packet.id).join(',') === 'broad-security', 'security claim inherited unrelated broad packets');
+assert(securityPlan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('2,47'), 'security response omitted the available offence count');
+assert(securityPlan?.evidenceSummary?.families.some((family) => family.label === 'Grupo y causalidad' && family.missingDimensions?.includes('diseño causal')), 'security response did not preserve the group-causality gap');
+assert(securityPlan?.evidenceSummary?.families.some((family) => family.label === '“Wokismo”'), 'security response treated the loaded political label as an evidence-free conclusion');
+
+const replacementClaim = 'Hay un reemplazo poblacional. La gente que viene tiene menos IQ, es más manipulable y los políticos se aprovechan del sistema podrido.';
+const replacementPlan = answerPlanForBroadDomain(replacementClaim);
+assert(broadDomainPacketsFor(replacementClaim).map((packet) => packet.id).join(',') === 'broad-population-replacement', 'replacement claim inherited the generic economy packet');
+assert(replacementPlan?.evidenceSummary?.families.some((family) => family.label === 'Composición demográfica'), 'replacement response omitted the population proposition');
+assert(replacementPlan?.evidenceSummary?.families.some((family) => family.label === 'IQ y capacidades' && family.status === 'missing'), 'replacement response did not mark the IQ generalisation as missing');
+assert(replacementPlan?.summary.includes('menor IQ') && replacementPlan?.summary.includes('políticos'), 'replacement response omitted substantive loaded propositions');
+
+const taxClaim = 'Cada vez pagamos más impuestos, la inflación sube y los salarios pierden poder de compra. IRPF e IVA suben, el gasto público se dispara, los baby boomers se jubilan y el sistema solo aguanta subiendo impuestos.';
+const taxPlan = answerPlanForBroadDomain(taxClaim);
+assert(broadDomainPacketsFor(taxClaim).map((packet) => packet.id).join(',') === 'broad-tax-burden-purchasing-power', 'tax claim inherited generic employment or pension packets');
+assert(taxPlan?.evidenceSummary?.families.some((family) => family.label === 'Ingresos e impuestos'), 'tax response omitted the tax proposition');
+assert(taxPlan?.evidenceSummary?.families.some((family) => family.label === 'Precios y salarios'), 'tax response omitted the purchasing-power proposition');
+assert(taxPlan?.evidenceSummary?.families.some((family) => family.label === 'Gasto y pensiones'), 'tax response omitted the pensions and spending proposition');
+assert(taxPlan?.evidenceSummary?.families.some((family) => family.label === 'Conclusión causal' && family.missingDimensions?.includes('mecanismo y comparación causal')), 'tax response did not scope its causal gap');
 
 for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una regularización masiva de inmigrantes?']) {
   const plan = answerPlanForBroadDomain(text);

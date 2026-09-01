@@ -92,6 +92,11 @@ const stateConclusion = (state: 'supported' | 'limited' | 'insufficient', answer
     ? 'La evidencia aporta contexto, pero no permite dar por demostrada la afirmación completa.'
     : 'No hay evidencia directa suficiente para confirmar esta afirmación.');
 const formatNumber = (value: number): string => value.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const evidenceGroupStatus = (criteria: EvidenceCriterion[]): EvidenceStatus => criteria.some((criterion) => criterion.status === 'partial') || (criteria.some((criterion) => criterion.status === 'available') && criteria.some((criterion) => criterion.status === 'missing'))
+  ? 'partial'
+  : criteria.length > 0 && criteria.every((criterion) => criterion.status === 'available')
+    ? 'available'
+    : 'missing';
 const evidenceGroupsFor = (families: EvidenceFamily[]): EvidenceFamily[] => {
   const groups = new Map<string, EvidenceFamily>();
   families.forEach((family, index) => {
@@ -101,6 +106,7 @@ const evidenceGroupsFor = (families: EvidenceFamily[]): EvidenceFamily[] => {
     if (!existing) groups.set(familyId, { ...family, familyId, familyLabel: family.familyLabel || family.label, criteria: family.criteria?.length ? family.criteria : [criterion], sourceIds: family.sourceIds || [], data: family.data || [], missingDimensions: family.missingDimensions || [] });
     else {
       existing.criteria = [...(existing.criteria || []), ...(family.criteria?.length ? family.criteria : [criterion])];
+      existing.status = evidenceGroupStatus(existing.criteria);
       existing.evidenceIds = [...new Set([...existing.evidenceIds, ...family.evidenceIds])];
       existing.sourceIds = [...new Set([...(existing.sourceIds || []), ...(family.sourceIds || [])])];
       existing.data = [...new Set([...(existing.data || []), ...(family.data || [])])];
@@ -120,7 +126,8 @@ const loadingStagesFor = (text: string): string[] => {
   const stages = ['Separando las afirmaciones'];
   if (/legaliz|regulariz|inmigr|migrant|extranj/.test(value)) stages.push('Comprobando la regularización');
   if (/servicios? publicos?|colapso|sanidad|educacion|hospital|escuela/.test(value)) stages.push('Buscando indicadores de servicios públicos');
-  if (/paguitas?|prestacion|ayuda|subsidio|renta minima|ingreso minimo|benefici/.test(value)) stages.push('Revisando prestaciones');
+  if (/paguitas?|prestacion|subsidio|renta minima|ingreso minimo|benefici/.test(value)) stages.push('Revisando prestaciones');
+  if (/padres|apoyo familiar|bienes inmuebles/.test(value)) stages.push('Comprobando apoyo familiar');
   return stages;
 };
 const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckResult['sources'][number] | undefined, scope: CheckResult['scope']): string => {

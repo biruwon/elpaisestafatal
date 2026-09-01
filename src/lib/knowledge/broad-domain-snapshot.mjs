@@ -14,8 +14,8 @@ const packets = [
     headline: 'Un estado excepcional no equivale por sí solo a suspender las elecciones',
     summary: 'La preocupación debe comprobarse en tres planos: qué estado excepcional se ha declarado, qué límites y controles establece la Constitución y la ley, y qué norma concreta afectaría al calendario electoral. Un estado de alarma o emergencia no demuestra por sí solo una intención de perpetuarse en el poder; la comparación con una dictadura tampoco prueba que el mismo desenlace vaya a ocurrir.',
     criteria: [
-      { id: 'exceptional-state', label: 'Regla jurídica', finding: 'Hay que identificar la declaración concreta, su duración, sus medidas y las prórrogas autorizadas; no basta con invocar “emergencia” de forma genérica.', sourceIds: ['constitutional-emergency-powers'] },
-      { id: 'election-continuity', label: 'Elecciones', finding: 'Para afirmar que no se convocarían elecciones hace falta una norma, resolución o calendario oficial que produzca ese efecto; el temor o una crisis territorial no lo demuestra.', sourceIds: ['constitutional-emergency-powers'] },
+      { id: 'exceptional-state', label: 'Regla jurídica', finding: 'Hay que identificar la declaración concreta, su duración, sus medidas y las prórrogas autorizadas; no basta con invocar “emergencia” de forma genérica.', fallbackData: ['Estado de alarma: máximo inicial de 15 días; una prórroga requiere autorización del Congreso (art. 116.2 de la Constitución).', 'Estado de excepción: máximo de 30 días, prorrogable por otro periodo igual con autorización del Congreso (art. 116.3).'], sourceIds: ['constitutional-emergency-powers'] },
+      { id: 'election-continuity', label: 'Elecciones', finding: 'Para afirmar que no se convocarían elecciones hace falta una norma, resolución o calendario oficial que produzca ese efecto; el temor o una crisis territorial no lo demuestra.', fallbackData: ['Durante los estados excepcionales no se interrumpe el funcionamiento de los poderes constitucionales y el Congreso no puede disolverse (art. 116.5 de la Constitución).'], sourceIds: ['constitutional-emergency-powers'] },
       { id: 'dictatorship-analogy', label: 'Analogía histórica', finding: 'Que algunas dictaduras comenzaran con medidas excepcionales es un contexto histórico, no una prueba de que una democracia actual siga necesariamente ese mismo camino.', sourceIds: ['constitutional-emergency-powers'] },
     ],
     limitations: ['No se puede confirmar una predicción sobre una “emergencia perpetua” sin una decisión concreta, fechas y norma aplicable. Para evaluar un riesgo real hay que revisar la declaración oficial, sus prórrogas, el control parlamentario y judicial y el calendario electoral.'],
@@ -28,9 +28,9 @@ const packets = [
     headline: 'El envejecimiento presiona las pensiones, pero no demuestra por sí solo una quiebra pública',
     summary: 'La estructura demográfica puede aumentar la presión sobre las pensiones al cambiar la relación entre cotizantes y pensionistas. Eso no basta para afirmar que el sistema sea “completamente insostenible” ni que ya esté arruinando las arcas públicas: hay que separar dependencia demográfica, ingresos por cotizaciones, gasto en pensiones, transferencias, déficit y deuda, con sus periodos y definiciones, antes de emitir ese veredicto.',
     criteria: [
-      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], fallbackData: ['29,5 personas mayores por cada 100 en edad de trabajar (2020)'], sourceIds: ['demography-pension-finance'] },
-      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], sourceIds: ['demography-pension-finance'] },
-      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], fallbackData: ['119,3 % del PIB de deuda pública (2020)'], sourceIds: ['public-finance-pension'] },
+      { id: 'demographic-structure', label: 'Demografía', finding: 'Hay que medir la relación entre población en edad de trabajar, cotizantes y pensionistas; “árbol demográfico invertido” es una descripción retórica, no un indicador estadístico único.', metricIds: ['old_age_dependency_ratio'], unit: 'personas mayores por cada 100 en edad de trabajar', fallbackData: ['29,5 personas mayores por cada 100 en edad de trabajar (2020)'], sourceIds: ['demography-pension-finance'] },
+      { id: 'pension-balance', label: 'Pensiones', finding: 'La sostenibilidad requiere comparar ingresos contributivos, gasto, transferencias y compromisos futuros; el gasto actual aislado no decide el resultado.', metricIds: ['old_age_survivors_benefits_per_capita'], unit: '€ por habitante', fallbackData: ['3.293,16 € por habitante en prestaciones de vejez y supervivencia (2020)'], sourceIds: ['demography-pension-finance'] },
+      { id: 'public-finance-effect', label: 'Arcas públicas', finding: 'Para afirmar que las pensiones ya arruinan las cuentas públicas hay que observar saldo presupuestario, deuda, financiación del sistema y evolución temporal, no solo la existencia de déficit.', metricIds: ['government_deficit_ratio', 'government_debt_ratio'], unit: '% del PIB', fallbackData: ['119,3 % del PIB de deuda pública (2020)'], sourceIds: ['public-finance-pension'] },
     ],
     limitations: ['El snapshot aporta indicadores de 2020, pero no un balance completo de ingresos contributivos, gasto, transferencias y proyecciones; por eso no confirma que el sistema sea “completamente insostenible” ni que exista una quiebra inmediata. La presión demográfica y la quiebra pública son afirmaciones diferentes.'],
     sources: [
@@ -45,12 +45,12 @@ const packets = [
     headline: 'La administración pública requiere medir plantilla, desempeño y calidad del servicio',
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
-      { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El número de empleados públicos y el gasto describen recursos, pero no indican cuántos puestos son sustituibles ni si una persona concreta trabaja o no. No hay una clasificación oficial general de puestos “prescindibles”.', sourceIds: ['public-administration-source'] },
+      { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.037.432 empleados públicos; 1.634.510 funcionarios de carrera (enero de 2025)'], sourceIds: ['public-administration-source'] },
       { id: 'public-service-performance', label: 'Desempeño', finding: 'Para evaluar la administración hacen falta tiempos de tramitación, cargas de trabajo, vacantes, absentismo, productividad y resultados del servicio, con una comparación compatible.', sourceIds: ['public-administration-source'] },
       { id: 'individual-conduct', label: 'Conducta individual', finding: 'Una oposición otorga una relación de empleo regulada; no demuestra por sí sola rendimiento, absentismo o derecho a permanecer sin cumplir sus obligaciones.', sourceIds: ['public-administration-source'] },
     ],
     limitations: ['La frase no aporta un servicio, puesto, territorio, periodo ni indicador. Sin esos datos no se puede estimar cuántos empleos son prescindibles. Una acusación individual exigiría además expedientes de desempeño o absentismo; no puede atribuirse vagancia a un colectivo entero.'],
-    sources: [source('public-administration-source', 'Government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
+    sources: [source('public-administration-source', 'Estadística del personal al servicio de las Administraciones Públicas', 'Ministerio para la Transformación Digital y de la Función Pública', 'https://digital.gob.es/funcion-publica/dgfp/registro-central-personal/evolucion-administraciones-publicas', '2025-07-01')],
   },
   {
     id: 'broad-public-services',
@@ -65,6 +65,40 @@ const packets = [
     ],
     limitations: ['No se ha localizado aquí una medición compatible que permita cuantificar un “colapso total” de los servicios públicos en conjunto. La inmigración y la presión sobre un servicio tampoco prueban por sí solas una relación causal.'],
     sources: [source('public-services-source', 'Government finance and public service statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Government_finance_statistics', '2025-10-01')],
+  },
+  {
+    id: 'broad-tax-burden-purchasing-power',
+    matches: /\b(impuesto|impuestos|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|inflaci[oó]n|poder de compra|salarios?|baby boom|gasto p[uú]blico|subir impuestos|subida de impuestos)\w*\b/i,
+    interpretation: { kind: 'mixed', subject: 'carga fiscal, precios, salarios y cuentas públicas en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de impuestos, poder adquisitivo, gasto público y pensiones', interpretation: 'La afirmación encadena cambios de impuestos, precios, salarios, gasto y jubilación. Son proposiciones separadas y una no prueba la siguiente.' },
+    headline: 'Impuestos, precios, salarios y pensiones requieren series separadas',
+    summary: 'La carga fiscal, la inflación y el poder adquisitivo no son la misma medida. Para comprobar la frase hay que comparar ingresos públicos, impuestos concretos, precios de consumo, salarios, gasto público y presión demográfica en los mismos periodos y con sus unidades; que varias series suban a la vez no demuestra que una subida de impuestos sea la causa de todo el resultado.',
+    criteria: [
+      { id: 'tax-revenue', label: 'Ingresos e impuestos', finding: 'Los ingresos públicos y los impuestos sobre renta y riqueza deben distinguirse del tipo legal de IRPF o IVA y del importe que paga cada hogar.', metricIds: ['government_revenue_ratio', 'government_current_taxes_income_wealth_europe'], sourceIds: ['tax-burden-eurostat'] },
+      { id: 'prices-and-wages', label: 'Precios y salarios', finding: 'La inflación mide precios; el poder adquisitivo exige compararla con una serie salarial compatible, periodo, población y unidad definidos.', metricIds: ['cpi_index', 'median_hourly_earnings'], sourceIds: ['tax-burden-eurostat'] },
+      { id: 'spending-and-pensions', label: 'Gasto y pensiones', finding: 'El gasto público, las prestaciones de vejez y la dependencia demográfica son indicadores distintos; ninguno demuestra por sí solo que el sistema solo pueda sostenerse subiendo impuestos.', metricIds: ['government_expenditure_ratio', 'old_age_survivors_benefits_per_capita', 'old_age_dependency_ratio'], sourceIds: ['tax-burden-eurostat'] },
+      { id: 'tax-causality', label: 'Conclusión causal', finding: 'Para afirmar que las pensiones obligan a subir impuestos hace falta identificar decisiones tributarias, periodos, mecanismo y una comparación que descarte otros factores.', missingDimensions: ['impuesto y base afectados', 'serie temporal alineada', 'mecanismo y comparación causal'], sourceIds: ['tax-burden-eurostat'] },
+    ],
+    limitations: ['Los indicadores agregados pueden mostrar evolución de precios, salarios, recaudación, gasto o dependencia, pero no prueban por sí solos pérdida de poder adquisitivo de todos los hogares ni que el sistema solo aguante subiendo impuestos.'],
+    sources: [
+      source('tax-burden-eurostat', 'Tax revenue, prices, wages and government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Tax_revenue_statistics', '2025-10-01'),
+    ],
+  },
+  {
+    id: 'broad-population-replacement',
+    matches: /\b(reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|manipulables?|manipulable|gente que viene)\b/i,
+    interpretation: { kind: 'causal', subject: 'población residente, capacidades individuales y decisiones políticas', subjectType: 'group', predicate: 'allegedly_changes', object: 'composición y funcionamiento institucional', normalizedClaim: 'reemplazo poblacional, capacidad cognitiva y aprovechamiento político', interpretation: 'La frase combina una afirmación demográfica con una generalización sobre capacidad individual y una acusación causal sobre políticos. La población puede medirse; las otras partes exigen definiciones y evidencia específica.' },
+    headline: 'Un cambio demográfico no demuestra menor capacidad ni manipulación política',
+    summary: 'La composición de la población y los flujos migratorios son medibles, pero “reemplazo poblacional” necesita una definición de población y periodo. No hay una categoría estadística válida que permita afirmar que las personas que llegan tienen menor IQ, y esa generalización no demuestra que sean más manipulables ni que los políticos se aprovechen del sistema.',
+    criteria: [
+      { id: 'population-composition', label: 'Composición demográfica', finding: 'La población nacida fuera de España puede medirse como residentes por país de nacimiento; es un stock y no demuestra por sí solo un reemplazo de la población ni una intención política.', metricIds: ['foreign_born_population'], sourceIds: ['replacement-population-source'] },
+      { id: 'cognitive-generalisation', label: 'IQ y capacidades', finding: '“Menor IQ” no identifica una población comparable ni un estudio representativo; no es una propiedad que pueda atribuirse a todas las personas por su origen.', missingDimensions: ['definición de IQ', 'población comparable', 'edad, educación, idioma y periodo', 'estudio representativo'], sourceIds: ['replacement-comparability-source'] },
+      { id: 'political-manipulation', label: 'Manipulación y aprovechamiento', finding: 'La acusación sobre políticos y un “sistema podrido” requiere decisiones, actores, mecanismo y resultados observables; no se deduce de la nacionalidad o del país de nacimiento.', missingDimensions: ['actor y decisión concreta', 'mecanismo', 'comparación o control', 'resultado medible'], sourceIds: ['replacement-comparability-source'] },
+    ],
+    limitations: ['Una variación en la población nacida fuera del país no prueba sustitución deliberada, menor capacidad cognitiva ni manipulación política. Esas conclusiones requieren proposiciones y fuentes independientes.'],
+    sources: [
+      source('replacement-population-source', 'Población por país de nacimiento en España', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_pop3ctb?geo=ES&age=TOTAL&sex=T&sinceTimePeriod=2015', '2026-08-17'),
+      source('replacement-comparability-source', 'Population and social indicators: methodological comparability', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_and_population_change_statistics', '2025-10-01'),
+    ],
   },
   {
     id: 'broad-benefits-recipients',
@@ -91,7 +125,7 @@ const packets = [
       { id: 'youth-income-employment', label: 'Ingresos y empleo', finding: 'La evolución salarial y el desempleo juvenil deben medirse con series separadas y con su población, unidad y periodo definidos.', metricIds: ['median_hourly_earnings', 'youth_unemployment_rate'], sourceIds: ['youth-labour-eurostat'] },
       { id: 'youth-housing-access', label: 'Vivienda', finding: 'El precio de la vivienda y la sobrecarga de costes describen presión residencial, pero no prueban por sí solos que nadie pueda comprar ni explican el papel de cada territorio.', metricIds: ['house_price_index', 'housing_cost_overburden_rate'], sourceIds: ['youth-housing-eurostat'] },
       { id: 'youth-supply', label: 'Oferta', finding: 'La construcción puede medirse con su índice de producción, pero no equivale automáticamente a viviendas disponibles para jóvenes ni a precios asequibles.', metricIds: ['construction_output_index'], sourceIds: ['youth-housing-eurostat'] },
-      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', sourceIds: ['youth-emancipation-source'] },
+      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', missingDimensions: ['encuesta o modelo contrafactual', 'población joven de referencia', 'periodo', 'definición de emigración evitada'], sourceIds: ['youth-emancipation-source'] },
     ],
     limitations: ['Sin edad, ciudad o territorio, periodo y definición de “precariedad” no se puede estimar la imposibilidad de comprar una vivienda. Tampoco se puede convertir la convivencia con los padres en un número de emigraciones evitadas sin una hipótesis identificable.'],
     sources: [
@@ -196,9 +230,9 @@ const packets = [
     headline: 'La inmigración no es una sola magnitud: población, flujos y llegadas son distintas',
     summary: 'España tiene una población nacida fuera del país creciente y también entradas irregulares, pero no se pueden sumar ni tratar como equivalentes. El tamaño de la población residente no demuestra una “invasión” y las llegadas irregulares no representan toda la inmigración.',
     criteria: [
-      { id: 'foreign-born', label: 'Población residente', finding: 'La población nacida fuera de España superó los 10 millones en 2026; es un stock de residentes, no el número de llegadas de un año.', sourceIds: ['immigration-population'] },
-      { id: 'irregular-arrivals', label: 'Llegadas irregulares', finding: 'Interior registró 36.775 llegadas irregulares en 2025, un 42,6% menos que en 2024.', sourceIds: ['immigration-arrivals'] },
-      { id: 'foreign-employment', label: 'Empleo', finding: 'La afiliación extranjera desestacionalizada alcanzó 3.135.581 personas en diciembre de 2025.', sourceIds: ['immigration-employment'] },
+      { id: 'foreign-born', label: 'Población residente', finding: 'La población nacida fuera de España es un stock de residentes, no el número de llegadas de un año.', fallbackData: ['Más de 10 millones de residentes nacidos fuera de España (2026)'], sourceIds: ['immigration-population'] },
+      { id: 'irregular-arrivals', label: 'Llegadas irregulares', finding: 'Las llegadas irregulares son un flujo anual y no equivalen a toda la inmigración.', fallbackData: ['36.775 llegadas irregulares (2025); −42,6% frente a 2024'], sourceIds: ['immigration-arrivals'] },
+      { id: 'foreign-employment', label: 'Empleo', finding: 'La afiliación extranjera mide personas afiliadas, no el total de población inmigrante.', fallbackData: ['3.135.581 afiliaciones extranjeras desestacionalizadas (diciembre de 2025)'], sourceIds: ['immigration-employment'] },
     ],
     limitations: ['La palabra “invasión” es una valoración amplia. Para evaluar efectos concretos hay que separar vivienda, empleo, servicios, integración y seguridad, con población y territorio definidos.'],
     sources: [
@@ -214,9 +248,12 @@ const packets = [
     headline: 'La seguridad no se puede resumir en una sola cifra de delincuencia',
     summary: 'Los datos nacionales no describen automáticamente lo que ocurre en una calle concreta. En 2025 la delincuencia convencional bajó ligeramente mientras la ciberdelincuencia creció; ambos fenómenos pueden coexistir con problemas locales y con una percepción real de inseguridad.',
     criteria: [
-      { id: 'total-offences', label: 'Total y composición', finding: 'España registró 2,47 millones de infracciones en 2025; la delincuencia convencional bajó un 0,2% y la cibercriminalidad subió un 5,3%.', sourceIds: ['security-balance'] },
-      { id: 'conventional-rate', label: 'Delincuencia convencional', finding: 'La tasa convencional quedó en 40,4 por mil, dentro de la banda baja histórica.', sourceIds: ['security-balance'] },
+      { id: 'total-offences', label: 'Total y composición', finding: 'El balance nacional separa infracciones totales, delincuencia convencional y cibercriminalidad; no son una única medida de inseguridad.', fallbackData: ['2,47 millones de infracciones (2025); delincuencia convencional −0,2%; cibercriminalidad +5,3% (2025)'], sourceIds: ['security-balance'] },
+      { id: 'conventional-rate', label: 'Delincuencia convencional', finding: 'La tasa convencional permite comparar el volumen registrado con la población; por sí sola no describe cada calle ni cada delito.', fallbackData: ['40,4 infracciones convencionales por mil habitantes (2025)'], sourceIds: ['security-balance'] },
       { id: 'scope', label: 'Alcance', finding: 'Una tendencia nacional puede convivir con deterioro en un barrio, estación o zona turística; hace falta una categoría y un territorio concretos.', sourceIds: ['security-balance'] },
+      { id: 'group-causality', label: 'Grupo y causalidad', finding: 'Los totales nacionales no permiten afirmar que un grupo definido por nacionalidad u origen sea responsable de acuchillamientos, robos, violaciones o palizas. Esa conclusión exige tasas comparables y ajuste por edad, sexo, exposición y territorio.', missingDimensions: ['delito concreto', 'grupo y denominador', 'edad, sexo y territorio', 'periodo comparable', 'diseño causal'], sourceIds: ['security-balance'] },
+      { id: 'institutional-response', label: 'Policía y justicia', finding: 'La afirmación de que “nadie hace nada” requiere medir recursos, denuncias, tiempos de respuesta, resoluciones y resultados por servicio; el total de delitos no mide por sí solo la actuación institucional.', missingDimensions: ['medida u organismo', 'periodo', 'indicador de respuesta', 'resultado del servicio'], sourceIds: ['security-balance'] },
+      { id: 'loaded-label', label: '“Wokismo”', finding: '“Wokismo” es una etiqueta política, no una categoría estadística. No se puede usar para explicar una tendencia delictiva sin identificar una política o actuación concreta y medir su efecto.', missingDimensions: ['política o actuación concreta', 'definición operativa', 'periodo', 'resultado comparable'], sourceIds: ['security-balance'] },
     ],
     limitations: ['“No se puede salir a la calle” expresa una experiencia o valoración que las estadísticas nacionales no pueden confirmar literalmente. Para comprobarla hacen falta lugar, periodo, delito o datos de victimización.'],
     sources: [
@@ -254,6 +291,24 @@ export const broadDomainPacketsFor = (text) => {
   if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const direct = packets.filter((packet) => packet.matches.test(value));
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|empleo p[uú]blico/i.test(value);
+  const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit/i.test(value);
+  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar/i.test(value);
+  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|poder de compra|subir impuestos|subida de impuestos)\b/i.test(value);
+  const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|manipulables?|manipulable|gente que viene/i.test(value);
+  const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
+  const compoundSignal = /legalizaci[oó]n|regularizaci[oó]n|regularizar/i.test(value) && /servicios? p[uú]blicos?|colapso/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici/i.test(value);
+  const packetById = (id) => packets.find((packet) => packet.id === id);
+  // Strong multi-proposition routes are resolved before broad keyword matches.
+  // This keeps a claim about one subject from inheriting nearby but incompatible
+  // packets such as generic taxes, pensions, employment or economy context.
+  if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
+  if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
+  if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
+  if (demographyPensionSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
+  if (youthSignal) return [packetById('broad-youth-living-housing')].filter(Boolean);
+  if (taxSignal && (/inflaci[oó]n|poder de compra|salari|baby boom|gasto p[uú]blico|pensiones?/.test(value) || /impuesto|irpf|iva|carga fiscal|presi[oó]n fiscal/.test(value))) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
+  if (/\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value) && securitySignal) return [packetById('broad-immigration-security')].filter(Boolean);
+  if (securitySignal) return [packetById('broad-security')].filter(Boolean);
   const filteredDirect = direct.filter((packet) => packet.id !== 'broad-public-administration' || administrationSignal);
   const familyOrder = { 'broad-immigration-regularization': 1, 'broad-public-services': 2, 'broad-benefits-recipients': 3 };
   const sortFamilies = (items) => items.slice().sort((left, right) => (familyOrder[left.id] || 50) - (familyOrder[right.id] || 50));
@@ -277,13 +332,17 @@ export const broadMetricIdsFor = (text) => new Set(
   broadDomainPacketsFor(text).flatMap((packet) => packet.criteria.flatMap((criterion) => criterion.metricIds || [])),
 );
 
-const formatObservation = (observation) => {
+const formatObservation = (observation, fallbackUnit) => {
   const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(observation.value) : String(observation.value || '').trim();
-  const rawUnit = observation.displayUnit || observation.unit || '';
+  const rawUnit = observation.displayUnit || observation.unit || fallbackUnit || '';
   const unit = ({
     'Euro per inhabitant': '€ por habitante',
     'Percentage of gross domestic product (GDP)': '% del PIB',
+    'Percentage of population in the labour force': '% de población activa',
     'Percentage': '%',
+    'Number': 'personas',
+    'Euro': '€',
+    'INE unit 133': 'índice',
   })[rawUnit] || rawUnit;
   const period = observation.period ? ` (${observation.period})` : '';
   return `${value}${unit ? ` ${unit}` : ''}${period}`;
@@ -298,7 +357,7 @@ const evidenceStatusFor = (data, missingDimensions) => data?.length ? (missingDi
 const dimensionsFor = (packet, criterion, data) => ({
   subject: packet.interpretation?.subject,
   geography: 'España',
-  period: data?.map((value) => String(value).match(/\(([^)]+)\)/)?.[1]).find(Boolean),
+  period: data?.map((value) => String(value).match(/\b20\d{2}(?:-\d{2}(?:-\d{2})?)?\b/)?.[0]).find(Boolean),
   unit: criterion.unit,
   causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,
 });
@@ -318,18 +377,19 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   }));
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
   const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
-  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item)}`));
+  const cleanQuantitative = (value) => String(value).trim().replace(/[.;]\s*$/, '');
+  const quantitativeFindings = matchedObservations.flatMap(({ criterion, observations: items }) => latestObservations(items).map((item) => `${criterion.label}: ${formatObservation(item, criterion.unit)}`));
   const criterionDataFor = (item, index) => {
     const matched = matchedObservations[index]?.observations || [];
-    return matched.length ? latestObservations(matched).map(formatObservation) : item.fallbackData?.length ? item.fallbackData : /\d/.test(item.finding) ? [item.finding] : [];
+    return matched.length ? latestObservations(matched).map((observation) => formatObservation(observation, item.unit)) : item.fallbackData?.length ? item.fallbackData : [];
   };
   matchedObservations.forEach(({ criterion, observations: items }) => {
-    if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${value}`));
+    if (!items.length && criterion.fallbackData?.length) quantitativeFindings.push(...criterion.fallbackData.map((value) => `${criterion.label}: ${cleanQuantitative(value)}`));
   });
   const reviewedQuantitativeFindings = packet.criteria
     .map((item) => item.finding)
     .filter((finding) => /\d/.test(finding))
-    .map((finding) => finding.replace(/[.。]+$/, ''));
+    .map(cleanQuantitative);
   quantitativeFindings.push(...reviewedQuantitativeFindings.slice(0, Math.max(0, 2 - quantitativeFindings.length)));
   const missingCriteria = matchedObservations
     .filter(({ criterion, observations: items }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding))
@@ -343,7 +403,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
   const conversationReply = [
     `${packet.headline}.`,
     quantitativeFindings.length ? `Valores observados: ${quantitativeFindings.join('; ')}.` : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
-    evidenceGap ? `Queda pendiente cuantificar: ${missingCriteria.map((item) => item.replace(/^dato concreto sobre /, '')).join('; ')}.` : undefined,
+    evidenceGap ? 'Quedan sin resolver varias dimensiones de esta afirmación; se detallan en las secciones de evidencia.' : undefined,
     packet.limitations[0],
   ].filter(Boolean).join(' ');
   return {

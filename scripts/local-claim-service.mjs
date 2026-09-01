@@ -181,6 +181,7 @@ const displayUnit = (value, metricId = '') => {
   if (metricId === 'old_age_survivors_benefits_per_capita_europe') return '€ por habitante';
   if (metricId === 'government_debt_current_prices') return 'millones de euros';
   if (metricId === 'government_deficit_ratio_europe' || metricId === 'government_debt_ratio_europe') return '% del PIB';
+  if (metricId === 'cpi_index') return 'índice';
   if (metricId === 'inflation_rate') return '% interanual';
   if (metricId === 'gdp_real_growth_quarterly' || metricId === 'gdp_real_growth_europe' || metricId === 'inflation_rate_europe') return '% interanual';
   if (metricId === 'employment_rate' || metricId === 'employment_rate_europe' || metricId === 'part_time_employment_rate' || metricId === 'part_time_employment_rate_europe' || metricId === 'temporary_employment_rate' || metricId === 'temporary_employment_rate_europe' || metricId === 'unemployment_rate' || metricId === 'unemployment_rate_europe' || metricId === 'youth_unemployment_rate' || metricId === 'youth_unemployment_rate_europe') return '%';
@@ -1931,7 +1932,13 @@ const startResolveJob = (text, origin = 'runtime') => {
     const propositions = (safeClassified.compiler?.explicitPropositions || safeClassified.compiler?.propositions || [])
       .filter((item) => item?.explicit !== false && item.text && item.text.trim() !== text.trim())
       .slice(0, 24);
-    if (propositions.length > 1 && resolved?.result) {
+    // A reviewed broad-domain plan already contains the complete family
+    // envelope for the claim. Re-running each sentence fragment through the
+    // generic classifier would append duplicate data_finding blocks and can
+    // reintroduce neighbouring employment, tax or pension series. Keep the
+    // structured packet authoritative; proposition fan-out remains for
+    // answers that do not already carry family metadata.
+    if (propositions.length > 1 && resolved?.result && !resolved.result.evidenceSummary?.families?.length) {
       const parts = [];
       // Ollama is local and model memory is shared; bound concurrent
       // proposition work so a long social post does not overload the model
@@ -3012,8 +3019,15 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // otherwise the first broad query can consume the row budget and hide a
   // valid demographic or pension series behind an unrelated result.
   const compoundMetricIds = [...compoundMetricIdsForInput(text)];
-  if (!retrievalClassified.primary && !suppressUnrelatedContext && compoundMetricIds.length) {
-    const explicitCompoundResults = await Promise.all(compoundMetricIds.map((metricId) => findWarehouseEvidence(`${metricId} España`, { ...retrievalClassified.compiler, metricIds: [metricId] })));
+  const packetMetricIds = broadPacketAvailable ? [...broadMetricIdsFor(text)] : [];
+  const independentMetricIds = [...new Set([...compoundMetricIds, ...packetMetricIds])];
+  if (!retrievalClassified.primary && !suppressUnrelatedContext && independentMetricIds.length) {
+    // Query every metric declared by the selected evidence packet separately.
+    // A single full-sentence lookup is allowed to rank one topic first and
+    // hide the other compatible series (for example housing hiding wages and
+    // prices). Independent lookups keep each observation attached to its
+    // proposition while the later de-duplication still bounds the payload.
+    const explicitCompoundResults = await Promise.all(independentMetricIds.map((metricId) => findWarehouseEvidence(`${metricQueryTextForIds(new Set([metricId]))} España`, { ...retrievalClassified.compiler, metricIds: [metricId] })));
     warehouseResults.unshift(...explicitCompoundResults);
   }
   const warehouseObservationRows = warehouseQueries.length > 1
