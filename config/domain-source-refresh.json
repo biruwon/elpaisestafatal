@@ -9,6 +9,22 @@
       "title": "Seguridad Social Cuenta General 2024: pensiones contributivas y resultados presupuestarios"
     },
     {
+      "id": "airef-pension-projection-tables-2026",
+      "domain": "pension_finance",
+      "url": "https://www.airef.es/wp-content/uploads/2026/05/Pensiones/AIReF.-Tablas-y-graficos.-Estudio-de-evaluacion-de-la-regla-de-gasto-en-pensiones.xlsx",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "AIReF 2026: series anuales proyectadas de ingresos, gastos y saldo de pensiones"
+    },
+    {
+      "id": "social-security-pension-budget-2025p",
+      "domain": "pension_finance",
+      "url": "https://www.seg-social.es/wps/wcm/connect/wss/60b9beda-6fbc-4d97-bf46-d238e33abbbc/C%2B9.4%2BGastos%2Bprestaciones%2Becon.reg%C3%ADmenes%2B%282025P%29.xlsx?CACHEID=ROOTWORKSPACE.Z18_81D21J401P5L40QTIT61G41000-60b9beda-6fbc-4d97-bf46-d238e33abbbc-pJZXURy&CONVERT_TO=linktext&MOD=AJPERES",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Presupuesto de la Seguridad Social 2025P: pensiones contributivas y no contributivas"
+    },
+    {
       "id": "euskadi-protected-housing-allocations-documentation-2025",
       "domain": "public_housing_allocation",
       "url": "https://www.euskadi.eus/noticia/2026/el-84-adjudicaciones-vivienda-protegida-alquiler-euskadi-corresponden-solicitantes-identificados-dni/web01-a2etxebi/es/",

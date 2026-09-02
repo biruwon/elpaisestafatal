@@ -1,4 +1,4 @@
-import { domainConnectorIds, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText, parseSocialSecurityPensionFinanceText } from './domain-connectors.mjs';
+import { domainConnectorIds, parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText, parseSocialSecurityPensionFinanceText } from './domain-connectors.mjs';
 import * as XLSX from 'xlsx';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
@@ -67,6 +67,37 @@ const healthRows = parseHealthEmergencyReportText('Tiempo medio declarado: 216,6
 if (healthRows.length !== 1 || healthRows[0].metricId !== 'emergency_wait_declared' || healthRows[0].value !== 216.69) throw new Error('Health emergency report parsing failed');
 const pensionRows = parseSocialSecurityPensionFinanceText('481 PENSIONES 1,00 2,00 3,00 4,00 172.653.504.701,48\n1. Cotizaciones Sociales 146.148,70\n4. Transferencias corrientes 48.151,75\nINGRESOS OPERACIONES CORRIENTES 195.891,23\nGASTOS POR OPERACIONES CORRIENTES 205.201,38\nDEFICIT/SUPERAVIT -9.310,15\nRESULTADO PRESUPUESTARIO TOTAL -2.900,90', { ...source, id: 'account-source' });
 if (pensionRows.length !== 7 || pensionRows.find((row) => row.metricId === 'social_security_contributory_pension_expenditure')?.value !== 172653.504701 || pensionRows.find((row) => row.metricId === 'social_security_current_balance')?.value !== -9310.15 || !pensionRows.every((row) => row.period === '2024' && row.geography === 'España')) throw new Error('Social Security account parser did not preserve pension expenditure, budget results, and dimensions');
+const airefBook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(airefBook, XLSX.utils.aoa_to_sheet([
+  ['metadata'], ['metadata'], ['metadata'], ['metadata'],
+  ['', '', '', '', 2020, 2025, 2070],
+  ['', 'Pensiones contributivas', 'Ingreso', 'Cotizaciones SSS dedicadas a pensiones', 9.2, 9.6, 10.3],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', 'Ingreso', 'Transferencias de AC', 0.8, 1.6, 1.7],
+  ['', '', '', '', '', '', ''],
+  ['', '', 'Gasto', 'Pensiones SS + complemento a mínimos', 12.3, 11.3, 14.8],
+  ['', '', 'Gasto', 'No contributivas', 0.2, 0.2, 0.2],
+  ['', '', '', '', '', '', ''],
+  ['', 'TOTAL', 'Ingresos', '', 11.5, 12.6, 12.4],
+  ['', 'TOTAL', 'Gastos', '', 14.0, 12.9, 15.4],
+  ['', 'TOTAL', 'Saldo', '', -2.5, -0.3, -3.0],
+  ['', 'TOTAL', '', 'Transferencias implícitas', 2.5, 0.3, 3.0],
+]), 'Gráfico 12');
+const airefRows = await parseAirefPensionProjectionWorkbook(XLSX.write(airefBook, { type: 'buffer', bookType: 'xlsx' }), { ...source, id: 'airef-source', title: 'AIReF projection workbook' });
+if (airefRows.length !== 24 || !airefRows.some((row) => row.metricId === 'pension_system_balance_projected' && row.period === '2070' && row.value === -3) || !airefRows.every((row) => row.dataKind === 'projected' && row.unit === '% del PIB' && row.dimensions.scenario)) throw new Error('AIReF projection parser did not preserve annual projected pension-finance series');
+const budgetBook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(budgetBook, XLSX.utils.aoa_to_sheet([
+  ['Cuadro 9.4'],
+  ['Concepto', 'TOTAL CONTRIBUTIVO', 'TOTAL COMPLEMENTOS A MÍNIMOS', '', '', 'PRESTACIONES NO CONTRIBUTIVAS', 'TOTAL PRESTACIONES'],
+  ['PENSIONES', 159526468.39, 7250126.54, '', '', 2806060.84, 169582905.52],
+]), 'C9.4');
+const budgetRows = await parseSocialSecurityPensionBudgetWorkbook(XLSX.write(budgetBook, { type: 'buffer', bookType: 'xlsx' }), { ...source, id: 'budget-source', title: 'Social Security 2025P pension budget' });
+if (budgetRows.length !== 4 || budgetRows.find((row) => row.metricId === 'social_security_contributory_pension_budget')?.value !== 159526.46839 || budgetRows.find((row) => row.metricId === 'social_security_pension_budget_total')?.value !== 169582.90552 || !budgetRows.every((row) => row.period === '2025P' && row.unit === 'millones de euros')) throw new Error('Social Security pension budget parser did not preserve 2025P breakdown and units');
 const spreadsheet = await parseSpreadsheetBuffer(Buffer.from('period,territorio,grupo,beneficiarios\n2025,España,total,100'));
 if (spreadsheet.length !== 1 || spreadsheet[0].grupo !== 'total') throw new Error('Spreadsheet parsing failed');
 let rejected = false;

@@ -277,6 +277,66 @@ export const parseSocialSecurityPensionFinanceText = (text, source) => {
   return records;
 };
 
+// AIReF publishes the annual pension-finance projection in the workbook that
+// accompanies its 2026 pension-expenditure study. Keep the rows separate:
+// dedicated contributions, central-government transfers, contributory and
+// non-contributory expenditure, total income/expenditure, the balance, and
+// the implicit transfer requirement are not interchangeable measures.
+export const parseAirefPensionProjectionWorkbook = async (buffer, source) => {
+  const { read, utils } = await import('xlsx');
+  const workbook = read(buffer, { type: 'buffer', cellDates: false });
+  const sheet = workbook.Sheets['Gráfico 12'];
+  if (!sheet) return [];
+  const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  const header = rows[4] || [];
+  const yearColumns = header.flatMap((value, index) => /^20\d{2}$/.test(String(value).trim()) ? [[index, String(value).trim()]] : []);
+  const rowFor = (predicate) => rows.find((row) => predicate(row.map((value) => String(value || '').trim())));
+  const specs = [
+    { metricId: 'pension_contributory_income_projected', metric: 'Cotizaciones SSS dedicadas a pensiones', predicate: (row) => row[1] === 'Pensiones contributivas' && row[2] === 'Ingreso' && /Cotizaciones SSS dedicadas a pensiones/i.test(row[3]), population: 'cotizaciones sociales dedicadas a pensiones contributivas' },
+    { metricId: 'pension_public_transfers_projected', metric: 'Transferencias de la Administración Central a pensiones', predicate: (row) => row[2] === 'Ingreso' && /Transferencias de AC/i.test(row[3]), population: 'transferencias de la Administración Central al sistema público de pensiones' },
+    { metricId: 'pension_contributory_expenditure_projected', metric: 'Pensiones de la Seguridad Social y complemento a mínimos', predicate: (row) => row[2] === 'Gasto' && /Pensiones SS \+ complemento a mínimos/i.test(row[3]), population: 'pensiones de la Seguridad Social y complementos a mínimos' },
+    { metricId: 'pension_noncontributory_expenditure_projected', metric: 'Pensiones no contributivas', predicate: (row) => row[2] === 'Gasto' && row[3] === 'No contributivas', population: 'pensiones no contributivas' },
+    { metricId: 'pension_system_income_projected', metric: 'Ingresos totales del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Ingresos', population: 'ingresos totales del sistema público de pensiones' },
+    { metricId: 'pension_system_expenditure_projected', metric: 'Gastos totales del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Gastos', population: 'gastos totales del sistema público de pensiones' },
+    { metricId: 'pension_system_balance_projected', metric: 'Saldo anual del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Saldo', population: 'ingresos totales menos gastos totales del sistema público de pensiones' },
+    { metricId: 'pension_implicit_transfers_projected', metric: 'Transferencias implícitas necesarias para equilibrar pensiones', predicate: (row) => row[1] === 'TOTAL' && row[3] === 'Transferencias implícitas', population: 'transferencias implícitas necesarias para financiar el sistema público de pensiones' },
+  ];
+  const dimensions = { projection: 'AIReF 2026', scenario: 'escenario base de políticas constantes', denominator: 'PIB', periodDefinition: 'serie anual proyectada 2020–2070' };
+  return specs.flatMap((spec) => {
+    const row = rowFor(spec.predicate);
+    if (!row) return [];
+    return yearColumns.flatMap(([index, period]) => {
+      const value = numberFor(row[index]);
+      if (value === null) return [];
+      return [{ id: `${source.id}-${spec.metricId}-${period}`, kind: 'observation', dataKind: 'projected', sourceId: source.id, datasetId: source.title, period, geography: 'España', population: spec.population, dimensions: { ...dimensions, metricScope: spec.metric }, metricId: spec.metricId, metric: spec.metric, value, unit: '% del PIB', url: source.url }];
+    });
+  });
+};
+
+// Cuadro 9.4 of the Social Security 2025P budget separates contributory
+// pensions, minimum supplements, non-contributory pensions, and the total.
+// Values are published in thousands of euros; normalize them to millions.
+export const parseSocialSecurityPensionBudgetWorkbook = async (buffer, source) => {
+  const { read, utils } = await import('xlsx');
+  const workbook = read(buffer, { type: 'buffer', cellDates: false });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  if (!sheet) return [];
+  const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  const row = rows.find((candidate) => String(candidate?.[0] || '').trim().toUpperCase() === 'PENSIONES');
+  if (!row) return [];
+  const values = [
+    ['social_security_contributory_pension_budget', 'Pensiones contributivas presupuestadas', row[1], 'total contributivo'],
+    ['social_security_pension_complements_minimum_budget', 'Complementos a mínimos de pensiones presupuestados', row[2], 'total complementos a mínimos'],
+    ['social_security_noncontributory_pension_budget', 'Pensiones no contributivas presupuestadas', row[5], 'prestaciones no contributivas'],
+    ['social_security_pension_budget_total', 'Gasto total presupuestado en pensiones', row[6], 'total prestaciones'],
+  ];
+  const dimensions = { budgetScope: 'presupuesto consolidado de la Seguridad Social', budgetMeasure: 'presupuesto de gastos 2025P', currency: 'euros', periodDefinition: 'presupuesto prorrogado 2025P' };
+  return values.flatMap(([metricId, metric, raw, measure]) => {
+    const value = numberFor(raw);
+    return value === null ? [] : [{ id: `${source.id}-${metricId}-2025P`, kind: 'observation', dataKind: 'context', sourceId: source.id, datasetId: source.title, period: '2025P', geography: 'España', population: `pensiones del presupuesto de la Seguridad Social; ${measure}`, dimensions, metricId, metric, value: value / 1000, unit: 'millones de euros', url: source.url }];
+  });
+};
+
 export const parseIneTempusSnapshot = (rows, source) => rows.flatMap((row, index) => {
   const metadata = Object.fromEntries((row?.MetaData || []).map((item) => [item.T3_Variable, item.Nombre]));
   return (Array.isArray(row?.Data) ? row.Data : []).map((point, pointIndex) => {

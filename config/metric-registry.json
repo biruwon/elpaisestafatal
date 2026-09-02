@@ -383,6 +383,102 @@
     "notEquivalentTo": ["government_deficit_ratio", "social_security_current_balance", "old_age_survivors_benefits_total"],
     "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
   },
+  "pension_contributory_income_projected": {
+    "name": "Projected social contributions dedicated to contributory pensions",
+    "aliases": ["cotizaciones dedicadas a pensiones proyectadas", "ingresos contributivos de pensiones proyectados", "cotizaciones SSS dedicadas a pensiones"],
+    "unit": "% GDP",
+    "population": "AIReF projection of social contributions dedicated to contributory pensions",
+    "notEquivalentTo": ["social_protection_contributions_total", "social_security_contributions", "pension_system_income_projected"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_public_transfers_projected": {
+    "name": "Projected central-government transfers to contributory pensions",
+    "aliases": ["transferencias de la Administración Central a pensiones proyectadas", "transferencias de AC a pensiones", "transferencias públicas a pensiones proyectadas"],
+    "unit": "% GDP",
+    "population": "AIReF projection of central-government transfers to the public pension system",
+    "notEquivalentTo": ["social_protection_government_contributions_total", "social_security_current_transfers", "pension_implicit_transfers_projected"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_contributory_expenditure_projected": {
+    "name": "Projected contributory pension expenditure including minimum supplements",
+    "aliases": ["gasto contributivo de pensiones proyectado", "pensiones SS y complemento a mínimos proyectado", "gasto de pensiones contributivas proyectado"],
+    "unit": "% GDP",
+    "population": "AIReF projection of Social Security pensions and minimum supplements",
+    "notEquivalentTo": ["pension_noncontributory_expenditure_projected", "old_age_survivors_benefits_total", "pension_system_expenditure_projected"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_noncontributory_expenditure_projected": {
+    "name": "Projected non-contributory pension expenditure",
+    "aliases": ["gasto de pensiones no contributivas proyectado", "pensiones no contributivas proyectadas"],
+    "unit": "% GDP",
+    "population": "AIReF projection of non-contributory pensions",
+    "notEquivalentTo": ["pension_contributory_expenditure_projected", "old_age_survivors_benefits_total"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_system_income_projected": {
+    "name": "Projected total income of the public pension system",
+    "aliases": ["ingresos totales del sistema público de pensiones proyectados", "ingresos del sistema de pensiones proyectados"],
+    "unit": "% GDP",
+    "population": "AIReF projection of total income of the public pension system",
+    "notEquivalentTo": ["pension_contributory_income_projected", "government_revenue_ratio", "social_security_current_revenue"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_system_expenditure_projected": {
+    "name": "Projected total expenditure of the public pension system",
+    "aliases": ["gastos totales del sistema público de pensiones proyectados", "gasto total del sistema de pensiones proyectado"],
+    "unit": "% GDP",
+    "population": "AIReF projection of total expenditure of the public pension system",
+    "notEquivalentTo": ["pension_contributory_expenditure_projected", "government_expenditure_ratio", "old_age_survivors_benefits_total"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_system_balance_projected": {
+    "name": "Projected annual balance of the public pension system",
+    "aliases": ["saldo anual del sistema de pensiones proyectado", "balance del sistema de pensiones proyectado", "saldo de pensiones proyectado"],
+    "unit": "% GDP",
+    "population": "AIReF projection of total pension-system income minus expenditure",
+    "notEquivalentTo": ["government_deficit_ratio", "social_security_current_balance", "pension_implicit_transfers_projected"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "pension_implicit_transfers_projected": {
+    "name": "Projected implicit transfers needed to finance the public pension system",
+    "aliases": ["transferencias implícitas de pensiones proyectadas", "necesidad de transferencias implícitas del sistema de pensiones", "transferencias implícitas para pensiones"],
+    "unit": "% GDP",
+    "population": "AIReF projection of implicit transfers needed to balance the public pension system",
+    "notEquivalentTo": ["pension_public_transfers_projected", "social_security_current_transfers", "social_protection_government_contributions_total"],
+    "dimensions": ["period", "geography", "projection", "scenario", "denominator", "unit"]
+  },
+  "social_security_contributory_pension_budget": {
+    "name": "Budgeted contributory pension expenditure",
+    "aliases": ["pensiones contributivas presupuestadas", "gasto presupuestado de pensiones contributivas", "total contributivo pensiones presupuesto"],
+    "unit": "million euro",
+    "population": "budgeted contributory pension expenditure excluding minimum supplements and non-contributory pensions",
+    "notEquivalentTo": ["social_security_contributory_pension_expenditure", "social_security_noncontributory_pension_budget", "social_security_pension_budget_total"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_pension_complements_minimum_budget": {
+    "name": "Budgeted pension minimum supplements",
+    "aliases": ["complementos a mínimos de pensiones presupuestados", "complementos a mínimos pensiones presupuesto"],
+    "unit": "million euro",
+    "population": "budgeted minimum supplements attached to contributory pensions",
+    "notEquivalentTo": ["social_security_contributory_pension_budget", "social_security_pension_budget_total"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_noncontributory_pension_budget": {
+    "name": "Budgeted non-contributory pension expenditure",
+    "aliases": ["pensiones no contributivas presupuestadas", "gasto presupuestado de pensiones no contributivas"],
+    "unit": "million euro",
+    "population": "budgeted non-contributory pension expenditure",
+    "notEquivalentTo": ["social_security_contributory_pension_budget", "social_security_pension_budget_total"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
+  "social_security_pension_budget_total": {
+    "name": "Total budgeted pension expenditure",
+    "aliases": ["gasto total presupuestado en pensiones", "total prestaciones pensiones presupuesto"],
+    "unit": "million euro",
+    "population": "total budgeted pension expenditure including contributory pensions, minimum supplements, and non-contributory pensions",
+    "notEquivalentTo": ["social_security_contributory_pension_budget", "old_age_survivors_benefits_total", "social_security_current_expenditure"],
+    "dimensions": ["period", "geography", "budget_scope", "budget_measure", "currency"]
+  },
   "projected_population_65_plus": {
     "name": "Projected population aged 65 years or more",
     "aliases": ["proyección de población mayor", "proyección de mayores de 65", "población de 65 años proyectada", "mayores de 65 proyectados"],

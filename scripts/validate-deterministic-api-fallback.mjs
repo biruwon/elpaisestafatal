@@ -29,7 +29,7 @@ for (const [input, expected] of [
   const result = deterministicApiFallback({ text: input, inputType: 'text' });
   if (result.result?.evidenceLevel !== expected || !result.result?.sourceLinks?.length) throw new Error(`broad claim did not receive scoped evidence: ${input}`);
   const evidenceGap = result.result?.blocks?.find((block) => block.type === 'evidence_gap');
-  if (evidenceGap && (result.result?.knowledgeVersion !== 'broad-domain-snapshot-1'
+  if (evidenceGap && (!String(result.result?.knowledgeVersion || '').startsWith('broad-domain-snapshot-')
     || !Array.isArray(evidenceGap.missing) || !evidenceGap.missing.length
     || !Array.isArray(evidenceGap.needed) || !evidenceGap.needed.length
     || typeof evidenceGap.nextAction !== 'string' || !evidenceGap.nextAction.trim())) {
