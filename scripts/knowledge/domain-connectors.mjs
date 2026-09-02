@@ -337,6 +337,25 @@ export const parseSocialSecurityPensionBudgetWorkbook = async (buffer, source) =
   });
 };
 
+// Cuadro C3 of the Social Security 2025P budget lists State transfers by
+// destination. These are budgeted amounts, not execution and not a complete
+// pension-system balance; keep the destination and scope explicit.
+export const parseSocialSecurityPensionTransfersText = (text, source) => {
+  const lines = String(text || '').split(/\r?\n/).map((line) => line.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const specs = [
+    ['social_security_minimum_complements_transfer_budget', 'Transferencia presupuestada para complementos a mínimos', /complementos?\s+a\s+m[ií]nimos/i, 'complementos a mínimos'],
+    ['social_security_noncontributory_transfer_budget', 'Transferencia presupuestada para pensiones no contributivas', /pensiones?\s+no\s+contributivas?/i, 'pensiones no contributivas'],
+    ['social_security_pact_toledo_transfer_budget', 'Transferencia presupuestada del Pacto de Toledo', /pacto\s+de\s+toledo/i, 'Pacto de Toledo'],
+  ];
+  return specs.flatMap(([metricId, metric, pattern, destination]) => {
+    const line = lines.find((candidate) => pattern.test(candidate) && /-?[\d.]+,\d{2}/.test(candidate));
+    const amounts = [...String(line || '').matchAll(/-?[\d.]+,\d{2}/g)].map((match) => numberFor(match[0])).filter((value) => value !== null);
+    const raw = amounts.at(-1);
+    if (raw === undefined) return [];
+    return [{ id: `${source.id}-${metricId}-2025P`, kind: 'observation', dataKind: 'context', sourceId: source.id, datasetId: source.title, period: '2025P', geography: 'España', population: `transferencias del Estado presupuestadas por destino; ${destination}`, dimensions: { budgetScope: 'presupuesto de la Seguridad Social', budgetMeasure: 'transferencias por destino 2025P', destination, currency: 'euros', periodDefinition: 'presupuesto prorrogado 2025P' }, metricId, metric, value: raw / 1000, unit: 'millones de euros', url: source.url }];
+  });
+};
+
 export const parseIneTempusSnapshot = (rows, source) => rows.flatMap((row, index) => {
   const metadata = Object.fromEntries((row?.MetaData || []).map((item) => [item.T3_Variable, item.Nombre]));
   return (Array.isArray(row?.Data) ? row.Data : []).map((point, pointIndex) => {

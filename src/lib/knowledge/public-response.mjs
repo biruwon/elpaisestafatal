@@ -12,11 +12,13 @@ const validDimensions = (value) => !value || (typeof value === 'object' && !Arra
 const validEvidenceSummary = (value) => !value || (typeof value === 'object'
   && ['dynamic', 'snapshot', 'mixed', 'none'].includes(value.mode)
   && Array.isArray(value.families)
-  && value.families.every((family) => family && typeof family.label === 'string' && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && (!family.status || evidenceStatuses.has(family.status)) && (!family.dataKind || evidenceDataKinds.has(family.dataKind)) && validDimensions(family.dimensions) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string')
+  && value.families.every((family) => family && typeof family.label === 'string' && (family.familyId === undefined || typeof family.familyId === 'string') && (family.familyLabel === undefined || typeof family.familyLabel === 'string') && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && (!family.status || evidenceStatuses.has(family.status)) && (!family.dataKind || evidenceDataKinds.has(family.dataKind)) && validDimensions(family.dimensions) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string')
     && (family.finding === undefined || typeof family.finding === 'string')
     && (family.limitation === undefined || typeof family.limitation === 'string')
     && (family.period === undefined || typeof family.period === 'string')
-    && (!family.criteria || Array.isArray(family.criteria) && family.criteria.every((criterion) => criterion && typeof criterion.id === 'string' && typeof criterion.label === 'string' && typeof criterion.finding === 'string' && (!criterion.status || evidenceStatuses.has(criterion.status)) && (!criterion.dataKind || evidenceDataKinds.has(criterion.dataKind)) && validDimensions(criterion.dimensions) && (!criterion.evidenceIds || Array.isArray(criterion.evidenceIds)) && (!criterion.sourceIds || Array.isArray(criterion.sourceIds)) && (!criterion.data || strings(criterion.data)) && (!criterion.missingDimensions || strings(criterion.missingDimensions)))))
+    && (!family.data || strings(family.data))
+    && (!family.missingDimensions || strings(family.missingDimensions))
+    && (!family.criteria || Array.isArray(family.criteria) && family.criteria.every((criterion) => criterion && typeof criterion.id === 'string' && (criterion.criterionId === undefined || typeof criterion.criterionId === 'string') && typeof criterion.label === 'string' && typeof criterion.finding === 'string' && (!criterion.status || evidenceStatuses.has(criterion.status)) && (!criterion.dataKind || evidenceDataKinds.has(criterion.dataKind)) && validDimensions(criterion.dimensions) && (!criterion.evidenceIds || Array.isArray(criterion.evidenceIds)) && (!criterion.sourceIds || Array.isArray(criterion.sourceIds)) && (!criterion.data || strings(criterion.data)) && (!criterion.missingDimensions || strings(criterion.missingDimensions)))))
   && (!value.missingDimensions || strings(value.missingDimensions))
   && (!value.fallbackReason || typeof value.fallbackReason === 'string'));
 

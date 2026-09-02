@@ -25,6 +25,14 @@
       "title": "Presupuesto de la Seguridad Social 2025P: pensiones contributivas y no contributivas"
     },
     {
+      "id": "social-security-pension-transfers-2025p",
+      "domain": "pension_finance",
+      "url": "https://www.seg-social.es/wps/wcm/connect/wss/f66c2eaa-6a36-49ba-b9a2-37f0a5b72cab/C%2B3.%2BIngresos%2Btransferencias%2B%282025P%29.pdf?CACHEID=ROOTWORKSPACE.Z18_81D21J401P5L40QTIT61G41000-f66c2eaa-6a36-49ba-b9a2-37f0a5b72cab-pJZXUxF&CONVERT_TO=linktext&MOD=AJPERES",
+      "schedule": "yearly",
+      "mode": "active",
+      "title": "Seguridad Social C3 2025P: transferencias por destino"
+    },
+    {
       "id": "euskadi-protected-housing-allocations-documentation-2025",
       "domain": "public_housing_allocation",
       "url": "https://www.euskadi.eus/noticia/2026/el-84-adjudicaciones-vivienda-protegida-alquiler-euskadi-corresponden-solicitantes-identificados-dni/web01-a2etxebi/es/",

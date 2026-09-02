@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22 <23",
+    "npm": ">=10"
+  },
   "scripts": {
     "catalogue:compile": "node scripts/knowledge/compile-runtime-catalogue.mjs",
     "catalogue:runtime:validate": "node scripts/knowledge/validate-runtime-catalogue.mjs",
