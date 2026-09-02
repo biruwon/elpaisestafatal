@@ -70,7 +70,9 @@ assert(demographicPension?.evidenceSummary?.families.some((family) => family.fam
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Arcas públicas' && family.data?.length), 'demography-pension fallback did not attach its public-finance snapshot value');
 assert(demographicPension?.evidenceSummary?.mode === 'snapshot', 'demography-pension fallback did not identify itself as snapshot evidence');
 assert(demographicPension?.evidenceSummary?.families.every((family) => family.status !== 'missing'), 'demography-pension snapshot still marked a covered evidence family as missing');
+assert(demographicPension?.evidenceSummary?.families.every((family) => family.status === 'available'), 'demography-pension snapshot still marked compatible evidence as partial');
 assert(!demographicPension?.evidenceSummary?.missingDimensions?.length, 'demography-pension response still exposed avoidable observed-scope gaps');
+assert(!demographicPension?.evidenceSummary?.fallbackReason?.includes('no un balance completo'), 'demography-pension response still described its scoped evidence as an incomplete balance');
 assert(demographicPension?.evidenceSummary?.families.every((family) => family.dimensions?.population && family.dimensions?.denominator), 'demography-pension response omitted population or denominator metadata');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Pensiones' && family.sourceIds?.includes('pension-spending-source')), 'demography-pension response did not attach the pension-spending source');
 assert(demographicPension?.evidenceSummary?.families.some((family) => family.familyLabel === 'Arcas públicas' && family.sourceIds?.includes('public-finance-source')), 'demography-pension response did not attach the public-finance source');

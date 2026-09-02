@@ -481,7 +481,7 @@ const unresolvedMissingDimensionsFor = (criterion, items) => {
     return observations.filter((item) => metricIds.includes(item.metricId)).length < minimum;
   });
 };
-const evidenceStatusFor = (data, missingDimensions, snapshotOnly = false) => data?.length ? (missingDimensions?.length || snapshotOnly ? 'partial' : 'available') : 'missing';
+const evidenceStatusFor = (data, missingDimensions) => data?.length ? (missingDimensions?.length ? 'partial' : 'available') : 'missing';
 const periodRangeFromData = (data) => {
   const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b(?:19|20|21)\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
   if (!periods.length) return undefined;
@@ -640,7 +640,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     evidenceSummary: {
       mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
       families: packet.criteria.map((item, index) => ({
-        status: evidenceStatusFor(criterionDataFor(item, index), unresolvedDimensions[index], !matchedObservations[index]?.observations?.length && Boolean(item.fallbackData?.length)),
+        status: evidenceStatusFor(criterionDataFor(item, index), unresolvedDimensions[index]),
         dimensions: dimensionsFor(packet, item, criterionDataFor(item, index)),
         // A broad packet can contain several substantive evidence families
         // (for example demography, pensions, and public finance). Keep each
@@ -660,7 +660,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
         dataKind: item.dataKind || (matchedObservations[index]?.observations?.length ? 'observed' : item.fallbackData?.length ? 'snapshot' : 'context'),
       })),
       ...(scopedMissingDimensions.length ? { missingDimensions: scopedMissingDimensions.map((item) => item.replace(/^dato concreto sobre /, '')) } : {}),
-      ...(hasSnapshotData ? { fallbackReason: hasDynamicObservations ? 'Se combinan observaciones dinámicas con datos de referencia revisados; cada valor conserva su periodo y alcance.' : 'Los indicadores mostrados son datos de referencia revisados y fechados, no un balance completo.' } : {}),
+      ...(hasSnapshotData ? { fallbackReason: packet.replyProfile === 'pension-sustainability'
+        ? 'La Cuenta General 2024 y la serie AIReF 2020–2070 están completas dentro de sus respectivos perímetros; cada cifra conserva su periodo, población, denominador y unidad.'
+        : hasDynamicObservations
+          ? 'Se combinan observaciones dinámicas con datos de referencia revisados; cada valor conserva su periodo y alcance.'
+          : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',
