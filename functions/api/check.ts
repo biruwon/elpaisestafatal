@@ -14,7 +14,7 @@ import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'evidence-precedence-7-pension-finance-series';
+const responseCacheVersion = 'evidence-precedence-8-pension-finance-final-precedence';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -94,7 +94,7 @@ const rhetoricalClaim = (claim: string): boolean => {
 // contextual answer. For rhetorical claims, require the dynamic plan to
 // explicitly carry qualification; otherwise use the domain packet, which
 // preserves the distinction between measurable facts and the slogan.
-const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+export const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
   const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
@@ -103,6 +103,14 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
     const criterion = family as typeof family & { criterionId?: string };
     return [criterion.criterionId || criterion.label, criterion.data?.length || 0];
   }));
+  const contextualPlanId = (contextualPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
+  const modelPlanId = (modelPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
+  const contextualIsBroadPacket = contextualPlanId?.startsWith('broad-') === true;
+  // A late local-model answer must not replace a reviewed broad packet with a
+  // generic headline and empty criteria. If it has no family-scoped values, or
+  // it belongs to a different packet, it is not an enrichment of this claim.
+  if (contextualIsBroadPacket && (!model || !modelPlan || !modelHasFamilyData)) return contextual;
+  if (contextualIsBroadPacket && modelPlanId && modelPlanId !== contextualPlanId) return contextual;
   // A reviewed broad-domain packet is an answerable, sourced fallback. Never
   // let a malformed or empty provider response hide it, regardless of whether
   // the provider labelled that response limited or insufficient.
@@ -117,8 +125,6 @@ const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, c
   // family-scoped values; otherwise a sparse provider result can silently
   // hide newly added official projections or account figures. A provider
   // result that genuinely contains more compatible observations still wins.
-  const contextualPlanId = (contextualPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
-  const modelPlanId = (modelPlan as (AnswerPlan & { id?: string }) | undefined)?.id;
   const sameBroadPacket = Boolean(contextualPlanId?.startsWith('broad-')
     && modelPlan
     && (!modelPlanId || contextualPlanId === modelPlanId)
