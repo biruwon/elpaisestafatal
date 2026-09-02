@@ -570,9 +570,14 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     }, new Map());
     return [...byFamily.values()].flatMap((group) => group.length <= perFamily ? group : [group[0], group.at(-1)]).map((entry) => entry.text);
   };
-  const observedFindings = quantitativeEntries.filter((entry) => entry.dataKind === 'observed').map((entry) => entry.text);
-  const projectedFindings = compactFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'projected'), 8);
-  const snapshotFindings = compactFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'snapshot' || entry.dataKind === 'context'), 8);
+  const replyFindings = (entries, preferredPatterns, limit = 6) => {
+    const values = compactFindings(entries, 8);
+    const preferred = preferredPatterns.flatMap((pattern) => values.filter((value) => pattern.test(value)));
+    return [...new Set([...preferred, ...values])].slice(0, limit);
+  };
+  const observedFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'observed'), [/Gasto reconocido/, /Resultado corriente/, /Cotizaciones sociales/, /Transferencias corrientes/], 4);
+  const projectedFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'projected'), [/Cotizaciones dedicadas/, /Gasto neto/, /Saldo anual/, /Deuda pública/], 4);
+  const snapshotFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'snapshot' || entry.dataKind === 'context'), [/Dependencia demográfica/, /Cotizantes por pensionista/, /Gasto total de vejez/, /Cotizaciones sociales agregadas/, /deuda pública/], 7);
   const findingSections = [
     observedFindings.length ? `Datos observados: ${observedFindings.join('; ')}.` : undefined,
     projectedFindings.length ? `Proyecciones: ${projectedFindings.join('; ')}.` : undefined,
