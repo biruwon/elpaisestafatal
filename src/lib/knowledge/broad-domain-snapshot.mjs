@@ -708,11 +708,44 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
-  const observed = families.flatMap((family) => family.data || []);
+  const familyReplyData = (family, maxCriteria = 3) => {
+    const seen = new Set();
+    return (family.criteria || [])
+      .filter((criterion) => criterion.data?.length)
+      .map((criterion) => {
+        const values = [...new Set(criterion.data || [])].filter((value) => !seen.has(value)).slice(0, 2);
+        values.forEach((value) => seen.add(value));
+        return values.length ? `${criterion.label}: ${values.join('; ')}` : undefined;
+      })
+      .filter(Boolean)
+      .slice(0, maxCriteria)
+      .join('. ');
+  };
+  const familyReplyGaps = (family, max = 3) => [...new Set(family.missingDimensions || [])].slice(0, max);
+  const familyReply = (family, maxCriteria = 3) => {
+    const data = familyReplyData(family, maxCriteria);
+    return `${family.familyLabel}: ${data || 'no hay una medida compatible localizada'}.`;
+  };
+  const parsePersonTransition = (family) => {
+    const series = (family.criteria || []).flatMap((criterion) => criterion.data || []).find((value) => /→/.test(value) && /personas/i.test(value));
+    const match = series?.match(/(\d[\d.]*)\s+personas.*?→\s*(\d[\d.]*)\s+personas/i);
+    if (!match) return undefined;
+    const parse = (value) => Number(value.replace(/\./g, ''));
+    const start = parse(match[1]);
+    const end = parse(match[2]);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start <= 0) return undefined;
+    const change = ((end - start) / start) * 100;
+    return `La serie localizada pasa de ${match[1]} a ${match[2]} personas (${change >= 0 ? '+' : ''}${change.toLocaleString('es-ES', { maximumFractionDigits: 1 })} % en el intervalo publicado)`;
+  };
+  const familyReplySections = families.map((family) => familyReply(family, family.familyId === 'broad-immigration-regularization' ? 2 : 3));
+  const benefitsFamily = families.find((family) => family.familyId === 'broad-benefits-recipients');
+  const benefitsTransition = benefitsFamily ? parsePersonTransition(benefitsFamily) : undefined;
   const reply = [
     'La frase mezcla tres afirmaciones distintas: regularización migratoria, capacidad de los servicios públicos y prestaciones.',
-    observed.length ? `En el balance oficial localizado constan ${observed.join(' y ').replace(/\.{2,}/g, '.')}.` : undefined,
-    'No se ha localizado una medición compatible para “colapso total” ni para “incremento exponencial” de una categoría de prestaciones no especificada.',
+    familyReplySections.join(' '),
+    benefitsTransition ? `${benefitsTransition}; ese cambio observado no tiene una forma exponencial demostrada.` : undefined,
+    'Las medidas de servicios describen indicadores concretos, no un umbral común de “colapso total”; el recuento del IMV describe ese programa, no todas las ayudas ni la necesidad económica de sus perceptores.',
+    gaps.length ? `La conclusión causal sigue abierta porque faltan, según cada familia, ${families.map((family) => { const missing = familyReplyGaps(family, 2); return missing.length ? `${family.familyLabel}: ${missing.join(' y ')}` : undefined; }).filter(Boolean).join('; ')}.` : undefined,
     'Las cifras disponibles no demuestran por sí solas que una regularización provoque un colapso de los servicios o un aumento de las prestaciones. La simultaneidad temporal no prueba causalidad.',
   ].filter(Boolean).join(' ');
   return {

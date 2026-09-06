@@ -207,6 +207,11 @@ assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.inclu
 assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('Quedan abiertos estos datos:'), 'compound reply still contains the raw aggregate gap checklist');
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
+const compoundReply = compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
+assert(compoundReply.includes('Inmigración y regularización:') && compoundReply.includes('Servicios públicos:') && compoundReply.includes('Prestaciones:'), 'compound reply did not explain each evidence family separately');
+assert(compoundReply.includes('camas hospitalarias') && compoundReply.includes('2.682.646 personas beneficiarias'), 'compound reply omitted the available service or benefit measurements');
+assert(compoundReply.includes('umbral común') && compoundReply.includes('no todas las ayudas'), 'compound reply did not explain what the service and benefit figures do not establish');
+assert(!compoundReply.includes('En el balance oficial localizado constan') && !compoundReply.includes('No se ha localizado una medición compatible para'), 'compound reply still presents unrelated family figures as one balance or hides available evidence behind a generic gap');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('cobertura de todos los programas')), 'compound claim did not expose the scoped benefits coverage gap');
 const servicesFamily = compoundFamilies.find((family) => family.familyId === 'broad-public-services');
