@@ -715,7 +715,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
       .map((criterion) => {
         const values = [...new Set(criterion.data || [])].filter((value) => !seen.has(value)).slice(0, 2);
         values.forEach((value) => seen.add(value));
-        return values.length ? `${criterion.label}: ${values.join('; ').replace(/\bSerie localizada:\s*/gi, '')}` : undefined;
+        return values.length ? `${criterion.label}: ${values.join('; ').replace(/\bSerie localizada:\s*/gi, '').replace(/\bPrograma identificado para la comprobación:\s*/gi, '')}` : undefined;
       })
       .filter(Boolean)
       .slice(0, maxCriteria)
