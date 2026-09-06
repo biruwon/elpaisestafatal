@@ -208,10 +208,11 @@ assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')
 assert(compoundPlan.headline !== 'La administración pública requiere medir plantilla, desempeño y calidad del servicio', 'compound claim was hijacked by administration routing');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 const compoundReply = compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
-assert(compoundReply.includes('Inmigración y regularización:') && compoundReply.includes('Servicios públicos:') && compoundReply.includes('Prestaciones:'), 'compound reply did not explain each evidence family separately');
+assert(compoundReply.includes('Inmigración y regularización.') && compoundReply.includes('Servicios públicos.') && compoundReply.includes('Prestaciones.'), 'compound reply did not explain each evidence family separately');
 assert(compoundReply.includes('camas hospitalarias') && compoundReply.includes('2.682.646 personas beneficiarias'), 'compound reply omitted the available service or benefit measurements');
-assert(compoundReply.includes('umbral común') && compoundReply.includes('no todas las ayudas'), 'compound reply did not explain what the service and benefit figures do not establish');
+assert(compoundReply.includes('No existe una medida común') && compoundReply.includes('no representa todas las ayudas'), 'compound reply did not explain what the service and benefit figures do not establish');
 assert(!compoundReply.includes('En el balance oficial localizado constan') && !compoundReply.includes('No se ha localizado una medición compatible para'), 'compound reply still presents unrelated family figures as one balance or hides available evidence behind a generic gap');
+assert(compoundReply.includes('\n\n'), 'compound reply did not separate its readable paragraphs');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('cobertura de todos los programas')), 'compound claim did not expose the scoped benefits coverage gap');
 const servicesFamily = compoundFamilies.find((family) => family.familyId === 'broad-public-services');
@@ -226,7 +227,7 @@ const staleBenefitReply = staleBenefitPlan?.blocks.find((block) => block.type ==
 assert(staleBenefitReply.includes('2.682.646') && !staleBenefitReply.includes('Perceptores: 2.532.284'), 'newer reviewed IMV snapshot did not supersede the stale recipient figure');
 assert(staleBenefitReply.includes('Serie localizada: 2.532.284 personas (2026-03) → 2.682.646 personas beneficiarias'), 'IMV trend did not present stale and current snapshots as a labelled series');
 assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
-assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueba causalidad'), 'compound claim omitted the causal limitation');
+assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueba que una cause la otra'), 'compound claim omitted the causal limitation');
 
 const rhetoricalCases = [
   ['Se maquillan las cifras del desempleo', 'unemployment', 'intent'],
