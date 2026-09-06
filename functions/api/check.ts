@@ -134,6 +134,16 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
     && modelPlan
     && (!modelPlanId || contextualPlanId === modelPlanId)
     && modelPlan.headline === contextualPlan?.headline);
+  // A resolver can return accurate family metadata while still carrying an
+  // older flattened conversation reply. Never let that representation hide a
+  // reviewed multi-family answer: it must name every family and preserve the
+  // paragraph breaks needed by the public result view.
+  const contextualFamilies = contextualPlan?.evidenceSummary?.families || [];
+  const modelReply = modelPlan?.blocks?.find((block) => block.type === 'conversation_reply')?.text || '';
+  const familyLabels = contextualFamilies.map((family) => family.familyLabel || family.label).filter(Boolean);
+  const modelReplyIsFamilyStructured = familyLabels.length < 2
+    || (familyLabels.every((label) => modelReply.includes(label)) && /\n\s*\n/.test(modelReply));
+  if (contextualIsBroadPacket && contextualFamilies.length > 1 && !modelReplyIsFamilyStructured) return contextual;
   if (sameBroadPacket) {
     const contextualCriteria = criterionDataCount(contextualPlan);
     const modelCriteria = criterionDataCount(modelPlan);
@@ -144,8 +154,8 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
   const plan = (model as PublicCheckResponse & { result?: AnswerPlan }).result;
   const summary = plan?.evidenceSummary;
   const hasQualification = Boolean(plan?.limitation || plan?.blocks?.some((block) => block.type === 'cannot_conclude') || summary?.missingDimensions?.length);
-  const contextualFamilies = contextualPlan?.evidenceSummary?.families?.length || 0;
-  if (!hasQualification || (summary?.mode === 'none' && contextualFamilies >= 2)) return contextual;
+  const contextualFamilyCount = contextualPlan?.evidenceSummary?.families?.length || 0;
+  if (!hasQualification || (summary?.mode === 'none' && contextualFamilyCount >= 2)) return contextual;
   return model;
 };
 

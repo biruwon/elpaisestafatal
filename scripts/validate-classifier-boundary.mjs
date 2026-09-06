@@ -13,6 +13,7 @@ for (const fragment of ["request.formData()", 'validateInputMetadata', 'LOCAL_CL
 }
 if (!classify.includes('unavailableCheck')) failures.push('/api/check must retain deterministic guidance when the optional origin is unavailable');
 if (!classify.includes('routeCatalogueQuery') || !classify.includes('normalize(route.entry.claim)')) failures.push('/api/check must gate catalogue answers behind exact claim interpretation');
+if (!classify.includes('modelReplyIsFamilyStructured') || !classify.includes('contextualFamilies.length > 1')) failures.push('/api/check must preserve readable reviewed replies for multi-family responses');
 if (!publishedFallback.includes('publishedEntryFor')) failures.push('catalogue resolver is missing publishedEntryFor');
 for (const fragment of ['export const deterministicApiFallback', 'claim_breakdown', 'RUNTIME_VERSIONS.fallbackKnowledge']) {
   if (!fallback.includes(fragment)) failures.push(`deterministic API fallback is missing ${fragment}`);
