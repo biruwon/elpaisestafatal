@@ -21,6 +21,11 @@ const circuitBreakAfter = 2;
 const circuitCooldownMs = 30_000;
 
 const semanticFingerprint = (text: string): string => text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const responseCacheBypassed = (request: Request): boolean => {
+  const url = new URL(request.url);
+  return ['1', 'true'].includes((url.searchParams.get('fresh') || '').toLocaleLowerCase())
+    || request.headers.get('x-development-no-cache') === '1';
+};
 const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; clarification?: Clarification }, env: Env): string => {
   const media = body.file ? `${body.file.type}:${body.file.size}:${body.file.name}` : '';
   return [responseCacheVersion, semanticFingerprint(body.text), semanticFingerprint(body.clarification?.prompt || ''), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
@@ -154,8 +159,13 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
   if (!validation.ok) return json(validation.code === 'empty' ? fallbackResponse(body.text, body.inputType) : unavailableCheck(body.text, validation.code), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
 
+  // `fresh=1` is an explicit development escape hatch. Responses are already
+  // marked no-store at the HTTP layer, but the Worker also keeps a short-lived
+  // in-memory result cache; bypass both the read and the write when iterating
+  // on answer selection or evidence presentation.
+  const bypassResponseCache = responseCacheBypassed(request);
   const cacheKey = cacheKeyFor(body, env);
-  const cached = cacheKey ? cache.get(cacheKey) : undefined;
+  const cached = bypassResponseCache ? undefined : cacheKey ? cache.get(cacheKey) : undefined;
   if (cached && cached.expiresAt > Date.now()) return json(cached.response);
   if (cached) cache.delete(cacheKey);
   const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
@@ -171,12 +181,12 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     const entry = route.entry && normalize(route.entry.claim) === normalize(routedText) ? route.entry : undefined;
     if (entry) {
       const response = checkFromCatalogue(body.text, entry);
-      cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
+      if (!bypassResponseCache) cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
   if (body.clarification) {
       const response = fallbackResponse(effectiveClaim, body.inputType);
-      if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+      if (!bypassResponseCache && cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
       return json(response);
     }
   }
@@ -191,13 +201,13 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   // safe fallback for deployments without the optional resolver.
   if (immediatePlan && (immediatePlan as ({ id?: string })).id?.startsWith('broad-')
     && (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN)) {
-    if (cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
+    if (!bypassResponseCache && cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
     return json(immediateContext);
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
     const response = fallbackResponse(effectiveClaim, body.inputType);
-    if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+    if (!bypassResponseCache && cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
@@ -245,7 +255,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     // model result; never replace a supported or clarification response.
     const contextualFallback = fallbackResponse(effectiveClaim, body.inputType);
     const response = chooseResponse(effectiveClaim, modelResponse, contextualFallback);
-    if (cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
+    if (!bypassResponseCache && cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;

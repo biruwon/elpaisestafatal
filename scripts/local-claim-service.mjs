@@ -1217,13 +1217,17 @@ const buildPublishedCompositeResult = async (text, classified) => {
   };
 };
 
-const classify = async (text) => {
+const classify = async (text, { bypassCache = false } = {}) => {
   // Do not reuse a result generated for a different conversational wrapper.
   // “La sanidad está colapsada” and “¿Es verdad que la sanidad está
   // colapsada?” share a canonical signature, but the compiler can make
   // different decisions for them. Meaning-level caching can be reintroduced
   // only for validated, representation-independent answer plans.
-  const key = normalise(text);
+  // Local development can explicitly bypass the in-process answer cache so a
+  // changed compiler, packet, or presentation is visible without restarting
+  // the whole stack. The timestamp is only used as an internal cache key and
+  // is never added to the submitted claim.
+  const key = bypassCache ? `${normalise(text)}|fresh:${Date.now()}` : normalise(text);
   const broadComplaintInput = broadComplaintText(text)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
   const broadPacketInput = broadDomainPacketsFor(text).length > 0;
@@ -1939,15 +1943,15 @@ const classify = async (text) => {
 const resolveCacheVersion = [RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
 const requestId = (text) => digest(`${resolveCacheVersion}|${normalise(text)}`).slice(0, 24);
 
-const startResolveJob = (text, origin = 'runtime') => {
-  const id = requestId(text);
+const startResolveJob = (text, origin = 'runtime', bypassCache = false) => {
+  const id = bypassCache ? `${requestId(text)}-${Date.now().toString(36)}` : requestId(text);
   const signature = canonicalSignatureFor(text);
   // Coalesce equivalent text submissions by their deterministic claim
   // signature. The signature removes conversational wrappers such as “mi
   // cuñado insiste”, while preserving meaningful words and polarity, so one
   // local inference job can serve the same claim phrased in several ways.
-  const existingById = resolveJobs.get(id);
-  const existingEquivalent = [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && !['uncovered', 'unavailable'].includes(item.status));
+  const existingById = bypassCache ? undefined : resolveJobs.get(id);
+  const existingEquivalent = bypassCache ? undefined : [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && !['uncovered', 'unavailable'].includes(item.status));
   // An uncovered result can mean that discovery timed out or a provider was
   // temporarily unavailable. Do not reuse that failure for every paraphrase
   // in the same semantic cluster; the next request should get one retry.
@@ -1958,7 +1962,7 @@ const startResolveJob = (text, origin = 'runtime') => {
   const job = { status: 'processing', requestId: id, claim: text, canonicalSignature: signature, createdAt: Date.now() };
   resolveJobs.set(id, job);
   const classifyStartedAt = Date.now();
-  void classify(text).then(async (classified) => {
+  void classify(text, { bypassCache }).then(async (classified) => {
     recordStage('classification', classifyStartedAt);
     // A broad tax judgement must never inherit a precise published tax
     // verdict from an approximate alias match. It needs a definition or
@@ -1992,7 +1996,7 @@ const startResolveJob = (text, origin = 'runtime') => {
           const researchText = partText.length < 48
             ? `${partText}. Contexto de la publicación: ${text.slice(0, 900)}`
             : partText;
-          const partClassified = await classify(researchText);
+          const partClassified = await classify(researchText, { bypassCache });
           return enrichResolve(researchText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`);
         });
         parts.push(...await Promise.allSettled(batch));
@@ -3293,7 +3297,8 @@ const server = createServer(async (request, response) => {
       const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: body.hasFile, fileSize: body.media?.base64 ? Buffer.byteLength(body.media.base64, 'base64') : 0, mimeType: body.media?.mime });
       if (!validation.ok) { response.writeHead(validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'empty' || validation.code === 'invalid_url' ? 400 : 415, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: validation.code === 'empty' || validation.code === 'text_too_large' ? 'uncovered' : 'unavailable', relatedClaims: [] })); return; }
       const origin = typeof request.headers['x-knowledge-gap-origin'] === 'string' ? request.headers['x-knowledge-gap-origin'].slice(0, 32) : 'runtime';
-      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media, origin) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text, origin) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
+      const bypassCache = request.headers['x-development-no-cache'] === '1' || url.searchParams.get('fresh') === '1';
+      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media, origin) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text, origin, bypassCache) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text || body.hasFile ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

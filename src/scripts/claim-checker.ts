@@ -53,7 +53,16 @@ const fetchJson = async (url: string, init: RequestInit, timeout = 45_000, exter
   const timer = window.setTimeout(() => { timedOut = true; controller.abort(); }, timeout);
   const cancel = () => controller.abort();
   externalSignal?.addEventListener('abort', cancel, { once: true });
-  try { const response = await fetch(url, { ...init, signal: controller.signal }); return await response.json() as CheckResponse; }
+  const headers = new Headers(init.headers);
+  // Local Vite development bypasses the server's in-memory result cache. The
+  // explicit page flag also lets a deployed preview be tested against the
+  // latest Worker code without changing production's normal request path.
+  const developmentRequest = import.meta.env.DEV || new URLSearchParams(window.location.search).get('fresh') === '1';
+  if (developmentRequest) headers.set('x-development-no-cache', '1');
+  const requestUrl = developmentRequest
+    ? `${url}${url.includes('?') ? '&' : '?'}fresh=1`
+    : url;
+  try { const response = await fetch(requestUrl, { ...init, headers, cache: 'no-store', signal: controller.signal }); return await response.json() as CheckResponse; }
   catch (error) { if (timedOut) throw new Error('request-timeout'); throw error; }
   finally { window.clearTimeout(timer); externalSignal?.removeEventListener('abort', cancel); }
 };
