@@ -87,7 +87,7 @@ const packets = [
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
     summary: 'La expresión “colapso total” no es un indicador estadístico. Para comprobarla hay que medir capacidad, demanda, tiempos de atención, cobertura y resultados del servicio afectado, con periodo y territorio definidos.',
     criteria: [
-      { id: 'public-service-capacity', label: 'Capacidad y demanda', metricIds: ['hospital_beds_per_100k', 'emergency_wait_declared'], finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', population: 'camas hospitalarias para atención con ingreso y tiempo declarado de espera en urgencias', denominator: 'población residente para camas; minutos de espera para urgencias', unit: 'camas por 100.000 habitantes; minutos', fallbackData: ['294,6 camas hospitalarias por 100.000 habitantes (2019)', '216,69 minutos de espera declarada en urgencias (2025)'], missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source', 'public-services-hospital-source', 'public-services-emergency-source'] },
+      { id: 'public-service-capacity', label: 'Capacidad y demanda', metricIds: ['hospital_beds_per_100k', 'emergency_wait_declared'], finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', population: 'camas hospitalarias para atención con ingreso y tiempo declarado de espera en urgencias', denominator: 'población residente para camas; minutos de espera para urgencias', unit: 'camas por 100.000 habitantes; minutos', fallbackData: ['camas hospitalarias: 297,92 camas por 100.000 habitantes (2015) → 294,6 camas por 100.000 habitantes (2019)', '216,69 minutos de espera declarada en urgencias (2025)'], missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source', 'public-services-hospital-source', 'public-services-emergency-source'] },
       { id: 'public-service-outcomes', label: 'Resultados y atención', metricIds: ['unmet_healthcare_waiting_list_rate'], finding: 'La Encuesta Europea de Salud registra necesidades médicas no atendidas por listas de espera; es un indicador de acceso sanitario y no equivale automáticamente a un colapso total de todos los servicios públicos.', population: 'personas de 16 años o más en España', denominator: 'población de 16 años o más', unit: '% de población', fallbackData: ['1,5 % de la población de 16 años o más declaró una necesidad médica no atendida por lista de espera (2025)'], missingDimensions: ['serie comparable de resultados de otros servicios'], sourceIds: ['public-services-health-access-source'] },
       { id: 'public-service-waiting-list', label: 'Lista de espera hospitalaria', finding: 'El informe del Sistema de Información de Listas de Espera del SNS registró una espera media de 102 días para primera consulta externa hospitalaria a 31 de diciembre de 2025 y 84 personas por cada 1.000 en esa lista; estos datos describen una espera concreta, no todos los servicios públicos.', population: 'personas en lista de espera para primera consulta externa hospitalaria del SNS', denominator: 'personas de la población protegida por el SNS', unit: 'días y personas por 1.000', fallbackData: ['102 días de espera media para primera consulta externa hospitalaria (31-12-2025)', '84 personas por cada 1.000 en lista de espera para primera consulta (31-12-2025)'], missingDimensions: ['comparación causal con inmigración'], sourceIds: ['public-services-waiting-list-source'] },
       { id: 'public-service-education-resources', label: 'Recursos educativos', metricIds: ['government_education_expenditure_ratio'], finding: 'El gasto público en educación fue del 4,1 % del PIB en 2024. Es un indicador de recursos presupuestarios y no una medida suficiente de capacidad, calidad o colapso.', population: 'gasto de las administraciones públicas en educación', denominator: 'PIB', unit: '% del PIB', fallbackData: ['4,1 % del PIB de gasto público en educación (2024)'], missingDimensions: ['resultados y capacidad por nivel educativo y territorio'], sourceIds: ['public-services-education-source'] },
@@ -140,7 +140,7 @@ const packets = [
       { id: 'benefit-programme', label: 'Programa y alcance', finding: '“Paguitas” no es una categoría oficial. El Ingreso Mínimo Vital (IMV) ofrece un programa concreto que puede medirse, pero no representa automáticamente todas las prestaciones.', population: 'hogares y personas beneficiarias del IMV', denominator: 'hogares perceptores y personas beneficiarias', unit: 'hogares y personas', fallbackData: ['Programa identificado para la comprobación: Ingreso Mínimo Vital (IMV), julio de 2026'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source', 'benefits-statistics-source'] },
       { id: 'benefit-recipients', label: 'Perceptores', metricIds: ['benefit_recipients_by_group'], preferFallbackWhenNewer: true, finding: 'El balance oficial del IMV de julio de 2026 registra 879.225 hogares y 2.682.646 personas beneficiarias. Son cifras del IMV, no del conjunto de ayudas ni una medida de dependencia económica.', population: 'personas y hogares beneficiarios del IMV en España', denominator: 'hogares perceptores y personas beneficiarias', unit: 'personas y hogares', fallbackData: ['2.682.646 personas beneficiarias en 879.225 hogares (IMV, 2026-07; julio de 2026)'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source'] },
       { id: 'benefit-composition', label: 'Composición del IMV', metricIds: ['imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality'], finding: 'En el dossier oficial del IMV de julio de 2026, el 82,53 % de los titulares tenía nacionalidad española y el 17,47 % extranjera. La composición de titulares no demuestra por sí sola necesidad, abuso o causalidad.', population: 'titulares del IMV por nacionalidad', denominator: 'total de titulares del IMV', unit: '% de titulares del IMV y personas titulares', missingDimensions: ['comparación con la población elegible de cada grupo'], sourceIds: ['benefits-imv-source'] },
-      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', metricIds: ['benefit_recipients_by_group'], combineFallbackAsSeries: true, finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', fallbackData: ['2.682.646 personas beneficiarias en 879.225 hogares (IMV, 2026-07; julio de 2026)'], missingDimensions: ['tasa de crecimiento comparable entre programas', 'diseño causal'], resolvesMissing: [{ dimension: 'serie temporal', metricId: 'benefit_recipients_by_group', minimumObservations: 2 }], sourceIds: ['benefits-imv-source'] },
+      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', metricIds: ['benefit_recipients_by_group'], combineFallbackAsSeries: true, finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', fallbackData: ['Serie localizada: Personas beneficiarias del IMV: 2.532.284 personas (2026-03) → 2.682.646 personas beneficiarias (2026-07)'], missingDimensions: ['tasa de crecimiento comparable entre programas', 'diseño causal'], resolvesMissing: [{ dimension: 'serie temporal', metricId: 'benefit_recipients_by_group', minimumObservations: 2 }], sourceIds: ['benefits-imv-source'] },
     ],
     limitations: ['El IMV aporta una medición concreta de personas y hogares, pero no cubre automáticamente todas las prestaciones. Sin una serie comparable y un diseño causal no se puede afirmar un incremento exponencial, dependencia económica ni que una regularización lo haya provocado.'],
     sources: [source('benefits-imv-source', 'El Ingreso Mínimo Vital llega en julio a cerca de 2,7 millones de personas', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-llega-en-julio-a-cerca-de-2-7-millones-de-personas-que-residen-en-879.225-hogares?redirect=%2F', '2026-07-01'), source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
@@ -518,7 +518,7 @@ const dimensionsFor = (packet, criterion, data) => ({
   causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,
 });
 
-export const composeFamilyReply = (plan) => {
+export const composeFamilyReply = (plan, { compact = false } = {}) => {
   const groups = new Map();
   for (const family of plan.evidenceSummary?.families || []) {
     const key = family.familyId || family.label;
@@ -529,14 +529,16 @@ export const composeFamilyReply = (plan) => {
   }
   const paragraphs = [...groups.values()].map((group) => {
     const measured = group.criteria.filter((criterion) => criterion.data?.length).sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0));
-    const chosen = measured.slice(0, 2);
-    const values = chosen.map((criterion) => `${criterion.label}: ${criterion.data.slice(0, 2).join('; ')}`).join('. ');
-    const finding = group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
+    const chosen = measured.slice(0, compact ? 3 : 2);
+    const values = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${criterion.label}: ${String(value).replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))].join('. ');
+    const rawFinding = group.limitation || group.criteria.find((criterion) => /No hay aquí|no hay .*recuento/i.test(criterion.finding || ''))?.finding || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
+    const finding = compact && rawFinding ? (rawFinding.includes('No hay aquí') ? rawFinding : rawFinding.split(/(?<=[.!?])\s+/)[0]) : rawFinding;
     const sourceIds = [...new Set(chosen.flatMap((criterion) => criterion.sourceIds || []))];
     const publishers = [...new Set(sourceIds.map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))];
     return `${group.label}. ${values ? values.replace(/Serie localizada: /g, '') + '.' : ''} ${finding || ''}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
   });
-  return [plan.headline.replace(/[.]$/, '') + '.', ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`].join('\n\n');
+  const lead = plan.headline.replace(/[.]$/, '') + '.';
+  return (compact ? [...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`] : [lead, ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`]).join('\n\n');
 };
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
@@ -579,6 +581,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     // with a stale fallback.
     if (item.combineFallbackAsSeries && fallbackIsNewer(item, index)) return [`Serie localizada: ${dynamic.at(-1)} → ${fallback.at(-1)}`];
     if (fallbackIsNewer(item, index)) return fallback;
+    // Keep a reviewed multi-period series available for the detail view when
+    // a live warehouse response only contains its latest point. The compact
+    // answer still selects the latest compatible value; the full view can
+    // then render the evolution without inventing a trend.
+    if (fallback.some((value) => /→/.test(value)) && !dynamic.some((value) => /→/.test(value))) return [...dynamic, ...fallback];
     return fallback.length && latestPeriodIn(fallback) > latestPeriodIn(dynamic)
       ? [...dynamic, ...fallback]
       : dynamic;
@@ -723,6 +730,6 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',
   };
-  plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
+  plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   return plan;
 };

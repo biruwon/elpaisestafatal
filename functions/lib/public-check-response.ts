@@ -26,7 +26,7 @@ const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
 };
 const replyFromPlan = (plan?: AnswerPlan): string => {
-  if (plan?.evidenceSummary?.families?.length && String((plan as AnswerPlan & { id?: string }).id || '').startsWith('broad-')) return composeFamilyReply(plan);
+  if (plan?.evidenceSummary?.families?.length && String((plan as AnswerPlan & { id?: string }).id || '').startsWith('broad-')) return composeFamilyReply(plan, { compact: String((plan as AnswerPlan & { id?: string }).id || '') === 'broad-compound-claim' });
   const composed = plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text;
   if (composed) return composed;
   const finding = plan?.blocks?.find((block) => block.type === 'confirmed' || block.type === 'data_finding');
