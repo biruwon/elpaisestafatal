@@ -532,13 +532,32 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
   }
   const paragraphs = [...groups.values()].map((group) => {
     const measured = group.criteria.filter((criterion) => criterion.data?.length).sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0));
-    const chosen = measured.slice(0, compact ? 3 : 2);
-    const values = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${criterion.label}: ${String(value).replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))].join('. ');
+    const primaryMeasured = compact ? measured.filter((criterion) => !/nacionalidad|composici[oó]n/i.test(criterion.label || '')) : measured;
+    const orderedMeasured = [...(primaryMeasured.length ? primaryMeasured : measured)].sort((left, right) => Number(right.data?.some((value) => /→/.test(value))) - Number(left.data?.some((value) => /→/.test(value))) || (right.replyPriority || 0) - (left.replyPriority || 0));
+    const seenMetricIds = new Set();
+    const seenLatestValues = new Set();
+    const chosen = orderedMeasured.filter((criterion) => {
+      if (!compact || !criterion.metricIds?.length) return true;
+      if (criterion.metricIds.some((metricId) => seenMetricIds.has(metricId))) return false;
+      criterion.metricIds.forEach((metricId) => seenMetricIds.add(metricId));
+      return true;
+    }).filter((criterion) => {
+      if (!compact || !criterion.data?.length) return true;
+      const latest = String(criterion.data.at(-1)).match(/([\d.,]+)[^\d]*(?:19|20|21)\d{2}(?:-\d{2})?/g)?.at(-1)?.replace(/[^\d-]/g, '');
+      if (!latest || seenLatestValues.has(latest)) return false;
+      seenLatestValues.add(latest);
+      return true;
+    }).slice(0, compact ? 3 : 2);
+    const valueEntries = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${criterion.label}: ${String(value).replace(/\s*·\s*(?:16 years or over|Total|All ages)[^:]*:?/gi, '').replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))];
+    const latestSignature = (value) => value.match(/([\d.,]+)[^\d]*(?:19|20|21)\d{2}(?:-\d{2})?/g)?.at(-1)?.replace(/[^\d-]/g, '');
+    const seriesSignatures = new Set(valueEntries.filter((value) => /→/.test(value)).map(latestSignature).filter(Boolean));
+    const seriesFinalNumbers = new Set(valueEntries.filter((value) => /→/.test(value)).map((value) => value.match(/→\s*([\d.,]+)/)?.[1]).filter(Boolean));
+    const values = valueEntries.filter((value) => !seriesSignatures.has(latestSignature(value)) || /→/.test(value)).filter((value) => /→/.test(value) || ![...seriesFinalNumbers].some((number) => value.includes(number))).join('. ');
     const rawFinding = (compact && group.criteria.find((criterion) => /No hay aquí|no hay .*recuento/i.test(criterion.finding || ''))?.finding) || group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
-    const finding = compact && rawFinding ? (rawFinding.includes('No hay aquí') ? rawFinding : rawFinding.split(/(?<=[.!?])\s+/)[0]) : rawFinding;
+    const finding = compact && rawFinding ? (rawFinding.match(/No hay aquí[^.]*\./)?.[0] || rawFinding.split(/(?<=[.!?])\s+/)[0]) : rawFinding;
     const sourceIds = [...new Set(chosen.flatMap((criterion) => criterion.sourceIds || []))];
     const publishers = [...new Set(sourceIds.map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))];
-    return `${group.label}. ${values ? values.replace(/Serie localizada: /g, '') + '.' : ''} ${finding || ''}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
+    return `${group.label}. ${values ? values.replace(/Serie localizada: /g, '') + '.' : ''} ${finding || ''}${publishers.length ? ` Fuente: ${publishers.slice(0, 2).join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
   });
   const lead = plan.headline.replace(/[.]$/, '') + '.';
   if (compact) {
