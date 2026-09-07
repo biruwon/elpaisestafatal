@@ -531,7 +531,7 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
     const measured = group.criteria.filter((criterion) => criterion.data?.length).sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0));
     const chosen = measured.slice(0, compact ? 3 : 2);
     const values = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${criterion.label}: ${String(value).replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))].join('. ');
-    const rawFinding = group.limitation || group.criteria.find((criterion) => /No hay aquí|no hay .*recuento/i.test(criterion.finding || ''))?.finding || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
+    const rawFinding = (compact && group.criteria.find((criterion) => /No hay aquí|no hay .*recuento/i.test(criterion.finding || ''))?.finding) || group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
     const finding = compact && rawFinding ? (rawFinding.includes('No hay aquí') ? rawFinding : rawFinding.split(/(?<=[.!?])\s+/)[0]) : rawFinding;
     const sourceIds = [...new Set(chosen.flatMap((criterion) => criterion.sourceIds || []))];
     const publishers = [...new Set(sourceIds.map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))];
