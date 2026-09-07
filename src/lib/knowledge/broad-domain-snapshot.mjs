@@ -485,7 +485,10 @@ const formatSeriesData = (items, fallbackUnit) => {
     const metricItems = selected.filter((candidate) => observationSeriesKey(candidate) === seriesKey).sort((a, b) => String(a.period).localeCompare(String(b.period)));
     const first = metricItems[0];
     const latest = metricItems.at(-1);
-    const groupLabels = Object.entries(latest.dimensionLabels || latest.dimensions || {}).filter(([key]) => /nationality|citizen|birth/i.test(key)).map(([, value]) => String(value));
+    const groupLabels = Object.entries(latest.dimensionLabels || latest.dimensions || {})
+      .filter(([key]) => /nationality|citizen|birth/i.test(key))
+      .map(([, value]) => String(value))
+      .filter((value) => !/years?\s*(old|or over)|\btotal\b|all ages|male|female|men|women|ambos sexos/i.test(value));
     const label = [observationMetricLabel(latest.metricId) || latest.metric || latest.metricId, ...groupLabels].filter(Boolean).join(' · ');
     const prefix = label ? `${label}: ` : '';
     return [metricItems.length > 1 ? `Serie localizada: ${prefix}${formatObservation(first, fallbackUnit)} → ${formatObservation(latest, fallbackUnit)}` : `${prefix}${formatObservation(latest, fallbackUnit)}`];
