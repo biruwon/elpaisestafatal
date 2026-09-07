@@ -70,7 +70,7 @@ const packets = [
     id: 'broad-public-administration',
     matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
     interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
-    headline: 'La plantilla no mide puestos prescindibles; una plaza pública sí exige cumplir obligaciones',
+    headline: 'El número de empleados públicos no mide puestos prescindibles ni vagancia; las plazas sí están sujetas a obligaciones',
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
       { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.037.432 empleados públicos; 1.634.510 funcionarios de carrera (enero de 2025)'], sourceIds: ['public-administration-source'] },
@@ -100,7 +100,7 @@ const packets = [
     id: 'broad-tax-burden-purchasing-power',
     matches: /\b(impuesto|impuestos|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|inflaci[oó]n|poder de compra|salarios?|baby boom|gasto p[uú]blico|subir impuestos|subida de impuestos)\w*\b/i,
     interpretation: { kind: 'mixed', subject: 'carga fiscal, precios, salarios y cuentas públicas en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de impuestos, poder adquisitivo, gasto público y pensiones', interpretation: 'La afirmación encadena cambios de impuestos, precios, salarios, gasto y jubilación. Son proposiciones separadas y una no prueba la siguiente.' },
-    headline: 'La pérdida de poder adquisitivo no puede atribuirse solo a impuestos; bajar IRPF o IVA es una decisión con costes, no una imposibilidad demostrada',
+    headline: 'La carga fiscal y el poder adquisitivo no prueban por sí solos que los impuestos causen toda la pérdida; una rebaja de IRPF o IVA tiene costes que deben cuantificarse',
     summary: 'La carga fiscal, la inflación y el poder adquisitivo no son la misma medida. Para comprobar la frase hay que comparar ingresos públicos, impuestos concretos, precios de consumo, salarios, gasto público y presión demográfica en los mismos periodos y con sus unidades; que varias series suban a la vez no demuestra que una subida de impuestos sea la causa de todo el resultado.',
     criteria: [
       { id: 'tax-revenue', label: 'Ingresos e impuestos', finding: 'Los ingresos públicos y los impuestos sobre renta y riqueza deben distinguirse del tipo legal de IRPF o IVA y del importe que paga cada hogar.', metricIds: ['government_revenue_ratio', 'government_current_taxes_income_wealth_europe'], sourceIds: ['tax-burden-eurostat'] },
@@ -170,7 +170,7 @@ const packets = [
     id: 'broad-immigration-regularization',
     matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
-    headline: 'Regularización y legalización no son una sola cifra',
+    headline: 'Regularización documentada, pero no se demuestra que sea masiva ni que cause un colapso o más dependencia de prestaciones',
     summary: 'Para comprobar una supuesta legalización masiva hay que identificar la norma o programa, su fecha y sus requisitos. Una regularización puede admitir solicitudes extraordinarias para personas que ya residen en España, pero las solicitudes, los expedientes tramitados y las autorizaciones concedidas son cifras distintas.',
     criteria: [
       { id: 'regularization-measure', label: 'Medida concreta', finding: 'El término “legalización masiva” no identifica por sí solo una ley, decreto o programa; hace falta localizar la norma y comprobar su alcance, requisitos y exclusiones.', missingDimensions: ['norma o programa', 'fecha', 'requisitos y exclusiones'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
@@ -703,7 +703,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     id: 'broad-compound-claim',
     schemaVersion: '1',
     evidenceLevel: 'limited',
-    headline: `La afirmación requiere contrastar ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}`,
+    headline: `La afirmación mezcla ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}; las cifras disponibles no demuestran por sí solas las relaciones causales`,
     summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
     coverage: 'qualified',
     claimType: 'mixed',
