@@ -38,6 +38,7 @@ import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventSta
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
@@ -2018,7 +2019,7 @@ const startResolveJob = (text, origin = 'runtime', bypassCache = false) => {
         ...successful.flatMap((part) => part.result.sourceLinks || []),
       ].filter((source) => source?.url).map((source) => [source.url, source])).values()].slice(0, 24);
     }
-    const completed = { ...resolved, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
+    const completed = { ...resolved, claim: text, canonicalSignature: signature, createdAt: job.createdAt, completedAt: Date.now() };
     resolveJobs.set(id, completed);
     recordCompletion(job.createdAt, completed.status);
     void recordKnowledgeGap(text, completed, 'text', classified, origin);
@@ -2879,7 +2880,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   // claim) cannot displace the packet's own figures or declared gap.
   if (broadPacketAvailable && broadMetricIdsFor(text).size === 0) {
     const plan = answerPlanForBroadDomains(text);
-    if (plan) return { status: 'complete', requestId: resultRequestId, canonicalSignature: canonicalSignatureFor(text), result: plan, relatedClaims: [] };
+    if (plan) {
+      await researchFamilyGaps(plan);
+      return { status: 'complete', requestId: resultRequestId, canonicalSignature: canonicalSignatureFor(text), result: plan, relatedClaims: [] };
+    }
   }
   const eventFrame = detectCurrentEvent(text);
   if (eventFrame && process.env.CURRENT_EVENT_RESEARCH !== '0') {
@@ -3215,11 +3219,12 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }
-  // Reviewed broad packets already contain the safe conclusion, scoped
-  // evidence families, and declared gaps. Do not spend another local-model
-  // turn rewriting or researching a packet that can be rendered directly;
-  // the warehouse observations above are the optional background enrichment.
-  if (broadPacketAvailable) return deterministic;
+  // Research each unresolved family even when another family has values.
+  // Leads remain separate until their measurement contract is validated.
+  if (broadPacketAvailable) {
+    if (deterministic.result) await researchFamilyGaps(deterministic.result);
+    return deterministic;
+  }
   if (deterministic.result && !retrievalClassified.primary
     && (!deterministic.result.evidenceIds?.length || deterministic.result.evidenceLevel !== 'supported')) {
     const researchPlan = await planResearchWithModel(text, classified);

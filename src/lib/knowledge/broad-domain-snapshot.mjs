@@ -2,6 +2,8 @@
 // keyed by concepts and evidence dimensions, never by a particular slogan.
 // They provide useful context when a claim is too broad for a single verdict
 // or when the optional local classifier is unavailable.
+import { broadObservationFits } from './broad-observation-fit.mjs';
+import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 
 const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-08-20', role: 'primary' });
@@ -68,7 +70,7 @@ const packets = [
     id: 'broad-public-administration',
     matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
     interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
-    headline: 'La administración pública requiere medir plantilla, desempeño y calidad del servicio',
+    headline: 'La plantilla no mide puestos prescindibles; una plaza pública sí exige cumplir obligaciones',
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
       { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.037.432 empleados públicos; 1.634.510 funcionarios de carrera (enero de 2025)'], sourceIds: ['public-administration-source'] },
@@ -98,7 +100,7 @@ const packets = [
     id: 'broad-tax-burden-purchasing-power',
     matches: /\b(impuesto|impuestos|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|inflaci[oó]n|poder de compra|salarios?|baby boom|gasto p[uú]blico|subir impuestos|subida de impuestos)\w*\b/i,
     interpretation: { kind: 'mixed', subject: 'carga fiscal, precios, salarios y cuentas públicas en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de impuestos, poder adquisitivo, gasto público y pensiones', interpretation: 'La afirmación encadena cambios de impuestos, precios, salarios, gasto y jubilación. Son proposiciones separadas y una no prueba la siguiente.' },
-    headline: 'Impuestos, precios, salarios y pensiones requieren series separadas',
+    headline: 'La pérdida de poder adquisitivo no puede atribuirse solo a impuestos; bajar IRPF o IVA es una decisión con costes, no una imposibilidad demostrada',
     summary: 'La carga fiscal, la inflación y el poder adquisitivo no son la misma medida. Para comprobar la frase hay que comparar ingresos públicos, impuestos concretos, precios de consumo, salarios, gasto público y presión demográfica en los mismos periodos y con sus unidades; que varias series suban a la vez no demuestra que una subida de impuestos sea la causa de todo el resultado.',
     criteria: [
       { id: 'tax-revenue', label: 'Ingresos e impuestos', finding: 'Los ingresos públicos y los impuestos sobre renta y riqueza deben distinguirse del tipo legal de IRPF o IVA y del importe que paga cada hogar.', metricIds: ['government_revenue_ratio', 'government_current_taxes_income_wealth_europe'], sourceIds: ['tax-burden-eurostat'] },
@@ -147,7 +149,7 @@ const packets = [
     id: 'broad-youth-living-housing',
     matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
     interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
-    headline: 'La situación joven exige separar precios, salarios, empleo, vivienda y apoyo familiar',
+    headline: 'La vivienda supone una barrera económica para los jóvenes; no hay una cifra observada de cuántos emigrarían sin ayuda familiar',
     summary: 'La precariedad o la falta de oportunidades de la población joven no se pueden medir con el precio de la vivienda por sí solo. Hay que comprobar por separado el coste de vida, la evolución de los ingresos, el empleo juvenil, los precios y el esfuerzo de vivienda, la construcción y la emancipación; la pregunta sobre cuántas personas emigrarían sin ayuda familiar es contrafactual y no tiene una cifra observada equivalente.',
     criteria: [
       { id: 'youth-cost-of-living', label: 'Coste de vida', finding: 'El IPC mide la evolución de los precios de consumo, no cuánto puede pagar cada joven ni el coste específico de una vivienda.', metricIds: ['cpi_index'], sourceIds: ['youth-living-eurostat'] },
@@ -175,7 +177,7 @@ const packets = [
       { id: 'regularization-counts', label: 'Cifras del proceso', finding: 'El balance oficial localizado registra 1.174.978 solicitudes y 609.737 expedientes tramitados; ninguna de esas cifras equivale automáticamente a autorizaciones concedidas.', fallbackData: ['Solicitudes: 1.174.978 (2026-07-02)', 'Expedientes tramitados: 609.737 (2026-07-02)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
       { id: 'legal-status', label: 'Resultado jurídico', finding: 'Para saber cuántas personas obtuvieron autorización hay que consultar resoluciones concedidas, denegadas y pendientes, además del tipo y duración del permiso.', missingDimensions: ['autorizaciones concedidas', 'denegaciones', 'expedientes pendientes', 'tipo y duración del permiso'], sourceIds: ['regularizacion-requisitos-antecedentes-2026'] },
     ],
-    limitations: ['Sin una norma, fecha o cifra concreta no se puede afirmar que haya una “legalización masiva” ni cuantificar cuántas personas obtuvieron un permiso. La palabra puede mezclar una propuesta, un proceso de regularización y sus resultados.'],
+    limitations: ['El programa y sus requisitos están documentados. Su efecto sobre servicios y prestaciones exige comparar resultados de las personas regularizadas con un grupo y periodo compatibles; las solicitudes no son permisos concedidos.'],
     sources: [
       source('regularizacion-extraordinaria-solicitudes-julio-2026', 'Balance del proceso de regularización extraordinaria · solicitudes recibidas', 'La Moncloa', 'https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/inclusion/paginas/2026/020726-balance-regularizacion-extraordinaria.aspx', '2026-07-02'),
       source('regularizacion-requisitos-antecedentes-2026', 'Preguntas y requisitos de la regularización extraordinaria 2026', 'Administración General del Estado', 'https://www.inclusion.gob.es/web/migraciones/regularizacion-extraordinaria', '2026-07-01'),
@@ -274,7 +276,7 @@ const packets = [
     id: 'broad-security',
     matches: /\b(delincuenc|criminal|delito|seguridad|insegur|calle|salir|polic[ií]a|droga|judicial|disuasor|denuncia)\w*\b/i,
     interpretation: { kind: 'quantitative', subject: 'seguridad en España', subjectType: 'country', predicate: 'has_distinct_offence_and_perception_measures', normalizedClaim: 'delincuencia, seguridad y experiencia del espacio público en España', interpretation: 'La delincuencia nacional, los delitos concretos y la sensación de inseguridad no son la misma medida.', confidence: 0.72, evidenceNeeds: ['categoría de delito', 'periodo', 'territorio', 'medida'] },
-    headline: 'La seguridad no se puede resumir en una sola cifra de delincuencia',
+    headline: 'Las tendencias delictivas difieren y no prueban que los nacionalizados causen un aumento general de la inseguridad',
     summary: 'Los datos nacionales no describen automáticamente lo que ocurre en una calle concreta. En 2025 la delincuencia convencional bajó ligeramente mientras la ciberdelincuencia creció; ambos fenómenos pueden coexistir con problemas locales y con una percepción real de inseguridad.',
     criteria: [
       { id: 'total-offences', label: 'Total y composición', finding: 'El balance nacional separa infracciones totales, delincuencia convencional y cibercriminalidad; no son una única medida de inseguridad.', fallbackData: ['2,47 millones de infracciones (2025); delincuencia convencional −0,2%; cibercriminalidad +5,3% (2025)'], sourceIds: ['security-balance'] },
@@ -334,10 +336,11 @@ export const broadDomainPacketsFor = (text) => {
   if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
-  if (demographyPensionSignal || pensionFinanceSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
+  if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
   if (youthSignal) return [packetById('broad-youth-living-housing')].filter(Boolean);
   if (taxSignal && (/inflaci[oó]n|poder de compra|salari|baby boom|gasto p[uú]blico|pensiones?/.test(value) || /impuesto|irpf|iva|carga fiscal|presi[oó]n fiscal/.test(value))) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
   if (/\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value) && securitySignal) return [packetById('broad-immigration-security')].filter(Boolean);
+  if (/nuevos? ["“”«»]?espanoles/.test(value) && securitySignal) return [packetById('broad-security')].filter(Boolean);
   if (securitySignal) return [packetById('broad-security')].filter(Boolean);
   const filteredDirect = direct.filter((packet) => packet.id !== 'broad-public-administration' || administrationSignal);
   const familyOrder = { 'broad-immigration-regularization': 1, 'broad-public-services': 2, 'broad-benefits-recipients': 3 };
@@ -404,7 +407,7 @@ const formatObservation = (observation, fallbackUnit) => {
 const comparableObservationDimensions = (item) => Object.entries(item?.dimensions || {})
   .filter(([key]) => !['time', 'period', 'year', 'anyo', 'fecha', 'averageage', 'average_age'].includes(normalise(key)))
   .sort(([left], [right]) => left.localeCompare(right));
-const observationSeriesKey = (item) => JSON.stringify({ metricId: item?.metricId || '', dimensions: comparableObservationDimensions(item) });
+const observationSeriesKey = (item) => JSON.stringify({ metricId: item?.metricId || '', geography: item?.geography || '', unit: item?.unit || '', population: item?.population || '', denominator: item?.denominator || '', dimensions: comparableObservationDimensions(item) });
 const uniqueObservations = (items) => [...new Map(items.map((item) => [`${observationSeriesKey(item)}|${item.period || ''}`, item])).values()];
 const preferredSeriesForMetric = (items) => {
   const groups = new Map();
@@ -421,7 +424,7 @@ const preferredSeriesForMetric = (items) => {
   })[0] || [];
   return selected.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
 };
-const observationsByMetric = (items) => [...new Set(items.map((item) => item.metricId).filter(Boolean))].flatMap((metricId) => preferredSeriesForMetric(items.filter((item) => item.metricId === metricId)));
+const observationsByMetric = (items) => [...new Set(items.map((item) => item.metricId).filter(Boolean))].flatMap((metricId) => (/imv_title_holder/.test(metricId) ? uniqueObservations(items.filter((item) => item.metricId === metricId)) : preferredSeriesForMetric(items.filter((item) => item.metricId === metricId))));
 const latestObservationsByMetric = (items) => observationsByMetric(items).reduce((latest, item) => {
   const current = latest.get(item.metricId);
   if (!current || String(item.period || '') > String(current.period || '')) latest.set(item.metricId, item);
@@ -452,6 +455,22 @@ const observationMetricLabel = (metricId) => ({
   social_security_pension_complements_minimum_budget: 'Complementos a mínimos presupuestados',
   social_security_noncontributory_pension_budget: 'Pensiones no contributivas presupuestadas',
   social_security_pension_budget_total: 'Gasto total presupuestado en pensiones',
+  emergency_wait_declared: 'Espera declarada en urgencias',
+  unmet_healthcare_waiting_list_rate: 'Necesidad médica no atendida por lista de espera',
+  government_education_expenditure_ratio: 'Gasto público en educación',
+  benefit_recipients_by_group: 'Personas beneficiarias del IMV',
+  imv_title_holders_by_nationality: 'Titulares del IMV por nacionalidad',
+  imv_title_holder_share_by_nationality: 'Proporción de titulares del IMV por nacionalidad',
+  cpi_index: 'IPC general (índice, base 2021 = 100)',
+  median_hourly_earnings: 'Salario mediano por hora',
+  youth_unemployment_rate: 'Desempleo juvenil',
+  house_price_index: 'Precio de la vivienda (índice)',
+  housing_cost_overburden_rate: 'Sobrecarga del coste de vivienda',
+  construction_output_index: 'Producción en construcción (índice)',
+  foreign_born_population: 'Residentes nacidos en el extranjero',
+  government_revenue_ratio: 'Ingresos públicos',
+  government_expenditure_ratio: 'Gasto público',
+  government_current_taxes_income_wealth_europe: 'Impuestos corrientes sobre renta y patrimonio',
   hospital_beds_per_100k: 'Camas hospitalarias',
   projected_population_65_plus: 'Población de 65 años o más proyectada',
   projected_population_20_64: 'Población de 20 a 64 años proyectada',
@@ -460,12 +479,14 @@ const formatSeriesData = (items, fallbackUnit) => {
   const selected = observationsByMetric(items);
   const seenMetrics = new Set();
   return selected.flatMap((item) => {
-    if (seenMetrics.has(item.metricId)) return [];
-    seenMetrics.add(item.metricId);
-    const metricItems = selected.filter((candidate) => candidate.metricId === item.metricId);
+    const seriesKey = observationSeriesKey(item);
+    if (seenMetrics.has(seriesKey)) return [];
+    seenMetrics.add(seriesKey);
+    const metricItems = selected.filter((candidate) => observationSeriesKey(candidate) === seriesKey).sort((a, b) => String(a.period).localeCompare(String(b.period)));
     const first = metricItems[0];
     const latest = metricItems.at(-1);
-    const label = observationMetricLabel(latest.metricId);
+    const groupLabels = Object.entries(latest.dimensionLabels || latest.dimensions || {}).filter(([key]) => /nationality|citizen|birth/i.test(key)).map(([, value]) => String(value));
+    const label = [observationMetricLabel(latest.metricId) || latest.metric || latest.metricId, ...groupLabels].filter(Boolean).join(' · ');
     const prefix = label ? `${label}: ` : '';
     return [metricItems.length > 1 ? `Serie localizada: ${prefix}${formatObservation(first, fallbackUnit)} → ${formatObservation(latest, fallbackUnit)}` : `${prefix}${formatObservation(latest, fallbackUnit)}`];
   });
@@ -483,7 +504,7 @@ const unresolvedMissingDimensionsFor = (criterion, items) => {
 };
 const evidenceStatusFor = (data, missingDimensions) => data?.length ? (missingDimensions?.length ? 'partial' : 'available') : 'missing';
 const periodRangeFromData = (data) => {
-  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b(?:19|20|21)\d{2}(?:-\d{2}(?:-\d{2})?)?\b/g) || []))].sort();
+  const periods = [...new Set((data || []).flatMap((value) => String(value).match(/\b(?:19|20|21)\d{2}(?:-\d{2}(?:-\d{2})?)?(?=\b|P\b)/g) || []))].sort();
   if (!periods.length) return undefined;
   return periods[0] === periods.at(-1) ? periods[0] : `${periods[0]}–${periods.at(-1)}`;
 };
@@ -497,6 +518,27 @@ const dimensionsFor = (packet, criterion, data) => ({
   causalRequirement: /caus|provoc|efecto/i.test(`${criterion.finding} ${packet.summary}`) ? 'comparación o diseño causal compatible' : undefined,
 });
 
+export const composeFamilyReply = (plan) => {
+  const groups = new Map();
+  for (const family of plan.evidenceSummary?.families || []) {
+    const key = family.familyId || family.label;
+    const group = groups.get(key) || { label: family.familyLabel || family.label, limitation: family.limitation, criteria: [], sourceIds: [] };
+    group.criteria.push(...(family.criteria?.length ? family.criteria : [family]));
+    group.sourceIds.push(...(family.sourceIds || []));
+    groups.set(key, group);
+  }
+  const paragraphs = [...groups.values()].map((group) => {
+    const measured = group.criteria.filter((criterion) => criterion.data?.length).sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0));
+    const chosen = measured.slice(0, 2);
+    const values = chosen.map((criterion) => `${criterion.label}: ${criterion.data.slice(0, 2).join('; ')}`).join('. ');
+    const finding = group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
+    const sourceIds = [...new Set(chosen.flatMap((criterion) => criterion.sourceIds || []))];
+    const publishers = [...new Set(sourceIds.map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))];
+    return `${group.label}. ${values ? values.replace(/Serie localizada: /g, '') + '.' : ''} ${finding || ''}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
+  });
+  return [plan.headline.replace(/[.]$/, '') + '.', ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`].join('\n\n');
+};
+
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
   const packet = broadDomainPacketFor(text);
   return answerPlanForPacket(packet, { now, observations });
@@ -504,18 +546,20 @@ export const answerPlanForBroadDomain = (text, { now = Date.now(), observations 
 
 const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {}) => {
   if (!packet) return undefined;
+  packet = supplementReviewedPacket(packet);
   const lifecycle = snapshotLifecycle(BROAD_SNAPSHOT_POLICY, now);
   if (!lifecycle.usable) return undefined;
   const matchedObservations = packet.criteria.map((criterion) => ({
     criterion,
-    observations: observations.filter((observation) => criterion.metricIds?.includes(observation.metricId) && typeof observation.value === 'number' && Number.isFinite(observation.value)),
+    observations: observations.filter((observation) => broadObservationFits(observation, criterion)),
   }));
   const hasDynamicObservations = matchedObservations.some(({ observations: items }) => items.length > 0);
   const hasSnapshotData = matchedObservations.some(({ criterion, observations: items }) => items.length === 0 && criterion.fallbackData?.length);
   const unresolvedDimensions = matchedObservations.map(({ criterion, observations: items }) => unresolvedMissingDimensionsFor(criterion, items));
   const evidenceIds = [...new Set(packet.criteria.flatMap((item) => item.sourceIds).concat(matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.id).filter(Boolean))))];
-  const sourceIds = [...new Set(packet.sources.map((item) => item.id))];
-  const cleanQuantitative = (value) => String(value).trim().replace(/[.;]\s*$/, '');
+  const observationSources = matchedObservations.flatMap(({ observations: items }) => items.map((item) => item.source).filter((source) => source?.id && source?.url && source?.title));
+  const planSources = [...new Map([...packet.sources, ...observationSources].map((source) => [source.id, source])).values()];
+  const sourceIds = planSources.map((source) => source.id);
   const latestPeriodIn = (values) => periodRangeFromData(values)?.split('–').at(-1) || '';
   const fallbackIsNewer = (item, index) => {
     const matched = matchedObservations[index]?.observations || [];
@@ -539,21 +583,6 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
       ? [...dynamic, ...fallback]
       : dynamic;
   };
-  const quantitativeEntries = matchedObservations.flatMap(({ criterion, observations: items }, index) => {
-    const entries = fallbackIsNewer(criterion, index)
-      ? criterionDataFor(criterion, index).map((value) => `${criterion.label}: ${cleanQuantitative(value)}`)
-      : [...latestObservationsByMetric(items)].map((item) => {
-        const metricLabel = observationMetricLabel(item.metricId);
-        return `${criterion.label}${metricLabel ? ` · ${metricLabel}` : ''}: ${formatObservation(item, criterion.unit)}`;
-      });
-    const dynamic = items.length ? formatSeriesData(items, criterion.unit) : [];
-    const dynamicText = new Set(dynamic);
-    const additional = criterionDataFor(criterion, index).filter((value) => !dynamicText.has(value));
-    return [
-      ...entries.map((text) => ({ text, familyId: criterion.familyId || criterion.id, criterionId: criterion.id, dataKind: criterion.dataKind || (items.length ? 'observed' : 'snapshot') })),
-      ...(!fallbackIsNewer(criterion, index) ? additional.map((value) => ({ text: `${criterion.label}: ${cleanQuantitative(value)}`, familyId: criterion.familyId || criterion.id, criterionId: criterion.id, dataKind: criterion.dataKind || 'snapshot' })) : []),
-    ];
-  });
   const missingCriteria = matchedObservations
     .map(({ criterion, observations: items }, index) => ({ criterion, items, missing: unresolvedDimensions[index] }))
     .filter(({ criterion, items, missing }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding) && missing.length)
@@ -568,52 +597,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     needed: ['una fuente primaria con valores, periodo y ámbito definidos', 'una comparación compatible con la afirmación'],
     nextAction: 'Localizar y mostrar los valores o documentos concretos antes de presentar una conclusión sobre la afirmación.',
   } : undefined;
-  const compactFindings = (entries, perFamily = 2) => {
-    const byFamily = entries.reduce((groups, entry) => {
-      const group = groups.get(`${entry.familyId}:${entry.criterionId || entry.text}`) || [];
-      group.push(entry);
-      groups.set(`${entry.familyId}:${entry.criterionId || entry.text}`, group);
-      return groups;
-    }, new Map());
-    return [...byFamily.values()].flatMap((group) => group.length <= perFamily ? group : [group[0], group.at(-1)]).map((entry) => entry.text);
-  };
-  const replyFindings = (entries, preferredPatterns, limit = 6) => {
-    const values = compactFindings(entries, 8);
-    const preferred = preferredPatterns.flatMap((pattern) => values.filter((value) => pattern.test(value)));
-    return [...new Set([...preferred, ...values])].slice(0, limit);
-  };
-  const replyFinding = (value) => String(value).replace(/^[^:]+:\s+/, '');
-  const compactReplyFinding = (value) => replyFinding(value).replace(/ millones de euros/g, ' M€');
-  const observedFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'observed'), [/Gasto reconocido/, /Resultado corriente/, /Cotizaciones sociales/, /Transferencias corrientes/], 4);
-  const projectedFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'projected'), [/Saldo anual/, /Gasto neto/, /Cotizaciones dedicadas/, /Deuda pública/], 4);
-  const transferBudgetFindings = replyFindings(quantitativeEntries.filter((entry) => entry.criterionId === 'pension-state-transfers-budget'), [/Complementos a mínimos/, /Pensiones no contributivas/, /Pacto de Toledo/], 3);
-  const transferExecutedFindings = replyFindings(quantitativeEntries.filter((entry) => entry.criterionId === 'pension-state-transfers-executed'), [/Complementos a mínimos/, /Pensiones no contributivas/, /Pacto de Toledo/], 3);
-  const snapshotFindings = replyFindings(quantitativeEntries.filter((entry) => entry.dataKind === 'snapshot' || entry.dataKind === 'context'), [/Dependencia demográfica/, /Cotizantes por pensionista/, /Gasto total de vejez/, /Cotizaciones sociales agregadas/, /deuda pública/], 7);
-  const findingSections = [
-    observedFindings.length ? `Datos observados: ${observedFindings.join('; ')}.` : undefined,
-    projectedFindings.length ? `Proyecciones: ${projectedFindings.join('; ')}.` : undefined,
-    snapshotFindings.length ? `Datos de referencia revisados: ${snapshotFindings.join('; ')}.` : undefined,
-  ].filter(Boolean);
   const observedPeriods = [...new Set(matchedObservations.filter(({ criterion }) => criterion.dataKind !== 'projected').flatMap(({ observations: items }) => observationsByMetric(items).map((item) => String(item.period || '')).filter(Boolean)))].sort();
   const limitation = observedPeriods.length > 1
     ? `Las series dinámicas observadas abarcan ${observedPeriods[0]}–${observedPeriods.at(-1)}. ${packet.limitations[0]}`
     : packet.limitations[0];
-  const conversationReply = packet.replyProfile === 'pension-sustainability'
-    ? [
-      `${packet.headline}.`,
-      observedFindings.length ? `En 2024, la Cuenta General registra ${observedFindings.slice(0, 3).map(compactReplyFinding).join('; ')}; son cifras del perímetro de la Seguridad Social.` : undefined,
-      transferExecutedFindings.length ? `También reconoce por destino ${transferExecutedFindings.map(compactReplyFinding).join('; ')}.` : undefined,
-      transferBudgetFindings.length ? `El presupuesto 2025P prevé ${transferBudgetFindings.map(compactReplyFinding).join('; ')}.` : undefined,
-      projectedFindings.length ? `La serie AIReF 2020–2070 proyecta ${projectedFindings.slice(0, 2).map(compactReplyFinding).join('; ')} y, en sus tablas, cotizaciones dedicadas de 9,20 % a 10,37 % del PIB.` : undefined,
-      'La cuenta observada de la Seguridad Social y la proyección AIReF cubren sus respectivos perímetros, pero no deben restarse como si fueran una única contabilidad. Estos datos muestran presión y necesidades de financiación; no demuestran por sí solos una insostenibilidad total ni que las pensiones ya hayan arruinado las cuentas públicas.',
-    ].filter(Boolean).join(' ')
-    : [
-      `${packet.headline}.`,
-      findingSections.length ? findingSections.join(' ') : 'No se localizaron valores compatibles para las dimensiones de esta afirmación.',
-      evidenceGap ? 'Quedan sin resolver varias dimensiones de esta afirmación; se detallan en las secciones de evidencia.' : undefined,
-      limitation,
-    ].filter(Boolean).join(' ');
-  return {
+  const plan = {
     id: packet.id,
     schemaVersion: '1',
     evidenceLevel: 'limited',
@@ -630,13 +618,13 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
       }) },
       { type: 'cannot_conclude', evidenceIds, points: [limitation] },
       ...(evidenceGap ? [evidenceGap] : []),
-      { type: 'conversation_reply', evidenceIds, text: conversationReply },
+      { type: 'conversation_reply', evidenceIds, text: '' },
     ],
     limitation,
     evidenceIds,
     sourceIds,
-    sourceLinks: packet.sources,
-    asOf: '2026-08-20',
+    sourceLinks: planSources,
+    asOf: '2026-09-07',
     evidenceSummary: {
       mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
       families: packet.criteria.map((item, index) => ({
@@ -650,10 +638,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
         familyId: item.familyId || item.id,
         familyLabel: item.familyLabel || item.label,
         criterionId: item.id,
+        replyPriority: item.replyPriority,
         label: item.label,
         direction: 'qualifies',
         evidenceIds: [...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.id).filter(Boolean)],
-        sourceIds: item.sourceIds,
+        sourceIds: [...new Set([...item.sourceIds, ...(matchedObservations[index]?.observations || []).map((observation) => observation.source?.id).filter(Boolean)])],
         ...(unresolvedDimensions[index].length ? { missingDimensions: unresolvedDimensions[index] } : {}),
         finding: item.finding,
         ...(criterionDataFor(item, index).length ? { data: criterionDataFor(item, index) } : {}),
@@ -667,8 +656,10 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',
+    knowledgeVersion: 'broad-domain-snapshot-4-family-composition',
   };
+  plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
+  return plan;
 };
 
 export const answerPlanForBroadDomains = (text, { now = Date.now(), observations = [] } = {}) => {
@@ -678,10 +669,10 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   if (!familyPlans.length) return undefined;
   if (familyPlans.length === 1) return familyPlans[0];
 
-  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones' };
+  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones', 'broad-tax-burden-purchasing-power': 'Fiscalidad y poder adquisitivo', 'broad-youth-living-housing': 'Condiciones de vida jóvenes', 'broad-security': 'Seguridad', 'broad-immigration': 'Migración', 'broad-emergency-election-powers': 'Límites legales y elecciones', 'broad-population-replacement': 'Demografía, capacidad y política' };
   const families = familyPlans.map((plan) => {
     const entries = plan.evidenceSummary?.families || [];
-    const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, finding: family.finding || '', status: family.status || evidenceStatusFor(family.data, family.missingDimensions), dataKind: family.dataKind, dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
+    const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, replyPriority: family.replyPriority, finding: family.finding || '', status: family.status || evidenceStatusFor(family.data, family.missingDimensions), dataKind: family.dataKind, dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
     const status = criteria.some((criterion) => criterion.status === 'partial') || (criteria.some((criterion) => criterion.status === 'available') && criteria.some((criterion) => criterion.status === 'missing')) ? 'partial' : criteria.every((criterion) => criterion.status === 'available') ? 'available' : 'missing';
     return {
       familyId: plan.id,
@@ -708,70 +699,30 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
-  const familyReplyData = (family, maxCriteria = 3) => {
-    const seen = new Set();
-    return (family.criteria || [])
-      .filter((criterion) => criterion.data?.length)
-      .map((criterion) => {
-        const values = [...new Set(criterion.data || [])].filter((value) => !seen.has(value)).slice(0, 2);
-        values.forEach((value) => seen.add(value));
-        return values.length ? `${criterion.label}: ${values.join('; ').replace(/\bSerie localizada:\s*/gi, '').replace(/\bPrograma identificado para la comprobación:\s*/gi, '')}` : undefined;
-      })
-      .filter(Boolean)
-      .slice(0, maxCriteria)
-      .join('. ');
-  };
-  const familyReplyGaps = (family, max = 3) => [...new Set(family.missingDimensions || [])].slice(0, max);
-  const familyReply = (family, maxCriteria = 3) => {
-    const data = familyReplyData(family, maxCriteria);
-    return data
-      ? `${family.familyLabel}. Datos localizados: ${data}.`
-      : `${family.familyLabel}. No se ha localizado una medida compatible para esta parte.`;
-  };
-  const parsePersonTransition = (family) => {
-    const series = (family.criteria || []).flatMap((criterion) => criterion.data || []).find((value) => /→/.test(value) && /personas/i.test(value));
-    const match = series?.match(/(\d[\d.]*)\s+personas.*?→\s*(\d[\d.]*)\s+personas/i);
-    if (!match) return undefined;
-    const parse = (value) => Number(value.replace(/\./g, ''));
-    const start = parse(match[1]);
-    const end = parse(match[2]);
-    if (!Number.isFinite(start) || !Number.isFinite(end) || start <= 0) return undefined;
-    const change = ((end - start) / start) * 100;
-    return `La serie localizada pasa de ${match[1]} a ${match[2]} personas (${change >= 0 ? '+' : ''}${change.toLocaleString('es-ES', { maximumFractionDigits: 1 })} % en el intervalo publicado)`;
-  };
-  const familyReplySections = families.map((family) => familyReply(family, family.familyId === 'broad-immigration-regularization' ? 2 : 3));
-  const benefitsFamily = families.find((family) => family.familyId === 'broad-benefits-recipients');
-  const benefitsTransition = benefitsFamily ? parsePersonTransition(benefitsFamily) : undefined;
-  const reply = [
-    'La frase mezcla tres afirmaciones distintas. Cada una debe comprobarse por separado: una medida migratoria, el funcionamiento de los servicios públicos y la evolución de las prestaciones.',
-    ...familyReplySections,
-    benefitsTransition ? `${benefitsTransition}; ese cambio observado no demuestra una forma exponencial.` : undefined,
-    'Qué indican estos datos: describen medidas concretas de cada ámbito. No existe una medida común que permita llamar “colapso total” al conjunto de los servicios, y el IMV no representa todas las ayudas ni demuestra por sí solo dependencia económica de sus perceptores.',
-    gaps.length ? `Qué falta para cerrar la comprobación: ${families.map((family) => { const missing = familyReplyGaps(family, 2); return missing.length ? `${family.familyLabel}: ${missing.join(' y ')}` : undefined; }).filter(Boolean).join('; ')}.` : undefined,
-    'Conclusión: las cifras disponibles no demuestran por sí solas que una regularización cause un colapso de los servicios ni un aumento exponencial de las prestaciones. Que dos series cambien a la vez no prueba que una cause la otra.',
-  ].filter(Boolean).join('\n\n');
-  return {
+  const plan = {
     id: 'broad-compound-claim',
     schemaVersion: '1',
     evidenceLevel: 'limited',
-    headline: 'La frase mezcla regularización, servicios públicos y prestaciones; cada parte requiere su propia evidencia',
-    summary: 'Las tres partes deben comprobarse con poblaciones, periodos, denominadores y unidades compatibles. Un dato sobre una familia no sustituye al de otra.',
+    headline: `La afirmación requiere contrastar ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}`,
+    summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
     coverage: 'qualified',
     claimType: 'mixed',
-    interpretation: { kind: 'mixed', subject: 'regularización, servicios públicos y prestaciones', subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: 'efectos de una regularización sobre servicios públicos y prestaciones', interpretation: 'La frase contiene una medida migratoria, dos resultados extremos y una relación causal; se mantienen separados.' },
+    interpretation: { kind: 'mixed', subject: families.map((family) => family.familyLabel).join(', '), subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: text, interpretation: `Se comprueban por separado ${families.length} familias y las relaciones que se afirman entre ellas.` },
     blocks: [
       { type: 'data_finding', evidenceIds, points: dataPoints },
-      { type: 'cannot_conclude', evidenceIds, points: [...limitations, 'La simultaneidad de dos series no demuestra que una medida migratoria cause el resultado observado.'] },
+      { type: 'cannot_conclude', evidenceIds, points: [...limitations, 'La simultaneidad de dos series no demuestra causalidad.'] },
       ...(gaps.length ? [{ type: 'evidence_gap', missing: gaps, needed: ['programa, población, periodo, denominador y unidad compatibles'], nextAction: 'Localizar una serie específica para cada familia antes de cuantificar la afirmación.' }] : []),
-      { type: 'conversation_reply', evidenceIds, text: reply },
+      { type: 'conversation_reply', evidenceIds, text: '' },
     ],
-    limitation: 'Los datos deben mantenerse separados por familia y no prueban por sí solos colapso, crecimiento exponencial ni causalidad.',
+    limitation: 'Cada cifra responde a su propia medida y población. Las tendencias simultáneas no establecen causalidad.',
     evidenceIds,
     sourceIds,
     sourceLinks: familyPlans.flatMap((plan) => plan.sourceLinks || []).filter((source, index, all) => all.findIndex((item) => item.id === source.id) === index),
-    asOf: '2026-08-20',
+    asOf: '2026-09-07',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',
   };
+  plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
+  return plan;
 };

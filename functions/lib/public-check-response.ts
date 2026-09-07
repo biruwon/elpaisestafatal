@@ -2,6 +2,7 @@ import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment, CheckScorecard } from '../../src/lib/knowledge/public-check';
+import { composeFamilyReply } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
 
 // Interpretation confidence, model metadata and extraction provenance are
@@ -25,6 +26,7 @@ const sourceLinks = (plan?: AnswerPlan): CheckSource[] => {
   return (plan?.sourceLinks || []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
 };
 const replyFromPlan = (plan?: AnswerPlan): string => {
+  if (plan?.evidenceSummary?.families?.length && String((plan as AnswerPlan & { id?: string }).id || '').startsWith('broad-')) return composeFamilyReply(plan);
   const composed = plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text;
   if (composed) return composed;
   const finding = plan?.blocks?.find((block) => block.type === 'confirmed' || block.type === 'data_finding');
@@ -34,7 +36,7 @@ const replyFromPlan = (plan?: AnswerPlan): string => {
 const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
   const points = 'points' in block ? block.points || [] : [];
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
-  return points.slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
+  return points.map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
 }).concat(plan.blocks.filter((block) => block.type === 'scorecard').flatMap((block, index) => {
   if (!('items' in block) || !Array.isArray(block.items)) return [];
   return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: item.evidenceIds || [] }));
@@ -148,7 +150,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     if (clarification) return clarification;
   }
   const criteria = criteriaFromPlan(plan);
-  const attributedIds = new Set(criteria.flatMap((item) => item.sourceIds || []));
+  const attributedIds = new Set([...criteria.flatMap((item) => item.sourceIds || []), ...(plan.evidenceSummary?.families || []).flatMap((family) => [...(family.sourceIds || []), ...(family.criteria || []).flatMap((criterion) => criterion.sourceIds || [])])]);
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);

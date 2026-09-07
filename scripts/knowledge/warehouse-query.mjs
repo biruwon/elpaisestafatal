@@ -245,7 +245,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
       excerpt: record.excerpt,
       dimensions: record.dimensions || {},
       dimensionLabels: record.dimensionLabels || {},
-      source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, aliases: record.source.aliases || [] } : undefined,
+      source: record.source ? { id: record.source.id, title: record.metric || record.source.title || record.source.publisher || record.source.url, url: record.url || record.source.url, publisher: record.source.publisher, publishedAt: record.source.publishedAt, retrievedAt: record.source.retrievedAt, aliases: record.source.aliases || [] } : undefined,
       score,
       matchedTerms: matchedTokens,
       evidenceFit: warehouseEvidenceFit(score),
