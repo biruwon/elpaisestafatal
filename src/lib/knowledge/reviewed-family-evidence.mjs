@@ -19,7 +19,7 @@ const updates = {
     population: 'solicitantes de arraigo extraordinario', denominator: 'no procede: requisitos jurídicos', unit: 'fechas y meses',
   },
   'legal-status': {
-    finding: 'La autorización de arraigo extraordinario dura un año y permite residir y trabajar. No hay aquí un recuento publicado de autorizaciones concedidas: solicitudes y expedientes tramitados no equivalen a concesiones, y sigue pendiente un balance de resoluciones por resultado.',
+    finding: 'La autorización dura un año y permite residir y trabajar. No hay aquí un recuento publicado de autorizaciones concedidas: solicitudes y expedientes tramitados no equivalen a concesiones.',
     fallbackData: ['Autorización inicial: 1 año; habilita residencia y trabajo (RD 316/2026, disposición adicional 21.ª.10)'],
     missingDimensions: ['autorizaciones concedidas', 'denegaciones', 'expedientes pendientes'], sourceIds: [regularizationLaw.id], dataKind: 'context',
   },

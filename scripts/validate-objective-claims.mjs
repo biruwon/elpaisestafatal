@@ -14,7 +14,7 @@ for (const [index, text] of claims.entries()) {
   assert.equal(replies.length, 1);
   const labels = [...new Set(plan.evidenceSummary.families.map((family) => family.familyLabel))];
   for (const label of labels) assert(new RegExp(`(?:^|\\n\\n)${label.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\.`).test(replies[0].text), `${index + 1}: missing paragraph for ${label}`);
-  assert.equal(replies[0].text.split('\n\n').length, labels.length + (plan.id === 'broad-compound-claim' ? 1 : 2), plan.id === 'broad-compound-claim' ? 'One concise paragraph per family, one conclusion' : 'One lead, one paragraph per family, one conclusion');
+  assert.equal(replies[0].text.split('\n\n').length, labels.length + (plan.id === 'broad-compound-claim' ? 0 : 2), plan.id === 'broad-compound-claim' ? 'One concise paragraph per family with an integrated conclusion' : 'One lead, one paragraph per family, one conclusion');
   const sourceIds = new Set(plan.sourceLinks.map((source) => source.id));
   for (const family of plan.evidenceSummary.families) {
     for (const id of family.sourceIds || []) assert(sourceIds.has(id), `Missing source ${id}`);

@@ -538,7 +538,11 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
     return `${group.label}. ${values ? values.replace(/Serie localizada: /g, '') + '.' : ''} ${finding || ''}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
   });
   const lead = plan.headline.replace(/[.]$/, '') + '.';
-  return (compact ? [...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`] : [lead, ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`]).join('\n\n');
+  if (compact) {
+    const conclusion = `Conclusión: ${plan.limitation || plan.summary}`;
+    return paragraphs.length ? [...paragraphs.slice(0, -1), `${paragraphs.at(-1)} ${conclusion}`].join('\n\n') : conclusion;
+  }
+  return [lead, ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`].join('\n\n');
 };
 
 export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
