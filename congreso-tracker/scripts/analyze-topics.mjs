@@ -12,7 +12,7 @@ try {
   const previous=JSON.parse(gunzipSync(await readFile('data/daily-presence-summaries.json.gz'),'utf8')).summaries||[];
   for (const row of previous) {
     const key=`${row.deputyId}|${row.date}`;
-    if (!daily.has(key) && row.status==='unknown') daily.set(key,row);
+    if (!daily.has(key) && row.status==='unknown') daily.set(key,{...row,firstEvidenceTime:row.firstEvidenceTime??null,lastEvidenceTime:row.lastEvidenceTime??null});
   }
 } catch {}
 const dailyPresenceSummaries=[...daily.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.deputyId.localeCompare(b.deputyId));
