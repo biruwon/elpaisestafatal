@@ -1,0 +1,4 @@
+import { readFile, writeFile } from 'node:fs/promises';
+const data=JSON.parse(await readFile(process.argv[2]||'data/sample.json','utf8')); const observations=[];
+for(const session of data.sessions.filter(s=>/^2026-09-1[56]/.test(s.date))){for(let second=0;second<(session.durationSeconds||0);second+=10) observations.push({id:`seat-${session.id}-${second}`,sessionId:session.id,atSecond:second,kind:'seat_observation',value:'unobservable',seat:null,evidenceId:null,confidence:'none',reviewStatus:'unreviewed',note:'Requires reviewed wide-shot frame; occupancy does not identify a deputy.'});}
+const out=process.argv[3]||'data/video-pilot-observations.json'; await writeFile(out,JSON.stringify({meta:{status:'pilot-template',samplingSeconds:10,facialIdentification:false},observations},null,2)); console.log(`wrote ${observations.length} observations`);

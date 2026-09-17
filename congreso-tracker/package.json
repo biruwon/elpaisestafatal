@@ -4,5 +4,5 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },
-  "scripts": { "start": "node src/server.mjs", "collect": "node scripts/collect.mjs", "test": "node --test" }
+  "scripts": { "start": "node src/server.mjs", "collect": "node scripts/collect.mjs", "normalize": "node scripts/normalize.mjs", "video:pilot": "node scripts/video-pilot.mjs", "test": "node --test" }
 }
