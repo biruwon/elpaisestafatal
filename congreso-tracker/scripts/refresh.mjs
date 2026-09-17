@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 
 const jobs = [
   ['collect', 'scripts/collect.mjs'],
+  ['import-deputy-identities', 'scripts/import-deputy-identities.mjs'],
   ['backfill-votes', 'scripts/backfill-votes.mjs'],
   ['import-agenda', 'scripts/import-agenda.mjs'],
   ['import-bodies', 'scripts/import-bodies.mjs'],
