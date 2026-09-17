@@ -1,0 +1,13 @@
+{
+  "id": "prop-administracion-publica-puestos-prescindibles-core",
+  "claimSlug": "administracion-publica-puestos-prescindibles",
+  "text": "Una parte cuantificable de los puestos públicos es prescindible y está ocupada por personas que no trabajan.",
+  "type": "mixed",
+  "subject": "public_employment",
+  "predicate": "contains_measurable_redundant_inactive_jobs",
+  "object": "España",
+  "geography": "España",
+  "period": "2025–2026",
+  "status": "insufficient",
+  "evidenceIds": ["empleo-publico-distribucion-julio-2025"]
+}

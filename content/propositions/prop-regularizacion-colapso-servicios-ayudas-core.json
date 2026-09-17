@@ -1,0 +1,13 @@
+{
+  "id": "prop-regularizacion-colapso-servicios-ayudas-core",
+  "claimSlug": "regularizacion-colapso-servicios-ayudas",
+  "text": "La regularización extraordinaria ha causado un colapso de servicios públicos y un aumento exponencial de prestaciones.",
+  "type": "causal",
+  "subject": "regularizacion_extraordinaria_2026",
+  "predicate": "causes",
+  "object": "public_service_collapse_and_exponential_benefit_growth",
+  "geography": "España",
+  "period": "2026",
+  "status": "qualified",
+  "evidenceIds": ["regularizacion-extraordinaria-solicitudes-julio-2026"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "prop-precariedad-juvenil-vivienda-ayuda-familiar-core",
+  "claimSlug": "precariedad-juvenil-vivienda-ayuda-familiar",
+  "text": "La renta está fuertemente asociada con la capacidad de las personas jóvenes para dejar el hogar familiar.",
+  "type": "comparative",
+  "subject": "young_adults_income",
+  "predicate": "is_associated_with",
+  "object": "living_with_parents",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["ine-ecv-convivencia-progenitores-renta-2025"]
+}

@@ -25422,6 +25422,55 @@
       "relationship": "context",
       "reviewStatus": "reviewed",
       "reviewedAt": "2026-08-19"
+    },
+    {
+      "evidenceId": "regularizacion-extraordinaria-solicitudes-julio-2026",
+      "propositionId": "prop-regularizacion-colapso-servicios-ayudas-core",
+      "relationship": "qualifies",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "empleo-publico-distribucion-julio-2025",
+      "propositionId": "prop-administracion-publica-puestos-prescindibles-core",
+      "relationship": "insufficient",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "airef-pensiones-sostenibilidad-2026",
+      "propositionId": "prop-envejecimiento-pensiones-insostenibles-core",
+      "relationship": "qualifies",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "ine-ecv-convivencia-progenitores-renta-2025",
+      "propositionId": "prop-precariedad-juvenil-vivienda-ayuda-familiar-core",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "interior-criminalidad-2025",
+      "propositionId": "prop-inseguridad-inmigracion-violencia-core",
+      "relationship": "qualifies",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "oecd-pisa-brecha-inmigracion-espana-2022",
+      "propositionId": "prop-reemplazo-poblacional-iq-manipulacion-core",
+      "relationship": "insufficient",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
+    },
+    {
+      "evidenceId": "oecd-tax-wedge-spain-2025",
+      "propositionId": "prop-carga-fiscal-inflacion-pensiones-core",
+      "relationship": "qualifies",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-09-17"
     }
   ]
 }

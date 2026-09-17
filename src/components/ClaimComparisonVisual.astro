@@ -1,0 +1,38 @@
+---
+interface Props {
+  title: string;
+  labels: string[];
+  values: string[];
+}
+
+const { title, labels, values } = Astro.props;
+const numericValue = (value: string) => {
+  const compact = value.trim().replace(/\s/g, '').replace(/\.(?=\d{3}(?:\D|$))/g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+  return Number(compact);
+};
+const entries = labels
+  .map((label, index) => ({ label, display: values[index], value: numericValue(values[index] || '') }))
+  .filter((entry) => entry.label && entry.display && Number.isFinite(entry.value));
+const maximum = Math.max(...entries.map((entry) => Math.abs(entry.value)), 1);
+---
+
+{entries.length ? (
+  <figure class="claim-comparison" aria-labelledby="claim-comparison-title">
+    <figcaption id="claim-comparison-title">{title}</figcaption>
+    <div class="claim-comparison-bars">
+      {entries.map((entry) => (
+        <div class="claim-comparison-row">
+          <div class="claim-comparison-label"><span>{entry.label}</span><strong>{entry.display}</strong></div>
+          <div class="claim-comparison-track" aria-hidden="true"><span style={`width:${Math.max(2, Math.abs(entry.value) / maximum * 100).toFixed(2)}%`}></span></div>
+        </div>
+      ))}
+    </div>
+    <details class="claim-comparison-data">
+      <summary>Ver datos en tabla</summary>
+      <table>
+        <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+        <tbody>{entries.map((entry) => <tr><th scope="row">{entry.label}</th><td>{entry.display}</td></tr>)}</tbody>
+      </table>
+    </details>
+  </figure>
+) : null}

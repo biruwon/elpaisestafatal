@@ -25,6 +25,7 @@ const packets = [
   },
   {
     id: 'broad-demography-pension-finance',
+    warehouseSeries: { labels: ['2022', '2050'], values: [12.7, 16.1], label: 'Gasto en pensiones sobre el PIB · escenario AIReF', unit: '% del PIB' },
     matches: /\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b[\s\S]{0,180}\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b|\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*[\s\S]{0,180}\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b/i,
     interpretation: { kind: 'mixed', subject: 'demografía y sistema de pensiones', subjectType: 'country', predicate: 'puts_pressure_on', object: 'financiación pública', normalizedClaim: 'cambio demográfico, sostenibilidad de las pensiones y efecto sobre las cuentas públicas', interpretation: 'La frase combina una descripción demográfica, una predicción sobre sostenibilidad y una acusación sobre las cuentas públicas. Cada parte requiere una medida distinta.' },
     replyProfile: 'pension-sustainability',
@@ -68,17 +69,18 @@ const packets = [
   },
   {
     id: 'broad-public-administration',
+    warehouseSeries: { labels: ['Comunidades autónomas', 'Administración local', 'Sector público estatal'], values: [1934335, 632030, 540830], label: 'Empleo público por nivel de administración · julio de 2025', unit: 'personas' },
     matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
     interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
     headline: 'El número de empleados públicos no mide puestos prescindibles ni vagancia; las plazas sí están sujetas a obligaciones',
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
-      { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.037.432 empleados públicos; 1.634.510 funcionarios de carrera (enero de 2025)'], sourceIds: ['public-administration-source'] },
+      { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.107.195 empleados públicos: 1.934.335 en comunidades autónomas, 632.030 en administración local y 540.830 en el sector público estatal (julio de 2025)'], sourceIds: ['public-administration-source'] },
       { id: 'public-service-performance', label: 'Desempeño', finding: 'Para evaluar la administración hacen falta tiempos de tramitación, cargas de trabajo, vacantes, absentismo, productividad y resultados del servicio, con una comparación compatible.', missingDimensions: ['tiempos de tramitación', 'carga de trabajo', 'vacantes', 'absentismo', 'productividad', 'resultados comparables por servicio y territorio'], sourceIds: ['public-administration-source'] },
       { id: 'individual-conduct', label: 'Conducta individual', finding: 'Una oposición otorga una relación de empleo regulada; no demuestra por sí sola rendimiento, absentismo o derecho a permanecer sin cumplir sus obligaciones.', missingDimensions: ['persona o puesto concreto', 'registro de desempeño', 'absentismo individual', 'expediente o resultado disciplinario'], sourceIds: ['public-administration-source'] },
     ],
     limitations: ['La frase no aporta un servicio, puesto, territorio, periodo ni indicador. Sin esos datos no se puede estimar cuántos empleos son prescindibles. Una acusación individual exigiría además expedientes de desempeño o absentismo; no puede atribuirse vagancia a un colectivo entero.'],
-    sources: [source('public-administration-source', 'Estadística del personal al servicio de las Administraciones Públicas', 'Ministerio para la Transformación Digital y de la Función Pública', 'https://digital.gob.es/funcion-publica/dgfp/registro-central-personal/evolucion-administraciones-publicas', '2025-07-01')],
+    sources: [source('public-administration-source', 'Boletín Estadístico del Personal al Servicio de las Administraciones Públicas · julio 2025', 'Ministerio para la Transformación Digital y de la Función Pública', 'https://digital.gob.es/content/dam/sgad/sefp/es/portalsefp/funcion-publica/rcp/boletin/BEPSAP%20julio%202025.pdf', '2026-04-20')],
   },
   {
     id: 'broad-public-services',
@@ -98,36 +100,44 @@ const packets = [
   },
   {
     id: 'broad-tax-burden-purchasing-power',
+    warehouseSeries: { labels: ['España', 'Media OCDE'], values: [41.4, 35.1], label: 'Cuña fiscal sobre un salario medio · 2025', unit: '%' },
     matches: /\b(impuesto|impuestos|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|inflaci[oó]n|poder de compra|salarios?|baby boom|gasto p[uú]blico|subir impuestos|subida de impuestos)\w*\b/i,
     interpretation: { kind: 'mixed', subject: 'carga fiscal, precios, salarios y cuentas públicas en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de impuestos, poder adquisitivo, gasto público y pensiones', interpretation: 'La afirmación encadena cambios de impuestos, precios, salarios, gasto y jubilación. Son proposiciones separadas y una no prueba la siguiente.' },
     headline: 'La carga fiscal y el poder adquisitivo no prueban por sí solos que los impuestos causen toda la pérdida; una rebaja de IRPF o IVA tiene costes que deben cuantificarse',
     summary: 'La carga fiscal, la inflación y el poder adquisitivo no son la misma medida. Para comprobar la frase hay que comparar ingresos públicos, impuestos concretos, precios de consumo, salarios, gasto público y presión demográfica en los mismos periodos y con sus unidades; que varias series suban a la vez no demuestra que una subida de impuestos sea la causa de todo el resultado.',
     criteria: [
-      { id: 'tax-revenue', label: 'Ingresos e impuestos', finding: 'Los ingresos públicos y los impuestos sobre renta y riqueza deben distinguirse del tipo legal de IRPF o IVA y del importe que paga cada hogar.', metricIds: ['government_revenue_ratio', 'government_current_taxes_income_wealth_europe'], sourceIds: ['tax-burden-eurostat'] },
+      { id: 'tax-revenue', label: 'Ingresos e impuestos', finding: 'La cuña fiscal combina IRPF y cotizaciones para un hogar tipo; no equivale al tipo legal de IRPF o IVA ni al importe que paga cada hogar.', metricIds: ['government_revenue_ratio', 'government_current_taxes_income_wealth_europe'], fallbackData: ['Cuña fiscal para una persona soltera sin hijos con salario medio: España 41,4 %; media OCDE 35,1 % (2025)', 'Ingresos públicos: España 42,9 % del PIB; UE 46,4 % (2025)'], sourceIds: ['tax-wedge-oecd-2026', 'tax-burden-eurostat'] },
+      { id: 'fiscal-drag', label: 'IRPF e inflación', finding: 'El Banco de España confirma la progresividad en frío: cuando los parámetros nominales no se actualizan plenamente, la inflación eleva la recaudación y el tipo efectivo aunque la renta real no mejore.', fallbackData: ['Un aumento nominal del 1 % de la renta de los hogares eleva aproximadamente un 1,85 % la recaudación por IRPF sin actualización; cerca de la mitad del aumento de IRPF/PIB de 2019–2023 se atribuye a progresividad en frío'], sourceIds: ['fiscal-drag-bde'] },
       { id: 'prices-and-wages', label: 'Precios y salarios', finding: 'La inflación mide precios; el poder adquisitivo exige compararla con una serie salarial compatible, periodo, población y unidad definidos.', metricIds: ['cpi_index', 'median_hourly_earnings'], sourceIds: ['tax-burden-eurostat'] },
-      { id: 'spending-and-pensions', label: 'Gasto y pensiones', finding: 'El gasto público, las prestaciones de vejez y la dependencia demográfica son indicadores distintos; ninguno demuestra por sí solo que el sistema solo pueda sostenerse subiendo impuestos.', metricIds: ['government_expenditure_ratio', 'old_age_survivors_benefits_per_capita', 'old_age_dependency_ratio'], sourceIds: ['tax-burden-eurostat'] },
+      { id: 'spending-and-pensions', label: 'Gasto y pensiones', finding: 'El envejecimiento eleva la presión presupuestaria, pero la financiación puede repartirse entre impuestos, cotizaciones, deuda, edad de retiro, empleo y prestaciones; no existe un único ajuste inevitable.', metricIds: ['government_expenditure_ratio', 'old_age_survivors_benefits_per_capita', 'old_age_dependency_ratio'], fallbackData: ['Deuda pública proyectada: 123 % del PIB en 2050 en el escenario base de políticas constantes de AIReF'], sourceIds: ['airef-tax-pension-outlook'] },
       { id: 'tax-causality', label: 'Conclusión causal', finding: 'Para afirmar que las pensiones obligan a subir impuestos hace falta identificar decisiones tributarias, periodos, mecanismo y una comparación que descarte otros factores.', missingDimensions: ['impuesto y base afectados', 'serie temporal alineada', 'mecanismo y comparación causal'], sourceIds: ['tax-burden-eurostat'] },
     ],
     limitations: ['Los indicadores agregados pueden mostrar evolución de precios, salarios, recaudación, gasto o dependencia, pero no prueban por sí solos pérdida de poder adquisitivo de todos los hogares ni que el sistema solo aguante subiendo impuestos.'],
     sources: [
       source('tax-burden-eurostat', 'Tax revenue, prices, wages and government finance statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Tax_revenue_statistics', '2025-10-01'),
+      source('tax-wedge-oecd-2026', 'Taxing Wages 2026 · cuña fiscal sobre el trabajo', 'OCDE', 'https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/04/taxing-wages-2026_d1f39986/3a5169ef-en.pdf', '2026-04-01'),
+      source('fiscal-drag-bde', 'Progresividad en frío: impacto de la inflación sobre la recaudación por IRPF', 'Banco de España', 'https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/documentos-ocasionales/progresividad-en-frio--el-impacto-heterogeneo-de-la-inflacion-sobre-la-recaudacion-por-irpf.html', '2024-06-14'),
+      source('airef-tax-pension-outlook', 'Estudio de evaluación de la regla de gasto de pensiones 2026', 'AIReF', 'https://www.airef.es/es/estudios/estudio-sobre-la-regla-de-gasto-de-pensiones/', '2026-05-29'),
     ],
   },
   {
     id: 'broad-population-replacement',
+    warehouseSeries: { labels: ['Brecha PISA bruta', 'Tras ajustar nivel socioeconómico'], values: [33, 7], label: 'Diferencia en matemáticas por origen migrante · PISA 2022', unit: 'puntos PISA' },
     matches: /\b(reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|manipulables?|manipulable|gente que viene)\b/i,
     interpretation: { kind: 'causal', subject: 'población residente, capacidades individuales y decisiones políticas', subjectType: 'group', predicate: 'allegedly_changes', object: 'composición y funcionamiento institucional', normalizedClaim: 'reemplazo poblacional, capacidad cognitiva y aprovechamiento político', interpretation: 'La frase combina una afirmación demográfica con una generalización sobre capacidad individual y una acusación causal sobre políticos. La población puede medirse; las otras partes exigen definiciones y evidencia específica.' },
     headline: 'Un cambio demográfico no demuestra menor capacidad ni manipulación política',
     summary: 'La composición de la población y los flujos migratorios son medibles, pero “reemplazo poblacional” necesita una definición de población y periodo. No hay una categoría estadística válida que permita afirmar que las personas que llegan tienen menor IQ, y esa generalización no demuestra que sean más manipulables ni que los políticos se aprovechen del sistema.',
     criteria: [
-      { id: 'population-composition', label: 'Composición demográfica', finding: 'La población nacida fuera de España puede medirse como residentes por país de nacimiento; es un stock y no demuestra por sí solo un reemplazo de la población ni una intención política.', metricIds: ['foreign_born_population'], sourceIds: ['replacement-population-source'] },
-      { id: 'cognitive-generalisation', label: 'IQ y capacidades', finding: '“Menor IQ” no identifica una población comparable ni un estudio representativo; no es una propiedad que pueda atribuirse a todas las personas por su origen.', missingDimensions: ['definición de IQ', 'población comparable', 'edad, educación, idioma y periodo', 'estudio representativo'], sourceIds: ['replacement-comparability-source'] },
+      { id: 'population-composition', label: 'Composición demográfica', finding: 'La población nacida fuera de España puede medirse como residentes por país de nacimiento; es un stock y no demuestra por sí solo un reemplazo deliberado ni una intención política.', metricIds: ['foreign_born_population'], fallbackData: ['Población nacida fuera de España: 5,88 millones (2015) → 9,46 millones (2025)'], sourceIds: ['replacement-population-source'] },
+      { id: 'educational-gap', label: 'Brecha educativa', finding: 'PISA mide competencias escolares a los 15 años, no inteligencia innata ni toda la población adulta. En España, gran parte de la brecha observada por origen migrante se reduce al ajustar por nivel socioeconómico.', fallbackData: ['Brecha en matemáticas entre alumnado no inmigrante e inmigrante: 33 puntos antes del ajuste → 7 puntos tras ajustar por nivel socioeconómico (PISA 2022)'], sourceIds: ['replacement-pisa-oecd'] },
+      { id: 'cognitive-generalisation', label: 'IQ y capacidades', finding: '“Menor IQ” no identifica una población comparable ni un estudio representativo; no es una propiedad que pueda atribuirse a todas las personas por su origen. PISA no cubre esa afirmación.', missingDimensions: ['definición de IQ', 'medición representativa de inteligencia adulta', 'comparación de edad, educación e idioma'], sourceIds: ['replacement-pisa-oecd', 'replacement-comparability-source'] },
       { id: 'political-manipulation', label: 'Manipulación y aprovechamiento', finding: 'La acusación sobre políticos y un “sistema podrido” requiere decisiones, actores, mecanismo y resultados observables; no se deduce de la nacionalidad o del país de nacimiento.', missingDimensions: ['actor y decisión concreta', 'mecanismo', 'comparación o control', 'resultado medible'], sourceIds: ['replacement-comparability-source'] },
     ],
     limitations: ['Una variación en la población nacida fuera del país no prueba sustitución deliberada, menor capacidad cognitiva ni manipulación política. Esas conclusiones requieren proposiciones y fuentes independientes.'],
     sources: [
       source('replacement-population-source', 'Población por país de nacimiento en España', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_pop3ctb?geo=ES&age=TOTAL&sex=T&sinceTimePeriod=2015', '2026-08-17'),
       source('replacement-comparability-source', 'Population and social indicators: methodological comparability', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Population_and_population_change_statistics', '2025-10-01'),
+      source('replacement-pisa-oecd', 'PISA 2022 · alumnado inmigrante y rendimiento en España', 'OCDE', 'https://www.oecd.org/en/publications/pisa-2022-results-volume-i-and-ii-country-notes_ed6fbcc5-en/spain_f1a3afc1-en.html', '2023-12-05'),
     ],
   },
   {
@@ -147,6 +157,7 @@ const packets = [
   },
   {
     id: 'broad-youth-living-housing',
+    warehouseSeries: { labels: ['Renta inferior a 6.000 €', 'Total de 26–34 años', 'Renta superior a 24.000 €'], values: [55.5, 44.3, 29.4], label: 'Personas de 26–34 años que viven con sus progenitores · ECV 2025', unit: '%' },
     matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
     interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
     headline: 'La vivienda supone una barrera económica para los jóvenes; no hay una cifra observada de cuántos emigrarían sin ayuda familiar',
@@ -156,7 +167,8 @@ const packets = [
       { id: 'youth-income-employment', label: 'Ingresos y empleo', finding: 'La evolución salarial y el desempleo juvenil deben medirse con series separadas y con su población, unidad y periodo definidos.', metricIds: ['median_hourly_earnings', 'youth_unemployment_rate'], sourceIds: ['youth-labour-eurostat'] },
       { id: 'youth-housing-access', label: 'Vivienda', finding: 'El precio de la vivienda y la sobrecarga de costes describen presión residencial, pero no prueban por sí solos que nadie pueda comprar ni explican el papel de cada territorio.', metricIds: ['house_price_index', 'housing_cost_overburden_rate'], sourceIds: ['youth-housing-eurostat'] },
       { id: 'youth-supply', label: 'Oferta', finding: 'La construcción puede medirse con su índice de producción, pero no equivale automáticamente a viviendas disponibles para jóvenes ni a precios asequibles.', metricIds: ['construction_output_index'], sourceIds: ['youth-housing-eurostat'] },
-      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', missingDimensions: ['encuesta o modelo contrafactual', 'población joven de referencia', 'periodo', 'definición de emigración evitada'], sourceIds: ['youth-emancipation-source'] },
+      { id: 'family-co-residence', label: 'Convivencia y renta', finding: 'La convivencia con progenitores es mucho más frecuente con rentas bajas, lo que respalda una barrera económica. No mide por sí sola transferencias familiares ni necesidad de emigrar.', fallbackData: ['Personas de 26 a 34 años que vivían con sus progenitores: 44,3 % en total; 55,5 % con renta inferior a 6.000 €; 29,4 % con renta superior a 24.000 € (2025)'], sourceIds: ['youth-family-housing-ine'] },
+      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', missingDimensions: ['encuesta o modelo contrafactual', 'definición de emigración evitada'], sourceIds: ['youth-family-housing-ine', 'youth-emancipation-source'] },
     ],
     limitations: ['Sin edad, ciudad o territorio, periodo y definición de “precariedad” no se puede estimar la imposibilidad de comprar una vivienda. Tampoco se puede convertir la convivencia con los padres en un número de emigraciones evitadas sin una hipótesis identificable.'],
     sources: [
@@ -164,10 +176,12 @@ const packets = [
       source('youth-labour-eurostat', 'Youth labour market statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Youth_statistics_-_employment', '2025-10-01'),
       source('youth-housing-eurostat', 'Housing in Europe — statistics on housing conditions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_in_Europe', '2025-10-01'),
       source('youth-emancipation-source', 'Observatorio de Emancipación', 'Consejo de la Juventud de España', 'https://www.cje.org/', '2025-10-01'),
+      source('youth-family-housing-ine', 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', 'INE', 'https://www.ine.es/dyngs/Prensa/m3ECV2025.htm?print=1', '2026-05-01'),
     ],
   },
   {
     id: 'broad-immigration-regularization',
+    warehouseSeries: { labels: ['Solicitudes', 'Expedientes tramitados', 'Nuevas afiliaciones'], values: [1174978, 609737, 159097], label: 'Regularización extraordinaria · balance a 30 de junio de 2026', unit: 'personas o expedientes' },
     matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
     headline: 'Regularización documentada, pero no se demuestra que sea masiva ni que cause un colapso o más dependencia de prestaciones',
@@ -175,6 +189,7 @@ const packets = [
     criteria: [
       { id: 'regularization-measure', label: 'Medida concreta', finding: 'El término “legalización masiva” no identifica por sí solo una ley, decreto o programa; hace falta localizar la norma y comprobar su alcance, requisitos y exclusiones.', missingDimensions: ['norma o programa', 'fecha', 'requisitos y exclusiones'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
       { id: 'regularization-counts', label: 'Cifras del proceso', finding: 'El balance oficial localizado registra 1.174.978 solicitudes y 609.737 expedientes tramitados; ninguna de esas cifras equivale automáticamente a autorizaciones concedidas.', fallbackData: ['Solicitudes: 1.174.978 (2026-07-02)', 'Expedientes tramitados: 609.737 (2026-07-02)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
+      { id: 'regularization-employment', label: 'Afiliación', finding: 'El mismo balance registra nuevas afiliaciones a la Seguridad Social vinculadas al proceso. Es un resultado laboral, no una estimación del uso de prestaciones o servicios públicos.', fallbackData: ['159.097 nuevas afiliaciones a la Seguridad Social (balance a 2026-06-30)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
       { id: 'legal-status', label: 'Resultado jurídico', finding: 'Para saber cuántas personas obtuvieron autorización hay que consultar resoluciones concedidas, denegadas y pendientes, además del tipo y duración del permiso.', missingDimensions: ['autorizaciones concedidas', 'denegaciones', 'expedientes pendientes', 'tipo y duración del permiso'], sourceIds: ['regularizacion-requisitos-antecedentes-2026'] },
     ],
     limitations: ['El programa y sus requisitos están documentados. Su efecto sobre servicios y prestaciones exige comparar resultados de las personas regularizadas con un grupo y periodo compatibles; las solicitudes no son permisos concedidos.'],
@@ -274,6 +289,7 @@ const packets = [
   },
   {
     id: 'broad-security',
+    warehouseSeries: { labels: ['Nacionalidad extranjera', 'Nacionalidad española'], values: [15.7, 6.2], label: 'Tasa bruta de adultos condenados por nacionalidad · 2024', unit: 'por mil' },
     matches: /\b(delincuenc|criminal|delito|seguridad|insegur|calle|salir|polic[ií]a|droga|judicial|disuasor|denuncia)\w*\b/i,
     interpretation: { kind: 'quantitative', subject: 'seguridad en España', subjectType: 'country', predicate: 'has_distinct_offence_and_perception_measures', normalizedClaim: 'delincuencia, seguridad y experiencia del espacio público en España', interpretation: 'La delincuencia nacional, los delitos concretos y la sensación de inseguridad no son la misma medida.', confidence: 0.72, evidenceNeeds: ['categoría de delito', 'periodo', 'territorio', 'medida'] },
     headline: 'Las tendencias delictivas difieren y no prueban que los nacionalizados causen un aumento general de la inseguridad',
@@ -281,14 +297,16 @@ const packets = [
     criteria: [
       { id: 'total-offences', label: 'Total y composición', finding: 'El balance nacional separa infracciones totales, delincuencia convencional y cibercriminalidad; no son una única medida de inseguridad.', fallbackData: ['2,47 millones de infracciones (2025); delincuencia convencional −0,2%; cibercriminalidad +5,3% (2025)'], sourceIds: ['security-balance'] },
       { id: 'conventional-rate', label: 'Delincuencia convencional', finding: 'La tasa convencional permite comparar el volumen registrado con la población; por sí sola no describe cada calle ni cada delito.', fallbackData: ['40,4 infracciones convencionales por mil habitantes (2025)'], sourceIds: ['security-balance'] },
+      { id: 'offence-trends', label: 'Delitos concretos', finding: 'La tendencia total oculta movimientos distintos: en 2025 aumentaron los homicidios consumados y los delitos sexuales, mientras bajó ligeramente la delincuencia convencional agregada.', fallbackData: ['Homicidios consumados: +7,7 %; delitos sexuales: +2,3 %; delincuencia convencional: -0,2 % (2025)'], sourceIds: ['security-balance'] },
       { id: 'scope', label: 'Alcance', finding: 'Una tendencia nacional puede convivir con deterioro en un barrio, estación o zona turística; hace falta una categoría y un territorio concretos.', sourceIds: ['security-balance'] },
-      { id: 'group-causality', label: 'Grupo y causalidad', finding: 'Los totales nacionales no permiten afirmar que un grupo definido por nacionalidad u origen sea responsable de acuchillamientos, robos, violaciones o palizas. Esa conclusión exige tasas comparables y ajuste por edad, sexo, exposición y territorio.', missingDimensions: ['delito concreto', 'grupo y denominador', 'edad, sexo y territorio', 'periodo comparable', 'diseño causal'], sourceIds: ['security-balance'] },
+      { id: 'group-causality', label: 'Grupo y causalidad', finding: 'En 2024 la tasa bruta de adultos condenados fue mayor entre extranjeros, pero la mayoría absoluta de condenados tenía nacionalidad española. Las tasas no ajustan edad, sexo, renta, exposición policial o territorio y no identifican a “nuevos españoles”.', fallbackData: ['Tasa bruta: 15,7 condenados por mil entre extranjeros y 6,2 por mil entre españoles; 71,4 % de las personas adultas condenadas tenía nacionalidad española (2024)'], missingDimensions: ['ajuste por edad, sexo, renta y territorio', 'diseño causal'], sourceIds: ['security-convictions-ine'] },
       { id: 'institutional-response', label: 'Policía y justicia', finding: 'La afirmación de que “nadie hace nada” requiere medir recursos, denuncias, tiempos de respuesta, resoluciones y resultados por servicio; el total de delitos no mide por sí solo la actuación institucional.', missingDimensions: ['medida u organismo', 'periodo', 'indicador de respuesta', 'resultado del servicio'], sourceIds: ['security-balance'] },
       { id: 'loaded-label', label: '“Wokismo”', finding: '“Wokismo” es una etiqueta política, no una categoría estadística. No se puede usar para explicar una tendencia delictiva sin identificar una política o actuación concreta y medir su efecto.', missingDimensions: ['política o actuación concreta', 'definición operativa', 'periodo', 'resultado comparable'], sourceIds: ['security-balance'] },
     ],
     limitations: ['“No se puede salir a la calle” expresa una experiencia o valoración que las estadísticas nacionales no pueden confirmar literalmente. Para comprobarla hacen falta lugar, periodo, delito o datos de victimización.'],
     sources: [
       source('security-balance', 'Balance de Criminalidad 2025', 'Ministerio del Interior', 'https://www.interior.gob.es/opencms/es/prensa/balances-e-informes/', '2026-01-01'),
+      source('security-convictions-ine', 'Estadística de condenados 2024', 'INE', 'https://www.ine.es/dyngs/Prensa/ECAECM2024.htm', '2025-09-01'),
     ],
   },
 ];
@@ -658,6 +676,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     sourceIds,
     sourceLinks: planSources,
     asOf: '2026-09-07',
+    ...(packet.warehouseSeries ? { warehouseSeries: packet.warehouseSeries } : {}),
     evidenceSummary: {
       mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
       families: packet.criteria.map((item, index) => ({
@@ -732,6 +751,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
+  const visualSeries = familyPlans.find((familyPlan) => familyPlan.warehouseSeries)?.warehouseSeries;
   const plan = {
     id: 'broad-compound-claim',
     schemaVersion: '1',
@@ -752,6 +772,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     sourceIds,
     sourceLinks: familyPlans.flatMap((plan) => plan.sourceLinks || []).filter((source, index, all) => all.findIndex((item) => item.id === source.id) === index),
     asOf: '2026-09-07',
+    ...(visualSeries ? { warehouseSeries: visualSeries } : {}),
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',

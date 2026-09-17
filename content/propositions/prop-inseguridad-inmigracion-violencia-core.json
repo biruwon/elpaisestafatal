@@ -1,0 +1,13 @@
+{
+  "id": "prop-inseguridad-inmigracion-violencia-core",
+  "claimSlug": "inseguridad-inmigracion-violencia",
+  "text": "España sufre un aumento dramático y general de la delincuencia callejera causado por los inmigrantes.",
+  "type": "causal",
+  "subject": "immigration",
+  "predicate": "causes",
+  "object": "dramatic_general_street_crime_growth",
+  "geography": "España",
+  "period": "2024–2025",
+  "status": "qualified",
+  "evidenceIds": ["interior-criminalidad-2025"]
+}

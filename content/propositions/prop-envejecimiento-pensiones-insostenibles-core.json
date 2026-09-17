@@ -1,0 +1,13 @@
+{
+  "id": "prop-envejecimiento-pensiones-insostenibles-core",
+  "claimSlug": "envejecimiento-pensiones-insostenibles",
+  "text": "El envejecimiento ya ha hecho quebrar el sistema público de pensiones.",
+  "type": "predictive",
+  "subject": "public_pension_system",
+  "predicate": "is_already_bankrupt_due_to",
+  "object": "population_ageing",
+  "geography": "España",
+  "period": "2022–2050",
+  "status": "qualified",
+  "evidenceIds": ["airef-pensiones-sostenibilidad-2026"]
+}

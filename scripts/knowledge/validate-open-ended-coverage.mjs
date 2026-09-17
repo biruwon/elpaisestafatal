@@ -43,7 +43,7 @@ assert(publicAdministration?.id === 'broad-public-administration', 'public-admin
 assert(publicAdministration?.summary.includes('No existe una cifra oficial'), 'public-administration packet did not answer the request for a count');
 assert(publicAdministration?.summary.includes('obligaciones de rendimiento'), 'public-administration packet omitted the distinction between tenure and accountability');
 assert(publicAdministration?.evidenceSummary?.families.some((family) => family.data?.some((item) => item.includes('empleados públicos'))), 'public-administration packet did not expose concrete staffing data');
-assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('3.037.432'), 'public-administration response omitted the available staffing count');
+assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('3.107.195'), 'public-administration response omitted the available staffing count');
 assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('Desempeño.'), 'public-administration response did not point to its missing performance measurements');
 assert(publicAdministration?.blocks.some((block) => block.type === 'evidence_gap'), 'public-administration fallback did not declare its missing data');
 

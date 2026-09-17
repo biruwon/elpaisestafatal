@@ -1,0 +1,13 @@
+{
+  "id": "prop-reemplazo-poblacional-iq-manipulacion-core",
+  "claimSlug": "reemplazo-poblacional-iq-manipulacion",
+  "text": "Las personas inmigrantes tienen menor inteligencia y por ello son más manipulables políticamente.",
+  "type": "causal",
+  "subject": "immigrant_population",
+  "predicate": "has_lower_intelligence_causing",
+  "object": "political_manipulability",
+  "geography": "España",
+  "period": "2015–2025",
+  "status": "insufficient",
+  "evidenceIds": ["oecd-pisa-brecha-inmigracion-espana-2022"]
+}

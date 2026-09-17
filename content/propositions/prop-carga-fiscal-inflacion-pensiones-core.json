@@ -1,0 +1,13 @@
+{
+  "id": "prop-carga-fiscal-inflacion-pensiones-core",
+  "claimSlug": "carga-fiscal-inflacion-pensiones",
+  "text": "La elevada carga fiscal sobre el trabajo hace inevitable sacrificar varias generaciones para financiar las pensiones.",
+  "type": "mixed",
+  "subject": "labour_taxation_and_pension_spending",
+  "predicate": "makes_inevitable",
+  "object": "multi_generation_sacrifice",
+  "geography": "España",
+  "period": "2019–2050",
+  "status": "qualified",
+  "evidenceIds": ["oecd-tax-wedge-spain-2025"]
+}
