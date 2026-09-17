@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "generatedAt": "2026-09-17T23:02:28.971Z",
+    "status": "unreviewed_template",
+    "method": "10-second seat-level sampling from official clip durations",
+    "facialIdentification": false
+  },
+  "sessions": [
+    {
+      "sessionId": "Pleno-2026-09-15",
+      "date": "2026-09-15",
+      "durationSeconds": 40249,
+      "sampledObservations": 4025,
+      "samplingSeconds": 10,
+      "observableSeconds": null,
+      "cameraCutsDetected": null,
+      "reviewedObservations": 0,
+      "status": "unreviewed_template"
+    },
+    {
+      "sessionId": "Pleno-2026-09-16",
+      "date": "2026-09-16",
+      "durationSeconds": 74440,
+      "sampledObservations": 7444,
+      "samplingSeconds": 10,
+      "observableSeconds": null,
+      "cameraCutsDetected": null,
+      "reviewedObservations": 0,
+      "status": "unreviewed_template"
+    }
+  ]
+}

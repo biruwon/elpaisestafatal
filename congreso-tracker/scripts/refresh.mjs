@@ -11,6 +11,7 @@ const jobs = [
   ['import-hemicycle', 'scripts/import-hemicycle.mjs'],
   ['import-audiovisual-pilot', 'scripts/import-audiovisual-pilot.mjs'],
   ['measure-clip-durations', 'scripts/measure-clip-durations.mjs'],
+  ['video-pilot', 'scripts/video-pilot.mjs'],
   ['import-transcripts', 'scripts/import-transcripts.mjs'],
   ['backfill-votes', 'scripts/backfill-votes.mjs'],
   ['import-agenda', 'scripts/import-agenda.mjs'],
