@@ -6,6 +6,7 @@ CREATE TABLE individual_votes (ballot_id TEXT NOT NULL, deputy_id TEXT NOT NULL,
 CREATE TABLE presence_observations (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, deputy_id TEXT, kind TEXT NOT NULL, value TEXT NOT NULL, observed_at TEXT, seat TEXT, evidence_id TEXT, confidence TEXT, review_status TEXT NOT NULL);
 CREATE TABLE source_documents (id TEXT PRIMARY KEY, url TEXT NOT NULL, retrieved_at TEXT NOT NULL, sha256 TEXT, http_status INTEGER, parser_version TEXT, object_path TEXT, error TEXT);
 CREATE TABLE service_periods (id TEXT PRIMARY KEY, deputy_id TEXT NOT NULL, legislature TEXT NOT NULL, from_date TEXT, to_date TEXT, group_name TEXT, source_document_id TEXT NOT NULL);
+CREATE TABLE substitutions (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, substitute_id TEXT, substituted_id TEXT, from_date TEXT, to_date TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE bodies (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, name TEXT NOT NULL, source_document_id TEXT NOT NULL);
 CREATE TABLE body_memberships (id TEXT PRIMARY KEY, body_id TEXT NOT NULL, deputy_id TEXT, role TEXT, from_date TEXT, to_date TEXT, validation_status TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE initiatives (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, number TEXT, title TEXT, initiative_type TEXT, super_type TEXT, first_session TEXT, last_session TEXT, source_document_id TEXT NOT NULL);

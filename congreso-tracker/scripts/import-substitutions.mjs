@@ -1,0 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+const url='https://www.congreso.es/es/diputados-sustituidos-y-sustitutos';
+const r=await fetch(url,{headers:{'user-agent':'congreso-tracker/0.1 research contact'},signal:AbortSignal.timeout(30000)});const html=await r.text();
+const marker='var jsonSustituciones = '; const begin=html.indexOf(marker); if(begin<0)throw new Error('substitution JSON not found'); const start=html.indexOf('[',begin); let depth=0,inString=false,escape=false,end=-1; for(let i=start;i<html.length;i++){const c=html[i];if(inString){if(escape)escape=false;else if(c==='\\')escape=true;else if(c==='"')inString=false;continue;}if(c==='"'){inString=true;continue;}if(c==='[')depth++;else if(c===']'&&!--depth){end=i+1;break;}} if(end<0)throw new Error('unterminated substitution JSON');
+const records=JSON.parse(html.slice(start,end));await writeFile('data/raw/substitutions.json',JSON.stringify({retrievedAt:new Date().toISOString(),url,records},null,2));console.log(`imported ${records.length} substitution records`);
