@@ -18,6 +18,7 @@ const jobs = [
   ['build-current', 'scripts/build-current.mjs'],
   ['analyze-topics', 'scripts/analyze-topics.mjs'],
   ['normalize-daily-presence', 'scripts/normalize-daily-presence.mjs'],
+  ['expand-daily-presence', 'scripts/expand-daily-presence.mjs'],
   ['validate-full-votes', 'scripts/validate-votes.mjs', 'data/votes-full.json.gz'],
   ['validate-integrity', 'scripts/validate-integrity.mjs'],
 ];
