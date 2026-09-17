@@ -1,0 +1,8 @@
+{
+  "name": "congreso-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node src/server.mjs", "collect": "node scripts/collect.mjs", "test": "node --test" }
+}

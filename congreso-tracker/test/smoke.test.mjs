@@ -1,0 +1,3 @@
+import test from 'node:test'; import assert from 'node:assert/strict'; import data from '../data/sample.json' with {type:'json'};
+test('fixture keeps evidence types separate',()=>{assert.ok(data.deputies.length>0);assert.ok(data.sessions.length>0);assert.ok(data.interventions.every(x=>x.clipUrl));assert.ok(data.presenceObservations.every(x=>['in_person_participation','remote_participation','official_attendance','seat_observation','unknown'].includes(x.kind)));});
+test('unknown activity is not coerced to zero',()=>{assert.equal(data.interventions[0].text,null);assert.equal(data.interventions[0].textStatus,'not_yet_imported');});
