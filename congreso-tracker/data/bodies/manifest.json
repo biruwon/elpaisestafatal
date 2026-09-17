@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-09-17T21:37:43.730Z",
+  "legislature": "XV",
+  "sources": [
+    {
+      "name": "mesa",
+      "id": 100,
+      "status": 200,
+      "bytes": 3080
+    },
+    {
+      "name": "junta-portavoces",
+      "id": 300,
+      "status": 200,
+      "bytes": 3080
+    },
+    {
+      "name": "diputacion-permanente",
+      "id": 500,
+      "status": 200,
+      "bytes": 3080
+    }
+  ]
+}

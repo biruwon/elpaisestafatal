@@ -1,0 +1,6 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+const base='https://www.congreso.es:443/es/mesa?p_p_id=organos&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=searchOrgano&p_p_cacheability=cacheLevelPage&_organos_selectedLegislatura=XV&_organos_statusOpenData=true';
+const targets=[['mesa',100],['junta-portavoces',300],['diputacion-permanente',500]];
+await mkdir('data/bodies',{recursive:true}); const result=[];
+for(const [name,id] of targets){const body=new URLSearchParams({_organos_selectedLegislatura:'XV',_organos_compoHistorica:'true',_organos_selectedOrganoSup:String(id),_organos_selectedSuborgano:''});try{const r=await fetch(base,{method:'POST',headers:{'user-agent':'congreso-tracker/0.1 research contact','x-requested-with':'XMLHttpRequest','content-type':'application/x-www-form-urlencoded'},body,signal:AbortSignal.timeout(20000)});const text=await r.text();result.push({name,id,status:r.status,bytes:text.length});if(r.ok)await writeFile(`data/bodies/${name}.json`,text);}catch(error){result.push({name,id,error:String(error)});}}
+await writeFile('data/bodies/manifest.json',JSON.stringify({generatedAt:new Date().toISOString(),legislature:'XV',sources:result},null,2));console.log(JSON.stringify(result,null,2));
