@@ -1,6 +1,7 @@
 CREATE TABLE deputies (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, name TEXT NOT NULL, group_name TEXT, constituency TEXT, service_from TEXT, service_to TEXT, profile_url TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE sessions (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, body TEXT NOT NULL, number INTEGER, date TEXT NOT NULL, agenda_url TEXT, transcript_url TEXT, video_url TEXT, status TEXT NOT NULL);
 CREATE TABLE interventions (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, deputy_id TEXT, initiative_id TEXT, title TEXT, topic_labels_json TEXT, text TEXT, text_status TEXT, clip_url TEXT, source_url TEXT);
+CREATE TABLE transcript_documents (id TEXT PRIMARY KEY, session_id TEXT, url TEXT NOT NULL, language TEXT NOT NULL, text_variant TEXT NOT NULL, text TEXT, text_status TEXT, interpretation_text TEXT, interpretation_status TEXT, retrieved_at TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE ballots (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, date TEXT, title TEXT, result_url TEXT, totals_json TEXT, presence_note TEXT);
 CREATE TABLE individual_votes (ballot_id TEXT NOT NULL, deputy_id TEXT NOT NULL, choice TEXT NOT NULL, mode TEXT NOT NULL, source_locator TEXT, PRIMARY KEY(ballot_id,deputy_id));
 CREATE TABLE presence_observations (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, deputy_id TEXT, kind TEXT NOT NULL, value TEXT NOT NULL, observed_at TEXT, seat TEXT, evidence_id TEXT, confidence TEXT, review_status TEXT NOT NULL);
@@ -11,6 +12,7 @@ CREATE TABLE bodies (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, name TEXT N
 CREATE TABLE body_memberships (id TEXT PRIMARY KEY, body_id TEXT NOT NULL, deputy_id TEXT, role TEXT, from_date TEXT, to_date TEXT, validation_status TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE initiatives (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, number TEXT, title TEXT, initiative_type TEXT, super_type TEXT, first_session TEXT, last_session TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE initiative_authorship (initiative_id TEXT NOT NULL, deputy_id TEXT, actor_type TEXT NOT NULL, actor_label TEXT NOT NULL, authorship_type TEXT NOT NULL, source_locator TEXT, PRIMARY KEY (initiative_id, actor_label, authorship_type));
+CREATE TABLE topic_evidence (intervention_id TEXT NOT NULL, label TEXT NOT NULL, passage TEXT NOT NULL, source_url TEXT NOT NULL, method TEXT NOT NULL, version TEXT NOT NULL, PRIMARY KEY (intervention_id, label, version));
 CREATE TABLE media_segments (id TEXT PRIMARY KEY, intervention_id TEXT, session_id TEXT NOT NULL, deputy_id TEXT, url TEXT, duration_seconds INTEGER, evidence_status TEXT);
 CREATE TABLE agenda_items (id TEXT PRIMARY KEY, date TEXT NOT NULL, session_id TEXT, kind TEXT NOT NULL, fields_json TEXT, source_locator TEXT, http_status INTEGER, error TEXT);
 CREATE TABLE daily_presence_summaries (deputy_id TEXT NOT NULL, date TEXT NOT NULL, intervention_turns INTEGER, intervention_seconds INTEGER, nominal_vote_events INTEGER, remote_vote_events INTEGER, evidence_kinds_json TEXT NOT NULL, status TEXT NOT NULL, PRIMARY KEY (deputy_id,date));
