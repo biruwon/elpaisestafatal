@@ -23,6 +23,7 @@ const jobs = [
   ['expand-daily-presence', 'scripts/expand-daily-presence.mjs'],
   ['validate-full-votes', 'scripts/validate-votes.mjs', 'data/votes-full.json.gz'],
   ['validate-integrity', 'scripts/validate-integrity.mjs'],
+  ['validate-acceptance', 'scripts/validate-acceptance.mjs'],
 ];
 for (const [name, script, ...args] of jobs) {
   await new Promise((resolve, reject) => {
