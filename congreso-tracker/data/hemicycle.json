@@ -1,0 +1,1234 @@
+{
+  "meta": {
+    "retrievedAt": "2026-09-17T22:29:38.482Z",
+    "imageUrl": "https://www.congreso.es/o/diputados/img/hemiciclo.png",
+    "caveat": "Current seating map; do not apply retrospectively without dated evidence."
+  },
+  "seats": [
+    {
+      "officialId": "140",
+      "legislature": "15",
+      "label": "Francina Armengol Socias (Presidenta del Congreso de los Diputados)",
+      "coords": "270,382,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "86",
+      "legislature": "15",
+      "label": "José Antonio Bermúdez de Castro Fernández (Vicepresidente Segundo)",
+      "coords": "246,382,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "328",
+      "legislature": "15",
+      "label": "Marta González Vázquez (Vicepresidenta Cuarta)",
+      "coords": "222,382,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "255",
+      "legislature": "15",
+      "label": "Isaura Leal Fernández (Secretaria Segunda)",
+      "coords": "217,361,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "189",
+      "legislature": "15",
+      "label": "Carmen Navarro Lacoba (Secretaria Cuarta)",
+      "coords": "197,360,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "253",
+      "legislature": "15",
+      "label": "Yolanda Díaz Pérez (Vicepresidenta Segunda del Gobierno y Ministra de Trabajo y Economía Social)",
+      "coords": "190,278,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "120",
+      "legislature": "15",
+      "label": "Óscar Puente Santiago (Ministro de Transportes y Movilidad Sostenible)",
+      "coords": "238,198,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "178",
+      "legislature": "15",
+      "label": "Montse Mínguez García (GS)",
+      "coords": "162,289,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "170",
+      "legislature": "15",
+      "label": "Javier Alfonso Cendón (GS)",
+      "coords": "162,266,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "271",
+      "legislature": "15",
+      "label": "Maribel García López (GS)",
+      "coords": "162,240,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "35",
+      "legislature": "15",
+      "label": "Alejandro Soler Mur (GS)",
+      "coords": "168,213,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "116",
+      "legislature": "15",
+      "label": "Rafael Simancas Simancas (GS)",
+      "coords": "187,192,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "95",
+      "legislature": "15",
+      "label": "Juan Francisco Serrano Martínez (GS)",
+      "coords": "136,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "182",
+      "legislature": "15",
+      "label": "Víctor Gutiérrez Santiago (GS)",
+      "coords": "136,266,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "272",
+      "legislature": "15",
+      "label": "María Carmen Castilla Álvarez (GS)",
+      "coords": "136,239,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "19",
+      "legislature": "15",
+      "label": "Susana Ros Martínez (GS)",
+      "coords": "141,213,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "68",
+      "legislature": "15",
+      "label": "Guillermo Hita Téllez (GS)",
+      "coords": "155,189,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "364",
+      "legislature": "15",
+      "label": "Rafaela Crespín Rubio (GS)",
+      "coords": "174,171,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "128",
+      "legislature": "15",
+      "label": "Luc Andre Diouf Dioh (GS)",
+      "coords": "111,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "105",
+      "legislature": "15",
+      "label": "Javier Rodríguez Palacios (GS)",
+      "coords": "110,265,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "112",
+      "legislature": "15",
+      "label": "Patricia Otero Rodríguez (GS)",
+      "coords": "111,241,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "186",
+      "legislature": "15",
+      "label": "Luis Carlos Sahuquillo García (GS)",
+      "coords": "114,217,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "195",
+      "legislature": "15",
+      "label": "María Dolores Corujo Berriel (GS)",
+      "coords": "123,194,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "54",
+      "legislature": "15",
+      "label": "Pablo Antuñano Colina (GS)",
+      "coords": "134,173,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "63",
+      "legislature": "15",
+      "label": "María de las Nieves Ramírez Moreno (GS)",
+      "coords": "150,155,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "21",
+      "legislature": "15",
+      "label": "Antidio Fagúndez Campo (GS)",
+      "coords": "83,302,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "96",
+      "legislature": "15",
+      "label": "Marc Lamuà Estañol (GS)",
+      "coords": "83,277,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "24",
+      "legislature": "15",
+      "label": "José Luis Aceves Galindo (GS)",
+      "coords": "83,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "264",
+      "legislature": "15",
+      "label": "María Luisa Faneca López (GS)",
+      "coords": "84,230,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "228",
+      "legislature": "15",
+      "label": "César Joaquín Ramos Esteban (GS)",
+      "coords": "87,206,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "218",
+      "legislature": "15",
+      "label": "María Carmen Sánchez Díaz (GS)",
+      "coords": "97,182,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "239",
+      "legislature": "15",
+      "label": "Noelia Cobo Pérez (GS)",
+      "coords": "109,159,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "244",
+      "legislature": "15",
+      "label": "Marta Madrenas i Mir (GJxCAT)",
+      "coords": "125,140,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "138",
+      "legislature": "15",
+      "label": "Míriam Nogueras i Camero (GJxCAT)",
+      "coords": "144,123,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "94",
+      "legislature": "15",
+      "label": "Valle Mellado Sierra (GS)",
+      "coords": "56,277,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "75",
+      "legislature": "15",
+      "label": "María Adrio Taracido (GS)",
+      "coords": "56,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "31",
+      "legislature": "15",
+      "label": "Sergio Gutiérrez Prieto (GS)",
+      "coords": "59,219,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "273",
+      "legislature": "15",
+      "label": "Pepe Mercadal Baquero (GS)",
+      "coords": "63,196,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "130",
+      "legislature": "15",
+      "label": "Daniel Senderos Oraá (GS)",
+      "coords": "74,165,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "363",
+      "legislature": "15",
+      "label": "Juan Antonio Lorenzo Cazorla (GS)",
+      "coords": "85,144,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "242",
+      "legislature": "15",
+      "label": "Josep Pagès i Massó (GJxCAT)",
+      "coords": "106,119,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "176",
+      "legislature": "15",
+      "label": "Pilar Calvo Gómez (GJxCAT)",
+      "coords": "124,101,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "79",
+      "legislature": "15",
+      "label": "Carmen Andrés Añón (GS)",
+      "coords": "29,279,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "81",
+      "legislature": "15",
+      "label": "Ferran Verdejo Vicente (GS)",
+      "coords": "30,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "146",
+      "legislature": "15",
+      "label": "Alicia Álvarez González (GS)",
+      "coords": "32,215,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "113",
+      "legislature": "15",
+      "label": "María Montserrat García Chavarría (GS)",
+      "coords": "37,192,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "168",
+      "legislature": "15",
+      "label": "Vicent Manuel Sarrià Morell (GS)",
+      "coords": "50,154,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "91",
+      "legislature": "15",
+      "label": "Trinidad Carmen Argota Castro (GS)",
+      "coords": "61,133,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "149",
+      "legislature": "15",
+      "label": "Luis Alfonso Rey de las Heras (GS)",
+      "coords": "88,99,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "129",
+      "legislature": "15",
+      "label": "Cristina Valido García (GMx)",
+      "coords": "107,83,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "388",
+      "legislature": "15",
+      "label": "Raúl Díaz Marín (GS)",
+      "coords": "7,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "220",
+      "legislature": "15",
+      "label": "Oriol Almirón Ruiz (GS)",
+      "coords": "6,265,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "394",
+      "legislature": "15",
+      "label": "Ana González Herdaro (GS)",
+      "coords": "6,238,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "93",
+      "legislature": "15",
+      "label": "Iván Cacho Isla (GS)",
+      "coords": "7,209,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "410",
+      "legislature": "15",
+      "label": "Luis Antonio Gómez Piña (GS)",
+      "coords": "12,181,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "39",
+      "legislature": "15",
+      "label": "Mercedes Otero García (GS)",
+      "coords": "22,153,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "384",
+      "legislature": "15",
+      "label": "Olvido De la Rosa Baena (GS)",
+      "coords": "37,124,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "8",
+      "legislature": "15",
+      "label": "Mª Isabel Moreno Fernández (GS)",
+      "coords": "55,98,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "390",
+      "legislature": "15",
+      "label": "José Losada Fernández (GS)",
+      "coords": "76,76,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "310",
+      "legislature": "15",
+      "label": "Gabriel Blanco Arrúe (GS)",
+      "coords": "98,58,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "165",
+      "legislature": "15",
+      "label": "Aina Vidal Sáez (GSUMAR)",
+      "coords": "243,172,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "309",
+      "legislature": "15",
+      "label": "Enrique Fernando Santiago Romero (GSUMAR)",
+      "coords": "274,170,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "303",
+      "legislature": "15",
+      "label": "Mikel Legarda Uriarte (GV (EAJ-PNV))",
+      "coords": "304,173,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "332",
+      "legislature": "15",
+      "label": "Agustín Santos Maraver (GSUMAR)",
+      "coords": "210,152,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "78",
+      "legislature": "15",
+      "label": "Teslem Andala Ubbi (GSUMAR)",
+      "coords": "239,144,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "225",
+      "legislature": "15",
+      "label": "Vicenç Vidal Matas (GSUMAR)",
+      "coords": "266,140,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "408",
+      "legislature": "15",
+      "label": "Manuel Lago Peñas (GSUMAR)",
+      "coords": "293,142,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "305",
+      "legislature": "15",
+      "label": "Nerea Renteria Lasanta (GV (EAJ-PNV))",
+      "coords": "322,147,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "87",
+      "legislature": "15",
+      "label": "Txema Guijarro García (GSUMAR)",
+      "coords": "197,131,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "329",
+      "legislature": "15",
+      "label": "Candela López Tagliafico (GSUMAR)",
+      "coords": "225,120,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "157",
+      "legislature": "15",
+      "label": "Fèlix Alonso Cantorné (GSUMAR)",
+      "coords": "253,115,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "393",
+      "legislature": "15",
+      "label": "Nahuel González López (GSUMAR)",
+      "coords": "279,114,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "77",
+      "legislature": "15",
+      "label": "Etna Estrems Fayos (GR)",
+      "coords": "308,117,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "312",
+      "legislature": "15",
+      "label": "Teresa Jordà i Roura (GR)",
+      "coords": "336,125,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "287",
+      "legislature": "15",
+      "label": "Mertxe Aizpurua Arzallus (GEH Bildu)",
+      "coords": "178,107,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "122",
+      "legislature": "15",
+      "label": "Isabel Pozueta Fernández (GEH Bildu)",
+      "coords": "202,94,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "397",
+      "legislature": "15",
+      "label": "Francisco Sierra Caballero (GSUMAR)",
+      "coords": "240,85,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "292",
+      "legislature": "15",
+      "label": "Àgueda Micó Micó (GMx)",
+      "coords": "266,82,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "33",
+      "legislature": "15",
+      "label": "Ione Belarra Urteaga (GMx)",
+      "coords": "293,84,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "238",
+      "legislature": "15",
+      "label": "Martina Velarde Gómez (GMx)",
+      "coords": "319,87,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "222",
+      "legislature": "15",
+      "label": "Pilar Vallugera Balañà (GR)",
+      "coords": "344,94,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "398",
+      "legislature": "15",
+      "label": "Inés Granollers Cunillera (GR)",
+      "coords": "367,107,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "290",
+      "legislature": "15",
+      "label": "Marije Fullaondo la Cruz (GEH Bildu)",
+      "coords": "178,74,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "207",
+      "legislature": "15",
+      "label": "Jacobo González-Robatto Perote (GVOX)",
+      "coords": "208,63,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "53",
+      "legislature": "15",
+      "label": "Patricia Rueda Perelló (GVOX)",
+      "coords": "234,58,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "70",
+      "legislature": "15",
+      "label": "Joaquín Robles López (GVOX)",
+      "coords": "265,56,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "4",
+      "legislature": "15",
+      "label": "Lourdes Méndez Monasterio (GVOX)",
+      "coords": "291,58,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "52",
+      "legislature": "15",
+      "label": "Ignacio Hoces Íñiguez (GVOX)",
+      "coords": "322,61,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "256",
+      "legislature": "15",
+      "label": "Ignacio Gil Lázaro (GVOX)",
+      "coords": "346,68,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "325",
+      "legislature": "15",
+      "label": "Emilio Jesús Del Valle Rodríguez (GVOX)",
+      "coords": "377,81,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "159",
+      "legislature": "15",
+      "label": "Carina Mejías Sánchez (GVOX)",
+      "coords": "190,42,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "214",
+      "legislature": "15",
+      "label": "Blanca Armario González (GVOX)",
+      "coords": "216,34,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "132",
+      "legislature": "15",
+      "label": "Rocío Aguirre Gil de Biedma (GVOX)",
+      "coords": "251,29,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "341",
+      "legislature": "15",
+      "label": "María del Mar Vázquez Jiménez (GP)",
+      "coords": "278,29,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "348",
+      "legislature": "15",
+      "label": "María Pilar Alía Aguado (GP)",
+      "coords": "313,31,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "323",
+      "legislature": "15",
+      "label": "Violante Tomás Olivares (GP)",
+      "coords": "340,37,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "160",
+      "legislature": "15",
+      "label": "Llanos De Luna Tobarra (GP)",
+      "coords": "373,50,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "316",
+      "legislature": "15",
+      "label": "Ricardo Chamorro Delmo (GVOX)",
+      "coords": "151,30,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "104",
+      "legislature": "15",
+      "label": "Pedro Fernández Hernández (GVOX)",
+      "coords": "191,17,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "172",
+      "legislature": "15",
+      "label": "Raúl Cuevas Larrosa (GP)",
+      "coords": "217,11,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "210",
+      "legislature": "15",
+      "label": "Jimena Delgado-Taramona Hernández (GP)",
+      "coords": "246,8,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "60",
+      "legislature": "15",
+      "label": "Esther Llamazares Domingo (GP)",
+      "coords": "273,6,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "260",
+      "legislature": "15",
+      "label": "Alfonso Carlos Macías Gata (GP)",
+      "coords": "301,7,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "16",
+      "legislature": "15",
+      "label": "Javier Celaya Brey (GP)",
+      "coords": "327,11,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "382",
+      "legislature": "15",
+      "label": "María Elisa Vedrina Conesa (GP)",
+      "coords": "354,17,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "368",
+      "legislature": "15",
+      "label": "Javier Noriega Gómez (GP)",
+      "coords": "381,26,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "317",
+      "legislature": "15",
+      "label": "Sandra Pascual Rocamora (GP)",
+      "coords": "406,38,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "193",
+      "legislature": "15",
+      "label": "María José Rodríguez de Millán Parro (GVOX)",
+      "coords": "359,201,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "27",
+      "legislature": "15",
+      "label": "Jaime Eduardo de Olano Vela (GP)",
+      "coords": "372,226,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "216",
+      "legislature": "15",
+      "label": "Ángel Ibáñez Hernando (GP)",
+      "coords": "374,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "28",
+      "legislature": "15",
+      "label": "Miguel Tellado Filgueira (GP)",
+      "coords": "375,278,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "283",
+      "legislature": "15",
+      "label": "Alberto Núñez Feijóo (GP)",
+      "coords": "374,302,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "307",
+      "legislature": "15",
+      "label": "Carlos Hernández Quero (GVOX)",
+      "coords": "372,180,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "202",
+      "legislature": "15",
+      "label": "Sergio Sayas López (GP)",
+      "coords": "389,200,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "270",
+      "legislature": "15",
+      "label": "Beatriz Álvarez Fanjul (GP)",
+      "coords": "398,225,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "9",
+      "legislature": "15",
+      "label": "Borja Sémper Pascual (GP)",
+      "coords": "400,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "209",
+      "legislature": "15",
+      "label": "Carmen Fúnez de Gregorio (GP)",
+      "coords": "400,278,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "284",
+      "legislature": "15",
+      "label": "Concepción Gamarra Ruiz-Clavijo (GP)",
+      "coords": "400,303,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "374",
+      "legislature": "15",
+      "label": "Pablo Sáez Alonso-Muñumer (GVOX)",
+      "coords": "387,156,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "349",
+      "legislature": "15",
+      "label": "Isabel María Borrego Cortés (GP)",
+      "coords": "403,174,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "108",
+      "legislature": "15",
+      "label": "Pedro Puy Fraga (GP)",
+      "coords": "414,194,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "351",
+      "legislature": "15",
+      "label": "Pedro Muñoz Abrines (GP)",
+      "coords": "422,218,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "188",
+      "legislature": "15",
+      "label": "Ana Isabel Alós López (GP)",
+      "coords": "425,242,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "315",
+      "legislature": "15",
+      "label": "Sofía Acedo Reyes (GP)",
+      "coords": "426,266,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "347",
+      "legislature": "15",
+      "label": "María del Mar Sánchez Sierra (GP)",
+      "coords": "426,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "73",
+      "legislature": "15",
+      "label": "Manuel Mariscal Zabala (GVOX)",
+      "coords": "392,124,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "109",
+      "legislature": "15",
+      "label": "Cristina Teniente Sánchez (GP)",
+      "coords": "411,139,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "131",
+      "legislature": "15",
+      "label": "María Soledad Cruz-Guzmán García (GP)",
+      "coords": "427,159,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "177",
+      "legislature": "15",
+      "label": "Irene Garrido Valenzuela (GP)",
+      "coords": "439,182,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "12",
+      "legislature": "15",
+      "label": "Antonio Román Jasanada (GP)",
+      "coords": "450,206,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "373",
+      "legislature": "15",
+      "label": "María Jesús Moro Almaraz (GP)",
+      "coords": "452,231,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "297",
+      "legislature": "15",
+      "label": "Pablo Hispán Iglesias de Ussel (GP)",
+      "coords": "453,253,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "324",
+      "legislature": "15",
+      "label": "María Mercedes Fernández González (GP)",
+      "coords": "453,278,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "99",
+      "legislature": "15",
+      "label": "María Sandra Moneo Díez (GP)",
+      "coords": "453,302,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "1",
+      "legislature": "15",
+      "label": "José Alberto Herrero Bono (GP)",
+      "coords": "422,111,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "55",
+      "legislature": "15",
+      "label": "Belén Hoyo Juliá (GP)",
+      "coords": "440,128,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "404",
+      "legislature": "15",
+      "label": "Agustín Conde Bajén (GP)",
+      "coords": "458,154,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "43",
+      "legislature": "15",
+      "label": "Ana Belén Vázquez Blanco (GP)",
+      "coords": "467,177,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "107",
+      "legislature": "15",
+      "label": "Patricia Rodríguez Calleja (GP)",
+      "coords": "476,209,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "45",
+      "legislature": "15",
+      "label": "Tomás Cabezón Casas (GP)",
+      "coords": "479,233,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "282",
+      "legislature": "15",
+      "label": "Silverio Argüelles García (GP)",
+      "coords": "480,266,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "206",
+      "legislature": "15",
+      "label": "Carlos Aragonés Mendiguchía (GP)",
+      "coords": "480,289,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "411",
+      "legislature": "15",
+      "label": "Esperanza Reynal Reillo (GP)",
+      "coords": "440,89,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "85",
+      "legislature": "15",
+      "label": "Elvira Velasco Morillo (GP)",
+      "coords": "457,109,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "198",
+      "legislature": "15",
+      "label": "Juan Luis Pedreño Molina (GP)",
+      "coords": "481,142,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "276",
+      "legislature": "15",
+      "label": "Cristina Agüera Gago (GP)",
+      "coords": "491,165,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "211",
+      "legislature": "15",
+      "label": "César Sánchez Pérez (GP)",
+      "coords": "503,203,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "74",
+      "legislature": "15",
+      "label": "Javier José Folch Blanc (GP)",
+      "coords": "505,227,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "254",
+      "legislature": "15",
+      "label": "Enrique Belda Pérez-Pedrero (GP)",
+      "coords": "507,264,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "155",
+      "legislature": "15",
+      "label": "María Isabel Prieto Serrano (GP)",
+      "coords": "507,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "391",
+      "legislature": "15",
+      "label": "María Cuesta Rodríguez (GP)",
+      "coords": "450,67,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "150",
+      "legislature": "15",
+      "label": "Antonio Martínez Gómez (GP)",
+      "coords": "472,87,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "88",
+      "legislature": "15",
+      "label": "Cristina Moreno Borrás (GP)",
+      "coords": "490,111,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "175",
+      "legislature": "15",
+      "label": "Cristóbal Garre Murcia (GP)",
+      "coords": "507,139,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "213",
+      "legislature": "15",
+      "label": "Óscar Ramajo Prada (GP)",
+      "coords": "519,166,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "48",
+      "legislature": "15",
+      "label": "Evarist Aznar Teruel (GP)",
+      "coords": "527,195,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "184",
+      "legislature": "15",
+      "label": "Manuel García Félix (GP)",
+      "coords": "529,240,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "156",
+      "legislature": "15",
+      "label": "Carlos Simarro Vicens (GP)",
+      "coords": "530,265,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "101",
+      "legislature": "15",
+      "label": "Carlos Alberto Sánchez Ojeda (GP)",
+      "coords": "530,290,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "412",
+      "legislature": "15",
+      "label": "Emilia Almodóvar Sánchez (GS)",
+      "coords": "59,385,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "362",
+      "legislature": "15",
+      "label": "Marta Gracia Blanco (GS)",
+      "coords": "59,363,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "18",
+      "legislature": "15",
+      "label": "Alba Soldevilla Novials (GS)",
+      "coords": "59,338,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "133",
+      "legislature": "15",
+      "label": "Esther Rodríguez Suárez (GS)",
+      "coords": "33,385,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "111",
+      "legislature": "15",
+      "label": "Josep Paré Aregall (GS)",
+      "coords": "33,361,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "352",
+      "legislature": "15",
+      "label": "Andreu Martín Martínez (GS)",
+      "coords": "33,337,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "98",
+      "legislature": "15",
+      "label": "Jesús Mayoral Pérez (GS)",
+      "coords": "7,375,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "365",
+      "legislature": "15",
+      "label": "Isabel Iniesta Egido (GS)",
+      "coords": "7,356,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "231",
+      "legislature": "15",
+      "label": "Irene Jódar Pérez (GS)",
+      "coords": "6,336,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "320",
+      "legislature": "15",
+      "label": "Rosa Quintana Carballo (GP)",
+      "coords": "478,325,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "266",
+      "legislature": "15",
+      "label": "Fernando De Rosa Torner (GP)",
+      "coords": "478,349,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "173",
+      "legislature": "15",
+      "label": "Celso Luis Delgado Arce (GP)",
+      "coords": "477,374,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "234",
+      "legislature": "15",
+      "label": "Silvia Franco González (GP)",
+      "coords": "505,325,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "299",
+      "legislature": "15",
+      "label": "Miguel Ángel Quintanilla Navarro (GP)",
+      "coords": "504,350,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "378",
+      "legislature": "15",
+      "label": "Beatriz Jiménez Linuesa (GP)",
+      "coords": "505,374,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    },
+    {
+      "officialId": "409",
+      "legislature": "15",
+      "label": "Ricardo Tarno Blanco (GP)",
+      "coords": "530,325,5",
+      "sourceUrl": "https://www.congreso.es/es/hemiciclo"
+    }
+  ]
+}
