@@ -1,0 +1,34 @@
+name: Congreso tracker refresh
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: congreso-tracker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run refresh
+      - name: Upload normalized snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: congreso-legislatura-xv-${{ github.run_id }}
+          retention-days: 30
+          path: |
+            congreso-tracker/data/current.json
+            congreso-tracker/data/*.json.gz
+            congreso-tracker/data/collection-log.json
+            congreso-tracker/data/video-pilot-report.json
