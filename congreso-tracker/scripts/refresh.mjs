@@ -8,6 +8,7 @@ const jobs = [
   ['import-committee-catalogue', 'scripts/import-committee-catalogue.mjs'],
   ['import-hemicycle', 'scripts/import-hemicycle.mjs'],
   ['import-audiovisual-pilot', 'scripts/import-audiovisual-pilot.mjs'],
+  ['measure-clip-durations', 'scripts/measure-clip-durations.mjs'],
   ['import-transcripts', 'scripts/import-transcripts.mjs'],
   ['backfill-votes', 'scripts/backfill-votes.mjs'],
   ['import-agenda', 'scripts/import-agenda.mjs'],
