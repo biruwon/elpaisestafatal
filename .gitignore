@@ -9,3 +9,5 @@ dist/
 functions/lib/generated-catalogue.ts
 
 congreso-tracker/data/raw/
+
+congreso-tracker/data/votes-full.json
