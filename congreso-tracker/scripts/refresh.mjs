@@ -4,6 +4,7 @@ const jobs = [
   ['collect', 'scripts/collect.mjs'],
   ['import-deputy-identities', 'scripts/import-deputy-identities.mjs'],
   ['import-substitutions', 'scripts/import-substitutions.mjs'],
+  ['import-profile-documents', 'scripts/import-profile-documents.mjs'],
   ['backfill-votes', 'scripts/backfill-votes.mjs'],
   ['import-agenda', 'scripts/import-agenda.mjs'],
   ['import-bodies', 'scripts/import-bodies.mjs'],
