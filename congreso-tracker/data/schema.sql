@@ -13,3 +13,4 @@ CREATE TABLE initiatives (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, number
 CREATE TABLE initiative_authorship (initiative_id TEXT NOT NULL, deputy_id TEXT NOT NULL, authorship_type TEXT NOT NULL, source_locator TEXT, PRIMARY KEY (initiative_id, deputy_id, authorship_type));
 CREATE TABLE media_segments (id TEXT PRIMARY KEY, intervention_id TEXT, session_id TEXT NOT NULL, deputy_id TEXT, url TEXT, duration_seconds INTEGER, evidence_status TEXT);
 CREATE TABLE agenda_items (id TEXT PRIMARY KEY, date TEXT NOT NULL, session_id TEXT, kind TEXT NOT NULL, fields_json TEXT, source_locator TEXT, http_status INTEGER, error TEXT);
+CREATE TABLE daily_presence_summaries (deputy_id TEXT NOT NULL, date TEXT NOT NULL, intervention_turns INTEGER NOT NULL, intervention_seconds INTEGER NOT NULL, nominal_vote_events INTEGER NOT NULL, remote_vote_events INTEGER NOT NULL, evidence_kinds_json TEXT NOT NULL, PRIMARY KEY (deputy_id,date));
