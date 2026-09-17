@@ -11,3 +11,4 @@ CREATE TABLE body_memberships (id TEXT PRIMARY KEY, body_id TEXT NOT NULL, deput
 CREATE TABLE initiatives (id TEXT PRIMARY KEY, legislature TEXT NOT NULL, number TEXT, title TEXT, initiative_type TEXT, super_type TEXT, first_session TEXT, last_session TEXT, source_document_id TEXT NOT NULL);
 CREATE TABLE initiative_authorship (initiative_id TEXT NOT NULL, deputy_id TEXT NOT NULL, authorship_type TEXT NOT NULL, source_locator TEXT, PRIMARY KEY (initiative_id, deputy_id, authorship_type));
 CREATE TABLE media_segments (id TEXT PRIMARY KEY, intervention_id TEXT, session_id TEXT NOT NULL, deputy_id TEXT, url TEXT, duration_seconds INTEGER, evidence_status TEXT);
+CREATE TABLE agenda_items (id TEXT PRIMARY KEY, date TEXT NOT NULL, session_id TEXT, kind TEXT NOT NULL, fields_json TEXT, source_locator TEXT, http_status INTEGER, error TEXT);
