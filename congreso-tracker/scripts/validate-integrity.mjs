@@ -1,0 +1,4 @@
+import { readFile } from 'node:fs/promises';
+const d=JSON.parse(await readFile('data/current.json','utf8'));const checks=[];function unique(name,rows){const ids=rows.map(x=>x.id).filter(Boolean);if(new Set(ids).size!==ids.length)throw new Error(`${name}: duplicate ids`);checks.push(`${name}:${ids.length}`)}
+unique('deputies',d.deputies);unique('servicePeriods',d.servicePeriods);unique('substitutions',d.substitutions);unique('interventions',d.interventions);unique('initiatives',d.initiatives);unique('presenceObservations',d.presenceObservations);
+if(d.presenceObservations.some(x=>x.kind==='remote_participation'&&x.value==='physical_presence'))throw new Error('remote vote marked physical');if(d.interventions.some(x=>x.topicLabels?.length===0))throw new Error('empty topic labels');if(d.deputies.some(x=>x.group===undefined))throw new Error('missing group coerced');console.log(`integrity passed: ${checks.join(', ')}`);
