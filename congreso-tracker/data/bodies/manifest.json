@@ -1,24 +1,30 @@
 {
-  "generatedAt": "2026-09-17T21:37:43.730Z",
+  "generatedAt": "2026-09-17T21:59:45.147Z",
   "legislature": "XV",
   "sources": [
     {
       "name": "mesa",
       "id": 100,
       "status": 200,
-      "bytes": 3080
+      "bytes": 3080,
+      "contentHash": "b06dbb59069bf35b4413403cf64d5d4164350d6a0230f1d0499052e28b6dd830",
+      "validationStatus": "unverified_response"
     },
     {
       "name": "junta-portavoces",
       "id": 300,
       "status": 200,
-      "bytes": 3080
+      "bytes": 3080,
+      "contentHash": "b06dbb59069bf35b4413403cf64d5d4164350d6a0230f1d0499052e28b6dd830",
+      "validationStatus": "duplicate_response_possible_parameter_ignored"
     },
     {
       "name": "diputacion-permanente",
       "id": 500,
       "status": 200,
-      "bytes": 3080
+      "bytes": 3080,
+      "contentHash": "b06dbb59069bf35b4413403cf64d5d4164350d6a0230f1d0499052e28b6dd830",
+      "validationStatus": "duplicate_response_possible_parameter_ignored"
     }
   ]
 }
