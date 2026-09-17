@@ -1,0 +1,4 @@
+import { readFile } from 'node:fs/promises';
+const d=JSON.parse(await readFile(process.argv[2]||'data/current.json','utf8')); let checked=0;
+for(const vote of d.votes||[]){const counts={si:0,no:0,abstencion:0};for(const item of vote.individual||[]){const c=String(item.choice).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(c.startsWith('si'))counts.si++;else if(c==='no')counts.no++;else if(c.startsWith('abst'))counts.abstencion++;}const t=vote.payload?.totales||{};if(t.afavor!=null&&counts.si!==Number(t.afavor))throw new Error(`${vote.id}: sí mismatch ${counts.si}/${t.afavor}`);if(t.enContra!=null&&counts.no!==Number(t.enContra))throw new Error(`${vote.id}: no mismatch ${counts.no}/${t.enContra}`);if(t.abstenciones!=null&&counts.abstencion!==Number(t.abstenciones))throw new Error(`${vote.id}: abstentions mismatch`);checked++;}
+console.log(`validated ${checked} ballots; individual choices reconcile with published totals`);
