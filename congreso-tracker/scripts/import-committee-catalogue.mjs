@@ -1,0 +1,4 @@
+import { writeFile } from 'node:fs/promises';
+const url='https://www.congreso.es/es/comisiones'; const html=await fetch(url,{headers:{'user-agent':'congreso-tracker/0.1 research contact'},signal:AbortSignal.timeout(30000)}).then(r=>r.text());
+const rows=[]; const re=/<a[^>]+href=["'][^"']*_organos_codComision=(\d+)[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi; let m; while((m=re.exec(html))){const name=m[2].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();if(name&&!rows.some(x=>x.code===m[1]))rows.push({code:m[1],name,legislature:'XV',sourceUrl:`${url}?_organos_codComision=${m[1]}`,membershipStatus:'catalogued; composition endpoint pending validation'});}
+await writeFile('data/committee-catalogue.json',JSON.stringify({meta:{retrievedAt:new Date().toISOString(),url,parserVersion:'commission-links-v1'},bodies:rows},null,2));console.log(`imported ${rows.length} committee catalogue entries`);

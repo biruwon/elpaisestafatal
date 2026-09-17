@@ -1,0 +1,415 @@
+{
+  "meta": {
+    "retrievedAt": "2026-09-17T22:21:53.338Z",
+    "url": "https://www.congreso.es/es/comisiones",
+    "parserVersion": "commission-links-v1"
+  },
+  "bodies": [
+    {
+      "code": "301",
+      "name": "Comisión Constitucional",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=301",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "302",
+      "name": "Comisión de Asuntos Exteriores",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=302",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "303",
+      "name": "Comisión de Justicia",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=303",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "304",
+      "name": "Comisión de Defensa",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=304",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "305",
+      "name": "Comisión de Hacienda y Función Pública",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=305",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "307",
+      "name": "Comisión de Presupuestos",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=307",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "329",
+      "name": "Comisión de Interior",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=329",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "327",
+      "name": "Comisión de Transportes y Movilidad Sostenible",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=327",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "371",
+      "name": "Comisión de Educación, Formación Profesional y Deportes",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=371",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "371201",
+      "name": "(154/5) Subcomisión relativa al Estatuto del Deportista",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=371201",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "372",
+      "name": "Comisión de Trabajo, Eco. Social, Inclusión, S.Social y Migraciones",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=372",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "373",
+      "name": "Comisión de Industria y Turismo",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=373",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "345",
+      "name": "Comisión de Derechos Sociales y Consumo",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=345",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "374",
+      "name": "Comisión de Agricultura, Pesca y Alimentación",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=374",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "330",
+      "name": "Comisión de Política Territorial",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=330",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "376",
+      "name": "Comisión de Transición Ecológica y Reto Demográfico",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=376",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "376101",
+      "name": "(154/1) Ponencia encargada relaciones Consejo de Seguridad Nuclear",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=376101",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "333",
+      "name": "Comisión de Vivienda y Agenda Urbana",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=333",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "377",
+      "name": "Comisión de Cultura",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=377",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "378",
+      "name": "Comisión de Economía, Comercio y Transformación Digital",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=378",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "379",
+      "name": "Comisión de Sanidad",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=379",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "379202",
+      "name": "(154/10) Subcomisión estudio situación del sector veterinario español",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=379202",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "380",
+      "name": "Comisión de Ciencia, Innovación y Universidades",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=380",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "326",
+      "name": "Comisión de Cooperación Internacional para el Desarrollo",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=326",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "320",
+      "name": "Comisión de Igualdad",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=320",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "320201",
+      "name": "(154/6) Subcomisión relativa a la lucha contra los discursos de odio",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=320201",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "332",
+      "name": "Comisión de Juventud e Infancia",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=332",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "332201",
+      "name": "(154/8) Subcomisión Pacto Estado erradicación Pobreza Infantil",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=332201",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "312",
+      "name": "Comisión de Reglamento",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=312",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "311",
+      "name": "Comisión del Estatuto",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=311",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "314",
+      "name": "Comisión de Peticiones",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=314",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "151",
+      "name": "Comisión de control de los créditos destinados a gastos reservados",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=151",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "150",
+      "name": "Comisión Consultiva de Nombramientos",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=150",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "343",
+      "name": "Comisión de seguimiento y evaluación de los acuerdos Pacto de Toledo",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=343",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "338",
+      "name": "Comisión de segto. y eval. acuerdos Pacto de Estado Violencia Género",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=338",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "346",
+      "name": "Comisión para las Políticas Integrales de la Discapacidad",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=346",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "331",
+      "name": "Comisión calidad democrática, contra corrupción y reform. inst. y leg.",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=331",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "344",
+      "name": "Comisión sobre Seguridad Vial",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=344",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "367",
+      "name": "(152/1) Comisión de Investigación sobre &#034;Operación Cataluña&#034;",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=367",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "368",
+      "name": "(152/2) Comisión de Investigación atentados de Barcelona y Cambrils",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=368",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "365",
+      "name": "(152/5) Comisión Investigación sobre la DANA y paliar fenómenos futuro",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=365",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "362",
+      "name": "(152/8) Com.Investig. interrup. suminis. eléctrico el 28 abril de 2025",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=362",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "317",
+      "name": "Comisión Mixta para las Relaciones con el Tribunal de Cuentas",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=317",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "317102",
+      "name": "(154/4) Ponencia recibir de la OIRSC infor. para contratación pública",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=317102",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "318",
+      "name": "Comisión Mixta para la Unión Europea",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=318",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "316",
+      "name": "Comisión Mixta de Relaciones con el Defensor del Pueblo",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=316",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "358",
+      "name": "Comisión Mixta Control Parlam. de la Corporación RTVE y sus Sociedades",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=358",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "358201",
+      "name": "(154/9) Subcomisión propuesta mandato-marco Corporación RTVE",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=358201",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "319",
+      "name": "Comisión Mixta de Seguridad Nacional",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=319",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "319102",
+      "name": "(154/11) Ponencia marco seguridad nacional regul.personas extranjeras",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=319102",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "322",
+      "name": "Comisión Mixta para el Estudio de los Problemas de las Adicciones",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=322",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "315",
+      "name": "Comisión Mixta para Coordinación y Seguimiento Estrategia Española ODS",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=315",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "323",
+      "name": "Comisión Mixta sobre Insularidad",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=323",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "313",
+      "name": "Comisión del Estatuto de los Diputados",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=313",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "369",
+      "name": "(152/3) Com.Investiga. espionaje a través de malware Pegasus y Candiru",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=369",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "366",
+      "name": "(152/4) Comisión Investigación contratación material sanitario COVID19",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=366",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "363",
+      "name": "(152/6) Comi. Investi. interrup. suministro eléctrico y comunicaciones",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=363",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    },
+    {
+      "code": "364",
+      "name": "(152/7) Comi.Invest.crisis suministro eléctrico causas y consecuencias",
+      "legislature": "XV",
+      "sourceUrl": "https://www.congreso.es/es/comisiones?_organos_codComision=364",
+      "membershipStatus": "catalogued; composition endpoint pending validation"
+    }
+  ]
+}
