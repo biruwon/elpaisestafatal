@@ -1,0 +1,14 @@
+import { readFile, writeFile } from 'node:fs/promises';
+const log = JSON.parse(await readFile('data/collection-log.json', 'utf8')).sources || [];
+const candidates = log.filter(x => (x.name === 'interventions' || x.name.startsWith('interventions-')) && String(x.contentType).toLowerCase().includes('json')).sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
+if (!candidates.length) throw new Error('No JSON interventions feed discovered');
+const selected = candidates[0]; const source = await readFile(`data/raw/${selected.name}`); JSON.parse(source);
+await writeFile('data/raw/interventions.json', source);
+const deputyCandidates = log.filter(x => (x.name === 'deputies' || x.name.startsWith('deputies-')) && String(x.contentType).toLowerCase().includes('json'));
+const active = deputyCandidates.find(x => /DiputadosActivos/i.test(x.url));
+const former = deputyCandidates.find(x => /DiputadosDeBaja/i.test(x.url));
+if (!active || !former) throw new Error('Active/former deputy JSON feeds not discovered');
+await writeFile('data/raw/deputies-active.json', await readFile(`data/raw/${active.name}`));
+await writeFile('data/raw/deputies-former.json', await readFile(`data/raw/${former.name}`));
+await writeFile('data/raw/selected-feeds.json', JSON.stringify({ generatedAt: new Date().toISOString(), interventions: { sourceName: selected.name, sourceUrl: selected.url, bytes: source.length }, deputies: { active: active.name, former: former.name } }, null, 2));
+console.log(`selected ${selected.name} as interventions JSON feed`);
