@@ -1,0 +1,1423 @@
+{
+  "meta": {
+    "legislature": "XV",
+    "retrievedAt": "2026-09-17T22:36:56.377Z",
+    "sessions": [
+      "197",
+      "198"
+    ],
+    "facialIdentification": false
+  },
+  "sessions": [
+    {
+      "sessionNumber": "197",
+      "date": "2026-09-15",
+      "indexUrl": "https://app.congreso.es/AudiovisualCongreso/audiovisualEmisionSemiDirecto?codOrgano=400&codSesion=197&idLegislaturaElegida=15&fechaSesion=15/09/2026",
+      "streamUrl": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_197/cortes/smil:15_000400_197.smil/manifest.m3u8",
+      "clips": [
+        {
+          "id": "197-1",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778279.mp4",
+          "label": "Minuto de silencio",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-2",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778280.mp4",
+          "label": "Juramento o promesa de acatamiento de la Constituci�n",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-3",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778281.mp4",
+          "label": "Taibo Monelos, Diego (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-4",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778283.mp4",
+          "label": "Del Grupo Parlamentario VOX, Org�nica de modificaci�n de la Ley Org�nica 5/2005, de 17 de noviembre, de la Defensa Nacional.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-5",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778284.mp4",
+          "label": "S�nchez Garc�a, Jos� Mar�a (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-6",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778285.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-7",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778286.mp4",
+          "label": "S�nchez Serna, Javier (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-8",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778287.mp4",
+          "label": "Legarda Uriarte, Mikel (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-9",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778288.mp4",
+          "label": "�lvaro Vidal, Francesc-Marc (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-10",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778289.mp4",
+          "label": "Guijarro Garc�a, Txema (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-11",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778290.mp4",
+          "label": "Rodr�guez Salas, Jos� Antonio (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-12",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778291.mp4",
+          "label": "Hernando Fraile, Rafael Antonio (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-13",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778345.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-14",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778292.mp4",
+          "label": "Del Grupo Parlamentario Plurinacional SUMAR, para la modificaci�n de la Ley 12/2023, de 24 de mayo, por el derecho a la vivienda.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-15",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778293.mp4",
+          "label": "Ib��ez Mezquita, Alberto (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-16",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778294.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-17",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778295.mp4",
+          "label": "Santana Perera, Noem� (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-18",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778296.mp4",
+          "label": "Vaquero Montero, Maribel (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-19",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778297.mp4",
+          "label": "Matute Garc�a de Jal�n, Oskar (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-20",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778298.mp4",
+          "label": "Madrenas i Mir, Marta (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-21",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778299.mp4",
+          "label": "Estrems Fayos, Etna (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-22",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778300.mp4",
+          "label": "Hern�ndez Quero, Carlos (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-23",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778301.mp4",
+          "label": "J�dar P�rez, Irene (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-24",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778302.mp4",
+          "label": "Sastre Uy�, Miguel �ngel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-25",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778346.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-26",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778304.mp4",
+          "label": "Del Grupo Parlamentario VOX, relativa al cumplimiento del Acuerdo entre el Reino de Espa�a y el Reino de Marruecos sobre la cooperaci�n en el �mbito de la prevenci�n de la emigraci�n ilegal de menores no acompa�ados, su protecci�n y su retorno concertado, hecho en Rabat el 6 de marzo de 2007, y al rechazo a su reparto por el territorio nacional ante la invasi�n inmigratoria de Marruecos sobre Ceuta.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-27",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778305.mp4",
+          "label": "Armario Gonz�lez, Blanca (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-28",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778307.mp4",
+          "label": "Catal�n Higueras, Alberto (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-29",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778308.mp4",
+          "label": "Valido Garc�a, Cristina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-30",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778309.mp4",
+          "label": "Renteria Lasanta, Nerea (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-31",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778310.mp4",
+          "label": "Gonz�lez L�pez, Nahuel (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-32",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778311.mp4",
+          "label": "Castilla �lvarez, Mar�a Carmen (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-33",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778312.mp4",
+          "label": "Al�s L�pez, Ana Isabel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-34",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778313.mp4",
+          "label": "Del Grupo Parlamentario Plurinacional SUMAR, contra las medidas de coerci�n de Estados Unidos contra Cuba y la defensa del derecho internacional, la soberan�a y la paz.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-35",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778314.mp4",
+          "label": "Santiago Romero, Enrique Fernando (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-36",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778315.mp4",
+          "label": "Vaquero Montero, Maribel (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-37",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778316.mp4",
+          "label": "Romero Pozo, Rafaela (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-38",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_0_27659_778317.mp4",
+          "label": "Hoyo Juli�, Bel�n (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-39",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778321.mp4",
+          "label": "Catal�n Higueras, Alberto (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-40",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778322.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-41",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778323.mp4",
+          "label": "S�nchez Serna, Javier (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-42",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778324.mp4",
+          "label": "I�arritu Garc�a, Jon (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-43",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778325.mp4",
+          "label": "Gavin i Valls, Isidre (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-44",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778326.mp4",
+          "label": "Salvador i Duch, Jordi (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-45",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778327.mp4",
+          "label": "Rodr�guez Almeida, Andr�s Alberto (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-46",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778330.mp4",
+          "label": "Del Grupo Parlamentario Mixto (Sra. Belarra Urteaga), relativa a los planes del Gobierno sobre el encarecimiento de la vida.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-47",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778331.mp4",
+          "label": "Belarra Urteaga, Ione (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-48",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778332.mp4",
+          "label": "Cruset Dom�nech, Josep Maria (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-49",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778333.mp4",
+          "label": "Granollers Cunillera, In�s (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-50",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778335.mp4",
+          "label": "Lago Pe�as, Manuel (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-51",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778336.mp4",
+          "label": "S�ez Alonso-Mu�umer, Pablo (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-52",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778337.mp4",
+          "label": "Santana Aguilera, Ada (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-53",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778338.mp4",
+          "label": "Pascual Rocamora, Sandra (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-54",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778339.mp4",
+          "label": "Del Grupo Parlamentario VOX, sobre las medidas que va a adoptar el Gobierno para revertir la situaci�n de inseguridad ocasionada por la invasi�n en Ceuta.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-55",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778340.mp4",
+          "label": "Gil L�zaro, Ignacio (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-56",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778341.mp4",
+          "label": "De Rosa Torner, Fernando (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-57",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778342.mp4",
+          "label": "Mic� Mic�, �gueda (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-58",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778343.mp4",
+          "label": "Pisarello Prados, Gerardo (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "197-59",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_197/cortes/15_000400_197_1_27660_778344.mp4",
+          "label": "Poblador Pacheco, Mar�a Araceli (GS)",
+          "kind": "official_clip"
+        }
+      ],
+      "observationPolicy": "wide_shot_sampling_requires_manual_review"
+    },
+    {
+      "sessionNumber": "198",
+      "date": "2026-09-16",
+      "indexUrl": "https://app.congreso.es/AudiovisualCongreso/audiovisualEmisionSemiDirecto?codOrgano=400&codSesion=198&idLegislaturaElegida=15&fechaSesion=16/09/2026",
+      "streamUrl": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_198/cortes/smil:15_000400_198.smil/manifest.m3u8",
+      "clips": [
+        {
+          "id": "198-1",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778349.mp4",
+          "label": "PREGUNTA del Diputado D. ALBERTO N��EZ FEIJ�O, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Presidente del Gobierno: �Cree usted que se ha degradado la imagen de Espa�a?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-2",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778350.mp4",
+          "label": "N��ez Feij�o, Alberto (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-3",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778351.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-4",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778352.mp4",
+          "label": "N��ez Feij�o, Alberto (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-5",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778353.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-6",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778354.mp4",
+          "label": "PREGUNTA de la Diputada D� M�RIAM NOGUERAS I CAMERO, del Grupo Parlamentario Junts per Catalunya, que formula al Excmo. Sr. Presidente del Gobierno: �Qu� opina el Gobierno sobre la situaci�n actual?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-7",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778355.mp4",
+          "label": "Nogueras i Camero, M�riam (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-8",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778356.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-9",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778357.mp4",
+          "label": "Nogueras i Camero, M�riam (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-10",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778358.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-11",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778359.mp4",
+          "label": "PREGUNTA de la Diputada D� MERTXE AIZPURUA ARZALLUS, del Grupo Parlamentario Euskal Herria Bildu, que formula al Excmo. Sr. Presidente del Gobierno: �Est� dispuesto a tomar las decisiones que sean necesarias para, en lo que resta de legislatura, ampliar derechos laborales y sociales?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-12",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778360.mp4",
+          "label": "Aizpurua Arzallus, Mertxe (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-13",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778361.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-14",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778362.mp4",
+          "label": "Aizpurua Arzallus, Mertxe (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-15",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778363.mp4",
+          "label": "S�nchez P�rez-Castej�n, Pedro (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-16",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778364.mp4",
+          "label": "PREGUNTA de la Diputada D� ESTER MU�OZ DE LA IGLESIA, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Vicepresidente Primero y Ministro de Econom�a, Comercio y Empresa: �Por qu� el Gobierno hace tan mal las cosas, Vicepresidente?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-17",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778365.mp4",
+          "label": "Mu�oz de la Iglesia, Ester (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-18",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778366.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-19",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778367.mp4",
+          "label": "Mu�oz de la Iglesia, Ester (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-20",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778368.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-21",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778369.mp4",
+          "label": "PREGUNTA del Diputado D. JUAN BRAVO BAENA, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Vicepresidente Primero y Ministro de Econom�a, Comercio y Empresa: �Conoce usted la realidad de la calle?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-22",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778370.mp4",
+          "label": "Bravo Baena, Juan (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-23",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778371.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-24",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778372.mp4",
+          "label": "Bravo Baena, Juan (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-25",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778373.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-26",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778374.mp4",
+          "label": "PREGUNTA de la Diputada D� IONE BELARRA URTEAGA, del Grupo Parlamentario Mixto, que formula al Excmo. Sr. Vicepresidente Primero y Ministro de Econom�a, Comercio y Empresa: �Qu� opina el Gobierno sobre la situaci�n social y econ�mica de nuestro pa�s?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-27",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778375.mp4",
+          "label": "Belarra Urteaga, Ione (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-28",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778376.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-29",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778377.mp4",
+          "label": "Belarra Urteaga, Ione (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-30",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778378.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-31",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778379.mp4",
+          "label": "PREGUNTA del Diputado D. GUILLERMO MARISCAL ANAYA, del Grupo Parlamentario Popular en el Congreso, que formula a la Excma. Sra. Vicepresidenta Tercera y Ministra para la Transici�n Ecol�gica y el Reto Demogr�fico: �Hacia d�nde nos lleva su desastrosa pol�tica energ�tica?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-32",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778380.mp4",
+          "label": "Mariscal Anaya, Guillermo (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-33",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778381.mp4",
+          "label": "Aagesen Mu�oz, Sara (Vicepresidenta Tercera del Gobierno y Ministra para la Transici�n Ecol�gica y el Reto Demogr�fico)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-34",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778382.mp4",
+          "label": "Mariscal Anaya, Guillermo (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-35",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778383.mp4",
+          "label": "Aagesen Mu�oz, Sara (Vicepresidenta Tercera del Gobierno y Ministra para la Transici�n Ecol�gica y el Reto Demogr�fico)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-36",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778384.mp4",
+          "label": "PREGUNTA de la Diputada D� CAYETANA �LVAREZ DE TOLEDO PERALTA-RAMOS, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Ministro de Asuntos Exteriores, Uni�n Europea y Cooperaci�n: �Qu� entiende su Gobierno por defender el inter�s nacional?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-37",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778385.mp4",
+          "label": "�lvarez de Toledo Peralta-Ramos, Cayetana (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-38",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778386.mp4",
+          "label": "Albares Bueno, Jos� Manuel (Ministro de Asuntos Exteriores, Uni�n Europea y Cooperaci�n)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-39",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778387.mp4",
+          "label": "�lvarez de Toledo Peralta-Ramos, Cayetana (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-40",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778388.mp4",
+          "label": "Albares Bueno, Jos� Manuel (Ministro de Asuntos Exteriores, Uni�n Europea y Cooperaci�n)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-41",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778389.mp4",
+          "label": "PREGUNTA de la Diputada D� CONCEPCI�N GAMARRA RUIZ-CLAVIJO, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Ministro de la Presidencia, Justicia y Relaciones con las Cortes: �Cu�l es el objetivo real de sus cambios legislativos?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-42",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778390.mp4",
+          "label": "Gamarra Ruiz-Clavijo, Concepci�n (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-43",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778391.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-44",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778392.mp4",
+          "label": "Gamarra Ruiz-Clavijo, Concepci�n (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-45",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778393.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-46",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778394.mp4",
+          "label": "PREGUNTA formulada por la Diputada D� CARMEN F�NEZ DE GREGORIO, en sustituci�n del Diputado D. BORJA S�MPER PASCUAL, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Ministro de la Presidencia, Justicia y Relaciones con las Cortes: �D�nde est� el l�mite, Ministro?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-47",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778395.mp4",
+          "label": "F�nez de Gregorio, Carmen (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-48",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778396.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-49",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778397.mp4",
+          "label": "F�nez de Gregorio, Carmen (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-50",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778398.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-51",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778399.mp4",
+          "label": "PREGUNTA de la Diputada D� MAR�A JOS� RODR�GUEZ DE MILL�N PARRO, del Grupo Parlamentario VOX, que formula al Excmo. Sr. Ministro de la Presidencia, Justicia y Relaciones con las Cortes: �Cu�les son sus planes para Ceuta?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-52",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778400.mp4",
+          "label": "Rodr�guez de Mill�n Parro, Mar�a Jos� (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-53",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778401.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-54",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778402.mp4",
+          "label": "Rodr�guez de Mill�n Parro, Mar�a Jos� (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-55",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778403.mp4",
+          "label": "Bola�os Garc�a, F�lix (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-56",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778404.mp4",
+          "label": "PREGUNTA de la Diputada D� IN�S GRANOLLERS CUNILLERA, del Grupo Parlamentario Republicano, que formula al Excmo. Sr. Ministro de Industria y Turismo: �Est� garantizada la competitividad industrial?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-57",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778405.mp4",
+          "label": "Granollers Cunillera, In�s (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-58",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778406.mp4",
+          "label": "Hereu Boher, Jordi (Ministro de Industria y Turismo)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-59",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778407.mp4",
+          "label": "Granollers Cunillera, In�s (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-60",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778408.mp4",
+          "label": "Hereu Boher, Jordi (Ministro de Industria y Turismo)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-61",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778409.mp4",
+          "label": "PREGUNTA del Diputado D. MIGUEL TELLADO FILGUEIRA, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Ministro del Interior: �Ha vuelto Ceuta a la normalidad?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-62",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778410.mp4",
+          "label": "Tellado Filgueira, Miguel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-63",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778411.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-64",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778412.mp4",
+          "label": "Tellado Filgueira, Miguel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-65",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778413.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-66",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778414.mp4",
+          "label": "PREGUNTA del Diputado D. EL�AS BENDODO BENASAYAG, del Grupo Parlamentario Popular en el Congreso, que formula al Excmo. Sr. Ministro del Interior: �Cree que est� actuando con diligencia en sus responsabilidades como Ministro?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-67",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778415.mp4",
+          "label": "Bendodo Benasayag, El�as (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-68",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778416.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-69",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778417.mp4",
+          "label": "Bendodo Benasayag, El�as (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-70",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778418.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-71",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778419.mp4",
+          "label": "PREGUNTA del Diputado D. IGNACIO GIL L�ZARO, del Grupo Parlamentario VOX, que formula al Excmo. Sr. Ministro del Interior: �Va a seguir enga�ando a los ceut�es?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-72",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778420.mp4",
+          "label": "Gil L�zaro, Ignacio (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-73",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778421.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-74",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778422.mp4",
+          "label": "Gil L�zaro, Ignacio (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-75",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778423.mp4",
+          "label": "Grande-Marlaska G�mez, Fernando (Ministro del Interior)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-76",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778424.mp4",
+          "label": "PREGUNTA del Diputado D. SERGIO SAYAS L�PEZ, del Grupo Parlamentario Popular en el Congreso, que formula a la Excma. Sra. Ministra de Vivienda y Agenda Urbana: �Qu� entiende el Gobierno por vivienda accesible?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-77",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778440.mp4",
+          "label": "Sayas L�pez, Sergio (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-78",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778425.mp4",
+          "label": "Rodr�guez Garc�a, Isabel (Ministra de Vivienda y Agenda Urbana)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-79",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778426.mp4",
+          "label": "Sayas L�pez, Sergio (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-80",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778427.mp4",
+          "label": "Rodr�guez Garc�a, Isabel (Ministra de Vivienda y Agenda Urbana)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-81",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778428.mp4",
+          "label": "PREGUNTA de la Diputada D� AINA VIDAL S�EZ, del Grupo Parlamentario Plurinacional SUMAR, que formula al Gobierno: �Considera el Gobierno justas las reivindicaciones de las asociaciones de familias beneficiarias de la prestaci�n CUME (cuidado de menores afectados por c�ncer u otra enfermedad grave)?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-82",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778429.mp4",
+          "label": "Vidal S�ez, Aina (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-83",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778430.mp4",
+          "label": "Saiz Delgado, Elma (Ministra de Inclusi�n, Seguridad Social y Migraciones)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-84",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778431.mp4",
+          "label": "Vidal S�ez, Aina (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-85",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778432.mp4",
+          "label": "PREGUNTA de la Diputada D� IDOIA SAGASTIZABAL UNZETABARRENETXEA, del Grupo Parlamentario Vasco (EAJ-PNV), que formula a la Excma. Sra. Ministra de Inclusi�n, Seguridad Social y Migraciones: �Cu�ndo va a cumplir el Gobierno con las familias cuidadoras?",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-86",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778434.mp4",
+          "label": "Sagastizabal Unzetabarrenetxea, Idoia (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-87",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778435.mp4",
+          "label": "Saiz Delgado, Elma (Ministra de Inclusi�n, Seguridad Social y Migraciones)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-88",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778436.mp4",
+          "label": "Sagastizabal Unzetabarrenetxea, Idoia (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-89",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778438.mp4",
+          "label": "Del Grupo Parlamentario Mixto (Sra. Valido Garc�a), a la Ministra de Sanidad sobre la reforma del Estatuto Marco del personal estatutario de los servicios de salud, en particular en lo relativo a la actualizaci�n de la clasificaci�n profesional y retributiva del personal sanitario de formaci�n profesional y del personal de gesti�n y servicios, la reforma del sistema de carrera profesional y la financiaci�n necesaria para garantizar su aplicaci�n en el conjunto del Sistema Nacional de Salud.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-90",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778439.mp4",
+          "label": "Valido Garc�a, Cristina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-91",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778441.mp4",
+          "label": "Garc�a G�mez, M�nica (Ministra de Sanidad)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-92",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778442.mp4",
+          "label": "Valido Garc�a, Cristina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-93",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778443.mp4",
+          "label": "Garc�a G�mez, M�nica (Ministra de Sanidad)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-94",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778444.mp4",
+          "label": "Del Grupo Parlamentario VOX, a la Ministra de Educaci�n, Formaci�n Profesional y Deportes sobre las medidas que va a adoptar el Gobierno para revertir los p�simos resultados de nuestro sistema educativo.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-95",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778445.mp4",
+          "label": "Robles L�pez, Joaqu�n (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-96",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778446.mp4",
+          "label": "Tol�n Jaime, Milagros (Ministra de Educaci�n, Formaci�n Profesional y Deporte)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-97",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778447.mp4",
+          "label": "Robles L�pez, Joaqu�n (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-98",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778448.mp4",
+          "label": "Tol�n Jaime, Milagros (Ministra de Educaci�n, Formaci�n Profesional y Deporte)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-99",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778449.mp4",
+          "label": "Del Grupo Parlamentario Popular en el Congreso, a la Ministra de Educaci�n, Formaci�n Profesional y Deportes sobre la nefasta pol�tica educativa de su Gobierno.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-100",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778450.mp4",
+          "label": "De los Santos Gonz�lez, Jaime Miguel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-101",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778451.mp4",
+          "label": "Tol�n Jaime, Milagros (Ministra de Educaci�n, Formaci�n Profesional y Deporte)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-102",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778452.mp4",
+          "label": "De los Santos Gonz�lez, Jaime Miguel (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-103",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778453.mp4",
+          "label": "Tol�n Jaime, Milagros (Ministra de Educaci�n, Formaci�n Profesional y Deporte)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-104",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778455.mp4",
+          "label": "Real Decreto-ley 21/2026, de 25 de agosto, de transparencia e integridad de las actividades de los grupos de inter�s.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-105",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778459.mp4",
+          "label": "L�pez �gueda, �scar (Ministro para la Transformaci�n Digital y de la Funci�n P�blica)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-106",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778460.mp4",
+          "label": "Mic� Mic�, �gueda (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-107",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778461.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-108",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_0_27661_778462.mp4",
+          "label": "Legarda Uriarte, Mikel (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-109",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778466.mp4",
+          "label": "Matute Garc�a de Jal�n, Oskar (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-110",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778467.mp4",
+          "label": "Pag�s i Mass�, Josep (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-111",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778468.mp4",
+          "label": "�lvaro Vidal, Francesc-Marc (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-112",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778469.mp4",
+          "label": "Mart�n Urriza, Carlos (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-113",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778470.mp4",
+          "label": "Del Valle Rodr�guez, Emilio Jes�s (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-114",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778471.mp4",
+          "label": "Aceves Galindo, Jos� Luis (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-115",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778472.mp4",
+          "label": "Uriarte Bengoechea, Edurne (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-116",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778473.mp4",
+          "label": "L�pez �gueda, �scar (Ministro para la Transformaci�n Digital y de la Funci�n P�blica)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-117",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778474.mp4",
+          "label": "Uriarte Bengoechea, Edurne (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-118",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778475.mp4",
+          "label": "Pag�s i Mass�, Josep (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-119",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778476.mp4",
+          "label": "L�pez �gueda, �scar (Ministro para la Transformaci�n Digital y de la Funci�n P�blica)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-120",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778537.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-121",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778477.mp4",
+          "label": "Real Decreto-ley 22/2026, de 1 de septiembre, por el que se aprueban medidas urgentes de car�cter social y econ�mico de apoyo a la ciudad de Ceuta.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-122",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778478.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-123",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778479.mp4",
+          "label": "Valido Garc�a, Cristina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-124",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778480.mp4",
+          "label": "Velarde G�mez, Martina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-125",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778481.mp4",
+          "label": "Sagastizabal Unzetabarrenetxea, Idoia (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-126",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778482.mp4",
+          "label": "I�arritu Garc�a, Jon (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-127",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778483.mp4",
+          "label": "Cruset Dom�nech, Josep Maria (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-128",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778484.mp4",
+          "label": "Ogou i Corbi, Viviane (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-129",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778485.mp4",
+          "label": "Figaredo �lvarez-Sala, Jos� Mar�a (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-130",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778486.mp4",
+          "label": "Corujo Berriel, Mar�a Dolores (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-131",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778487.mp4",
+          "label": "Mar� Bos�, Jos� Vicente (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-132",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778488.mp4",
+          "label": "Cuerpo Caballero, Carlos (Vicepresidente Primero del Gobierno y Ministro de Econom�a, Comercio y Empresa)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-133",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778532.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-134",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778490.mp4",
+          "label": "Proyecto de Ley por la que se modifican el Texto Refundido de la Ley General de derechos de las personas con discapacidad y de su inclusi�n social, aprobado por el Real Decreto Legislativo 1/2013, de 29 de noviembre, y la Ley 39/2006, de 14 de diciembre, de Promoci�n de la Autonom�a Personal y Atenci�n a las personas en situaci�n de dependencia, para la extensi�n y refuerzo de los derechos de las personas con discapacidad a la inclusi�n, la autonom�a y la accesibilidad universal conforme al art�culo 49 de la Constituci�n Espa�ola.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-135",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778491.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-136",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_1_27662_778492.mp4",
+          "label": "Santana Perera, Noem� (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-137",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_3_27664_778541.mp4",
+          "label": "Renteria Lasanta, Nerea (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-138",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_3_27664_778542.mp4",
+          "label": "Fullaondo la Cruz, Marije (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-139",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_3_27664_778543.mp4",
+          "label": "Calvo G�mez, Pilar (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-140",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778497.mp4",
+          "label": "Salvador i Duch, Jordi (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-141",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778498.mp4",
+          "label": "Mart�nez Hierro, Lander (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-142",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778499.mp4",
+          "label": "Aizcorbe Torra, Juan Jos� (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-143",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778500.mp4",
+          "label": "Plaza Garc�a, In�s (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-144",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778501.mp4",
+          "label": "Tom�s Olivares, Violante (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-145",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778502.mp4",
+          "label": "Bustinduy Amador, Pablo (Ministro de Derechos Sociales, Consumo y Agenda 2030)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-146",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778533.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-147",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778504.mp4",
+          "label": "Dictamen de la Comisi�n del Estatuto sobre declaraci�n de actividades de Excmos. Sres. Diputados.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-148",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778534.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-149",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778506.mp4",
+          "label": "Del Grupo Parlamentario Popular en el Congreso, sobre la crisis que atraviesa la Ciudad Aut�noma de Ceuta.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-150",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778507.mp4",
+          "label": "Celaya Brey, Javier (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-151",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778508.mp4",
+          "label": "Rodr�guez Almeida, Andr�s Alberto (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-152",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778509.mp4",
+          "label": "Catal�n Higueras, Alberto (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-153",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778510.mp4",
+          "label": "Rego Candamil, N�stor (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-154",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778511.mp4",
+          "label": "Velarde G�mez, Martina (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-155",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778512.mp4",
+          "label": "Legarda Uriarte, Mikel (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-156",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778513.mp4",
+          "label": "Madrenas i Mir, Marta (GJxCAT)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-157",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778514.mp4",
+          "label": "�lvaro Vidal, Francesc-Marc (GR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-158",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778515.mp4",
+          "label": "Andala Ubbi, Teslem (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-159",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778516.mp4",
+          "label": "Mont�vez Aguillaume, Vicente (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-160",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778535.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-161",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778517.mp4",
+          "label": "Del Grupo Parlamentario Mixto (Sr. Catal�n Higueras), para que el Gobierno explique los motivos por los que el Ministerio para la Transici�n Ecol�gica y el Reto Demogr�fico no ha cumplido el mandato parlamentario de establecer un cronograma para la licitaci�n y adjudicaci�n de las obras de la segunda fase del Canal de Navarra.",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-162",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778518.mp4",
+          "label": "Catal�n Higueras, Alberto (GMx)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-163",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778519.mp4",
+          "label": "Cacho Isla, Iv�n (GS)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-164",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778520.mp4",
+          "label": "Sagastizabal Unzetabarrenetxea, Idoia (GV (EAJ-PNV))",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-165",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778521.mp4",
+          "label": "Otero Gabirondo, Mikel (GEH Bildu)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-166",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778522.mp4",
+          "label": "Badia Casas, Eloi (GSUMAR)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-167",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778523.mp4",
+          "label": "Rueda Perell�, Patricia (GVOX)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-168",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778524.mp4",
+          "label": "Garc�a Adanero, Carlos (GP)",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-169",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778536.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-170",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778525.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-171",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778526.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-172",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778527.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        },
+        {
+          "id": "198-173",
+          "url": "https://static.congreso.es/audiovisual/video/leg15/400/15_000400_198/cortes/15_000400_198_2_27663_778528.mp4",
+          "label": "Votaciones",
+          "kind": "official_clip"
+        }
+      ],
+      "observationPolicy": "wide_shot_sampling_requires_manual_review"
+    }
+  ]
+}
