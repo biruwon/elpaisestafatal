@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Explorador de actividad parlamentaria y evidencia de presencia de la XV Legislatura." />
+    <title>Observatorio Congreso · XV Legislatura</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#/"><span class="brand-mark">C</span><span>Observatorio<br><b>Congreso XV</b></span></a>
+        <nav class="main-nav" aria-label="Navegación principal">
+          <a href="#/" data-nav="home">Resumen</a>
+          <a href="#/deputies" data-nav="deputies">Diputados</a>
+          <a href="#/sessions" data-nav="sessions">Sesiones</a>
+          <a href="#/votes" data-nav="votes">Votaciones</a>
+          <a href="#/topics" data-nav="topics">Temas</a>
+          <a href="#/coverage" data-nav="coverage">Cobertura</a>
+        </nav>
+        <button class="menu-button" id="menuButton" aria-label="Abrir menú">☰</button>
+      </header>
+      <main id="main" class="main-content" aria-live="polite"></main>
+      <footer class="footer"><span>Fuentes oficiales del Congreso de los Diputados · XV Legislatura</span><a href="/api/congreso/v1/" target="_blank" rel="noreferrer">API y datos</a></footer>
+    </div>
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>

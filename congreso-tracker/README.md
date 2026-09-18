@@ -9,7 +9,7 @@ npm install
 npm start
 ```
 
-Open http://localhost:8787. `npm run collect` discovers the current official deputy JSON/CSV/XML links and stores a raw snapshot under `data/raw/`; HTTP 403 and other failures are recorded in `data/collection-log.json` rather than interpreted as empty data.
+Open http://localhost:8787. The root page is the Spanish-language visual dashboard, with hash routes for the overview, deputy explorer, sessions, votes, topics and collection coverage. `npm run collect` discovers the current official deputy JSON/CSV/XML links and stores a raw snapshot under `data/raw/`; HTTP 403 and other failures are recorded in `data/collection-log.json` rather than interpreted as empty data.
 
 The tracker can also run as an independent container: `docker compose up --build` (or `docker build -t congreso-tracker . && docker run --rm -p 8787:8787 congreso-tracker`). The image contains the normalized snapshot and compressed evidence artifacts, while raw downloads and temporary media stay outside the image. The coverage metadata reports how many intervention records have a deputy identifier; records without one remain available but are never counted as deputy activity.
 
