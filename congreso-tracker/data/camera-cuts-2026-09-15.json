@@ -1,0 +1,10 @@
+{
+  "input": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_197/cortes/smil:15_000400_197.smil/manifest.m3u8",
+  "generatedAt": "2026-09-18T16:21:39.940Z",
+  "method": "ffmpeg select scene + showinfo",
+  "threshold": 0.4,
+  "analysisDurationSeconds": 300,
+  "coverage": "bounded_window",
+  "cameraCutsDetected": 0,
+  "cutTimesSeconds": []
+}
