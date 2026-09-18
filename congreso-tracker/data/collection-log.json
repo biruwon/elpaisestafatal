@@ -1,2156 +1,2164 @@
 {
-  "generatedAt": "2026-09-17T23:19:35.110Z",
+  "generatedAt": "2026-09-18T00:06:00.727Z",
   "sources": [
     {
       "name": "deputies",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:48.643Z",
+      "retrievedAt": "2026-09-18T00:04:52.587Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "deputies-0",
       "url": "https://www.congreso.es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:48.884Z",
+      "retrievedAt": "2026-09-18T00:04:52.787Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-1",
       "url": "https://www.congreso.es/gl/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.017Z",
+      "retrievedAt": "2026-09-18T00:04:52.979Z",
       "bytes": 95693,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-2",
       "url": "https://www.congreso.es/ca/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.136Z",
+      "retrievedAt": "2026-09-18T00:04:53.175Z",
       "bytes": 95712,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-3",
       "url": "https://www.congreso.es/eu/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.258Z",
+      "retrievedAt": "2026-09-18T00:04:53.306Z",
       "bytes": 95739,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-4",
       "url": "https://www.congreso.es/en/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.397Z",
+      "retrievedAt": "2026-09-18T00:04:53.456Z",
       "bytes": 95081,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-5",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696475&redirect=%2Fes%2Fopendata%2Fdiputados&languageId=en_GB",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.642Z",
+      "retrievedAt": "2026-09-18T00:04:53.681Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-6",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696475&redirect=%2Fes%2Fopendata%2Fdiputados&languageId=ca_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:49.861Z",
+      "retrievedAt": "2026-09-18T00:04:53.965Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-7",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696475&redirect=%2Fes%2Fopendata%2Fdiputados&languageId=eu_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.078Z",
+      "retrievedAt": "2026-09-18T00:04:54.231Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-8",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696475&redirect=%2Fes%2Fopendata%2Fdiputados&languageId=gl_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.301Z",
+      "retrievedAt": "2026-09-18T00:04:54.466Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-9",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.381Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:00.375Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-10",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.461Z",
+      "retrievedAt": "2026-09-18T00:05:00.507Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-11",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.504Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:00.553Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-12",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.646Z",
+      "retrievedAt": "2026-09-18T00:05:01.014Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-13",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.802Z",
+      "retrievedAt": "2026-09-18T00:05:01.422Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-14",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:50.931Z",
+      "retrievedAt": "2026-09-18T00:05:01.641Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-15",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.043Z",
+      "retrievedAt": "2026-09-18T00:05:01.973Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-16",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosActivos__20260917050010.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.140Z",
+      "retrievedAt": "2026-09-18T00:05:02.276Z",
       "bytes": 153207,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-17",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosActivos__20260917050011.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.216Z",
+      "retrievedAt": "2026-09-18T00:05:02.453Z",
       "bytes": 210097,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-18",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosActivos__20260917050010.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.318Z",
+      "retrievedAt": "2026-09-18T00:05:02.699Z",
       "bytes": 309448,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-19",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/docacteco__20260917050301.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.431Z",
+      "retrievedAt": "2026-09-18T00:05:02.922Z",
       "bytes": 413476,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-20",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/docacteco__20260917050302.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.561Z",
+      "retrievedAt": "2026-09-18T00:05:03.114Z",
       "bytes": 659173,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-21",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/docacteco__20260917050302.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.686Z",
+      "retrievedAt": "2026-09-18T00:05:03.292Z",
       "bytes": 1452948,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-22",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosDeBaja__20260917050013.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:51.774Z",
+      "retrievedAt": "2026-09-18T00:05:03.474Z",
       "bytes": 29712,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-23",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosDeBaja__20260917050013.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.033Z",
+      "retrievedAt": "2026-09-18T00:05:03.754Z",
       "bytes": 42696,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-24",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/DiputadosDeBaja__20260917050013.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.211Z",
+      "retrievedAt": "2026-09-18T00:05:03.858Z",
       "bytes": 59227,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-25",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diputadas__20260917050015.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.269Z",
+      "retrievedAt": "2026-09-18T00:05:03.954Z",
       "bytes": 103050,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-26",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diputadas__20260917050016.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.333Z",
+      "retrievedAt": "2026-09-18T00:05:04.078Z",
       "bytes": 300982,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-27",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diputadas__20260917050016.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.425Z",
+      "retrievedAt": "2026-09-18T00:05:04.188Z",
       "bytes": 582574,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-28",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diput__20260917050306.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.504Z",
+      "retrievedAt": "2026-09-18T00:05:04.362Z",
       "bytes": 367573,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-29",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diput__20260917050306.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.622Z",
+      "retrievedAt": "2026-09-18T00:05:04.586Z",
       "bytes": 1084560,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-30",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/Diput__20260917050306.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.685Z",
+      "retrievedAt": "2026-09-18T00:05:04.744Z",
       "bytes": 2087961,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-31",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados14__20260917050310.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.770Z",
+      "retrievedAt": "2026-09-18T00:05:04.834Z",
       "bytes": 187743,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-32",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados14__20260917050310.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.824Z",
+      "retrievedAt": "2026-09-18T00:05:04.940Z",
       "bytes": 275153,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-33",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados14__20260917050310.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:52.951Z",
+      "retrievedAt": "2026-09-18T00:05:05.098Z",
       "bytes": 384798,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-34",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados13__20260917050019.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:53.072Z",
+      "retrievedAt": "2026-09-18T00:05:05.284Z",
       "bytes": 159711,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-35",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados13__20260917050020.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:53.138Z",
+      "retrievedAt": "2026-09-18T00:05:05.441Z",
       "bytes": 234951,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-36",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados13__20260917050019.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:53.562Z",
+      "retrievedAt": "2026-09-18T00:05:05.618Z",
       "bytes": 329102,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-37",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados12__20260917050023.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:53.930Z",
+      "retrievedAt": "2026-09-18T00:05:05.742Z",
       "bytes": 194524,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-38",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados12__20260917050024.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:53.999Z",
+      "retrievedAt": "2026-09-18T00:05:05.926Z",
       "bytes": 277999,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-39",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados12__20260917050023.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.135Z",
+      "retrievedAt": "2026-09-18T00:05:06.083Z",
       "bytes": 381912,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-40",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados11__20260917050224.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.202Z",
+      "retrievedAt": "2026-09-18T00:05:06.149Z",
       "bytes": 159939,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-41",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados11__20260917050224.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.270Z",
+      "retrievedAt": "2026-09-18T00:05:06.241Z",
       "bytes": 234347,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-42",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados11__20260917050224.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.425Z",
+      "retrievedAt": "2026-09-18T00:05:06.355Z",
       "bytes": 327108,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-43",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados10__20260917050226.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.692Z",
+      "retrievedAt": "2026-09-18T00:05:06.533Z",
       "bytes": 205341,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-44",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados10__20260917050227.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.828Z",
+      "retrievedAt": "2026-09-18T00:05:06.645Z",
       "bytes": 299279,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-45",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados10__20260917050227.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.887Z",
+      "retrievedAt": "2026-09-18T00:05:06.779Z",
       "bytes": 415872,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-46",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados09__20260917050230.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:54.985Z",
+      "retrievedAt": "2026-09-18T00:05:06.925Z",
       "bytes": 185390,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-47",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados09__20260917050230.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.048Z",
+      "retrievedAt": "2026-09-18T00:05:07.032Z",
       "bytes": 273407,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-48",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados09__20260917050230.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.110Z",
+      "retrievedAt": "2026-09-18T00:05:07.124Z",
       "bytes": 384065,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-49",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados08__20260917050232.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.162Z",
+      "retrievedAt": "2026-09-18T00:05:07.198Z",
       "bytes": 187095,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-50",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados08__20260917050232.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.324Z",
+      "retrievedAt": "2026-09-18T00:05:07.343Z",
       "bytes": 272538,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-51",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados08__20260917050232.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.428Z",
+      "retrievedAt": "2026-09-18T00:05:07.464Z",
       "bytes": 379948,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-52",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados07__20260917050234.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.495Z",
+      "retrievedAt": "2026-09-18T00:05:07.578Z",
       "bytes": 155873,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-53",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados07__20260917050235.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.636Z",
+      "retrievedAt": "2026-09-18T00:05:07.661Z",
       "bytes": 245155,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-54",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados07__20260917050234.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.737Z",
+      "retrievedAt": "2026-09-18T00:05:07.781Z",
       "bytes": 357445,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-55",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados06__20260917050237.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.834Z",
+      "retrievedAt": "2026-09-18T00:05:07.896Z",
       "bytes": 159716,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-56",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados06__20260917050238.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.895Z",
+      "retrievedAt": "2026-09-18T00:05:08.089Z",
       "bytes": 247933,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-57",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados06__20260917050237.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:55.986Z",
+      "retrievedAt": "2026-09-18T00:05:08.219Z",
       "bytes": 358895,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-58",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados05__20260917050240.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.059Z",
+      "retrievedAt": "2026-09-18T00:05:08.307Z",
       "bytes": 137924,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-59",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados05__20260917050240.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.176Z",
+      "retrievedAt": "2026-09-18T00:05:08.459Z",
       "bytes": 224385,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-60",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados05__20260917050240.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.294Z",
+      "retrievedAt": "2026-09-18T00:05:08.543Z",
       "bytes": 332126,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-61",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados04__20260917050243.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.406Z",
+      "retrievedAt": "2026-09-18T00:05:08.742Z",
       "bytes": 129499,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-62",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados04__20260917050243.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.462Z",
+      "retrievedAt": "2026-09-18T00:05:08.808Z",
       "bytes": 212053,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-63",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados04__20260917050243.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.525Z",
+      "retrievedAt": "2026-09-18T00:05:08.921Z",
       "bytes": 315141,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-64",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados03__20260917050246.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.632Z",
+      "retrievedAt": "2026-09-18T00:05:09.000Z",
       "bytes": 152821,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-65",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados03__20260917050247.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.701Z",
+      "retrievedAt": "2026-09-18T00:05:09.090Z",
       "bytes": 256932,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-66",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados03__20260917050247.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.782Z",
+      "retrievedAt": "2026-09-18T00:05:09.167Z",
       "bytes": 386557,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-67",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados02__20260917050250.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.868Z",
+      "retrievedAt": "2026-09-18T00:05:09.243Z",
       "bytes": 100458,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-68",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados02__20260917050250.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:56.938Z",
+      "retrievedAt": "2026-09-18T00:05:09.322Z",
       "bytes": 183765,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-69",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados02__20260917050250.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.050Z",
+      "retrievedAt": "2026-09-18T00:05:09.397Z",
       "bytes": 288426,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-70",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados01__20260917050253.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.155Z",
+      "retrievedAt": "2026-09-18T00:05:09.508Z",
       "bytes": 282266,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-71",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados01__20260917050254.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.286Z",
+      "retrievedAt": "2026-09-18T00:05:09.643Z",
       "bytes": 371169,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-72",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados01__20260917050253.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.363Z",
+      "retrievedAt": "2026-09-18T00:05:09.733Z",
       "bytes": 483395,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-73",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados00__20260917050256.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.444Z",
+      "retrievedAt": "2026-09-18T00:05:09.801Z",
       "bytes": 69215,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-74",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados00__20260917050257.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.571Z",
+      "retrievedAt": "2026-09-18T00:05:09.863Z",
       "bytes": 144278,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-75",
       "url": "https://www.congreso.es/webpublica/opendata/diputados/odsDiputados00__20260917050257.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.646Z",
+      "retrievedAt": "2026-09-18T00:05:09.991Z",
       "bytes": 261468,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "deputies-76",
       "url": "https://www.congreso.es/busqueda-de-diputados?statusOpendata=true",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:57.910Z",
+      "retrievedAt": "2026-09-18T00:05:10.291Z",
       "bytes": 260256,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.125Z",
+      "retrievedAt": "2026-09-18T00:05:10.411Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "interventions-0",
       "url": "https://www.congreso.es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.275Z",
+      "retrievedAt": "2026-09-18T00:05:10.698Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-1",
       "url": "https://www.congreso.es/gl/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.387Z",
+      "retrievedAt": "2026-09-18T00:05:10.845Z",
       "bytes": 85448,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-2",
       "url": "https://www.congreso.es/ca/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.529Z",
+      "retrievedAt": "2026-09-18T00:05:11.073Z",
       "bytes": 85468,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-3",
       "url": "https://www.congreso.es/eu/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.648Z",
+      "retrievedAt": "2026-09-18T00:05:11.302Z",
       "bytes": 85529,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-4",
       "url": "https://www.congreso.es/en/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:58.760Z",
+      "retrievedAt": "2026-09-18T00:05:11.657Z",
       "bytes": 85206,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-5",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696491&redirect=%2Fes%2Fopendata%2Fintervenciones&languageId=en_GB",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.001Z",
+      "retrievedAt": "2026-09-18T00:05:11.906Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-6",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696491&redirect=%2Fes%2Fopendata%2Fintervenciones&languageId=ca_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.262Z",
+      "retrievedAt": "2026-09-18T00:05:12.159Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-7",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696491&redirect=%2Fes%2Fopendata%2Fintervenciones&languageId=eu_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.464Z",
+      "retrievedAt": "2026-09-18T00:05:12.584Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-8",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696491&redirect=%2Fes%2Fopendata%2Fintervenciones&languageId=gl_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.729Z",
+      "retrievedAt": "2026-09-18T00:05:13.099Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-9",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.800Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:13.237Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-10",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.842Z",
+      "retrievedAt": "2026-09-18T00:05:13.277Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-11",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:18:59.886Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:13.359Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-12",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.015Z",
+      "retrievedAt": "2026-09-18T00:05:13.483Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-13",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.159Z",
+      "retrievedAt": "2026-09-18T00:05:13.687Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-14",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.310Z",
+      "retrievedAt": "2026-09-18T00:05:13.898Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-15",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.470Z",
+      "retrievedAt": "2026-09-18T00:05:14.134Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-16",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesIniciativa__20260917050118.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.725Z",
+      "retrievedAt": "2026-09-18T00:05:14.524Z",
       "bytes": 41296164,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-17",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesIniciativa__20260917050128.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:00.982Z",
+      "retrievedAt": "2026-09-18T00:05:14.946Z",
       "bytes": 54134698,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-18",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesIniciativa__20260917050123.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:01.282Z",
+      "retrievedAt": "2026-09-18T00:05:15.465Z",
       "bytes": 71220258,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-19",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesCronologicamente__20260917050202.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:01.678Z",
+      "retrievedAt": "2026-09-18T00:05:15.856Z",
       "bytes": 41296164,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-20",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesCronologicamente__20260917050210.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:01.922Z",
+      "retrievedAt": "2026-09-18T00:05:16.167Z",
       "bytes": 54134698,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-21",
       "url": "https://www.congreso.es/webpublica/opendata/intervenciones/IntervencionesCronologicamente__20260917050207.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:02.282Z",
+      "retrievedAt": "2026-09-18T00:05:16.624Z",
       "bytes": 71220258,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "interventions-22",
       "url": "https://www.congreso.es/busqueda-de-intervenciones?p_p_id=intervenciones&_intervenciones_statusOpenData=true",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:02.551Z",
+      "retrievedAt": "2026-09-18T00:05:16.950Z",
       "bytes": 189281,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:02.583Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:16.987Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "votes-0",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:02.644Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:17.075Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-1",
       "url": "https://www.congreso.es/gl/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:07.531Z",
+      "retrievedAt": "2026-09-18T00:05:23.499Z",
       "bytes": 247604,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-2",
       "url": "https://www.congreso.es/ca/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:11.262Z",
+      "retrievedAt": "2026-09-18T00:05:28.523Z",
       "bytes": 247542,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-3",
       "url": "https://www.congreso.es/eu/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:15.229Z",
+      "retrievedAt": "2026-09-18T00:05:34.501Z",
       "bytes": 247946,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-4",
       "url": "https://www.congreso.es/en/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:19.428Z",
+      "retrievedAt": "2026-09-18T00:05:40.338Z",
       "bytes": 247354,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-5",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696467&redirect=%2Fes%2Fopendata%2Fvotaciones&languageId=en_GB",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:19.627Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:40.610Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-6",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696467&redirect=%2Fes%2Fopendata%2Fvotaciones&languageId=ca_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:19.749Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:40.753Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-7",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696467&redirect=%2Fes%2Fopendata%2Fvotaciones&languageId=eu_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:19.909Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:40.890Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-8",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696467&redirect=%2Fes%2Fopendata%2Fvotaciones&languageId=gl_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.060Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:41.084Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-9",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.145Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:41.161Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-10",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.202Z",
+      "retrievedAt": "2026-09-18T00:05:41.202Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-11",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.249Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:41.247Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-12",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.403Z",
+      "retrievedAt": "2026-09-18T00:05:41.448Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-13",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.518Z",
+      "retrievedAt": "2026-09-18T00:05:41.604Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-14",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.662Z",
+      "retrievedAt": "2026-09-18T00:05:41.775Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-15",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:20.765Z",
+      "retrievedAt": "2026-09-18T00:05:41.929Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-16",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/VOT_20260916195335.zip",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.169Z",
+      "retrievedAt": "2026-09-18T00:05:42.436Z",
       "bytes": 6883456,
       "contentType": "application/zip",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-17",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion001/VOT_20260916195334.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.238Z",
+      "retrievedAt": "2026-09-18T00:05:42.537Z",
       "bytes": 99300,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-18",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion001/VOT_20260916195334.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.304Z",
+      "retrievedAt": "2026-09-18T00:05:42.718Z",
       "bytes": 68182,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-19",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion001/VOT_20260916195336.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.369Z",
+      "retrievedAt": "2026-09-18T00:05:42.810Z",
       "bytes": 32560,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-20",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion002/VOT_20260916195335.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.403Z",
+      "retrievedAt": "2026-09-18T00:05:42.873Z",
       "bytes": 100376,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-21",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion002/VOT_20260916195336.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.489Z",
+      "retrievedAt": "2026-09-18T00:05:43.026Z",
       "bytes": 68178,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-22",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion002/VOT_20260916195338.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.609Z",
+      "retrievedAt": "2026-09-18T00:05:43.251Z",
       "bytes": 32566,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-23",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion003/VOT_20260916195335.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.650Z",
+      "retrievedAt": "2026-09-18T00:05:43.439Z",
       "bytes": 99254,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-24",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion003/VOT_20260916195338.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.729Z",
+      "retrievedAt": "2026-09-18T00:05:43.569Z",
       "bytes": 69178,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-25",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion003/VOT_20260916195340.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.779Z",
+      "retrievedAt": "2026-09-18T00:05:43.670Z",
       "bytes": 33459,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-26",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion004/VOT_20260916195335.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.815Z",
+      "retrievedAt": "2026-09-18T00:05:43.719Z",
       "bytes": 99331,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-27",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion004/VOT_20260916195340.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:21.904Z",
+      "retrievedAt": "2026-09-18T00:05:43.817Z",
       "bytes": 69186,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-28",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion004/VOT_20260916195343.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.005Z",
+      "retrievedAt": "2026-09-18T00:05:43.980Z",
       "bytes": 33467,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-29",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion005/VOT_20260916195336.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.048Z",
+      "retrievedAt": "2026-09-18T00:05:44.039Z",
       "bytes": 99281,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-30",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion005/VOT_20260916195343.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.130Z",
+      "retrievedAt": "2026-09-18T00:05:44.200Z",
       "bytes": 69178,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-31",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion005/VOT_20260916195345.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.302Z",
+      "retrievedAt": "2026-09-18T00:05:44.301Z",
       "bytes": 33459,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-32",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion006/VOT_20260916195336.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.364Z",
+      "retrievedAt": "2026-09-18T00:05:44.374Z",
       "bytes": 99282,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-33",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion006/VOT_20260916195345.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.458Z",
+      "retrievedAt": "2026-09-18T00:05:44.559Z",
       "bytes": 68212,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-34",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion006/VOT_20260916195347.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.582Z",
+      "retrievedAt": "2026-09-18T00:05:44.676Z",
       "bytes": 31893,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-35",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion007/VOT_20260916195336.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.624Z",
+      "retrievedAt": "2026-09-18T00:05:44.736Z",
       "bytes": 99290,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-36",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion007/VOT_20260916195347.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.720Z",
+      "retrievedAt": "2026-09-18T00:05:44.849Z",
       "bytes": 68212,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-37",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion007/VOT_20260916195348.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.767Z",
+      "retrievedAt": "2026-09-18T00:05:45.013Z",
       "bytes": 31893,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-38",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion008/VOT_20260916195337.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.803Z",
+      "retrievedAt": "2026-09-18T00:05:45.059Z",
       "bytes": 100303,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-39",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion008/VOT_20260916195349.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.860Z",
+      "retrievedAt": "2026-09-18T00:05:45.208Z",
       "bytes": 69282,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-40",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion008/VOT_20260916195351.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.943Z",
+      "retrievedAt": "2026-09-18T00:05:45.334Z",
       "bytes": 33623,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-41",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion009/VOT_20260916195337.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:22.983Z",
+      "retrievedAt": "2026-09-18T00:05:45.489Z",
       "bytes": 100293,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-42",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion009/VOT_20260916195351.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.071Z",
+      "retrievedAt": "2026-09-18T00:05:45.609Z",
       "bytes": 69290,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-43",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion009/VOT_20260916195352.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.222Z",
+      "retrievedAt": "2026-09-18T00:05:45.723Z",
       "bytes": 33646,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-44",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion010/VOT_20260916195337.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.260Z",
+      "retrievedAt": "2026-09-18T00:05:45.768Z",
       "bytes": 99403,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-45",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion010/VOT_20260916195352.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.345Z",
+      "retrievedAt": "2026-09-18T00:05:45.888Z",
       "bytes": 69096,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-46",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion010/VOT_20260916195355.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.646Z",
+      "retrievedAt": "2026-09-18T00:05:46.079Z",
       "bytes": 33449,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-47",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion011/VOT_20260916195338.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.681Z",
+      "retrievedAt": "2026-09-18T00:05:46.122Z",
       "bytes": 100287,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-48",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion011/VOT_20260916195355.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.834Z",
+      "retrievedAt": "2026-09-18T00:05:46.259Z",
       "bytes": 68117,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-49",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion011/VOT_20260916195357.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.911Z",
+      "retrievedAt": "2026-09-18T00:05:46.335Z",
       "bytes": 32563,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-50",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion012/VOT_20260916195338.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:23.952Z",
+      "retrievedAt": "2026-09-18T00:05:46.382Z",
       "bytes": 100236,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-51",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion012/VOT_20260916195357.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.020Z",
+      "retrievedAt": "2026-09-18T00:05:46.572Z",
       "bytes": 68121,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-52",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion012/VOT_20260916195359.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.176Z",
+      "retrievedAt": "2026-09-18T00:05:46.791Z",
       "bytes": 32512,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-53",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion013/VOT_20260916195338.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.214Z",
+      "retrievedAt": "2026-09-18T00:05:46.860Z",
       "bytes": 100246,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-54",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion013/VOT_20260916195359.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.370Z",
+      "retrievedAt": "2026-09-18T00:05:46.977Z",
       "bytes": 68032,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-55",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion013/VOT_20260916195400.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.502Z",
+      "retrievedAt": "2026-09-18T00:05:47.124Z",
       "bytes": 32423,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-56",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion014/VOT_20260916195339.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.605Z",
+      "retrievedAt": "2026-09-18T00:05:47.174Z",
       "bytes": 99337,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-57",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion014/VOT_20260916195400.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.792Z",
+      "retrievedAt": "2026-09-18T00:05:47.300Z",
       "bytes": 68129,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-58",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion014/VOT_20260916195402.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.896Z",
+      "retrievedAt": "2026-09-18T00:05:47.416Z",
       "bytes": 32640,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-59",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion015/VOT_20260916195339.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:24.932Z",
+      "retrievedAt": "2026-09-18T00:05:47.528Z",
       "bytes": 100473,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-60",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion015/VOT_20260916195402.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.022Z",
+      "retrievedAt": "2026-09-18T00:05:47.618Z",
       "bytes": 69420,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-61",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion015/VOT_20260916195404.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.070Z",
+      "retrievedAt": "2026-09-18T00:05:47.698Z",
       "bytes": 34588,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-62",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion016/VOT_20260916195339.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.106Z",
+      "retrievedAt": "2026-09-18T00:05:47.867Z",
       "bytes": 100340,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-63",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion016/VOT_20260916195404.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.316Z",
+      "retrievedAt": "2026-09-18T00:05:47.933Z",
       "bytes": 68005,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-64",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion016/VOT_20260916195406.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.510Z",
+      "retrievedAt": "2026-09-18T00:05:48.294Z",
       "bytes": 32337,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-65",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion017/VOT_20260916195340.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.549Z",
+      "retrievedAt": "2026-09-18T00:05:48.331Z",
       "bytes": 99238,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-66",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion017/VOT_20260916195406.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.706Z",
+      "retrievedAt": "2026-09-18T00:05:48.505Z",
       "bytes": 68005,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-67",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion017/VOT_20260916195408.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.769Z",
+      "retrievedAt": "2026-09-18T00:05:48.638Z",
       "bytes": 33062,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-68",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion018/VOT_20260916195340.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.807Z",
+      "retrievedAt": "2026-09-18T00:05:48.685Z",
       "bytes": 98283,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-69",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion018/VOT_20260916195408.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.855Z",
+      "retrievedAt": "2026-09-18T00:05:48.815Z",
       "bytes": 68011,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-70",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion018/VOT_20260916195409.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.908Z",
+      "retrievedAt": "2026-09-18T00:05:48.894Z",
       "bytes": 33243,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-71",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion019/VOT_20260916195340.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:25.960Z",
+      "retrievedAt": "2026-09-18T00:05:48.953Z",
       "bytes": 99431,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-72",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion019/VOT_20260916195409.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.028Z",
+      "retrievedAt": "2026-09-18T00:05:49.197Z",
       "bytes": 68482,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-73",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion019/VOT_20260916195411.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.136Z",
+      "retrievedAt": "2026-09-18T00:05:49.291Z",
       "bytes": 33733,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-74",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion020/VOT_20260916195341.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.171Z",
+      "retrievedAt": "2026-09-18T00:05:49.339Z",
       "bytes": 100495,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-75",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion020/VOT_20260916195411.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.230Z",
+      "retrievedAt": "2026-09-18T00:05:49.415Z",
       "bytes": 68655,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-76",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion020/VOT_20260916195412.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.371Z",
+      "retrievedAt": "2026-09-18T00:05:49.485Z",
       "bytes": 33156,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-77",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion021/VOT_20260916195341.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.410Z",
+      "retrievedAt": "2026-09-18T00:05:49.608Z",
       "bytes": 100594,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-78",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion021/VOT_20260916195412.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.502Z",
+      "retrievedAt": "2026-09-18T00:05:49.709Z",
       "bytes": 68925,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "votes-79",
       "url": "https://www.congreso.es/webpublica/opendata/votaciones/Leg15/Sesion198/20260916/Votacion021/VOT_20260916195414.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.551Z",
+      "retrievedAt": "2026-09-18T00:05:49.792Z",
       "bytes": 33401,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.705Z",
+      "retrievedAt": "2026-09-18T00:05:49.942Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "bodies-0",
       "url": "https://www.congreso.es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:26.917Z",
+      "retrievedAt": "2026-09-18T00:05:50.093Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-1",
       "url": "https://www.congreso.es/gl/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.045Z",
+      "retrievedAt": "2026-09-18T00:05:50.185Z",
       "bytes": 93089,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-2",
       "url": "https://www.congreso.es/ca/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.140Z",
+      "retrievedAt": "2026-09-18T00:05:50.309Z",
       "bytes": 93104,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-3",
       "url": "https://www.congreso.es/eu/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.249Z",
+      "retrievedAt": "2026-09-18T00:05:50.398Z",
       "bytes": 93163,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-4",
       "url": "https://www.congreso.es/en/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.359Z",
+      "retrievedAt": "2026-09-18T00:05:50.517Z",
       "bytes": 92937,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-5",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696499&redirect=%2Fes%2Fopendata%2Forganos&languageId=en_GB",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.573Z",
+      "retrievedAt": "2026-09-18T00:05:50.705Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-6",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696499&redirect=%2Fes%2Fopendata%2Forganos&languageId=ca_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:27.871Z",
+      "retrievedAt": "2026-09-18T00:05:50.922Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-7",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696499&redirect=%2Fes%2Fopendata%2Forganos&languageId=eu_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.082Z",
+      "retrievedAt": "2026-09-18T00:05:51.125Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-8",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696499&redirect=%2Fes%2Fopendata%2Forganos&languageId=gl_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.333Z",
+      "retrievedAt": "2026-09-18T00:05:51.300Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-9",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.404Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:51.359Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-10",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.461Z",
+      "retrievedAt": "2026-09-18T00:05:51.398Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-11",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.502Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:51.432Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-12",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.653Z",
+      "retrievedAt": "2026-09-18T00:05:51.572Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-13",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.845Z",
+      "retrievedAt": "2026-09-18T00:05:51.694Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-14",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:28.976Z",
+      "retrievedAt": "2026-09-18T00:05:51.842Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "bodies-15",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.078Z",
+      "retrievedAt": "2026-09-18T00:05:51.928Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.240Z",
+      "retrievedAt": "2026-09-18T00:05:52.070Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "initiatives-0",
       "url": "https://www.congreso.es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.415Z",
+      "retrievedAt": "2026-09-18T00:05:52.238Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-1",
       "url": "https://www.congreso.es/gl/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.528Z",
+      "retrievedAt": "2026-09-18T00:05:52.368Z",
       "bytes": 86547,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-2",
       "url": "https://www.congreso.es/ca/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.645Z",
+      "retrievedAt": "2026-09-18T00:05:52.504Z",
       "bytes": 86567,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-3",
       "url": "https://www.congreso.es/eu/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.766Z",
+      "retrievedAt": "2026-09-18T00:05:52.649Z",
       "bytes": 86615,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-4",
       "url": "https://www.congreso.es/en/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:29.874Z",
+      "retrievedAt": "2026-09-18T00:05:52.781Z",
       "bytes": 86307,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-5",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696483&redirect=%2Fes%2Fopendata%2Finiciativas&languageId=en_GB",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.096Z",
+      "retrievedAt": "2026-09-18T00:05:53.205Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-6",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696483&redirect=%2Fes%2Fopendata%2Finiciativas&languageId=ca_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.293Z",
+      "retrievedAt": "2026-09-18T00:05:53.414Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-7",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696483&redirect=%2Fes%2Fopendata%2Finiciativas&languageId=eu_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.477Z",
+      "retrievedAt": "2026-09-18T00:05:53.636Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-8",
       "url": "https://www.congreso.es/es/c/portal/update_language?p_l_id=696483&redirect=%2Fes%2Fopendata%2Finiciativas&languageId=gl_ES",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.701Z",
+      "retrievedAt": "2026-09-18T00:05:53.852Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-9",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.781Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:53.931Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-10",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.824Z",
+      "retrievedAt": "2026-09-18T00:05:53.970Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-11",
       "url": "https://www.congreso.es/es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.863Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:54.008Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-12",
       "url": "https://www.congreso.es/es/opendata/diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:30.996Z",
+      "retrievedAt": "2026-09-18T00:05:54.124Z",
       "bytes": 95923,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-13",
       "url": "https://www.congreso.es/es/opendata/iniciativas",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.106Z",
+      "retrievedAt": "2026-09-18T00:05:54.245Z",
       "bytes": 86776,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-14",
       "url": "https://www.congreso.es/es/opendata/intervenciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.213Z",
+      "retrievedAt": "2026-09-18T00:05:54.381Z",
       "bytes": 85680,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-15",
       "url": "https://www.congreso.es/es/opendata/organos",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.317Z",
+      "retrievedAt": "2026-09-18T00:05:54.478Z",
       "bytes": 93318,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-16",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/IniciativasLegislativasAprobadas__20260917050025.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.500Z",
+      "retrievedAt": "2026-09-18T00:05:54.644Z",
       "bytes": 56303,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-17",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/IniciativasLegislativasAprobadas__20260917050026.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.576Z",
+      "retrievedAt": "2026-09-18T00:05:54.817Z",
       "bytes": 70986,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-18",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/IniciativasLegislativasAprobadas__20260917050025.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.835Z",
+      "retrievedAt": "2026-09-18T00:05:54.956Z",
       "bytes": 92518,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-19",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProyectosDeLey__20260917050034.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.919Z",
+      "retrievedAt": "2026-09-18T00:05:55.071Z",
       "bytes": 312316,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-20",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProyectosDeLey__20260917050035.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:31.993Z",
+      "retrievedAt": "2026-09-18T00:05:55.165Z",
       "bytes": 347174,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-21",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProyectosDeLey__20260917050034.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.060Z",
+      "retrievedAt": "2026-09-18T00:05:55.304Z",
       "bytes": 400762,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-22",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/PropuestasDeReforma__20260917050041.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.135Z",
+      "retrievedAt": "2026-09-18T00:05:55.419Z",
       "bytes": 2401,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-23",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/PropuestasDeReforma__20260917050042.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.231Z",
+      "retrievedAt": "2026-09-18T00:05:55.546Z",
       "bytes": 2597,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-24",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/PropuestasDeReforma__20260917050041.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.360Z",
+      "retrievedAt": "2026-09-18T00:05:55.621Z",
       "bytes": 3777,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-25",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProposicionesDeLey__20260917050220.csv",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.457Z",
+      "retrievedAt": "2026-09-18T00:05:55.725Z",
       "bytes": 609244,
       "contentType": "text/csv",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-26",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProposicionesDeLey__20260917050221.json",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.550Z",
+      "retrievedAt": "2026-09-18T00:05:55.826Z",
       "bytes": 698951,
       "contentType": "application/json",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-27",
       "url": "https://www.congreso.es/webpublica/opendata/iniciativas/ProposicionesDeLey__20260917050220.xml",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.623Z",
+      "retrievedAt": "2026-09-18T00:05:55.949Z",
       "bytes": 894494,
       "contentType": "text/xml",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "initiatives-28",
       "url": "https://www.congreso.es/busqueda-de-iniciativas?p_p_id=iniciativas&_iniciativas_statusOpenData=true",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:32.932Z",
+      "retrievedAt": "2026-09-18T00:05:56.166Z",
       "bytes": 187393,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "agenda",
       "url": "https://www.congreso.es/es/agenda",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.124Z",
+      "retrievedAt": "2026-09-18T00:05:57.427Z",
       "bytes": 96763,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "agenda-0",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.191Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:57.495Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "agenda-1",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.236Z",
+      "retrievedAt": "2026-09-18T00:05:57.529Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "profiles",
       "url": "https://www.congreso.es/es/busqueda-de-diputados",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.389Z",
+      "retrievedAt": "2026-09-18T00:05:57.845Z",
       "bytes": 258886,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "profiles-0",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.461Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:05:57.922Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "profiles-1",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.498Z",
+      "retrievedAt": "2026-09-18T00:05:57.976Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "hemicycle",
       "url": "https://www.congreso.es/es/hemiciclo",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:34.984Z",
+      "retrievedAt": "2026-09-18T00:06:00.623Z",
       "bytes": 401692,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2",
+      "attempts": 3
     },
     {
       "name": "hemicycle-0",
       "url": "https://www.congreso.es/opendata/votaciones",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:35.070Z",
-      "bytes": 247846,
+      "retrievedAt": "2026-09-18T00:06:00.687Z",
+      "bytes": 247837,
       "contentType": "text/html;charset=UTF-8",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     },
     {
       "name": "hemicycle-1",
       "url": "https://www.congreso.es/webpublica/estudios/formulario_pedido_publicaciones.pdf",
       "status": 200,
-      "retrievedAt": "2026-09-17T23:19:35.108Z",
+      "retrievedAt": "2026-09-18T00:06:00.724Z",
       "bytes": 98944,
       "contentType": "application/pdf",
-      "parserVersion": "discovery-v1"
+      "parserVersion": "discovery-v2"
     }
   ]
 }
