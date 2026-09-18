@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { gunzipSync, gzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
 
 const current = JSON.parse(await readFile('data/current.json', 'utf8'));
 const file = 'data/daily-presence-summaries.json.gz';
@@ -22,4 +23,12 @@ for (const deputy of current.deputies || []) {
 payload.summaries = [...rows.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.deputyId).localeCompare(String(b.deputyId)));
 payload.meta = { ...payload.meta, expandedAt: new Date().toISOString(), unknownRowsIncluded: true, denominator: 'deputy-service-period x indexed-session-date' };
 await writeFile(file, gzipSync(JSON.stringify(payload)));
+try {
+  const currentPath = 'data/current.json';
+  const current = JSON.parse(await readFile(currentPath, 'utf8'));
+  const bytes = await readFile(file);
+  const document = current.sourceDocuments?.find(x => x.id === 'daily-presence-summaries');
+  if (document) { document.sha256 = createHash('sha256').update(bytes).digest('hex'); document.bytes = bytes.length; document.recordCount = payload.summaries.length; document.retrievedAt = new Date().toISOString(); }
+  await writeFile(currentPath, JSON.stringify(current, null, 2));
+} catch {}
 console.log(`expanded daily summaries to ${payload.summaries.length} rows (${payload.summaries.filter(row => row.status === 'unknown').length} unknown)`);
