@@ -16,7 +16,7 @@ for (const deputy of current.deputies || []) {
     const day = parse(session.date);
     if (!session.date || day === null || day < from || day > to) continue;
     const key = `${deputy.id}|${session.date}`;
-    if (!rows.has(key)) rows.set(key, { deputyId: deputy.id, date: session.date, interventionTurns: null, interventionSeconds: null, nominalVoteEvents: null, remoteVoteEvents: null, firstEvidenceTime: null, lastEvidenceTime: null, evidenceKinds: ['unknown'], status: 'unknown' });
+    if (!rows.has(key)) rows.set(key, { deputyId: deputy.id, date: session.date, interventionTurns: null, interventionSeconds: null, nominalVoteEvents: null, remoteVoteEvents: null, evidenceEventCount: null, firstEvidenceTime: null, lastEvidenceTime: null, evidenceSpanSeconds: null, evidenceKinds: ['unknown'], status: 'unknown' });
   }
 }
 payload.summaries = [...rows.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.deputyId).localeCompare(String(b.deputyId)));

@@ -1,0 +1,2785 @@
+{
+  "meta": {
+    "legislature": "XV",
+    "retrievedAt": "2026-09-18T00:09:37.060Z",
+    "profileCount": 412
+  },
+  "documents": [
+    {
+      "deputyId": "160",
+      "deputyName": "Abades Martínez, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_160.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=160&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "136",
+      "deputyName": "Agüera Gago, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_136.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=136&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "139",
+      "deputyName": "Adrio Taracido, María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_139.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=139&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "64",
+      "deputyName": "Aceves Galindo, José Luis",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_64.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=64&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "69",
+      "deputyName": "Acedo Reyes, Sofía",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_69.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=69&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "317",
+      "deputyName": "Abascal Conde, Santiago",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_317.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=317&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "305",
+      "deputyName": "Agirretxea Urresti, Joseba Andoni",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_305.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=305&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "371",
+      "deputyName": "Aguirre Gil de Biedma, Rocío",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_371.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=371&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "52",
+      "deputyName": "Aizcorbe Torra, Juan José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_52.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=52&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "252",
+      "deputyName": "Alfonso Cendón, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_252.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=252&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "254",
+      "deputyName": "Alfonso Silvestre, Alma",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_254.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=254&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "387",
+      "deputyName": "Almirón Ruiz, Oriol",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_387.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=387&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "300",
+      "deputyName": "Aizpurua Arzallus, Mertxe",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_300.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=300&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "183",
+      "deputyName": "Alía Aguado, María Pilar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_183.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=183&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "4",
+      "deputyName": "Alcaraz Martos, Francisco José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_4.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=4&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "367",
+      "deputyName": "Almodóvar Sánchez, Emilia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_367.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=367&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "269",
+      "deputyName": "Alonso Cantorné, Fèlix",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_269.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=269&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "334",
+      "deputyName": "Alós López, Ana Isabel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_334.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=334&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "143",
+      "deputyName": "Álvarez Fanjul, Beatriz",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_143.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=143&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "134",
+      "deputyName": "Álvarez González, Alicia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_134.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=134&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "338",
+      "deputyName": "Andala Ubbi, Teslem",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_338.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=338&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "106",
+      "deputyName": "Andrés Añón, Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_106.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=106&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "222",
+      "deputyName": "Álvaro Vidal, Francesc-Marc",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_222.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=222&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "315",
+      "deputyName": "Álvarez de Toledo Peralta-Ramos, Cayetana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_315.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=315&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "403",
+      "deputyName": "Antuñano Colina, Pablo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_403.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=403&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "259",
+      "deputyName": "Aragonés Mendiguchía, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_259.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=259&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "249",
+      "deputyName": "Armario González, Blanca",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_249.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=249&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "163",
+      "deputyName": "Argüelles García, Silverio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_163.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=163&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "103",
+      "deputyName": "Argota Castro, Trinidad Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_103.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=103&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "21",
+      "deputyName": "Aranda Vargas, Francisco",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_21.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=21&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "185",
+      "deputyName": "Armengol Socias, Francina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_185.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=185&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "96",
+      "deputyName": "Arribas Maroto, Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_96.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=96&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "316",
+      "deputyName": "Asarta Cuevas, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_316.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=316&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "297",
+      "deputyName": "Beamonte Mesa, Luis María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_297.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=297&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "273",
+      "deputyName": "Azorín Salar, Lázaro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_273.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=273&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "329",
+      "deputyName": "Badia Casas, Eloi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_329.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=329&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "406",
+      "deputyName": "Aznar Teruel, Evarist",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_406.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=406&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "262",
+      "deputyName": "Belarra Urteaga, Ione",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_262.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=262&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "382",
+      "deputyName": "Bayón Rolo, Juan Andrés",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_382.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=382&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "378",
+      "deputyName": "Barrio Baroja, Carmelo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_378.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=378&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "208",
+      "deputyName": "Belda Pérez-Pedrero, Enrique",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_208.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=208&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "118",
+      "deputyName": "Bermúdez de Castro Fernández, José Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_118.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=118&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "175",
+      "deputyName": "Belmonte Gómez, Rafael Benigno",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_175.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=175&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "209",
+      "deputyName": "Bendodo Benasayag, Elías",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_209.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=209&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "400",
+      "deputyName": "Blanco Arrúe, Gabriel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_400.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=400&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "332",
+      "deputyName": "Boada Danés, Júlia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_332.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=332&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "170",
+      "deputyName": "Blanquer Alcaraz, Patricia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_170.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=170&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "253",
+      "deputyName": "Bolaños García, Félix",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_253.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=253&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "9",
+      "deputyName": "Bravo Baena, Juan",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_9.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=9&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "2",
+      "deputyName": "Cabezón Casas, Tomás",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_2.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=2&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "145",
+      "deputyName": "Borrego Cortés, Isabel María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_145.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=145&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "401",
+      "deputyName": "Cacho Isla, Iván",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_401.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=401&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "364",
+      "deputyName": "Camino Miñana, Víctor",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_364.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=364&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "207",
+      "deputyName": "Campos Asensi, Jorge",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_207.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=207&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "243",
+      "deputyName": "Calvo Gómez, Pilar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_243.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=243&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "388",
+      "deputyName": "Canelo Matito, Andrea",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_388.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=388&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "149",
+      "deputyName": "Catalán Higueras, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_149.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=149&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "234",
+      "deputyName": "Cantalapiedra Álvarez, María de las Mercedes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_234.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=234&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "15",
+      "deputyName": "Castilla Álvarez, María Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_15.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=15&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "282",
+      "deputyName": "Carazo Hermoso, Eduardo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_282.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=282&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "341",
+      "deputyName": "Carballedo Berlanga, María Eugenia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_341.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=341&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "299",
+      "deputyName": "Cavacasillas Rodríguez, Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_299.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=299&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "162",
+      "deputyName": "Celaya Brey, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_162.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=162&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "111",
+      "deputyName": "Cercas Mena, Blanca",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_111.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=111&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "75",
+      "deputyName": "Cobo Carmona, Ana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_75.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=75&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "242",
+      "deputyName": "Cervera Pinart, Josep Maria",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_242.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=242&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "109",
+      "deputyName": "Clavell López, Óscar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_109.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=109&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "294",
+      "deputyName": "Chamorro Delmo, Ricardo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_294.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=294&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "276",
+      "deputyName": "Clemente Muñoz, Raquel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_276.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=276&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "321",
+      "deputyName": "Cobo Pérez, Noelia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_321.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=321&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "324",
+      "deputyName": "Cobo Vega, Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_324.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=324&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "122",
+      "deputyName": "Cofiño Fernández, Rafael",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_122.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=122&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "352",
+      "deputyName": "Conesa Coma, Ignasi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_352.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=352&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "154",
+      "deputyName": "Crespín Rubio, Rafaela",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_154.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=154&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "85",
+      "deputyName": "Cortés Carballo, Mario",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_85.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=85&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "7",
+      "deputyName": "Conde Bajén, Agustín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_7.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=7&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "187",
+      "deputyName": "Corujo Berriel, María Dolores",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_187.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=187&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "349",
+      "deputyName": "Conde López, Francisco José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_349.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=349&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "244",
+      "deputyName": "Cruset Domènech, Josep Maria",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_244.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=244&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "168",
+      "deputyName": "Cruz Santana, Gabriel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_168.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=168&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "107",
+      "deputyName": "De las Cuevas Cortés, Félix",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_107.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=107&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "395",
+      "deputyName": "Cuevas Larrosa, Raúl",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_395.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=395&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "174",
+      "deputyName": "De Luna Tobarra, Llanos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_174.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=174&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "270",
+      "deputyName": "De los Santos González, Jaime Miguel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_270.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=270&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "44",
+      "deputyName": "Cuesta Rodríguez, María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_44.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=44&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "376",
+      "deputyName": "De la Rosa Baena, Olvido",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_376.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=376&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "319",
+      "deputyName": "Cruz-Guzmán García, María Soledad",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_319.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=319&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "284",
+      "deputyName": "De Meer Méndez, Rocío",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_284.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=284&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "32",
+      "deputyName": "Delgado Arce, Celso Luis",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_32.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=32&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "124",
+      "deputyName": "Del Valle Rodríguez, Emilio Jesús",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_124.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=124&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "142",
+      "deputyName": "Diouf Dioh, Luc Andre",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_142.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=142&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "248",
+      "deputyName": "De Rosa Torner, Fernando",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_248.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=248&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "235",
+      "deputyName": "Delgado-Taramona Hernández, Jimena",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_235.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=235&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "342",
+      "deputyName": "Díaz Pérez, Yolanda",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_342.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=342&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "50",
+      "deputyName": "Díaz Marín, Raúl",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_50.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=50&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "392",
+      "deputyName": "Estrems Fayos, Etna",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_392.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=392&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "167",
+      "deputyName": "Faneca López, María Luisa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_167.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=167&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "108",
+      "deputyName": "Fabra Part, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_108.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=108&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "214",
+      "deputyName": "Fernández Ríos, Tomás",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_214.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=214&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "31",
+      "deputyName": "Fernández Benéitez, Andrea",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_31.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=31&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "29",
+      "deputyName": "Fagúndez Campo, Antidio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_29.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=29&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "82",
+      "deputyName": "Fernández González, María Mercedes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_82.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=82&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "14",
+      "deputyName": "Fernández Hernández, Pedro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_14.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=14&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "193",
+      "deputyName": "Figaredo Álvarez-Sala, José María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_193.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=193&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "159",
+      "deputyName": "Flores Juberías, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_159.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=159&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "65",
+      "deputyName": "Fúnez de Gregorio, Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_65.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=65&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "115",
+      "deputyName": "Folch Blanc, Javier José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_115.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=115&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "55",
+      "deputyName": "Floriano Corrales, Carlos Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_55.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=55&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "291",
+      "deputyName": "Fullaondo la Cruz, Marije",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_291.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=291&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "30",
+      "deputyName": "Franco González, Silvia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_30.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=30&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "314",
+      "deputyName": "Gamarra Ruiz-Clavijo, Concepción",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_314.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=314&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "74",
+      "deputyName": "Gallardo Barrena, Pedro Ignacio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_74.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=74&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "266",
+      "deputyName": "García Adanero, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_266.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=266&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "380",
+      "deputyName": "García Chavarría, María Montserrat",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_380.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=380&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "25",
+      "deputyName": "García Félix, Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_25.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=25&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "104",
+      "deputyName": "García Gomis, David",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_104.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=104&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "195",
+      "deputyName": "García Morís, Roberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_195.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=195&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "113",
+      "deputyName": "García Gurrutxaga, María Luisa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_113.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=113&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "49",
+      "deputyName": "García López, Maribel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_49.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=49&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "84",
+      "deputyName": "Garre Murcia, Cristóbal",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_84.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=84&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "116",
+      "deputyName": "Garrido Jiménez, Elisa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_116.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=116&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "42",
+      "deputyName": "Garrido Valenzuela, Irene",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_42.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=42&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "239",
+      "deputyName": "Gavin i Valls, Isidre",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_239.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=239&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "86",
+      "deputyName": "Gil de Reboleño Lastortres, Esther",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_86.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=86&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "117",
+      "deputyName": "Gil Lázaro, Ignacio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_117.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=117&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "396",
+      "deputyName": "Gómez Piña, Luis Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_396.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=396&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "228",
+      "deputyName": "González Gracia, Juan Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_228.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=228&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "407",
+      "deputyName": "González Herdaro, Ana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_407.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=407&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "166",
+      "deputyName": "González López, Nahuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_166.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=166&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "200",
+      "deputyName": "González Vázquez, Marta",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_200.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=200&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "221",
+      "deputyName": "Granollers Cunillera, Inés",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_221.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=221&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "370",
+      "deputyName": "Gracia Blanco, Marta",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_370.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=370&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "121",
+      "deputyName": "González-Robatto Perote, Jacobo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_121.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=121&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "351",
+      "deputyName": "Guardiola Salmerón, Mirian",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_351.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=351&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "92",
+      "deputyName": "Guijarro García, Txema",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_92.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=92&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "272",
+      "deputyName": "Guinart Moreno, Lídia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_272.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=272&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "232",
+      "deputyName": "Gutiérrez Prieto, Sergio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_232.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=232&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "202",
+      "deputyName": "Hernando Fraile, Rafael Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_202.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=202&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "357",
+      "deputyName": "Gutiérrez Santiago, Víctor",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_357.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=357&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "186",
+      "deputyName": "Herrera García, Milena",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_186.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=186&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "345",
+      "deputyName": "Hernández Quero, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_345.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=345&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "277",
+      "deputyName": "Herrero Bono, José Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_277.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=277&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "350",
+      "deputyName": "Hispán Iglesias de Ussel, Pablo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_350.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=350&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "381",
+      "deputyName": "Hita Téllez, Guillermo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_381.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=381&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "194",
+      "deputyName": "Hoces Íñiguez, Ignacio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_194.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=194&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "180",
+      "deputyName": "Ibáñez Hernando, Ángel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_180.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=180&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "67",
+      "deputyName": "Hoyo Juliá, Belén",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_67.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=67&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "137",
+      "deputyName": "Iniesta Egido, Isabel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_137.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=137&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "165",
+      "deputyName": "Ibáñez Mezquita, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_165.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=165&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "290",
+      "deputyName": "Iñarritu García, Jon",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_290.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=290&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "18",
+      "deputyName": "Jerez Antequera, Juan Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_18.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=18&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "41",
+      "deputyName": "Jiménez Linuesa, Beatriz",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_41.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=41&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "405",
+      "deputyName": "Jódar Pérez, Irene",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_405.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=405&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "375",
+      "deputyName": "Lago Peñas, Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_375.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=375&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "110",
+      "deputyName": "Lamuà Estañol, Marc",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_110.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=110&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "191",
+      "deputyName": "Leal Fernández, Isaura",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_191.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=191&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "306",
+      "deputyName": "Legarda Uriarte, Mikel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_306.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=306&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "155",
+      "deputyName": "Lima García, Laura María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_155.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=155&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "224",
+      "deputyName": "Jordà i Roura, Teresa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_224.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=224&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "340",
+      "deputyName": "Llamazares Domingo, Esther",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_340.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=340&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "120",
+      "deputyName": "López Álvarez, Patxi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_120.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=120&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "264",
+      "deputyName": "López Cano, Ignacio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_264.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=264&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "365",
+      "deputyName": "López Zamora, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_365.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=365&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "372",
+      "deputyName": "López Tagliafico, Candela",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_372.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=372&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "73",
+      "deputyName": "López Maraver, Ángel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_73.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=73&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "48",
+      "deputyName": "Lorente Anaya, Macarena",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_48.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=48&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "298",
+      "deputyName": "Macías Gata, Alfonso Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_298.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=298&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "353",
+      "deputyName": "Losada Fernández, José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_353.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=353&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "354",
+      "deputyName": "Lorenzo Cazorla, Juan Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_354.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=354&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "105",
+      "deputyName": "Maldonado López, Adriana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_105.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=105&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "320",
+      "deputyName": "Marcos Ortega, Milagros",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_320.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=320&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "245",
+      "deputyName": "Madrenas i Mir, Marta",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_245.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=245&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "255",
+      "deputyName": "Mariscal Anaya, Guillermo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_255.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=255&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "260",
+      "deputyName": "Madrid Olmo, Bartolomé",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_260.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=260&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "188",
+      "deputyName": "Marí Bosó, José Vicente",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_188.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=188&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "409",
+      "deputyName": "Marín Aparicio, Inmaculada",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_409.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=409&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "263",
+      "deputyName": "Mariscal Zabala, Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_263.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=263&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "79",
+      "deputyName": "Marqués Atés, Amador",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_79.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=79&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "173",
+      "deputyName": "Martín Blanco, Nacho",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_173.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=173&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "62",
+      "deputyName": "Martín Martínez, Andreu",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_62.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=62&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "150",
+      "deputyName": "Martín García, Pedro Samuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_150.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=150&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "146",
+      "deputyName": "Martín Rodríguez, Margarita",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_146.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=146&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "225",
+      "deputyName": "Martín Urriza, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_225.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=225&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "310",
+      "deputyName": "Martínez Barbero, Verónica",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_310.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=310&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "102",
+      "deputyName": "Martínez Gómez, Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_102.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=102&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "87",
+      "deputyName": "Martínez Hierro, Lander",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_87.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=87&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "182",
+      "deputyName": "Martínez Salmerón, Joaquín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_182.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=182&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "213",
+      "deputyName": "Martínez Labella, Ana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_213.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=213&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "63",
+      "deputyName": "Martínez Seijo, María Luz",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_63.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=63&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "218",
+      "deputyName": "Martínez Ramírez, Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_218.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=218&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "366",
+      "deputyName": "Mayoral Pérez, Jesús",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_366.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=366&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "287",
+      "deputyName": "Matute García de Jalón, Oskar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_287.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=287&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "363",
+      "deputyName": "Mayoral de Lamo, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_363.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=363&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "331",
+      "deputyName": "Mejías Sánchez, Carina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_331.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=331&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "171",
+      "deputyName": "Mellado Sierra, Valle",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_171.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=171&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "211",
+      "deputyName": "Melgarejo Moreno, Joaquín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_211.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=211&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "190",
+      "deputyName": "Mercadal Baquero, Pepe",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_190.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=190&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "203",
+      "deputyName": "Méndez Monasterio, Lourdes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_203.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=203&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "99",
+      "deputyName": "Merino Martínez, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_99.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=99&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "132",
+      "deputyName": "Mesquida Mayans, Joan",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_132.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=132&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "164",
+      "deputyName": "Micó Micó, Àgueda",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_164.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=164&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "390",
+      "deputyName": "Montávez Aguillaume, Vicente",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_390.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=390&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "80",
+      "deputyName": "Mínguez García, Montse",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_80.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=80&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "391",
+      "deputyName": "Molina León, Ainhoa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_391.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=391&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "216",
+      "deputyName": "Montesinos de Miguel, Macarena",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_216.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=216&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "198",
+      "deputyName": "Moraleja Gómez, Tristana María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_198.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=198&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "204",
+      "deputyName": "Moneo Díez, María Sandra",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_204.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=204&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "93",
+      "deputyName": "Morales Álvarez, Álvaro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_93.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=93&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "385",
+      "deputyName": "Moreno Borrás, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_385.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=385&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "361",
+      "deputyName": "Moreno Fernández, Mª Isabel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_361.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=361&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "151",
+      "deputyName": "Moro Almaraz, María Jesús",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_151.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=151&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "236",
+      "deputyName": "Muñoz Abrines, Pedro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_236.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=236&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "28",
+      "deputyName": "Muñoz de la Iglesia, Ester",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_28.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=28&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "348",
+      "deputyName": "Nacarino-Brabo Jiménez, Aurora",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_348.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=348&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "178",
+      "deputyName": "Nasarre Oliva, Begoña",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_178.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=178&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "271",
+      "deputyName": "Narbona Ruiz, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_271.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=271&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "215",
+      "deputyName": "Navarro Lacoba, Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_215.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=215&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "241",
+      "deputyName": "Nogueras i Camero, Míriam",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_241.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=241&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "346",
+      "deputyName": "Núñez Feijóo, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_346.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=346&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "141",
+      "deputyName": "Noriega Gómez, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_141.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=141&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "397",
+      "deputyName": "Ogou i Corbi, Viviane",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_397.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=397&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "325",
+      "deputyName": "Ortega Smith-Molina, Francisco Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_325.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=325&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "161",
+      "deputyName": "Olano Vela, Jaime Eduardo de",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_161.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=161&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "373",
+      "deputyName": "Núñez Guijarro, José Enrique",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_373.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=373&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "398",
+      "deputyName": "Otero Gabirondo, Mikel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_398.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=398&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "386",
+      "deputyName": "Otero García, Mercedes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_386.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=386&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "377",
+      "deputyName": "Otero Rodríguez, Patricia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_377.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=377&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "389",
+      "deputyName": "Pagès i Massó, Josep",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_389.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=389&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "1",
+      "deputyName": "Palencia Rubio, Héctor",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_1.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=1&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "323",
+      "deputyName": "Paniagua Núñez, Miguel Ángel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_323.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=323&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "369",
+      "deputyName": "Paré Aregall, Josep",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_369.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=369&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "210",
+      "deputyName": "Parra Aparicio, Julia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_210.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=210&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "172",
+      "deputyName": "Parra Gallego, Agustín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_172.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=172&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "212",
+      "deputyName": "Pascual Rocamora, Sandra",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_212.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=212&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "339",
+      "deputyName": "Pedreño Molina, Juan Luis",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_339.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=339&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "95",
+      "deputyName": "Peña Camarero, Esther",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_95.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=95&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "19",
+      "deputyName": "Perea i Conillas, María Mercè",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_19.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=19&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "45",
+      "deputyName": "Pérez Coronado, Pablo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_45.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=45&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "27",
+      "deputyName": "Pérez López, Álvaro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_27.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=27&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "88",
+      "deputyName": "Pérez Recuerda, Isabel Gema",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_88.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=88&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "8",
+      "deputyName": "Pérez Ortiz, Isabel María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_8.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=8&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "16",
+      "deputyName": "Pérez Osma, Daniel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_16.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=16&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "328",
+      "deputyName": "Pisarello Prados, Gerardo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_328.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=328&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "81",
+      "deputyName": "Plaza García, Inés",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_81.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=81&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "39",
+      "deputyName": "Poblador Pacheco, María Araceli",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_39.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=39&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "288",
+      "deputyName": "Pozueta Fernández, Isabel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_288.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=288&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "129",
+      "deputyName": "Pose Mesura, Modesto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_129.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=129&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "71",
+      "deputyName": "Prieto Serrano, María Isabel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_71.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=71&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "90",
+      "deputyName": "Puente Santiago, Óscar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_90.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=90&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "199",
+      "deputyName": "Puy Fraga, Pedro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_199.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=199&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "197",
+      "deputyName": "Quintana Carballo, Rosa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_197.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=197&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "181",
+      "deputyName": "Quintanilla Navarro, Miguel Ángel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_181.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=181&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "46",
+      "deputyName": "Ramajo Prada, Óscar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_46.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=46&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "394",
+      "deputyName": "Quintero Hernández, Jonay",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_394.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=394&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "54",
+      "deputyName": "Rallo Lombarte, Artemi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_54.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=54&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "94",
+      "deputyName": "Ramírez Carner, Arnau",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_94.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=94&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "70",
+      "deputyName": "Ramírez del Río, José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_70.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=70&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "393",
+      "deputyName": "Recas Martín, Alda",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_393.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=393&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "100",
+      "deputyName": "Ramos Esteban, César Joaquín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_100.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=100&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "5",
+      "deputyName": "Ramírez Moreno, María de las Nieves",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_5.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=5&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "60",
+      "deputyName": "Ramírez Martín, María Lourdes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_60.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=60&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "98",
+      "deputyName": "Redondo Cárdenas, Gonzalo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_98.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=98&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "238",
+      "deputyName": "Rego Candamil, Néstor",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_238.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=238&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "399",
+      "deputyName": "Renteria Lasanta, Nerea",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_399.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=399&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "131",
+      "deputyName": "Requena Ruiz, Juan Diego",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_131.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=131&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "11",
+      "deputyName": "Rey de las Heras, Luis Alfonso",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_11.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=11&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "157",
+      "deputyName": "Rivera Arias, Engracia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_157.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=157&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "231",
+      "deputyName": "Rives Arcayna, Caridad",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_231.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=231&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "246",
+      "deputyName": "Reynal Reillo, Esperanza",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_246.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=246&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "318",
+      "deputyName": "Robles López, Joaquín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_318.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=318&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "256",
+      "deputyName": "Rodríguez Almeida, Andrés Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_256.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=256&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "51",
+      "deputyName": "Rodríguez Calleja, Patricia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_51.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=51&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "344",
+      "deputyName": "Rodríguez de Millán Parro, María José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_344.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=344&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "140",
+      "deputyName": "Rodríguez Gómez de Celis, Alfonso",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_140.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=140&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "404",
+      "deputyName": "Rodríguez Herrer, María Elvira",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_404.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=404&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "101",
+      "deputyName": "Rodríguez Serra, Santi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_101.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=101&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "128",
+      "deputyName": "Rodríguez Salas, José Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_128.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=128&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "355",
+      "deputyName": "Rodríguez Palacios, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_355.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=355&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "359",
+      "deputyName": "Rodríguez Suárez, Esther",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_359.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=359&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "12",
+      "deputyName": "Rojas García, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_12.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=12&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "156",
+      "deputyName": "Rojas Manrique, Juan Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_156.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=156&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "176",
+      "deputyName": "Rojo Blas, Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_176.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=176&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "59",
+      "deputyName": "Román Jasanada, Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_59.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=59&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "112",
+      "deputyName": "Romero Pozo, Rafaela",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_112.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=112&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "307",
+      "deputyName": "Romero Vilches, María de los Reyes",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_307.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=307&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "58",
+      "deputyName": "Ros Martínez, Susana",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_58.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=58&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "68",
+      "deputyName": "Ruiz Boix, Juan Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_68.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=68&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "293",
+      "deputyName": "Rueda Perelló, Patricia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_293.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=293&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "312",
+      "deputyName": "Rufián Romero, Gabriel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_312.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=312&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "283",
+      "deputyName": "Ruiz Solás, María de la Cabeza",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_283.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=283&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "362",
+      "deputyName": "Ruiz de Diego, Víctor Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_362.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=362&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "61",
+      "deputyName": "Sáez Alonso-Muñumer, Pablo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_61.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=61&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "138",
+      "deputyName": "Sáez Cruz, Emilio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_138.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=138&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "309",
+      "deputyName": "Sagastizabal Unzetabarrenetxea, Idoia",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_309.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=309&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "10",
+      "deputyName": "Sahuquillo García, Luis Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_10.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=10&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "77",
+      "deputyName": "Salvador i Duch, Jordi",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_77.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=77&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "384",
+      "deputyName": "Sainz Martín, María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_384.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=384&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "72",
+      "deputyName": "Sánchez Díaz, María Carmen",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_72.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=72&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "53",
+      "deputyName": "Sánchez García, José María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_53.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=53&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "152",
+      "deputyName": "Sánchez Ojeda, Carlos Alberto",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_152.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=152&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "217",
+      "deputyName": "Sánchez Pérez, César",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_217.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=217&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "189",
+      "deputyName": "Sánchez Pérez-Castejón, Pedro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_189.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=189&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "130",
+      "deputyName": "Sancho Íñiguez, Herminio Rufino",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_130.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=130&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "292",
+      "deputyName": "Sánchez Serna, Javier",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_292.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=292&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "281",
+      "deputyName": "Sánchez Sierra, María del Mar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_281.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=281&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "177",
+      "deputyName": "Sánchez Torregrosa, Maribel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_177.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=177&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "133",
+      "deputyName": "Santana Aguilera, Ada",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_133.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=133&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "33",
+      "deputyName": "Santana Perera, Noemí",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_33.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=33&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "125",
+      "deputyName": "Santiago Romero, Enrique Fernando",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_125.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=125&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "311",
+      "deputyName": "Santos Maraver, Agustín",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_311.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=311&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "148",
+      "deputyName": "Sayas López, Sergio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_148.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=148&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "91",
+      "deputyName": "Sanz Martínez, Luisa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_91.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=91&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "219",
+      "deputyName": "Sarrià Morell, Vicent Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_219.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=219&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "206",
+      "deputyName": "Sastre Uyá, Miguel Ángel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_206.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=206&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "258",
+      "deputyName": "Sémper Pascual, Borja",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_258.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=258&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "17",
+      "deputyName": "Senderos Oraá, Daniel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_17.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=17&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "40",
+      "deputyName": "Serrano Martínez, Juan Francisco",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_40.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=40&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "24",
+      "deputyName": "Serrada Pariente, David",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_24.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=24&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "268",
+      "deputyName": "Sierra Caballero, Francisco",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_268.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=268&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "229",
+      "deputyName": "Simancas Simancas, Rafael",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_229.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=229&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "402",
+      "deputyName": "Simarro Vicens, Carlos",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_402.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=402&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "358",
+      "deputyName": "Soldevilla Novials, Alba",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_358.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=358&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "296",
+      "deputyName": "Soler Mur, Alejandro",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_296.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=296&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "89",
+      "deputyName": "Tarno Blanco, Ricardo",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_89.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=89&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "26",
+      "deputyName": "Tellado Filgueira, Miguel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_26.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=26&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "47",
+      "deputyName": "Teniente Sánchez, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_47.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=47&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "119",
+      "deputyName": "Tomás Olivares, Violante",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_119.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=119&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "368",
+      "deputyName": "Torres Tejada, María",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_368.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=368&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "374",
+      "deputyName": "Uriarte Bengoechea, Edurne",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_374.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=374&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "220",
+      "deputyName": "Trenzano Rubio, Marta",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_220.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=220&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "78",
+      "deputyName": "Valero Morales, Juan Antonio",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_78.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=78&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "38",
+      "deputyName": "Valido García, Cristina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_38.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=38&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "223",
+      "deputyName": "Vallugera Balañà, Pilar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_223.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=223&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "303",
+      "deputyName": "Vaquero Montero, Maribel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_303.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=303&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "196",
+      "deputyName": "Vázquez Blanco, Ana Belén",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_196.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=196&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "347",
+      "deputyName": "Varela Pazos, Marta",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_347.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=347&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "383",
+      "deputyName": "Vedrina Conesa, María Elisa",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_383.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=383&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "76",
+      "deputyName": "Vázquez Jiménez, María del Mar",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_76.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=76&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "169",
+      "deputyName": "Velarde Gómez, Martina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_169.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=169&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "34",
+      "deputyName": "Velasco Morillo, Elvira",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_34.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=34&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "184",
+      "deputyName": "Velasco Retamosa, José Manuel",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_184.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=184&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "23",
+      "deputyName": "Verdejo Vicente, Ferran",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_23.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=23&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "43",
+      "deputyName": "Verano Domínguez, Bella",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_43.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=43&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "192",
+      "deputyName": "Vidal Matas, Vicenç",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_192.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=192&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "408",
+      "deputyName": "Vergara Román, Laura",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_408.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=408&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "327",
+      "deputyName": "Vidal Sáez, Aina",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_327.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=327&idLegislatura=XV",
+      "httpStatus": 200
+    },
+    {
+      "deputyId": "35",
+      "deputyName": "Zaragoza Alonso, José",
+      "url": "https://www.congreso.es/docinte/registro_intereses_diputado_35.pdf",
+      "documentType": "economic_interests",
+      "sourceProfile": "https://www.congreso.es/es/busqueda-de-diputados?p_p_id=diputadomodule&p_p_lifecycle=0&p_p_state=normal&_diputadomodule_mostrarFicha=true&codParlamentario=35&idLegislatura=XV",
+      "httpStatus": 200
+    }
+  ]
+}
