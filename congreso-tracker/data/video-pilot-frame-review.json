@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "sessionId": "Pleno-2026-09-15",
+    "reviewedAt": "2026-09-18",
+    "reviewer": "manual-frame-review",
+    "method": "manual inspection of frames extracted from official HLS stream",
+    "facialIdentification": false,
+    "scope": "sampled evidence frames; not continuous attendance"
+  },
+  "frames": [
+    {
+      "atSecond": 60,
+      "view": "wide_shot",
+      "seatCoverage": "partially_observable",
+      "value": "observable",
+      "evidenceUrl": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_197/cortes/smil:15_000400_197.smil/manifest.m3u8",
+      "note": "Both curved seating banks are visible, but people and railings obscure some rows. No occupant attribution made."
+    },
+    {
+      "atSecond": 600,
+      "view": "medium_shot",
+      "seatCoverage": "unobservable",
+      "value": "unobservable",
+      "evidenceUrl": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_197/cortes/smil:15_000400_197.smil/manifest.m3u8",
+      "note": "Camera is focused on the rostrum; most assigned seats are outside the frame."
+    },
+    {
+      "atSecond": 1200,
+      "view": "speaker_close_up",
+      "seatCoverage": "unobservable",
+      "value": "unobservable",
+      "evidenceUrl": "https://streaming.congreso.es:8443/vod/ondemand/video/leg15/400/15_000400_197/cortes/smil:15_000400_197.smil/manifest.m3u8",
+      "note": "Close-up of the speaking deputy; chamber seats are not visible."
+    }
+  ]
+}
