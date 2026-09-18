@@ -1,0 +1,9 @@
+data/raw
+data/normalized
+data/bodies
+data/votes-full.json
+data/*.mp4
+data/*.ts
+node_modules
+.git
+*.log
