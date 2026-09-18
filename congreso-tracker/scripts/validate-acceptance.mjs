@@ -17,5 +17,6 @@ if (daily.some(x => { const bounds=service.get(x.deputyId); const day=dateValue(
 if (transcripts.some(x => x.language !== 'es' || x.textVariant !== 'official_transcript_original' || !('interpretationText' in x))) errors.push('transcript language/version metadata missing');
 if (current.formalBodyMemberships.some(x => x.validationStatus === 'official_response' && !x.sourceUrl)) errors.push('official committee row missing source URL');
 if (current.interventions.filter(x => x.textUrl).length === 0) errors.push('no transcript links imported');
+const knownIds=new Set(current.deputies.map(x=>String(x.officialId))); const unresolvedSubstitutions=current.substitutions.filter(x=>x.substituteId&&!knownIds.has(String(x.substituteId))||x.substitutedId&&!knownIds.has(String(x.substitutedId))); if (unresolvedSubstitutions.some(x=>!x.substituteName&&!x.substitutedName)) errors.push('substitution row has no resolvable identity or preserved name');
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`acceptance passed: ${current.deputies.length} deputies, ${current.interventions.length} interventions, ${current.formalBodyMemberships.length} body rows, ${daily.length} daily rows`);
