@@ -11,7 +11,7 @@ npm start
 
 Open http://localhost:8787. `npm run collect` discovers the current official deputy JSON/CSV/XML links and stores a raw snapshot under `data/raw/`; HTTP 403 and other failures are recorded in `data/collection-log.json` rather than interpreted as empty data.
 
-The tracker can also run as an independent container: `docker compose up --build` (or `docker build -t congreso-tracker . && docker run --rm -p 8787:8787 congreso-tracker`). The image contains the normalized snapshot and compressed evidence artifacts, while raw downloads and temporary media stay outside the image.
+The tracker can also run as an independent container: `docker compose up --build` (or `docker build -t congreso-tracker . && docker run --rm -p 8787:8787 congreso-tracker`). The image contains the normalized snapshot and compressed evidence artifacts, while raw downloads and temporary media stay outside the image. The coverage metadata reports how many intervention records have a deputy identifier; records without one remain available but are never counted as deputy activity.
 
 Deployments can use `GET /healthz` to confirm the snapshot loaded and inspect its legislature, generation time and core record counts.
 
