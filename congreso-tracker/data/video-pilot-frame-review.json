@@ -5,7 +5,13 @@
     "reviewer": "manual-frame-review",
     "method": "manual inspection of frames extracted from official HLS stream",
     "facialIdentification": false,
-    "scope": "sampled evidence frames; not continuous attendance"
+    "scope": "sampled evidence frames; not continuous attendance",
+    "sampleCoverage": "convenience_sample",
+    "reviewedFrameCount": 3,
+    "observableFrameCount": 1,
+    "observableFrameFraction": 0.3333,
+    "occupancyAccuracy": null,
+    "accuracyNote": "No independently labeled ground truth is available; accuracy is not estimated."
   },
   "frames": [
     {
