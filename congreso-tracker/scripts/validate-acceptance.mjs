@@ -20,6 +20,11 @@ if (current.formalBodyMemberships.some(x => x.validationStatus === 'official_res
 if (current.interventions.filter(x => x.textUrl).length === 0) errors.push('no transcript links imported');
 if (!current.meta.attribution || current.meta.attribution.interventionsTotal !== current.interventions.length) errors.push('intervention attribution coverage metadata missing or stale');
 if (current.meta.attribution && current.meta.attribution.interventionsWithDeputyId + current.meta.attribution.interventionsWithoutDeputyId !== current.interventions.length) errors.push('intervention attribution counts do not reconcile');
+if (current.interventions.some(x => x.identityStatus === 'outside_service_period' && x.deputyId)) errors.push('officeholder intervention outside service period still counted as deputy');
+if (current.interventions.some(x => x.duplicateCount < 1 || !Array.isArray(x.sourceRowIndexes) || x.sourceRowIndexes.length !== x.duplicateCount)) errors.push('deduplicated intervention provenance missing');
+if (current.meta.topicAnalysisVersion !== 'lexicon-es-v3') errors.push('stale topic analysis version remains');
+if (current.presenceObservations.some(x => x.kind === 'remote_participation' && x.physicalPresence !== false)) errors.push('remote vote lacks explicit physical-presence=false');
+const pnvNames=['Sagastizabal Unzetabarrenetxea, Idoia','Legarda Uriarte, Mikel','Vaquero Montero, Maribel','Agirretxea Urresti, Joseba Andoni']; for (const name of pnvNames) { if (!current.interventions.some(x => String(x.speaker||'').startsWith(name) && x.deputyId)) errors.push(`canonical name match missing for ${name}`); }
 const knownIds=new Set(current.deputies.map(x=>String(x.officialId))); const unresolvedSubstitutions=current.substitutions.filter(x=>x.substituteId&&!knownIds.has(String(x.substituteId))||x.substitutedId&&!knownIds.has(String(x.substitutedId))); if (unresolvedSubstitutions.some(x=>!x.substituteName&&!x.substitutedName)) errors.push('substitution row has no resolvable identity or preserved name');
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`acceptance passed: ${current.deputies.length} deputies, ${current.interventions.length} interventions, ${current.formalBodyMemberships.length} body rows, ${daily.length} daily rows`);
