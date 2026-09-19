@@ -2,7 +2,7 @@ const API = '/api/congreso/v1';
 const main = document.getElementById('main');
 const nav = document.querySelector('.main-nav');
 const menuButton = document.getElementById('menuButton');
-const state = { overview: null, coverage: null, deputies: null, sessions: null, votes: null };
+const state = { overview: null, coverage: null, deputies: null, sessions: null, votes: null, analytics: null };
 
 const esc = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = (value) => Number(value || 0).toLocaleString('es-ES');
@@ -123,6 +123,33 @@ async function renderCoverage() {
     sectionHead('Documentos normalizados', 'Cada fuente conserva URL, captura, parser, tamaño y hash') + '<div class="card source-list">' + (data.sources || []).map((x) => '<div class="source-row"><div><b>' + esc(x.id) + '</b><br><span class="subtle">' + fmt(x.recordCount) + ' registros · ' + esc(x.parserVersion || '—') + '</span></div><div style="text-align:right"><span class="subtle">' + esc(x.retrievedAt || '—') + '</span><br><code>' + esc((x.sha256 || 'sin hash').slice(0,18)) + '…</code></div></div>').join('') + '</div>';
 }
 
+const metricLabel = { speechTurns: 'Intervenciones', votesCast: 'Votos registrados', votingParticipation: 'Participación en votos', minutes: 'Minutos temporizados', initiativeCount: 'Iniciativas vinculadas', topicCount: 'Temas distintos', groupAgreement: 'Coincidencia con grupo' };
+const analyticsBars = (rows, key, limit) => { const top = rows.slice().sort((a,b) => Number(b[key] || 0) - Number(a[key] || 0)).slice(0, limit || 10); const max = Math.max(1, ...top.map(x => Number(x[key] || 0))); return '<div class="bars">' + top.map(x => '<div class="bar-row"><span class="bar-label" title="' + esc(x.name) + '">' + esc(x.name) + '</span><span class="bar-track"><span class="bar-fill" style="width:' + Math.round(Number(x[key] || 0) / max * 100) + '%"></span></span><span class="bar-value">' + (key === 'votingParticipation' || key === 'groupAgreement' ? (x[key] == null ? '—' : x[key] + '%') : fmt(x[key])) + '</span></div>').join('') + '</div>'; };
+const topicBars = (values, limit) => { const rows = Object.entries(values || {}).sort((a,b) => b[1] - a[1]).slice(0, limit || 10); const max = Math.max(1, ...rows.map(x => x[1])); return '<div class="bars">' + rows.map(x => '<div class="bar-row"><span class="bar-label" title="' + esc(x[0]) + '">' + esc(x[0]) + '</span><span class="bar-track"><span class="bar-fill accent" style="width:' + Math.round(x[1] / max * 100) + '%"></span></span><span class="bar-value">' + fmt(x[1]) + '</span></div>').join('') + '</div>'; };
+
+async function renderAnalysis() {
+  const data = state.analytics || (state.analytics = await get('/analytics'));
+  const query = new URLSearchParams(location.hash.split('?')[1] || '').get('q') || '';
+  const sort = new URLSearchParams(location.hash.split('?')[1] || '').get('sort') || 'speechTurns';
+  const q = query.toLocaleLowerCase('es');
+  const rows = data.deputies.filter(x => !q || (x.name + ' ' + x.group + ' ' + x.constituency).toLocaleLowerCase('es').includes(q));
+  const ordered = rows.slice().sort((a,b) => Number(b[sort] || 0) - Number(a[sort] || 0));
+  const top = ordered[0] || {};
+  const monthly = Object.entries(data.topicByMonth || {}).sort((a,b) => a[0].localeCompare(b[0])).slice(-18);
+  const monthlyTopics = monthly.map(([month, topics]) => { const lead = Object.entries(topics).sort((a,b) => b[1] - a[1])[0]; return '<tr><td>' + esc(month) + '</td><td>' + (lead ? esc(lead[0]) : '—') + '</td><td>' + (lead ? fmt(lead[1]) : '—') + '</td></tr>'; }).join('');
+  const collaborations = (data.collaborations || []).slice(0, 18).map(x => '<tr><td><a href="#/deputy/' + encodeURIComponent(x.a) + '">' + esc(x.deputyA) + '</a><br><span class="subtle">' + esc(x.groupA) + '</span></td><td><a href="#/deputy/' + encodeURIComponent(x.b) + '">' + esc(x.deputyB) + '</a><br><span class="subtle">' + esc(x.groupB) + '</span></td><td>' + fmt(x.count) + '</td><td>' + (x.crossParty ? pill('entre grupos', 'green') : pill('mismo grupo')) + '</td></tr>').join('');
+  main.innerHTML = '<div class="hero"><div><p class="eyebrow">Lecturas comparables</p><h1>Análisis de actividad</h1><p class="hero-copy">Rankings y relaciones calculadas sobre registros oficiales. Cada métrica conserva su denominador; no es una puntuación única de rendimiento.</p></div><a class="button secondary" href="' + API + '/analytics" target="_blank">Ver datos JSON ↗</a></div>' +
+    '<div class="grid grid-4">' + card('Más intervenciones', esc(top.name || '—'), fmt(top.speechTurns || 0) + ' turnos') + card('Más votos', esc(rows.slice().sort((a,b) => b.votesCast-a.votesCast)[0]?.name || '—'), fmt(rows.slice().sort((a,b) => b.votesCast-a.votesCast)[0]?.votesCast || 0) + ' registrados') + card('Más temas', esc(rows.slice().sort((a,b) => b.topicCount-a.topicCount)[0]?.name || '—'), fmt(rows.slice().sort((a,b) => b.topicCount-a.topicCount)[0]?.topicCount || 0) + ' temas distintos') + card('Vídeo revisado', fmt(data.presence.reviewedFrames), 'frames publicados, sin identificación facial') + '</div>' +
+    '<div class="toolbar"><input class="input" id="analysisSearch" value="' + esc(query) + '" placeholder="Filtrar diputado, grupo o circunscripción"><select class="input" id="analysisSort"><option value="speechTurns"' + (sort === 'speechTurns' ? ' selected' : '') + '>Más intervenciones</option><option value="votesCast"' + (sort === 'votesCast' ? ' selected' : '') + '>Más votos</option><option value="votingParticipation"' + (sort === 'votingParticipation' ? ' selected' : '') + '>Mayor participación en votos</option><option value="minutes"' + (sort === 'minutes' ? ' selected' : '') + '>Más minutos temporizados</option><option value="initiativeCount"' + (sort === 'initiativeCount' ? ' selected' : '') + '>Más iniciativas</option><option value="topicCount"' + (sort === 'topicCount' ? ' selected' : '') + '>Más temas</option></select><span class="subtle" style="align-self:center">' + fmt(rows.length) + ' diputados</span></div>' +
+    '<div class="grid grid-2"><section class="card chart-card"><h3>' + esc(metricLabel[sort] || 'Métrica') + '</h3>' + analyticsBars(ordered, sort, 12) + '</section><section class="card chart-card"><h3>Tipos de iniciativa</h3>' + topicBars(data.initiativesByType, 10) + '</section></div>' +
+    '<section class="card" style="margin-top:18px"><h3>Tabla comparativa</h3><div class="table-wrap"><table><thead><tr><th>Diputado</th><th>Grupo</th><th>Interv.</th><th>Minutos</th><th>Votos</th><th>Participación</th><th>Coincidencia grupo</th><th>Iniciativas</th><th>Temas</th><th>Días observados / desconocidos</th></tr></thead><tbody>' + ordered.slice(0, 120).map(x => '<tr><td><a class="deputy-name" href="#/deputy/' + encodeURIComponent(x.deputyId) + '">' + esc(x.name) + '</a><br><span class="subtle">' + esc(x.constituency) + '</span></td><td>' + esc(x.group) + '</td><td>' + fmt(x.speechTurns) + '</td><td>' + fmt(x.minutes) + '</td><td>' + fmt(x.votesCast) + '</td><td>' + (x.votingParticipation == null ? '—' : x.votingParticipation + '%') + '</td><td>' + (x.groupAgreement == null ? '—' : x.groupAgreement + '%') + '</td><td>' + fmt(x.initiativeCount) + '</td><td>' + fmt(x.topicCount) + '</td><td>' + fmt(x.observedDays) + ' / ' + fmt(x.unknownDays) + '</td></tr>').join('') + '</tbody></table></div></section>' +
+    '<div class="grid grid-2" style="margin-top:18px"><section class="card"><h3>Temas líderes por diputado</h3><p class="subtle">Los ocho temas con más intervenciones atribuidas a cada persona están disponibles en el API de análisis.</p>' + Object.entries(data.topicLeaders || {}).slice(0, 8).map(([topic, leaders]) => '<div class="topic-leader"><b>' + esc(topic) + '</b><span>' + leaders.slice(0, 3).map(x => esc(x.name) + ' (' + fmt(x.count) + ')').join(' · ') + '</span></div>').join('') + '</section><section class="card"><h3>Temas que cambian por mes</h3><table><thead><tr><th>Mes</th><th>Tema líder</th><th>Intervenciones</th></tr></thead><tbody>' + monthlyTopics + '</tbody></table></section></div>' +
+    '<section class="card" style="margin-top:18px"><h3>Colaboración por coautoría</h3><p class="subtle">Parejas que aparecen como autores en una misma iniciativa. El contador mide coincidencias publicadas, no acuerdo político.</p><div class="table-wrap"><table><thead><tr><th>Diputado</th><th>Diputado</th><th>Iniciativas compartidas</th><th>Relación</th></tr></thead><tbody>' + collaborations + '</tbody></table></div></section>' +
+    '<div class="notice" style="margin-top:18px">Presencia visual: ' + fmt(data.presence.reviewedFrames) + ' frames revisados y ' + fmt(data.presence.seatObservationRows) + ' observaciones de asiento publicadas. Estas observaciones describen ocupación en un instante; no identifican automáticamente al diputado ni prueban presencia continua.</div>';
+  document.getElementById('analysisSearch').addEventListener('input', e => { location.hash = '#/analysis?q=' + encodeURIComponent(e.target.value) + '&sort=' + encodeURIComponent(sort); });
+  document.getElementById('analysisSort').addEventListener('change', e => { location.hash = '#/analysis?q=' + encodeURIComponent(query) + '&sort=' + encodeURIComponent(e.target.value); });
+}
+
 async function route() {
   setLoading();
   nav.classList.remove('open');
@@ -135,6 +162,7 @@ async function route() {
     if (path === 'sessions') { setActiveNav('sessions'); return await renderSessions(); }
     if (path === 'votes') { setActiveNav('votes'); return await renderVotes(); }
     if (path === 'topics') { setActiveNav('topics'); return await renderTopics(); }
+    if (path === 'analysis') { setActiveNav('analysis'); return await renderAnalysis(); }
     if (path === 'coverage') { setActiveNav('coverage'); return await renderCoverage(); }
     location.hash = '#/';
   } catch (error) { setError(error); }
