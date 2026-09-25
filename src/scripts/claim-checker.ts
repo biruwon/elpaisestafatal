@@ -1,4 +1,5 @@
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
+import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 
 type CheckResult = {
@@ -258,7 +259,7 @@ const renderResultOverview = (groups: EvidenceFamily[], state: string): string =
   const statusClass = (status?: EvidenceStatus): string => status === 'available' ? 'is-available' : status === 'partial' ? 'is-partial' : 'is-missing';
   return `<nav class="result-overview" aria-label="Resumen de la comprobación"><div class="result-overview-heading"><span class="eyebrow">Resumen de la comprobación</span><strong>${escapeHtml(state === 'limited' ? 'La evidencia es parcial' : state === 'insufficient' ? 'Faltan mediciones clave' : 'Hay evidencia compatible')}</strong></div><div class="result-overview-links">${groups.map((group, index) => `<a class="result-overview-link ${statusClass(group.status)}" href="#evidence-family-${index + 1}"><span>${escapeHtml(statusLabel(group.status))}</span><strong>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</strong><span aria-hidden="true">↓</span></a>`).join('')}</div></nav>`;
 };
-const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, phase?: 'provisional' | 'final'): void => {
+const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, phase?: 'provisional' | 'final' | 'reviewed'): void => {
   if (!result) return; const item = response.result; setMode(true);
   const stateLabel = response.state === 'supported' ? 'Respuesta con fuentes' : response.state === 'limited' ? 'Evidencia limitada' : 'Evidencia insuficiente';
   const assessment = `<span class="claim-assessment claim-assessment-${response.state}">${escapeHtml(stateLabel)}</span>`;
@@ -297,6 +298,8 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
     ? '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta provisional · la estamos contrastando; puede cambiar y aún no se puede copiar.</p>'
     : phase === 'final'
       ? '<p class="claim-enrichment-status is-final" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta final · la revisión de fuentes ha terminado.</p>'
+      : phase === 'reviewed'
+        ? '<p class="claim-enrichment-status is-final" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta revisada · conservamos el mismo alcance, datos y fuentes.</p>'
       : '';
   const claimMap = renderClaimMap(evidenceGroups);
   const shareLead = answerLeadFor(responseText);
@@ -384,6 +387,13 @@ const submit = async (event: SubmitEvent): Promise<void> => {
         return;
       }
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
+    }
+    if (initialPreview && (response.state === 'unavailable' || response.state === 'clarification'
+      || ((response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') && shouldRetainReviewedPreview(initialPreview, response)))) {
+      renderResult(initialPreview, 'reviewed');
+      const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
+      if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar respuesta revisada'; }
+      return;
     }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
   } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) { finishLoading(); return; } finishLoading(); renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }

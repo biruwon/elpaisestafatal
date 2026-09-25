@@ -6,6 +6,7 @@ import { answerPlanForBroadDomains, broadDomainPacketsFor } from '../src/lib/kno
 import { broadObservationFits } from '../src/lib/knowledge/broad-observation-fit.mjs';
 import { familyResearchRequests, researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { reviewedContextualAnswer } from '../functions/lib/reviewed-contextual-answer.mjs';
+import { shouldRetainReviewedPreview } from '../src/lib/knowledge/reviewed-answer-stability.mjs';
 const claims = JSON.parse(await readFile(new URL('./fixtures/claim-objective-cases.json', import.meta.url)));
 const expected = ['broad-compound-claim', 'broad-public-administration', 'broad-demography-pension-finance', 'broad-youth-living-housing', 'broad-security', 'broad-population-replacement', 'broad-tax-burden-purchasing-power'];
 const variants = [
@@ -67,11 +68,29 @@ for (const [index, item] of variants.entries()) {
 const reviewedPreview = { state: 'limited', result: { id: 'broad-compound-claim', reply: 'reviewed answer' } };
 assert.equal(reviewedContextualAnswer({ state: 'supported', result: { id: 'model-answer' } }, reviewedPreview), reviewedPreview, 'A late model answer replaced a reviewed broad-domain answer');
 assert.equal(reviewedContextualAnswer({ state: 'clarification' }, reviewedPreview), undefined, 'An explicit clarification was swallowed by the reviewed fallback');
+const focusedPreview = {
+  state: 'limited',
+  result: {
+    evidenceSummary: { families: [{ familyLabel: 'Inmigración y regularización' }, { familyLabel: 'Servicios públicos' }, { familyLabel: 'Prestaciones' }] },
+    visuals: [{ title: 'Lista SNS' }, { title: 'IMV · evolución' }],
+  },
+};
+const broadenedLateAnswer = {
+  state: 'limited',
+  result: {
+    evidenceSummary: { families: [{ familyLabel: 'Servicios públicos' }, { familyLabel: 'Prestaciones' }, { familyLabel: 'Migración' }] },
+    visuals: [{ title: 'Lista SNS' }, { title: 'IMV · evolución' }, { title: 'Población nacida fuera' }],
+  },
+};
+assert.equal(shouldRetainReviewedPreview(focusedPreview, broadenedLateAnswer), true, 'A delayed answer that drops the regularization family and adds general migration must not replace the reviewed scope');
+assert.equal(shouldRetainReviewedPreview(focusedPreview, focusedPreview), false, 'A final answer with the reviewed families and charts may replace its preview');
+assert.equal(shouldRetainReviewedPreview(focusedPreview, { ...focusedPreview, result: { ...focusedPreview.result, visuals: [{ title: 'Lista SNS' }] } }), true, 'A final answer must retain every chart from the reviewed preview');
 const endpoint = await readFile(new URL('../functions/api/check.ts', import.meta.url), 'utf8');
 const browserClient = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 assert.match(endpoint, /reviewedContextualAnswer\(model, contextual\)/, 'POST response selection must preserve the reviewed answer');
 assert.match(endpoint, /chooseResponse\(claim, modelResponse, contextual\)/, 'Final poll must use the same response selection as POST');
 assert.match(browserClient, /'x-claim-text': original/, 'The final poll must retain the submitted claim to rebuild the same contextual response');
+assert.match(browserClient, /shouldRetainReviewedPreview\(initialPreview, response\)/, 'The UI must keep a reviewed preview when a delayed answer changes its scope or drops reviewed charts');
 // Changing the combination must not reuse the immigration-specific answer.
 const novel = answerPlanForBroadDomains('La regularización de inmigrantes aumenta el precio del alquiler');
 assert(!novel.blocks.find((block) => block.type === 'conversation_reply').text.includes('tres afirmaciones'));
