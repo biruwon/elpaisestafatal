@@ -36,7 +36,11 @@ for (const [index, text] of claims.entries()) {
   assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Exact claim ${index + 1} answer is too long to scan`);
   assert(plan.shareableSourceIds?.length, `Exact claim ${index + 1} needs primary sources near the answer`);
   const visuals = assertVisuals(plan, `Exact claim ${index + 1}`);
-  if (index === 0) assert(visuals.length >= 3, 'Compound immigration claim should visualize services, regional waiting lists, and the IMV trend separately');
+  if (index === 0) {
+    assert(visuals.length >= 3, 'Compound immigration claim should visualize services, regional waiting lists, and the IMV trend separately');
+    assert(plan.shareableReply.includes('cinco meses continuados') && plan.shareableReply.includes('antecedentes penales'), 'The short response must state the regularization eligibility requirements');
+    assert(plan.shareableReply.includes('autorizaciones') || plan.shareableReply.includes('permisos concedidos'), 'The short response must distinguish applications from permits granted');
+  }
   if (index === 5) assert(visuals.length >= 5, 'Population/IQ claim should visualize population, origins, permit motives, and PISA evidence separately');
   const replies = plan.blocks.filter((block) => block.type === 'conversation_reply');
   assert.equal(replies.length, 1);

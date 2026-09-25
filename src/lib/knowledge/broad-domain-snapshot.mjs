@@ -866,11 +866,11 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const hasRegularizationServicesAndBenefits = ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].every((id) => familyPlans.some((familyPlan) => familyPlan.id === id));
   const shareableReply = hasRegularizationServicesAndBenefits ? [
     'Evidencia limitada.',
-    applications && processedCases ? `El proceso fue amplio: el balance oficial registró ${applications.replace(/^Solicitudes:\s*/i, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '')} expedientes tramitados; no equivalen a permisos concedidos.` : '',
-    newAffiliations ? `El Gobierno atribuyó ${newAffiliations} al proceso: son afiliaciones laborales, no una medida del uso de ayudas.` : '',
-    specialistWait ? `En las listas del SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
-    surgeryWaiting ? `La espera media para cirugía no urgente fue de 121 días en diciembre de 2025; varió entre 173 en Andalucía y 50 en Madrid.` : '',
-    cleanImvTrend ? `En el IMV, ${cleanImvTrend}. La subida entre agosto de 2025 y agosto de 2026 fue del 16,7 %; no prueba crecimiento exponencial ni que la regularización la causara.` : '',
+    'El RD 316/2026 cubría a quienes solicitaron protección internacional antes del 1-1-2026 y a personas en situación irregular que llegaron antes de esa fecha. Exigía cinco meses continuados en España, carecer de antecedentes penales y no ser amenaza al orden, seguridad o salud públicos. El permiso inicial duraba un año para residir y trabajar; no daba nacionalidad ni ayudas automáticas.',
+    applications && processedCases ? `Balance de julio: ${applications.replace(/^Solicitudes:\s*/i, '').replace(/ \([^)]+\)/, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '').replace(/ \([^)]+\)/, '')} expedientes tramitados; no son permisos concedidos.` : '',
+    newAffiliations ? `Al 30 de junio se atribuyeron ${newAffiliations.replace(/ nuevas afiliaciones a la Seguridad Social/i, '').replace(/ \([^)]+\)$/, '')} nuevas altas a la Seguridad Social; no son beneficiarios de ayudas.` : '',
+    specialistWait && surgeryWaiting ? `SNS (diciembre de 2025): 102 días de espera para primera consulta y 121 para cirugía no urgente; en cirugía, Andalucía 173 frente a Madrid 50. Son presiones concretas, no un colapso total.` : specialistWait ? `En el SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
+    cleanImvTrend ? `En agosto, beneficiarios del ingreso mínimo vital (IMV): ${cleanImvTrend.replace(/^beneficiarios del IMV en agosto:\s*/i, '')}. La subida no demuestra dependencia, crecimiento exponencial ni causalidad con la regularización.` : '',
   ].filter(Boolean).join('\n\n') : undefined;
   const plan = {
     id: 'broad-compound-claim',
