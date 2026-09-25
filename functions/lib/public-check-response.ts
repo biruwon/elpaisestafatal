@@ -159,7 +159,13 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     if (clarification) return clarification;
   }
   const criteria = criteriaFromPlan(plan);
-  const attributedIds = new Set([...criteria.flatMap((item) => item.sourceIds || []), ...(plan.evidenceSummary?.families || []).flatMap((family) => [...(family.sourceIds || []), ...(family.criteria || []).flatMap((criterion) => criterion.sourceIds || [])])]);
+  const attributedIds = new Set([
+    ...criteria.flatMap((item) => item.sourceIds || []),
+    ...(plan.evidenceSummary?.families || []).flatMap((family) => [...(family.sourceIds || []), ...(family.criteria || []).flatMap((criterion) => criterion.sourceIds || [])]),
+    ...(plan.visual?.evidenceIds || []),
+    ...(plan.visual?.sourceId ? [plan.visual.sourceId] : []),
+    ...(plan.shareableSourceIds || []),
+  ]);
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);
