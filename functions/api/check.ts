@@ -9,12 +9,13 @@ import { publicResolveResponse } from '../../src/lib/knowledge/public-response.m
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
 import { routeCatalogueQuery } from '../lib/catalogue-resolver';
 import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } from '../lib/public-check-response';
+import { reviewedContextualAnswer } from '../lib/reviewed-contextual-answer.mjs';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'compound-evidence-composer-12-concise-family-answer';
+const responseCacheVersion = 'compound-evidence-composer-13-stable-reviewed-answer';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -100,6 +101,8 @@ const rhetoricalClaim = (claim: string): boolean => {
 // explicitly carry qualification; otherwise use the domain packet, which
 // preserves the distinction between measurable facts and the slogan.
 export const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+  const reviewed = reviewedContextualAnswer(model, contextual);
+  if (reviewed) return reviewed as PublicCheckResponse;
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
   const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
@@ -281,9 +284,14 @@ export const onRequestGet = async ({ request, env }: Context): Promise<Response>
     const upstream = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/classify/${encodeURIComponent(id)}`, { headers: { authorization: `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}` }, signal: AbortSignal.timeout(2000) });
     const payload = await upstream.json().catch(() => undefined);
     const safe = publicResolveResponse(payload) as ResolveResult | undefined;
-    const claim = typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim : '';
+    const requestedClaim = request.headers.get('x-claim-text')?.slice(0, 12_000).trim() || '';
+    const claim = requestedClaim || (typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim : '');
     if (safe?.status === 'processing') return json(processingCheck(claim, id), 202);
-    const response = safe?.result ? checkFromPlan(claim, safe.result, id) : unavailableCheck(claim, 'La comprobación no pudo completarse.');
+    const modelResponse = safe?.result ? checkFromPlan(claim, safe.result, id) : undefined;
+    const contextual = claim ? fallbackResponse(claim, 'text') : undefined;
+    const response = contextual
+      ? chooseResponse(claim, modelResponse, contextual)
+      : modelResponse || unavailableCheck(claim, 'La comprobación no pudo completarse.');
     return json(response);
   } catch {
     // A slow local resolver is still working; preserve the job state so the

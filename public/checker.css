@@ -49,7 +49,8 @@
 .result-known .result-section-heading>p{max-width:760px;color:var(--muted);font:.9rem/1.45 var(--sans)}.known-family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;margin-top:18px;background:var(--line)}.known-family-card{min-width:0;display:grid;align-content:start;gap:14px;padding:17px;background:var(--paper-deep)}.known-family-card h4{margin:6px 0 0;font:400 1.35rem/1.05 var(--serif)}.known-family-card ul{display:grid;gap:7px;margin:0;padding:0 0 0 17px;font:.72rem/1.4 var(--mono)}.known-family-card li::marker{color:var(--red)}.known-family-card>p{margin:0;color:var(--muted);font:.75rem/1.4 var(--mono)}
 .result-two-column p{margin:12px 0 0;font:1.08rem/1.4 var(--sans)}
 .result-limit{border-left:4px solid var(--amber)!important}
-.result-visual{margin-top:30px;padding:22px;background:var(--paper-deep)}
+.result-visual-set{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:18px;margin-top:30px}.result-visual-set .result-visual{min-width:0;margin-top:0}.result-visual{margin-top:30px;padding:22px;background:var(--paper-deep)}
+.result-visual-method-note{margin:15px 0 0;padding-left:11px;border-left:2px solid var(--amber);color:var(--muted);font:.7rem/1.45 var(--mono)}
 .result-chart{display:block;width:100%;height:auto;margin:22px 0 0;overflow:visible}
 .result-chart-label{font:10px var(--mono);fill:var(--muted)}
 .result-chart-grid{stroke:var(--line);stroke-width:1}.result-chart-line{fill:none;stroke:var(--red);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.result-chart-point{fill:var(--paper-deep);stroke:var(--red);stroke-width:3}.result-chart-bar{fill:var(--red);opacity:.84}

@@ -165,7 +165,8 @@ export type AnswerPlan = {
     alternatives?: Array<{ normalizedClaim: string; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number }>;
   };
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
-  visual?: { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string };
+  visual?: { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[] };
+  visuals?: Array<{ type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[] }>;
   researchPlan?: ResearchPlan;
   evidenceSummary?: {
     mode: 'dynamic' | 'snapshot' | 'mixed' | 'none';

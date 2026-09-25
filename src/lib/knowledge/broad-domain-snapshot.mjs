@@ -7,6 +7,28 @@ import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 
 const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-09-25', role: 'primary' });
+const reviewedVisuals = {
+  publicEmploymentTrend: { type: 'line', title: 'Personal de las administraciones públicas · corte anual', unit: 'efectivos', labels: Array.from({ length: 25 }, (_, index) => String(2002 + index)), values: [2296193,2322495,2345765,2380005,2428663,2503991,2574524,2628406,2686983,2674305,2676293,2567083,2541237,2534904,2509976,2509980,2552115,2569118,2587672,2701163,2708325,2970563,2978716,3033304,3071725], sourceId: 'public-administration-epsap-history', evidenceIds: ['public-administration-epsap-history'], breakAfter: [20], note: 'Recuento a 1 de enero. La edición de 2023 introduce una ruptura metodológica: no compares el salto entre 2022 y 2023 con la serie anterior.', interpretation: 'La plantilla registrada aumenta dentro de ambos tramos; el cambio metodológico de 2023 impide interpretar el salto 2022–2023 como crecimiento real.' },
+  publicEmploymentByAdministration: { type: 'bar', title: 'Empleo público por nivel de administración · enero de 2026', unit: 'efectivos', labels: ['Comunidades autónomas', 'Administración local', 'Sector público estatal'], values: [1930273,594898,546554], sourceId: 'public-administration-epsap-2026', evidenceIds: ['public-administration-epsap-2026'], note: 'Total: 3.071.725 efectivos; la distribución no mide productividad ni puestos sustituibles.' },
+  imvTrend: { type: 'line', title: 'Personas beneficiarias del IMV · nómina de agosto', unit: 'personas', labels: ['Agosto 2023','Agosto 2024','Agosto 2025','Agosto 2026'], values: [1467252,1957700,2335553,2725899], sourceId: 'benefits-imv-august-source', evidenceIds: ['benefits-imv-historic-source','benefits-imv-previous-year-source','benefits-imv-august-source'], note: 'Serie de una prestación concreta; no cuenta todas las ayudas ni identifica el efecto de la regularización.', interpretation: 'El IMV creció en los cuatro cortes de agosto, un 16,7 % entre 2025 y 2026; la coincidencia temporal no demuestra qué causó el aumento.' },
+  surgeryWaitTrend: { type: 'line', title: 'Espera media para cirugía no urgente · lista del SNS', unit: 'días', labels: ['Dic. 2022','Jun. 2023','Dic. 2023','Jun. 2024','Dic. 2024','Jun. 2025','Dic. 2025'], values: [120,112,128,121,126,119,121], sourceId: 'public-services-waiting-list-source', evidenceIds: ['public-services-waiting-list-source'], note: 'Indicador sanitario nacional de un servicio concreto; no mide todos los servicios públicos ni demuestra una causa migratoria.' },
+  surgeryWaitRegions: { type: 'bar', title: 'Espera para cirugía no urgente por territorio · diciembre de 2025', unit: 'días', labels: ['Andalucía','Cataluña','Cantabria','Extremadura','Aragón','Canarias','Baleares','Murcia','Navarra','Ceuta','Castilla-La Mancha','Asturias','Comunidad Valenciana','Castilla y León','Melilla','La Rioja','Galicia','País Vasco','Madrid'], values: [173,142,137,135,132,106,105,103,96,94,92,91,88,87,82,78,73,64,50], sourceId: 'public-services-waiting-list-source', evidenceIds: ['public-services-waiting-list-source'], note: 'Rango de la espera media publicada: Andalucía 173 días y Madrid 50. CCAA y ciudades autónomas; mide lista quirúrgica, no calidad global.' },
+  pensionSpending: { type: 'line', title: 'Prestaciones de vejez y supervivencia · gasto nominal', unit: 'millones de euros', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'], values: [130125.04,133951.32,135670.9,144206.74,151536.33,155962.11,162874.93,171818.78,190308.8,205009.77], sourceId: 'pension-expenditure-total-source', evidenceIds: ['pension-expenditure-total-source'], note: 'Eurostat: prestaciones de vejez y supervivencia de todos los esquemas. Euros corrientes, sin descontar inflación; no equivale solo a la pensión contributiva de la Seguridad Social.' },
+  pensionRule: { type: 'comparison', title: 'Proyección media del gasto neto en pensiones · regla legal', unit: '% del PIB · media 2022–2050', labels: ['Escenario AIReF','Umbral legal'], values: [13,13.3], sourceId: 'airef-pension-sustainability-study-2026', evidenceIds: ['airef-pension-sustainability-study-2026'], note: 'Escenario modelizado, no un resultado observado ni una garantía de sostenibilidad.' },
+  youthUnemployment: { type: 'line', title: 'Tasa de paro juvenil · España, 15–24 años', unit: '% de la población activa', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'], values: [48.3,44.4,38.6,34.3,32.5,38.3,35,29.7,28.7,26.5,24.9], sourceId: 'youth-labour-eurostat', evidenceIds: ['youth-labour-eurostat'], note: 'El paro juvenil bajó desde 2015, aunque sigue siendo elevado. No es una medida de salarios ni de acceso a vivienda.' },
+  youthHousingPrices: { type: 'line', title: 'Índice de precios de vivienda · cuarto trimestre', unit: 'índice (2015 = 100)', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'], values: [101.31,105.78,113.39,120.97,125.44,127.55,135.58,142.99,149.13,166.07,187.45], sourceId: 'youth-housing-eurostat', evidenceIds: ['youth-housing-eurostat'], note: 'Índice general de precios de vivienda, no un precio juvenil ni un índice de alquiler.' },
+  youthRegionalRent: { type: 'bar', title: 'Alquiler de vivienda completa como parte del salario neto · CCAA', unit: '% del salario · 16–29 años', labels: ['Canarias','Illes Balears','Cataluña','Comunidad de Madrid','Andalucía','Comunitat Valenciana','País Vasco','Ceuta y Melilla','Galicia','Cantabria','Aragón','La Rioja','Navarra','Asturias','Castilla y León','Castilla-La Mancha','Extremadura'], values: [126,125,117,113,99,96,88,80,76,76,72,71,68,67,62,62,60], sourceId: 'cje-emancipation-2025', evidenceIds: ['cje-emancipation-2025'], note: 'Lectura aproximada del gráfico autonómico del CJE 2025, redondeada al punto porcentual; no se publicó una tabla con estos valores. Incluso las regiones con menor esfuerzo superan holgadamente el 30 % recomendado.' },
+  youthWageRent: { type: 'bar', title: 'Variación acumulada desde 2008 · salario joven y alquiler', unit: '%', labels: ['Salario joven','Alquiler'], values: [10.8,54], sourceId: 'cje-emancipation-2024', evidenceIds: ['cje-emancipation-2024'], note: 'Comparación nominal citada por el CJE en 2024; periodo y población distintos de la tasa de paro juvenil.' },
+  securityRecent: { type: 'bar', title: 'Variación de delitos registrados · enero–junio de 2026 vs. 2025', unit: '%', labels: ['Total registrado','Delitos contra libertad sexual','Hurtos','Robos con violencia'], values: [0.5,4,-3.8,-0.8], sourceId: 'security-balance', evidenceIds: ['security-balance'], note: 'Variación nacional interanual; no identifica autores ni equivale a percepción de inseguridad.' },
+  securityAdjustedTrend: { type: 'bar', title: 'Cambio de tasas estandarizadas por edad y sexo · 2007–2023', unit: 'variación acumulada', labels: ['Nacionalidad española','Nacionalidad extranjera'], values: [120,70], sourceId: 'security-standardised-crime-reis', evidenceIds: ['security-standardised-crime-reis'], note: 'Estudio de condenas adultas estandarizadas; la reforma penal de 2015 explica parte del aumento observado.' },
+  securityAdjustedGap: { type: 'comparison', title: 'Brecha en tasas de delitos con condena · antes y después del ajuste', unit: 'delitos por 100.000 adultos · 2007–2023', labels: ['Tasa bruta: diferencia entre grupos','Tras ajuste por edad y sexo'], values: [1197,619], sourceId: 'security-standardised-crime-reis', evidenceIds: ['security-standardised-crime-reis'], note: 'El ajuste reduce la brecha un 48,3 %, pero no la elimina; quedan factores como renta, barrio, origen y exposición institucional.' },
+  immigrationStock: { type: 'line', title: 'Residentes nacidos fuera de España', unit: 'personas', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'], values: [5883891,5913165,6014708,6207509,6549309,7014753,7254797,7468144,8204206,8838234,9464210], sourceId: 'replacement-population-source', evidenceIds: ['replacement-population-source'], note: 'Eurostat mide población residente por lugar de nacimiento: es un stock, no llegadas del año, ciudadanía ni sustitución deliberada.' },
+  immigrationOrigins: { type: 'bar', title: 'Principales países de nacimiento de residentes en España · 2025', unit: 'personas', labels: ['Marruecos','Colombia','Venezuela','Rumanía','Ecuador','Argentina','Perú'], values: [1165955,978041,692316,521181,468751,450883,430277], sourceId: 'replacement-population-source', evidenceIds: ['replacement-population-source'], note: 'País de nacimiento, no nacionalidad actual ni motivo migratorio.' },
+  immigrationPermitReasons: { type: 'bar', title: 'Primeros permisos a ciudadanos no UE · España, 2024', unit: '% de permisos', labels: ['Familia','Estudios','Trabajo','Otros motivos'], values: [46,20.8,17,16.1], sourceId: 'immigration-permit-reasons-eurostat', evidenceIds: ['immigration-permit-reasons-eurostat'], note: 'Porcentajes redondeados, calculados sobre 561.640 primeros permisos. Solo cubre primeros permisos de residencia a no comunitarios; no representa todos los movimientos migratorios.' },
+  pisaShare: { type: 'line', title: 'Alumnado con origen inmigrante · España', unit: '% del alumnado de 15 años', labels: ['2012','2022'], values: [10,15], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'PISA mide alumnado de 15 años y competencias escolares, no IQ ni inteligencia innata.' },
+  pisaMathGap: { type: 'comparison', title: 'Brecha matemática PISA 2022 por origen migrante', unit: 'puntos PISA', labels: ['Sin ajustar','Tras ajustar por nivel socioeconómico'], values: [33,7], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'La OCDE indica que la brecha neta se redujo entre 2012 y 2022. PISA no permite inferir capacidad adulta ni manipulabilidad.' },
+  taxWedgeTrend: { type: 'line', title: 'Cuña fiscal del trabajo · persona soltera con salario medio, sin hijos', unit: '% del coste laboral', labels: Array.from({ length: 26 }, (_, index) => String(2000 + index)), values: [38.6,38.9,39.1,38.6,38.8,39,39.1,39,38,38.3,39.7,40,40.6,40.7,40.7,39.4,39.4,39.6,39.7,39.8,39.3,39.9,40,40.8,41.1,41.4], sourceId: 'tax-wedge-oecd-2026', evidenceIds: ['tax-wedge-oecd-2026'], note: 'Incluye IRPF y cotizaciones sociales de trabajador y empresa; no incluye IVA ni representa la carga fiscal de cada hogar.' },
+};
 
 const packets = [
   {
@@ -25,7 +47,7 @@ const packets = [
   },
   {
     id: 'broad-demography-pension-finance',
-    visual: { type: 'comparison', title: 'Gasto neto previsto y umbral legal · media 2022–2050', unit: '% del PIB', labels: ['Previsión AIReF', 'Umbral legal'], values: [13.0, 13.3], sourceId: 'airef-pension-sustainability-study-2026' },
+    visuals: [reviewedVisuals.pensionSpending, reviewedVisuals.pensionRule],
     matches: /\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b[\s\S]{0,180}\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b|\b(pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*[\s\S]{0,180}\b(arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|poblaci[oó]n)\b/i,
     interpretation: { kind: 'mixed', subject: 'demografía y sistema de pensiones', subjectType: 'country', predicate: 'puts_pressure_on', object: 'financiación pública', normalizedClaim: 'cambio demográfico, sostenibilidad de las pensiones y efecto sobre las cuentas públicas', interpretation: 'La frase combina una descripción demográfica, una predicción sobre sostenibilidad y una acusación sobre las cuentas públicas. Cada parte requiere una medida distinta.' },
     replyProfile: 'pension-sustainability',
@@ -72,7 +94,7 @@ const packets = [
     matches: /\b(administraci[oó]n p[uú]blica|empleo p[uú]blico|empleados? p[uú]blicos?|funcionari|oposici[oó]n|plazas? fijas?|servicios? p[uú]blicos?)\b/i,
     interpretation: { kind: 'mixed', subject: 'administración y empleo público', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'plantilla, desempeño y calidad de los servicios públicos', interpretation: 'La frase mezcla una valoración de la administración con acusaciones sobre puestos y conducta individual; son cuestiones distintas y medibles de forma diferente.' },
     headline: 'El número de empleados públicos no mide puestos prescindibles ni vagancia; las plazas sí están sujetas a obligaciones',
-    visual: { type: 'bar', title: 'Empleo público por nivel de administración · enero de 2026', unit: 'efectivos', labels: ['Comunidades autónomas', 'Administración local', 'Sector público estatal'], values: [1930273, 594898, 546554], sourceId: 'public-administration-epsap-2026' },
+    visuals: [reviewedVisuals.publicEmploymentByAdministration, reviewedVisuals.publicEmploymentTrend],
     summary: 'No existe una cifra oficial de puestos “prescindibles” ni una estadística que permita clasificar como vagos a los empleados públicos en general. La oposición establece una relación de empleo regulada, pero no elimina las obligaciones de rendimiento ni demuestra por sí sola falta de actividad. Para evaluar la administración hay que separar plantilla, vacantes, absentismo, carga de trabajo, tiempos de atención, productividad, digitalización y resultados por servicio y territorio.',
     criteria: [
       { id: 'public-employment-definition', label: 'Qué se mide', finding: 'El recuento de efectivos no indica cuántos puestos son prescindibles ni mide rendimiento; no existe una clasificación oficial general de puestos “prescindibles”.', fallbackData: ['3.071.725 efectivos (enero de 2026): 1.930.273 en el sector público de las comunidades autónomas (62,84 %), 594.898 en la administración local (19,37 %) y 546.554 en el sector público estatal (17,79 %)'], sourceIds: ['public-administration-epsap-2026'] },
@@ -84,6 +106,7 @@ const packets = [
   },
   {
     id: 'broad-public-services',
+    visuals: [reviewedVisuals.surgeryWaitTrend, reviewedVisuals.surgeryWaitRegions],
     matches: /\b(servicios? p[uú]blicos?|colapso(?:\s+total)?[^.]{0,80}servicios?|sanidad|educaci[oó]n|atenci[oó]n p[uú]blica)\b/i,
     interpretation: { kind: 'quantitative', subject: 'capacidad y resultados de los servicios públicos', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'capacidad, uso y resultados de los servicios públicos', interpretation: '“Colapso total” es una conclusión extrema: hay que identificar el servicio, el territorio, el periodo y el umbral observable que la definiría.' },
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
@@ -100,7 +123,7 @@ const packets = [
   },
   {
     id: 'broad-tax-burden-purchasing-power',
-    visual: { type: 'comparison', title: 'Cuña fiscal · salario medio, persona soltera sin hijos · 2025', unit: '% del coste laboral', labels: ['España', 'Media OCDE'], values: [41.4, 35.1], sourceId: 'tax-wedge-oecd-2026' },
+    visuals: [reviewedVisuals.taxWedgeTrend, { type: 'comparison', title: 'Cuña fiscal · salario medio, persona soltera sin hijos · 2025', unit: '% del coste laboral', labels: ['España', 'Media OCDE'], values: [41.4, 35.1], sourceId: 'tax-wedge-oecd-2026', evidenceIds: ['tax-wedge-oecd-2026'], note: 'Incluye IRPF y cotizaciones sociales de trabajador y empresa; no incluye IVA.' }],
     matches: /\b(impuesto|impuestos|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|inflaci[oó]n|poder de compra|salarios?|baby boom|gasto p[uú]blico|subir impuestos|subida de impuestos)\w*\b/i,
     interpretation: { kind: 'mixed', subject: 'carga fiscal, precios, salarios y cuentas públicas en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de impuestos, poder adquisitivo, gasto público y pensiones', interpretation: 'La afirmación encadena cambios de impuestos, precios, salarios, gasto y jubilación. Son proposiciones separadas y una no prueba la siguiente.' },
     headline: 'La carga fiscal y el poder adquisitivo no prueban por sí solos que los impuestos causen toda la pérdida; una rebaja de IRPF o IVA tiene costes que deben cuantificarse',
@@ -122,7 +145,7 @@ const packets = [
   },
   {
     id: 'broad-population-replacement',
-    visual: { type: 'comparison', title: 'Brecha en matemáticas entre alumnado inmigrante y no inmigrante · PISA 2022', unit: 'puntos PISA', labels: ['Sin ajustar', 'Ajustada por nivel socioeconómico'], values: [33, 7], sourceId: 'replacement-pisa-oecd' },
+    visuals: [reviewedVisuals.immigrationStock, reviewedVisuals.immigrationOrigins, reviewedVisuals.immigrationPermitReasons, reviewedVisuals.pisaShare, reviewedVisuals.pisaMathGap],
     matches: /\b(reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|manipulables?|manipulable|gente que viene)\b/i,
     interpretation: { kind: 'causal', subject: 'población residente, capacidades individuales y decisiones políticas', subjectType: 'group', predicate: 'allegedly_changes', object: 'composición y funcionamiento institucional', normalizedClaim: 'reemplazo poblacional, capacidad cognitiva y aprovechamiento político', interpretation: 'La frase combina una afirmación demográfica con una generalización sobre capacidad individual y una acusación causal sobre políticos. La población puede medirse; las otras partes exigen definiciones y evidencia específica.' },
     headline: 'Un cambio demográfico no demuestra menor capacidad ni manipulación política',
@@ -142,6 +165,7 @@ const packets = [
   },
   {
     id: 'broad-benefits-recipients',
+    visuals: [reviewedVisuals.imvTrend],
     matches: /\b(paguitas?|ayudas? para vivir|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
     interpretation: { kind: 'quantitative', subject: 'personas perceptoras de prestaciones', subjectType: 'group', predicate: 'has_multiple_measures', normalizedClaim: 'alcance y evolución de las prestaciones sociales', interpretation: '“Paguitas” no identifica un programa oficial ni demuestra dependencia, abuso o inactividad. Hay que especificar la prestación, la población, el periodo y el denominador.' },
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
@@ -162,7 +186,7 @@ const packets = [
   },
   {
     id: 'broad-youth-living-housing',
-    visual: { type: 'bar', title: 'Personas de 26–34 años que viven con sus progenitores · ECV 2025', unit: '%', labels: ['Renta < 6.000 €', 'Total', 'Renta > 24.000 €'], values: [55.5, 44.3, 29.4], sourceId: 'youth-family-housing-ine' },
+    visuals: [reviewedVisuals.youthUnemployment, reviewedVisuals.youthHousingPrices, reviewedVisuals.youthRegionalRent, reviewedVisuals.youthWageRent],
     matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
     interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
     headline: 'La vivienda supone una barrera económica para los jóvenes; no hay una cifra observada de cuántos emigrarían sin ayuda familiar',
@@ -242,6 +266,7 @@ const packets = [
   },
   {
     id: 'broad-immigration-security',
+    visuals: [reviewedVisuals.securityRecent, reviewedVisuals.securityAdjustedTrend, reviewedVisuals.securityAdjustedGap],
     matches: /\b(inmigr|migrant|extranj|migrator)\w*\b[\s\w]{0,36}\b(delincuenc|criminal|delito|seguridad|insegur)\w*\b|\b(delincuenc|criminal|delito|seguridad|insegur)\w*[\s\w]{0,36}\b(inmigr|migrant|extranj|migrator)\w*\b/i,
     interpretation: { kind: 'causal', subject: 'personas inmigrantes o extranjeras', subjectType: 'group', predicate: 'allegedly_causes', object: 'delincuencia o inseguridad', normalizedClaim: 'relación entre inmigración y delincuencia en España', interpretation: 'La frase atribuye una relación causal o asociativa a un grupo; hay que separar diferencia descriptiva de causalidad.', confidence: 0.75, evidenceNeeds: ['métrica', 'población', 'denominador', 'periodo', 'causalidad'] },
     headline: 'Una diferencia de condenas no demuestra una causa colectiva',
@@ -275,6 +300,7 @@ const packets = [
   },
   {
     id: 'broad-immigration',
+    visuals: [reviewedVisuals.immigrationStock, reviewedVisuals.immigrationOrigins, reviewedVisuals.immigrationPermitReasons],
     matches: /\b(inmigr|migrant|extranj|invasion|invaden|patera|asilo|llegad)\w*\b/i,
     interpretation: { kind: 'quantitative', subject: 'inmigración en España', subjectType: 'group', predicate: 'has_distinct_populations_and_flows', normalizedClaim: 'población, flujos y llegadas de inmigración en España', interpretation: 'La afirmación mezcla población residente, flujos anuales y entradas irregulares, que son magnitudes diferentes.', confidence: 0.78, evidenceNeeds: ['población', 'flujo', 'periodo', 'definición'] },
     headline: 'La inmigración no es una sola magnitud: población, flujos y llegadas son distintas',
@@ -293,7 +319,7 @@ const packets = [
   },
   {
     id: 'broad-security',
-    visual: { type: 'bar', title: 'Variación interanual de infracciones registradas · enero-junio de 2026', unit: '%', labels: ['Total', 'Libertad sexual', 'Hurtos', 'Robos violentos'], values: [0.5, 4.0, -3.8, -0.8], sourceId: 'security-balance' },
+    visuals: [reviewedVisuals.securityRecent, reviewedVisuals.securityAdjustedTrend, reviewedVisuals.securityAdjustedGap],
     matches: /\b(delincuenc|criminal|delito|seguridad|insegur|calle|salir|polic[ií]a|droga|judicial|disuasor|denuncia)\w*\b/i,
     interpretation: { kind: 'quantitative', subject: 'seguridad en España', subjectType: 'country', predicate: 'has_distinct_offence_and_perception_measures', normalizedClaim: 'delincuencia, seguridad y experiencia del espacio público en España', interpretation: 'La delincuencia nacional, los delitos concretos y la sensación de inseguridad no son la misma medida.', confidence: 0.72, evidenceNeeds: ['categoría de delito', 'periodo', 'territorio', 'medida'] },
     headline: 'Las tendencias delictivas difieren y no prueban que los nacionalizados causen un aumento general de la inseguridad',
@@ -323,8 +349,9 @@ const shareableSourcesByPacket = {
   'broad-public-administration': ['public-administration-epsap-2026', 'public-employment-statute'],
   'broad-demography-pension-finance': ['demography-pension-finance', 'social-security-general-account-2024', 'airef-pension-sustainability-study-2026'],
   'broad-youth-living-housing': ['cje-emancipation-2025', 'youth-family-housing-ine'],
-  'broad-security': ['security-balance', 'ine-convictions-2024'],
-  'broad-population-replacement': ['replacement-population-source', 'replacement-pisa-oecd'],
+  'broad-security': ['security-balance', 'security-standardised-crime-reis', 'ine-convictions-2024'],
+  'broad-immigration-security': ['security-balance', 'security-standardised-crime-reis', 'immigration-crime'],
+  'broad-population-replacement': ['replacement-population-source', 'immigration-permit-reasons-eurostat', 'replacement-pisa-oecd'],
   'broad-tax-burden-purchasing-power': ['tax-wedge-oecd-2026', 'fiscal-drag-bde', 'airef-tax-pension-outlook'],
 };
 
@@ -356,13 +383,22 @@ const shareableReplyForPacket = (packetId, families) => {
     const foreignRate = value('group-causality', /Nacionalidad extranjera/);
     const spanishRate = value('group-causality', /Nacionalidad española/);
     if (!total || !trends || !foreignRate || !spanishRate) return undefined;
-    return `Entre enero y junio de 2026, las infracciones registradas subieron un 0,5 % frente al mismo periodo de 2025; los delitos contra la libertad sexual aumentaron un 4,0 %, mientras los hurtos bajaron un 3,8 % y los robos violentos un 0,8 %. La tasa bruta de condenados adultos en 2024 fue de 15,7 por cada 1.000 residentes extranjeros frente a 6,2 entre españoles: no está ajustada y no demuestra causalidad. Además, las personas nacionalizadas cuentan como españolas, no como extranjeras. El balance es provisional y no mide cada barrio ni el “wokismo”.`;
+    return `Entre enero y junio de 2026, las infracciones registradas subieron un 0,5 % frente al mismo periodo de 2025; los delitos contra la libertad sexual aumentaron un 4,0 %, mientras los hurtos bajaron un 3,8 % y los robos violentos un 0,8 %. La tasa bruta de condenados adultos en 2024 fue de 15,7 por cada 1.000 residentes extranjeros frente a 6,2 entre españoles. Un estudio ajustado por edad y sexo reduce la brecha de condenas un 48,3 %, pero no la elimina; ni las tasas brutas ni las ajustadas prueban que la nacionalidad cause delitos. Las personas nacionalizadas cuentan como españolas. El balance nacional no mide cada barrio ni el “wokismo”.`;
+  }
+  if (packetId === 'broad-immigration-security') {
+    const trends = value('security-recent-trend', /\+0,5 %/);
+    const rawRates = value('convicted-rate', /15,7/);
+    const adjustedRates = value('causal-limit', /estandarizadas/);
+    if (!trends || !rawRates || !adjustedRates) return undefined;
+    return `En enero–junio de 2026, el total de infracciones registradas subió un 0,5 %; libertad sexual +4,0 %, hurtos −3,8 % y robos con violencia −0,8 %. La tasa bruta de condenados adultos en 2024 fue 15,7 por 1.000 residentes extranjeros y 6,2 entre españoles. En 2007–2023, ajustar por edad y sexo redujo la brecha de tasas de condena un 48,3 %, pero no la eliminó. Ninguna de estas comparaciones prueba causalidad ni que la nacionalidad cause delitos; tampoco identifica a “nuevos españoles” como categoría separada.`;
   }
   if (packetId === 'broad-population-replacement') {
     const population = value('population-composition', /5,88 millones/);
     const gap = value('educational-gap', /33 puntos/);
-    if (!population || !gap) return undefined;
-    return `La población residente nacida fuera de España pasó de 5,88 millones en 2015 a 9,46 millones en 2025: mide un cambio demográfico, no una sustitución deliberada. En PISA 2022, la brecha bruta en matemáticas entre alumnado inmigrante y no inmigrante fue de 33 puntos y de 7 tras ajustar por nivel socioeconómico. PISA evalúa competencias escolares a los 15 años, no el IQ, la inteligencia innata ni la manipulabilidad de personas adultas. No hay datos que demuestren la intención política atribuida.`;
+    const origins = value('main-origins', /Marruecos/);
+    const motives = value('permit-reasons', /familia/i);
+    if (!population || !gap || !origins || !motives) return undefined;
+    return `La población residente nacida fuera de España pasó de 5,88 millones en 2015 a 9,46 millones en 2025: mide un cambio demográfico, no una sustitución deliberada. Entre los primeros permisos de 2024 a ciudadanos no comunitarios, el 46 % fue por motivos familiares, el 20,8 % por estudios y el 17 % por trabajo; no son todos los movimientos migratorios. En PISA 2022, la brecha bruta en matemáticas entre alumnado inmigrante y no inmigrante fue de 33 puntos y de 7 tras ajustar por nivel socioeconómico. PISA mide competencias escolares a los 15 años, no IQ, inteligencia innata ni manipulabilidad adulta. No hay datos que demuestren la intención política atribuida.`;
   }
   if (packetId === 'broad-tax-burden-purchasing-power') {
     const wedge = value('tax-revenue', /41,4 %/);
@@ -398,14 +434,14 @@ export const broadDomainPacketsFor = (text) => {
   // let a mention of employment or security hijack that route accidentally.
   if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const direct = packets.filter((packet) => packet.matches.test(value));
-  const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|empleo p[uú]blico/i.test(value);
-  const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit/i.test(value);
-  const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n/i.test(value) && /insostenib|sostenib|arruin|arcas p[uú]blicas|deficit|gasto|financ/i.test(value);
-  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar/i.test(value);
-  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|poder de compra|subir impuestos|subida de impuestos)\b/i.test(value);
-  const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|manipulables?|manipulable|gente que viene/i.test(value);
+  const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|empleo p[uú]blico|sector p[uú]blico|plaza fija|calentar (?:la )?silla|no trabaja|automatiz|digitalizaci[oó]n/i.test(value);
+  const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|piramide poblacional|ratio (?:de )?cotizantes/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit|quiebr|bancarrota/i.test(value);
+  const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n|cotizantes/i.test(value) && /insostenib|sostenib|arruin|arcas p[uú]blicas|deficit|gasto|financ|quiebr|bancarrota|ratio/i.test(value);
+  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar|emancip|herencia|comprar casa|imposible/i.test(value);
+  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|poder de compra|poder adquisitivo|subir impuestos|subida de impuestos|progresividad en frio|deflactar|coste de vida)\b/i.test(value);
+  const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|menos inteligent|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
   const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
-  const compoundSignal = /legalizaci[oó]n|regularizaci[oó]n|regularizar/i.test(value) && /servicios? p[uú]blicos?|colapso/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici/i.test(value);
+  const compoundSignal = /legalizaci[oó]n|regularizaci[oó]n|regularizar|amnistia migratoria|arraigo extraordinario/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
   const packetById = (id) => packets.find((packet) => packet.id === id);
   // Strong multi-proposition routes are resolved before broad keyword matches.
   // This keeps a claim about one subject from inheriting nearby but incompatible
@@ -737,7 +773,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     sourceLinks: planSources,
     asOf: '2026-09-25',
     ...(packet.warehouseSeries ? { warehouseSeries: packet.warehouseSeries } : {}),
-    ...(packet.visual ? { visual: { ...packet.visual, evidenceIds: [packet.visual.sourceId].filter(Boolean) } } : {}),
+    ...(packet.visuals?.length ? { visuals: packet.visuals.map((visual) => ({ ...visual, evidenceIds: visual.evidenceIds || [visual.sourceId].filter(Boolean) })) } : packet.visual ? { visual: { ...packet.visual, evidenceIds: packet.visual.evidenceIds || [packet.visual.sourceId].filter(Boolean) } } : {}),
     ...(shareableSourcesByPacket[packet.id] ? { shareableSourceIds: shareableSourcesByPacket[packet.id] } : {}),
     evidenceSummary: {
       mode: hasDynamicObservations ? (hasSnapshotData ? 'mixed' : 'dynamic') : 'snapshot',
@@ -825,20 +861,16 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const newAffiliations = dataPoint('broad-immigration-regularization', 'regularization-employment', /afiliaciones? a la Seguridad Social/i);
   const specialistWait = dataPoint('broad-public-services', 'public-service-waiting-list', /espera media para primera consulta externa/i);
   const imvTrend = dataForCriterion('broad-benefits-recipients', 'benefit-trend-causality').find((value) => /→/.test(value));
-  const imvSeries = imvTrend?.match(/:\s*([\d.]+)\s+personas?\s+\((\d{4})-(\d{2})\)\s*→\s*([\d.]+)\s+personas?\s+\((\d{4})-(\d{2})/i);
-  const spanishMonths = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  const monthLabel = (year, month) => `${spanishMonths[Number(month) - 1] || month} de ${year}`;
-  const cleanImvTrend = imvSeries
-    ? `el número de beneficiarios pasó de ${imvSeries[1]} en ${monthLabel(imvSeries[2], imvSeries[3])} a ${imvSeries[4]} en ${monthLabel(imvSeries[5], imvSeries[6])}`
-    : imvTrend?.replace(/^Serie localizada:\s*/i, '').replace(/^Personas beneficiarias del IMV:\s*/i, 'la serie de beneficiarios pasó de ').replace(/;\s*\+[\d,.]+\s*%\s*interanual/i, '');
-  const interannualGrowth = imvTrend?.match(/\+[\d,.]+\s*% interanual/i)?.[0];
+  const cleanImvTrend = imvTrend?.replace(/^Serie localizada:\s*/i, '');
+  const surgeryWaiting = dataPoint('broad-public-services', 'public-service-waiting-list', /121 días de espera media para cirugía no urgente/i);
   const hasRegularizationServicesAndBenefits = ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].every((id) => familyPlans.some((familyPlan) => familyPlan.id === id));
   const shareableReply = hasRegularizationServicesAndBenefits ? [
     'Evidencia limitada.',
     applications && processedCases ? `El proceso fue amplio: el balance oficial registró ${applications.replace(/^Solicitudes:\s*/i, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '')} expedientes tramitados; no equivalen a permisos concedidos.` : '',
     newAffiliations ? `El Gobierno atribuyó ${newAffiliations} al proceso: son afiliaciones laborales, no una medida del uso de ayudas.` : '',
-    specialistWait ? `En el SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
-    cleanImvTrend ? `En el IMV, ${cleanImvTrend}${interannualGrowth ? ` (${interannualGrowth})` : ''}. La subida es real, pero no prueba crecimiento exponencial ni que la regularización la causara.` : '',
+    specialistWait ? `En las listas del SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
+    surgeryWaiting ? `La espera media para cirugía no urgente fue de 121 días en diciembre de 2025; varió entre 173 en Andalucía y 50 en Madrid.` : '',
+    cleanImvTrend ? `En el IMV, ${cleanImvTrend}. La subida entre agosto de 2025 y agosto de 2026 fue del 16,7 %; no prueba crecimiento exponencial ni que la regularización la causara.` : '',
   ].filter(Boolean).join('\n\n') : undefined;
   const plan = {
     id: 'broad-compound-claim',
@@ -847,8 +879,8 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     headline: `La afirmación mezcla ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}; las cifras disponibles no demuestran por sí solas las relaciones causales`,
     summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
     shareableReply,
-    shareableSourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026', 'regularization-law-2026', 'public-services-waiting-list-source', 'benefits-imv-august-source', 'benefits-imv-previous-year-source'],
-    visual: { type: 'bar', title: 'Personas beneficiarias del IMV · mismo mes interanual', unit: 'personas', labels: ['Agosto 2025', 'Agosto 2026'], values: [2335553, 2725899], evidenceIds: ['benefits-imv-previous-year-source', 'benefits-imv-august-source'], sourceId: 'benefits-imv-august-source' },
+    shareableSourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026', 'regularization-law-2026', 'public-services-waiting-list-source', 'benefits-imv-historic-source', 'benefits-imv-august-source', 'benefits-imv-previous-year-source'],
+    visuals: familyPlans.flatMap((familyPlan) => familyPlan.visuals?.length ? familyPlan.visuals : familyPlan.visual ? [familyPlan.visual] : []).filter((visual, index, all) => all.findIndex((candidate) => `${candidate.sourceId}:${candidate.title}` === `${visual.sourceId}:${visual.title}`) === index),
     coverage: 'qualified',
     claimType: 'mixed',
     interpretation: { kind: 'mixed', subject: families.map((family) => family.familyLabel).join(', '), subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: text, interpretation: `Se comprueban por separado ${families.length} familias y las relaciones que se afirman entre ellas.` },

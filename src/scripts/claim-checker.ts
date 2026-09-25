@@ -8,8 +8,9 @@ type CheckResult = {
   arguments?: Array<{ id: string; claim: string; verdict: string; finding: string; evidenceIds: string[]; sourceIds: string[]; limitations: string[] }>;
   coverageSummary?: { total: number; supported: number; contradicted: number; mixed: number; insufficient: number; notVerifiable: number };
   sources: Array<{ id: string; title: string; publisher?: string; url: string; publishedAt?: string }>;
-  assessment?: string; canonicalHref?: string; visual?: { type?: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds?: string[]; sourceId?: string }; scorecard?: { title: string; baselinePeriod: string; comparisonPeriod: string; snapshotDate?: string; scope?: string; explanation?: string; items: Array<{ label: string; unit: string; baseline?: { value: string; period: string }; comparison?: { value: string; period: string }; change?: string; direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable'; caveat?: string; sources: Array<{ title: string; publisher?: string; url: string; publishedAt?: string }> }> }; evidenceSummary?: { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: EvidenceFamily[]; missingDimensions?: string[]; fallbackReason?: string };
+  assessment?: string; canonicalHref?: string; visual?: CheckVisual; visuals?: CheckVisual[]; scorecard?: { title: string; baselinePeriod: string; comparisonPeriod: string; snapshotDate?: string; scope?: string; explanation?: string; items: Array<{ label: string; unit: string; baseline?: { value: string; period: string }; comparison?: { value: string; period: string }; change?: string; direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable'; caveat?: string; sources: Array<{ title: string; publisher?: string; url: string; publishedAt?: string }> }> }; evidenceSummary?: { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: EvidenceFamily[]; missingDimensions?: string[]; fallbackReason?: string };
 };
+type CheckVisual = { type?: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds?: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[] };
 type EvidenceStatus = 'available' | 'partial' | 'missing';
 type EvidenceDimensions = { subject?: string; population?: string; period?: string; geography?: string; denominator?: string; unit?: string; causalRequirement?: string };
 type EvidenceDataKind = 'observed' | 'projected' | 'snapshot' | 'context';
@@ -185,16 +186,19 @@ const loadingStagesFor = (text: string): string[] => {
   if (/padres|apoyo familiar|bienes inmuebles/.test(value)) stages.push('Comprobando apoyo familiar');
   return stages;
 };
-const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckResult['sources'][number] | undefined, scope: CheckResult['scope']): string => {
-  const entries = visual.labels.map((label, index) => ({ label, value: Number(visual.values[index]) })).filter((entry) => Number.isFinite(entry.value)).slice(0, 8);
+const renderVisual = (visual: CheckVisual, source: CheckResult['sources'][number] | undefined, scope: CheckResult['scope'], index: number): string => {
+  const entries = visual.labels.map((label, index) => ({ label, value: Number(visual.values[index]) })).filter((entry) => Number.isFinite(entry.value));
   if (!entries.length) return '';
   const unit = visual.unit || 'valor';
   const title = visual.title || 'Datos utilizados';
+  const titleId = `result-visual-title-${index}`;
   const sourceText = source ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">Fuente: ${escapeHtml(source.title)}${source.publishedAt ? ` · ${escapeHtml(source.publishedAt)}` : ''} ↗</a>` : 'Fuente indicada en el detalle de la respuesta';
+  const note = visual.note ? `<p class="result-visual-method-note">${escapeHtml(visual.note)}</p>` : '';
+  const period = scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : '';
   const table = entries.map((entry) => `<tr><th scope="row">${escapeHtml(entry.label)}</th><td>${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</td></tr>`).join('');
   if (visual.type === 'comparison') {
     const cards = entries.map((entry) => `<div class="result-comparison-card"><span>${escapeHtml(entry.label)}</span><strong>${escapeHtml(formatNumber(entry.value))}</strong><small>${escapeHtml(unit)}</small></div>`).join('');
-    return `<section class="result-visual result-comparison" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Comparación de datos</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><div class="result-comparison-grid">${cards}</div><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+    return `<section class="result-visual result-comparison" aria-labelledby="${titleId}"><div class="result-section-heading"><span class="eyebrow">Comparación de datos</span><h3 id="${titleId}">${escapeHtml(title)}</h3></div><div class="result-comparison-grid">${cards}</div>${note}<p class="result-visual-note">${sourceText}${period}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
   }
   if (visual.type === 'bar') {
     const minimum = Math.min(0, ...entries.map((entry) => entry.value));
@@ -214,20 +218,27 @@ const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckR
     }).join('');
     const axisStart = formatNumber(domainMin);
     const axisEnd = formatNumber(domainMax);
-    return `<section class="result-visual result-horizontal-visual" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><div class="result-bar-chart" role="group" aria-label="${escapeHtml(title)}">${rows}<div class="result-bar-axis" aria-hidden="true"><span>${escapeHtml(axisStart)} ${escapeHtml(unit)}</span><span>${escapeHtml(axisEnd)} ${escapeHtml(unit)}</span></div></div><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+    return `<section class="result-visual result-horizontal-visual" aria-labelledby="${titleId}"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="${titleId}">${escapeHtml(title)}</h3></div><div class="result-bar-chart" role="group" aria-label="${escapeHtml(title)}">${rows}<div class="result-bar-axis" aria-hidden="true"><span>${escapeHtml(axisStart)} ${escapeHtml(unit)}</span><span>${escapeHtml(axisEnd)} ${escapeHtml(unit)}</span></div></div>${note}<p class="result-visual-note">${sourceText}${period}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
   }
   const width = 720; const height = 250; const left = 66; const right = 18; const top = 22; const bottom = 52; const plotWidth = width - left - right; const plotHeight = height - top - bottom;
   const min = Math.min(...entries.map((entry) => entry.value)); const max = Math.max(...entries.map((entry) => entry.value)); const padding = max === min ? Math.max(Math.abs(max) * .12, 1) : (max - min) * .1; const domainMin = min - padding; const domainMax = max + padding;
   const x = (index: number) => entries.length === 1 ? left + plotWidth / 2 : left + (index / (entries.length - 1)) * plotWidth;
   const y = (value: number) => top + ((domainMax - value) / (domainMax - domainMin)) * plotHeight;
   const ticks = [0, .5, 1].map((fraction) => { const value = domainMax - (domainMax - domainMin) * fraction; const tickY = top + plotHeight * fraction; return `<line class="result-chart-grid" x1="${left}" y1="${tickY}" x2="${width - right}" y2="${tickY}"></line><text class="result-chart-label" x="${left - 10}" y="${tickY + 4}" text-anchor="end">${escapeHtml(formatNumber(value))}</text>`; }).join('');
-  const xLabels = entries.map((entry, index) => `<text class="result-chart-label" x="${x(index)}" y="${height - 16}" text-anchor="middle">${escapeHtml(entry.label.length > 16 ? `${entry.label.slice(0, 15)}…` : entry.label)}</text>`).join('');
-  const chart = `<polyline class="result-chart-line" points="${entries.map((entry, index) => `${x(index)},${y(entry.value)}`).join(' ')}"></polyline>${entries.map((entry, index) => `<circle class="result-chart-point" cx="${x(index)}" cy="${y(entry.value)}" r="5"><title>${escapeHtml(entry.label)}: ${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</title></circle>`).join('')}`;
+  const labelEvery = Math.max(1, Math.ceil(entries.length / 8));
+  const xLabels = entries.map((entry, index) => index % labelEvery === 0 || index === entries.length - 1 ? `<text class="result-chart-label" x="${x(index)}" y="${height - 16}" text-anchor="middle">${escapeHtml(entry.label.length > 16 ? `${entry.label.slice(0, 15)}…` : entry.label)}</text>` : '').join('');
+  const breakAfter = new Set(visual.breakAfter || []);
+  const segments: number[][] = [];
+  let segment: number[] = [];
+  entries.forEach((_entry, index) => { segment.push(index); if (breakAfter.has(index)) { if (segment.length) segments.push(segment); segment = []; } });
+  if (segment.length) segments.push(segment);
+  const lines = segments.filter((items) => items.length > 1).map((items) => `<polyline class="result-chart-line" points="${items.map((index) => `${x(index)},${y(entries[index].value)}`).join(' ')}"></polyline>`).join('');
+  const chart = `${lines}${entries.map((entry, index) => `<circle class="result-chart-point" cx="${x(index)}" cy="${y(entry.value)}" r="5"><title>${escapeHtml(entry.label)}: ${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</title></circle>`).join('')}`;
   const trend = entries.length > 1 ? entries[entries.length - 1].value - entries[0].value : 0;
-  const interpretation = entries.length > 1
+  const interpretation = visual.interpretation || (entries.length > 1
       ? `La serie pasa de ${formatNumber(entries[0].value)} a ${formatNumber(entries[entries.length - 1].value)} ${unit}${trend === 0 ? '.' : trend > 0 ? ', un aumento en el periodo mostrado.' : ', un descenso en el periodo mostrado.'}`
-      : `El valor observado es ${formatNumber(entries[0].value)} ${unit}.`;
-  return `<section class="result-visual" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><svg class="result-chart" role="img" aria-label="${escapeHtml(title)}" viewBox="0 ${width} ${height}">${ticks}${chart}${xLabels}</svg><p class="result-visual-interpretation">${escapeHtml(interpretation)}</p><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+      : `El valor observado es ${formatNumber(entries[0].value)} ${unit}.`);
+  return `<section class="result-visual" aria-labelledby="${titleId}"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="${titleId}">${escapeHtml(title)}</h3></div><svg class="result-chart" role="img" aria-label="${escapeHtml(title)}" viewBox="0 0 ${width} ${height}">${ticks}${chart}${xLabels}</svg><p class="result-visual-interpretation">${escapeHtml(interpretation)}</p>${note}<p class="result-visual-note">${sourceText}${period}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
 };
 const renderScorecard = (scorecard: NonNullable<CheckResult['scorecard']>): string => {
   const improved = scorecard.items.filter((item) => item.direction === 'improved').length;
@@ -269,8 +280,13 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
     ? `<section class="result-section result-arguments"><div class="result-section-heading"><span class="eyebrow">Partes de la afirmación</span><h3>Qué responde la evidencia</h3></div><div class="result-arguments-grid">${argumentCards}</div></section>`
     : `<details class="claim-arguments result-details"><summary>Ver argumento comprobado<span aria-hidden="true">＋</span></summary>${argumentCards}</details>` : '';
   const criteria = item.criteria?.length ? `<details class="result-details"><summary>Cómo se ha comprobado<span aria-hidden="true">＋</span></summary><div>${item.criteria.map((criterion) => `<p><strong>${escapeHtml(criterion.label)}:</strong> ${escapeHtml(criterion.finding)}</p>`).join('')}</div></details>` : '';
-  const visualSource = item.visual?.sourceId ? item.sources.find((source) => source.id === item.visual?.sourceId) : item.sources[0];
-  const visual = item.visual && item.visual.labels.length === item.visual.values.length ? renderVisual(item.visual, visualSource, item.scope) : '';
+  const visualList = item.visuals?.length ? item.visuals : item.visual ? [item.visual] : [];
+  const visuals = visualList.map((visual, index) => {
+    if (visual.labels.length !== visual.values.length) return '';
+    const visualSource = visual.sourceId ? item.sources.find((source) => source.id === visual.sourceId) : item.sources[0];
+    return renderVisual(visual, visualSource, item.scope, index + 1);
+  }).join('');
+  const visual = visuals ? `<div class="result-visual-set" aria-label="Gráficos de la comprobación">${visuals}</div>` : '';
   const sources = item.sources.length && evidenceGroups.length < 2 ? `<section class="claim-sources result-sources"><div class="result-section-heading"><span class="eyebrow">Trazabilidad</span><h3>Fuentes y fecha</h3></div>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${source.publishedAt}` : ''} ↗</span></a>`).join('')}</section>` : '';
   const isShareableResult = Boolean(item.shareableReply?.trim());
   const answer = item.shareableReply?.trim() || item.answer.trim() || item.reply;
@@ -345,7 +361,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     for (let attempt = 0; response.state === 'processing' && response.id && Date.now() < enrichmentDeadline; attempt += 1) {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
       try {
-        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET' }, 2000, request.signal);
+        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET', headers: { 'x-claim-text': original } }, 2000, request.signal);
       } catch (error) {
         // A status check can time out while the resolver is still working.
         // Keep the processing response so a transient timeout cannot replace
