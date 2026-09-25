@@ -7,9 +7,17 @@ const required = [
   ['id="recent-checks"', 'recent checks'],
   ['id="checker-suggestions"', 'suggestions disclosure'],
   ['class="checker-page"', 'checker page container'],
-  ['data-example="Los inmigrantes crean inseguridad"', 'example one'],
-  ['data-example="La vivienda se ha triplicado"', 'example two'],
-  ['data-example="El paro está manipulado"', 'example three'],
+  ['Paráfrasis de temas habituales; no son citas literales ni representan a ningún grupo de votantes.', 'illustrative-example disclaimer'],
+  ['data-example="La regularización masiva de inmigrantes colapsará los servicios públicos y disparará las paguitas."', 'immigration, services, and benefits example'],
+  ['data-example="Los funcionarios con plaza son vagos y hay miles de puestos prescindibles."', 'public administration example'],
+  ['data-example="El envejecimiento hace insostenible el sistema de pensiones y arruina las arcas públicas."', 'pension sustainability example'],
+  ['data-example="Los jóvenes no pueden comprar vivienda sin la ayuda de sus padres y se ven obligados a emigrar."', 'youth housing example'],
+  ['data-example="La inmigración dispara la delincuencia, pero el wokismo impide hablarlo."', 'immigration and crime example'],
+  ['data-example="La inmigración reemplaza a la población española: quienes llegan tienen menos IQ y son manipulables."', 'population replacement example'],
+  ['data-example="La carga fiscal y la inflación hunden los salarios; las pensiones las pagarán dos generaciones jóvenes."', 'tax burden example'],
+  ['data-example="El Pacto Verde está destruyendo la agricultura española."', 'agriculture and green policy example'],
+  ['data-example="La amnistía rompe la igualdad ante la ley."', 'amnesty example'],
+  ['data-example="Echar a los okupas tarda años."', 'housing occupation example'],
 ];
 const failures = required.filter(([fragment]) => !source.includes(fragment)).map(([, label]) => `homepage is missing ${label}`);
 if (source.includes('claim-catalog.json') || source.includes('claimIndexData')) failures.push('homepage must not embed or fetch the full catalogue');

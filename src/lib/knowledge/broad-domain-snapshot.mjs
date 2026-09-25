@@ -28,6 +28,7 @@ const reviewedVisuals = {
   pisaShare: { type: 'line', title: 'Alumnado con origen inmigrante · España', unit: '% del alumnado de 15 años', labels: ['2012','2022'], values: [10,15], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'PISA mide alumnado de 15 años y competencias escolares, no IQ ni inteligencia innata.' },
   pisaMathGap: { type: 'comparison', title: 'Brecha matemática PISA 2022 por origen migrante', unit: 'puntos PISA', labels: ['Sin ajustar','Tras ajustar por nivel socioeconómico'], values: [33,7], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'La OCDE indica que la brecha neta se redujo entre 2012 y 2022. PISA no permite inferir capacidad adulta ni manipulabilidad.' },
   taxWedgeTrend: { type: 'line', title: 'Cuña fiscal del trabajo · persona soltera con salario medio, sin hijos', unit: '% del coste laboral', labels: Array.from({ length: 26 }, (_, index) => String(2000 + index)), values: [38.6,38.9,39.1,38.6,38.8,39,39.1,39,38,38.3,39.7,40,40.6,40.7,40.7,39.4,39.4,39.6,39.7,39.8,39.3,39.9,40,40.8,41.1,41.4], sourceId: 'tax-wedge-oecd-2026', evidenceIds: ['tax-wedge-oecd-2026'], note: 'Incluye IRPF y cotizaciones sociales de trabajador y empresa; no incluye IVA ni representa la carga fiscal de cada hogar.' },
+  farmIncomePerWorkUnit: { type: 'line', title: 'Renta agraria real por unidad de trabajo · España', unit: 'índice · 2019 = 100', labels: ['2019','2020','2021','2022','2023','2024','2025'], values: [100,97.7,97.4,95.5,110.3,114.4,119.1], sourceId: 'farm-income-mapa-2025', evidenceIds: ['farm-income-mapa-2025'], note: 'Serie nacional de renta real por UTA rebased a 2019=100 a partir de la segunda estimación MAPA; 2025 es provisional. No separa explotaciones, cultivos ni causas regulatorias.' },
 };
 
 const packets = [
@@ -234,7 +235,7 @@ const packets = [
     ['energy', /\b(energ[ií]a|electricidad|luz|gasolina|combustible|renovable)\w*\b/i, 'La energía requiere separar precio, consumo y dependencia', 'El precio que paga un hogar, el coste mayorista, los impuestos, el consumo y la dependencia exterior no son la misma magnitud.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Energy_statistics_-_prices', 'Eurostat'],
     ['transport', /\b(tren|trenes|transporte|carretera|avi[oó]n|cercan[ií]as|infraestructura)\w*\b/i, 'El transporte requiere separar incidencias, inversión y servicio', 'Una avería o retraso concreto no demuestra por sí solo el estado de toda la red. Hay que fijar línea, periodo, frecuencia, puntualidad, inversión y comparación.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Passenger_transport_statistics', 'Eurostat'],
     ['tourism', /\b(turismo|turista|turistas|hotel|masificaci[oó]n|temporada|crucero|visitante|hosteler[ií]a)\w*\b/i, 'El turismo requiere separar volumen, empleo, vivienda e impacto territorial', 'Más visitantes no equivalen automáticamente a más bienestar. Hay que separar pernoctaciones, empleo, ingresos, presión residencial, estacionalidad y territorio.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Tourism_statistics', 'Eurostat'],
-    ['agriculture', /\b(agricultura|agricultor|campo|ganader[ií]a|cultivo|regad[ií]o|cosecha)\w*\b/i, 'El campo requiere separar producción, renta, costes y territorio', 'La producción agraria, la renta de los agricultores, los costes de insumos y el empleo rural pueden moverse de forma distinta.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Agriculture,_forestry_and_fishery_statistics', 'Eurostat'],
+    ['agriculture', /\b(agricultura|agricultor|campo|ganader[ií]a|cultivo|regad[ií]o|cosecha|explotaci[oó]n(?:es)? agrari|sector agrario)\w*\b/i, 'El campo requiere separar producción, renta, costes y territorio', 'La producción agraria, la renta de los agricultores, los costes de insumos y el empleo rural pueden moverse de forma distinta.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Agriculture,_forestry_and_fishery_statistics', 'Eurostat'],
     ['economy', /\b(econom[ií]a|productividad|crecimiento|pib|recesi[oó]n|empresa|empresas)\w*\b/i, 'La economía requiere separar crecimiento, productividad, empleo y bienestar', 'El PIB no resume por sí solo el bienestar. Hay que distinguir producción, productividad, renta, empleo, precios, deuda y distribución.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP', 'Eurostat'],
   ].map(([id, matches, headline, summary, url, publisher]) => ({
     id: `broad-${id}`, matches,
@@ -262,6 +263,25 @@ const packets = [
     limitations: ['No existe una cifra nacional que demuestre por sí sola que una causa concreta —topes, turismo, okupación o propietarios— explique todo el mercado. Para un veredicto hacen falta ciudad, periodo, población y mecanismo definidos.'],
     sources: [
       source('housing-eurostat', 'Housing in Europe — statistics on housing conditions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_in_Europe', '2025-10-01'),
+    ],
+  },
+  {
+    id: 'broad-agriculture-green-transition',
+    matches: /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b[\s\S]{0,180}\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b|\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b[\s\S]{0,180}\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i,
+    interpretation: { kind: 'causal', subject: 'renta agraria y política ambiental', subjectType: 'country', predicate: 'allegedly_causes', object: 'deterioro de la agricultura española', normalizedClaim: 'efecto de las normas ambientales y la PAC sobre la renta agraria', interpretation: 'La frase enlaza requisitos ambientales con daños a todo el sector agrario. Para contrastarla hay que separar ingresos, costes, ayudas y el efecto causal de cada norma.' },
+    headline: 'La PAC incorpora requisitos ambientales, pero los datos agregados no demuestran que esas normas estén destruyendo el campo',
+    visuals: [reviewedVisuals.farmIncomePerWorkUnit],
+    summary: 'La PAC combina requisitos ambientales y eco-regímenes voluntarios. La renta agraria real por unidad de trabajo aumentó en la segunda estimación nacional de 2025, pero también subieron los consumos intermedios y bajaron las subvenciones totales. Esos agregados describen movimientos simultáneos: no aíslan el coste de cumplir cada norma ni demuestran que el Pacto Verde causara pérdidas o mejoras en cada explotación.',
+    criteria: [
+      { id: 'farm-income-trend', label: 'Renta agraria', finding: 'En la segunda estimación MAPA de 2025, la renta agraria nominal aumentó y el indicador real por unidad de trabajo también subió; el dato es un promedio nacional provisional, no el resultado de cada explotación.', fallbackData: ['Renta agraria total: 39.798,6 millones de euros en 2025, +8,9 % nominal frente a 2024; renta real por UTA: +4,1 % (segunda estimación)'], sourceIds: ['farm-income-mapa-2025'], preferReviewedFallback: true },
+      { id: 'farm-costs-and-subsidies', label: 'Costes y ayudas', finding: 'Los consumos intermedios crecieron mientras las subvenciones totales bajaron; sin separar insumos, producción y ayudas por explotación no puede atribuirse el saldo a una norma ambiental concreta.', fallbackData: ['Consumos intermedios: +4,8 % en 2025; subvenciones totales: −2,7 % (segunda estimación MAPA)'], sourceIds: ['farm-income-mapa-2025'], preferReviewedFallback: true },
+      { id: 'cap-environmental-requirements', label: 'Requisitos de la PAC', finding: 'El Plan Estratégico de la PAC incluye condicionalidad reforzada y eco-regímenes voluntarios; su presupuesto describe el diseño de la política, no su efecto neto sobre la rentabilidad de cada explotación.', fallbackData: ['Eco-regímenes voluntarios: aproximadamente 1.107 millones de euros al año; el 47,8 % de los fondos de desarrollo rural se reserva para objetivos ambientales'], sourceIds: ['cap-strategic-plan-summary'] },
+      { id: 'farm-regulatory-causality', label: 'Efecto de las normas', finding: 'Las cuentas agregadas no aíslan el coste de cumplimiento ni comparan explotaciones equivalentes sujetas a requisitos distintos; no demuestran que el Pacto Verde esté destruyendo el sector.', missingDimensions: ['coste de cumplimiento por explotación y norma', 'comparación por cultivo y territorio', 'contrafactual o diseño causal', 'serie de rentabilidad desglosada por tamaño de explotación'], sourceIds: ['farm-income-mapa-2025', 'cap-strategic-plan-summary'] },
+    ],
+    limitations: ['La serie es un agregado nacional y 2025 es una segunda estimación. No mide cada cultivo, comunidad autónoma o explotación y no permite atribuir cambios de renta a una regulación ambiental sin costes de cumplimiento y comparación causal.'],
+    sources: [
+      source('farm-income-mapa-2025', 'Cuentas Económicas de la Agricultura · 2025, segunda estimación', 'Ministerio de Agricultura, Pesca y Alimentación', 'https://www.mapa.gob.es/dam/mapa/contenido/estadisticas/temas/estadisticas-agrarias/1.economicas/renta-agraria/cea-2025-2-estimacion-marzo-2026--0.pdf', '2026-04-01'),
+      source('cap-strategic-plan-summary', 'Resumen del Plan Estratégico de la PAC 2023–2027', 'Ministerio de Agricultura, Pesca y Alimentación', 'https://www.mapa.gob.es/dam/mapa/contenido/reforma-de-la-pac/plan-estrategico-pac-post-2020/documentos/resumen-pac-es.pdf', '2023-01-01'),
     ],
   },
   {
@@ -353,6 +373,7 @@ const shareableSourcesByPacket = {
   'broad-immigration-security': ['security-balance', 'security-standardised-crime-reis', 'immigration-crime'],
   'broad-population-replacement': ['replacement-population-source', 'immigration-permit-reasons-eurostat', 'replacement-pisa-oecd'],
   'broad-tax-burden-purchasing-power': ['tax-wedge-oecd-2026', 'fiscal-drag-bde', 'airef-tax-pension-outlook'],
+  'broad-agriculture-green-transition': ['farm-income-mapa-2025', 'cap-strategic-plan-summary'],
 };
 
 const shareableReplyForPacket = (packetId, families) => {
@@ -407,6 +428,13 @@ const shareableReplyForPacket = (packetId, families) => {
     if (!wedge || !drag || !debt) return undefined;
     return `Para una persona soltera sin hijos con salario medio, la cuña fiscal de 2025 fue 41,4 % en España y 35,1 % en la OCDE; incluye IRPF y cotizaciones sociales de trabajador y empresa, no equivale al IRPF o IVA pagado por una familia. El Banco de España estima que, sin actualizar los tramos, un 1 % más de renta nominal se asocia con un 1,85 % más de recaudación por IRPF; cerca de la mitad del alza de IRPF/PIB de 2019–2023 se atribuye a esa progresividad en frío. Deflactar el IRPF o reducir el IVA son opciones: su viabilidad exige cuantificar coste y distribución. La deuda del 123 % del PIB en 2050 es un escenario, no prueba que cualquier rebaja sea imposible ni que el ajuste vaya a recaer inevitablemente sobre generaciones concretas.`;
   }
+  if (packetId === 'broad-agriculture-green-transition') {
+    const income = value('farm-income-trend', /39\.798,6 millones/);
+    const costs = value('farm-costs-and-subsidies', /Consumos intermedios: \+4,8 %/);
+    const cap = value('cap-environmental-requirements', /1\.107 millones/);
+    if (!income || !costs || !cap) return undefined;
+    return `En 2025, la segunda estimación del MAPA sitúa la renta agraria en 39.798,6 millones de euros (+8,9 % nominal frente a 2024) y la renta real por unidad de trabajo anual subió un 4,1 %. También aumentaron los consumos intermedios un 4,8 % y descendieron las subvenciones totales un 2,7 %. La PAC combina condicionalidad ambiental con eco-regímenes voluntarios dotados con aproximadamente 1.107 millones de euros al año; el 47,8 % de los fondos de desarrollo rural se reserva para objetivos ambientales. Estos promedios nacionales no describen cada explotación ni demuestran que las normas ambientales causaran pérdidas o mejoras.`;
+  }
   return undefined;
 };
 
@@ -434,24 +462,26 @@ export const broadDomainPacketsFor = (text) => {
   // let a mention of employment or security hijack that route accidentally.
   if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const direct = packets.filter((packet) => packet.matches.test(value));
+  const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|empleo p[uú]blico|sector p[uú]blico|plaza fija|calentar (?:la )?silla|no trabaja|automatiz|digitalizaci[oó]n/i.test(value);
   const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|piramide poblacional|ratio (?:de )?cotizantes/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit|quiebr|bancarrota/i.test(value);
-  const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n|cotizantes/i.test(value) && /insostenib|sostenib|arruin|arcas p[uú]blicas|deficit|gasto|financ|quiebr|bancarrota|ratio/i.test(value);
+  const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n|cotizantes/i.test(value) && /insostenib|sostenib|arruin|hunde|arcas p[uú]blicas|deficit|gasto|financ|quiebr|bancarrota|ratio|deuda|presupuesto/i.test(value);
   const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar|emancip|herencia|comprar casa|imposible/i.test(value);
-  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|poder de compra|poder adquisitivo|subir impuestos|subida de impuestos|progresividad en frio|deflactar|coste de vida)\b/i.test(value);
-  const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacional|menos iq|menor iq|menos inteligent|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
-  const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
-  const compoundSignal = /legalizaci[oó]n|regularizaci[oó]n|regularizar|amnistia migratoria|arraigo extraordinario/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
+  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
+  const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacion|sustitucion (?:poblacional|demografica)|menos iq|menor iq|cociente intelectual|menos inteligent|menor inteligenc|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
+  const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
+  const compoundSignal = /legaliz\w*|regulariz\w*|amnistia migratoria|arraigo extraordinario|papeles[\s\S]{0,60}(?:inmigr|migr|extranj)|(?:inmigr|migr|extranj)[\s\S]{0,60}papeles/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
   const packetById = (id) => packets.find((packet) => packet.id === id);
   // Strong multi-proposition routes are resolved before broad keyword matches.
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
   if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
+  if (agricultureTransitionSignal) return [packetById('broad-agriculture-green-transition')].filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
   if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
-  if (youthSignal) return [packetById('broad-youth-living-housing')].filter(Boolean);
   if (taxSignal && (/inflaci[oó]n|poder de compra|salari|baby boom|gasto p[uú]blico|pensiones?/.test(value) || /impuesto|irpf|iva|carga fiscal|presi[oó]n fiscal/.test(value))) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
+  if (youthSignal) return [packetById('broad-youth-living-housing')].filter(Boolean);
   if (/\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value) && securitySignal) return [packetById('broad-immigration-security')].filter(Boolean);
   if (/nuevos? ["“”«»]?espanoles/.test(value) && securitySignal) return [packetById('broad-security')].filter(Boolean);
   if (securitySignal) return [packetById('broad-security')].filter(Boolean);
@@ -806,7 +836,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-6-claims-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-7-claims-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   const shareableReply = shareableReplyForPacket(packet.id, plan.evidenceSummary.families);
@@ -821,7 +851,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   if (!familyPlans.length) return undefined;
   if (familyPlans.length === 1) return familyPlans[0];
 
-  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones', 'broad-tax-burden-purchasing-power': 'Fiscalidad y poder adquisitivo', 'broad-youth-living-housing': 'Condiciones de vida jóvenes', 'broad-security': 'Seguridad', 'broad-immigration': 'Migración', 'broad-emergency-election-powers': 'Límites legales y elecciones', 'broad-population-replacement': 'Demografía, capacidad y política' };
+  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones', 'broad-tax-burden-purchasing-power': 'Fiscalidad y poder adquisitivo', 'broad-youth-living-housing': 'Condiciones de vida jóvenes', 'broad-security': 'Seguridad', 'broad-immigration': 'Migración', 'broad-emergency-election-powers': 'Límites legales y elecciones', 'broad-population-replacement': 'Demografía, capacidad y política', 'broad-agriculture-green-transition': 'Agricultura y normas ambientales' };
   const families = familyPlans.map((plan) => {
     const entries = plan.evidenceSummary?.families || [];
     const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, replyPriority: family.replyPriority, finding: family.finding || '', status: family.status || evidenceStatusFor(family.data, family.missingDimensions), dataKind: family.dataKind, dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
@@ -897,7 +927,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     asOf: '2026-09-25',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-6-claims-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-7-claims-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   return plan;

@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import { metricCandidatesForQuery } from './metric-query-hints.mjs';
 import { answerPlanForBroadDomain, answerPlanForBroadDomains, broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
 const registry = createRequire(import.meta.url)('../../config/metric-registry.json');
 
@@ -248,5 +249,43 @@ for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos i
   assert((plan.evidenceSummary.families || []).length >= 2, `${text}: snapshot did not preserve independent families`);
   assert(plan.limitation, `${text}: snapshot omitted limitation`);
 }
+
+const claimVariants = [
+  ['La regularización de inmigrantes saturará la sanidad y disparará las ayudas sociales.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
+  ['Dar papeles a todos los inmigrantes colapsará los hospitales y disparará las prestaciones.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
+  ['Los empleados públicos con plaza fija no trabajan y sobran miles de puestos.', 'broad-public-administration'],
+  ['La Administración está llena de funcionarios intocables que calientan la silla.', 'broad-public-administration'],
+  ['El envejecimiento hará quebrar las pensiones y hundirá el presupuesto público.', 'broad-demography-pension-finance'],
+  ['La pirámide poblacional está invertida y el sistema de jubilación es insostenible.', 'broad-demography-pension-finance'],
+  ['Los salarios de los jóvenes no alcanzan para alquilar y dependen de vivir con sus padres.', 'broad-youth-living-housing'],
+  ['La juventud no puede emanciparse ni comprar vivienda sin heredar de su familia.', 'broad-youth-living-housing'],
+  ['Los nuevos "españoles" provocan acuchillamientos y hurtos a diario, pero nadie hace nada.', 'broad-security'],
+  ['La inmigración aumenta los robos y las agresiones en las calles.', 'broad-immigration-security'],
+  ['La sustitución demográfica permite manipular a una población con menos cociente intelectual.', 'broad-population-replacement'],
+  ['Quienes llegan tienen menor inteligencia y los políticos los manipulan para perpetuar el sistema.', 'broad-population-replacement'],
+  ['Hay que deflactar el IRPF y bajar el IVA porque la inflación se come los sueldos y habrá que pagar las pensiones del baby boom.', 'broad-tax-burden-purchasing-power'],
+  ['Cada vez pagamos más impuestos y el coste de vida obliga a los jóvenes a mantener las pensiones.', 'broad-tax-burden-purchasing-power'],
+];
+for (const [text, expectedPacketIds] of claimVariants) {
+  const actualPacketIds = broadDomainPacketsFor(text).map((packet) => packet.id).join(',');
+  assert(actualPacketIds === expectedPacketIds, `${text}: expected ${expectedPacketIds}, received ${actualPacketIds || 'no route'}`);
+}
+
+for (const text of ['El Pacto Verde está destruyendo la agricultura española.', 'Las normas ambientales de la PAC están hundiendo las explotaciones agrarias.']) {
+  const plan = answerPlanForBroadDomain(text);
+  assert(plan?.id === 'broad-agriculture-green-transition', `${text}: did not reach the reviewed agriculture/green-policy packet`);
+  assert(plan.headline.includes('no demuestran'), `${text}: headline overstated the causal evidence`);
+  assert(plan.shareableReply?.includes('39.798,6 millones') && plan.shareableReply.includes('subió un 4,1 %') && plan.shareableReply.includes('aumentaron los consumos intermedios un 4,8 %') && plan.shareableReply.includes('descendieron las subvenciones totales un 2,7 %'), `${text}: shareable answer omitted the MAPA income, cost, or subsidy figures`);
+  assert(plan.shareableReply.includes('1.107 millones') && plan.shareableReply.includes('no describen cada explotación'), `${text}: shareable answer omitted PAC context or its scope caveat`);
+  assert(plan.visuals?.some((visual) => visual.title.includes('Renta agraria real por unidad de trabajo') && visual.values.join(',') === '100,97.7,97.4,95.5,110.3,114.4,119.1'), `${text}: missing the reviewed real farm-income trend visual`);
+  const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'test-agriculture', result: plan }, text);
+  const expectedVisual = plan.visuals.find((visual) => visual.title.includes('Renta agraria real por unidad de trabajo'));
+  assert(publicResponse.result?.visual?.title === expectedVisual.title, `${text}: local public response dropped the reviewed chart`);
+  assert(publicResponse.result?.sources?.some((source) => source.id === expectedVisual.sourceId), `${text}: local public response dropped the chart source`);
+  assert(publicResponse.result?.shareableSourceIds?.length, `${text}: local public response dropped shareable source attribution`);
+  assert(plan.evidenceSummary?.families.some((family) => family.label === 'Efecto de las normas' && family.missingDimensions?.includes('contrafactual o diseño causal')), `${text}: did not disclose what is missing to test causality`);
+  assert(plan.sourceLinks?.some((item) => item.id === 'farm-income-mapa-2025') && plan.sourceLinks?.some((item) => item.id === 'cap-strategic-plan-summary'), `${text}: did not expose primary MAPA sources`);
+}
+assert(broadDomainPacketsFor('Las explotaciones agrarias necesitan relevo generacional.').map((packet) => packet.id).join(',') === 'broad-agriculture', 'non-environmental farming wording was captured by the narrower green-policy packet');
 
 console.log(`Open-ended coverage validation passed: ${cases.length} unseen formulations, ${rhetoricalCases.length} rhetorical variants, and broad snapshot routing.`);

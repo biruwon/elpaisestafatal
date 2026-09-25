@@ -1,6 +1,5 @@
 import { createServer, request as proxyRequest } from 'node:http';
-import { deterministicApiFallback } from '../src/lib/knowledge/deterministic-api-fallback.mjs';
-import { broadDomainPacketsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { localPublicCheckResponse } from './lib/local-public-check-response.mjs';
 
 const port = Number(process.env.LOCAL_GATEWAY_PORT || 4321);
 const astroPort = Number(process.env.LOCAL_ASTRO_PORT || 4322);
@@ -13,24 +12,6 @@ const forward = (request, response, targetPort, targetPath = request.url) => {
   });
   proxy.on('error', () => { if (!response.headersSent) response.writeHead(503); response.end(); });
   request.pipe(proxy);
-};
-
-const publicCheckResponse = (payload, claim = '') => {
-  if (payload?.status === 'processing' && payload.requestId) {
-    const fallback = broadDomainPacketsFor(claim).length ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
-    const preview = fallback?.status === 'complete'
-      ? publicCheckResponse({ ...fallback, requestId: payload.requestId }, claim)
-      : undefined;
-    return { state: 'processing', id: payload.requestId, claim, ...(preview ? { preview } : {}) };
-  }
-  const plan = payload?.status === 'complete' ? payload.result : undefined;
-  if (!plan || typeof plan !== 'object') return { state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: 'La comprobación local no pudo completarse.', retryable: true };
-  const criteria = (Array.isArray(plan.blocks) ? plan.blocks : []).filter((block) => block?.type === 'confirmed' || block?.type === 'data_finding').flatMap((block, blockIndex) => (Array.isArray(block.points) ? block.points : []).slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${blockIndex + 1}-${pointIndex + 1}`, label: pointIndex ? 'Contexto' : 'Dato respaldado', finding, sourceIds: Array.isArray(block.evidenceIds) ? block.evidenceIds : [] })));
-  const sources = (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
-  const composedReply = (Array.isArray(plan.blocks) ? plan.blocks : []).find((block) => block?.type === 'conversation_reply')?.text;
-  const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
-  const evidenceLevel = plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  return { state: evidenceLevel, id: payload.requestId || `local-${Date.now().toString(36)}`, result: { claim, interpretation: plan.interpretation, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter(Boolean), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary, evidenceLevel } };
 };
 
 const forwardCheck = (request, response, targetPath) => {
@@ -49,7 +30,7 @@ const forwardCheck = (request, response, targetPath) => {
       upstream.on('end', () => {
         try {
           const payload = JSON.parse(Buffer.concat(responseChunks).toString('utf8'));
-          const publicPayload = publicCheckResponse(payload, claim);
+          const publicPayload = localPublicCheckResponse(payload, claim);
           response.writeHead(upstream.statusCode === 202 ? 202 : 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
           response.end(JSON.stringify(publicPayload));
         } catch { response.writeHead(502); response.end(); }

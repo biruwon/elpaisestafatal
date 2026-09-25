@@ -63,8 +63,8 @@
 .checker-suggestions{margin-top:26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .checker-suggestions summary,.claim-result-details summary,.claim-result-sources summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:48px;cursor:pointer;list-style:none;font:600 .68rem/1.3 var(--mono);text-transform:uppercase}
 .checker-suggestions summary::-webkit-details-marker,.claim-result-details summary::-webkit-details-marker,.claim-result-sources summary::-webkit-details-marker{display:none}
-.checker-suggestions summary span{font:1.4rem var(--serif);transition:transform .2s ease}
-.checker-suggestions[open] summary span{transform:rotate(45deg)}
+.checker-suggestions summary span:last-child{font:1.4rem var(--serif);transition:transform .2s ease}
+.checker-suggestions[open] summary span:last-child{transform:rotate(45deg)}
 .checker-suggestions[open] .recent-checks,.checker-suggestions[open] .conversation-examples{padding-bottom:16px}
 .recent-checks>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0 8px}
 .recent-checks>div:last-child{display:flex;flex-wrap:wrap;gap:6px}
