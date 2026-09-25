@@ -1,8 +1,9 @@
 // Reviewed primary documents supplement criteria, never whole claim strings.
 // Each addition retains its own scope and does not resolve a different measurement.
-const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-09-07', role: 'primary' });
+const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-09-25', role: 'primary' });
 const regularizationLaw = source('regularization-law-2026', 'Real Decreto 316/2026 · arraigo extraordinario', 'BOE', 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-8284', '2026-04-15');
 const employmentLaw = source('public-employment-statute', 'Estatuto Básico del Empleado Público · artículos 20, 52, 95 y 96', 'BOE', 'https://www.boe.es/buscar/act.php?id=BOE-A-2015-11719', '2015-10-31');
+const epsap2026 = source('public-administration-epsap-2026', 'Estadística del Personal al Servicio de las Administraciones Públicas · enero de 2026', 'Ministerio para la Transformación Digital y de la Función Pública', 'https://digital.gob.es/content/dam/portal-mtdfp/funcion-publica/rcp/boletin/2026_01/revision-agosto-2026/EPSAP_Enero_2026%20.pdf');
 const youthHousing = source('cje-emancipation-2025', 'Observatorio de Emancipación 2025 · balance publicado en mayo de 2026', 'Consejo de la Juventud de España', 'https://www.cje.org/observatorio_2025/', '2026-05-26');
 const convictions = source('ine-convictions-2024', 'Estadística de Condenados: Adultos / Menores · 2024', 'INE', 'https://www.ine.es/dyngs/Prensa/ECAECM2024.htm', '2025-09-18');
 
@@ -12,6 +13,20 @@ const vat = source('aeat-vat-rates', 'Tipos impositivos de IVA · 2026', 'Agenci
 const updates = {
   'social-security-account': { replyPriority: 10 },
   'pension-finance-projection-series': { replyPriority: 9 },
+  'public-employment-definition': {
+    finding: 'El recuento oficial registra efectivos, no puestos prescindibles ni rendimiento individual; la estadística no publica un número de empleos que puedan eliminarse.',
+    fallbackData: ['3.071.725 efectivos (enero de 2026): 1.930.273 en el sector público de las comunidades autónomas (62,84 %), 594.898 en la administración local (19,37 %) y 546.554 en el sector público estatal (17,79 %)'],
+    sourceIds: [epsap2026.id], population: 'efectivos al servicio de las administraciones públicas incluidos en EPSAP', denominator: 'recuento de efectivos', unit: 'personas', dataKind: 'observed',
+  },
+  'public-service-performance': { sourceIds: [] },
+  'total-offences': { preferReviewedFallback: true },
+  'conventional-rate': { preferReviewedFallback: true },
+  'offence-trends': { preferReviewedFallback: true },
+  'group-causality': { preferReviewedFallback: true },
+  'spending-and-pensions': { preferReviewedFallback: true },
+  'family-co-residence': { preferReviewedFallback: true },
+  'youth-purchase-effort': { preferReviewedFallback: true },
+  'youth-rental-effort': { preferReviewedFallback: true },
   'regularization-measure': {
     finding: 'Existe una regularización extraordinaria: el Real Decreto 316/2026 incorpora el arraigo extraordinario. Exige presencia anterior a 2026, permanencia continuada y requisitos penales, además de una vía laboral, familiar o de vulnerabilidad. No concede automáticamente nacionalidad ni prestaciones.',
     fallbackData: ['Real Decreto 316/2026, publicado el 15-04-2026; disposición adicional 21.ª', 'Presencia en España anterior al 01-01-2026 y al menos 5 meses continuados antes de solicitar'],
@@ -40,6 +55,7 @@ const updates = {
     population: 'personas adultas condenadas', denominator: 'recuento nacional', unit: 'personas',
     missingDimensions: ['tiempos de respuesta policial y judicial por delito y territorio', 'denuncias, esclarecimientos y archivo con el mismo periodo'],
   },
+  'family-support-counterfactual': { sourceIds: [youthHousing.id] },
 };
 const additions = {
   'broad-public-administration': [
@@ -55,7 +71,7 @@ const additions = {
     { id: 'youth-rental-effort', replyPriority: 9, familyId: 'youth-housing-access', familyLabel: 'Vivienda', label: 'Alquiler y salario', finding: 'El alquiler de una vivienda completa absorbe casi todo el salario de referencia. Compartir vivienda o disponer de otros ingresos cambia el esfuerzo; el dato no mide emigraciones evitadas.', fallbackData: ['Alquiler medio: 1.176 €/mes; 98,7 % del salario joven de referencia (Observatorio 2025)'], sourceIds: [youthHousing.id], population: 'juventud de referencia del Observatorio', denominator: 'salario individual mensual', unit: 'euros al mes y % del salario', dataKind: 'snapshot' },
   ],
 };
-const sources = [regularizationLaw, employmentLaw, youthHousing, convictions, digitalServices, vat];
+const sources = [regularizationLaw, employmentLaw, epsap2026, youthHousing, convictions, digitalServices, vat];
 export const supplementReviewedPacket = (packet) => {
   const criteria = [...packet.criteria.map((criterion) => ({ ...criterion, ...(updates[criterion.id] || {}) })), ...(additions[packet.id] || [])];
   const ids = new Set(criteria.flatMap((criterion) => criterion.sourceIds || []));

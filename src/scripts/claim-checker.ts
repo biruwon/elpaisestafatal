@@ -2,13 +2,13 @@ import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-cont
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 
 type CheckResult = {
-  claim: string; reply: string; answer: string; shareableReply?: string; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
+  claim: string; reply: string; answer: string; shareableReply?: string; shareableSourceIds?: string[]; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
   scope: { geography?: string; period?: string; checkedAt?: string };
   criteria?: Array<{ id: string; label: string; finding: string }>;
   arguments?: Array<{ id: string; claim: string; verdict: string; finding: string; evidenceIds: string[]; sourceIds: string[]; limitations: string[] }>;
   coverageSummary?: { total: number; supported: number; contradicted: number; mixed: number; insufficient: number; notVerifiable: number };
   sources: Array<{ id: string; title: string; publisher?: string; url: string; publishedAt?: string }>;
-  assessment?: string; canonicalHref?: string; visual?: { type?: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[] }; scorecard?: { title: string; baselinePeriod: string; comparisonPeriod: string; snapshotDate?: string; scope?: string; explanation?: string; items: Array<{ label: string; unit: string; baseline?: { value: string; period: string }; comparison?: { value: string; period: string }; change?: string; direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable'; caveat?: string; sources: Array<{ title: string; publisher?: string; url: string; publishedAt?: string }> }> }; evidenceSummary?: { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: EvidenceFamily[]; missingDimensions?: string[]; fallbackReason?: string };
+  assessment?: string; canonicalHref?: string; visual?: { type?: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds?: string[]; sourceId?: string }; scorecard?: { title: string; baselinePeriod: string; comparisonPeriod: string; snapshotDate?: string; scope?: string; explanation?: string; items: Array<{ label: string; unit: string; baseline?: { value: string; period: string }; comparison?: { value: string; period: string }; change?: string; direction: 'improved' | 'worsened' | 'roughly_unchanged' | 'unavailable'; caveat?: string; sources: Array<{ title: string; publisher?: string; url: string; publishedAt?: string }> }> }; evidenceSummary?: { mode: 'dynamic' | 'snapshot' | 'mixed' | 'none'; families: EvidenceFamily[]; missingDimensions?: string[]; fallbackReason?: string };
 };
 type EvidenceStatus = 'available' | 'partial' | 'missing';
 type EvidenceDimensions = { subject?: string; population?: string; period?: string; geography?: string; denominator?: string; unit?: string; causalRequirement?: string };
@@ -161,28 +161,6 @@ const answerLeadFor = (answer: string): string => {
   return lead || 'La evidencia disponible no permite una conclusión completa.';
 };
 const renderReplyText = (text: string): string => text.split(/\n{2,}/).map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`).filter((paragraph) => paragraph !== '<p></p>').join('');
-const parseSeries = (value: string): { start: string; end: string; startNumber: number; endNumber: number; years: string[] } | undefined => {
-  const match = value.match(/:\s*(-?[\d.]+(?:,\d+)?)[^→]+→\s*(-?[\d.]+(?:,\d+)?)/);
-  if (!match) return undefined;
-  const toNumber = (token: string): number => Number(token.replace(/\./g, '').replace(',', '.'));
-  const years = [...value.matchAll(/\b(?:19|20|21)\d{2}(?:-\d{2})?\b/g)].map((item) => item[0]);
-  const startNumber = toNumber(match[1]);
-  const endNumber = toNumber(match[2]);
-  if (!Number.isFinite(startNumber) || !Number.isFinite(endNumber)) return undefined;
-  return { start: match[1], end: match[2], startNumber, endNumber, years: [...new Set(years)].slice(0, 2) };
-};
-const periodLabel = (period: string): string => {
-  const match = period.match(/^(\d{4})-(\d{2})$/);
-  if (!match) return period;
-  const month = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][Number(match[2]) - 1];
-  return month ? `${month} ${match[1]}` : period;
-};
-const demographicSeriesLabel = (value: string, fallback: string): string => {
-  if (/dependencia/i.test(fallback)) return 'Dependencia de mayores';
-  if (/65 años o más/i.test(value)) return 'Población de 65 años o más';
-  if (/20 a 64/i.test(value)) return 'Población de 20 a 64 años';
-  return fallback;
-};
 const renderClaimMap = (groups: EvidenceFamily[]): string => {
   if (groups.length < 2) return '';
   const conclusion = groups.every((group) => group.status === 'available')
@@ -198,39 +176,6 @@ const renderClaimMap = (groups: EvidenceFamily[]): string => {
   }).join('');
   return `<section class="result-section result-claim-map" aria-labelledby="claim-map-title"><div class="result-section-heading"><span class="eyebrow">La frase contiene varias preguntas</span><h3 id="claim-map-title">${escapeHtml(conclusion)}</h3></div><div class="claim-map-grid">${cards}</div></section>`;
 };
-const renderDemographicVisual = (groups: EvidenceFamily[]): string => {
-  const demographic = groups.find((group) => /demograf/i.test(group.familyLabel || group.label));
-  if (!demographic) return '';
-  const series = (demographic.criteria || []).flatMap((criterion) => (criterion.data || []).map((value) => {
-    const parsed = parseSeries(value);
-    if (!parsed) return undefined;
-    return { ...parsed, label: demographicSeriesLabel(value, criterion.label), unit: criterion.dimensions?.unit || '' };
-  })).filter((item): item is NonNullable<typeof item> => Boolean(item)).filter((item, index, all) => all.findIndex((candidate) => candidate.label === item.label) === index).slice(0, 3);
-  if (series.length < 2) return '';
-  const max = Math.max(...series.flatMap((item) => [item.startNumber, item.endNumber]));
-  const rows = series.map((item) => {
-    const startWidth = Math.max(4, Math.round((item.startNumber / max) * 100));
-    const endWidth = Math.max(4, Math.round((item.endNumber / max) * 100));
-    const years = item.years.length === 2 ? `${item.years[0]} → ${item.years[1]}` : '';
-    return `<div class="demography-row"><div class="demography-row-heading"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(years)}</span></div><div class="demography-track"><span class="demography-bar demography-bar-start" style="--bar-width:${startWidth}%"></span><span class="demography-bar demography-bar-end" style="--bar-width:${endWidth}%"></span></div><div class="demography-values"><span>${escapeHtml(item.start)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</span><strong>→ ${escapeHtml(item.end)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</strong></div></div>`;
-  }).join('');
-  const years = series.find((item) => item.years.length === 2)?.years || [];
-  return `<section class="result-visual result-demography-visual" aria-labelledby="demography-visual-title"><div class="result-section-heading"><span class="eyebrow">La demografía, en una mirada</span><h3 id="demography-visual-title">Más mayores; menos población en edad de trabajar</h3></div><div class="demography-legend"><span><i class="demography-dot demography-dot-start"></i>${escapeHtml(years[0] || 'Inicio')}</span><span><i class="demography-dot demography-dot-end"></i>${escapeHtml(years[1] || 'Final')}</span></div><div class="demography-chart" role="img" aria-label="Evolución de los principales grupos de edad proyectados y de la dependencia demográfica">${rows}</div><p class="result-visual-interpretation">Esto sí muestra presión demográfica. No es, por sí solo, el balance de ingresos y gastos de las pensiones.</p><p class="result-visual-note">Las proyecciones son un escenario demográfico, no una predicción financiera.</p></section>`;
-};
-const renderFamilyTrendCharts = (groups: EvidenceFamily[]): string => {
-  const cards = groups.map((group) => {
-    const series = (group.criteria || []).flatMap((criterion) => (criterion.data || []).map((value) => {
-      const parsed = parseSeries(value);
-      const unit = criterion.dimensions?.unit || (/personas beneficiarias del IMV/i.test(criterion.label) ? 'personas' : '');
-      return parsed ? { ...parsed, label: criterion.label, unit } : undefined;
-    })).filter((item): item is NonNullable<typeof item> => Boolean(item)).filter((item) => !item.unit.includes(';')).slice(0, 4);
-    if (!series.length) return '';
-    const max = Math.max(...series.flatMap((item) => [item.startNumber, item.endNumber]), 1);
-    const rows = series.map((item) => { const startWidth = Math.max(3, Math.round(item.startNumber / max * 100)); const endWidth = Math.max(3, Math.round(item.endNumber / max * 100)); const years = item.years.length === 2 ? `${periodLabel(item.years[0])} → ${periodLabel(item.years[1])}` : ''; return `<div class="family-trend-row"><div class="family-trend-heading"><strong>${escapeHtml(publicMetricLabel(item.label))}</strong><span>${escapeHtml(years)}</span></div><div class="family-trend-bars" aria-hidden="true"><i style="--bar-width:${startWidth}%"></i><b style="--bar-width:${endWidth}%"></b></div><div class="family-trend-values"><span>${escapeHtml(item.start)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</span><strong>${escapeHtml(item.end)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</strong></div></div>`; }).join('');
-    return `<article class="family-trend-card"><span class="eyebrow">Evolución observada</span><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><div class="family-trend-legend"><span><i></i>Inicio</span><span><b></b>Final</span></div>${rows}</article>`;
-  }).filter(Boolean).join('');
-  return cards ? `<section class="result-section result-family-trends" aria-labelledby="family-trends-title"><div class="result-section-heading"><span class="eyebrow">Evolución de los indicadores</span><h3 id="family-trends-title">Qué cambia en las series comparables</h3><p>Estas gráficas solo reúnen valores con la misma medida y población. No representan causalidad.</p></div><div class="family-trends-grid">${cards}</div></section>` : '';
-};
 const loadingStagesFor = (text: string): string[] => {
   const value = text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const stages = ['Separando las afirmaciones'];
@@ -245,11 +190,31 @@ const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckR
   if (!entries.length) return '';
   const unit = visual.unit || 'valor';
   const title = visual.title || 'Datos utilizados';
-  const sourceText = source ? `Fuente: ${source.title}${source.publishedAt ? ` · ${source.publishedAt}` : ''}` : 'Fuente indicada en el detalle de la respuesta';
+  const sourceText = source ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">Fuente: ${escapeHtml(source.title)}${source.publishedAt ? ` · ${escapeHtml(source.publishedAt)}` : ''} ↗</a>` : 'Fuente indicada en el detalle de la respuesta';
   const table = entries.map((entry) => `<tr><th scope="row">${escapeHtml(entry.label)}</th><td>${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</td></tr>`).join('');
-  if (entries.length === 2 || visual.type === 'comparison') {
+  if (visual.type === 'comparison') {
     const cards = entries.map((entry) => `<div class="result-comparison-card"><span>${escapeHtml(entry.label)}</span><strong>${escapeHtml(formatNumber(entry.value))}</strong><small>${escapeHtml(unit)}</small></div>`).join('');
-    return `<section class="result-visual result-comparison" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Comparación de datos</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><div class="result-comparison-grid">${cards}</div><p class="result-visual-note">${escapeHtml(sourceText)}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+    return `<section class="result-visual result-comparison" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Comparación de datos</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><div class="result-comparison-grid">${cards}</div><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+  }
+  if (visual.type === 'bar') {
+    const minimum = Math.min(0, ...entries.map((entry) => entry.value));
+    const maximum = Math.max(0, ...entries.map((entry) => entry.value));
+    const span = maximum - minimum || 1;
+    const padding = span * .08;
+    const domainMin = minimum < 0 ? minimum - padding : 0;
+    const domainMax = maximum > 0 ? maximum + padding : 0;
+    const domainSpan = domainMax - domainMin || 1;
+    const zero = ((0 - domainMin) / domainSpan) * 100;
+    const rows = entries.map((entry) => {
+      const position = ((entry.value - domainMin) / domainSpan) * 100;
+      const left = Math.min(zero, position);
+      const width = Math.max(Math.abs(position - zero), .6);
+      const sign = entry.value < 0 ? 'is-negative' : 'is-positive';
+      return `<div class="result-bar-row"><div class="result-bar-heading"><strong>${escapeHtml(entry.label)}</strong><span>${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</span></div><div class="result-bar-track" aria-hidden="true"><i class="result-bar-zero" style="--zero-position:${zero}%"></i><i class="result-bar-fill ${sign}" style="--bar-left:${left}%;--bar-width:${width}%"></i></div></div>`;
+    }).join('');
+    const axisStart = formatNumber(domainMin);
+    const axisEnd = formatNumber(domainMax);
+    return `<section class="result-visual result-horizontal-visual" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><div class="result-bar-chart" role="group" aria-label="${escapeHtml(title)}">${rows}<div class="result-bar-axis" aria-hidden="true"><span>${escapeHtml(axisStart)} ${escapeHtml(unit)}</span><span>${escapeHtml(axisEnd)} ${escapeHtml(unit)}</span></div></div><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
   }
   const width = 720; const height = 250; const left = 66; const right = 18; const top = 22; const bottom = 52; const plotWidth = width - left - right; const plotHeight = height - top - bottom;
   const min = Math.min(...entries.map((entry) => entry.value)); const max = Math.max(...entries.map((entry) => entry.value)); const padding = max === min ? Math.max(Math.abs(max) * .12, 1) : (max - min) * .1; const domainMin = min - padding; const domainMax = max + padding;
@@ -257,14 +222,12 @@ const renderVisual = (visual: NonNullable<CheckResult['visual']>, source: CheckR
   const y = (value: number) => top + ((domainMax - value) / (domainMax - domainMin)) * plotHeight;
   const ticks = [0, .5, 1].map((fraction) => { const value = domainMax - (domainMax - domainMin) * fraction; const tickY = top + plotHeight * fraction; return `<line class="result-chart-grid" x1="${left}" y1="${tickY}" x2="${width - right}" y2="${tickY}"></line><text class="result-chart-label" x="${left - 10}" y="${tickY + 4}" text-anchor="end">${escapeHtml(formatNumber(value))}</text>`; }).join('');
   const xLabels = entries.map((entry, index) => `<text class="result-chart-label" x="${x(index)}" y="${height - 16}" text-anchor="middle">${escapeHtml(entry.label.length > 16 ? `${entry.label.slice(0, 15)}…` : entry.label)}</text>`).join('');
-  const chart = visual.type === 'bar' ? entries.map((entry, index) => { const barWidth = Math.min(70, (plotWidth / entries.length) * .62); const barX = left + ((index + .5) / entries.length) * plotWidth - barWidth / 2; const barY = y(entry.value); return `<rect class="result-chart-bar" x="${barX}" y="${barY}" width="${barWidth}" height="${Math.max(2, top + plotHeight - barY)}><title>${escapeHtml(entry.label)}: ${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</title></rect>`; }).join('') : `<polyline class="result-chart-line" points="${entries.map((entry, index) => `${x(index)},${y(entry.value)}`).join(' ')}"></polyline>${entries.map((entry, index) => `<circle class="result-chart-point" cx="${x(index)}" cy="${y(entry.value)}" r="5"><title>${escapeHtml(entry.label)}: ${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</title></circle>`).join('')}`;
+  const chart = `<polyline class="result-chart-line" points="${entries.map((entry, index) => `${x(index)},${y(entry.value)}`).join(' ')}"></polyline>${entries.map((entry, index) => `<circle class="result-chart-point" cx="${x(index)}" cy="${y(entry.value)}" r="5"><title>${escapeHtml(entry.label)}: ${escapeHtml(formatNumber(entry.value))} ${escapeHtml(unit)}</title></circle>`).join('')}`;
   const trend = entries.length > 1 ? entries[entries.length - 1].value - entries[0].value : 0;
-  const interpretation = visual.type === 'bar'
-    ? `La gráfica compara ${entries.length} categorías en la misma medida; no representa una evolución temporal.`
-    : entries.length > 1
+  const interpretation = entries.length > 1
       ? `La serie pasa de ${formatNumber(entries[0].value)} a ${formatNumber(entries[entries.length - 1].value)} ${unit}${trend === 0 ? '.' : trend > 0 ? ', un aumento en el periodo mostrado.' : ', un descenso en el periodo mostrado.'}`
       : `El valor observado es ${formatNumber(entries[0].value)} ${unit}.`;
-  return `<section class="result-visual" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><svg class="result-chart" role="img" aria-label="${escapeHtml(title)}" viewBox="0 0 ${width} ${height}">${ticks}${chart}${xLabels}</svg><p class="result-visual-interpretation">${escapeHtml(interpretation)}</p><p class="result-visual-note">${escapeHtml(sourceText)}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
+  return `<section class="result-visual" aria-labelledby="result-visual-title"><div class="result-section-heading"><span class="eyebrow">Datos utilizados</span><h3 id="result-visual-title">${escapeHtml(title)}</h3></div><svg class="result-chart" role="img" aria-label="${escapeHtml(title)}" viewBox="0 ${width} ${height}">${ticks}${chart}${xLabels}</svg><p class="result-visual-interpretation">${escapeHtml(interpretation)}</p><p class="result-visual-note">${sourceText}${scope.period ? ` · Periodo: ${escapeHtml(scope.period)}` : ''}</p><details class="result-data-table"><summary>Ver valores exactos</summary><table><thead><tr><th>Grupo o periodo</th><th>Valor</th></tr></thead><tbody>${table}</tbody></table></details></section>`;
 };
 const renderScorecard = (scorecard: NonNullable<CheckResult['scorecard']>): string => {
   const improved = scorecard.items.filter((item) => item.direction === 'improved').length;
@@ -284,7 +247,7 @@ const renderResultOverview = (groups: EvidenceFamily[], state: string): string =
   const statusClass = (status?: EvidenceStatus): string => status === 'available' ? 'is-available' : status === 'partial' ? 'is-partial' : 'is-missing';
   return `<nav class="result-overview" aria-label="Resumen de la comprobación"><div class="result-overview-heading"><span class="eyebrow">Resumen de la comprobación</span><strong>${escapeHtml(state === 'limited' ? 'La evidencia es parcial' : state === 'insufficient' ? 'Faltan mediciones clave' : 'Hay evidencia compatible')}</strong></div><div class="result-overview-links">${groups.map((group, index) => `<a class="result-overview-link ${statusClass(group.status)}" href="#evidence-family-${index + 1}"><span>${escapeHtml(statusLabel(group.status))}</span><strong>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</strong><span aria-hidden="true">↓</span></a>`).join('')}</div></nav>`;
 };
-const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>): void => {
+const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, phase?: 'provisional' | 'final'): void => {
   if (!result) return; const item = response.result; setMode(true);
   const stateLabel = response.state === 'supported' ? 'Respuesta con fuentes' : response.state === 'limited' ? 'Evidencia limitada' : 'Evidencia insuficiente';
   const assessment = `<span class="claim-assessment claim-assessment-${response.state}">${escapeHtml(stateLabel)}</span>`;
@@ -306,23 +269,26 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
     ? `<section class="result-section result-arguments"><div class="result-section-heading"><span class="eyebrow">Partes de la afirmación</span><h3>Qué responde la evidencia</h3></div><div class="result-arguments-grid">${argumentCards}</div></section>`
     : `<details class="claim-arguments result-details"><summary>Ver argumento comprobado<span aria-hidden="true">＋</span></summary>${argumentCards}</details>` : '';
   const criteria = item.criteria?.length ? `<details class="result-details"><summary>Cómo se ha comprobado<span aria-hidden="true">＋</span></summary><div>${item.criteria.map((criterion) => `<p><strong>${escapeHtml(criterion.label)}:</strong> ${escapeHtml(criterion.finding)}</p>`).join('')}</div></details>` : '';
-  const visual = item.visual && item.visual.labels.length === item.visual.values.length ? renderVisual(item.visual, item.sources[0], item.scope) : '';
+  const visualSource = item.visual?.sourceId ? item.sources.find((source) => source.id === item.visual?.sourceId) : item.sources[0];
+  const visual = item.visual && item.visual.labels.length === item.visual.values.length ? renderVisual(item.visual, visualSource, item.scope) : '';
   const sources = item.sources.length && evidenceGroups.length < 2 ? `<section class="claim-sources result-sources"><div class="result-section-heading"><span class="eyebrow">Trazabilidad</span><h3>Fuentes y fecha</h3></div>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${source.publishedAt}` : ''} ↗</span></a>`).join('')}</section>` : '';
   const isShareableResult = Boolean(item.shareableReply?.trim());
   const answer = item.shareableReply?.trim() || item.answer.trim() || item.reply;
   const responseText = answer || 'No hay una respuesta redactada para esta comprobación.';
+  const shareableSources = [...new Map((item.shareableSourceIds || []).map((id) => item.sources.find((source) => source.id === id)).filter((source): source is CheckResult['sources'][number] => Boolean(source)).map((source) => [source.url, source])).values()].slice(0, 5);
+  const shareableSourceNav = shareableSources.length ? `<nav class="claim-share-sources" aria-label="Fuentes principales"><span class="eyebrow">Fuentes principales</span>${shareableSources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</nav>` : '';
+  const phaseStatus = phase === 'provisional'
+    ? '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta provisional · la estamos contrastando; puede cambiar y aún no se puede copiar.</p>'
+    : phase === 'final'
+      ? '<p class="claim-enrichment-status is-final" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta final · la revisión de fuentes ha terminado.</p>'
+      : '';
   const claimMap = renderClaimMap(evidenceGroups);
-  const demographicVisual = renderDemographicVisual(evidenceGroups);
-  const chartGroups = isShareableResult
-    ? evidenceGroups.map((group) => ({ ...group, criteria: (group.criteria || []).filter((criterion) => /personas beneficiarias del IMV/i.test(criterion.label)) })).filter((group) => group.criteria?.length)
-    : evidenceGroups;
-  const familyTrendCharts = renderFamilyTrendCharts(chartGroups);
   const shareLead = answerLeadFor(responseText);
-  const resultHeading = isShareableResult ? 'Proceso amplio; no se prueban el colapso ni la causalidad' : item.keyFact || stateConclusion(response.state, shareLead);
+  const resultHeading = item.keyFact || stateConclusion(response.state, shareLead);
   const evidenceExplorer = isShareableResult
-    ? `<details class="result-details result-evidence-explorer"><summary>Explorar datos, límites y fuentes<span aria-hidden="true">＋</span></summary>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${claimMap}${compoundKnown}${demographicVisual}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}</details>`
-    : `${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${demographicVisual}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}`;
-  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${isShareableResult ? familyTrendCharts : renderResultOverview(evidenceGroups, response.state)}${isShareableResult ? renderResultOverview(evidenceGroups, response.state) : familyTrendCharts}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+    ? `<details class="result-details result-evidence-explorer"><summary>Explorar datos, límites y fuentes<span aria-hidden="true">＋</span></summary>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${claimMap}${compoundKnown}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}</details>`
+    : `${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}`;
+  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${visual}${renderResultOverview(evidenceGroups, response.state)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
@@ -356,9 +322,8 @@ const setLoading = (text: string): void => {
 };
 const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'processing' }>): void => {
   if (!response.preview) return;
-  renderResult(response.preview);
+  renderResult(response.preview, 'provisional');
   const article = result?.querySelector<HTMLElement>('.claim-result');
-  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta provisional · contrastamos si hay datos o fuentes adicionales; la conclusión puede cambiar al terminar.</p>');
   const copyButton = article?.querySelector<HTMLButtonElement>('[data-copy-answer]');
   if (copyButton) { copyButton.disabled = true; copyButton.textContent = 'Esperando respuesta final'; }
 };
@@ -404,7 +369,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       }
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
     }
-    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response); }
+    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
   } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) { finishLoading(); return; } finishLoading(); renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };
 

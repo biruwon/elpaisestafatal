@@ -116,6 +116,10 @@ const scorecardFromPlan = (plan: AnswerPlan, sources: CheckSource[]): CheckScore
   };
 };
 const visualFromPlan = (plan: AnswerPlan): CheckVisual | undefined => {
+  const reviewed = plan.visual;
+  if (reviewed && reviewed.labels.length && reviewed.labels.length === reviewed.values.length && reviewed.values.every(Number.isFinite)) {
+    return { type: reviewed.type, title: reviewed.title, unit: reviewed.unit, labels: reviewed.labels, values: reviewed.values, evidenceIds: reviewed.evidenceIds, sourceId: reviewed.sourceId };
+  }
   const series = plan.warehouseSeries;
   if (!series || !series.labels.length || series.labels.length !== series.values.length || series.values.some((value) => !Number.isFinite(value))) return undefined;
   return { type: series.labels.length === 2 ? 'comparison' : 'bar', title: series.label, unit: series.unit, labels: series.labels, values: series.values, evidenceIds: plan.evidenceIds };
@@ -171,7 +175,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     : 'La tesis se evalúa mejor separando sus argumentos y comparando resultados concretos con un periodo y criterios definidos.';
   const scorecard = scorecardFromPlan(plan, sources);
   const reply = plan.shareableReply?.trim() || replyFromPlan(plan);
-  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, visual: visualFromPlan(plan), scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
+  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, shareableSourceIds: plan.shareableSourceIds, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, visual: visualFromPlan(plan), scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
   const state = argumentsList.length && argumentEvidence === 0
     ? 'insufficient'

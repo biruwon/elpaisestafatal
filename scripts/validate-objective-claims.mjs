@@ -10,6 +10,11 @@ const expected = ['broad-compound-claim', 'broad-public-administration', 'broad-
 for (const [index, text] of claims.entries()) {
   const plan = answerPlanForBroadDomains(text);
   assert.equal(plan?.id, expected[index], `Exact claim ${index + 1} routed to the wrong topic`);
+  assert(plan.shareableReply?.trim(), `Exact claim ${index + 1} needs a concise, reusable answer`);
+  assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Exact claim ${index + 1} answer is too long to scan`);
+  assert(plan.shareableSourceIds?.length, `Exact claim ${index + 1} needs primary sources near the answer`);
+  assert(plan.visual?.labels?.length && plan.visual.labels.length === plan.visual.values.length, `Exact claim ${index + 1} needs a comparable, labeled visual`);
+  assert(plan.visual.sourceId && plan.sourceLinks.some((source) => source.id === plan.visual.sourceId), `Exact claim ${index + 1} visual must identify its source`);
   const replies = plan.blocks.filter((block) => block.type === 'conversation_reply');
   assert.equal(replies.length, 1);
   const labels = [...new Set(plan.evidenceSummary.families.map((family) => family.familyLabel))];

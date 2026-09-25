@@ -8,6 +8,7 @@ const string = (value) => typeof value === 'string' ? value : undefined;
 const strings = (value) => Array.isArray(value) && value.every((item) => typeof item === 'string') ? value : undefined;
 const evidenceStatuses = new Set(['available', 'partial', 'missing']);
 const evidenceDataKinds = new Set(['observed', 'projected', 'snapshot', 'context']);
+const visualTypes = new Set(['line', 'bar', 'comparison', 'money-flow']);
 const validDimensions = (value) => !value || (typeof value === 'object' && !Array.isArray(value) && ['subject', 'population', 'period', 'geography', 'denominator', 'unit', 'causalRequirement'].every((key) => value[key] === undefined || typeof value[key] === 'string'));
 const validEvidenceSummary = (value) => !value || (typeof value === 'object'
   && ['dynamic', 'snapshot', 'mixed', 'none'].includes(value.mode)
@@ -21,6 +22,14 @@ const validEvidenceSummary = (value) => !value || (typeof value === 'object'
     && (!family.criteria || Array.isArray(family.criteria) && family.criteria.every((criterion) => criterion && typeof criterion.id === 'string' && (criterion.criterionId === undefined || typeof criterion.criterionId === 'string') && typeof criterion.label === 'string' && typeof criterion.finding === 'string' && (!criterion.status || evidenceStatuses.has(criterion.status)) && (!criterion.dataKind || evidenceDataKinds.has(criterion.dataKind)) && validDimensions(criterion.dimensions) && (!criterion.evidenceIds || Array.isArray(criterion.evidenceIds)) && (!criterion.sourceIds || Array.isArray(criterion.sourceIds)) && (!criterion.data || strings(criterion.data)) && (!criterion.missingDimensions || strings(criterion.missingDimensions)))))
   && (!value.missingDimensions || strings(value.missingDimensions))
   && (!value.fallbackReason || typeof value.fallbackReason === 'string'));
+const validVisual = (value, sourceIds) => !value || (typeof value === 'object'
+  && visualTypes.has(value.type)
+  && Array.isArray(value.labels) && value.labels.length > 0 && value.labels.every((label) => typeof label === 'string')
+  && Array.isArray(value.values) && value.values.length === value.labels.length && value.values.every((item) => Number.isFinite(item))
+  && Array.isArray(value.evidenceIds) && value.evidenceIds.every((id) => typeof id === 'string')
+  && (value.sourceId === undefined || typeof value.sourceId === 'string' && sourceIds.includes(value.sourceId))
+  && (value.title === undefined || typeof value.title === 'string')
+  && (value.unit === undefined || typeof value.unit === 'string'));
 
 const isReference = (value) => Boolean(value && typeof value === 'object'
   && kinds.has(value.kind)
@@ -64,7 +73,10 @@ const cleanPlan = (value) => {
     || !Array.isArray(value.sourceIds) || typeof value.knowledgeVersion !== 'string'
     || (value.evidenceLevel !== undefined && !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel))
     || !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel)
-    || !validEvidenceSummary(value.evidenceSummary)) return undefined;
+    || !validEvidenceSummary(value.evidenceSummary)
+    || (value.shareableReply !== undefined && typeof value.shareableReply !== 'string')
+    || (value.shareableSourceIds !== undefined && (!strings(value.shareableSourceIds) || value.shareableSourceIds.some((id) => !value.sourceIds.includes(id))))
+    || !validVisual(value.visual, value.sourceIds)) return undefined;
   return value;
 };
 

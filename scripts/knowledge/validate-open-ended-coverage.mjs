@@ -42,8 +42,8 @@ const publicAdministration = answerPlanForBroadDomain('Administración pública 
 assert(publicAdministration?.id === 'broad-public-administration', 'public-administration wording was routed to an unrelated broad packet');
 assert(publicAdministration?.summary.includes('No existe una cifra oficial'), 'public-administration packet did not answer the request for a count');
 assert(publicAdministration?.summary.includes('obligaciones de rendimiento'), 'public-administration packet omitted the distinction between tenure and accountability');
-assert(publicAdministration?.evidenceSummary?.families.some((family) => family.data?.some((item) => item.includes('empleados públicos'))), 'public-administration packet did not expose concrete staffing data');
-assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('3.107.195'), 'public-administration response omitted the available staffing count');
+assert(publicAdministration?.evidenceSummary?.families.some((family) => family.data?.some((item) => item.includes('3.071.725 efectivos'))), 'public-administration packet did not expose the reviewed January 2026 staffing data');
+assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('3.071.725'), 'public-administration response omitted the reviewed staffing count');
 assert(publicAdministration?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('Desempeño.'), 'public-administration response did not point to its missing performance measurements');
 assert(publicAdministration?.blocks.some((block) => block.type === 'evidence_gap'), 'public-administration fallback did not declare its missing data');
 
@@ -106,8 +106,8 @@ assert(demographicPensionWithSeries?.evidenceSummary?.families.some((family) => 
 assert(demographicPensionWithSeries?.limitation.includes('2015–2025'), 'demography-pension series response did not describe its observed period');
 assert(!seriesMissing.includes('serie temporal de dependencia') && !seriesMissing.includes('saldo presupuestario del periodo') && !seriesMissing.includes('serie temporal de deuda'), 'demography-pension series left resolved dimensions in the pending list');
 assert(!seriesMissing.includes('relación entre cotizantes y pensionistas') && !seriesMissing.includes('saldo anual observado del sistema de pensiones') && !seriesMissing.includes('gasto contributivo neto observado'), 'demography-pension series retained gaps resolved by the official account or projection');
-assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.data?.some((item) => item.includes('Serie localizada')), 'demography-pension evidence did not visibly summarize the available series');
-assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.dimensions?.period === '2015–2025', 'demography-pension evidence exposed only the first observation period');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.data?.some((item) => item.includes('31,2') && item.includes('2025')), 'demography-pension evidence did not visibly retain the reviewed demographic series');
+assert(demographicPensionWithSeries?.evidenceSummary?.families.find((family) => family.familyLabel === 'Demografía')?.dimensions?.period === '2020–2025', 'demography-pension evidence omitted the reviewed dependency-ratio period');
 const demographicPensionWithExpandedEvidence = answerPlanForBroadDomain('Árbol demográfico completamente invertido: el sistema de pensiones es insostenible y arruina las arcas públicas', {
   observations: [
     { id: 'projected-older-2022', metricId: 'projected_population_65_plus', value: 9526631, unit: 'Person', period: '2022' },
@@ -161,7 +161,7 @@ assert(youthLivingWithData?.evidenceSummary?.families.some((family) => family.la
 const securityClaim = 'La seguridad en España se ha ido a la mierda. Los nuevos españoles son los que acuchillan, roban, violan y pegan palizas, pero nadie hace nada porque no hay policía ni justicia, con tanto wokismo.';
 const securityPlan = answerPlanForBroadDomain(securityClaim);
 assert(broadDomainPacketsFor(securityClaim).map((packet) => packet.id).join(',') === 'broad-security', 'security claim inherited unrelated broad packets');
-assert(securityPlan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('2,47'), 'security response omitted the available offence count');
+assert(securityPlan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.217.476') && securityPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('+0,5 %'), 'security response omitted the reviewed January–June 2026 offence count');
 assert(securityPlan?.evidenceSummary?.families.some((family) => family.label === 'Grupo y causalidad' && family.missingDimensions?.includes('diseño causal')), 'security response did not preserve the group-causality gap');
 assert(securityPlan?.evidenceSummary?.families.some((family) => family.label === '“Wokismo”'), 'security response treated the loaded political label as an evidence-free conclusion');
 

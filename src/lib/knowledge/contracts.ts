@@ -138,6 +138,7 @@ export type AnswerPlan = {
   headline: string;
   summary: string;
   shareableReply?: string;
+  shareableSourceIds?: string[];
   coverage: CoverageStatus;
   claimType: ClaimType;
   blocks: AnswerBlock[];
@@ -164,6 +165,7 @@ export type AnswerPlan = {
     alternatives?: Array<{ normalizedClaim: string; interpretation: string; evidenceDifference: 'same' | 'material'; confidence: number }>;
   };
   warehouseSeries?: { labels: string[]; values: number[]; label: string; unit: string };
+  visual?: { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string };
   researchPlan?: ResearchPlan;
   evidenceSummary?: {
     mode: 'dynamic' | 'snapshot' | 'mixed' | 'none';
