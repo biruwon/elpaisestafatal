@@ -22,7 +22,6 @@ const updates = {
   'total-offences': { preferReviewedFallback: true },
   'conventional-rate': { preferReviewedFallback: true },
   'offence-trends': { preferReviewedFallback: true },
-  'group-causality': { preferReviewedFallback: true },
   'spending-and-pensions': { preferReviewedFallback: true },
   'family-co-residence': { preferReviewedFallback: true },
   'youth-purchase-effort': { preferReviewedFallback: true },
@@ -44,6 +43,7 @@ const updates = {
     sourceIds: [employmentLaw.id], dataKind: 'context',
   },
   'group-causality': {
+    preferReviewedFallback: true,
     finding: 'Hay una diferencia en tasas brutas por nacionalidad: no debe ocultarse ni confundirse con causalidad. “Nuevos españoles” no es la categoría “extranjeros”: los nacionalizados cuentan como españoles. Estas tasas incluyen todos los delitos y no aíslan el efecto del origen ni cada delito citado.',
     fallbackData: ['Nacionalidad extranjera: 15,7 condenados adultos por 1.000 residentes de 18 o más años (2024)', 'Nacionalidad española: 6,2 condenados adultos por 1.000 residentes de 18 o más años (2024)'],
     sourceIds: [convictions.id], population: 'adultos condenados por sentencia firme inscrita en 2024, por hechos de 2024 o anteriores', denominator: '1.000 residentes adultos de la misma nacionalidad', unit: 'condenados por 1.000 residentes adultos', dataKind: 'observed',
