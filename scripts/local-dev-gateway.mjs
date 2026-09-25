@@ -28,9 +28,9 @@ const publicCheckResponse = (payload, claim = '') => {
   const criteria = (Array.isArray(plan.blocks) ? plan.blocks : []).filter((block) => block?.type === 'confirmed' || block?.type === 'data_finding').flatMap((block, blockIndex) => (Array.isArray(block.points) ? block.points : []).slice(0, 3).map((finding, pointIndex) => ({ id: `evidence-${blockIndex + 1}-${pointIndex + 1}`, label: pointIndex ? 'Contexto' : 'Dato respaldado', finding, sourceIds: Array.isArray(block.evidenceIds) ? block.evidenceIds : [] })));
   const sources = (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
   const composedReply = (Array.isArray(plan.blocks) ? plan.blocks : []).find((block) => block?.type === 'conversation_reply')?.text;
-  const reply = composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
+  const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
   const evidenceLevel = plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  return { state: evidenceLevel, id: payload.requestId || `local-${Date.now().toString(36)}`, result: { claim, interpretation: plan.interpretation, reply, answer: reply || plan.summary || plan.headline, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter(Boolean), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary, evidenceLevel } };
+  return { state: evidenceLevel, id: payload.requestId || `local-${Date.now().toString(36)}`, result: { claim, interpretation: plan.interpretation, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, keyFact: plan.headline, criteria, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter(Boolean), scope: { checkedAt: plan.asOf }, sources, evidenceSummary: plan.evidenceSummary, evidenceLevel } };
 };
 
 const forwardCheck = (request, response, targetPath) => {

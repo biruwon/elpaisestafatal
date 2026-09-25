@@ -38,6 +38,15 @@ assert(data.some((value) => value.includes('española') && value.includes('725.6
 assert(data.every((value) => !value.includes('→')), 'Separate populations became a spurious trend');
 // One family with numbers must not suppress another family's research.
 const plan = answerPlanForBroadDomains(claims[0]);
+assert(plan.shareableReply.includes('2.335.553 en agosto de 2025 a 2.725.899 en agosto de 2026 (+16,7 % interanual)'), 'Shareable reply omitted the reviewed, same-month IMV comparison');
+const dynamicallyEnrichedPlan = answerPlanForBroadDomains(claims[0], { observations: [
+  { id: 'older-imv-point', metricId: 'benefit_recipients_by_group', value: 2_682_646, unit: 'Person', period: '2026-07', geography: 'Spain' },
+] });
+assert(dynamicallyEnrichedPlan.shareableReply.includes('2.335.553 en agosto de 2025 a 2.725.899 en agosto de 2026 (+16,7 % interanual)'), 'Live enrichment changed the reviewed baseline or mismatched the IMV growth rate');
+assert(!dynamicallyEnrichedPlan.shareableReply.includes('julio de 2026'), 'A single-month live point replaced the reviewed IMV comparison');
+const dynamicallyEnrichedBenefits = dynamicallyEnrichedPlan.evidenceSummary.families.find((family) => family.familyId === 'broad-benefits-recipients');
+const reviewedTrend = dynamicallyEnrichedBenefits.criteria.find((criterion) => criterion.id === 'benefit-trend-causality');
+assert.equal(reviewedTrend.data[0], 'Serie localizada: Personas beneficiarias del IMV: 2.335.553 personas (2025-08) → 2.725.899 personas (2026-08; +16,7 % interanual)');
 const requests = familyResearchRequests(plan);
 assert(requests.some((request) => request.label === 'Prestaciones'));
 assert(requests.some((request) => request.label === 'Servicios públicos'));

@@ -147,13 +147,18 @@ const packets = [
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
     summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
     criteria: [
-      { id: 'benefit-programme', label: 'Programa y alcance', finding: '“Paguitas” no es una categoría oficial. El Ingreso Mínimo Vital (IMV) ofrece un programa concreto que puede medirse, pero no representa automáticamente todas las prestaciones.', population: 'hogares y personas beneficiarias del IMV', denominator: 'hogares perceptores y personas beneficiarias', unit: 'hogares y personas', fallbackData: ['Programa identificado para la comprobación: Ingreso Mínimo Vital (IMV), julio de 2026'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source', 'benefits-statistics-source'] },
-      { id: 'benefit-recipients', label: 'Perceptores', metricIds: ['benefit_recipients_by_group'], preferFallbackWhenNewer: true, finding: 'El balance oficial del IMV de julio de 2026 registra 879.225 hogares y 2.682.646 personas beneficiarias. Son cifras del IMV, no del conjunto de ayudas ni una medida de dependencia económica.', population: 'personas y hogares beneficiarios del IMV en España', denominator: 'hogares perceptores y personas beneficiarias', unit: 'personas y hogares', fallbackData: ['2.682.646 personas beneficiarias en 879.225 hogares (IMV, 2026-07; julio de 2026)'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-source'] },
+      { id: 'benefit-programme', label: 'Programa y alcance', finding: '“Paguitas” no es una categoría oficial. El Ingreso Mínimo Vital (IMV) ofrece un programa concreto que puede medirse, pero no representa automáticamente todas las prestaciones.', population: 'hogares y personas beneficiarias del IMV', denominator: 'hogares perceptores y personas beneficiarias', unit: 'hogares y personas', fallbackData: ['Programa identificado para la comprobación: Ingreso Mínimo Vital (IMV), agosto de 2026'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-august-source', 'benefits-statistics-source'] },
+      { id: 'benefit-recipients', label: 'Perceptores', metricIds: ['benefit_recipients_by_group'], preferFallbackWhenNewer: true, finding: 'El balance oficial del IMV de agosto de 2026 registra 893.820 hogares y 2.725.899 personas beneficiarias. Son cifras del IMV, no del conjunto de ayudas ni una medida de dependencia económica.', population: 'personas y hogares beneficiarios del IMV en España', denominator: 'hogares perceptores y personas beneficiarias', unit: 'personas y hogares', fallbackData: ['2.725.899 personas beneficiarias en 893.820 hogares (IMV, 2026-08; agosto de 2026)'], missingDimensions: ['cobertura de todos los programas de prestaciones'], sourceIds: ['benefits-imv-august-source'] },
       { id: 'benefit-composition', label: 'Composición del IMV', metricIds: ['imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality'], finding: 'En el dossier oficial del IMV de julio de 2026, el 82,53 % de los titulares tenía nacionalidad española y el 17,47 % extranjera. La composición de titulares no demuestra por sí sola necesidad, abuso o causalidad.', population: 'titulares del IMV por nacionalidad', denominator: 'total de titulares del IMV', unit: '% de titulares del IMV y personas titulares', missingDimensions: ['comparación con la población elegible de cada grupo'], sourceIds: ['benefits-imv-source'] },
-      { id: 'benefit-trend-causality', label: 'Evolución y causalidad', metricIds: ['benefit_recipients_by_group'], combineFallbackAsSeries: true, finding: '“Incremento exponencial” requiere una serie temporal y una tasa definida. Una coincidencia temporal con la inmigración no demuestra que una medida migratoria cause el aumento.', fallbackData: ['Serie localizada: Personas beneficiarias del IMV: 2.532.284 personas (2026-03) → 2.682.646 personas beneficiarias (2026-07)'], missingDimensions: ['tasa de crecimiento comparable entre programas', 'diseño causal'], resolvesMissing: [{ dimension: 'serie temporal', metricId: 'benefit_recipients_by_group', minimumObservations: 2 }], sourceIds: ['benefits-imv-source'] },
+      { id: 'benefit-trend-causality', label: 'Personas beneficiarias del IMV', metricIds: ['benefit_recipients_by_group'], preferReviewedFallback: true, finding: 'En agosto de 2026 el INSS registró 390.346 beneficiarios más que en agosto de 2025 (+16,7 %). Es un aumento interanual real en una prestación concreta; por sí solo no demuestra crecimiento exponencial ni una relación causal con la regularización.', fallbackData: ['Serie localizada: Personas beneficiarias del IMV: 2.335.553 personas (2025-08) → 2.725.899 personas (2026-08; +16,7 % interanual)'], missingDimensions: ['diseño causal entre la regularización y el uso del IMV'], resolvesMissing: [{ dimension: 'serie temporal', metricId: 'benefit_recipients_by_group', minimumObservations: 2 }], sourceIds: ['benefits-imv-august-source', 'benefits-imv-previous-year-source'] },
     ],
     limitations: ['El IMV aporta una medición concreta de personas y hogares, pero no cubre automáticamente todas las prestaciones. Sin una serie comparable y un diseño causal no se puede afirmar un incremento exponencial, dependencia económica ni que una regularización lo haya provocado.'],
-    sources: [source('benefits-imv-source', 'El Ingreso Mínimo Vital llega en julio a cerca de 2,7 millones de personas', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-llega-en-julio-a-cerca-de-2-7-millones-de-personas-que-residen-en-879.225-hogares?redirect=%2F', '2026-07-01'), source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01')],
+    sources: [
+      source('benefits-imv-source', 'El Ingreso Mínimo Vital llega en julio a cerca de 2,7 millones de personas', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-llega-en-julio-a-cerca-de-2-7-millones-de-personas-que-residen-en-879.225-hogares?redirect=%2F', '2026-08-07'),
+      source('benefits-imv-august-source', 'El Ingreso Mínimo Vital protege en agosto a más de 2,7 millones de personas residentes en 894.000 hogares', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-protege-en-agosto-a-m%C3%A1s-de-2-7-millones-de-personas-residentes-en-894.000-hogares', '2026-09-07'),
+      source('benefits-imv-previous-year-source', 'El Ingreso Mínimo Vital llega a más de 2,3 millones de personas en agosto', 'Instituto Nacional de la Seguridad Social', 'https://revista.seg-social.es/-/el-ingreso-m%C3%ADnimo-vital-llega-a-m%C3%A1s-de-2-3-millones-de-personas-en-agosto', '2025-09-05'),
+      source('benefits-statistics-source', 'Social protection statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', '2025-10-01'),
+    ],
   },
   {
     id: 'broad-youth-living-housing',
@@ -181,7 +186,6 @@ const packets = [
   },
   {
     id: 'broad-immigration-regularization',
-    warehouseSeries: { labels: ['Solicitudes', 'Expedientes tramitados', 'Nuevas afiliaciones'], values: [1174978, 609737, 159097], label: 'Regularización extraordinaria · balance a 30 de junio de 2026', unit: 'personas o expedientes' },
     matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
     headline: 'Regularización documentada, pero no se demuestra que sea masiva ni que cause un colapso o más dependencia de prestaciones',
@@ -619,6 +623,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     if (!matched.length) return item.fallbackData?.length ? item.fallbackData : [];
     const dynamic = formatSeriesData(matched, item.unit);
     const fallback = item.fallbackData || [];
+    if (item.preferReviewedFallback && fallback.length) return fallback;
     // A warehouse may contain an older release while the reviewed packet has
     // a newer official snapshot. Preserve both only when the snapshot really
     // extends the observed period; never replace a compatible live series
@@ -708,7 +713,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-4-family-composition',
+    knowledgeVersion: 'broad-domain-snapshot-5-imv-august-update',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   return plan;
@@ -751,13 +756,38 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
-  const visualSeries = familyPlans.find((familyPlan) => familyPlan.warehouseSeries)?.warehouseSeries;
+  const dataForCriterion = (packetId, criterionId) => familyPlans
+    .find((familyPlan) => familyPlan.id === packetId)
+    ?.evidenceSummary?.families?.flatMap((family) => family.criteria?.length ? family.criteria : [family])
+    .find((criterion) => (criterion.criterionId || criterion.id) === criterionId)?.data || [];
+  const dataPoint = (packetId, criterionId, pattern) => dataForCriterion(packetId, criterionId).find((value) => pattern.test(value));
+  const applications = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Solicitudes:/i);
+  const processedCases = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Expedientes tramitados:/i);
+  const newAffiliations = dataPoint('broad-immigration-regularization', 'regularization-employment', /afiliaciones? a la Seguridad Social/i);
+  const specialistWait = dataPoint('broad-public-services', 'public-service-waiting-list', /espera media para primera consulta externa/i);
+  const imvTrend = dataForCriterion('broad-benefits-recipients', 'benefit-trend-causality').find((value) => /→/.test(value));
+  const imvSeries = imvTrend?.match(/:\s*([\d.]+)\s+personas?\s+\((\d{4})-(\d{2})\)\s*→\s*([\d.]+)\s+personas?\s+\((\d{4})-(\d{2})/i);
+  const spanishMonths = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const monthLabel = (year, month) => `${spanishMonths[Number(month) - 1] || month} de ${year}`;
+  const cleanImvTrend = imvSeries
+    ? `el número de beneficiarios pasó de ${imvSeries[1]} en ${monthLabel(imvSeries[2], imvSeries[3])} a ${imvSeries[4]} en ${monthLabel(imvSeries[5], imvSeries[6])}`
+    : imvTrend?.replace(/^Serie localizada:\s*/i, '').replace(/^Personas beneficiarias del IMV:\s*/i, 'la serie de beneficiarios pasó de ').replace(/;\s*\+[\d,.]+\s*%\s*interanual/i, '');
+  const interannualGrowth = imvTrend?.match(/\+[\d,.]+\s*% interanual/i)?.[0];
+  const hasRegularizationServicesAndBenefits = ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].every((id) => familyPlans.some((familyPlan) => familyPlan.id === id));
+  const shareableReply = hasRegularizationServicesAndBenefits ? [
+    'Evidencia limitada.',
+    applications && processedCases ? `El proceso fue amplio: el balance oficial registró ${applications.replace(/^Solicitudes:\s*/i, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '')} expedientes tramitados; no equivalen a permisos concedidos.` : '',
+    newAffiliations ? `El Gobierno atribuyó ${newAffiliations} al proceso: son afiliaciones laborales, no una medida del uso de ayudas.` : '',
+    specialistWait ? `En el SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
+    cleanImvTrend ? `En el IMV, ${cleanImvTrend}${interannualGrowth ? ` (${interannualGrowth})` : ''}. La subida es real, pero no prueba crecimiento exponencial ni que la regularización la causara.` : '',
+  ].filter(Boolean).join('\n\n') : undefined;
   const plan = {
     id: 'broad-compound-claim',
     schemaVersion: '1',
     evidenceLevel: 'limited',
     headline: `La afirmación mezcla ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}; las cifras disponibles no demuestran por sí solas las relaciones causales`,
     summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
+    shareableReply,
     coverage: 'qualified',
     claimType: 'mixed',
     interpretation: { kind: 'mixed', subject: families.map((family) => family.familyLabel).join(', '), subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: text, interpretation: `Se comprueban por separado ${families.length} familias y las relaciones que se afirman entre ellas.` },
@@ -772,10 +802,9 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     sourceIds,
     sourceLinks: familyPlans.flatMap((plan) => plan.sourceLinks || []).filter((source, index, all) => all.findIndex((item) => item.id === source.id) === index),
     asOf: '2026-09-07',
-    ...(visualSeries ? { warehouseSeries: visualSeries } : {}),
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-3-pension-finance-context',
+    knowledgeVersion: 'broad-domain-snapshot-5-imv-august-update',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   return plan;

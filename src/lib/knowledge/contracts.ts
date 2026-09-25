@@ -137,6 +137,7 @@ export type AnswerPlan = {
   schemaVersion: '1';
   headline: string;
   summary: string;
+  shareableReply?: string;
   coverage: CoverageStatus;
   claimType: ClaimType;
   blocks: AnswerBlock[];

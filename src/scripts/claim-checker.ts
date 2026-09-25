@@ -2,7 +2,7 @@ import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-cont
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 
 type CheckResult = {
-  claim: string; reply: string; answer: string; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
+  claim: string; reply: string; answer: string; shareableReply?: string; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
   scope: { geography?: string; period?: string; checkedAt?: string };
   criteria?: Array<{ id: string; label: string; finding: string }>;
   arguments?: Array<{ id: string; claim: string; verdict: string; finding: string; evidenceIds: string[]; sourceIds: string[]; limitations: string[] }>;
@@ -165,11 +165,17 @@ const parseSeries = (value: string): { start: string; end: string; startNumber: 
   const match = value.match(/:\s*(-?[\d.]+(?:,\d+)?)[^→]+→\s*(-?[\d.]+(?:,\d+)?)/);
   if (!match) return undefined;
   const toNumber = (token: string): number => Number(token.replace(/\./g, '').replace(',', '.'));
-  const years = [...value.matchAll(/\b(?:19|20|21)\d{2}\b/g)].map((item) => item[0]);
+  const years = [...value.matchAll(/\b(?:19|20|21)\d{2}(?:-\d{2})?\b/g)].map((item) => item[0]);
   const startNumber = toNumber(match[1]);
   const endNumber = toNumber(match[2]);
   if (!Number.isFinite(startNumber) || !Number.isFinite(endNumber)) return undefined;
   return { start: match[1], end: match[2], startNumber, endNumber, years: [...new Set(years)].slice(0, 2) };
+};
+const periodLabel = (period: string): string => {
+  const match = period.match(/^(\d{4})-(\d{2})$/);
+  if (!match) return period;
+  const month = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][Number(match[2]) - 1];
+  return month ? `${month} ${match[1]}` : period;
 };
 const demographicSeriesLabel = (value: string, fallback: string): string => {
   if (/dependencia/i.test(fallback)) return 'Dependencia de mayores';
@@ -215,11 +221,12 @@ const renderFamilyTrendCharts = (groups: EvidenceFamily[]): string => {
   const cards = groups.map((group) => {
     const series = (group.criteria || []).flatMap((criterion) => (criterion.data || []).map((value) => {
       const parsed = parseSeries(value);
-      return parsed ? { ...parsed, label: criterion.label, unit: criterion.dimensions?.unit || '' } : undefined;
-    })).filter((item): item is NonNullable<typeof item> => Boolean(item)).slice(0, 4);
+      const unit = criterion.dimensions?.unit || (/personas beneficiarias del IMV/i.test(criterion.label) ? 'personas' : '');
+      return parsed ? { ...parsed, label: criterion.label, unit } : undefined;
+    })).filter((item): item is NonNullable<typeof item> => Boolean(item)).filter((item) => !item.unit.includes(';')).slice(0, 4);
     if (!series.length) return '';
     const max = Math.max(...series.flatMap((item) => [item.startNumber, item.endNumber]), 1);
-    const rows = series.map((item) => { const startWidth = Math.max(3, Math.round(item.startNumber / max * 100)); const endWidth = Math.max(3, Math.round(item.endNumber / max * 100)); const years = item.years.length === 2 ? `${item.years[0]} → ${item.years[1]}` : ''; return `<div class="family-trend-row"><div class="family-trend-heading"><strong>${escapeHtml(publicMetricLabel(item.label))}</strong><span>${escapeHtml(years)}</span></div><div class="family-trend-bars"><i style="--bar-width:${startWidth}%"></i><b style="--bar-width:${endWidth}%"></b></div><div class="family-trend-values"><span>${escapeHtml(item.start)}</span><strong>${escapeHtml(item.end)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</strong></div></div>`; }).join('');
+    const rows = series.map((item) => { const startWidth = Math.max(3, Math.round(item.startNumber / max * 100)); const endWidth = Math.max(3, Math.round(item.endNumber / max * 100)); const years = item.years.length === 2 ? `${periodLabel(item.years[0])} → ${periodLabel(item.years[1])}` : ''; return `<div class="family-trend-row"><div class="family-trend-heading"><strong>${escapeHtml(publicMetricLabel(item.label))}</strong><span>${escapeHtml(years)}</span></div><div class="family-trend-bars" aria-hidden="true"><i style="--bar-width:${startWidth}%"></i><b style="--bar-width:${endWidth}%"></b></div><div class="family-trend-values"><span>${escapeHtml(item.start)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</span><strong>${escapeHtml(item.end)}${item.unit ? ` · ${escapeHtml(item.unit)}` : ''}</strong></div></div>`; }).join('');
     return `<article class="family-trend-card"><span class="eyebrow">Evolución observada</span><h4>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</h4><div class="family-trend-legend"><span><i></i>Inicio</span><span><b></b>Final</span></div>${rows}</article>`;
   }).filter(Boolean).join('');
   return cards ? `<section class="result-section result-family-trends" aria-labelledby="family-trends-title"><div class="result-section-heading"><span class="eyebrow">Evolución de los indicadores</span><h3 id="family-trends-title">Qué cambia en las series comparables</h3><p>Estas gráficas solo reúnen valores con la misma medida y población. No representan causalidad.</p></div><div class="family-trends-grid">${cards}</div></section>` : '';
@@ -301,15 +308,23 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   const criteria = item.criteria?.length ? `<details class="result-details"><summary>Cómo se ha comprobado<span aria-hidden="true">＋</span></summary><div>${item.criteria.map((criterion) => `<p><strong>${escapeHtml(criterion.label)}:</strong> ${escapeHtml(criterion.finding)}</p>`).join('')}</div></details>` : '';
   const visual = item.visual && item.visual.labels.length === item.visual.values.length ? renderVisual(item.visual, item.sources[0], item.scope) : '';
   const sources = item.sources.length && evidenceGroups.length < 2 ? `<section class="claim-sources result-sources"><div class="result-section-heading"><span class="eyebrow">Trazabilidad</span><h3>Fuentes y fecha</h3></div>${item.sources.slice(0, 4).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer"><strong>${escapeHtml(source.title)}</strong><span>${escapeHtml(source.publisher || '')}${source.publishedAt ? ` · ${source.publishedAt}` : ''} ↗</span></a>`).join('')}</section>` : '';
-  const answer = item.answer.trim() || item.reply;
+  const isShareableResult = Boolean(item.shareableReply?.trim());
+  const answer = item.shareableReply?.trim() || item.answer.trim() || item.reply;
   const responseText = answer || 'No hay una respuesta redactada para esta comprobación.';
   const claimMap = renderClaimMap(evidenceGroups);
   const demographicVisual = renderDemographicVisual(evidenceGroups);
-  const familyTrendCharts = renderFamilyTrendCharts(evidenceGroups);
+  const chartGroups = isShareableResult
+    ? evidenceGroups.map((group) => ({ ...group, criteria: (group.criteria || []).filter((criterion) => /personas beneficiarias del IMV/i.test(criterion.label)) })).filter((group) => group.criteria?.length)
+    : evidenceGroups;
+  const familyTrendCharts = renderFamilyTrendCharts(chartGroups);
   const shareLead = answerLeadFor(responseText);
-  const resultHeading = item.keyFact || stateConclusion(response.state, shareLead);
-  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header>${renderResultOverview(evidenceGroups, response.state)}<section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">La respuesta</h3></div><button type="button" class="claim-copy" data-copy-answer>Copiar respuesta</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${familyTrendCharts}${demographicVisual}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  const resultHeading = isShareableResult ? 'Proceso amplio; no se prueban el colapso ni la causalidad' : item.keyFact || stateConclusion(response.state, shareLead);
+  const evidenceExplorer = isShareableResult
+    ? `<details class="result-details result-evidence-explorer"><summary>Explorar datos, límites y fuentes<span aria-hidden="true">＋</span></summary>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${claimMap}${compoundKnown}${demographicVisual}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}</details>`
+    : `${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${demographicVisual}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${visual}${sources}`;
+  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}"><header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${isShareableResult ? familyTrendCharts : renderResultOverview(evidenceGroups, response.state)}${isShareableResult ? renderResultOverview(evidenceGroups, response.state) : familyTrendCharts}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
+  result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();
 };
@@ -322,7 +337,7 @@ const setLoading = (text: string): void => {
   if (button) { button.disabled = true; button.setAttribute('aria-label', 'Comprobación en curso'); }
   if (result) {
     setMode(true);
-    result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobando</span><h2 data-loading-title>Estamos entendiendo la frase</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>${escapeHtml(loadingStages[0])}. La comprobación sigue en curso.</p><p class="claim-loading-family" data-loading-family>${escapeHtml(loadingStages.join(' · '))}</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
+    result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobación en curso</span><h2 data-loading-title>Estamos contrastando datos y fuentes</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>Aún no hay una respuesta final; la conclusión y las cifras aparecerán cuando termine la comprobación.</p><p class="claim-loading-family" data-loading-family>Partes a revisar: ${escapeHtml(loadingStages.slice(1).join(' · ') || 'afirmación y fuentes disponibles')}</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
     result.querySelector<HTMLButtonElement>('[data-cancel-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; input?.focus(); });
   }
   const update = (): void => {
@@ -330,21 +345,11 @@ const setLoading = (text: string): void => {
     const stage = result?.querySelector<HTMLElement>('[data-loading-stage]');
     const title = result?.querySelector<HTMLElement>('[data-loading-title]');
     const note = result?.querySelector<HTMLElement>('[data-loading-note]');
-    const family = result?.querySelector<HTMLElement>('[data-loading-family]');
     const elapsedNode = result?.querySelector<HTMLElement>('[data-loading-elapsed]');
     if (elapsed < 2) return;
-    if (loadingStages.length > 1) {
-      const index = Math.min(loadingStages.length - 1, Math.floor((elapsed - 2) / 3) + 1);
-      if (stage) stage.textContent = 'Comprobación en curso';
-      if (title) title.textContent = loadingStages[index];
-      if (note) note.textContent = 'Comprobación en curso; todavía no se marca ninguna fase como completada.';
-      if (family) family.textContent = loadingStages.join(' · ');
-      if (elapsedNode) elapsedNode.textContent = `${elapsed} s · La comprobación sigue en curso`;
-      return;
-    }
-    if (elapsed < 8) { if (stage) stage.textContent = 'Analizando'; if (title) title.textContent = 'Estamos identificando qué afirma'; if (note) note.textContent = 'Buscamos una comprobación compatible con la frase y su periodo, lugar y medida.'; }
-    else if (elapsed < 15) { if (stage) stage.textContent = 'Contrastando'; if (title) title.textContent = 'Estamos buscando datos y fuentes'; if (note) note.textContent = 'La respuesta sigue en curso. El modelo solo ayuda a interpretar y ordenar evidencia comprobable.'; }
-    else { if (stage) stage.textContent = 'Comprobación en curso'; if (title) title.textContent = 'Seguimos esperando los resultados'; if (note) note.textContent = 'Está tardando un poco más de lo habitual; puedes esperar o cancelar y volver a intentarlo.'; }
+    if (elapsed < 8) { if (stage) stage.textContent = 'Comprobación en curso'; if (title) title.textContent = 'Estamos contrastando datos y fuentes'; if (note) note.textContent = 'Aún no hay una respuesta final; la conclusión y las cifras aparecerán cuando termine la comprobación.'; }
+    else if (elapsed < 15) { if (stage) stage.textContent = 'Comprobación en curso'; if (title) title.textContent = 'La revisión sigue en marcha'; if (note) note.textContent = 'Contrastamos cada parte con fuentes y periodos compatibles; todavía no mostramos una conclusión provisional.'; }
+    else { if (stage) stage.textContent = 'Comprobación en curso'; if (title) title.textContent = 'Seguimos esperando los resultados'; if (note) note.textContent = 'Está tardando más de lo habitual; puedes esperar o cancelar y volver a intentarlo.'; }
     if (elapsedNode) elapsedNode.textContent = `${elapsed} s · La comprobación sigue en curso`;
   };
   loadingTicker = window.setInterval(update, 1000);
@@ -353,7 +358,9 @@ const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'proc
   if (!response.preview) return;
   renderResult(response.preview);
   const article = result?.querySelector<HTMLElement>('.claim-result');
-  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Contexto inicial revisado · estamos comprobando si podemos añadir más datos y fuentes.</p>');
+  article?.insertAdjacentHTML('afterbegin', '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta provisional · contrastamos si hay datos o fuentes adicionales; la conclusión puede cambiar al terminar.</p>');
+  const copyButton = article?.querySelector<HTMLButtonElement>('[data-copy-answer]');
+  if (copyButton) { copyButton.disabled = true; copyButton.textContent = 'Esperando respuesta final'; }
 };
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
@@ -389,8 +396,10 @@ const submit = async (event: SubmitEvent): Promise<void> => {
         const status = result?.querySelector<HTMLElement>('.claim-enrichment-status');
         if (status) {
           status.classList.add('is-stalled');
-          status.innerHTML = '<span class="claim-enrichment-dot" aria-hidden="true"></span>Contexto inicial disponible · la ampliación de fuentes sigue en segundo plano.';
+          status.innerHTML = '<span class="claim-enrichment-dot" aria-hidden="true"></span>No han llegado más datos; esta respuesta conserva su carácter provisional.';
         }
+        const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
+        if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar contexto provisional'; }
         return;
       }
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;

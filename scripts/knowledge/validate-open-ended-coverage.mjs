@@ -209,7 +209,7 @@ assert(compoundPlan.headline !== 'La administración pública requiere medir pla
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 const compoundReply = compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
 assert(compoundReply.includes('Inmigración y regularización.') && compoundReply.includes('Servicios públicos.') && compoundReply.includes('Prestaciones.'), 'compound reply did not explain each evidence family separately');
-assert(compoundReply.includes('camas hospitalarias') && compoundReply.includes('2.682.646 personas beneficiarias'), 'compound reply omitted the available service or benefit measurements');
+assert(compoundReply.includes('camas hospitalarias') && compoundReply.includes('2.725.899'), 'compound reply omitted the available service or benefit measurements');
 assert(compoundReply.includes('colapso') && compoundReply.includes('prestaciones'), 'compound reply did not explain what the service and benefit figures do not establish');
 assert(!compoundReply.includes('En el balance oficial localizado constan') && !compoundReply.includes('No se ha localizado una medición compatible para'), 'compound reply still presents unrelated family figures as one balance or hides available evidence behind a generic gap');
 assert(compoundReply.includes('\n\n'), 'compound reply did not separate its readable paragraphs');
@@ -218,14 +218,14 @@ assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.inclu
 const servicesFamily = compoundFamilies.find((family) => family.familyId === 'broad-public-services');
 const benefitsFamily = compoundFamilies.find((family) => family.familyId === 'broad-benefits-recipients');
 assert(servicesFamily?.data?.some((item) => item.includes('294,6') && item.includes('100.000')), 'compound service family did not expose compatible hospital-bed data');
-assert(benefitsFamily?.data?.some((item) => item.includes('2.682.646') && item.includes('879.225')), 'compound benefits family did not expose the latest compatible IMV data');
+assert(benefitsFamily?.data?.some((item) => item.includes('2.725.899') && item.includes('893.820')), 'compound benefits family did not expose the latest compatible IMV data');
 assert(!compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('138.368'), 'compound response used an incompatible total hospital-bed count');
 const staleBenefitPlan = answerPlanForBroadDomain('¿Cuántas personas reciben el Ingreso Mínimo Vital en España?', {
   observations: [{ id: 'stale-imv', metricId: 'benefit_recipients_by_group', value: 2532284, unit: 'personas', period: '2026-03' }],
 });
 const staleBenefitReply = staleBenefitPlan?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
-assert(staleBenefitReply.includes('2.682.646') && !staleBenefitReply.includes('Perceptores: 2.532.284'), 'newer reviewed IMV snapshot did not supersede the stale recipient figure');
-assert(staleBenefitPlan.evidenceSummary.families.some((family) => family.data?.some((value) => value.includes('2.532.284 personas (2026-03)') && value.includes('2.682.646 personas beneficiarias'))), 'IMV trend did not present stale and current snapshots as a labelled series');
+assert(staleBenefitReply.includes('2.725.899') && !staleBenefitReply.includes('Perceptores: 2.532.284'), 'newer reviewed IMV snapshot did not supersede the stale recipient figure');
+assert(staleBenefitPlan.evidenceSummary.families.some((family) => family.data?.some((value) => value.includes('2.335.553 personas (2025-08)') && value.includes('2.725.899 personas (2026-08;'))), 'IMV trend did not preserve the reviewed like-for-like year-on-year series');
 assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no establecen causalidad'), 'compound claim omitted the causal limitation');
 

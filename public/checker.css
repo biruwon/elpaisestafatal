@@ -163,6 +163,7 @@
 .result-share-details summary::after{content:'＋';font-size:1rem}
 .result-share-details[open] summary::after{content:'−'}
 .result-share-details p{max-width:790px;margin:4px 0 5px;color:var(--muted);font:1rem/1.5 var(--sans)}
+.result-evidence-explorer{margin-top:22px}.result-evidence-explorer>summary{font-size:.72rem}.claim-copy:disabled{opacity:.55;cursor:wait}.claim-copy:disabled:hover{background:var(--ink);border-color:var(--ink)}
 .result-claim-map{margin-top:38px}
 .claim-map-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:18px;background:var(--line)}
 .claim-map-card{min-width:0;min-height:215px;padding:18px;background:var(--paper-deep);border-top:5px solid var(--amber)}
