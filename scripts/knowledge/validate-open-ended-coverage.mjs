@@ -293,7 +293,7 @@ const freshClaimAnswers = [
   {
     text: 'La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.',
     id: 'broad-amnesty-constitution',
-    reply: /Tribunal Constitucional[\s\S]*no anuló en conjunto[\s\S]*inconstitucionales dos aspectos[\s\S]*no una declaración de que toda la ley fuera inconstitucional/i,
+    reply: /Tribunal Constitucional[\s\S]*no anuló en conjunto[\s\S]*no nulo[\s\S]*oponerse al procés[\s\S]*efecto exonerador sobre conductas futuras[\s\S]*no se declaró inconstitucional toda la ley/i,
     sourceId: 'amnesty-tc-decision-2025',
   },
   {
