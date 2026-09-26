@@ -1,4 +1,26 @@
----
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Privacidad — El país está fatal. ¿Seguro?"><article class="prose"><p class="eyebrow">Privacidad</p><h1>Lo mínimo<br /><em>necesario.</em></h1><p class="lead">No vendemos datos, no usamos publicidad personalizada ni conservamos el texto bruto de tus consultas.</p><h2>Aprender sin guardar tu frase</h2><p>Para decidir qué temas conviene revisar, el servidor puede conservar agregados anónimos: una proposición neutral, una firma semántica, el modo de respuesta, una zona y periodo aproximados, el estado de las fuentes, recuentos y fechas. Se eliminan enlaces, teléfonos, nombres y lenguaje acusatorio; nunca se guarda la dirección IP ni el texto original.</p><h2>Sin analítica de producto</h2><p>El sitio no envía consultas, clicks, compartidos, descargas ni identificadores a un sistema de analítica propio o de terceros.</p><h2>Investigación en directo</h2><p>Cuando se activa una búsqueda provisional, las consultas se neutralizan localmente y solo se consultan dominios de fuentes autorizadas. Los resultados, fragmentos y cuerpos de artículos no se guardan: se conserva únicamente la metadata derivada necesaria durante un máximo de 15 minutos; la sesión del navegador conserva una respuesta provisional durante un máximo de 5 minutos.</p><h2>Selección autonómica</h2><p>Si eliges una comunidad autónoma, el nombre se conserva únicamente en el almacenamiento local de tu navegador.</p><h2>Sin cuentas ni formulario</h2><p>No hay cuentas ni comentarios. Las correcciones se tramitan públicamente mediante <a href="https://github.com/biruwon/elpaisestafatal/issues/new/choose">GitHub Issues</a>; cualquier dato que publiques allí se rige por la política de GitHub.</p></article></BaseLayout>
+<BaseLayout title="Privacidad — El país está fatal. ¿Seguro?"><article class="prose">
+  <p class="eyebrow">Privacidad</p>
+  <h1>Lo mínimo<br /><em>necesario.</em></h1>
+  <p class="lead">No vendemos datos ni usamos publicidad personalizada. El servidor recibe el texto que envías para poder comprobarlo.</p>
+
+  <h2>Consultas y afirmaciones</h2>
+  <p>Para entender qué temas conviene revisar, la base operativa puede conservar una versión normalizada y filtrada del texto, una firma que agrupa formulaciones parecidas, el tipo de entrada, el estado de recepción y la fecha. Cada envío cuenta como una consulta; no se crea un perfil ni un identificador persistente de visitante. Los archivos subidos y las respuestas completas no se guardan en esta base. Los registros se usan internamente y no se publican; el listado público solo muestra temas revisados y aprobados.</p>
+  <p>Antes de guardar el texto, filtros automáticos intentan quitar enlaces, correos, nombres de usuario, teléfonos, documentos, cuentas bancarias, direcciones IP, direcciones postales y nombres de personas. Son reglas heurísticas y pueden pasar por alto datos personales; no incluyas información personal o confidencial en una consulta. Los registros de consultas no tienen actualmente un plazo automático de borrado.</p>
+
+  <h2>Límites de uso</h2>
+  <p>Para limitar solicitudes abusivas, se convierte la IP que Cloudflare entrega al servidor en una huella SHA-256 usada solo por el limitador; no se añade a los registros de afirmaciones. La rutina de mantenimiento configurada elimina los contadores de más de dos días.</p>
+
+  <h2>Analítica</h2>
+  <p>No enviamos consultas, clics, enlaces compartidos, descargas ni identificadores a proveedores de analítica de terceros.</p>
+
+  <h2>Investigación en directo</h2>
+  <p>Cuando se activa una búsqueda provisional, las consultas se neutralizan localmente y solo se consultan dominios de fuentes autorizadas. Los resultados, fragmentos y cuerpos de artículos no se guardan: se conserva únicamente la metadata derivada necesaria durante un máximo de 15 minutos; la sesión del navegador conserva una respuesta provisional durante un máximo de 5 minutos.</p>
+
+  <h2>Selección autonómica</h2>
+  <p>Si eliges una comunidad autónoma, el nombre se conserva únicamente en el almacenamiento local de tu navegador.</p>
+
+  <h2>Sin cuentas ni formulario</h2>
+  <p>No hay cuentas ni comentarios. Las correcciones se tramitan públicamente mediante <a href="https://github.com/biruwon/elpaisestafatal/issues/new/choose">GitHub Issues</a>; cualquier dato que publiques allí se rige por la política de GitHub.</p>
+</article></BaseLayout>

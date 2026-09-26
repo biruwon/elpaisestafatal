@@ -35,6 +35,32 @@ The model-selection and fine-tuning decision is documented in
 [`model-strategy.md`](./model-strategy.md). In short: models interpret and
 synthesize supplied evidence; reviewed sources remain the factual authority.
 
+## User-submitted claims and demand export
+
+After `/api/check` accepts a submission, a Pages Function schedules a
+best-effort server-side write to Cloudflare D1. It stores a filtered,
+normalized text version, semantic and canonical signatures, input type,
+`received` status, and submission time. Each accepted text submission with
+claim text remaining after filtering gets a new event row; equivalent wording
+is grouped into a `query_clusters` row with an incrementing count. The claim
+record is not joined to a visitor ID or the
+rate-limit fingerprint. The raw request text and uploaded file are not written
+to these claim tables. Automatic filters are heuristic, so users should not
+submit personal or confidential details. File-only and URL-only requests
+without remaining claim text are not added to claim clusters.
+
+To read current demand clusters from the configured remote D1 database, run:
+
+```sh
+npm run knowledge:export-query-clusters
+```
+
+Wrangler must be authenticated for the Cloudflare account. The command writes
+`.local/d1-query-clusters.json`, including total counts and rolling 7- and
+30-day counts. The scheduled `knowledge-triage` GitHub Actions workflow also
+exports clusters when its Cloudflare secrets are configured and retains its
+review artifact for 30 days.
+
 ## Core vocabulary
 
 - A **metric** is a reusable measurement definition, such as unemployment rate or recorded offences.

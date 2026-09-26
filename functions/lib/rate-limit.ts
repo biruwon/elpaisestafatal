@@ -11,9 +11,12 @@ type LocalWindow = { startedAt: number; count: number };
 
 const localWindows = new Map<string, LocalWindow>();
 
-const clientIdentity = (request: Request): string => {
+const clientIdentity = async (request: Request): Promise<string> => {
   const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return request.headers.get('cf-connecting-ip') || forwarded || 'anonymous';
+  const address = request.headers.get('cf-connecting-ip') || forwarded || 'anonymous';
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(address));
+  const fingerprint = [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  return `sha256:${fingerprint}`;
 };
 
 const allowInMemory = (identity: string, scope: string, limit: number, windowMs: number, now: number): boolean => {
@@ -33,7 +36,7 @@ export const allowRateLimitedRequest = async (
   env: object,
   { scope, limit, windowMs = 60_000 }: { scope: string; limit: number; windowMs?: number },
 ): Promise<boolean> => {
-  const identity = clientIdentity(request);
+  const identity = await clientIdentity(request);
   const now = Date.now();
   const windowStart = Math.floor(now / windowMs) * windowMs;
 

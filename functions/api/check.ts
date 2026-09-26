@@ -1,5 +1,5 @@
-interface Env { LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string; LOCAL_MODEL_VERSION?: string; CATALOGUE_VERSION?: string }
-interface Context { request: Request; env: Env }
+interface Env { DB?: ClaimDemandDatabase; LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string; LOCAL_MODEL_VERSION?: string; CATALOGUE_VERSION?: string }
+interface Context { request: Request; env: Env; waitUntil(promise: Promise<unknown>): void }
 type InputType = 'text' | 'image' | 'audio' | 'url';
 
 import { allowRateLimitedRequest } from '../lib/rate-limit';
@@ -11,6 +11,7 @@ import { routeCatalogueQuery } from '../lib/catalogue-resolver';
 import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } from '../lib/public-check-response';
 import { reviewedContextualAnswer } from '../lib/reviewed-contextual-answer.mjs';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
+import { captureClaimDemand, type ClaimDemandDatabase } from '../lib/claim-demand';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
@@ -162,7 +163,7 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
   return model;
 };
 
-export const onRequestPost = async ({ request, env }: Context): Promise<Response> => {
+export const onRequestPost = async ({ request, env, waitUntil }: Context): Promise<Response> => {
   if (!(await allowRateLimitedRequest(request, env, { scope: 'check', limit: 30 }))) return json(unavailableCheck('', 'Has alcanzado el límite temporal de comprobaciones.'), 429);
   const contentLength = Number(request.headers.get('content-length') || 0);
   if (contentLength > INPUT_LIMITS.maxRequestBytes) return json(unavailableCheck('', 'El archivo o texto supera el tamaño permitido.'), 413);
@@ -171,6 +172,8 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   try { body = await requestBody(request); } catch { return json(unavailableCheck('', 'No hemos podido leer la solicitud.'), 400); }
   const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
   if (!validation.ok) return json(validation.code === 'empty' ? fallbackResponse(body.text, body.inputType) : unavailableCheck(body.text, validation.code), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
+  const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
+  if (effectiveClaim.trim()) waitUntil(captureClaimDemand(env.DB, effectiveClaim, body.inputType));
 
   // `fresh=1` is an explicit development escape hatch. Responses are already
   // marked no-store at the HTTP layer, but the Worker also keeps a short-lived
@@ -181,8 +184,6 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   const cached = bypassResponseCache ? undefined : cacheKey ? cache.get(cacheKey) : undefined;
   if (cached && cached.expiresAt > Date.now()) return json(cached.response);
   if (cached) cache.delete(cacheKey);
-  const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
-
   if (body.inputType === 'text') {
     const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: true });
