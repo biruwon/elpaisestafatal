@@ -348,6 +348,16 @@ const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'proc
   const copyButton = article?.querySelector<HTMLButtonElement>('[data-copy-answer]');
   if (copyButton) { copyButton.disabled = true; copyButton.textContent = 'Esperando respuesta final'; }
 };
+const renderStalledPreview = (preview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, note: string): void => {
+  renderResult(preview, 'provisional');
+  const status = result?.querySelector<HTMLElement>('.claim-enrichment-status');
+  if (status) {
+    status.classList.add('is-stalled');
+    status.innerHTML = `<span class="claim-enrichment-dot" aria-hidden="true"></span>${escapeHtml(note)}`;
+  }
+  const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
+  if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar contexto provisional'; }
+};
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
   request?.abort();
@@ -357,10 +367,11 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
   if (!clarificationContext) writeRecent(original); setLoading(file?.name || original, submission);
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
+  let initialPreview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined;
   try {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, submission.signal);
     if (!isCurrentSubmission(submission)) return;
-    const initialPreview = response.state === 'processing' ? response.preview : undefined;
+    initialPreview = response.state === 'processing' ? response.preview : undefined;
     if (response.state === 'processing') renderProcessingPreview(response);
     // Local model interpretation and evidence planning can take a little
     // longer on a cold worker. Keep the animated status visible while the
@@ -388,13 +399,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     clarificationContext = undefined;
     if (response.state === 'processing') {
       if (initialPreview) {
-        const status = result?.querySelector<HTMLElement>('.claim-enrichment-status');
-        if (status) {
-          status.classList.add('is-stalled');
-          status.innerHTML = '<span class="claim-enrichment-dot" aria-hidden="true"></span>No han llegado más datos; esta respuesta conserva su carácter provisional.';
-        }
-        const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
-        if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar contexto provisional'; }
+        renderStalledPreview(initialPreview, 'No han llegado más datos; esta respuesta conserva su carácter provisional.');
         return;
       }
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
@@ -407,7 +412,18 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       return;
     }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
-  } catch (error) { if (request !== submission) return; if (error instanceof DOMException && error.name === 'AbortError' && submission.signal.aborted) { finishLoading(); request = undefined; return; } finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
+  } catch (error) {
+    if (request !== submission) return;
+    if (error instanceof DOMException && error.name === 'AbortError' && submission.signal.aborted) { finishLoading(); request = undefined; return; }
+    finishLoading();
+    request = undefined;
+    clarificationContext = undefined;
+    if (initialPreview) {
+      renderStalledPreview(initialPreview, 'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.');
+      return;
+    }
+    renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true });
+  }
 };
 
 form?.addEventListener('submit', submit);

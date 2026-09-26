@@ -31,5 +31,6 @@ const retainsPreviewAfterTimeout = source.includes("if (response.state === 'proc
   && source.includes('No han llegado más datos; esta respuesta conserva su carácter provisional.')
   && source.includes('Copiar contexto provisional');
 if (!retainsPreviewAfterTimeout && !source.includes("response.state === 'processing') { renderUnavailable")) throw new Error('Claim checker must retain a timed-out preview or end the processing state visibly');
+if (!source.includes('const renderStalledPreview =') || !source.includes('renderStalledPreview(initialPreview, \'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.\')')) throw new Error('A failed enrichment must retain and make the reviewed preview copyable rather than replacing it with a generic service error');
 if (!source.includes("state: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
 console.log('Claim-checker lifecycle validation passed: unified submission, media, polling, recent checks, and terminal states are wired.');
