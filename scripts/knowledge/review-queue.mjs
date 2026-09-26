@@ -18,6 +18,7 @@ const outputPath = args.get('output') || join(root, '.local/review-queue.json');
 const markdownPath = args.get('markdown') || join(root, '.local/review-queue.md');
 const minimumCount = Math.max(1, Number(args.get('min-count') || 3));
 const limit = Math.max(1, Number(args.get('limit') || 25));
+const submissionLimit = Math.max(1, Number(args.get('submission-limit') || 200));
 
 const asArray = (value) => Array.isArray(value) ? value : [];
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -106,8 +107,21 @@ export const buildResearchCandidates = (clusters, { minCount = 3, max = 25 } = {
   .slice(0, max)
   .map((candidate, index) => ({ rank: index + 1, ...candidate }));
 
-export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audit = null } = {}) => {
+export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, maxSubmissions = submissionLimit, audit = null } = {}) => {
   const clusters = asArray(clusterDocument?.clusters);
+  const allSubmittedClaims = asArray(clusterDocument?.submittedClaims);
+  const submittedClaims = allSubmittedClaims.slice(0, maxSubmissions).map((claim, index) => ({
+    rank: index + 1,
+    canonicalText: safeText(claim.text),
+    submissionCount: number(claim.submissionCount) || 1,
+    firstSeen: date(claim.firstSeen),
+    lastSeen: date(claim.lastSeen),
+    inputTypes: asArray(claim.inputTypes).map((type) => safeText(type)).filter(Boolean),
+    clustered: Boolean(claim.clustered),
+    triageStatus: safeText(claim.triageStatus || 'unclustered'),
+    reviewStatus: safeText(claim.reviewStatus || 'unreviewed'),
+    lowSignal: normalise(claim.text).split(' ').filter((word) => word.length > 2).length < 2,
+  }));
   const candidates = rankMaterializationCandidates(clusters, { minCount, max });
   const auditItems = new Map(asArray(audit?.sourceWorkItems).map((item) => [String(item.clusterId), item]));
   const researchCandidates = buildResearchCandidates(clusters, { minCount, max }).map((candidate) => {
@@ -134,6 +148,10 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
       sourceWorkItems: asArray(audit?.sourceWorkItems).length,
       newlyCoveredAuditItems: asArray(audit?.clusters).filter((item) => item.newlyCovered).length,
       topPriorityScore: candidates[0]?.priorityScore || 0,
+      submittedClaimPhrases: allSubmittedClaims.length,
+      submittedClaimEvents: allSubmittedClaims.reduce((total, claim) => total + (number(claim.submissionCount) || 1), 0),
+      unclusteredClaimPhrases: allSubmittedClaims.filter((claim) => !claim.clustered).length,
+      truncatedSubmittedClaims: allSubmittedClaims.length > submittedClaims.length,
     },
     candidates: candidates.map((candidate, index) => ({
       rank: index + 1,
@@ -155,6 +173,7 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
       matchedMetricIds: asArray(candidate.matchedMetricIds),
       evidenceStatus: candidate.evidenceStatus || (candidate.newlyCovered ? 'warehouse_ready' : 'not_ready'),
     })),
+    submittedClaims,
     researchCandidates,
     sourceWork: asArray(audit?.sourceWorkItems).slice(0, max).map((item, index) => ({
       rank: index + 1,
@@ -173,10 +192,12 @@ export const buildReviewQueue = (clusterDocument, { minCount = 3, max = 25, audi
 
 const markdownTableRow = (candidate) => `| ${candidate.rank} | ${candidate.canonicalText.replaceAll('|', '\\|')} | ${formatNumber(candidate.queryCount)} | ${formatNumber(candidate.priorityScore)} | ${candidate.coverageStatus} | ${candidate.sourceIds.join(', ') || 'none'} | ${candidate.nextAction.replaceAll('|', '\\|')} |`;
 const researchMarkdownTableRow = (candidate) => `| ${candidate.rank} | ${candidate.canonicalText.replaceAll('|', '\\|')} | ${formatNumber(candidate.queryCount)} | ${formatNumber(candidate.priorityScore)} | ${candidate.sourceAvailability} | ${candidate.localSpecific ? 'local' : 'general'} | ${candidate.nextAction.replaceAll('|', '\\|')} |`;
+const submittedMarkdownTableRow = (claim) => `| ${claim.rank} | ${claim.lastSeen} | ${formatNumber(claim.submissionCount)} | ${claim.inputTypes.join(', ') || 'unknown'} | ${claim.clustered ? claim.triageStatus : 'unclustered'} | ${claim.reviewStatus} | ${claim.canonicalText.replaceAll('\\', '\\\\').replaceAll('|', '\\|').replaceAll('[', '\\[').replaceAll(']', '\\]').replaceAll('<', '&lt;').replaceAll('>', '&gt;')} |`;
 
 export const renderReviewQueueMarkdown = (queue) => {
   const candidates = asArray(queue?.candidates);
   const researchCandidates = asArray(queue?.researchCandidates);
+  const submittedClaims = asArray(queue?.submittedClaims);
   const newlyCovered = candidates.filter((candidate) => candidate.newlyCovered);
   const unresolved = candidates.filter((candidate) => !candidate.newlyCovered);
   const excluded = Object.entries(queue?.inputs?.excludedReasons || {}).map(([reason, count]) => `- ${reason}: ${formatNumber(count)}`).join('\n') || '- None recorded';
@@ -188,6 +209,13 @@ export const renderReviewQueueMarkdown = (queue) => {
       ...candidates.map(markdownTableRow),
     ].join('\n')
     : '_No review candidates are ready._';
+  const submittedTable = submittedClaims.length
+    ? [
+      '| Rank | Last submitted | Times submitted | Input type | Triage state | Review state | Claim wording (scrubbed) |',
+      '| ---: | --- | ---: | --- | --- | --- | --- |',
+      ...submittedClaims.map(submittedMarkdownTableRow),
+    ].join('\n')
+    : '_No claim submissions are available in this export._';
 
   return `# Local review queue
 
@@ -204,10 +232,18 @@ This report is private operational input for autonomous promotion. It is derived
 - Coverage-audit work items: ${formatNumber(queue?.summary?.sourceWorkItems)}
 - Reviewable local records: ${formatNumber(queue?.inputs?.reviewableLocalRecords)}
 - Excluded local records: ${formatNumber(queue?.inputs?.excludedLocalRecords)}
+- Submitted claim phrasings: ${formatNumber(queue?.summary?.submittedClaimPhrases)} (${formatNumber(queue?.summary?.submittedClaimEvents)} submissions)
+- Unclustered claim phrasings: ${formatNumber(queue?.summary?.unclusteredClaimPhrases)}
 
 ## Recommended order
 
 ${table}
+
+## User-submitted claim wording
+
+Scrubbed normalized wording from the checker intake. Identical phrasings are grouped, with repeat submissions counted. Unclustered phrasings remain listed for follow-up.${queue?.summary?.truncatedSubmittedClaims ? ' This report is capped; use the JSON export for the full list.' : ''}
+
+${submittedTable}
 
 ## Review rules
 

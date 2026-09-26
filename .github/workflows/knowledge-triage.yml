@@ -1,4 +1,4 @@
-name: Build knowledge-gap review queue
+name: Triage user claim demand
 
 on:
   schedule:
@@ -50,22 +50,34 @@ jobs:
         if: steps.configuration.outputs.configured == 'true'
         run: npm ci
 
-      - name: Validate triage and export production clusters
+      - name: Validate triage and export production claims
         if: steps.configuration.outputs.configured == 'true'
         run: |
           npm run knowledge:triage:validate
           npm run d1:migrate
           npm run knowledge:triage -- --export-d1 --sync-d1 --database elpaisestafatal-ops --min-count 3 --limit 50
 
-      - name: Upload maintainer-only review artifacts
+      - name: Publish aggregate-only status
         if: steps.configuration.outputs.configured == 'true'
-        uses: actions/upload-artifact@v6
-        with:
-          name: knowledge-review-queue-${{ github.run_id }}
-          path: |
-            .local/d1-query-clusters.json
-            .local/query-clusters.json
-            .local/review-queue.json
-            .local/review-queue.md
-          if-no-files-found: error
-          retention-days: 30
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFile, readFile } from 'node:fs/promises';
+
+          const queue = JSON.parse(await readFile('.local/review-queue.json', 'utf8'));
+          const summary = queue.summary || {};
+          const report = [
+            '# Claim demand triage',
+            '',
+            `- Scrubbed claim phrasings: ${Number(summary.submittedClaimPhrases) || 0}`,
+            `- Submissions: ${Number(summary.submittedClaimEvents) || 0}`,
+            `- Unclustered phrasings: ${Number(summary.unclusteredClaimPhrases) || 0}`,
+            `- Research-only clusters: ${Number(summary.researchCandidates) || 0}`,
+            '',
+            'Claim wording stays in Cloudflare D1 and local review files. No claim text is attached to this public workflow run.',
+            '',
+            'To review locally, run `npm run knowledge:triage -- --export-d1 --database elpaisestafatal-ops --min-count 1 --limit 50`, then `npm run knowledge:review-dashboard`.',
+          ].join('\n');
+
+          await appendFile(process.env.GITHUB_STEP_SUMMARY, `${report}\n`);
+          NODE

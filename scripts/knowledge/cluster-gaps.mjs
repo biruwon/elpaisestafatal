@@ -177,6 +177,30 @@ const parseD1Clusters = (value) => {
     fromD1: true,
   })).filter((item) => item.signature || item.text);
 };
+const safeSubmittedClaimText = (value) => publicText(String(value || '')
+  .replace(/https?:\/\/\S+|www\.[^\s]+/giu, '[url]')
+  .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/giu, '[email]')
+  .replace(/\b(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?/giu, '[url]')
+  .replace(/\b[A-Z]{2}\d{2}(?:[\s-]?[A-Z0-9]){11,30}\b/giu, '[account]')
+  .replace(/\b[XYZ]\s?\d{7}\s?[A-Z]\b/giu, '[id]')
+  .replace(/\b\d{8}[\s-]?[A-Z]\b/giu, '[id]')
+  .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/gu, '[ip]')
+  .replace(/\b(?:\+?\d{1,3}[\s.-]?)?(?:\d[\s().-]?){9,12}\b/gu, '[phone]'));
+const parseD1SubmittedClaims = (value) => {
+  let parsed;
+  try { parsed = JSON.parse(value); } catch { return []; }
+  const possible = Array.isArray(parsed) ? parsed.flatMap((item) => item?.results || []) : parsed?.submittedClaims || [];
+  return asArray(possible).map((item) => ({
+    text: safeSubmittedClaimText(item.claim_text || item.normalized_text || item.text),
+    submissionCount: Number(item.submission_count ?? item.count ?? 1),
+    firstSeen: item.first_seen_at || item.firstSeenAt || '',
+    lastSeen: item.last_seen_at || item.lastSeenAt || '',
+    inputTypes: String(item.input_types || item.input_type || 'unknown').split(',').map((type) => type.trim()).filter(Boolean),
+    clustered: Boolean(item.cluster_id || item.clusterId),
+    triageStatus: item.triage_status || item.triageStatus || 'unclustered',
+    reviewStatus: item.review_status || item.reviewStatus || 'unreviewed',
+  })).filter((item) => item.text);
+};
 
 const clusterRecords = (records, publishedClaims = []) => {
   const clusters = new Map();
@@ -431,12 +455,13 @@ const localRecords = parsedLocalRecords.filter((item) => {
   return false;
 });
 const d1Records = d1InputPath ? parseD1Clusters(await readText(d1InputPath)) : [];
-if (!localRecords.length && !d1Records.length) {
+const d1SubmittedClaims = d1InputPath ? parseD1SubmittedClaims(await readText(d1InputPath)) : [];
+if (!localRecords.length && !d1Records.length && !d1SubmittedClaims.length) {
   console.log('No local or exported operational knowledge gaps yet.');
   process.exit(0);
 }
 const publishedClaims = await publishedClaimRecords();
 const initialClusters = clusterRecords([...localRecords, ...d1Records], publishedClaims);
 const semanticResult = await mergeByLocalEmbeddings(initialClusters);
-await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length }, semanticClustering: semanticResult.metadata, clusters: semanticResult.clusters }, null, 2));
+await writeFile(outputPath, JSON.stringify({ generatedAt: new Date().toISOString(), inputs: { localRecords: localRecords.length, parsedLocalRecords: parsedLocalRecords.length, excludedLocalRecords: parsedLocalRecords.length - localRecords.length, excludedReasons, d1Clusters: d1Records.length, d1SubmittedClaims: d1SubmittedClaims.length }, semanticClustering: semanticResult.metadata, clusters: semanticResult.clusters, submittedClaims: d1SubmittedClaims }, null, 2));
 console.log(`Knowledge-gap review queue written: ${semanticResult.clusters.length} clusters from ${localRecords.length} reviewable local records and ${d1Records.length} D1 clusters; excluded ${parsedLocalRecords.length - localRecords.length} low-signal or failed records. Local semantic merge: ${semanticResult.metadata.enabled ? `${semanticResult.metadata.merged} merged` : `not used (${semanticResult.metadata.skipped})`}.`);

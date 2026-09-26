@@ -1,6 +1,9 @@
 import { readFile } from 'node:fs/promises';
 
 const triage = await readFile(new URL('./knowledge/triage.mjs', import.meta.url), 'utf8');
+const exporter = await readFile(new URL('./knowledge/export-query-clusters.mjs', import.meta.url), 'utf8');
+const reviewQueue = await readFile(new URL('./knowledge/review-queue.mjs', import.meta.url), 'utf8');
+const backfillMigration = await readFile(new URL('../migrations/0009_backfill_unclustered_claims.sql', import.meta.url), 'utf8');
 const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 // Roadmap documentation is optional in production checkouts; validation must
 // not make the Pages build depend on an untracked planning document.
@@ -16,6 +19,12 @@ requireText(triage, "args.has('export-d1')", 'explicit export opt-in');
 requireText(triage, "args.has('sync-d1')", 'explicit D1 triage sync opt-in');
 requireText(triage, 'sync-query-triage.mjs', 'durable D1 triage sync command');
 requireText(triage, 'review-queue.md', 'human-readable queue output');
+requireText(exporter, 'FROM resolve_requests r', 'privacy-filtered individual submission export');
+requireText(exporter, 'submittedClaims', 'submitted claim export payload');
+requireText(reviewQueue, 'User-submitted claim wording', 'direct submitted-claim review section');
+requireText(reviewQueue, 'Unclustered claim phrasings', 'visibility for unclustered submissions');
+requireText(backfillMigration, 'INSERT OR IGNORE INTO query_cluster_members', 'legacy submission membership backfill');
+requireText(backfillMigration, 'MIN(r.normalized_text)', 'preservation of claim wording during backfill');
 requireText(triage, 'No local or exported production knowledge gaps are available yet.', 'empty-input guard');
 requireText(triage, 'unlink(clusterOutput)', 'stale-output protection');
 if (packageJson.scripts?.['knowledge:triage'] !== 'node scripts/knowledge/triage.mjs') failures.push('package script does not expose knowledge:triage');

@@ -9,14 +9,15 @@ for (const required of [
   'knowledge:triage -- --export-d1',
   '--sync-d1',
   '.local/review-queue.json',
-  '.local/review-queue.md',
-  'actions/upload-artifact@v6',
+  'GITHUB_STEP_SUMMARY',
+  'submittedClaimPhrases',
+  'submittedClaimEvents',
   'CLOUDFLARE_API_TOKEN',
   'CLOUDFLARE_ACCOUNT_ID',
 ]) {
   if (!workflow.includes(required)) failures.push(`triage workflow is missing ${required}`);
 }
-for (const forbidden of ['knowledge:materialize', 'knowledge:promote-cluster', 'git push', 'wrangler pages deploy']) {
+for (const forbidden of ['actions/upload-artifact', '.local/d1-query-clusters.json', '.local/review-queue.md', 'knowledge:materialize', 'knowledge:promote-cluster', 'git push', 'wrangler pages deploy']) {
   if (workflow.includes(forbidden)) failures.push(`triage workflow must not perform public promotion: ${forbidden}`);
 }
 if (!workflow.includes("github.event_name") || !workflow.includes('configured=false')) failures.push('scheduled triage must skip safely without credentials and fail only for manual runs');
@@ -25,4 +26,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log('Knowledge triage workflow valid: production gaps become private review artifacts without automatic publication.');
+console.log('Knowledge triage workflow valid: only aggregate claim counts reach the public job summary; claim text stays in D1 and local review files.');

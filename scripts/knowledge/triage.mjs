@@ -26,8 +26,8 @@ const run = async (command, commandArgs) => {
 const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
 
 if (args.has('help')) {
-  console.log('Usage: npm run knowledge:triage [--export-d1] [--sync-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25]');
-  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}. Production D1 export and private triage sync are opt-in.');
+  console.log('Usage: npm run knowledge:triage [--export-d1] [--sync-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25] [--submission-limit 200]');
+  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}, including scrubbed user-submitted claim wording. Production D1 export and private triage sync are opt-in.');
   process.exit(0);
 }
 
@@ -62,14 +62,16 @@ if (!(await exists(clusterOutput))) {
   process.exit(0);
 }
 
-await run(process.execPath, [
+const reviewQueueArgs = [
   'scripts/knowledge/review-queue.mjs',
   '--input', clusterOutput,
   '--output', queueOutput,
   '--markdown', markdownOutput,
   '--min-count', minCount,
   '--limit', limit,
-]);
+];
+if (args.has('submission-limit')) reviewQueueArgs.push('--submission-limit', args.get('submission-limit'));
+await run(process.execPath, reviewQueueArgs);
 if (args.has('sync-d1')) {
   await run(process.execPath, ['scripts/knowledge/sync-query-triage.mjs', '--database', database, '--queue', queueOutput]);
 }
