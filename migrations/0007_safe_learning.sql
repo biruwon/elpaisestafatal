@@ -9,8 +9,7 @@ ALTER TABLE query_clusters ADD COLUMN source_status TEXT;
 ALTER TABLE query_clusters ADD COLUMN last_researched_at TEXT;
 ALTER TABLE query_clusters ADD COLUMN negative_feedback_count INTEGER NOT NULL DEFAULT 0;
 
--- One-time privacy scrub for rows created before neutral clustering. The
--- semantic signature remains useful for aggregate counts; original wording
--- is deliberately not retained.
-UPDATE resolve_requests SET normalized_text = 'legacy neutral cluster', canonical_signature = COALESCE(canonical_signature, 'legacy');
-UPDATE query_clusters SET canonical_text = 'legacy neutral cluster', canonical_signature = COALESCE(canonical_signature, 'legacy');
+-- Preserve normalized claim wording so maintainers can review real demand.
+-- New submissions are filtered and normalized in functions/lib/claim-demand.ts
+-- before they reach these tables. Replacing historical wording wholesale
+-- would leave the review queue with counts but no claims to inspect.

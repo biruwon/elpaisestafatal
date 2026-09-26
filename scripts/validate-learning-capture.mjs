@@ -4,6 +4,7 @@ const checker = await readFile(new URL('../src/scripts/claim-checker.ts', import
 const checkFunction = await readFile(new URL('../functions/api/check.ts', import.meta.url), 'utf8');
 const capture = await readFile(new URL('../functions/lib/claim-demand.ts', import.meta.url), 'utf8');
 const questions = await readFile(new URL('../functions/api/questions.ts', import.meta.url), 'utf8');
+const safeLearningMigration = await readFile(new URL('../migrations/0007_safe_learning.sql', import.meta.url), 'utf8');
 
 const required = [
   'stripSensitiveDetails',
@@ -22,5 +23,8 @@ if (questions.includes('export const onRequestPost')) {
 }
 if (checker.includes("fetch('/api/questions'") || checker.includes('fetch("/api/questions"')) {
   throw new Error('Checker must not persist submitted claims from the browser.');
+}
+if (/UPDATE\s+(?:resolve_requests|query_clusters)[\s\S]*?(?:normalized_text|canonical_text)\s*=\s*'legacy neutral cluster'/i.test(safeLearningMigration)) {
+  throw new Error('Safe-learning migration must preserve claim wording needed for review.');
 }
 console.log('Learning capture contract valid: scrubbed claims enter D1 server-side and provisional results stay session-only.');
