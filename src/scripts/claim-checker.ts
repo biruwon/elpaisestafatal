@@ -310,10 +310,11 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${visual}${renderResultOverview(evidenceGroups, response.state)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
-  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();
 };
-const setLoading = (text: string): void => {
+const isCurrentSubmission = (submission: AbortController): boolean => request === submission && !submission.signal.aborted;
+const setLoading = (text: string, submission: AbortController): void => {
   finishLoading();
   loadingStartedAt = Date.now();
   const loadingStages = loadingStagesFor(text);
@@ -323,9 +324,10 @@ const setLoading = (text: string): void => {
   if (result) {
     setMode(true);
     result.innerHTML = `<article class="claim-result claim-loading" aria-busy="true" role="status" aria-live="polite"><div class="claim-loading-mark" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow" data-loading-stage>Comprobación en curso</span><h2 data-loading-title>Estamos contrastando datos y fuentes</h2><p>${escapeHtml(text)}</p><p class="claim-loading-note" data-loading-note>Aún no hay una respuesta final; la conclusión y las cifras aparecerán cuando termine la comprobación.</p><p class="claim-loading-family" data-loading-family>Partes a revisar: ${escapeHtml(loadingStages.slice(1).join(' · ') || 'afirmación y fuentes disponibles')}</p><p class="claim-loading-elapsed" data-loading-elapsed>Acabamos de empezar</p><button type="button" class="claim-loading-cancel" data-cancel-check>Cancelar</button></article>`;
-    result.querySelector<HTMLButtonElement>('[data-cancel-check]')?.addEventListener('click', () => { request?.abort(); finishLoading(); setMode(false); result.innerHTML = ''; input?.focus(); });
+    result.querySelector<HTMLButtonElement>('[data-cancel-check]')?.addEventListener('click', () => { if (request !== submission) return; submission.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; input?.focus(); });
   }
   const update = (): void => {
+    if (!isCurrentSubmission(submission)) return;
     const elapsed = Math.round((Date.now() - loadingStartedAt) / 1000);
     const stage = result?.querySelector<HTMLElement>('[data-loading-stage]');
     const title = result?.querySelector<HTMLElement>('[data-loading-title]');
@@ -348,12 +350,16 @@ const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'proc
 };
 const submit = async (event: SubmitEvent): Promise<void> => {
   event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
+  request?.abort();
+  const submission = new AbortController();
+  request = submission;
   const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
-  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
-  request?.abort(); request = new AbortController(); if (!clarificationContext) writeRecent(original); setLoading(file?.name || original);
+  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
+  if (!clarificationContext) writeRecent(original); setLoading(file?.name || original, submission);
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   try {
-    let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, request.signal);
+    let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, submission.signal);
+    if (!isCurrentSubmission(submission)) return;
     const initialPreview = response.state === 'processing' ? response.preview : undefined;
     if (response.state === 'processing') renderProcessingPreview(response);
     // Local model interpretation and evidence planning can take a little
@@ -363,9 +369,12 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     const enrichmentDeadline = Date.now() + 120_000;
     for (let attempt = 0; response.state === 'processing' && response.id && Date.now() < enrichmentDeadline; attempt += 1) {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
+      if (!isCurrentSubmission(submission)) return;
       try {
-        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET', headers: { 'x-claim-text': original } }, 2000, request.signal);
+        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET', headers: { 'x-claim-text': original } }, 2000, submission.signal);
+        if (!isCurrentSubmission(submission)) return;
       } catch (error) {
+        if (!isCurrentSubmission(submission)) return;
         // A status check can time out while the resolver is still working.
         // Keep the processing response so a transient timeout cannot replace
         // an already-rendered preview with a terminal error.
@@ -373,7 +382,9 @@ const submit = async (event: SubmitEvent): Promise<void> => {
         throw error;
       }
     }
+    if (!isCurrentSubmission(submission)) return;
     finishLoading();
+    request = undefined;
     clarificationContext = undefined;
     if (response.state === 'processing') {
       if (initialPreview) {
@@ -396,7 +407,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       return;
     }
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
-  } catch (error) { if (error instanceof DOMException && error.name === 'AbortError' && request?.signal.aborted) { finishLoading(); return; } finishLoading(); renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
+  } catch (error) { if (request !== submission) return; if (error instanceof DOMException && error.name === 'AbortError' && submission.signal.aborted) { finishLoading(); request = undefined; return; } finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true }); }
 };
 
 form?.addEventListener('submit', submit);

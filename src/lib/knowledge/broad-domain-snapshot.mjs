@@ -24,6 +24,11 @@ const reviewedVisuals = {
   securityAdjustedGap: { type: 'comparison', title: 'Brecha en tasas de delitos con condena · antes y después del ajuste', unit: 'delitos por 100.000 adultos · 2007–2023', labels: ['Tasa bruta: diferencia entre grupos','Tras ajuste por edad y sexo'], values: [1197,619], sourceId: 'security-standardised-crime-reis', evidenceIds: ['security-standardised-crime-reis'], note: 'El ajuste reduce la brecha un 48,3 %, pero no la elimina; quedan factores como renta, barrio, origen y exposición institucional.' },
   immigrationStock: { type: 'line', title: 'Residentes nacidos fuera de España', unit: 'personas', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'], values: [5883891,5913165,6014708,6207509,6549309,7014753,7254797,7468144,8204206,8838234,9464210], sourceId: 'replacement-population-source', evidenceIds: ['replacement-population-source'], note: 'Eurostat mide población residente por lugar de nacimiento: es un stock, no llegadas del año, ciudadanía ni sustitución deliberada.' },
   immigrationOrigins: { type: 'bar', title: 'Principales países de nacimiento de residentes en España · 2025', unit: 'personas', labels: ['Marruecos','Colombia','Venezuela','Rumanía','Ecuador','Argentina','Perú'], values: [1165955,978041,692316,521181,468751,450883,430277], sourceId: 'replacement-population-source', evidenceIds: ['replacement-population-source'], note: 'País de nacimiento, no nacionalidad actual ni motivo migratorio.' },
+  immigrationNationalityVsBirthplace: { type: 'bar', title: 'Población extranjera y nacida fuera de España · 1 de enero de 2025', unit: '% de residentes', labels: ['Nacionalidad extranjera','Nacida en el extranjero'], values: [14.1,19.3], sourceId: 'ine-census-2025-immigration', evidenceIds: ['ine-census-2025-immigration'], note: 'Son definiciones distintas y no se deben sumar: algunas personas nacidas fuera tienen nacionalidad española.' },
+  pensionRetirementAge: { type: 'bar', title: 'Edad ordinaria legal de jubilación · calendario de la Ley 27/2011', unit: 'años', labels: ['2026 · <38 a 3 m cotizados','2026 · ≥38 a 3 m','Desde 2027 · <38 a 6 m','Desde 2027 · ≥38 a 6 m'], values: [66.83,65,67,65], sourceId: 'pension-retirement-age-law-2011', evidenceIds: ['pension-retirement-age-law-2011'], note: 'En 2026, 66 años y 10 meses equivalen aproximadamente a 66,83 años. La vía de 65 años depende de acreditar el periodo de cotización indicado.' },
+  illegalOccupationProcedure: { type: 'comparison', title: 'Duración media de procedimientos civiles por ocupación ilegal de vivienda · 2023', unit: 'meses', labels: ['Primera instancia','Apelación si se recurre'], values: [12,11.2], sourceId: 'illegal-occupation-cgpj-duration', evidenceIds: ['illegal-occupation-cgpj-duration'], note: 'Son medias de procedimientos civiles distintos; la apelación solo se añade cuando se interpone. No describen cada caso ni los procedimientos penales.' },
+  nuclearGenerationContext: { type: 'bar', title: 'Cuota de generación eléctrica española · 2025', unit: '% de la generación', labels: ['Renovables','Nuclear','Ciclo combinado'], values: [55.5,19,16.8], sourceId: 'nuclear-generation-ree-2025', evidenceIds: ['nuclear-generation-ree-2025'], note: 'Cuotas de generación anual antes de estimar el autoconsumo: renovables 55,5 %, nuclear 19 % y ciclo combinado 16,8 %. La cuota renovable llega al 56,6 % al contar autoconsumo.' },
+  regionalGovernmentSpending: { type: 'bar', title: 'Gasto autonómico liquidado por funciones · 2023', unit: '% del gasto total', labels: ['Sanidad','Educación','Cultura','Servicios generales','Alta dirección','Adm. financiera y tributaria'], values: [32.8,19.5,0.8,1.6,0.4,0.6], sourceId: 'hacienda-ccaa-finances-2023', evidenceIds: ['hacienda-ccaa-finances-2023'], note: 'Clasificación funcional del presupuesto liquidado. Las categorías de administración indicadas no equivalen a todo el coste administrativo ni miden duplicidades o cargos innecesarios.' },
   immigrationPermitReasons: { type: 'bar', title: 'Primeros permisos a ciudadanos no UE · España, 2024', unit: '% de permisos', labels: ['Familia','Estudios','Trabajo','Otros motivos'], values: [46,20.8,17,16.1], sourceId: 'immigration-permit-reasons-eurostat', evidenceIds: ['immigration-permit-reasons-eurostat'], note: 'Porcentajes redondeados, calculados sobre 561.640 primeros permisos. Solo cubre primeros permisos de residencia a no comunitarios; no representa todos los movimientos migratorios.' },
   pisaShare: { type: 'line', title: 'Alumnado con origen inmigrante · España', unit: '% del alumnado de 15 años', labels: ['2012','2022'], values: [10,15], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'PISA mide alumnado de 15 años y competencias escolares, no IQ ni inteligencia innata.' },
   pisaMathGap: { type: 'comparison', title: 'Brecha matemática PISA 2022 por origen migrante', unit: 'puntos PISA', labels: ['Sin ajustar','Tras ajustar por nivel socioeconómico'], values: [33,7], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'La OCDE indica que la brecha neta se redujo entre 2012 y 2022. PISA no permite inferir capacidad adulta ni manipulabilidad.' },
@@ -32,6 +37,205 @@ const reviewedVisuals = {
 };
 
 const packets = [
+  {
+    id: 'broad-migrant-minor-cost',
+    matches: /\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b[\s\S]{0,140}\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n|pagamos?)\b|\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n)\b[\s\S]{0,140}\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b/i,
+    interpretation: { kind: 'quantitative', subject: 'coste de acogida de menores migrantes no acompañados', subjectType: 'public-programme', predicate: 'costs', object: 'gasto público por menor y comparación con una pensión', normalizedClaim: 'coste mensual por menor migrante no acompañado y comparación con la pensión media', interpretation: 'La cifra por menor debe distinguir el coste total del sistema, transferencias entre administraciones y coste ejecutado por plaza/persona; después debe compararse con una pensión del mismo periodo.' },
+    headline: 'La cifra de 4.000 € al mes por menor no queda acreditada por las transferencias publicadas',
+    summary: 'Hay financiación pública para la acogida, pero una transferencia a las comunidades autónomas no equivale al coste mensual individual. Para comprobar la cifra hacen falta gasto ejecutado, número de menores atendidos, periodo y una pensión comparable.',
+    criteria: [
+      { id: 'minor-cost-per-person', label: 'Coste por menor', finding: 'No se ha localizado una serie estatal homogénea de gasto ejecutado por menor y mes que confirme los 4.000 € citados.', missingDimensions: ['gasto ejecutado por persona', 'número de menores atendidos en el mismo periodo', 'metodología y territorio'], sourceIds: ['minor-accommodation-funding-2026'] },
+      { id: 'minor-accommodation-transfer', label: 'Financiación de acogida', finding: 'En julio de 2026 el Consejo de Ministros aprobó repartir 35 millones de euros entre comunidades y ciudades autónomas para apoyar la acogida; el crédito también cubre orientación, apoyo psicosocial, escolarización, inserción e inclusión, y ampliación de plazas.', fallbackData: ['35 millones de euros de crédito estatal para acogida y servicios asociados (2026)'], population: 'comunidades y ciudades autónomas que prestan atención a menores migrantes no acompañados', denominator: 'crédito total aprobado, no coste por menor', unit: 'euros', sourceIds: ['minor-accommodation-funding-2026'] },
+      { id: 'minor-pension-comparison', label: 'Comparación con una pensión', finding: 'La transferencia anual a los sistemas territoriales y el coste mensual atribuido a una plaza son magnitudes distintas; no permiten concluir que cada menor cueste más que una pensión media.', missingDimensions: ['pensión de referencia y periodo', 'gasto individual comparable'], sourceIds: ['minor-accommodation-funding-2026'] },
+    ],
+    limitations: ['El reparto de 35 millones documenta financiación de acogida en 2026, no el coste total del sistema ni una tarifa mensual por menor. La cifra de 4.000 € y la comparación con una pensión siguen sin una medición compatible.'],
+    sources: [source('minor-accommodation-funding-2026', 'Distribución territorial de fondos para la acogida de niños y adolescentes migrantes no acompañados · 2026', 'La Moncloa', 'https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2026/20260714-referencia-rueda-de-prensa-ministros.aspx', '2026-07-14')],
+  },
+  {
+    id: 'broad-amnesty-constitution',
+    matches: /\b(ley de )?amnist[ií]a\b[\s\S]{0,160}\b(inconstitucional|constitucional|igualdad|independent|catalu[nñ]a|proc[eé]s|separatist)\w*\b|\b(inconstitucional|constitucional|igualdad)\b[\s\S]{0,160}\bamnist[ií]a\b/i,
+    interpretation: { kind: 'legal', subject: 'Ley Orgánica 1/2024 de amnistía para Cataluña', subjectType: 'law', predicate: 'complies_with', object: 'la Constitución y el principio de igualdad', normalizedClaim: 'constitucionalidad e igualdad ante la ley en la amnistía de Cataluña', interpretation: 'Hay que distinguir la constitucionalidad general de la ley, los preceptos concretos anulados y las opiniones discrepantes.' },
+    headline: 'El Tribunal Constitucional avaló la amnistía en general y anuló aspectos concretos por igualdad',
+    summary: 'La respuesta no es que toda la amnistía fuera declarada inconstitucional. En junio de 2025, la mayoría del Tribunal Constitucional avaló la ley salvo aspectos concretos, incluidos dos relativos al principio de igualdad; hubo votos particulares discrepantes.',
+    criteria: [
+      { id: 'amnesty-overall-ruling', label: 'Fallo sobre la ley', finding: 'El Pleno del Tribunal Constitucional avaló la legitimidad constitucional de la LO 1/2024 en su conjunto, con excepciones expresas; la mera concesión de una amnistía no se consideró prohibida por la Constitución.', fallbackData: ['STC 137/2025: sentencia de 26 de junio de 2025; el TC avaló la ley salvo aspectos concretos'], population: 'Ley Orgánica 1/2024 y recurso de inconstitucionalidad', denominator: 'fallo del Pleno del Tribunal Constitucional', unit: 'decisión judicial', sourceIds: ['amnesty-tc-decision-2025'] },
+      { id: 'amnesty-equality-limits', label: 'Igualdad y límites', finding: 'El TC declaró inconstitucional por omisión parte del art. 1.1 por excluir conductas dirigidas a rechazar el procés y anuló el segundo párrafo del art. 1.3 por permitir amnistiar conductas posteriores a la aprobación de la ley; condicionó además una regla procesal del art. 13 a oír a todas las partes.', fallbackData: ['Dos aspectos de la LO 1/2024 declarados inconstitucionales por vulnerar la igualdad; una regla procesal interpretada con condición (2025)'], population: 'preceptos concretos examinados', denominator: 'fallo mayoritario del Tribunal Constitucional', unit: 'decisión jurídica', sourceIds: ['amnesty-tc-decision-2025'] },
+    ],
+    limitations: ['El fallo mayoritario no elimina el debate político ni los votos particulares, pero sí responde a la afirmación jurídica general: la ley no fue anulada en su totalidad.'],
+    sources: [source('amnesty-tc-decision-2025', 'Sentencia 137/2025 y nota informativa sobre la Ley Orgánica 1/2024 de amnistía', 'Tribunal Constitucional', 'https://hj.tribunalconstitucional.es/es/Resolucion/Show/31575', '2025-06-26')],
+  },
+  {
+    id: 'broad-housing-priority-migration',
+    matches: /\b(inmigr\w*|migrant\w*|extranj\w*|reci[eé]n llegad\w*)\b[\s\S]{0,120}\b(viviend\w*|alquil\w*|piso\w*)\b[\s\S]{0,100}\b(prior\w*|list\w*|releg\w*|prefer\w*|adjudic\w*)\b|\b(prior\w*|list\w*|releg\w*|prefer\w*|adjudic\w*)\b[\s\S]{0,120}\b(inmigr\w*|migrant\w*|extranj\w*|reci[eé]n llegad\w*)\b[\s\S]{0,100}\b(viviend\w*|alquil\w*|piso\w*)\b/i,
+    interpretation: { kind: 'legal', subject: 'adjudicación de vivienda pública a residentes españoles y extranjeros', subjectType: 'public-programme', predicate: 'prioritises', object: 'newly arrived migrants over Spanish families', normalizedClaim: 'prioridad de inmigrantes recién llegados en la adjudicación de vivienda pública', interpretation: 'La regla estatal de acceso y las listas reales de cada comunidad o programa son preguntas distintas; hace falta territorio, convocatoria y datos de adjudicación.' },
+    headline: 'No hay una prioridad automática estatal demostrada; la adjudicación depende de la norma y el programa territorial',
+    summary: 'La Ley de Extranjería permite que las personas extranjeras residentes accedan a ayudas de vivienda en los términos fijados por las leyes y administraciones competentes; para residentes de larga duración establece igualdad de condiciones con españoles. Eso no prueba quién ocupa posiciones preferentes en cada lista local.',
+    criteria: [
+      { id: 'housing-national-rule', label: 'Regla legal de acceso', finding: 'El artículo 13 de la Ley Orgánica 4/2000 remite a las leyes y administraciones competentes para concretar el acceso de extranjeros residentes a ayudas públicas de vivienda; garantiza a residentes de larga duración las mismas condiciones que a los españoles.', fallbackData: ['LO 4/2000, art. 13: condiciones de acceso definidas por las normas y administraciones competentes; igualdad expresa para residentes de larga duración'], population: 'personas extranjeras residentes que solicitan ayudas de vivienda', denominator: 'marco legal estatal de acceso', unit: 'norma jurídica', sourceIds: ['foreigners-housing-rights-law'] },
+      { id: 'housing-allocation-practice', label: 'Listas y adjudicaciones', finding: 'La ley estatal no contiene una lista nacional de adjudicaciones ni demuestra que recién llegados desplacen a hogares españoles con la misma necesidad. Para comprobar una práctica concreta hay que identificar la comunidad, el programa, la convocatoria y las adjudicaciones comparables.', missingDimensions: ['comunidad autónoma o municipio', 'programa y convocatoria', 'criterios de baremación', 'resultados de adjudicación comparables'], sourceIds: ['foreigners-housing-rights-law'] },
+    ],
+    limitations: ['La norma general no permite confirmar ni descartar una acusación sobre una lista o convocatoria local concreta. No se debe inferir una prioridad real a partir de la nacionalidad de adjudicatarios aislados.'],
+    sources: [source('foreigners-housing-rights-law', 'Ley Orgánica 4/2000 · artículos 13 y 14', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-2000-544', '2000-01-12')],
+  },
+  {
+    id: 'broad-immigrant-net-fiscal-contribution',
+    matches: /\b(inmigr\w*|migrant\w*|extranj\w*)\b[\s\w]{0,100}\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*|prestacion\w*|ayuda\w*|servicios? p[uú]blicos?|cuesta|paga\w*)\b|\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*|prestacion\w*|ayuda\w*|servicios? p[uú]blicos?|cuesta|paga\w*)\b[\s\w]{0,100}\b(inmigr\w*|migrant\w*|extranj\w*)\b/i,
+    interpretation: { kind: 'quantitative', subject: 'contribución fiscal de los hogares inmigrantes en España', subjectType: 'group', predicate: 'contributes_to', object: 'ingresos y gastos públicos', normalizedClaim: 'saldo fiscal neto de inmigrantes frente a la población nativa', interpretation: 'El saldo depende de si se cuentan solo impuestos y prestaciones monetarias o también sanidad, educación y otros servicios, además de año, edad y población.' },
+    headline: 'El saldo fiscal depende del método: una estimación de 2017 cambia al incluir sanidad y educación',
+    summary: 'No hay una cifra única para todos los inmigrantes y todos los años. La AIReF resume un estudio de hogares no europeos para 2017 que estima un saldo directo positivo; al incorporar salud y educación, la comparación relativa con hogares nativos cambia.',
+    criteria: [
+      { id: 'immigrant-direct-fiscal-balance', label: 'Saldo fiscal directo', finding: 'AIReF cita una estimación para 2017 según la cual los hogares no europeos generaron una contribución fiscal neta directa de 4.200 € al año, un 75 % superior a la de los hogares nativos; el resultado se explica en parte por menor gasto en pensiones por una estructura de edad más joven.', fallbackData: ['Saldo fiscal directo estimado: +4.200 € por hogar no europeo y año (2017), un 75 % superior al de hogares nativos'], population: 'hogares compuestos exclusivamente por inmigrantes no europeos incluidos en la estimación', denominator: 'hogar y año', unit: 'euros netos', sourceIds: ['airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020'] },
+      { id: 'immigrant-total-fiscal-balance', label: 'Servicios públicos incluidos', finding: 'El estudio resumido por AIReF calcula que, al añadir transferencias en educación y sanidad, los hogares no europeos reciben alrededor de 400 € más que los nativos. Es una comparación de hogares y del año 2017, no una cuenta completa y actual de cada persona migrante.', fallbackData: ['Al incluir gasto de sanidad y educación: hogares no europeos recibieron unos 400 € más que hogares nativos (2017)'], population: 'hogares no europeos comparados con hogares nativos en España', denominator: 'hogar y año', unit: 'diferencia estimada en euros', sourceIds: ['airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020'] },
+      { id: 'immigrant-fiscal-generalisation', label: 'Alcance de la conclusión', finding: 'El resultado no se puede trasladar automáticamente a todos los inmigrantes, a personas irregulares, a otros años o a cada programa; faltan cuentas actuales desglosadas por situación laboral, edad y servicios utilizados.', missingDimensions: ['estimación actual', 'desglose por situación laboral y residencia', 'balance individual por grupo de edad'], sourceIds: ['airef-immigration-fiscal-review-2025'] },
+    ],
+    limitations: ['La estimación positiva de saldo directo no incluye todos los servicios; al ampliar el perímetro, el resultado relativo cambia. Ni un estudio de 2017 ni un promedio de hogares prueba el saldo fiscal de cada persona o de todos los inmigrantes hoy.'],
+    sources: [
+      source('airef-immigration-fiscal-review-2025', 'Recuadro 5 · Impacto fiscal de la inmigración', 'AIReF', 'https://www.airef.es/wp-content/uploads/2025/03/Opini%C3%B3n_sobre_la_sostenibilidad_de_las_AAPP_largo_plazo/Recuadro-5_Opinion.pdf', '2025-03-31'),
+      source('uc3m-immigration-fiscal-study-2020', 'The size, socio-economic composition and fiscal implications of irregular immigration in Spain', 'Universidad Carlos III de Madrid', 'https://e-archivo.uc3m.es/rest/api/core/bitstreams/1f19ed21-ac46-4007-9637-bd60e73bbc19/content', '2020-07-24'),
+    ],
+  },
+  {
+    id: 'broad-immigration-regional-minority-forecast',
+    visuals: [reviewedVisuals.immigrationNationalityVsBirthplace],
+    matches: /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b[\s\w]{0,100}\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b|\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b[\s\w]{0,100}\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i,
+    interpretation: { kind: 'projected', subject: 'población por nacionalidad y lugar de nacimiento en España', subjectType: 'population', predicate: 'could_become', object: 'minority across most autonomous communities within three to five years', normalizedClaim: 'predicción de que la población española será minoría en la mayoría de territorios en tres a cinco años', interpretation: 'Hay que distinguir ciudadanía de lugar de nacimiento y comparar una proyección territorial por nacionalidad con el plazo anunciado.' },
+    headline: 'El censo no respalda que la población española vaya a ser minoría en la mayoría de territorios en 3–5 años',
+    summary: 'El dato más reciente del INE consultado, a 1 de enero de 2025, cuenta nacionalidad y lugar de nacimiento por separado. Es una foto actual, no una proyección a 3–5 años para cada comunidad autónoma.',
+    criteria: [
+      { id: 'resident-nationality-share', label: 'Nacionalidad actual', finding: 'A 1 de enero de 2025, el 85,9 % de la población residente tenía nacionalidad española y el 14,1 % extranjera. La nacionalidad no equivale al origen ni al lugar de nacimiento.', fallbackData: ['42.216.326 residentes con nacionalidad española (85,9 %) y 6.911.971 con nacionalidad extranjera (14,1 %) · 1-1-2025'], population: 'población residente en España', denominator: '49.128.297 residentes', unit: 'personas y porcentaje', sourceIds: ['ine-census-2025-immigration'] },
+      { id: 'foreign-born-share', label: 'Lugar de nacimiento', finding: 'El 19,3 % había nacido fuera de España; algunas personas nacidas en el extranjero tienen nacionalidad española, por lo que esta cifra no debe sumarse a la población extranjera.', fallbackData: ['9.464.210 residentes nacidos fuera de España (19,3 %) · 1-1-2025'], population: 'población residente en España', denominator: '49.128.297 residentes', unit: 'personas y porcentaje', sourceIds: ['ine-census-2025-immigration'] },
+      { id: 'regional-minority-projection', label: 'Proyección por territorio', finding: 'Los recuentos actuales no demuestran una mayoría futura ni el plazo de 3–5 años. Para confirmar la predicción se necesita una proyección por nacionalidad y comunidad autónoma, no extrapolar el crecimiento agregado de residentes nacidos fuera.', missingDimensions: ['proyección por nacionalidad y CCAA', 'definición de “españoles” (ciudadanía o nacimiento)', 'plazo y supuestos demográficos'], sourceIds: ['ine-census-2025-immigration', 'ine-population-projections'] },
+    ],
+    limitations: ['Los porcentajes son nacionales y observados en 2025; no resuelven por sí solos una predicción regional futura. Ciudadanía y nacimiento fuera son categorías diferentes.'],
+    sources: [
+      source('ine-census-2025-immigration', 'Censo Anual de Población 2025 · nacionalidad y país de nacimiento', 'INE', 'https://www.ine.es/dyngs/Prensa/CensoVariables2025.htm', '2026-04-29'),
+      source('ine-population-projections', 'Proyecciones de población 2026–2076', 'INE', 'https://ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176953&idp=1254735572981&menu=ultiDatos', '2026-06-01'),
+    ],
+  },
+  {
+    id: 'broad-pension-retirement-age-immigration',
+    visuals: [reviewedVisuals.pensionRetirementAge],
+    matches: /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b[\s\S]{0,180}\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b|\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b[\s\S]{0,180}\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i,
+    interpretation: { kind: 'legal', subject: 'edad ordinaria de jubilación en España', subjectType: 'law', predicate: 'requires', object: 'retirement at age 67 because immigration contributions are insufficient', normalizedClaim: 'edad de jubilación de 67 años y relación causal con las cotizaciones de inmigrantes', interpretation: 'La norma fija una edad ordinaria gradual con excepciones por años cotizados; su calendario no prueba por sí mismo por qué se aprobó ni una causa migratoria.' },
+    headline: 'La edad legal sube gradualmente a 67 para algunas carreras, no para todo el mundo ni por una causa migratoria demostrada',
+    summary: 'La Ley 27/2011 fija edades distintas según el historial de cotización. En 2026 la edad ordinaria es 65 años con al menos 38 años y 3 meses cotizados, o 66 años y 10 meses con menos; desde 2027 son 65 con al menos 38 años y 6 meses o 67 con menos.',
+    criteria: [
+      { id: 'retirement-age-schedule', label: 'Calendario legal', finding: 'La edad ordinaria depende del periodo cotizado y se implantó gradualmente por la Ley 27/2011.', fallbackData: ['2026: 65 años con ≥38 años y 3 meses cotizados; 66 años y 10 meses con menos', 'Desde 2027: 65 años con ≥38 años y 6 meses cotizados; 67 años con menos'], population: 'personas que solicitan pensión contributiva de jubilación', denominator: 'periodo de cotización acreditado', unit: 'edad ordinaria legal', sourceIds: ['pension-retirement-age-law-2011'] },
+      { id: 'retirement-age-cause', label: 'Causa atribuida a inmigración', finding: 'La Ley 27/2011 establece el calendario legal, pero no demuestra que se fijara por una insuficiencia concreta de cotizaciones de inmigrantes. Para sostener esa causalidad haría falta una evaluación que cuantificara la contribución migratoria y la decisión de elevar la edad.', missingDimensions: ['evaluación causal de la reforma', 'contribución migratoria comparada con el coste pensionista'], sourceIds: ['pension-retirement-age-law-2011'] },
+    ],
+    limitations: ['La norma determina edades ordinarias y excepciones por cotización; no equivale a obligar a toda persona a trabajar hasta los 67 ni prueba la explicación causal alegada.'],
+    sources: [source('pension-retirement-age-law-2011', 'Ley 27/2011 · edad ordinaria de jubilación y calendario transitorio', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-2011-13242', '2011-08-02')],
+  },
+  {
+    id: 'broad-nato-expulsion',
+    matches: /\b(otan|nato)\b[\s\w]{0,100}\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b|\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b[\s\w]{0,100}\b(otan|nato)\b/i,
+    interpretation: { kind: 'legal', subject: 'pertenencia de España a la OTAN', subjectType: 'institution', predicate: 'could_be_removed_from', object: 'NATO membership', normalizedClaim: 'propuesta de suspender o expulsar a España de la OTAN y mecanismo jurídico aplicable', interpretation: 'Hay que separar un correo filtrado o una propuesta política de una decisión formal y de lo que permite el Tratado del Atlántico Norte.' },
+    headline: 'Hubo un correo interno que planteó suspender a España; el Tratado no prevé expulsar ni suspender miembros',
+    summary: 'Reuters informó en abril de 2026 de que un correo interno del Pentágono barajó una suspensión como opción de presión. Eso no fue una decisión de la OTAN. El artículo 13 del Tratado regula la retirada voluntaria de un Estado y el texto no crea un procedimiento de expulsión o suspensión.',
+    criteria: [
+      { id: 'nato-reported-proposal', label: 'Propuesta reportada', finding: 'Una información de Reuters describió un correo interno del Pentágono que incluía la suspensión de España entre opciones de presión; una opción interna no equivale a una decisión del Consejo del Atlántico Norte.', fallbackData: ['Reuters informó de la opción en un correo interno del Pentágono (24-4-2026)'], population: 'correo interno del Departamento de Defensa de EE. UU.', denominator: 'reporte periodístico sobre opciones consideradas', unit: 'propuesta reportada', sourceIds: ['nato-pentagon-email-report-2026'] },
+      { id: 'nato-treaty-membership', label: 'Tratado y mecanismo', finding: 'El artículo 13 permite la retirada voluntaria de una parte tras notificarla; el Tratado no establece un procedimiento para expulsar o suspender a un miembro.', fallbackData: ['Tratado del Atlántico Norte, art. 13: retirada voluntaria con un año de preaviso; no contiene cláusula de expulsión o suspensión'], population: 'Estados parte del Tratado del Atlántico Norte', denominator: 'artículos del Tratado', unit: 'norma jurídica', sourceIds: ['nato-founding-treaty', 'nato-members-2026'] },
+      { id: 'nato-spain-status', label: 'Situación de España', finding: 'España sigue figurando entre los países miembros de la OTAN; no se ha reportado una decisión formal de expulsión o suspensión.', fallbackData: ['España figura como país miembro de la OTAN (consulta 2026-09-26)'], population: 'miembros de la OTAN', denominator: 'lista oficial de países miembros', unit: 'estado de membresía', sourceIds: ['nato-members-2026'] },
+    ],
+    limitations: ['La información sobre una opción planteada en un correo no prueba una decisión institucional ni un mecanismo jurídico. Si la afirmación se refiere a una declaración o propuesta posterior, hay que identificar a su autor y fecha.'],
+    sources: [
+      source('nato-founding-treaty', 'Tratado del Atlántico Norte · artículo 13', 'OTAN', 'https://www.nato.int/cps/en/natohq/official_texts_17120.htm?selectedLocale=es', '1949-04-04'),
+      source('nato-members-2026', 'Países miembros de la OTAN', 'OTAN', 'https://www.nato.int/en/about-us/organization/nato-member-countries', '2026-09-26'),
+      { ...source('nato-pentagon-email-report-2026', 'Exclusive: Pentagon email floats suspending Spain from NATO', 'Reuters · republicado por Investing.com', 'https://www.investing.com/news/world-news/exclusivepentagon-email-floats-suspending-spain-from-nato-other-steps-over-iran-rift-source-says-4634557', '2026-04-24'), role: 'secondary' },
+    ],
+  },
+  {
+    id: 'broad-illegal-occupation',
+    visuals: [reviewedVisuals.illegalOccupationProcedure],
+    matches: /\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b[\s\S]{0,180}\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse|puede)\b|\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse)\b[\s\S]{0,180}\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b/i,
+    interpretation: { kind: 'legal', subject: 'entrada y permanencia no consentidas en inmuebles', subjectType: 'law', predicate: 'can_be_removed_by', object: 'police and courts under different procedures depending on whether the property is a dwelling', normalizedClaim: 'si la policía no puede desalojar una ocupación ilegal y si los ocupantes pueden quedarse durante años', interpretation: '“Okupación” agrupa situaciones legalmente distintas. Hay que separar allanamiento de morada, usurpación de un inmueble que no constituye morada y duración de cada vía judicial.' },
+    headline: 'La policía no está legalmente impedida de actuar, pero el desalojo y los plazos dependen del caso y de la vía judicial',
+    summary: 'El Código Penal distingue el allanamiento de una morada ajena (artículo 202) de la usurpación de un inmueble que no constituye morada (artículo 245). Desde 2025 ambos delitos pueden entrar en el cauce de juicio rápido si cumplen sus requisitos, pero eso no equivale a un desalojo automático en el acto. En la vía civil, el CGPJ estimó 12 meses de media en primera instancia para una clase concreta de procedimiento en 2023.',
+    criteria: [
+      { id: 'occupation-legal-distinction', label: 'Qué inmueble y qué delito', finding: 'El artículo 202 del Código Penal tipifica entrar o permanecer contra la voluntad del morador en una morada ajena; el artículo 245.2 tipifica ocupar sin autorización un inmueble que no constituye morada. No son una sola situación ni se resuelven con una regla única.', fallbackData: ['Código Penal, arts. 202 y 245.2: allanamiento de morada y usurpación de inmueble son figuras distintas'], population: 'hechos denunciados como entrada o permanencia sin consentimiento', denominator: 'tipo de inmueble y conducta acreditada', unit: 'norma jurídica', sourceIds: ['illegal-occupation-criminal-code'] },
+      { id: 'occupation-procedure-reform', label: 'Vía de actuación judicial', finding: 'La Ley Orgánica 1/2025 incorporó los delitos de allanamiento de morada y usurpación al ámbito del procedimiento de enjuiciamiento rápido cuando concurren los requisitos legales. La reforma acelera una vía procesal; no promete una expulsión inmediata en cualquier supuesto.', fallbackData: ['Desde 2025, allanamiento (art. 202 CP) y usurpación (art. 245 CP) pueden tramitarse por juicio rápido si se cumplen los requisitos del art. 795 LECrim'], population: 'procedimientos penales por allanamiento y usurpación que cumplan los requisitos', denominator: 'art. 795 de la Ley de Enjuiciamiento Criminal', unit: 'vía procesal', sourceIds: ['illegal-occupation-fast-track-law', 'illegal-occupation-prosecutor-circular'] },
+      { id: 'occupation-civil-duration', label: 'Duración publicada', finding: 'El CGPJ estimó en 2023 una duración media de 12,0 meses para los juicios verbales posesorios por ocupación ilegal de viviendas en primera instancia; la apelación civil añadía 11,2 meses de media cuando se recurría. Son medias de procedimientos civiles específicos, no la duración de todos los casos.', fallbackData: ['Primera instancia: 12,0 meses (2023); apelación civil: 11,2 meses de media si se recurre'], population: 'procedimientos civiles verbales posesorios por ocupación ilegal de viviendas', denominator: 'procedimiento, primera instancia; apelación medida por separado', unit: 'meses de duración media', sourceIds: ['illegal-occupation-cgpj-duration'] },
+    ],
+    limitations: ['Las medias civiles son históricas y no fijan un plazo universal ni describen actuaciones policiales en flagrancia. Para valorar un caso concreto importan el tipo de inmueble, cuándo se detectó, la prueba de titularidad y la vía utilizada.'],
+    sources: [
+      source('illegal-occupation-criminal-code', 'Código Penal · artículos 202 y 245', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1995-25444', '1995-11-23'),
+      source('illegal-occupation-fast-track-law', 'Ley Orgánica 1/2025 · procedimiento de enjuiciamiento rápido', 'Boletín Oficial del Estado', 'https://www.boe.es/eli/es/lo/2025/01/02/1/con', '2025-01-03'),
+      source('illegal-occupation-prosecutor-circular', 'Circular 1/2025 · ocupación de inmuebles y allanamiento de morada', 'Fiscalía General del Estado', 'https://www.boe.es/buscar/doc.php?id=BOE-A-2025-17153', '2025-06-26'),
+      source('illegal-occupation-cgpj-duration', 'Panorámica de la Justicia 2023 · duración media de procedimientos', 'Consejo General del Poder Judicial', 'https://www.poderjudicial.es/stfls/ESTADISTICA/FICHEROS/Panoramicajusticia/Panor%C3%A1mica%20Justicia%202023.pdf', '2024-07-01'),
+    ],
+  },
+  {
+    id: 'broad-sexual-consent-law-effects',
+    matches: /\b(ley del )?solo s[ií] es s[ií]\b|\b(ley org[aá]nica )?10\/2022\b[\s\S]{0,140}\b(rebaj\w*|reduc\w*|condenas?|v[ií]ctimas?|protecci[oó]n)\b|\b(rebaj\w*|reduc\w*|condenas?)\b[\s\S]{0,140}\bsolo s[ií] es s[ií]\b/i,
+    interpretation: { kind: 'mixed', subject: 'revisión de penas tras la Ley Orgánica 10/2022', subjectType: 'law', predicate: 'changed', object: 'sentences for sexual offences and protection outcomes', normalizedClaim: 'reducciones de penas bajo la ley del solo sí es sí y efecto general sobre la protección de víctimas', interpretation: 'Hay que separar el hecho comprobable de revisiones de condena de la afirmación causal, más amplia, de que la protección de víctimas empeoró en general.' },
+    headline: 'Sí hubo rebajas y excarcelaciones; esa cifra por sí sola no mide la protección global de las víctimas',
+    summary: 'El CGPJ comunicó al menos 1.233 reducciones de pena y 126 excarcelaciones hasta el 1 de noviembre de 2023 en datos recabados de los tribunales superiores, Audiencias Provinciales, Tribunal Supremo y Audiencia Nacional. La cifra es real y relevante, pero no incluye datos de los juzgados de lo penal ni demuestra por sí sola un empeoramiento general de la protección o de los resultados para las víctimas.',
+    criteria: [
+      { id: 'sexual-law-sentence-reductions', label: 'Revisiones de condena', finding: 'El CGPJ registró al menos 1.233 reducciones de pena y 126 excarcelaciones hasta el 1 de noviembre de 2023. El recuento cubría los órganos judiciales que informaron y excluía las revisiones de los juzgados de lo penal, por dificultad para recabar esos datos.', fallbackData: ['Al menos 1.233 reducciones de pena y 126 excarcelaciones · datos del CGPJ hasta 1-11-2023'], population: 'condenas revisadas por Tribunal Supremo, Audiencia Nacional, TSJ y Audiencias Provinciales', denominator: 'resoluciones comunicadas; no incluye Juzgados de lo Penal', unit: 'resoluciones', sourceIds: ['sexual-law-cgpj-revisions'] },
+      { id: 'sexual-law-amendment', label: 'Cambio legal posterior', finding: 'La Ley Orgánica 4/2023 modificó el Código Penal en los delitos contra la libertad sexual después de las revisiones iniciales. Para valorar una pena concreta hay que identificar la ley aplicable a la fecha de los hechos y las reglas de retroactividad favorable.', fallbackData: ['La LO 4/2023 reformó las penas de los delitos contra la libertad sexual tras la entrada en vigor de la LO 10/2022'], population: 'delitos contra la libertad sexual', denominator: 'texto penal aplicable al hecho y a la revisión', unit: 'reforma legal', sourceIds: ['sexual-law-amendment-2023'] },
+      { id: 'sexual-law-victim-protection', label: 'Efecto global sobre las víctimas', finding: 'El recuento de rebajas mide resoluciones judiciales, no prevalencia delictiva, reincidencia, denuncias, seguridad de víctimas ni calidad de la protección. Por sí solo no acredita el efecto general que atribuye la frase.', missingDimensions: ['serie de resultados para víctimas', 'comparación causal antes y después', 'cobertura de todos los órganos judiciales'], sourceIds: ['sexual-law-cgpj-revisions'] },
+    ],
+    limitations: ['La cifra oficial confirma reducciones y excarcelaciones, pero no es una evaluación causal completa de la protección de víctimas. El balance global necesita indicadores distintos y comparables, no solo el total de revisiones.'],
+    sources: [
+      source('sexual-law-cgpj-revisions', 'Los tribunales han acordado 1.233 reducciones de pena en aplicación de la LO 10/2022', 'Consejo General del Poder Judicial', 'https://www.poderjudicial.es/cgpj/es/Poder-Judicial/En-Portada/Los-tribunales-han-acordado-1-233-reducciones-de-pena-en-aplicacion-de-la-Ley-Organica-10-2022', '2023-11-24'),
+      source('sexual-law-amendment-2023', 'Ley Orgánica 4/2023 · modificación de los delitos contra la libertad sexual', 'Boletín Oficial del Estado', 'https://www.boe.es/eli/es/lo/2023/04/27/4/con', '2023-04-28'),
+    ],
+  },
+  {
+    id: 'broad-gender-law-evidence-standard',
+    matches: /\b(ley de )?violencia de g[eé]nero\b[\s\S]{0,180}\b(hombres?|discrimin\w*|pruebas?|conden\w*|inocencia|igualdad)\b|\b(menos pruebas|presunci[oó]n de inocencia|discrimina a los hombres)\b[\s\S]{0,180}\b(violencia de g[eé]nero|ley)\b/i,
+    interpretation: { kind: 'legal', subject: 'reglas penales de la Ley Orgánica 1/2004 y garantías de prueba', subjectType: 'law', predicate: 'changes', object: 'penalties for specified partner violence but not the presumption of innocence', normalizedClaim: 'si la Ley de Violencia de Género permite condenar hombres con menos pruebas', interpretation: 'La frase mezcla diferencias legales en el tipo y la pena con el estándar probatorio del proceso penal; son cuestiones distintas.' },
+    headline: 'La ley prevé una pena distinta en supuestos concretos, pero no rebaja el estándar de prueba',
+    summary: 'El Tribunal Constitucional avaló en 2008 la diferencia de pena del artículo 153.1 del Código Penal para el supuesto de violencia de un hombre contra su pareja o expareja mujer. Eso no crea una regla de “menos pruebas”: la presunción de inocencia del artículo 24.2 de la Constitución sigue amparando a toda persona acusada.',
+    criteria: [
+      { id: 'gender-law-penalty-difference', label: 'Diferencia penal reconocida', finding: 'La STC 59/2008 desestimó la cuestión de inconstitucionalidad contra el artículo 153.1 CP y consideró constitucional la diferencia punitiva para el ámbito definido por la ley. La distinción se refiere al encuadre y a la pena de ciertos hechos, no a que la acusación necesite menos prueba.', fallbackData: ['STC 59/2008: el Tribunal Constitucional avaló el artículo 153.1 del Código Penal y su diferencia de pena en el supuesto legal'], population: 'supuestos definidos en el art. 153.1 CP', denominator: 'sentencia del Tribunal Constitucional', unit: 'doctrina constitucional', sourceIds: ['gender-violence-tc-2008', 'gender-violence-law-2004'] },
+      { id: 'gender-law-evidence-guarantee', label: 'Carga y garantías probatorias', finding: 'El artículo 24.2 de la Constitución reconoce a todas las personas el derecho a la presunción de inocencia. No se ha identificado en la Ley Orgánica 1/2004 una excepción que permita condenar sin prueba suficiente o con un estándar probatorio inferior por razón del sexo del acusado.', fallbackData: ['Constitución, art. 24.2: toda persona tiene derecho a la presunción de inocencia'], population: 'todas las personas acusadas en un proceso penal', denominator: 'garantía constitucional', unit: 'derecho procesal', sourceIds: ['spanish-constitution-presumption-innocence'] },
+    ],
+    limitations: ['La respuesta se refiere a la comparación de penas del artículo 153.1 y al estándar constitucional de prueba. No evalúa por sí sola el funcionamiento de cada juzgado ni todas las políticas de igualdad.'],
+    sources: [
+      source('gender-violence-tc-2008', 'STC 59/2008 · artículo 153.1 del Código Penal', 'Tribunal Constitucional', 'https://hj.tribunalconstitucional.es/es/Resolucion/Show/6291', '2008-05-14'),
+      source('gender-violence-law-2004', 'Ley Orgánica 1/2004 de medidas de protección integral contra la violencia de género', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-2004-21760', '2004-12-29'),
+      source('spanish-constitution-presumption-innocence', 'Constitución Española · artículo 24.2', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', '1978-12-29'),
+    ],
+  },
+  {
+    id: 'broad-nuclear-phaseout-risk',
+    visuals: [reviewedVisuals.nuclearGenerationContext],
+    matches: /\b(cierre|cerrar|cierre progresivo|desmantel\w*|apag[oó]n)\b[\s\S]{0,180}\b(centrales? nucleares?|nucleares?|energ[ií]a nuclear)\b[\s\S]{0,180}\b(precio|luz|seguridad energ[eé]tica|suministro|electricidad)\b|\b(centrales? nucleares?|nucleares?|energ[ií]a nuclear)\b[\s\S]{0,180}\b(cierre|cerrar|desmantel\w*|apag[oó]n)\b[\s\S]{0,180}\b(precio|luz|seguridad energ[eé]tica|suministro|electricidad)\b/i,
+    interpretation: { kind: 'mixed', subject: 'retirada gradual de centrales nucleares españolas', subjectType: 'policy', predicate: 'could_affect', object: 'electricity prices and security of supply', normalizedClaim: 'si cerrar las nucleares elevará el precio de la electricidad y pondrá en riesgo el suministro', interpretation: 'La nuclear aporta una fracción relevante de la generación actual. El efecto futuro depende de inversión sustitutiva, demanda, almacenamiento, redes, interconexión y gas; los escenarios no equivalen a una certeza.' },
+    headline: 'La nuclear aporta una quinta parte de la generación; el efecto del cierre depende de qué la sustituya',
+    summary: 'La generación nuclear aportó el 19 % de la electricidad producida en 2025. El calendario nacional aún prevé el cierre del parque en 2035, aunque en agosto de 2026 se prorrogó Almaraz por 31 y 19 meses. Un modelo reciente encuentra que, manteniendo lo demás constante, extender Almaraz reduce precios mayoristas al desplazar gas; si esa extensión debilita suficientemente la inversión renovable y en almacenamiento, el resultado de largo plazo puede invertirse. Eso respalda un riesgo condicionado, no una subida automática de la factura ni un apagón inevitable.',
+    criteria: [
+      { id: 'nuclear-generation-share', label: 'Peso actual en el sistema', finding: 'Red Eléctrica atribuye a la nuclear el 19 % de la generación eléctrica de 2025; las renovables fueron el 55,5 % de la generación y el ciclo combinado el 16,8 %. La cuota renovable sube al 56,6 % al estimar el autoconsumo.', fallbackData: ['Cuota de generación 2025: nuclear 19 %; renovables 55,5 % (56,6 % con autoconsumo); ciclo combinado 16,8 %'], population: 'generación eléctrica española', denominator: 'generación anual total', unit: 'porcentaje de electricidad generada', sourceIds: ['nuclear-generation-ree-2025'] },
+      { id: 'nuclear-closure-schedule', label: 'Calendario vigente', finding: 'La orden publicada en agosto de 2026 prorrogó Almaraz 31 y 19 meses y señala que no altera el cierre del conjunto del parque en 2035. El calendario puede cambiar por nuevas decisiones o autorizaciones.', fallbackData: ['Almaraz I y II prorrogadas 31 y 19 meses; la orden mantiene el cierre del parque nuclear en 2035'], population: 'reactores nucleares de Almaraz y conjunto del parque español', denominator: 'autorizaciones de explotación vigentes', unit: 'calendario regulatorio', sourceIds: ['nuclear-almaraz-extension-2026'] },
+      { id: 'nuclear-price-model', label: 'Precios y sustitución', finding: 'Un estudio de mercado eléctrico ibérico publicado en 2026 concluye que, manteniendo las demás variables, prolongar Almaraz reduce precios mayoristas y emisiones al desplazar gas; el efecto de inversión puede debilitar renovables y almacenamiento, y ser suficientemente grande como para invertir el resultado. Es un modelo condicionado, no una predicción cierta de la factura doméstica.', fallbackData: ['Modelo 2026: extensión de Almaraz reduce precios en el escenario estático; la respuesta de inversión puede revertir el efecto a largo plazo'], population: 'mercado eléctrico ibérico simulado', denominator: 'escenarios de inversión y demanda', unit: 'resultado de modelo, no observación', sourceIds: ['nuclear-price-effects-study-2026'] },
+    ],
+    limitations: ['El 19 % describe la generación de 2025, no la dependencia futura. El estudio estima precios mayoristas en escenarios, no una factura minorista garantizada; seguridad de suministro requiere evaluar capacidad firme, redes, almacenamiento e inversión de sustitución.'],
+    sources: [
+      source('nuclear-generation-ree-2025', 'El sistema eléctrico español en 2025 · generación por tecnología', 'Red Eléctrica', 'https://www.ree.es/es/sala-de-prensa/actualidad/nota-de-prensa/2026/03/el-sistema-electrico-espanol-en-2025-aumenta-la-demanda-de-electricidad-la-generacion-y-la-potencia-instalada', '2026-03-11'),
+      source('nuclear-almaraz-extension-2026', 'Orden de renovación de la autorización de explotación de Almaraz', 'MITECO', 'https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/agosto/el-boe-publica-la-orden-ministerial-por-la-que-se-concede-la-ren.html', '2026-08-14'),
+      { ...source('nuclear-price-effects-study-2026', 'The Price and Emissions Effects of Extending Nuclear Lifetimes: Evidence from Spain', 'CEPR · discussion paper', 'https://cepr.org/publications/dp21053', '2026-01-19'), role: 'research' },
+    ],
+  },
+  {
+    id: 'broad-autonomous-communities-duplication',
+    visuals: [reviewedVisuals.regionalGovernmentSpending],
+    matches: /\b(comunidades? aut[oó]nomas?|estado de las autonom[ií]as|autonom[ií]as?)\b[\s\S]{0,200}\b(duplicw*|prescindibw*|cargos? innecesarios?|eliminw*|abolw*|ahorrw*|miles de millones|sobrecostw*)\b|\b(duplicw*|prescindibw*|cargos? innecesarios?|eliminw*|abolw*|ahorrw*|miles de millones|sobrecostw*)\b[\s\S]{0,200}\b(comunidades? aut[oó]nomas?|estado de las autonom[ií]as|autonom[ií]as?)\b/i,
+    interpretation: { kind: 'mixed', subject: 'solapamientos y coste de las administraciones autonómicas', subjectType: 'institution', predicate: 'could_be_reduced_by', object: 'abolishing autonomous communities', normalizedClaim: 'duplicidades autonómicas y ahorro presupuestario si se eliminaran las comunidades autónomas', interpretation: 'Hay que distinguir solapamientos documentados, gasto destinado a servicios transferidos y una estimación contrafactual del ahorro neto de suprimir instituciones.' },
+    headline: 'Hay gasto autonómico en servicios esenciales y antecedentes de solapamientos; no hay una cifra comparable del ahorro por suprimir las comunidades',
+    summary: 'En la liquidación de 2023, sanidad, educación y cultura absorbieron el 53,2 % del gasto autonómico; servicios sociales y promoción social, otro 10,4 %. Hacienda registra pequeñas partidas funcionales de alta dirección y servicios generales, pero no equivalen a todo el coste administrativo. Hubo programas oficiales para eliminar duplicidades y estimaciones de ahorro de reformas pasadas; no son un cálculo del ahorro neto por abolir las comunidades autónomas.',
+    criteria: [
+      { id: 'autonomies-service-spending', label: 'Destino del gasto', finding: 'La liquidación de 2023 asignó el 32,8 % del gasto autonómico a sanidad, el 19,5 % a educación, el 0,8 % a cultura y el 10,4 % a protección y promoción social. Estas cifras describen servicios y funciones, no puestos eliminables.', fallbackData: ['Gasto autonómico liquidado 2023: sanidad 32,8 %; educación 19,5 %; cultura 0,8 %; protección y promoción social 10,4 %'], population: 'gasto consolidado ejecutado por las comunidades autónomas', denominator: 'gasto autonómico liquidado total', unit: 'porcentaje del gasto', sourceIds: ['hacienda-ccaa-finances-2023'] },
+      { id: 'autonomies-overlap-history', label: 'Duplicidades documentadas', finding: 'La reforma local de 2013 identificó solapamientos entre administraciones y fijó objetivos de clarificación competencial. En 2014 el Gobierno informó de 2.064 entidades cerradas o en proceso de cierre en los tres niveles administrativos y atribuyó 3.000 millones de euros ahorrados a esa racionalización; es un balance gubernamental de medidas concretas, no de suprimir las comunidades.', fallbackData: ['El Gobierno informó en 2014 de 2.064 entes cerrados o en proceso y 3.000 millones de euros de ahorro atribuido a la racionalización de los tres niveles'], population: 'entidades estatales, autonómicas y locales incluidas en el informe gubernamental', denominator: 'medidas de racionalización administrativa hasta diciembre de 2014', unit: 'entidades e importe atribuido por el Gobierno', sourceIds: ['autonomies-reform-local-law-2013', 'autonomies-rationalisation-report-2014'] },
+      { id: 'autonomies-abolition-savings', label: 'Ahorro por suprimir las comunidades', finding: 'No se ha localizado una estimación independiente que calcule el ahorro neto de abolir las comunidades autónomas una vez restados los costes de transferir o volver a prestar sanidad, educación, servicios sociales y otras competencias. El importe bruto de sus presupuestos no sería un ahorro administrativo: gran parte financia esos servicios.', missingDimensions: ['contrafactual de ahorro neto', 'coste de transferir competencias y plantillas', 'efecto sobre calidad y acceso a servicios'], sourceIds: ['hacienda-ccaa-finances-2023', 'autonomies-rationalisation-report-2014'] },
+    ],
+    limitations: ['El reparto de gasto y el balance oficial de una reforma local pasada no cuantifican el ahorro neto ni la calidad de un modelo sin comunidades autónomas. Para comprobar un cálculo de “miles de millones” hay que especificar qué funciones desaparecen, quién las prestaría y qué costes de transición se incluyen.'],
+    sources: [
+      source('hacienda-ccaa-finances-2023', 'Las haciendas autonómicas en cifras · ejercicio 2023', 'Ministerio de Hacienda', 'https://www.hacienda.gob.es/cdi/sist%20financiacion%20y%20deuda/informaci%C3%B3nccaa/las-haciendas-autonomicas-en-cifras-2023.pdf'),
+      source('autonomies-reform-local-law-2013', 'Ley 27/2013 de racionalización y sostenibilidad de la Administración Local', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/doc.php?id=BOE-A-2013-13756', '2013-12-30'),
+      source('autonomies-rationalisation-report-2014', 'Reforma de las administraciones públicas · balance de medidas', 'La Moncloa', 'https://www.lamoncloa.gob.es/lang/en/espana/stpv/spaintoday2015/transparency/paginas/index.aspx?mode=Dark', '2015-01-01'),
+    ],
+  },
   {
     id: 'broad-emergency-election-powers',
     matches: /\b(estado de (alarma|emergencia|excepci[oó]n)|emergencia perpetua|no convocar elecciones|no celebrar elecciones|perpetuarse? en el poder|dictadura|dictaduras?)\b/i,
@@ -366,6 +570,18 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 export const BROAD_SNAPSHOT_POLICY = Object.freeze({ owner: 'knowledge-review', createdAt: '2026-09-25', expiresAt: '2026-12-25', refreshCommand: 'npm run knowledge:domain-refresh', validationStatus: 'reviewed', supportedScope: 'España, contexto nacional y fuentes citadas en cada packet', unsupportedScope: 'atribución causal, barrios concretos y generalizaciones no medidas' });
 
 const shareableSourcesByPacket = {
+  'broad-migrant-minor-cost': ['minor-accommodation-funding-2026'],
+  'broad-amnesty-constitution': ['amnesty-tc-decision-2025'],
+  'broad-housing-priority-migration': ['foreigners-housing-rights-law'],
+  'broad-immigrant-net-fiscal-contribution': ['airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020'],
+  'broad-immigration-regional-minority-forecast': ['ine-census-2025-immigration', 'ine-population-projections'],
+  'broad-pension-retirement-age-immigration': ['pension-retirement-age-law-2011'],
+  'broad-nato-expulsion': ['nato-founding-treaty', 'nato-members-2026', 'nato-pentagon-email-report-2026'],
+  'broad-illegal-occupation': ['illegal-occupation-criminal-code', 'illegal-occupation-fast-track-law', 'illegal-occupation-cgpj-duration'],
+  'broad-sexual-consent-law-effects': ['sexual-law-cgpj-revisions', 'sexual-law-amendment-2023'],
+  'broad-gender-law-evidence-standard': ['gender-violence-tc-2008', 'spanish-constitution-presumption-innocence'],
+  'broad-nuclear-phaseout-risk': ['nuclear-generation-ree-2025', 'nuclear-almaraz-extension-2026', 'nuclear-price-effects-study-2026'],
+  'broad-autonomous-communities-duplication': ['hacienda-ccaa-finances-2023', 'autonomies-reform-local-law-2013', 'autonomies-rationalisation-report-2014'],
   'broad-public-administration': ['public-administration-epsap-2026', 'public-employment-statute'],
   'broad-demography-pension-finance': ['demography-pension-finance', 'social-security-general-account-2024', 'airef-pension-sustainability-study-2026'],
   'broad-youth-living-housing': ['cje-emancipation-2025', 'youth-family-housing-ine'],
@@ -379,6 +595,81 @@ const shareableSourcesByPacket = {
 const shareableReplyForPacket = (packetId, families) => {
   const data = (criterionId) => families.find((family) => family.criterionId === criterionId)?.data || [];
   const value = (criterionId, pattern) => data(criterionId).find((item) => pattern.test(item));
+  if (packetId === 'broad-migrant-minor-cost') {
+    const funding = value('minor-accommodation-transfer', /35 millones de euros/);
+    if (!funding) return undefined;
+    return `No he localizado una serie estatal homogénea que confirme un coste ejecutado de 4.000 € por menor y mes. En 2026 se aprobaron ${funding.replace(/ \(2026\)$/, '')} para apoyar a las comunidades en acogida y servicios como orientación, escolarización y apoyo psicosocial; no es un coste por persona ni por mes. Sin gasto individual y una pensión del mismo periodo, la comparación no queda acreditada.`;
+  }
+  if (packetId === 'broad-amnesty-constitution') {
+    const ruling = value('amnesty-overall-ruling', /STC 137\/2025/);
+    const equality = value('amnesty-equality-limits', /Dos aspectos/);
+    if (!ruling || !equality) return undefined;
+    return `El Tribunal Constitucional no anuló en conjunto la Ley Orgánica 1/2024: en la STC 137/2025, de 26 de junio, avaló la amnistía salvo límites concretos. Sí declaró inconstitucionales dos aspectos por vulnerar la igualdad —la omisión de ciertas conductas en el artículo 1.1 y la posibilidad de amnistiar conductas posteriores a la aprobación de la ley en el artículo 1.3— y condicionó una regla procesal del artículo 13. Por tanto, la afirmación es demasiado amplia: hubo inconstitucionalidades parciales, no una declaración de que toda la ley fuera inconstitucional.`;
+  }
+  if (packetId === 'broad-housing-priority-migration') {
+    const rule = value('housing-national-rule', /art\. 13/i);
+    if (!rule) return undefined;
+    return `La ley estatal no establece una prioridad automática para inmigrantes recién llegados. El artículo 13 de la Ley Orgánica 4/2000 remite el acceso de residentes extranjeros a las normas de cada administración y reconoce a los residentes de larga duración las mismas condiciones que a los españoles. Eso no permite confirmar ni descartar una lista local concreta: para probar que alguien fue priorizado frente a hogares españoles con necesidades equivalentes hacen falta la comunidad, el programa, sus criterios y datos comparables de adjudicación.`;
+  }
+  if (packetId === 'broad-immigrant-net-fiscal-contribution') {
+    const direct = value('immigrant-direct-fiscal-balance', /4\.200 €/);
+    const total = value('immigrant-total-fiscal-balance', /400 €/);
+    if (!direct || !total) return undefined;
+    return `AIReF resume una estimación para hogares no europeos en 2017: el saldo fiscal directo fue de +4.200 € por hogar y año, un 75 % superior al de hogares nativos. Pero al incluir sanidad y educación, el mismo estudio estima que esos hogares recibían unos 400 € más que los nativos. La conclusión cambia con el perímetro: no hay una cifra que describa a cada inmigrante ni un balance actual de todos los grupos.`;
+  }
+  if (packetId === 'broad-immigration-regional-minority-forecast') {
+    const citizenship = value('resident-nationality-share', /85,9 %/);
+    const birthplace = value('foreign-born-share', /19,3 %/);
+    if (!citizenship || !birthplace) return undefined;
+    return `A 1 de enero de 2025, el ${citizenship.match(/85,9 %/)?.[0]} de residentes tenía nacionalidad española y el 14,1 % extranjera. El ${birthplace.match(/19,3 %/)?.[0]} había nacido fuera de España; nacionalidad y lugar de nacimiento no son lo mismo. Estos datos no demuestran que los españoles vayan a ser minoría en la mayoría de comunidades dentro de 3–5 años: esa predicción necesita una proyección territorial por nacionalidad y supuestos explícitos, no una extrapolación del dato nacional.`;
+  }
+  if (packetId === 'broad-pension-retirement-age-immigration') {
+    const current = value('retirement-age-schedule', /2026: 65 años/);
+    const future = value('retirement-age-schedule', /Desde 2027:/);
+    if (!current || !future) return undefined;
+    return `La Ley 27/2011 no obliga a todo el mundo a jubilarse a los 67: en 2026 la edad ordinaria es 65 años con al menos 38 años y 3 meses cotizados, o 66 años y 10 meses con menos; desde 2027 será 65 años con al menos 38 años y 6 meses, o 67 con menos. El calendario legal no demuestra que el cambio se debiera a una aportación insuficiente de inmigrantes; esa relación causal requiere evidencia aparte.`;
+  }
+  if (packetId === 'broad-nato-expulsion') {
+    const report = value('nato-reported-proposal', /24-4-2026/);
+    const treaty = value('nato-treaty-membership', /art\. 13/);
+    const status = value('nato-spain-status', /España figura/);
+    if (!report || !treaty || !status) return undefined;
+    return `Reuters informó el 24 de abril de 2026 de que un correo interno del Pentágono barajó suspender a España como opción de presión; eso no fue una decisión formal de la OTAN. El artículo 13 del Tratado permite que un país se retire voluntariamente con un año de preaviso, pero el Tratado no prevé expulsar ni suspender miembros. España sigue en la lista oficial de países miembros.`;
+  }
+  if (packetId === 'broad-illegal-occupation') {
+    const legal = value('occupation-legal-distinction', /arts?\.? 202/);
+    const procedure = value('occupation-procedure-reform', /juicio r[aá]pido/);
+    const duration = value('occupation-civil-duration', /12,0 meses/);
+    if (!legal || !procedure || !duration) return undefined;
+    return `La afirmación general es incorrecta: el Código Penal distingue el allanamiento de morada (art. 202) de la usurpación de un inmueble que no es morada (art. 245.2), y la policía no tiene una prohibición general de actuar. Desde 2025 ambos delitos pueden ir por juicio rápido si se cumplen los requisitos, pero eso no garantiza un desalojo instantáneo en todos los casos. En la vía civil, el CGPJ midió 12 meses de media en primera instancia en 2023 para los juicios posesorios por ocupación ilegal; una apelación civil promedió 11,2 meses adicionales si se recurría. No es un plazo universal ni describe todos los procedimientos.`;
+  }
+  if (packetId === 'broad-sexual-consent-law-effects') {
+    const reductions = value('sexual-law-sentence-reductions', /1\.233 reducciones/);
+    const amendment = value('sexual-law-amendment', /LO 4\/2023/);
+    if (!reductions || !amendment) return undefined;
+    return `Sí hubo revisiones a la baja: el CGPJ contó al menos 1.233 reducciones de pena y 126 excarcelaciones hasta el 1 de noviembre de 2023. El recuento cubrió los órganos que comunicaron datos y excluyó las revisiones de los Juzgados de lo Penal. La LO 4/2023 modificó después las penas. Estos datos confirman un efecto legal concreto, pero no miden por sí solos si la protección global de las víctimas empeoró: para esa conclusión hacen falta resultados comparables sobre delitos, reincidencia y víctimas.`;
+  }
+  if (packetId === 'broad-gender-law-evidence-standard') {
+    const ruling = value('gender-law-penalty-difference', /STC 59\/2008/);
+    const guarantee = value('gender-law-evidence-guarantee', /presunci[oó]n de inocencia/);
+    if (!ruling || !guarantee) return undefined;
+    return `La ley sí establece una diferencia de pena en supuestos concretos del artículo 153.1 del Código Penal, y el Tribunal Constitucional la avaló en la STC 59/2008. Pero esa diferencia no crea un estándar de prueba menor: el artículo 24.2 de la Constitución reconoce a toda persona acusada la presunción de inocencia. La afirmación de que un hombre puede ser condenado “con menos pruebas” no se desprende de esa diferencia penal.`;
+  }
+  if (packetId === 'broad-nuclear-phaseout-risk') {
+    const mix = value('nuclear-generation-share', /nuclear 19 %/);
+    const schedule = value('nuclear-closure-schedule', /2035/);
+    const model = value('nuclear-price-model', /reduce precios/);
+    if (!mix || !schedule || !model) return undefined;
+    return `La nuclear aportó el 19 % de la generación eléctrica española en 2025, así que sustituirla sin capacidad firme suficiente sí plantea un reto real de suministro y precios. El cierre del parque sigue previsto para 2035, aunque Almaraz se prorrogó en agosto de 2026. Un modelo publicado en 2026 encuentra que, con lo demás constante, mantener Almaraz reduce el precio mayorista al desplazar gas; pero la inversión posterior en renovables y almacenamiento puede cambiar el resultado. Por tanto, existe un riesgo condicionado, no una subida automática de la factura ni un apagón inevitable.`;
+  }
+  if (packetId === 'broad-autonomous-communities-duplication') {
+    const spending = value('autonomies-service-spending', /sanidad 32,8 %/);
+    const overlaps = value('autonomies-overlap-history', /3\.000 millones/);
+    const savingsGap = families.find((family) => family.criterionId === 'autonomies-abolition-savings' && family.missingDimensions?.includes('contrafactual de ahorro neto'));
+    const savings = Boolean(savingsGap);
+    if (!spending || !overlaps || !savings) return undefined;
+    return `Hay antecedentes documentados de solapamientos: la reforma local de 2013 buscó aclarar competencias y el Gobierno atribuyó 3.000 millones de euros a la racionalización de entidades en los tres niveles administrativos hasta 2014. Pero eso no calcula el ahorro de abolir las comunidades autónomas. En el gasto autonómico liquidado de 2023, sanidad representó el 32,8 %, educación el 19,5 % y cultura el 0,8 %; son servicios, no burocracia prescindible. No he localizado una estimación independiente del ahorro neto tras transferir esas funciones y sus costes.`;
+  }
   if (packetId === 'broad-public-administration') {
     const count = value('public-employment-definition', /3\.071\.725/);
     if (!count || !value('individual-conduct', /artículo 20/)) return undefined;
@@ -460,7 +751,9 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
-  if (/\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
+  const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);
+  const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value));
+  if (!hasSpecificClaim && /\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const direct = packets.filter((packet) => packet.matches.test(value));
   const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|empleo p[uú]blico|sector p[uú]blico|plaza fija|calentar (?:la )?silla|no trabaja|automatiz|digitalizaci[oó]n/i.test(value);
@@ -472,10 +765,34 @@ export const broadDomainPacketsFor = (text) => {
   const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
   const compoundSignal = /legaliz\w*|regulariz\w*|amnistia migratoria|arraigo extraordinario|papeles[\s\S]{0,60}(?:inmigr|migr|extranj)|(?:inmigr|migr|extranj)[\s\S]{0,60}papeles/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
   const packetById = (id) => packets.find((packet) => packet.id === id);
+  const minorCostSignal = /\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b/i.test(value) && /\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n|pagamos?)\b/i.test(value);
+  const amnestySignal = /\bamnist[ií]a\b/i.test(value) && /\b(inconstitucional|constitucional|igualdad|independent|catalu[nñ]a|proc[eé]s|separatist)\w*\b/i.test(value);
+  const housingPrioritySignal = /\b(inmigr\w*|migrant\w*|extranj\w*|reci[eé]n llegad\w*)\b/i.test(value) && /\b(viviend\w*|alquil\w*|piso\w*)\b/i.test(value) && /\b(prior\w*|list\w*|releg\w*|prefer\w*|adjudic\w*)\b/i.test(value);
+  const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n|reciben? m[aá]s|pagan? menos|impuestos?|cotizacion\w*|prestacion\w*|ayudas?|servicios? p[uú]blicos?)\b/i.test(value);
+  const regionalMinoritySignal = /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i.test(value) && /\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b/i.test(value);
+  const retirementAgeSignal = /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i.test(value) && /\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b/i.test(value);
+  const natoExpulsionSignal = /\b(otan|nato)\b/i.test(value) && /\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b/i.test(value);
+  const illegalOccupationSignal = /\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b/i.test(value) && /\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse|puede)\b/i.test(value);
+  const sexualConsentLawSignal = /\b(solo s[ií] es s[ií]|ley org[aá]nica 10\/2022)\b/i.test(value) && /\b(rebaj\w*|reduc\w*|condenas?|v[ií]ctimas?|protecci[oó]n)\b/i.test(value);
+  const genderLawEvidenceSignal = /\b(violencia de g[eé]nero|ley org[aá]nica 1\/2004)\b/i.test(value) && /\b(hombres?|discrimin\w*|pruebas?|conden\w*|inocencia|igualdad)\b/i.test(value);
+  const nuclearPhaseoutSignal = /\b(cierre|cerrar|desmantel\w*|apag[oó]n)\b[\s\S]{0,180}\b(nuclear\w*|centrales? nucleares?)\b|\b(nuclear\w*|centrales? nucleares?)\b[\s\S]{0,180}\b(cierre|cerrar|desmantel\w*|apag[oó]n)\b/i.test(value) && /\b(precio|luz|seguridad energ[eé]tica|suministro|electricidad)\b/i.test(value);
+  const autonomiesDuplicationSignal = /\b(comunidades? aut[oó]nomas?|estado de las autonom[ií]as|autonom[ií]as?)\b/i.test(value) && /\b(duplic\w*|prescindib\w*|cargos? innecesarios?|elimin\w*|abol\w*|ahorr\w*|miles de millones|sobrecost\w*)\b/i.test(value);
   // Strong multi-proposition routes are resolved before broad keyword matches.
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
+  if (minorCostSignal) return [packetById('broad-migrant-minor-cost')].filter(Boolean);
+  if (amnestySignal) return [packetById('broad-amnesty-constitution')].filter(Boolean);
+  if (housingPrioritySignal) return [packetById('broad-housing-priority-migration')].filter(Boolean);
   if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
+  if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
+  if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
+  if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
+  if (natoExpulsionSignal) return [packetById('broad-nato-expulsion')].filter(Boolean);
+  if (illegalOccupationSignal) return [packetById('broad-illegal-occupation')].filter(Boolean);
+  if (sexualConsentLawSignal) return [packetById('broad-sexual-consent-law-effects')].filter(Boolean);
+  if (genderLawEvidenceSignal) return [packetById('broad-gender-law-evidence-standard')].filter(Boolean);
+  if (nuclearPhaseoutSignal) return [packetById('broad-nuclear-phaseout-risk')].filter(Boolean);
+  if (autonomiesDuplicationSignal) return [packetById('broad-autonomous-communities-duplication')].filter(Boolean);
   if (agricultureTransitionSignal) return [packetById('broad-agriculture-green-transition')].filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
@@ -836,7 +1153,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-7-claims-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-12-claims-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   const shareableReply = shareableReplyForPacket(packet.id, plan.evidenceSummary.families);

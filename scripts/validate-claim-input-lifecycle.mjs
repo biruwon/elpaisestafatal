@@ -17,10 +17,16 @@ const required = [
   'Respuesta provisional',
   'Esperando respuesta final',
   'Copiar contexto provisional',
+  'const submission = new AbortController()',
+  'const isCurrentSubmission = (submission: AbortController)',
+  'if (!isCurrentSubmission(submission)) return;',
+  'submission.signal',
+  'request !== submission',
 ];
 const missing = required.filter((item) => !source.includes(item));
 if (missing.length) throw new Error(`Claim checker lifecycle is missing: ${missing.join(', ')}`);
 if (!source.includes("response.state === 'processing'")) throw new Error('Claim checker must poll processing responses');
+if (source.includes('request.signal')) throw new Error('Claim checker must use a submission-local abort signal, not mutable global request state');
 const retainsPreviewAfterTimeout = source.includes("if (response.state === 'processing') {\n      if (initialPreview)")
   && source.includes('No han llegado más datos; esta respuesta conserva su carácter provisional.')
   && source.includes('Copiar contexto provisional');

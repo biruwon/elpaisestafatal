@@ -251,6 +251,18 @@ for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos i
 }
 
 const claimVariants = [
+  ['Cada MENA cuesta 4.000 euros al mes al Estado, más que la pensión media de un jubilado.', 'broad-migrant-minor-cost'],
+  ['La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.', 'broad-amnesty-constitution'],
+  ['En algunas comunidades se da prioridad en las listas de vivienda pública a inmigrantes recién llegados frente a familias españolas.', 'broad-housing-priority-migration'],
+  ['Los inmigrantes reciben más ayudas y servicios públicos de los impuestos que aportan; son una carga neta para España.', 'broad-immigrant-net-fiscal-contribution'],
+  ['En 3–5 años, los españoles seremos minoría en la mayor parte de España por la inmigración.', 'broad-immigration-regional-minority-forecast'],
+  ['Los españoles tenemos que trabajar hasta los 67 porque la inmigración no aporta lo suficiente para pagar las pensiones.', 'broad-pension-retirement-age-immigration'],
+  ['Quieren expulsar a España de la OTAN por la política exterior del Gobierno.', 'broad-nato-expulsion'],
+  ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation'],
+  ['La ley del solo sí es sí ha rebajado condenas a agresores sexuales y demuestra que la política feminista del Gobierno ha empeorado la protección de las víctimas.', 'broad-sexual-consent-law-effects'],
+  ['La Ley de Violencia de Género discrimina a los hombres: permite condenarlos con menos pruebas que a las mujeres.', 'broad-gender-law-evidence-standard'],
+  ['El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.', 'broad-nuclear-phaseout-risk'],
+  ['El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.', 'broad-autonomous-communities-duplication'],
   ['La regularización de inmigrantes saturará la sanidad y disparará las ayudas sociales.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
   ['Dar papeles a todos los inmigrantes colapsará los hospitales y disparará las prestaciones.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
   ['Los empleados públicos con plaza fija no trabajan y sobran miles de puestos.', 'broad-public-administration'],
@@ -269,6 +281,96 @@ const claimVariants = [
 for (const [text, expectedPacketIds] of claimVariants) {
   const actualPacketIds = broadDomainPacketsFor(text).map((packet) => packet.id).join(',');
   assert(actualPacketIds === expectedPacketIds, `${text}: expected ${expectedPacketIds}, received ${actualPacketIds || 'no route'}`);
+}
+
+const freshClaimAnswers = [
+  {
+    text: 'Cada MENA cuesta 4.000 euros al mes al Estado, más que la pensión media de un jubilado.',
+    id: 'broad-migrant-minor-cost',
+    reply: /35 millones de euros[\s\S]*no es un coste por persona ni por mes[\s\S]*no queda acreditada/i,
+    sourceId: 'minor-accommodation-funding-2026',
+  },
+  {
+    text: 'La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.',
+    id: 'broad-amnesty-constitution',
+    reply: /Tribunal Constitucional[\s\S]*no anuló en conjunto[\s\S]*inconstitucionales dos aspectos[\s\S]*no una declaración de que toda la ley fuera inconstitucional/i,
+    sourceId: 'amnesty-tc-decision-2025',
+  },
+  {
+    text: 'En algunas comunidades se da prioridad en las listas de vivienda pública a inmigrantes recién llegados frente a familias españolas.',
+    id: 'broad-housing-priority-migration',
+    reply: /no establece una prioridad automática[\s\S]*artículo 13[\s\S]*hacen falta la comunidad, el programa/i,
+    sourceId: 'foreigners-housing-rights-law',
+  },
+  {
+    text: 'Los inmigrantes reciben más ayudas y servicios públicos de los impuestos que aportan; son una carga neta para España.',
+    id: 'broad-immigrant-net-fiscal-contribution',
+    reply: /AIReF[\s\S]*4\.200 € por hogar y año[\s\S]*400 € más[\s\S]*no hay una cifra que describa a cada inmigrante/i,
+    sourceId: 'airef-immigration-fiscal-review-2025',
+  },
+  {
+    text: 'En 3–5 años, los españoles seremos minoría en la mayor parte de España por la inmigración.',
+    id: 'broad-immigration-regional-minority-forecast',
+    reply: /85,9 %[\s\S]*14,1 %[\s\S]*19,3 %[\s\S]*no demuestran que los españoles vayan a ser minoría[\s\S]*proyección territorial por nacionalidad/i,
+    sourceId: 'ine-census-2025-immigration',
+  },
+  {
+    text: 'Los españoles tenemos que trabajar hasta los 67 porque la inmigración no aporta lo suficiente para pagar las pensiones.',
+    id: 'broad-pension-retirement-age-immigration',
+    reply: /Ley 27\/2011[\s\S]*38 años y 3 meses[\s\S]*desde 2027[\s\S]*no demuestra que el cambio se debiera/i,
+    sourceId: 'pension-retirement-age-law-2011',
+  },
+  {
+    text: 'Quieren expulsar a España de la OTAN por la política exterior del Gobierno.',
+    id: 'broad-nato-expulsion',
+    reply: /correo interno del Pentágono[\s\S]*no fue una decisión formal[\s\S]*no prevé expulsar ni suspender miembros/i,
+    sourceId: 'nato-founding-treaty',
+  },
+  {
+    text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
+    id: 'broad-illegal-occupation',
+    reply: /art\. 202[\s\S]*245\.2[\s\S]*juicio r[aá]pido[\s\S]*12 meses/i,
+    sourceId: 'illegal-occupation-cgpj-duration',
+  },
+  {
+    text: 'La ley del solo sí es sí ha rebajado condenas a agresores sexuales y demuestra que la política feminista del Gobierno ha empeorado la protección de las víctimas.',
+    id: 'broad-sexual-consent-law-effects',
+    reply: /1\.233 reducciones[\s\S]*126 excarcelaciones[\s\S]*no miden por s[ií] solos? si la protecci[oó]n global/i,
+    sourceId: 'sexual-law-cgpj-revisions',
+  },
+  {
+    text: 'La Ley de Violencia de Género discrimina a los hombres: permite condenarlos con menos pruebas que a las mujeres.',
+    id: 'broad-gender-law-evidence-standard',
+    reply: /STC 59\/2008[\s\S]*no crea un est[aá]ndar de prueba menor[\s\S]*presunci[oó]n de inocencia/i,
+    sourceId: 'gender-violence-tc-2008',
+  },
+  {
+    text: 'El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.',
+    id: 'broad-nuclear-phaseout-risk',
+    reply: /nuclear aport[oó] el 19 %[\s\S]*2035[\s\S]*precio mayorista[\s\S]*riesgo condicionado/i,
+    sourceId: 'nuclear-generation-ree-2025',
+  },
+  {
+    text: 'El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.',
+    id: 'broad-autonomous-communities-duplication',
+    reply: /3\.000 millones[\s\S]*sanidad represent[oó] el 32,8 %[\s\S]*no he localizado una estimaci[oó]n independiente del ahorro neto/i,
+    sourceId: 'hacienda-ccaa-finances-2023',
+  },
+];
+for (const claim of freshClaimAnswers) {
+  const plan = answerPlanForBroadDomain(claim.text);
+  assert(plan?.id === claim.id, `${claim.text}: expected focused packet ${claim.id}`);
+  assert(claim.reply.test(plan.shareableReply || ''), `${claim.text}: shareable answer did not directly address the claim`);
+  assert(plan.shareableSourceIds?.includes(claim.sourceId), `${claim.text}: shareable answer omitted its primary source`);
+  assert(plan.evidenceSummary?.families.length && plan.sourceLinks?.some((source) => source.id === claim.sourceId), `${claim.text}: no evidence section or linked source was provided`);
+}
+for (const [text, id, sourceId] of [
+  ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation', 'illegal-occupation-cgpj-duration'],
+  ['El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.', 'broad-nuclear-phaseout-risk', 'nuclear-generation-ree-2025'],
+  ['El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.', 'broad-autonomous-communities-duplication', 'hacienda-ccaa-finances-2023'],
+]) {
+  const plan = answerPlanForBroadDomain(text);
+  assert(plan.visuals?.some((visual) => visual.sourceId === sourceId), `${id}: expected a claim-relevant, sourced visual`);
 }
 
 for (const text of ['El Pacto Verde está destruyendo la agricultura española.', 'Las normas ambientales de la PAC están hundiendo las explotaciones agrarias.']) {
