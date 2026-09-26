@@ -259,10 +259,23 @@ const claimVariants = [
   ['Los españoles tenemos que trabajar hasta los 67 porque la inmigración no aporta lo suficiente para pagar las pensiones.', 'broad-pension-retirement-age-immigration'],
   ['Quieren expulsar a España de la OTAN por la política exterior del Gobierno.', 'broad-nato-expulsion'],
   ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation'],
+  ['¿Puede la policía sacar a alguien que ocupa una vivienda ajena?', 'broad-illegal-occupation'],
+  ['¿Qué opciones legales tiene el dueño si alguien se mete y permanece en su casa sin permiso?', 'broad-illegal-occupation'],
   ['La ley del solo sí es sí ha rebajado condenas a agresores sexuales y demuestra que la política feminista del Gobierno ha empeorado la protección de las víctimas.', 'broad-sexual-consent-law-effects'],
+  ['Tras la ley de libertad sexual hubo rebajas de penas; ¿demuestra eso un empeoramiento general de la protección?', 'broad-sexual-consent-law-effects'],
+  ['¿Las penas de delitos sexuales se redujeron tras la reforma y qué dice eso sobre la protección de víctimas?', 'broad-sexual-consent-law-effects'],
   ['La Ley de Violencia de Género discrimina a los hombres: permite condenarlos con menos pruebas que a las mujeres.', 'broad-gender-law-evidence-standard'],
+  ['¿Se aplica la misma presunción de inocencia a hombres acusados de violencia machista?', 'broad-gender-law-evidence-standard'],
+  ['En una denuncia de violencia contra la pareja, ¿se exige menos prueba si el acusado es un hombre?', 'broad-gender-law-evidence-standard'],
   ['El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.', 'broad-nuclear-phaseout-risk'],
+  ['¿Qué impacto puede tener el calendario nuclear en el coste y la fiabilidad del suministro?', 'broad-nuclear-phaseout-risk'],
+  ['¿La retirada escalonada de las nucleares encarecerá la electricidad o pondrá en riesgo el suministro?', 'broad-nuclear-phaseout-risk'],
   ['El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.', 'broad-autonomous-communities-duplication'],
+  ['¿Cuánto dinero se ahorraría realmente si se transfirieran las competencias autonómicas al Estado?', 'broad-autonomous-communities-duplication'],
+  ['¿Abolir el sistema autonómico permitiría ahorrar si el Estado asumiera las competencias regionales?', 'broad-autonomous-communities-duplication'],
+  ['¿La acogida de menores migrantes cuesta 4.000 euros mensuales por cabeza?', 'broad-migrant-minor-cost'],
+  ['¿Es inconstitucional la amnistía del procés por dar un trato desigual?', 'broad-amnesty-constitution'],
+  ['¿Las familias sin nacionalidad española tienen preferencia en las listas de vivienda protegida?', 'broad-housing-priority-migration'],
   ['La regularización de inmigrantes saturará la sanidad y disparará las ayudas sociales.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
   ['Dar papeles a todos los inmigrantes colapsará los hospitales y disparará las prestaciones.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
   ['Los empleados públicos con plaza fija no trabajan y sobran miles de puestos.', 'broad-public-administration'],
@@ -281,25 +294,40 @@ const claimVariants = [
 for (const [text, expectedPacketIds] of claimVariants) {
   const actualPacketIds = broadDomainPacketsFor(text).map((packet) => packet.id).join(',');
   assert(actualPacketIds === expectedPacketIds, `${text}: expected ${expectedPacketIds}, received ${actualPacketIds || 'no route'}`);
+  if (!expectedPacketIds.includes(',')) {
+    const plan = answerPlanForBroadDomain(text);
+    assert(plan?.id === expectedPacketIds, `${text}: semantic variant did not build an answer from its routed evidence packet`);
+    assert(plan.evidenceSummary?.families.length && plan.sourceLinks?.length, `${text}: semantic variant did not carry evidence and sources through to the answer`);
+  }
+}
+
+for (const [text, excludedId] of [
+  ['¿Puede la Policía ocupar un puesto de trabajo vacante?', 'broad-illegal-occupation'],
+  ['¿Aumentaron las condenas por delitos sexuales el año pasado?', 'broad-sexual-consent-law-effects'],
+  ['¿Cuál es la presunción de inocencia de cualquier persona acusada?', 'broad-gender-law-evidence-standard'],
+  ['¿Qué precio tiene la electricidad generada con energía nuclear?', 'broad-nuclear-phaseout-risk'],
+  ['¿Cuánto cuesta en total la Administración pública?', 'broad-autonomous-communities-duplication'],
+]) {
+  assert(!broadDomainPacketsFor(text).some((packet) => packet.id === excludedId), `${text}: unrelated neighboring topic cross-routed to ${excludedId}`);
 }
 
 const freshClaimAnswers = [
   {
     text: 'Cada MENA cuesta 4.000 euros al mes al Estado, más que la pensión media de un jubilado.',
     id: 'broad-migrant-minor-cost',
-    reply: /35 millones de euros[\s\S]*no es un coste por persona ni por mes[\s\S]*no queda acreditada/i,
+    answerEvidence: ['35 millones de euros', 'ni una tarifa mensual por menor', 'pensión'],
     sourceId: 'minor-accommodation-funding-2026',
   },
   {
     text: 'La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.',
     id: 'broad-amnesty-constitution',
-    reply: /Tribunal Constitucional[\s\S]*no anuló en conjunto[\s\S]*no nulo[\s\S]*oponerse al procés[\s\S]*efecto exonerador sobre conductas futuras[\s\S]*no se declaró inconstitucional toda la ley/i,
+    answerEvidence: ['STC 137/2025', 'inconstitucional', 'igualdad', 'ley no fue anulada en su totalidad'],
     sourceId: 'amnesty-tc-decision-2025',
   },
   {
     text: 'En algunas comunidades se da prioridad en las listas de vivienda pública a inmigrantes recién llegados frente a familias españolas.',
     id: 'broad-housing-priority-migration',
-    reply: /no establece una prioridad automática[\s\S]*artículo 13[\s\S]*hacen falta la comunidad, el programa/i,
+    answerEvidence: ['artículo 13', 'mismas condiciones', 'lista o convocatoria local'],
     sourceId: 'foreigners-housing-rights-law',
   },
   {
@@ -329,38 +357,43 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    reply: /art\. 202[\s\S]*245\.2[\s\S]*juicio r[aá]pido[\s\S]*12 meses/i,
+    answerEvidence: ['artículo 202', 'artículo 245.2', 'juicio rápido', '12,0 meses'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
     text: 'La ley del solo sí es sí ha rebajado condenas a agresores sexuales y demuestra que la política feminista del Gobierno ha empeorado la protección de las víctimas.',
     id: 'broad-sexual-consent-law-effects',
-    reply: /1\.233 reducciones[\s\S]*126 excarcelaciones[\s\S]*no miden por s[ií] solos? si la protecci[oó]n global/i,
+    answerEvidence: ['1.233 reducciones de pena', '126 excarcelaciones', 'juzgados de lo penal', 'protección'],
     sourceId: 'sexual-law-cgpj-revisions',
   },
   {
     text: 'La Ley de Violencia de Género discrimina a los hombres: permite condenarlos con menos pruebas que a las mujeres.',
     id: 'broad-gender-law-evidence-standard',
-    reply: /STC 59\/2008[\s\S]*no crea un est[aá]ndar de prueba menor[\s\S]*presunci[oó]n de inocencia/i,
+    answerEvidence: ['STC 59/2008', 'no a que la acusación necesite menos prueba', 'presunción de inocencia'],
     sourceId: 'gender-violence-tc-2008',
   },
   {
     text: 'El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.',
     id: 'broad-nuclear-phaseout-risk',
-    reply: /nuclear aport[oó] el 19 %[\s\S]*2035[\s\S]*precio mayorista[\s\S]*riesgo condicionado/i,
+    answerEvidence: ['19 %', '2035', 'precios mayoristas', 'escenarios'],
     sourceId: 'nuclear-generation-ree-2025',
   },
   {
     text: 'El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.',
     id: 'broad-autonomous-communities-duplication',
-    reply: /3\.000 millones[\s\S]*sanidad represent[oó] el 32,8 %[\s\S]*no he localizado una estimaci[oó]n independiente del ahorro neto/i,
+    answerEvidence: ['3.000 millones de euros', '32,8 %', 'ahorro neto'],
     sourceId: 'hacienda-ccaa-finances-2023',
   },
 ];
 for (const claim of freshClaimAnswers) {
   const plan = answerPlanForBroadDomain(claim.text);
   assert(plan?.id === claim.id, `${claim.text}: expected focused packet ${claim.id}`);
-  assert(claim.reply.test(plan.shareableReply || ''), `${claim.text}: shareable answer did not directly address the claim`);
+  if (claim.answerEvidence) {
+    assert(plan.shareableReply?.startsWith(`${plan.headline}.`), `${claim.text}: response was not composed from its selected evidence packet`);
+    for (const phrase of claim.answerEvidence) assert(plan.shareableReply.includes(phrase), `${claim.text}: composed answer omitted ${phrase}`);
+  } else {
+    assert(claim.reply.test(plan.shareableReply || ''), `${claim.text}: shareable answer did not directly address the claim`);
+  }
   assert(plan.shareableSourceIds?.includes(claim.sourceId), `${claim.text}: shareable answer omitted its primary source`);
   assert(plan.evidenceSummary?.families.length && plan.sourceLinks?.some((source) => source.id === claim.sourceId), `${claim.text}: no evidence section or linked source was provided`);
 }

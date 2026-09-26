@@ -5,6 +5,7 @@
 import { broadObservationFits } from './broad-observation-fit.mjs';
 import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
+import { domainProfileFor } from '../../../scripts/knowledge/domain-handlers.mjs';
 
 const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-09-25', role: 'primary' });
 const reviewedVisuals = {
@@ -595,22 +596,6 @@ const shareableSourcesByPacket = {
 const shareableReplyForPacket = (packetId, families) => {
   const data = (criterionId) => families.find((family) => family.criterionId === criterionId)?.data || [];
   const value = (criterionId, pattern) => data(criterionId).find((item) => pattern.test(item));
-  if (packetId === 'broad-migrant-minor-cost') {
-    const funding = value('minor-accommodation-transfer', /35 millones de euros/);
-    if (!funding) return undefined;
-    return `No he localizado una serie estatal homogénea que confirme un coste ejecutado de 4.000 € por menor y mes. En 2026 se aprobaron ${funding.replace(/ \(2026\)$/, '')} para apoyar a las comunidades en acogida y servicios como orientación, escolarización y apoyo psicosocial; no es un coste por persona ni por mes. Sin gasto individual y una pensión del mismo periodo, la comparación no queda acreditada.`;
-  }
-  if (packetId === 'broad-amnesty-constitution') {
-    const ruling = value('amnesty-overall-ruling', /STC 137\/2025/);
-    const equality = value('amnesty-equality-limits', /Dos aspectos/);
-    if (!ruling || !equality) return undefined;
-    return `El Tribunal Constitucional no anuló en conjunto la Ley Orgánica 1/2024: en la STC 137/2025, de 26 de junio, avaló la ley salvo aspectos concretos. Declaró inconstitucional, pero no nulo, el artículo 1.1 por omitir a quienes actuaron para oponerse al procés. También anuló el segundo párrafo del artículo 1.3 porque daba a la amnistía un efecto exonerador sobre conductas futuras, sin justificación objetiva y razonable. Además, condicionó los apartados 2 y 3 del artículo 13 a oír a todas las partes afectadas. Así que hubo límites constitucionales concretos, pero no se declaró inconstitucional toda la ley.`;
-  }
-  if (packetId === 'broad-housing-priority-migration') {
-    const rule = value('housing-national-rule', /art\. 13/i);
-    if (!rule) return undefined;
-    return `La ley estatal no establece una prioridad automática para inmigrantes recién llegados. El artículo 13 de la Ley Orgánica 4/2000 remite el acceso de residentes extranjeros a las normas de cada administración y reconoce a los residentes de larga duración las mismas condiciones que a los españoles. Eso no permite confirmar ni descartar una lista local concreta: para probar que alguien fue priorizado frente a hogares españoles con necesidades equivalentes hacen falta la comunidad, el programa, sus criterios y datos comparables de adjudicación.`;
-  }
   if (packetId === 'broad-immigrant-net-fiscal-contribution') {
     const direct = value('immigrant-direct-fiscal-balance', /4\.200 €/);
     const total = value('immigrant-total-fiscal-balance', /400 €/);
@@ -635,40 +620,6 @@ const shareableReplyForPacket = (packetId, families) => {
     const status = value('nato-spain-status', /España figura/);
     if (!report || !treaty || !status) return undefined;
     return `Reuters informó el 24 de abril de 2026 de que un correo interno del Pentágono barajó suspender a España como opción de presión; eso no fue una decisión formal de la OTAN. El artículo 13 del Tratado permite que un país se retire voluntariamente con un año de preaviso, pero el Tratado no prevé expulsar ni suspender miembros. España sigue en la lista oficial de países miembros.`;
-  }
-  if (packetId === 'broad-illegal-occupation') {
-    const legal = value('occupation-legal-distinction', /arts?\.? 202/);
-    const procedure = value('occupation-procedure-reform', /juicio r[aá]pido/);
-    const duration = value('occupation-civil-duration', /12,0 meses/);
-    if (!legal || !procedure || !duration) return undefined;
-    return `La afirmación general es incorrecta: el Código Penal distingue el allanamiento de morada (art. 202) de la usurpación de un inmueble que no es morada (art. 245.2), y la policía no tiene una prohibición general de actuar. Desde 2025 ambos delitos pueden ir por juicio rápido si se cumplen los requisitos, pero eso no garantiza un desalojo instantáneo en todos los casos. En la vía civil, el CGPJ midió 12 meses de media en primera instancia en 2023 para los juicios posesorios por ocupación ilegal; una apelación civil promedió 11,2 meses adicionales si se recurría. No es un plazo universal ni describe todos los procedimientos.`;
-  }
-  if (packetId === 'broad-sexual-consent-law-effects') {
-    const reductions = value('sexual-law-sentence-reductions', /1\.233 reducciones/);
-    const amendment = value('sexual-law-amendment', /LO 4\/2023/);
-    if (!reductions || !amendment) return undefined;
-    return `Sí hubo revisiones a la baja: el CGPJ contó al menos 1.233 reducciones de pena y 126 excarcelaciones hasta el 1 de noviembre de 2023. El recuento cubrió los órganos que comunicaron datos y excluyó las revisiones de los Juzgados de lo Penal. La LO 4/2023 modificó después las penas. Estos datos confirman un efecto legal concreto, pero no miden por sí solos si la protección global de las víctimas empeoró: para esa conclusión hacen falta resultados comparables sobre delitos, reincidencia y víctimas.`;
-  }
-  if (packetId === 'broad-gender-law-evidence-standard') {
-    const ruling = value('gender-law-penalty-difference', /STC 59\/2008/);
-    const guarantee = value('gender-law-evidence-guarantee', /presunci[oó]n de inocencia/);
-    if (!ruling || !guarantee) return undefined;
-    return `La ley sí establece una diferencia de pena en supuestos concretos del artículo 153.1 del Código Penal, y el Tribunal Constitucional la avaló en la STC 59/2008. Pero esa diferencia no crea un estándar de prueba menor: el artículo 24.2 de la Constitución reconoce a toda persona acusada la presunción de inocencia. La afirmación de que un hombre puede ser condenado “con menos pruebas” no se desprende de esa diferencia penal.`;
-  }
-  if (packetId === 'broad-nuclear-phaseout-risk') {
-    const mix = value('nuclear-generation-share', /nuclear 19 %/);
-    const schedule = value('nuclear-closure-schedule', /2035/);
-    const model = value('nuclear-price-model', /reduce precios/);
-    if (!mix || !schedule || !model) return undefined;
-    return `La nuclear aportó el 19 % de la generación eléctrica española en 2025, así que sustituirla sin capacidad firme suficiente sí plantea un reto real de suministro y precios. El cierre del parque sigue previsto para 2035, aunque Almaraz se prorrogó en agosto de 2026. Un modelo publicado en 2026 encuentra que, con lo demás constante, mantener Almaraz reduce el precio mayorista al desplazar gas; pero la inversión posterior en renovables y almacenamiento puede cambiar el resultado. Por tanto, existe un riesgo condicionado, no una subida automática de la factura ni un apagón inevitable.`;
-  }
-  if (packetId === 'broad-autonomous-communities-duplication') {
-    const spending = value('autonomies-service-spending', /sanidad 32,8 %/);
-    const overlaps = value('autonomies-overlap-history', /3\.000 millones/);
-    const savingsGap = families.find((family) => family.criterionId === 'autonomies-abolition-savings' && family.missingDimensions?.includes('contrafactual de ahorro neto'));
-    const savings = Boolean(savingsGap);
-    if (!spending || !overlaps || !savings) return undefined;
-    return `Hay antecedentes documentados de solapamientos: la reforma local de 2013 buscó aclarar competencias y el Gobierno atribuyó 3.000 millones de euros a la racionalización de entidades en los tres niveles administrativos hasta 2014. Pero eso no calcula el ahorro de abolir las comunidades autónomas. En el gasto autonómico liquidado de 2023, sanidad representó el 32,8 %, educación el 19,5 % y cultura el 0,8 %; son servicios, no burocracia prescindible. No he localizado una estimación independiente del ahorro neto tras transferir esas funciones y sus costes.`;
   }
   if (packetId === 'broad-public-administration') {
     const count = value('public-employment-definition', /3\.071\.725/);
@@ -749,10 +700,12 @@ const supplementalRoutes = [
 
 export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
+  const packetById = (id) => packets.find((packet) => packet.id === id);
+  const domainProfile = domainProfileFor(text);
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
   const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);
-  const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value));
+  const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value)) || specificPacketIds.has(domainProfile?.packetId);
   if (!hasSpecificClaim && /\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const direct = packets.filter((packet) => packet.matches.test(value));
   const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
@@ -764,35 +717,19 @@ export const broadDomainPacketsFor = (text) => {
   const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacion|sustitucion (?:poblacional|demografica)|menos iq|menor iq|cociente intelectual|menos inteligent|menor inteligenc|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
   const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
   const compoundSignal = /legaliz\w*|regulariz\w*|amnistia migratoria|arraigo extraordinario|papeles[\s\S]{0,60}(?:inmigr|migr|extranj)|(?:inmigr|migr|extranj)[\s\S]{0,60}papeles/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
-  const packetById = (id) => packets.find((packet) => packet.id === id);
-  const minorCostSignal = /\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b/i.test(value) && /\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n|pagamos?)\b/i.test(value);
-  const amnestySignal = /\bamnist[ií]a\b/i.test(value) && /\b(inconstitucional|constitucional|igualdad|independent|catalu[nñ]a|proc[eé]s|separatist)\w*\b/i.test(value);
-  const housingPrioritySignal = /\b(inmigr\w*|migrant\w*|extranj\w*|reci[eé]n llegad\w*)\b/i.test(value) && /\b(viviend\w*|alquil\w*|piso\w*)\b/i.test(value) && /\b(prior\w*|list\w*|releg\w*|prefer\w*|adjudic\w*)\b/i.test(value);
   const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n|reciben? m[aá]s|pagan? menos|impuestos?|cotizacion\w*|prestacion\w*|ayudas?|servicios? p[uú]blicos?)\b/i.test(value);
   const regionalMinoritySignal = /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i.test(value) && /\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b/i.test(value);
   const retirementAgeSignal = /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i.test(value) && /\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b/i.test(value);
   const natoExpulsionSignal = /\b(otan|nato)\b/i.test(value) && /\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b/i.test(value);
-  const illegalOccupationSignal = /\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b/i.test(value) && /\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse|puede)\b/i.test(value);
-  const sexualConsentLawSignal = /\b(solo s[ií] es s[ií]|ley org[aá]nica 10\/2022)\b/i.test(value) && /\b(rebaj\w*|reduc\w*|condenas?|v[ií]ctimas?|protecci[oó]n)\b/i.test(value);
-  const genderLawEvidenceSignal = /\b(violencia de g[eé]nero|ley org[aá]nica 1\/2004)\b/i.test(value) && /\b(hombres?|discrimin\w*|pruebas?|conden\w*|inocencia|igualdad)\b/i.test(value);
-  const nuclearPhaseoutSignal = /\b(cierre|cerrar|desmantel\w*|apag[oó]n)\b[\s\S]{0,180}\b(nuclear\w*|centrales? nucleares?)\b|\b(nuclear\w*|centrales? nucleares?)\b[\s\S]{0,180}\b(cierre|cerrar|desmantel\w*|apag[oó]n)\b/i.test(value) && /\b(precio|luz|seguridad energ[eé]tica|suministro|electricidad)\b/i.test(value);
-  const autonomiesDuplicationSignal = /\b(comunidades? aut[oó]nomas?|estado de las autonom[ií]as|autonom[ií]as?)\b/i.test(value) && /\b(duplic\w*|prescindib\w*|cargos? innecesarios?|elimin\w*|abol\w*|ahorr\w*|miles de millones|sobrecost\w*)\b/i.test(value);
   // Strong multi-proposition routes are resolved before broad keyword matches.
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
-  if (minorCostSignal) return [packetById('broad-migrant-minor-cost')].filter(Boolean);
-  if (amnestySignal) return [packetById('broad-amnesty-constitution')].filter(Boolean);
-  if (housingPrioritySignal) return [packetById('broad-housing-priority-migration')].filter(Boolean);
+  if (domainProfile?.packetId) return [packetById(domainProfile.packetId)].filter(Boolean);
   if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
   if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
   if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
   if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
   if (natoExpulsionSignal) return [packetById('broad-nato-expulsion')].filter(Boolean);
-  if (illegalOccupationSignal) return [packetById('broad-illegal-occupation')].filter(Boolean);
-  if (sexualConsentLawSignal) return [packetById('broad-sexual-consent-law-effects')].filter(Boolean);
-  if (genderLawEvidenceSignal) return [packetById('broad-gender-law-evidence-standard')].filter(Boolean);
-  if (nuclearPhaseoutSignal) return [packetById('broad-nuclear-phaseout-risk')].filter(Boolean);
-  if (autonomiesDuplicationSignal) return [packetById('broad-autonomous-communities-duplication')].filter(Boolean);
   if (agricultureTransitionSignal) return [packetById('broad-agriculture-green-transition')].filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
@@ -982,6 +919,28 @@ const dimensionsFor = (packet, criterion, data) => ({
 });
 
 export const composeFamilyReply = (plan, { compact = false } = {}) => {
+  if (compact && plan.id !== 'broad-compound-claim') {
+    const criteria = (plan.evidenceSummary?.families || [])
+      .flatMap((family) => family.criteria?.length ? family.criteria : [family])
+      .filter((criterion) => criterion.finding || criterion.data?.length)
+      .slice(0, 6);
+    const numericTokens = (value) => String(value || '').match(/\d+(?:[.,]\d+)*(?:%|€)?/g) || [];
+    const sourceNames = (criterion) => [...new Set((criterion.sourceIds || [])
+      .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher)
+      .filter(Boolean))].slice(0, 2);
+    const evidencePoints = criteria.map((criterion) => {
+      const finding = String(criterion.finding || '').trim();
+      const firstDatum = criterion.data?.[0] ? String(criterion.data[0]).trim() : '';
+      const findingNumbers = new Set(numericTokens(finding));
+      const datumAddsScope = firstDatum && numericTokens(firstDatum).some((token) => !findingNumbers.has(token));
+      const statement = finding || firstDatum;
+      const withDatum = datumAddsScope ? `${statement} Dato: ${firstDatum}.` : statement;
+      const publishers = sourceNames(criterion);
+      return `${criterion.label ? `${criterion.label}: ` : ''}${withDatum}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
+    });
+    const conclusion = `Conclusión: ${plan.limitation || plan.summary}`;
+    return [plan.headline.replace(/[.]$/, '') + '.', ...evidencePoints, conclusion].join('\n\n');
+  }
   const groups = new Map();
   for (const family of plan.evidenceSummary?.families || []) {
     const key = family.familyId || family.label;
@@ -1153,10 +1112,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-12-claims-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
-  const shareableReply = shareableReplyForPacket(packet.id, plan.evidenceSummary.families);
+  const shareableReply = shareableReplyForPacket(packet.id, plan.evidenceSummary.families)
+    || composeFamilyReply(plan, { compact: true });
   if (shareableReply) plan.shareableReply = shareableReply;
   return plan;
 };
@@ -1244,7 +1204,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     asOf: '2026-09-25',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-7-claims-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   return plan;
