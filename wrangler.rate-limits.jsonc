@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "elpaisestafatal-rate-limits",
+  "main": "./workers/rate-limits/index.ts",
+  "compatibility_date": "2026-07-16",
+  "workers_dev": false,
+  "ratelimits": [
+    {
+      "name": "CHECK_LIMITER",
+      "namespace_id": "927092701",
+      "simple": { "limit": 30, "period": 60 }
+    },
+    {
+      "name": "QUESTIONS_LIMITER",
+      "namespace_id": "927092702",
+      "simple": { "limit": 60, "period": 60 }
+    }
+  ]
+}

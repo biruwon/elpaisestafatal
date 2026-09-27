@@ -805,7 +805,7 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
   return boundedSeries(selected);
 };
 
-const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
+const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseRecords) => {
   const normalizedQuery = normalise(query);
   const explicitComparison = /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(normalizedQuery)
     || /\b(?:que|frente a|comparad)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(normalizedQuery);
@@ -835,7 +835,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding) => {
   // periods for the chart.
   const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('tertiary_education_attainment_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('life_expectancy_at_birth_europe') || hintedMetricIds.has('fertility_rate_europe') || hintedMetricIds.has('unmet_healthcare_waiting_list_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('government_education_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe') || hintedMetricIds.has('social_protection_benefits_per_capita_europe') || hintedMetricIds.has('government_deficit_ratio_europe') || hintedMetricIds.has('government_debt_ratio_europe') || hintedMetricIds.has('gini_coefficient_europe') || hintedMetricIds.has('household_electricity_price_europe');
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
-  const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds });
+  const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds, records: warehouseRecords, useProvidedRecords: Array.isArray(warehouseRecords) });
   const candidates = rawCandidates.filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
@@ -1944,7 +1944,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
 const resolveCacheVersion = [RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
 const requestId = (text) => digest(`${resolveCacheVersion}|${normalise(text)}`).slice(0, 24);
 
-const startResolveJob = (text, origin = 'runtime', bypassCache = false) => {
+const startResolveJob = (text, origin = 'runtime', bypassCache = false, warehouseRecords) => {
   const id = bypassCache ? `${requestId(text)}-${Date.now().toString(36)}` : requestId(text);
   const signature = canonicalSignatureFor(text);
   // Coalesce equivalent text submissions by their deterministic claim
@@ -1972,7 +1972,7 @@ const startResolveJob = (text, origin = 'runtime', bypassCache = false) => {
       ? { ...classified, status: 'uncovered', primary: undefined, alternatives: [], compiler: { ...(classified.compiler || {}), metricIds: [] } }
       : classified;
     const enrichmentStartedAt = Date.now();
-    const resolved = await enrichResolve(text, safeClassified, undefined, id);
+    const resolved = await enrichResolve(text, safeClassified, undefined, id, warehouseRecords);
     recordStage('retrieval_and_answer', enrichmentStartedAt);
     // Compound posts need proposition-level retrieval. Resolve each explicit
     // clause independently so one successful metric family cannot masquerade
@@ -1998,7 +1998,7 @@ const startResolveJob = (text, origin = 'runtime', bypassCache = false) => {
             ? `${partText}. Contexto de la publicación: ${text.slice(0, 900)}`
             : partText;
           const partClassified = await classify(researchText, { bypassCache });
-          return enrichResolve(researchText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`);
+          return enrichResolve(researchText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`, warehouseRecords);
         });
         parts.push(...await Promise.allSettled(batch));
       }
@@ -2812,7 +2812,8 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   return { status: 'uncovered', requestId: resultRequestId, canonicalSignature: classified.input?.canonical ? normalise(classified.input.canonical) : canonicalSignatureFor(text), result: safeResult, relatedClaims: safetyUnresolved || broadPoliticalComplaint ? [] : explicitMetricRoute && !broadEconomicComplaint && !broadPoliticalComplaint ? finalRelatedClaims.filter((item) => item.kind !== 'topic') : finalRelatedClaims };
 };
 
-const enrichResolve = async (text, classified, sourceOverride, resultRequestId) => {
+const enrichResolve = async (text, classified, sourceOverride, resultRequestId, warehouseRecords) => {
+  const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, compiler, queryEmbedding, warehouseRecords);
   // Enrichment must never replace a canonical published answer with a
   // provisional warehouse composition. Resolve the normalized title/alias
   // again at this boundary because this is where dynamic retrieval can
@@ -3059,7 +3060,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
       const queryCompiler = queryMetricIds.size
         ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds], retrievalMetricIds: [...queryMetricIds] }
         : retrievalClassified.compiler;
-      return findWarehouseEvidence(query, queryCompiler, index === 0 ? queryEmbedding : undefined);
+      return retrieveWarehouseEvidence(query, queryCompiler, index === 0 ? queryEmbedding : undefined);
     }))
     : [];
   // A metric hint is a stronger routing signal than the broad semantic topic
@@ -3072,7 +3073,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     // a housing claim); those must not crowd the direct series out of the
     // bounded evidence packet.
     const fallbackMetricIds = preferredMetricIdsForQuery(metricFallbackQuery);
-    warehouseResults.unshift(await findWarehouseEvidence(metricFallbackQuery, fallbackMetricIds.size
+    warehouseResults.unshift(await retrieveWarehouseEvidence(metricFallbackQuery, fallbackMetricIds.size
       ? { ...retrievalClassified.compiler, metricIds: [...fallbackMetricIds] }
       : retrievalClassified.compiler));
   }
@@ -3089,7 +3090,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
     // proposition while the later de-duplication still bounds the payload.
     const explicitCompoundResults = await Promise.all(independentMetricIds.map(async (metricId) => {
       const query = `${metricQueryTextForIds(new Set([metricId]))} España`;
-      const result = await findWarehouseEvidence(query, { ...retrievalClassified.compiler, metricIds: [metricId], retrievalMetricIds: [metricId] });
+      const result = await retrieveWarehouseEvidence(query, { ...retrievalClassified.compiler, metricIds: [metricId], retrievalMetricIds: [metricId] });
       return result;
     }));
     warehouseResults.unshift(...explicitCompoundResults);
@@ -3147,19 +3148,19 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId) 
   if (!broadPacketAvailable && process.env.BROAD_SCORECARD !== '0' && (broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text)))) {
     const region = normalise(text).match(/\b(?:andalucia|aragon|asturias|baleares|canarias|cantabria|castilla y leon|castilla la mancha|cataluna|comunidad valenciana|extremadura|galicia|madrid|murcia|navarra|pais vasco|la rioja|ceuta|melilla)\b/)?.[0];
     const geography = region || 'España';
-    const packets = await Promise.all(scorecardMetrics.map((metric) => findWarehouseEvidence(`${metric.aliases} ${geography}`, { metricIds: [metric.id], claimType: 'trend', geography })));
+    const packets = await Promise.all(scorecardMetrics.map((metric) => retrieveWarehouseEvidence(`${metric.aliases} ${geography}`, { metricIds: [metric.id], claimType: 'trend', geography })));
     scorecardObservations = packets.flatMap((packet) => packet.observations || []).slice(0, 48);
     const normalizedCondition = normalise(text);
     if (/\b(?:joven|jovenes|juventud)\b/.test(normalizedCondition)) {
       const youthIds = ['youth_unemployment_rate', 'neet_rate', 'tertiary_education_attainment_rate'];
-      const youthPackets = await Promise.all(youthIds.map((id) => findWarehouseEvidence(`${id} jóvenes España`, { metricIds: [id], claimType: 'trend', population: 'jóvenes' })));
+      const youthPackets = await Promise.all(youthIds.map((id) => retrieveWarehouseEvidence(`${id} jóvenes España`, { metricIds: [id], claimType: 'trend', population: 'jóvenes' })));
       scorecardObservations.push(...youthPackets.flatMap((packet) => packet.observations || []).slice(0, 36));
     }
     const populationRoute = /mujer|mujeres|female/.test(normalizedCondition) ? ['women', ['employment_rate', 'unemployment_rate', 'median_equivalised_income'], 'mujeres']
       : /mayor|pensionista|65/.test(normalizedCondition) ? ['older', ['older_population_share', 'life_expectancy_at_birth', 'resident_population'], 'personas mayores']
         : /familia|familias|hogar|hogares/.test(normalizedCondition) ? ['households', ['median_equivalised_income', 'housing_cost_overburden_rate', 'unmet_healthcare_waiting_list_rate'], 'hogares'] : null;
     if (populationRoute) {
-      const packets = await Promise.all(populationRoute[1].map((id) => findWarehouseEvidence(`${id} ${populationRoute[2]} España`, { metricIds: [id], claimType: 'trend', population: populationRoute[2] })));
+      const packets = await Promise.all(populationRoute[1].map((id) => retrieveWarehouseEvidence(`${id} ${populationRoute[2]} España`, { metricIds: [id], claimType: 'trend', population: populationRoute[2] })));
       scorecardObservations.push(...packets.flatMap((packet) => packet.observations || []).slice(0, 36));
     }
   }
@@ -3262,16 +3263,22 @@ const readResolveBody = async (request) => {
   if (request.headers['content-type']?.includes('multipart/form-data')) {
     try {
       const form = await new Request('http://local', { method: 'POST', headers: request.headers, body: rawBody }).formData();
+      let warehouseRecords;
+      const warehouseValue = form.get('warehouseRecords');
+      if (typeof warehouseValue === 'string') {
+        try { const parsed = JSON.parse(warehouseValue); if (Array.isArray(parsed)) warehouseRecords = parsed.slice(0, 500); } catch { /* Ignore malformed optional D1 candidates. */ }
+      }
       const file = form.get('file');
-      if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: false };
+      if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: false, warehouseRecords };
       const fileBytes = Buffer.from(await file.arrayBuffer());
       if (fileBytes.length > INPUT_LIMITS.maxFileBytes) return { text: '', inputType: String(form.get('inputType') || 'text'), hasFile: false, tooLarge: true };
-      return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: true, media: { base64: fileBytes.toString('base64'), mime: file.type, sha: digest(fileBytes.toString('base64')).slice(0, 24) } };
+      return { text: String(form.get('text') || '').trim(), inputType: String(form.get('inputType') || 'text'), hasFile: true, media: { base64: fileBytes.toString('base64'), mime: file.type, sha: digest(fileBytes.toString('base64')).slice(0, 24) }, warehouseRecords };
     } catch (error) { console.error('Media parsing failed:', error instanceof Error ? error.message : error); return { text: '', inputType: 'text', hasFile: false }; }
   }
   try {
     const value = JSON.parse(body);
-    return { text: String(value.text || '').trim(), inputType: String(value.inputType || 'text'), hasFile: false };
+    const warehouseRecords = Array.isArray(value.warehouseRecords) ? value.warehouseRecords.slice(0, 500) : undefined;
+    return { text: String(value.text || '').trim(), inputType: String(value.inputType || 'text'), hasFile: false, warehouseRecords };
   } catch { return { text: '', inputType: 'text', hasFile: false }; }
 };
 
@@ -3303,7 +3310,7 @@ const server = createServer(async (request, response) => {
       if (!validation.ok) { response.writeHead(validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : validation.code === 'empty' || validation.code === 'invalid_url' ? 400 : 415, { 'content-type': 'application/json', 'cache-control': 'no-store' }); response.end(JSON.stringify({ status: validation.code === 'empty' || validation.code === 'text_too_large' ? 'uncovered' : 'unavailable', relatedClaims: [] })); return; }
       const origin = typeof request.headers['x-knowledge-gap-origin'] === 'string' ? request.headers['x-knowledge-gap-origin'].slice(0, 32) : 'runtime';
       const bypassCache = request.headers['x-development-no-cache'] === '1' || url.searchParams.get('fresh') === '1';
-      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media, origin) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text, origin, bypassCache) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
+      const result = body.hasFile ? startMediaResolveJob(body.text, body.inputType, body.media, origin) : body.text && body.inputType === 'url' ? startUrlResolveJob(body.text) : body.text && body.inputType === 'text' ? startResolveJob(body.text, origin, bypassCache, body.warehouseRecords) : body.inputType !== 'text' ? { status: 'unavailable', relatedClaims: [] } : { status: 'uncovered', relatedClaims: [] };
       response.writeHead(body.text || body.hasFile ? (result.status === 'processing' ? 202 : 200) : 400, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

@@ -9,11 +9,10 @@ const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
   <p class="lead">No vendemos datos ni usamos publicidad personalizada. El servidor recibe el texto que envías para poder comprobarlo.</p>
 
   <h2>Consultas y afirmaciones</h2>
-  <p>Para entender qué temas conviene revisar, la base operativa puede conservar una versión normalizada y filtrada del texto, una firma que agrupa formulaciones parecidas, el tipo de entrada, el estado de recepción y la fecha. Cada envío cuenta como una consulta; no se crea un perfil ni un identificador persistente de visitante. Los archivos subidos y las respuestas completas no se guardan en esta base. Los registros se usan internamente y no se publican; el listado público solo muestra temas revisados y aprobados.</p>
-  <p>Antes de guardar el texto, filtros automáticos intentan quitar enlaces, correos, nombres de usuario, teléfonos, documentos, cuentas bancarias, direcciones IP, direcciones postales y nombres de personas. Son reglas heurísticas y pueden pasar por alto datos personales; no incluyas información personal o confidencial en una consulta. Los registros de consultas no tienen actualmente un plazo automático de borrado.</p>
+  <p>Para entender qué temas conviene revisar, la base operativa conserva una versión normalizada del texto (en minúsculas, sin acentos ni puntuación y limitada a 600 caracteres), una firma que agrupa formulaciones parecidas, el tipo de entrada, el estado de recepción y la fecha. La normalización no elimina datos personales: el texto guardado puede incluir detalles presentes en la consulta. Cada envío cuenta como una consulta; no se crea un perfil de visitante. Los archivos subidos y las respuestas completas no se guardan en esta base. Los registros se usan internamente y no se publican; el listado público solo muestra temas revisados y aprobados. Los registros de consultas no tienen actualmente un plazo automático de borrado.</p>
 
   <h2>Límites de uso</h2>
-  <p>Para limitar solicitudes abusivas, se convierte la IP que Cloudflare entrega al servidor en una huella SHA-256 usada solo por el limitador; no se añade a los registros de afirmaciones. La rutina de mantenimiento configurada elimina los contadores de más de dos días.</p>
+  <p>Cloudflare aplica límites por minuto a las solicitudes del comprobador mediante su servicio de limitación en el borde. El contador no se guarda en la base operativa D1.</p>
 
   <h2>Analítica</h2>
   {analyticsConfigured ? (

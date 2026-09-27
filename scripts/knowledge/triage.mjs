@@ -27,7 +27,7 @@ const exists = async (path) => { try { await access(path); return true; } catch 
 
 if (args.has('help')) {
   console.log('Usage: npm run knowledge:triage [--export-d1] [--sync-d1] [--input path] [--d1-input path] [--embedding-endpoint http://127.0.0.1:11434] [--min-count 3] [--limit 25] [--submission-limit 200]');
-  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}, including scrubbed user-submitted claim wording. Production D1 export and private triage sync are opt-in.');
+  console.log('Creates .local/query-clusters.json and .local/review-queue.{json,md}, including normalized user-submitted claim wording. Production D1 export and private triage sync are opt-in.');
   process.exit(0);
 }
 

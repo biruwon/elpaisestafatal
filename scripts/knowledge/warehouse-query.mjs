@@ -254,6 +254,11 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
     }));
 };
 
-export const findWarehouseObservations = async (query, limit = 12, { metricIds } = {}) => {
-  return filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, await readRecords({ query, metricIds }), limit, { metricIds }))));
+export const findWarehouseObservations = async (query, limit = 12, { metricIds, records, useProvidedRecords = false } = {}) => {
+  const rank = (candidates) => filterForeignCitizenshipObservations(filterForeignBornObservations(filterRecordedOffenceObservations(query, rankWarehouseObservations(query, candidates, limit, { metricIds }))));
+  if (useProvidedRecords) {
+    const fromD1 = rank(Array.isArray(records) ? records : []);
+    if (fromD1.length) return fromD1;
+  }
+  return rank(await readRecords({ query, metricIds }));
 };

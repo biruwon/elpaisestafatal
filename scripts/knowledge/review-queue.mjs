@@ -211,7 +211,7 @@ export const renderReviewQueueMarkdown = (queue) => {
     : '_No review candidates are ready._';
   const submittedTable = submittedClaims.length
     ? [
-      '| Rank | Last submitted | Times submitted | Input type | Triage state | Review state | Claim wording (scrubbed) |',
+      '| Rank | Last submitted | Times submitted | Input type | Triage state | Review state | Claim wording (normalized) |',
       '| ---: | --- | ---: | --- | --- | --- | --- |',
       ...submittedClaims.map(submittedMarkdownTableRow),
     ].join('\n')

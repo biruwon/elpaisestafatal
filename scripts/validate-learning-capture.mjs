@@ -7,7 +7,7 @@ const questions = await readFile(new URL('../functions/api/questions.ts', import
 const safeLearningMigration = await readFile(new URL('../migrations/0007_safe_learning.sql', import.meta.url), 'utf8');
 
 const required = [
-  'stripSensitiveDetails',
+  'normalize(String(value ||',
   'crypto.randomUUID()',
   'INSERT INTO resolve_requests',
   'ON CONFLICT(semantic_signature)',
@@ -27,4 +27,4 @@ if (checker.includes("fetch('/api/questions'") || checker.includes('fetch("/api/
 if (/UPDATE\s+(?:resolve_requests|query_clusters)[\s\S]*?(?:normalized_text|canonical_text)\s*=\s*'legacy neutral cluster'/i.test(safeLearningMigration)) {
   throw new Error('Safe-learning migration must preserve claim wording needed for review.');
 }
-console.log('Learning capture contract valid: scrubbed claims enter D1 server-side and provisional results stay session-only.');
+console.log('Learning capture contract valid: normalized claims enter D1 server-side and provisional results stay session-only.');

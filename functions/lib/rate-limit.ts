@@ -1,28 +1,24 @@
-interface DatabaseStatement {
-  bind(...values: unknown[]): DatabaseStatement;
-  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
-}
-
-interface Database {
-  prepare(query: string): DatabaseStatement;
-}
-
 type LocalWindow = { startedAt: number; count: number };
+interface RateLimitService { fetch(request: Request): Promise<Response> }
+interface Env { RATE_LIMITER?: RateLimitService }
 
 const localWindows = new Map<string, LocalWindow>();
 
-const clientIdentity = async (request: Request): Promise<string> => {
-  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const address = request.headers.get('cf-connecting-ip') || forwarded || 'anonymous';
-  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(address));
-  const fingerprint = [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-  return `sha256:${fingerprint}`;
-};
+const clientIdentity = (request: Request): string => request.headers.get('cf-connecting-ip')
+  || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  || 'anonymous';
 
 const allowInMemory = (identity: string, scope: string, limit: number, windowMs: number, now: number): boolean => {
   const key = `${scope}:${identity}`;
   const current = localWindows.get(key);
   if (!current || now - current.startedAt >= windowMs) {
+    if (!current && localWindows.size >= 10_000) {
+      for (const [expiredKey, window] of localWindows) {
+        if (now - window.startedAt >= windowMs) localWindows.delete(expiredKey);
+        if (localWindows.size < 8_000) break;
+      }
+      if (localWindows.size >= 10_000) localWindows.delete(localWindows.keys().next().value || '');
+    }
     localWindows.set(key, { startedAt: now, count: 1 });
     return true;
   }
@@ -36,25 +32,20 @@ export const allowRateLimitedRequest = async (
   env: object,
   { scope, limit, windowMs = 60_000 }: { scope: string; limit: number; windowMs?: number },
 ): Promise<boolean> => {
-  const identity = await clientIdentity(request);
+  const identity = clientIdentity(request);
   const now = Date.now();
-  const windowStart = Math.floor(now / windowMs) * windowMs;
-
-  const database = (env as { DB?: Database }).DB;
-  if (database) {
+  const binding = (env as Env).RATE_LIMITER;
+  if (binding) {
     try {
-      const rows = await database.prepare(`
-        INSERT INTO api_rate_limits (identity, window_start, request_count, updated_at)
-        VALUES (?, ?, 1, ?)
-        ON CONFLICT (identity, window_start)
-        DO UPDATE SET request_count = request_count + 1, updated_at = excluded.updated_at
-        RETURNING request_count
-      `).bind(`${scope}:${identity}`, windowStart, new Date(now).toISOString()).all<{ request_count?: number }>();
-      const count = Number(rows.results[0]?.request_count || 0);
-      if (count > 0) return count <= limit;
+      const response = await binding.fetch(new Request(`https://rate-limiter.internal/${encodeURIComponent(scope)}`, {
+        method: 'POST',
+        headers: { 'x-rate-limit-key': identity },
+      }));
+      if (response.status === 204) return true;
+      if (response.status === 429) return false;
     } catch {
-      // The limiter must never turn an unavailable operational database into
-      // a failure of the public deterministic claim path.
+      // Rate limiting is an abuse control; service binding failure must not
+      // turn the public deterministic claim path into an outage.
     }
   }
 

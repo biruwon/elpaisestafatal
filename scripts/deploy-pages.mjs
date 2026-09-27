@@ -40,6 +40,8 @@ const checkCanonicalHealth = async () => {
 const main = async () => {
   console.log(`Building and deploying ${project}…`);
   await run('npm', ['run', 'build']);
+  await run('./node_modules/.bin/wrangler', ['d1', 'migrations', 'apply', 'elpaisestafatal-ops', '--remote', '--yes']);
+  await run('./node_modules/.bin/wrangler', ['deploy', '--config', 'wrangler.rate-limits.jsonc']);
   await run('./node_modules/.bin/wrangler', ['pages', 'deploy', 'dist', '--project-name', project]);
 
   let lastError;

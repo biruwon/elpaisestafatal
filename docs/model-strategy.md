@@ -76,7 +76,7 @@ budget. Retain deterministic fallbacks and the provider-neutral interface.
 ## Near-term priorities
 
 1. Expand primary-source connectors and freshness checks for high-volume gaps.
-2. Capture anonymous resolution outcomes and reviewer corrections as evaluation
+2. Capture resolution outcomes and reviewer corrections as evaluation
    data, not as automatic truth.
 3. Benchmark several local model sizes using identical prompts and evidence
    packets; choose the smallest model that clears the quality gates.

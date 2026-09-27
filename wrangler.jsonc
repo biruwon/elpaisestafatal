@@ -10,5 +10,11 @@
       "database_id": "423f04db-bd1a-4fb2-8e46-99c3a326aaa0",
       "migrations_dir": "./migrations"
     }
+  ],
+  "services": [
+    {
+      "binding": "RATE_LIMITER",
+      "service": "elpaisestafatal-rate-limits"
+    }
   ]
 }

@@ -38,16 +38,15 @@ synthesize supplied evidence; reviewed sources remain the factual authority.
 ## User-submitted claims and demand export
 
 After `/api/check` accepts a submission, a Pages Function schedules a
-best-effort server-side write to Cloudflare D1. It stores a filtered,
-normalized text version, semantic and canonical signatures, input type,
-`received` status, and submission time. Each accepted text submission with
-claim text remaining after filtering gets a new event row; equivalent wording
-is grouped into a `query_clusters` row with an incrementing count. The claim
-record is not joined to a visitor ID or the
-rate-limit fingerprint. The raw request text and uploaded file are not written
-to these claim tables. Automatic filters are heuristic, so users should not
-submit personal or confidential details. File-only and URL-only requests
-without remaining claim text are not added to claim clusters.
+best-effort server-side write to Cloudflare D1. It stores a lowercased,
+punctuation-normalized version of the submitted claim, truncated to 600
+characters, plus semantic and canonical signatures, input type, `received`
+status, and submission time. Normalization does not remove personal details;
+the stored wording can include them. Each submission with claim text gets a
+new event row, and equivalent wording is grouped into a `query_clusters` row
+with an incrementing count. Uploaded files and complete answers are not
+written to these claim tables. URL-only and media-only submissions without
+claim text are not added to the review queue.
 
 To read current demand clusters from the configured remote D1 database, run:
 
@@ -60,6 +59,43 @@ Wrangler must be authenticated for the Cloudflare account. The command writes
 30-day counts. The scheduled `knowledge-triage` GitHub Actions workflow also
 exports clusters when its Cloudflare secrets are configured and retains its
 review artifact for 30 days.
+
+## Warehouse storage and retrieval
+
+`.local/source-warehouse` remains the rebuildable source snapshot used in
+local development and offline workflows. The daily `knowledge-refresh`
+workflow exports its structured records into the configured D1 database;
+`/api/check` searches D1's FTS index and passes bounded candidates to the
+existing evidence ranker. When D1 is unavailable or returns no compatible
+candidates, the local resolver can use its file-backed snapshot. Numeric
+observations and typed `official_publication`, `legal_document`, and
+`legal_rule` records share the generic `observations` table so event and legal
+evidence retain their types without parallel tables.
+
+Before this change, the refresh job generated a SQL artifact but never loaded
+it into D1, and the export referenced columns missing from the applied schema.
+The runtime continued to query the JSON snapshot. Migration 0010 aligns the
+schema, while the refresh workflow now loads the generated SQL in bounded D1
+imports and `/api/check` reads its FTS index.
+
+The initial D1 schema also proposed separate `government_events` and
+`legal_rules` projections, scored `evidence_relationships`, and
+`ingestion_runs`. They had no runtime readers or ingestion writers. Event and
+legal handling already operates on typed records in the file warehouse;
+evidence fit is computed by the resolver, and refresh history is retained by
+GitHub Actions. Migration 0010 drops the unused D1 projections.
+
+`answer_feedback` had no browser caller, no reader, and no stored rows; its
+capture endpoint and table are removed. The custom `api_rate_limits` counter
+was active, but it exists only to throttle abuse, so its durable D1 writes and
+daily cleanup job are replaced by Cloudflare's native Worker rate-limit
+binding. The D1 request rows and semantic clusters remain because the private
+triage workflow reads them. Unused per-request lifecycle/result fields and
+unused cluster research/feedback counters are dropped while legacy request
+signatures remain available to older Pages deployments and active review and
+clustering fields remain. Cloudflare's native counters are per edge location
+and eventually consistent, which suits abuse throttling but not exact usage
+accounting.
 
 ## Core vocabulary
 

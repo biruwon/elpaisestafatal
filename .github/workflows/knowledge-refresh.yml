@@ -15,15 +15,33 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      - name: Check D1 warehouse sync configuration
+        id: d1
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${CLOUDFLARE_API_TOKEN:-}" && -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual warehouse refresh requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+            exit 1
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "D1 warehouse sync skipped: Cloudflare credentials are not configured."
+          fi
+
       - name: Check out repository
         uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -53,6 +71,12 @@ jobs:
           npm run knowledge:coverage:audit
           npm run knowledge:coverage:audit:validate
           npm run knowledge:coverage:promote
+
+      - name: Apply D1 migrations and load the warehouse
+        if: steps.d1.outputs.configured == 'true'
+        run: |
+          npm run d1:migrate
+          npm run knowledge:warehouse:d1
 
       - name: Upload refresh snapshot
         uses: actions/upload-artifact@v6

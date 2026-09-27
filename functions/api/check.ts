@@ -12,6 +12,7 @@ import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } 
 import { reviewedContextualAnswer } from '../lib/reviewed-contextual-answer.mjs';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 import { captureClaimDemand, type ClaimDemandDatabase } from '../lib/claim-demand';
+import { searchD1Warehouse } from '../lib/d1-warehouse';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
@@ -184,6 +185,7 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
   const cached = bypassResponseCache ? undefined : cacheKey ? cache.get(cacheKey) : undefined;
   if (cached && cached.expiresAt > Date.now()) return json(cached.response);
   if (cached) cache.delete(cacheKey);
+
   if (body.inputType === 'text') {
     const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: true });
@@ -228,15 +230,23 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
   if (localCircuitOpenUntil > Date.now()) return json(fallbackResponse(effectiveClaim, body.inputType));
 
   try {
+    // D1 is the production retrieval index. The local resolver still ranks
+    // and checks evidence compatibility, but receives bounded observations
+    // from the mirror populated by the daily refresh workflow.
+    let warehouseRecords: Record<string, unknown>[] | undefined;
+    if (env.DB && body.inputType === 'text') {
+      try { warehouseRecords = await searchD1Warehouse(env.DB, effectiveClaim); } catch { /* Fall back to the local source snapshot if D1 is unavailable. */ }
+    }
     const isMultipart = Boolean(body.file);
     const payload = isMultipart ? (() => {
       const form = new FormData();
       form.set('text', body.text);
       form.set('inputType', body.inputType);
+      if (warehouseRecords) form.set('warehouseRecords', JSON.stringify(warehouseRecords));
       if (body.clarification) form.set('clarification', JSON.stringify(body.clarification));
       if (body.file) form.set('file', body.file, body.file.name || 'upload');
       return form;
-    })() : JSON.stringify({ text: body.text, inputType: body.inputType, clarification: body.clarification });
+    })() : JSON.stringify({ text: body.text, inputType: body.inputType, clarification: body.clarification, ...(warehouseRecords ? { warehouseRecords } : {}) });
     const headers = new Headers();
     if (!isMultipart) headers.set('content-type', 'application/json');
     headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);

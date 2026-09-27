@@ -19,7 +19,7 @@ requireText(triage, "args.has('export-d1')", 'explicit export opt-in');
 requireText(triage, "args.has('sync-d1')", 'explicit D1 triage sync opt-in');
 requireText(triage, 'sync-query-triage.mjs', 'durable D1 triage sync command');
 requireText(triage, 'review-queue.md', 'human-readable queue output');
-requireText(exporter, 'FROM resolve_requests r', 'privacy-filtered individual submission export');
+requireText(exporter, 'FROM resolve_requests r', 'individual submission export for internal review');
 requireText(exporter, 'submittedClaims', 'submitted claim export payload');
 requireText(reviewQueue, 'User-submitted claim wording', 'direct submitted-claim review section');
 requireText(reviewQueue, 'Unclustered claim phrasings', 'visibility for unclustered submissions');
