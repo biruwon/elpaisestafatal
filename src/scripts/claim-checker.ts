@@ -1,6 +1,7 @@
 import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
 import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
+import { trackAnalyticsEvent } from '../lib/analytics';
 
 type CheckResult = {
   claim: string; reply: string; answer: string; shareableReply?: string; shareableSourceIds?: string[]; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
@@ -364,8 +365,9 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const submission = new AbortController();
   request = submission;
   const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
-  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
+  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
   if (!clarificationContext) writeRecent(original); setLoading(file?.name || original, submission);
+  trackAnalyticsEvent('claim_submit', { input_type: inputType });
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   let initialPreview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined;
   try {
@@ -399,18 +401,22 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     clarificationContext = undefined;
     if (response.state === 'processing') {
       if (initialPreview) {
+        trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'enrichment_timeout', preview_available: true });
         renderStalledPreview(initialPreview, 'No han llegado más datos; esta respuesta conserva su carácter provisional.');
         return;
       }
+      trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'processing_timeout', preview_available: false });
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
     }
     if (initialPreview && (response.state === 'unavailable' || response.state === 'clarification'
       || ((response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') && shouldRetainReviewedPreview(initialPreview, response)))) {
+      trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'reviewed_preview' });
       renderResult(initialPreview, 'reviewed');
       const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
       if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar respuesta revisada'; }
       return;
     }
+    trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'final' });
     if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
   } catch (error) {
     if (request !== submission) return;
@@ -419,9 +425,11 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     request = undefined;
     clarificationContext = undefined;
     if (initialPreview) {
+      trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'enrichment_failed', preview_available: true });
       renderStalledPreview(initialPreview, 'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.');
       return;
     }
+    trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: error instanceof Error && error.message === 'request-timeout' ? 'request_timeout' : 'network_or_unexpected', preview_available: false });
     renderUnavailable({ state: 'unavailable', id: `error-${Date.now()}`, claim: original, message: error instanceof Error && error.message === 'request-timeout' ? 'La comprobación está tardando demasiado. Puedes intentarlo de nuevo.' : 'El servicio no está disponible ahora. Puedes intentarlo de nuevo.', retryable: true });
   }
 };

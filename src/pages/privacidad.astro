@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+const analyticsMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || '';
+const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
 ---
 <BaseLayout title="Privacidad — El país está fatal. ¿Seguro?"><article class="prose">
   <p class="eyebrow">Privacidad</p>
@@ -14,7 +16,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <p>Para limitar solicitudes abusivas, se convierte la IP que Cloudflare entrega al servidor en una huella SHA-256 usada solo por el limitador; no se añade a los registros de afirmaciones. La rutina de mantenimiento configurada elimina los contadores de más de dos días.</p>
 
   <h2>Analítica</h2>
-  <p>No enviamos consultas, clics, enlaces compartidos, descargas ni identificadores a proveedores de analítica de terceros.</p>
+  {analyticsConfigured ? (
+    <p>Usamos Google Analytics 4 para medir visitas y uso del sitio; la etiqueta se carga al abrir cada página. Recibe las páginas visitadas y eventos limitados como el tipo de entrada (texto, enlace, imagen o audio), el estado de la comprobación y una categoría técnica de error. No enviamos el texto de las afirmaciones, las respuestas, los nombres de archivos ni su contenido. Google puede usar cookies o tecnologías similares; consulta la <a href="https://policies.google.com/privacy">política de privacidad de Google</a>.</p>
+  ) : (
+    <p>El sitio está preparado para Google Analytics 4, pero la medición no se activa hasta que se configure el identificador de la propiedad. Si se activa, enviará páginas visitadas y eventos limitados de uso, nunca el texto de las afirmaciones, las respuestas ni el contenido de archivos.</p>
+  )}
 
   <h2>Investigación en directo</h2>
   <p>Cuando se activa una búsqueda provisional, las consultas se neutralizan localmente y solo se consultan dominios de fuentes autorizadas. Los resultados, fragmentos y cuerpos de artículos no se guardan: se conserva únicamente la metadata derivada necesaria durante un máximo de 15 minutos; la sesión del navegador conserva una respuesta provisional durante un máximo de 5 minutos.</p>
