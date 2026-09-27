@@ -97,6 +97,19 @@ clustering fields remain. Cloudflare's native counters are per edge location
 and eventually consistent, which suits abuse throttling but not exact usage
 accounting.
 
+The Pages Functions service binding targets the separate
+`elpaisestafatal-rate-limits` Worker. Cloudflare's Git-connected Pages build
+does not run `npm run deploy:pages`, so provision that Worker before the first
+Git deployment with:
+
+```sh
+./node_modules/.bin/wrangler deploy --config wrangler.rate-limits.jsonc
+```
+
+The Worker must exist before Pages can publish a Function that binds to it.
+`npm run deploy:pages` handles the order automatically for command-line
+deployments; publish the Worker first when deploying Pages directly from Git.
+
 ## Core vocabulary
 
 - A **metric** is a reusable measurement definition, such as unemployment rate or recorded offences.
