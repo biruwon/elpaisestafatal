@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const analyticsMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || '';
+const analyticsMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || 'G-HDKLCPGXWH';
 const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
 ---
 <BaseLayout title="Privacidad — El país está fatal. ¿Seguro?"><article class="prose">

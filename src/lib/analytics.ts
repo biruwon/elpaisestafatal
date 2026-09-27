@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const measurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || '';
+const measurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || 'G-HDKLCPGXWH';
 const validMeasurementId = /^G-[A-Z0-9]+$/i.test(measurementId);
 
 export const trackAnalyticsEvent = (name: string, properties: AnalyticsProperties = {}): void => {
