@@ -17,7 +17,7 @@ import { searchD1Warehouse } from '../lib/d1-warehouse';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'compound-evidence-composer-15-semantic-evidence-router-2026-09';
+const responseCacheVersion = 'compound-evidence-composer-16-concise-scope-utf8-poll-2026-09';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -295,7 +295,14 @@ export const onRequestGet = async ({ request, env }: Context): Promise<Response>
     const upstream = await fetch(`${env.LOCAL_CLASSIFIER_ENDPOINT}/v1/classify/${encodeURIComponent(id)}`, { headers: { authorization: `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}` }, signal: AbortSignal.timeout(2000) });
     const payload = await upstream.json().catch(() => undefined);
     const safe = publicResolveResponse(payload) as ResolveResult | undefined;
-    const requestedClaim = request.headers.get('x-claim-text')?.slice(0, 12_000).trim() || '';
+    // New clients send the submitted text as UTF-8 JSON. HTTP field values are
+    // not a reliable transport for arbitrary Unicode text (for example, ñ/á
+    // may be replaced while a delayed result is rebuilt). Keep the old header
+    // as a compatibility fallback for already-open clients.
+    const pollBody = request.method === 'POST'
+      ? await request.json().catch(() => undefined) as { claim?: unknown } | undefined
+      : undefined;
+    const requestedClaim = (typeof pollBody?.claim === 'string' ? pollBody.claim : request.headers.get('x-claim-text'))?.slice(0, 12_000).trim() || '';
     const claim = requestedClaim || (typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim : '');
     if (safe?.status === 'processing') return json(processingCheck(claim, id), 202);
     const modelResponse = safe?.result ? checkFromPlan(claim, safe.result, id) : undefined;

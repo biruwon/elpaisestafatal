@@ -11,9 +11,9 @@ const source = (id, title, publisher, url, publishedAt) => ({ id, title, publish
 const reviewedVisuals = {
   publicEmploymentTrend: { type: 'line', title: 'Personal de las administraciones públicas · corte anual', unit: 'efectivos', labels: Array.from({ length: 25 }, (_, index) => String(2002 + index)), values: [2296193,2322495,2345765,2380005,2428663,2503991,2574524,2628406,2686983,2674305,2676293,2567083,2541237,2534904,2509976,2509980,2552115,2569118,2587672,2701163,2708325,2970563,2978716,3033304,3071725], sourceId: 'public-administration-epsap-history', evidenceIds: ['public-administration-epsap-history'], breakAfter: [20], note: 'Recuento a 1 de enero. La edición de 2023 introduce una ruptura metodológica: no compares el salto entre 2022 y 2023 con la serie anterior.', interpretation: 'La plantilla registrada aumenta dentro de ambos tramos; el cambio metodológico de 2023 impide interpretar el salto 2022–2023 como crecimiento real.' },
   publicEmploymentByAdministration: { type: 'bar', title: 'Empleo público por nivel de administración · enero de 2026', unit: 'efectivos', labels: ['Comunidades autónomas', 'Administración local', 'Sector público estatal'], values: [1930273,594898,546554], sourceId: 'public-administration-epsap-2026', evidenceIds: ['public-administration-epsap-2026'], note: 'Total: 3.071.725 efectivos; la distribución no mide productividad ni puestos sustituibles.' },
-  imvTrend: { type: 'line', title: 'Personas beneficiarias del IMV · nómina de agosto', unit: 'personas', labels: ['Agosto 2023','Agosto 2024','Agosto 2025','Agosto 2026'], values: [1467252,1957700,2335553,2725899], sourceId: 'benefits-imv-august-source', evidenceIds: ['benefits-imv-historic-source','benefits-imv-previous-year-source','benefits-imv-august-source'], note: 'Serie de una prestación concreta; no cuenta todas las ayudas ni identifica el efecto de la regularización.', interpretation: 'El IMV creció en los cuatro cortes de agosto, un 16,7 % entre 2025 y 2026; la coincidencia temporal no demuestra qué causó el aumento.' },
-  surgeryWaitTrend: { type: 'line', title: 'Espera media para cirugía no urgente · lista del SNS', unit: 'días', labels: ['Dic. 2022','Jun. 2023','Dic. 2023','Jun. 2024','Dic. 2024','Jun. 2025','Dic. 2025'], values: [120,112,128,121,126,119,121], sourceId: 'public-services-waiting-list-source', evidenceIds: ['public-services-waiting-list-source'], note: 'Indicador sanitario nacional de un servicio concreto; no mide todos los servicios públicos ni demuestra una causa migratoria.' },
-  surgeryWaitRegions: { type: 'bar', title: 'Espera para cirugía no urgente por territorio · diciembre de 2025', unit: 'días', labels: ['Andalucía','Cataluña','Cantabria','Extremadura','Aragón','Canarias','Baleares','Murcia','Navarra','Ceuta','Castilla-La Mancha','Asturias','Comunidad Valenciana','Castilla y León','Melilla','La Rioja','Galicia','País Vasco','Madrid'], values: [173,142,137,135,132,106,105,103,96,94,92,91,88,87,82,78,73,64,50], sourceId: 'public-services-waiting-list-source', evidenceIds: ['public-services-waiting-list-source'], note: 'Rango de la espera media publicada: Andalucía 173 días y Madrid 50. CCAA y ciudades autónomas; mide lista quirúrgica, no calidad global.' },
+  imvTrend: { type: 'line', title: 'Personas beneficiarias del IMV · nómina de agosto', unit: 'personas', labels: ['Agosto 2023','Agosto 2024','Agosto 2025','Agosto 2026'], values: [1467252,1957700,2335553,2725899], sourceId: 'benefits-imv-august-source', evidenceIds: ['benefits-imv-historic-source','benefits-imv-previous-year-source','benefits-imv-august-source'], note: 'Serie de una prestación concreta; no cuenta todas las ayudas ni identifica a las personas regularizadas.', interpretation: 'Los beneficiarios aumentaron en cada agosto, pero la variación interanual bajó del 33,4 % al 19,3 % y al 16,7 %; estos cuatro cortes no demuestran crecimiento exponencial ni causalidad con la regularización.' },
+  surgeryWaitRegions: { type: 'bar', title: 'Espera para cirugía no urgente por territorio · diciembre de 2025', unit: 'días', labels: ['Andalucía','Cataluña','Cantabria','Extremadura','Aragón','Canarias','Baleares','Murcia','Navarra','Ceuta','Castilla-La Mancha','Asturias','Comunidad Valenciana','Castilla y León','Melilla','La Rioja','Galicia','País Vasco','Madrid'], values: [173,142,137,135,132,106,105,103,96,94,92,91,88,87,82,78,73,64,50], sourceId: 'public-services-waiting-list-source', evidenceIds: ['public-services-waiting-list-source'], note: 'Espera de un servicio concreto; no mide todos los servicios públicos. El corte de diciembre de 2025 precede al proceso de regularización iniciado en abril de 2026 y no mide su efecto.' },
+  regularizationProcess: { type: 'bar', title: 'Balance del proceso de regularización · 2 de julio de 2026', unit: 'expedientes', labels: ['Solicitudes recibidas','Expedientes tramitados'], values: [1174978,609737], sourceId: 'regularizacion-extraordinaria-solicitudes-julio-2026', evidenceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'], note: 'Los expedientes tramitados forman parte de las solicitudes recibidas; ninguno de los dos recuentos equivale a autorizaciones concedidas.' },
   pensionSpending: { type: 'line', title: 'Prestaciones de vejez y supervivencia · gasto nominal', unit: 'millones de euros', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'], values: [130125.04,133951.32,135670.9,144206.74,151536.33,155962.11,162874.93,171818.78,190308.8,205009.77], sourceId: 'pension-expenditure-total-source', evidenceIds: ['pension-expenditure-total-source'], note: 'Eurostat: prestaciones de vejez y supervivencia de todos los esquemas. Euros corrientes, sin descontar inflación; no equivale solo a la pensión contributiva de la Seguridad Social.' },
   pensionRule: { type: 'comparison', title: 'Proyección media del gasto neto en pensiones · regla legal', unit: '% del PIB · media 2022–2050', labels: ['Escenario AIReF','Umbral legal'], values: [13,13.3], sourceId: 'airef-pension-sustainability-study-2026', evidenceIds: ['airef-pension-sustainability-study-2026'], note: 'Escenario modelizado, no un resultado observado ni una garantía de sostenibilidad.' },
   youthUnemployment: { type: 'line', title: 'Tasa de paro juvenil · España, 15–24 años', unit: '% de la población activa', labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'], values: [48.3,44.4,38.6,34.3,32.5,38.3,35,29.7,28.7,26.5,24.9], sourceId: 'youth-labour-eurostat', evidenceIds: ['youth-labour-eurostat'], note: 'El paro juvenil bajó desde 2015, aunque sigue siendo elevado. No es una medida de salarios ni de acceso a vivienda.' },
@@ -312,7 +312,7 @@ const packets = [
   },
   {
     id: 'broad-public-services',
-    visuals: [reviewedVisuals.surgeryWaitTrend, reviewedVisuals.surgeryWaitRegions],
+    visuals: [reviewedVisuals.surgeryWaitRegions],
     matches: /\b(servicios? p[uú]blicos?|colapso(?:\s+total)?[^.]{0,80}servicios?|sanidad|educaci[oó]n|atenci[oó]n p[uú]blica)\b/i,
     interpretation: { kind: 'quantitative', subject: 'capacidad y resultados de los servicios públicos', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'capacidad, uso y resultados de los servicios públicos', interpretation: '“Colapso total” es una conclusión extrema: hay que identificar el servicio, el territorio, el periodo y el umbral observable que la definiría.' },
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
@@ -372,7 +372,7 @@ const packets = [
   {
     id: 'broad-benefits-recipients',
     visuals: [reviewedVisuals.imvTrend],
-    matches: /\b(paguitas?|ayudas? para vivir|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
+    matches: /\b(IMV|paguitas?|ayudas? para vivir|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
     interpretation: { kind: 'quantitative', subject: 'personas perceptoras de prestaciones', subjectType: 'group', predicate: 'has_multiple_measures', normalizedClaim: 'alcance y evolución de las prestaciones sociales', interpretation: '“Paguitas” no identifica un programa oficial ni demuestra dependencia, abuso o inactividad. Hay que especificar la prestación, la población, el periodo y el denominador.' },
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
     summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
@@ -416,6 +416,7 @@ const packets = [
   },
   {
     id: 'broad-immigration-regularization',
+    visuals: [reviewedVisuals.regularizationProcess],
     matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
     headline: 'Regularización documentada, pero no se demuestra que sea masiva ni que cause un colapso o más dependencia de prestaciones',
@@ -1166,24 +1167,21 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const applications = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Solicitudes:/i);
   const processedCases = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Expedientes tramitados:/i);
   const newAffiliations = dataPoint('broad-immigration-regularization', 'regularization-employment', /afiliaciones? a la Seguridad Social/i);
-  const specialistWait = dataPoint('broad-public-services', 'public-service-waiting-list', /espera media para primera consulta externa/i);
   const imvTrend = dataForCriterion('broad-benefits-recipients', 'benefit-trend-causality').find((value) => /→/.test(value));
   const cleanImvTrend = imvTrend?.replace(/^Serie localizada:\s*/i, '');
-  const surgeryWaiting = dataPoint('broad-public-services', 'public-service-waiting-list', /121 días de espera media para cirugía no urgente/i);
+  const latestImvPoint = cleanImvTrend?.match(/→\s*([\d.]+)\s+\((\d{4}); \+([\d,]+) % interanual\)/);
   const hasRegularizationServicesAndBenefits = ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].every((id) => familyPlans.some((familyPlan) => familyPlan.id === id));
   const shareableReply = hasRegularizationServicesAndBenefits ? [
-    'Evidencia limitada.',
-    'El RD 316/2026 cubría a solicitantes de protección internacional antes del 1-1-2026 y a personas irregulares llegadas antes de esa fecha. Exigía cinco meses continuados, carecer de antecedentes y no amenazar el orden, seguridad o salud públicos; quienes no pidieron protección debían acreditar trabajo en España, familia elegible o vulnerabilidad. El permiso inicial autorizaba residir y trabajar en España un año; no daba nacionalidad ni ayudas automáticas.',
-    applications && processedCases ? `Balance de julio: ${applications.replace(/^Solicitudes:\s*/i, '').replace(/ \([^)]+\)/, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '').replace(/ \([^)]+\)/, '')} tramitadas; no equivalen a permisos concedidos.` : '',
-    newAffiliations ? `Al 30 de junio se atribuyeron ${newAffiliations.replace(/ nuevas afiliaciones a la Seguridad Social/i, '').replace(/ \([^)]+\)$/, '')} altas a la Seguridad Social; no son beneficiarios de ayudas.` : '',
-    specialistWait && surgeryWaiting ? `SNS (diciembre de 2025): 102 días para primera consulta y 121 para cirugía no urgente (Andalucía 173, Madrid 50); son presiones concretas, no un colapso total.` : specialistWait ? `En el SNS, ${specialistWait.toLocaleLowerCase('es')}; es una presión concreta, no una medición de colapso total.` : '',
-    cleanImvTrend ? `IMV en agosto: ${cleanImvTrend.replace(/^beneficiarios del IMV en agosto:\s*/i, '')}. La subida no demuestra dependencia, crecimiento exponencial ni causalidad con la regularización.` : '',
+    applications && processedCases ? `El plazo del RD 316/2026 terminó el 30 de junio de 2026. Permitía solicitar un permiso temporal de un año a personas adultas presentes en España antes del 1 de enero, con cinco meses continuados y otros requisitos según la vía. Al 2 de julio constaban ${applications.replace(/^Solicitudes:\s*/i, '').replace(/ \([^)]+\)/, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '').replace(/ \([^)]+\)/, '')} expedientes tramitados; tramitados no significa concedidos.` : '',
+    newAffiliations ? `El Gobierno atribuyó ${newAffiliations.replace(/ nuevas afiliaciones a la Seguridad Social/i, '').replace(/ \([^)]+\)$/, '')} altas a la Seguridad Social al proceso hasta el 30 de junio: empleo, no perceptores de ayudas.` : '',
+    `La lista quirúrgica del SNS utilizada es de diciembre de 2025, anterior al proceso; describe un servicio, no un colapso general ni su efecto.`,
+    latestImvPoint ? `El IMV registró ${latestImvPoint[1]} beneficiarios en agosto de ${latestImvPoint[2]}, un ${latestImvPoint[3]} % más que en agosto de ${Number(latestImvPoint[2]) - 1}. Es una prestación: no identifica a personas regularizadas ni mide dependencia; esta serie no demuestra crecimiento exponencial ni causalidad.` : '',
   ].filter(Boolean).join('\n\n') : undefined;
   const plan = {
     id: 'broad-compound-claim',
     schemaVersion: '1',
     evidenceLevel: 'limited',
-    headline: `La afirmación mezcla ${families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ')}; las cifras disponibles no demuestran por sí solas las relaciones causales`,
+    headline: 'No se demuestra un colapso total ni que la regularización haya disparado la dependencia de ayudas',
     summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
     shareableReply,
     shareableSourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026', 'regularization-law-2026', 'public-services-waiting-list-source', 'benefits-imv-historic-source', 'benefits-imv-august-source', 'benefits-imv-previous-year-source'],
@@ -1204,7 +1202,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     asOf: '2026-09-25',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09-2',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   return plan;

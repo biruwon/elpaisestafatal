@@ -37,9 +37,18 @@ for (const [index, text] of claims.entries()) {
   assert(plan.shareableSourceIds?.length, `Exact claim ${index + 1} needs primary sources near the answer`);
   const visuals = assertVisuals(plan, `Exact claim ${index + 1}`);
   if (index === 0) {
-    assert(visuals.length >= 3, 'Compound immigration claim should visualize services, regional waiting lists, and the IMV trend separately');
-    assert(plan.shareableReply.includes('cinco meses continuados') && plan.shareableReply.includes('antecedentes') && plan.shareableReply.includes('vulnerabilidad') && plan.shareableReply.includes('familia elegible'), 'The short response must state the common and alternative regularization eligibility requirements');
-    assert(plan.shareableReply.includes('autorizaciones') || plan.shareableReply.includes('permisos concedidos'), 'The short response must distinguish applications from permits granted');
+    const titles = visuals.map((visual) => visual.title);
+    assert.equal(visuals.length, 3, 'Compound immigration answer should show only the process, one service context, and the IMV trend');
+    assert(titles.some((title) => title.includes('Balance del proceso de regularización')), 'The answer should visualize the relevant application/processing counts');
+    assert(titles.some((title) => title.includes('Espera para cirugía no urgente por territorio')), 'The answer should show one clearly scoped public-service indicator');
+    assert(!titles.some((title) => title.includes('Espera media para cirugía')), 'The answer should not repeat the same waiting-list indicator in two charts');
+    assert(titles.some((title) => title.includes('beneficiarias del IMV')), 'The answer should visualize the benefit series separately');
+    assert(plan.headline.includes('colapso total') && plan.headline.includes('dependencia de ayudas'), 'The heading should state the direct conclusion rather than say the claim mixes topics');
+    assert(plan.shareableReply.includes('cinco meses continuados') && plan.shareableReply.includes('30 de junio de 2026'), 'The response should state the core eligibility period and that applications have closed');
+    assert(plan.shareableReply.includes('1.174.978') && plan.shareableReply.includes('609.737') && plan.shareableReply.includes('tramitados no significa concedidos'), 'The response must distinguish applications and processed files from approvals');
+    assert(plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto de 2025'), 'The response should state a like-for-like IMV comparison');
+    assert(!plan.shareableReply.includes('Evidencia limitada.') && !plan.shareableReply.includes('102 días') && !plan.shareableReply.includes('Andalucía 173'), 'The copyable answer should omit duplicated status text and repeated health-chart values');
+    assert(plan.shareableReply.trim().split(/\s+/).length <= 160, 'The copyable answer should remain concise');
   }
   if (index === 5) assert(visuals.length >= 5, 'Population/IQ claim should visualize population, origins, permit motives, and PISA evidence separately');
   const replies = plan.blocks.filter((block) => block.type === 'conversation_reply');
@@ -90,14 +99,23 @@ assert.equal(shouldRetainReviewedPreview(focusedPreview, broadenedLateAnswer), t
 assert.equal(shouldRetainReviewedPreview(focusedPreview, focusedPreview), false, 'A final answer with the reviewed families and charts may replace its preview');
 assert.equal(shouldRetainReviewedPreview(focusedPreview, { ...focusedPreview, result: { ...focusedPreview.result, visuals: [{ title: 'Lista SNS' }] } }), true, 'A final answer must retain every chart from the reviewed preview');
 const endpoint = await readFile(new URL('../functions/api/check.ts', import.meta.url), 'utf8');
+const pollRoute = await readFile(new URL('../functions/api/check/[id].ts', import.meta.url), 'utf8');
 const browserClient = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 assert.match(endpoint, /reviewedContextualAnswer\(model, contextual\)/, 'POST response selection must preserve the reviewed answer');
 assert.match(endpoint, /chooseResponse\(claim, modelResponse, contextual\)/, 'Final poll must use the same response selection as POST');
-assert.match(browserClient, /'x-claim-text': original/, 'The final poll must retain the submitted claim to rebuild the same contextual response');
+assert.match(endpoint, /request\.method === 'POST'[\s\S]*?request\.json\(\)/, 'The poll endpoint must decode Unicode claim text from a JSON body');
+assert.match(pollRoute, /onRequestGet as onRequestPost/, 'The dynamic polling route must accept the UTF-8 POST contract');
+assert.match(browserClient, /method: 'POST'[\s\S]*?JSON\.stringify\(\{ claim: original \}\)/, 'The final poll must send the original claim as JSON, not a raw HTTP header');
+assert.doesNotMatch(browserClient, /x-claim-text/, 'The browser must not transmit Unicode claims in a custom header');
+const accentedPollClaim = 'La regularización extraordinaria de inmigrantes en España';
+assert.equal(JSON.parse(JSON.stringify({ claim: accentedPollClaim })).claim, accentedPollClaim, 'The poll payload must preserve Spanish accents through UTF-8 JSON');
 assert.match(browserClient, /shouldRetainReviewedPreview\(initialPreview, response\)/, 'The UI must keep a reviewed preview when a delayed answer changes its scope or drops reviewed charts');
 // Changing the combination must not reuse the immigration-specific answer.
 const novel = answerPlanForBroadDomains('La regularización de inmigrantes aumenta el precio del alquiler');
 assert(!novel.blocks.find((block) => block.type === 'conversation_reply').text.includes('tres afirmaciones'));
+const healthOnlyRoute = broadDomainPacketsFor('La sanidad tiene listas de espera muy largas').map((packet) => packet.id);
+assert(healthOnlyRoute.includes('broad-public-services') && !healthOnlyRoute.includes('broad-immigration-regularization') && !healthOnlyRoute.includes('broad-benefits-recipients'), 'A nearby health-only claim must not inherit the regularization or benefits evidence');
+assert.deepEqual(broadDomainPacketsFor('El IMV ha crecido tras la regularización').map((packet) => packet.id), ['broad-immigration-regularization', 'broad-benefits-recipients'], 'An immigration-plus-benefits claim must not acquire an unmentioned public-services family');
 // Unit, country and nationality changes must not be joined as a time series.
 const imv = answerPlanForBroadDomains('¿Quién recibe el ingreso mínimo vital?', { observations: [
   { id: 'foreign', metricId: 'imv_title_holders_by_nationality', value: 153529, unit: 'personas', period: '2026-07', dimensionLabels: { nationality: 'extranjera' }, dimensions: { nationality: 'foreign' } },
@@ -109,11 +127,11 @@ assert(data.some((value) => value.includes('española') && value.includes('725.6
 assert(data.every((value) => !value.includes('→')), 'Separate populations became a spurious trend');
 // One family with numbers must not suppress another family's research.
 const plan = answerPlanForBroadDomains(claims[0]);
-assert(plan.shareableReply.includes('1.467.252 personas (2023) → 1.957.700 (2024) → 2.335.553 (2025) → 2.725.899 (2026; +16,7 % interanual)'), 'Shareable reply omitted the reviewed IMV trend');
+assert(plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto de 2025'), 'Shareable reply omitted the reviewed like-for-like IMV comparison');
 const dynamicallyEnrichedPlan = answerPlanForBroadDomains(claims[0], { observations: [
   { id: 'older-imv-point', metricId: 'benefit_recipients_by_group', value: 2_682_646, unit: 'Person', period: '2026-07', geography: 'Spain' },
 ] });
-assert(dynamicallyEnrichedPlan.shareableReply.includes('1.467.252 personas (2023) → 1.957.700 (2024) → 2.335.553 (2025) → 2.725.899 (2026; +16,7 % interanual)'), 'Live enrichment changed the reviewed baseline or mismatched the IMV growth rate');
+assert(dynamicallyEnrichedPlan.shareableReply.includes('2.725.899') && dynamicallyEnrichedPlan.shareableReply.includes('16,7 %') && dynamicallyEnrichedPlan.shareableReply.includes('agosto de 2025'), 'Live enrichment changed the reviewed like-for-like IMV comparison');
 assert(!dynamicallyEnrichedPlan.shareableReply.includes('julio de 2026'), 'A single-month live point replaced the reviewed IMV comparison');
 const dynamicallyEnrichedBenefits = dynamicallyEnrichedPlan.evidenceSummary.families.find((family) => family.familyId === 'broad-benefits-recipients');
 const reviewedTrend = dynamicallyEnrichedBenefits.criteria.find((criterion) => criterion.id === 'benefit-trend-causality');

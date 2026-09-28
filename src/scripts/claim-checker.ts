@@ -384,7 +384,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
       if (!isCurrentSubmission(submission)) return;
       try {
-        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'GET', headers: { 'x-claim-text': original } }, 2000, submission.signal);
+        response = await fetchJson(`/api/check/${encodeURIComponent(response.id)}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claim: original }) }, 2000, submission.signal);
         if (!isCurrentSubmission(submission)) return;
       } catch (error) {
         if (!isCurrentSubmission(submission)) return;

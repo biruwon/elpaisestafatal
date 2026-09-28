@@ -23,7 +23,7 @@ for (const fragment of ['publicResolveResponse', 'schemaVersion', 'processing'])
 }
 if (!gateway.includes("replace(/^\\/api\\/check/, '/v1/classify')")) failures.push('local gateway must retain the internal /v1/classify contract');
 if (!client.includes("'/api/check'")) failures.push('claim input must submit through /api/check');
-if (!pollingRoute.includes("export { onRequestGet } from '../check'")) failures.push('dynamic /api/check/:id polling route is missing');
+if (!pollingRoute.includes("export { onRequestGet, onRequestGet as onRequestPost } from '../check'")) failures.push('dynamic /api/check/:id GET/UTF-8 POST polling route is missing');
 
 const publicDetails = /ollama|localhost|127\.0\.0\.1|host\.docker\.internal|whisper_command|cloudflare_api_token|cors/i;
 if (publicDetails.test(classify)) failures.push('/api/check must not expose provider or runtime details');
