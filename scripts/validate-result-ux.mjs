@@ -11,6 +11,7 @@ if (source.includes("renderMissingList('Datos pendientes', criterion.missingDime
 if (!source.includes('periodRangeFromData(data) || value')) throw new Error('Evidence period metadata must prefer the observed data range.');
 if (source.includes('Los datos no apoyan') || page.includes('Los datos no apoyan')) throw new Error('Unified result must not publish a global scorecard verdict');
 if (!source.includes('stateConclusion') || !source.includes('publicDirectionLabel')) throw new Error('Result UX must expose a direct conclusion and readable evidence directions.');
+if (!source.includes('Evidencia por tema') || source.includes('La evidencia es parcial')) throw new Error('The topic overview must keep family statuses without repeating the overall evidence verdict.');
 if (source.includes('<p class="eyebrow">${stateLabel}</p>')) throw new Error('Result UX must not duplicate the evidence-status label.');
 const resultRenderer = source.slice(source.indexOf('const renderResult ='), source.indexOf('const setLoading ='));
 if (resultRenderer.includes('renderFamilyTrendCharts') || resultRenderer.includes('renderDemographicVisual')) throw new Error('Charts must use an explicitly curated, single-measure visual instead of mixing unrelated family series.');
