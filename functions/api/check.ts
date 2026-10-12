@@ -17,7 +17,7 @@ import { searchD1Warehouse } from '../lib/d1-warehouse';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'compound-evidence-composer-18-five-family-conciseness-2026-10';
+const responseCacheVersion = 'compound-evidence-composer-19-health-superlative-2026-10';
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;

@@ -244,6 +244,7 @@ assert(qualityFamilies.some((family) => family.data.some((value) => value.includ
 assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('93,90') && value.includes('2024')), 'social-relations response did not include the latest comparable index'));
 assert(['Vivienda.', 'Sanidad.', 'Empleo.', 'Precios de alimentos.', 'Relaciones sociales.'].every((label) => qualityReply.includes(label)), 'main answer omitted at least one topic family');
 assert(qualityReply.includes('+12,2 %') && qualityReply.includes('102 días') && qualityReply.includes('14,7 %') && qualityReply.includes('2,3 %') && qualityReply.includes('93,90'), 'main answer omitted an available data point for one of the five topics');
+assert(qualityReply.includes('peor que nunca') && qualityReply.includes('serie comparable'), 'health paragraph did not directly assess the historical superlative');
 assert(qualityReply.trim().split(/\s+/).length <= 180, 'five-family answer is too long to scan');
 assert(!qualityReply.includes('Precio de compraventa: Índice de compraventa') && !qualityReply.includes('Contrato temporal: Asalariados') && !qualityReply.includes('Precio de los alimentos: Alimentos'), 'answer repeats a measure label immediately before the same metric');
 assert(!qualityReply.includes('regularización') && !qualityReply.includes('colapso total'), 'quality-of-life response leaked stale immigration wording');
