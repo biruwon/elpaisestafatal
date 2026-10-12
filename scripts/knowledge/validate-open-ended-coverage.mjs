@@ -405,6 +405,9 @@ for (const claim of freshClaimAnswers) {
   assert(plan.shareableSourceIds?.includes(claim.sourceId), `${claim.text}: shareable answer omitted its primary source`);
   for (const sourceId of claim.additionalSourceIds || []) assert(plan.shareableSourceIds?.includes(sourceId), `${claim.text}: shareable answer omitted source ${sourceId}`);
   assert(plan.evidenceSummary?.families.length && plan.sourceLinks?.some((source) => source.id === claim.sourceId), `${claim.text}: no evidence section or linked source was provided`);
+  if (claim.id === 'broad-migrant-minor-cost') {
+    assert(plan.sourceLinks.find((source) => source.id === 'social-security-average-retirement-pension-august-2026')?.title.includes('jubilación: 1.574,9 €/mes'), 'The pension source label should identify the specific retirement-pension figure used in the answer');
+  }
 }
 const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
 assert(occupationPlan.headline.includes('La policía sí puede desalojar en flagrancia'), 'occupation answer did not lead with a direct response to the police claim');
