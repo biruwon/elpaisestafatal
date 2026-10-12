@@ -361,7 +361,7 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    answerEvidence: ['delito flagrante', 'autorización judicial previa', 'vivienda habitual', 'segunda residencia usada como morada', '12,0 meses', 'no cuánto permanece cada ocupante'],
+    answerEvidence: ['autorización judicial previa', 'vivienda habitual', 'segunda residencia que su ocupante usa como vivienda', 'entrando o quedándose allí contra la voluntad de quien la habita', '12,0 meses', 'no cuánto permanece cada ocupante'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
@@ -415,7 +415,8 @@ assert(occupationPlan.sourceLinks.filter((source) => source.id.startsWith('illeg
 assert(occupationPlan.headline.includes('puede desalojar sin orden') && occupationPlan.headline.includes('delito en el acto'), 'occupation answer did not lead with a plain-language response to the police claim');
 assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
 assert(!occupationPlan.shareableReply.includes('juicio rápido') && !occupationPlan.shareableReply.includes('delito leve'), 'occupation reply added procedural detail that does not answer the police-and-duration claim');
-assert(occupationPlan.shareableReply.includes('delito flagrante') && occupationPlan.shareableReply.includes('exige autorización judicial previa'), 'occupation reply did not state the legal test and the non-flagrant usurpation limit');
+assert(occupationPlan.shareableReply.includes('entrando o quedándose allí contra la voluntad de quien la habita') && occupationPlan.shareableReply.includes('exige autorización judicial previa'), 'occupation reply did not explain the in-progress and after-the-fact distinctions in plain language');
+assert(!['morada', 'allanamiento', 'usurpación', 'flagrante'].some((term) => occupationPlan.shareableReply.includes(term)), 'occupation reply retained unexplained legal jargon');
 assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
 assert((occupationPlan.shareableReply.match(/sin autorización judicial previa/g) || []).length === 1, 'occupation answer repeated the police/no-order conclusion in its evidence paragraphs');
 assert(!occupationPlan.shareableReply.includes('no cuánto dura cada ocupación'), 'occupation answer retained vague wording for what the duration metric does not measure');
