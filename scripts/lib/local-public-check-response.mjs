@@ -19,6 +19,7 @@ const visualsFromPlan = (plan) => {
       note: visual.note,
       interpretation: visual.interpretation,
       breakAfter: visual.breakAfter,
+      axisMin: visual.axisMin,
     }));
   if (valid.length) return valid;
 

@@ -118,7 +118,7 @@ const scorecardFromPlan = (plan: AnswerPlan, sources: CheckSource[]): CheckScore
 const visualsFromPlan = (plan: AnswerPlan): CheckVisual[] => {
   const planned = plan.visuals?.length ? plan.visuals : plan.visual ? [plan.visual] : [];
   const valid = planned.filter((visual) => visual.labels.length > 0 && visual.labels.length === visual.values.length && visual.values.every(Number.isFinite))
-    .map((visual) => ({ type: visual.type, title: visual.title, unit: visual.unit, labels: visual.labels, values: visual.values, evidenceIds: visual.evidenceIds, sourceId: visual.sourceId, note: visual.note, interpretation: visual.interpretation, breakAfter: visual.breakAfter }));
+    .map((visual) => ({ type: visual.type, title: visual.title, unit: visual.unit, labels: visual.labels, values: visual.values, evidenceIds: visual.evidenceIds, sourceId: visual.sourceId, note: visual.note, interpretation: visual.interpretation, breakAfter: visual.breakAfter, axisMin: visual.axisMin }));
   if (valid.length) return valid;
   const series = plan.warehouseSeries;
   if (!series || !series.labels.length || series.labels.length !== series.values.length || series.values.some((value) => !Number.isFinite(value))) return [];

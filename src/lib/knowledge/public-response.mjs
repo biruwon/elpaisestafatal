@@ -29,7 +29,8 @@ const validVisual = (value, sourceIds) => !value || (typeof value === 'object'
   && Array.isArray(value.evidenceIds) && value.evidenceIds.every((id) => typeof id === 'string')
   && (value.sourceId === undefined || typeof value.sourceId === 'string' && sourceIds.includes(value.sourceId))
   && (value.title === undefined || typeof value.title === 'string')
-  && (value.unit === undefined || typeof value.unit === 'string'));
+  && (value.unit === undefined || typeof value.unit === 'string')
+  && (value.axisMin === undefined || Number.isFinite(value.axisMin)));
 
 const isReference = (value) => Boolean(value && typeof value === 'object'
   && kinds.has(value.kind)

@@ -420,6 +420,8 @@ const occupationVisual = occupationPlan.visuals.find((visual) => visual.sourceId
 assert(JSON.stringify(occupationVisual.labels) === JSON.stringify(['2019', '2020', '2021', '2022', '2023']), 'occupation chart should show one consistent first-instance series');
 assert(JSON.stringify(occupationVisual.values) === JSON.stringify([5.8, 8.1, 9.6, 10.9, 12]), 'occupation chart should use the CGPJ year-by-year first-instance estimates');
 assert(occupationVisual.axisMin === 0, 'occupation duration chart should start at zero so the trend is not visually exaggerated');
+const occupationPublicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'occupation-axis', result: occupationPlan }, 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
+assert(occupationPublicResponse.result?.visual?.axisMin === 0, 'public check response dropped the chart axis baseline');
 for (const paraphrase of [
   '¿Pueden los okupas ser desalojados si la policía los sorprende entrando en una vivienda?',
   '¿Puede la policía sacar a alguien que ocupa una vivienda ajena?',
