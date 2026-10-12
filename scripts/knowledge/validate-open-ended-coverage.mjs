@@ -361,7 +361,7 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    answerEvidence: ['art. 202', 'art. 245.2', 'art. 245.1', 'violencia o intimidación', 'juicio rápido', '12,0 meses'],
+    answerEvidence: ['desalojar sin esperar una orden judicial', 'vivienda habitual y la segunda residencia', 'juicio rápido', 'delito leve', '12,0 meses', 'no cuánto dura cada ocupación'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
@@ -410,7 +410,7 @@ for (const claim of freshClaimAnswers) {
   }
 }
 const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
-assert(occupationPlan.headline.includes('los descubre entrando') && occupationPlan.headline.includes('puede desalojar sin orden'), 'occupation answer did not lead with a plain-language response to the police claim');
+assert(occupationPlan.headline.includes('puede desalojar sin orden') && occupationPlan.headline.includes('sorprende a alguien entrando'), 'occupation answer did not lead with a plain-language response to the police claim');
 assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
 assert(!occupationPlan.shareableReply.includes('ambos delitos pueden tramitarse por juicio rápido'), 'occupation reply repeated the inaccurate blanket fast-track claim');
 assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
@@ -419,6 +419,7 @@ assert(!occupationPlan.shareableReply.includes('11,2 meses'), 'occupation answer
 const occupationVisual = occupationPlan.visuals.find((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration');
 assert(JSON.stringify(occupationVisual.labels) === JSON.stringify(['2019', '2020', '2021', '2022', '2023']), 'occupation chart should show one consistent first-instance series');
 assert(JSON.stringify(occupationVisual.values) === JSON.stringify([5.8, 8.1, 9.6, 10.9, 12]), 'occupation chart should use the CGPJ year-by-year first-instance estimates');
+assert(occupationVisual.axisMin === 0, 'occupation duration chart should start at zero so the trend is not visually exaggerated');
 for (const paraphrase of [
   '¿Pueden los okupas ser desalojados si la policía los sorprende entrando en una vivienda?',
   '¿Puede la policía sacar a alguien que ocupa una vivienda ajena?',

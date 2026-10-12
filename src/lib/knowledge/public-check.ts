@@ -1,6 +1,6 @@
 export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
-export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[] };
+export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[]; axisMin?: number };
 export type EvidenceStatus = 'available' | 'partial' | 'missing';
 export type EvidenceDimensions = { subject?: string; population?: string; period?: string; geography?: string; denominator?: string; unit?: string; causalRequirement?: string };
 export type PublicEvidenceCriterion = { id: string; criterionId?: string; label: string; finding: string; status?: EvidenceStatus; dataKind?: 'observed' | 'projected' | 'snapshot' | 'context'; dimensions?: EvidenceDimensions; evidenceIds?: string[]; sourceIds?: string[]; data?: string[]; missingDimensions?: string[] };
