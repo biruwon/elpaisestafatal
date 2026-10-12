@@ -361,7 +361,7 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    answerEvidence: ['desalojar sin esperar una orden judicial', 'vivienda habitual y la segunda residencia', 'juicio rápido', 'delito leve', '12,0 meses', 'no cuánto dura cada ocupación'],
+    answerEvidence: ['delito flagrante', 'autorización judicial previa', 'vivienda habitual', 'segunda residencia usada como morada', '12,0 meses', 'no cuánto permanece cada ocupante'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
@@ -410,11 +410,13 @@ for (const claim of freshClaimAnswers) {
   }
 }
 const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
-assert(occupationPlan.headline.includes('puede desalojar sin orden') && occupationPlan.headline.includes('sorprende a alguien entrando'), 'occupation answer did not lead with a plain-language response to the police claim');
+assert(occupationPlan.headline.includes('puede desalojar sin orden') && occupationPlan.headline.includes('delito en el acto'), 'occupation answer did not lead with a plain-language response to the police claim');
 assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
-assert(!occupationPlan.shareableReply.includes('ambos delitos pueden tramitarse por juicio rápido'), 'occupation reply repeated the inaccurate blanket fast-track claim');
+assert(!occupationPlan.shareableReply.includes('juicio rápido') && !occupationPlan.shareableReply.includes('delito leve'), 'occupation reply added procedural detail that does not answer the police-and-duration claim');
+assert(occupationPlan.shareableReply.includes('delito flagrante') && occupationPlan.shareableReply.includes('exige autorización judicial previa'), 'occupation reply did not state the legal test and the non-flagrant usurpation limit');
 assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
-assert((occupationPlan.shareableReply.match(/sin orden/g) || []).length === 1, 'occupation answer repeated the police/no-order conclusion in its evidence paragraphs');
+assert((occupationPlan.shareableReply.match(/sin autorización judicial previa/g) || []).length === 1, 'occupation answer repeated the police/no-order conclusion in its evidence paragraphs');
+assert(!occupationPlan.shareableReply.includes('no cuánto dura cada ocupación'), 'occupation answer retained vague wording for what the duration metric does not measure');
 assert(!occupationPlan.shareableReply.includes('11,2 meses'), 'occupation answer misattributed the general verbal-appeal average to illegal-occupation proceedings');
 const occupationVisual = occupationPlan.visuals.find((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration');
 assert(JSON.stringify(occupationVisual.labels) === JSON.stringify(['2019', '2020', '2021', '2022', '2023']), 'occupation chart should show one consistent first-instance series');
