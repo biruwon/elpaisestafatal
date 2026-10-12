@@ -392,6 +392,10 @@ const freshClaimAnswers = [
 for (const claim of freshClaimAnswers) {
   const plan = answerPlanForBroadDomain(claim.text);
   assert(plan?.id === claim.id, `${claim.text}: expected focused packet ${claim.id}`);
+  const replyParagraphs = (plan.shareableReply || '').split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  assert(new Set(replyParagraphs.map((paragraph) => paragraph.toLocaleLowerCase('es'))).size === replyParagraphs.length, `${claim.text}: shareable answer repeated a paragraph`);
+  assert((plan.shareableReply?.match(/\bFuentes?:/g) || []).length <= 1, `${claim.text}: shareable answer repeated its source label`);
+  assert(plan.shareableReply.trim().split(/\s+/).length <= 220, `${claim.text}: shareable answer exceeded the concise-response limit`);
   if (claim.answerEvidence) {
     assert(plan.shareableReply?.startsWith(`${plan.headline}.`), `${claim.text}: response was not composed from its selected evidence packet`);
     for (const phrase of claim.answerEvidence) assert(plan.shareableReply.includes(phrase), `${claim.text}: composed answer omitted ${phrase}`);
