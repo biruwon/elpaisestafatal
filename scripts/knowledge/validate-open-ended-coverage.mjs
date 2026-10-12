@@ -252,6 +252,7 @@ for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos i
 
 const claimVariants = [
   ['Cada MENA cuesta 4.000 euros al mes al Estado, más que la pensión media de un jubilado.', 'broad-migrant-minor-cost'],
+  ['¿Está documentado que cada menor migrante tutelado cueste 4.000 euros al mes, más que una pensión?', 'broad-migrant-minor-cost'],
   ['La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.', 'broad-amnesty-constitution'],
   ['En algunas comunidades se da prioridad en las listas de vivienda pública a inmigrantes recién llegados frente a familias españolas.', 'broad-housing-priority-migration'],
   ['Los inmigrantes reciben más ayudas y servicios públicos de los impuestos que aportan; son una carga neta para España.', 'broad-immigrant-net-fiscal-contribution'],
@@ -259,6 +260,7 @@ const claimVariants = [
   ['Los españoles tenemos que trabajar hasta los 67 porque la inmigración no aporta lo suficiente para pagar las pensiones.', 'broad-pension-retirement-age-immigration'],
   ['Quieren expulsar a España de la OTAN por la política exterior del Gobierno.', 'broad-nato-expulsion'],
   ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation'],
+  ['¿Pueden los okupas ser desalojados si la policía los sorprende entrando en una vivienda?', 'broad-illegal-occupation'],
   ['¿Puede la policía sacar a alguien que ocupa una vivienda ajena?', 'broad-illegal-occupation'],
   ['¿Qué opciones legales tiene el dueño si alguien se mete y permanece en su casa sin permiso?', 'broad-illegal-occupation'],
   ['La ley del solo sí es sí ha rebajado condenas a agresores sexuales y demuestra que la política feminista del Gobierno ha empeorado la protección de las víctimas.', 'broad-sexual-consent-law-effects'],
@@ -303,6 +305,7 @@ for (const [text, expectedPacketIds] of claimVariants) {
 
 for (const [text, excludedId] of [
   ['¿Puede la Policía ocupar un puesto de trabajo vacante?', 'broad-illegal-occupation'],
+  ['¿Puede el propietario desahuciar a un inquilino que ha dejado de pagar el alquiler?', 'broad-illegal-occupation'],
   ['¿Aumentaron las condenas por delitos sexuales el año pasado?', 'broad-sexual-consent-law-effects'],
   ['¿Cuál es la presunción de inocencia de cualquier persona acusada?', 'broad-gender-law-evidence-standard'],
   ['¿Qué precio tiene la electricidad generada con energía nuclear?', 'broad-nuclear-phaseout-risk'],
@@ -315,19 +318,20 @@ const freshClaimAnswers = [
   {
     text: 'Cada MENA cuesta 4.000 euros al mes al Estado, más que la pensión media de un jubilado.',
     id: 'broad-migrant-minor-cost',
-    answerEvidence: ['35 millones de euros', 'ni una tarifa mensual por menor', 'pensión'],
+    answerEvidence: ['35 millones de euros', 'serie estatal homogénea', '1.574,9 €', '2,54 veces'],
     sourceId: 'minor-accommodation-funding-2026',
+    additionalSourceIds: ['social-security-average-retirement-pension-august-2026'],
   },
   {
     text: 'La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.',
     id: 'broad-amnesty-constitution',
-    answerEvidence: ['STC 137/2025', 'inconstitucional', 'igualdad', 'ley no fue anulada en su totalidad'],
+    answerEvidence: ['STC 137/2025', 'inconstitucional', 'igualdad', 'avaló la LO 1/2024 en su conjunto salvo preceptos concretos'],
     sourceId: 'amnesty-tc-decision-2025',
   },
   {
     text: 'En algunas comunidades se da prioridad en las listas de vivienda pública a inmigrantes recién llegados frente a familias españolas.',
     id: 'broad-housing-priority-migration',
-    answerEvidence: ['artículo 13', 'mismas condiciones', 'lista o convocatoria local'],
+    answerEvidence: ['artículo 13', 'mismas condiciones', 'la comunidad, el programa', 'convocatoria'],
     sourceId: 'foreigners-housing-rights-law',
   },
   {
@@ -357,7 +361,7 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    answerEvidence: ['artículo 202', 'artículo 245.2', 'juicio rápido', '12,0 meses'],
+    answerEvidence: ['art. 202', 'art. 245.2', 'art. 245.1', 'violencia o intimidación', 'juicio rápido', '12,0 meses', '11,2 meses'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
@@ -375,7 +379,7 @@ const freshClaimAnswers = [
   {
     text: 'El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.',
     id: 'broad-nuclear-phaseout-risk',
-    answerEvidence: ['19 %', '2035', 'precios mayoristas', 'escenarios'],
+    answerEvidence: ['19 %', '2035', 'precios mayoristas', 'modelo condicionado'],
     sourceId: 'nuclear-generation-ree-2025',
   },
   {
@@ -395,8 +399,14 @@ for (const claim of freshClaimAnswers) {
     assert(claim.reply.test(plan.shareableReply || ''), `${claim.text}: shareable answer did not directly address the claim`);
   }
   assert(plan.shareableSourceIds?.includes(claim.sourceId), `${claim.text}: shareable answer omitted its primary source`);
+  for (const sourceId of claim.additionalSourceIds || []) assert(plan.shareableSourceIds?.includes(sourceId), `${claim.text}: shareable answer omitted source ${sourceId}`);
   assert(plan.evidenceSummary?.families.length && plan.sourceLinks?.some((source) => source.id === claim.sourceId), `${claim.text}: no evidence section or linked source was provided`);
 }
+const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
+assert(occupationPlan.headline.includes('La policía sí puede desalojar en flagrancia'), 'occupation answer did not lead with a direct response to the police claim');
+assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
+assert(!occupationPlan.shareableReply.includes('ambos delitos pueden tramitarse por juicio rápido'), 'occupation reply repeated the inaccurate blanket fast-track claim');
+assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
 for (const [text, id, sourceId] of [
   ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation', 'illegal-occupation-cgpj-duration'],
   ['El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.', 'broad-nuclear-phaseout-risk', 'nuclear-generation-ree-2025'],

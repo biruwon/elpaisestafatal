@@ -40,17 +40,17 @@ const reviewedVisuals = {
 const packets = [
   {
     id: 'broad-migrant-minor-cost',
-    matches: /\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b[\s\S]{0,140}\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n|pagamos?)\b|\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n)\b[\s\S]{0,140}\b(menas?|menores? (?:extranjeros?|migrantes?) no acompa[nñ]ados?)\b/i,
+    matches: /\b(menas?|menores? (?:extranjeros?|migrantes?) (?:no acompa[nñ]ados?|tutelad[oa]s?))\b[\s\S]{0,140}\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n|pagamos?)\b|\b(4[., ]?000|euros?|cost[ae]|cuest[ae]|gasto|pensi[oó]n)\b[\s\S]{0,140}\b(menas?|menores? (?:extranjeros?|migrantes?) (?:no acompa[nñ]ados?|tutelad[oa]s?))\b/i,
     interpretation: { kind: 'quantitative', subject: 'coste de acogida de menores migrantes no acompañados', subjectType: 'public-programme', predicate: 'costs', object: 'gasto público por menor y comparación con una pensión', normalizedClaim: 'coste mensual por menor migrante no acompañado y comparación con la pensión media', interpretation: 'La cifra por menor debe distinguir el coste total del sistema, transferencias entre administraciones y coste ejecutado por plaza/persona; después debe compararse con una pensión del mismo periodo.' },
-    headline: 'La cifra de 4.000 € al mes por menor no queda acreditada por las transferencias publicadas',
+    headline: 'Los 4.000 € mensuales por menor no están acreditados; la pensión media fue 1.574,9 € en agosto de 2026',
     summary: 'Hay financiación pública para la acogida, pero una transferencia a las comunidades autónomas no equivale al coste mensual individual. Para comprobar la cifra hacen falta gasto ejecutado, número de menores atendidos, periodo y una pensión comparable.',
     criteria: [
       { id: 'minor-cost-per-person', label: 'Coste por menor', finding: 'No se ha localizado una serie estatal homogénea de gasto ejecutado por menor y mes que confirme los 4.000 € citados.', missingDimensions: ['gasto ejecutado por persona', 'número de menores atendidos en el mismo periodo', 'metodología y territorio'], sourceIds: ['minor-accommodation-funding-2026'] },
       { id: 'minor-accommodation-transfer', label: 'Financiación de acogida', finding: 'En julio de 2026 el Consejo de Ministros aprobó repartir 35 millones de euros entre comunidades y ciudades autónomas para apoyar la acogida; el crédito también cubre orientación, apoyo psicosocial, escolarización, inserción e inclusión, y ampliación de plazas.', fallbackData: ['35 millones de euros de crédito estatal para acogida y servicios asociados (2026)'], population: 'comunidades y ciudades autónomas que prestan atención a menores migrantes no acompañados', denominator: 'crédito total aprobado, no coste por menor', unit: 'euros', sourceIds: ['minor-accommodation-funding-2026'] },
-      { id: 'minor-pension-comparison', label: 'Comparación con una pensión', finding: 'La transferencia anual a los sistemas territoriales y el coste mensual atribuido a una plaza son magnitudes distintas; no permiten concluir que cada menor cueste más que una pensión media.', missingDimensions: ['pensión de referencia y periodo', 'gasto individual comparable'], sourceIds: ['minor-accommodation-funding-2026'] },
+      { id: 'minor-pension-comparison', label: 'Comparación con una pensión', finding: 'La pensión contributiva media de jubilación fue de 1.574,9 € al mes en agosto de 2026. Si el coste de 4.000 € por menor fuera correcto y comparable, equivaldría a 2,54 veces esa pensión; la cifra por menor sigue sin estar acreditada.', fallbackData: ['Pensión contributiva media de jubilación: 1.574,9 €/mes (agosto de 2026); 4.000 € equivaldrían a 2,54 veces esa cuantía, si fueran comparables'], population: 'pensiones contributivas de jubilación de la Seguridad Social', denominator: 'importe mensual medio por pensión', unit: 'euros mensuales', sourceIds: ['social-security-average-retirement-pension-august-2026', 'minor-accommodation-funding-2026'] },
     ],
     limitations: ['El reparto de 35 millones documenta financiación de acogida en 2026, no el coste total del sistema ni una tarifa mensual por menor. La cifra de 4.000 € y la comparación con una pensión siguen sin una medición compatible.'],
-    sources: [source('minor-accommodation-funding-2026', 'Distribución territorial de fondos para la acogida de niños y adolescentes migrantes no acompañados · 2026', 'La Moncloa', 'https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2026/20260714-referencia-rueda-de-prensa-ministros.aspx', '2026-07-14')],
+    sources: [source('minor-accommodation-funding-2026', 'Distribución territorial de fondos para la acogida de niños y adolescentes migrantes no acompañados · 2026', 'La Moncloa', 'https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2026/20260714-referencia-rueda-de-prensa-ministros.aspx', '2026-07-14'), { ...source('social-security-average-retirement-pension-august-2026', 'La pensión media del sistema de la Seguridad Social se sitúa en 1.373,4 euros en agosto', 'Seguridad Social', 'https://revista.seg-social.es/-/la-pension-media-del-sistema-de-la-seguridad-social-se-situa-en-1.373-4-euros-en-agosto-un-4-6-mas-que-hace-un-ano', '2026-08-25'), retrievedAt: '2026-10-12' }],
   },
   {
     id: 'broad-amnesty-constitution',
@@ -59,7 +59,7 @@ const packets = [
     headline: 'El Tribunal Constitucional avaló la amnistía en general y anuló aspectos concretos por igualdad',
     summary: 'La respuesta no es que toda la amnistía fuera declarada inconstitucional. En junio de 2025, la mayoría del Tribunal Constitucional avaló la ley salvo aspectos concretos, incluidos dos relativos al principio de igualdad; hubo votos particulares discrepantes.',
     criteria: [
-      { id: 'amnesty-overall-ruling', label: 'Fallo sobre la ley', finding: 'El Pleno del Tribunal Constitucional avaló la legitimidad constitucional de la LO 1/2024 en su conjunto, con excepciones expresas; la mera concesión de una amnistía no se consideró prohibida por la Constitución.', fallbackData: ['STC 137/2025: sentencia de 26 de junio de 2025; el TC avaló la ley salvo aspectos concretos'], population: 'Ley Orgánica 1/2024 y recurso de inconstitucionalidad', denominator: 'fallo del Pleno del Tribunal Constitucional', unit: 'decisión judicial', sourceIds: ['amnesty-tc-decision-2025'] },
+      { id: 'amnesty-overall-ruling', label: 'Fallo sobre la ley', finding: 'En la STC 137/2025, de 26 de junio de 2025, el Pleno del Tribunal Constitucional avaló la LO 1/2024 en su conjunto salvo preceptos concretos; la Constitución no prohíbe por sí misma conceder una amnistía.', fallbackData: ['STC 137/2025: sentencia de 26 de junio de 2025; el TC avaló la ley salvo aspectos concretos'], population: 'Ley Orgánica 1/2024 y recurso de inconstitucionalidad', denominator: 'fallo del Pleno del Tribunal Constitucional', unit: 'decisión judicial', sourceIds: ['amnesty-tc-decision-2025'] },
       { id: 'amnesty-equality-limits', label: 'Igualdad y límites', finding: 'El TC declaró inconstitucional, pero no nulo, el art. 1.1 por omitir a quienes actuaron para oponerse al procés; declaró inconstitucional y nulo el segundo párrafo del art. 1.3 porque daba a la amnistía un efecto exonerador sobre conductas futuras, sin justificación objetiva y razonable. Interpretó además los apartados 2 y 3 del art. 13 de modo que se oiga a todas las partes afectadas.', fallbackData: ['Dos aspectos de la LO 1/2024 declarados inconstitucionales por vulnerar la igualdad; una regla procesal interpretada con condición (2025)'], population: 'preceptos concretos examinados', denominator: 'fallo mayoritario del Tribunal Constitucional', unit: 'decisión jurídica', sourceIds: ['amnesty-tc-decision-2025'] },
     ],
     limitations: ['El fallo mayoritario no elimina el debate político ni los votos particulares, pero sí responde a la afirmación jurídica general: la ley no fue anulada en su totalidad.'],
@@ -150,16 +150,18 @@ const packets = [
     visuals: [reviewedVisuals.illegalOccupationProcedure],
     matches: /\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b[\s\S]{0,180}\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse|puede)\b|\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse)\b[\s\S]{0,180}\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b/i,
     interpretation: { kind: 'legal', subject: 'entrada y permanencia no consentidas en inmuebles', subjectType: 'law', predicate: 'can_be_removed_by', object: 'police and courts under different procedures depending on whether the property is a dwelling', normalizedClaim: 'si la policía no puede desalojar una ocupación ilegal y si los ocupantes pueden quedarse durante años', interpretation: '“Okupación” agrupa situaciones legalmente distintas. Hay que separar allanamiento de morada, usurpación de un inmueble que no constituye morada y duración de cada vía judicial.' },
-    headline: 'La policía no está legalmente impedida de actuar, pero el desalojo y los plazos dependen del caso y de la vía judicial',
-    summary: 'El Código Penal distingue el allanamiento de una morada ajena (artículo 202) de la usurpación de un inmueble que no constituye morada (artículo 245). Desde 2025 ambos delitos pueden entrar en el cauce de juicio rápido si cumplen sus requisitos, pero eso no equivale a un desalojo automático en el acto. En la vía civil, el CGPJ estimó 12 meses de media en primera instancia para una clase concreta de procedimiento en 2023.',
+    headline: 'La policía sí puede desalojar en flagrancia; fuera de ella puede hacer falta autorización judicial',
+    summary: 'No hay una regla única para todos los casos. Si alguien entra o permanece en una vivienda que constituye morada y la policía lo detecta en flagrancia, puede desalojar de inmediato. La ocupación de un inmueble que no es morada es otro delito y, si no se detecta mientras ocurre, requiere autorización judicial para el desalojo. Los plazos dependen del procedimiento y del caso.',
     criteria: [
-      { id: 'occupation-legal-distinction', label: 'Qué inmueble y qué delito', finding: 'El artículo 202 del Código Penal tipifica entrar o permanecer contra la voluntad del morador en una morada ajena; el artículo 245.2 tipifica ocupar sin autorización un inmueble que no constituye morada. No son una sola situación ni se resuelven con una regla única.', fallbackData: ['Código Penal, arts. 202 y 245.2: allanamiento de morada y usurpación de inmueble son figuras distintas'], population: 'hechos denunciados como entrada o permanencia sin consentimiento', denominator: 'tipo de inmueble y conducta acreditada', unit: 'norma jurídica', sourceIds: ['illegal-occupation-criminal-code'] },
-      { id: 'occupation-procedure-reform', label: 'Vía de actuación judicial', finding: 'La Ley Orgánica 1/2025 incorporó los delitos de allanamiento de morada y usurpación al ámbito del procedimiento de enjuiciamiento rápido cuando concurren los requisitos legales. La reforma acelera una vía procesal; no promete una expulsión inmediata en cualquier supuesto.', fallbackData: ['Desde 2025, allanamiento (art. 202 CP) y usurpación (art. 245 CP) pueden tramitarse por juicio rápido si se cumplen los requisitos del art. 795 LECrim'], population: 'procedimientos penales por allanamiento y usurpación que cumplan los requisitos', denominator: 'art. 795 de la Ley de Enjuiciamiento Criminal', unit: 'vía procesal', sourceIds: ['illegal-occupation-fast-track-law', 'illegal-occupation-prosecutor-circular'] },
-      { id: 'occupation-civil-duration', label: 'Duración publicada', finding: 'El CGPJ estimó en 2023 una duración media de 12,0 meses para los juicios verbales posesorios por ocupación ilegal de viviendas en primera instancia; la apelación civil añadía 11,2 meses de media cuando se recurría. Son medias de procedimientos civiles específicos, no la duración de todos los casos.', fallbackData: ['Primera instancia: 12,0 meses (2023); apelación civil: 11,2 meses de media si se recurre'], population: 'procedimientos civiles verbales posesorios por ocupación ilegal de viviendas', denominator: 'procedimiento, primera instancia; apelación medida por separado', unit: 'meses de duración media', sourceIds: ['illegal-occupation-cgpj-duration'] },
+      { id: 'occupation-legal-distinction', label: 'Casa y flagrancia', finding: 'Si el inmueble es una morada, entrar o quedarse contra la voluntad de quien vive allí es allanamiento (art. 202 del Código Penal). Si la policía lo detecta en flagrancia, la Constitución permite la entrada sin orden y el protocolo de Interior prevé el desalojo inmediato. En una vivienda que no es morada, la policía también puede actuar si sorprende la ocupación; si se descubre después, el desalojo requiere autorización judicial.', fallbackData: ['Constitución, art. 18.2: consentimiento, resolución judicial o delito flagrante; protocolo de Interior de 2020: actuación policial en flagrancia'], population: 'moradas y otros inmuebles denunciados como ocupados', denominator: 'tipo de inmueble y flagrancia acreditada', unit: 'norma y protocolo policial', sourceIds: ['illegal-occupation-criminal-code', 'illegal-occupation-constitution-home', 'illegal-occupation-interior-protocol'] },
+      { id: 'occupation-procedure-reform', label: 'Juicio aplicable', finding: 'La Fiscalía explica que el allanamiento (art. 202) y la usurpación con violencia o intimidación (art. 245.1) pueden ir por juicio rápido si cumplen los requisitos legales. La ocupación pacífica (art. 245.2) se tramita como delito leve, no por juicio rápido; ningún procedimiento garantiza por sí solo un desalojo inmediato.', fallbackData: ['Fiscalía, Circular 1/2025: arts. 202 y 245.1, posible juicio rápido con requisitos; art. 245.2, juicio por delito leve'], population: 'procedimientos penales por allanamiento y usurpación', denominator: 'tipo penal y requisitos de la Ley de Enjuiciamiento Criminal', unit: 'vía procesal', sourceIds: ['illegal-occupation-prosecutor-circular'] },
+      { id: 'occupation-civil-duration', label: 'Cuánto duran algunos procesos', finding: 'En 2023, los juicios civiles posesorios por ocupación ilegal de vivienda duraron una media de 12,0 meses en primera instancia y 11,2 meses más si hubo apelación. Son promedios de esa clase de procedimiento; no predicen la duración de todos los casos ni miden una actuación policial.', fallbackData: ['Primera instancia: 12,0 meses (2023); apelación civil: 11,2 meses de media si se recurre'], population: 'procedimientos civiles verbales posesorios por ocupación ilegal de viviendas', denominator: 'procedimiento, primera instancia; apelación medida por separado', unit: 'meses de duración media', sourceIds: ['illegal-occupation-cgpj-duration'] },
     ],
-    limitations: ['Las medias civiles son históricas y no fijan un plazo universal ni describen actuaciones policiales en flagrancia. Para valorar un caso concreto importan el tipo de inmueble, cuándo se detectó, la prueba de titularidad y la vía utilizada.'],
+    limitations: ['La media civil de 2023 no fija el plazo de cada caso ni el tiempo que tarda una intervención policial. Para valorar una situación concreta importan el tipo de inmueble, la flagrancia, la prueba de titularidad y la vía utilizada.'],
     sources: [
       source('illegal-occupation-criminal-code', 'Código Penal · artículos 202 y 245', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1995-25444', '1995-11-23'),
+      source('illegal-occupation-constitution-home', 'Constitución Española · artículo 18.2 · inviolabilidad del domicilio', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', '1978-12-29'),
+      source('illegal-occupation-interior-protocol', 'Protocolo policial ante ocupaciones ilegales · flagrancia y desalojo', 'Ministerio del Interior', 'https://www.interior.gob.es/opencms/es/detalle/articulo/Interior-dota-a-las-Fuerzas-de-Seguridad-del-Estado-de-un-protocolo-de-actuacion-que-mejora-su-respuesta-ante-las-ocupaciones/', '2020-09-17'),
       source('illegal-occupation-fast-track-law', 'Ley Orgánica 1/2025 · procedimiento de enjuiciamiento rápido', 'Boletín Oficial del Estado', 'https://www.boe.es/eli/es/lo/2025/01/02/1/con', '2025-01-03'),
       source('illegal-occupation-prosecutor-circular', 'Circular 1/2025 · ocupación de inmuebles y allanamiento de morada', 'Fiscalía General del Estado', 'https://www.boe.es/buscar/doc.php?id=BOE-A-2025-17153', '2025-06-26'),
       source('illegal-occupation-cgpj-duration', 'Panorámica de la Justicia 2023 · duración media de procedimientos', 'Consejo General del Poder Judicial', 'https://www.poderjudicial.es/stfls/ESTADISTICA/FICHEROS/Panoramicajusticia/Panor%C3%A1mica%20Justicia%202023.pdf', '2024-07-01'),
@@ -572,14 +574,14 @@ const normalise = (value) => String(value || '').toLocaleLowerCase('es').normali
 export const BROAD_SNAPSHOT_POLICY = Object.freeze({ owner: 'knowledge-review', createdAt: '2026-09-25', expiresAt: '2026-12-25', refreshCommand: 'npm run knowledge:domain-refresh', validationStatus: 'reviewed', supportedScope: 'España, contexto nacional y fuentes citadas en cada packet', unsupportedScope: 'atribución causal, barrios concretos y generalizaciones no medidas' });
 
 const shareableSourcesByPacket = {
-  'broad-migrant-minor-cost': ['minor-accommodation-funding-2026'],
+  'broad-migrant-minor-cost': ['minor-accommodation-funding-2026', 'social-security-average-retirement-pension-august-2026'],
   'broad-amnesty-constitution': ['amnesty-tc-decision-2025'],
   'broad-housing-priority-migration': ['foreigners-housing-rights-law'],
   'broad-immigrant-net-fiscal-contribution': ['airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020'],
   'broad-immigration-regional-minority-forecast': ['ine-census-2025-immigration', 'ine-population-projections'],
   'broad-pension-retirement-age-immigration': ['pension-retirement-age-law-2011'],
   'broad-nato-expulsion': ['nato-founding-treaty', 'nato-members-2026', 'nato-pentagon-email-report-2026'],
-  'broad-illegal-occupation': ['illegal-occupation-criminal-code', 'illegal-occupation-fast-track-law', 'illegal-occupation-cgpj-duration'],
+  'broad-illegal-occupation': ['illegal-occupation-criminal-code', 'illegal-occupation-constitution-home', 'illegal-occupation-interior-protocol', 'illegal-occupation-prosecutor-circular', 'illegal-occupation-cgpj-duration'],
   'broad-sexual-consent-law-effects': ['sexual-law-cgpj-revisions', 'sexual-law-amendment-2023'],
   'broad-gender-law-evidence-standard': ['gender-violence-tc-2008', 'spanish-constitution-presumption-innocence'],
   'broad-nuclear-phaseout-risk': ['nuclear-generation-ree-2025', 'nuclear-almaraz-extension-2026', 'nuclear-price-effects-study-2026'],
@@ -926,21 +928,32 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
       .filter((criterion) => criterion.finding || criterion.data?.length)
       .slice(0, 6);
     const numericTokens = (value) => String(value || '').match(/\d+(?:[.,]\d+)*(?:%|€)?/g) || [];
-    const sourceNames = (criterion) => [...new Set((criterion.sourceIds || [])
-      .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher)
-      .filter(Boolean))].slice(0, 2);
+    const words = (value) => new Set(normalise(value).match(/[a-z0-9]+/g)?.filter((word) => word.length > 3) || []);
+    const overlapCoefficient = (left, right) => {
+      const leftWords = words(left);
+      const rightWords = words(right);
+      if (!leftWords.size || !rightWords.size) return 0;
+      const common = [...leftWords].filter((word) => rightWords.has(word)).length;
+      return common / Math.min(leftWords.size, rightWords.size);
+    };
     const evidencePoints = criteria.map((criterion) => {
       const finding = String(criterion.finding || '').trim();
       const firstDatum = criterion.data?.[0] ? String(criterion.data[0]).trim() : '';
       const findingNumbers = new Set(numericTokens(finding));
-      const datumAddsScope = firstDatum && numericTokens(firstDatum).some((token) => !findingNumbers.has(token));
+      const datumAddsScope = finding
+        && firstDatum
+        && !findingNumbers.size
+        && numericTokens(firstDatum).length > 0
+        && overlapCoefficient(finding, firstDatum) < 0.4;
       const statement = finding || firstDatum;
       const withDatum = datumAddsScope ? `${statement} Dato: ${firstDatum}.` : statement;
-      const publishers = sourceNames(criterion);
-      return `${criterion.label ? `${criterion.label}: ` : ''}${withDatum}${publishers.length ? ` Fuente: ${publishers.join('; ')}.` : ''}`.replace(/ +/g, ' ').trim();
+      return `${criterion.label ? `${criterion.label}: ` : ''}${withDatum}`.replace(/ +/g, ' ').trim();
     });
-    const conclusion = `Conclusión: ${plan.limitation || plan.summary}`;
-    return [plan.headline.replace(/[.]$/, '') + '.', ...evidencePoints, conclusion].join('\n\n');
+    const publishers = [...new Set(criteria.flatMap((criterion) => criterion.sourceIds || [])
+      .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher)
+      .filter(Boolean))].slice(0, 4);
+    const sourcePoint = publishers.length ? `Fuentes: ${publishers.join('; ')}.` : '';
+    return [plan.headline.replace(/[.]$/, '') + '.', ...evidencePoints, sourcePoint].filter(Boolean).join('\n\n');
   }
   const groups = new Map();
   for (const family of plan.evidenceSummary?.families || []) {

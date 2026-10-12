@@ -164,6 +164,7 @@ const answerLeadFor = (answer: string): string => {
   return lead || 'La evidencia disponible no permite una conclusión completa.';
 };
 const renderReplyText = (text: string): string => text.split(/\n{2,}/).map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`).filter((paragraph) => paragraph !== '<p></p>').join('');
+const normalizeForComparison = (text: string): string => text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const renderClaimMap = (groups: EvidenceFamily[]): string => {
   if (groups.length < 2) return '';
   const conclusion = groups.every((group) => group.status === 'available')
@@ -260,7 +261,7 @@ const renderResultOverview = (groups: EvidenceFamily[]): string => {
   const statusClass = (status?: EvidenceStatus): string => status === 'available' ? 'is-available' : status === 'partial' ? 'is-partial' : 'is-missing';
   return `<nav class="result-overview" aria-label="Evidencia por tema"><div class="result-overview-heading"><span class="eyebrow">Evidencia por tema</span></div><div class="result-overview-links">${groups.map((group, index) => `<a class="result-overview-link ${statusClass(group.status)}" href="#evidence-family-${index + 1}"><span>${escapeHtml(statusLabel(group.status))}</span><strong>${escapeHtml(publicMetricLabel(group.familyLabel || group.label))}</strong><span aria-hidden="true">↓</span></a>`).join('')}</div></nav>`;
 };
-const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, phase?: 'provisional' | 'final' | 'reviewed'): void => {
+const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, phase?: 'provisional' | 'final' | 'reviewed', submittedClaim?: string): void => {
   if (!result) return; const item = response.result; setMode(true);
   const stateLabel = response.state === 'supported' ? 'Respuesta con fuentes' : response.state === 'limited' ? 'Evidencia limitada' : 'Evidencia insuficiente';
   const assessment = `<span class="claim-assessment claim-assessment-${response.state}">${escapeHtml(stateLabel)}</span>`;
@@ -293,7 +294,16 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   const isShareableResult = Boolean(item.shareableReply?.trim());
   const answer = item.shareableReply?.trim() || item.answer.trim() || item.reply;
   const responseText = answer || 'No hay una respuesta redactada para esta comprobación.';
+  const shareLead = answerLeadFor(responseText);
+  const resultHeading = item.keyFact || stateConclusion(response.state, shareLead);
   const shareableSources = [...new Map((item.shareableSourceIds || []).map((id) => item.sources.find((source) => source.id === id)).filter((source): source is CheckResult['sources'][number] => Boolean(source)).map((source) => [source.url, source])).values()].slice(0, 5);
+  const answerParagraphs = responseText.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  const headlineRepeatsInAnswer = Boolean(answerParagraphs.length && normalizeForComparison(answerParagraphs[0]) === normalizeForComparison(resultHeading));
+  const visibleAnswerParagraphs = headlineRepeatsInAnswer ? answerParagraphs.slice(1) : answerParagraphs;
+  const visibleResponseText = isShareableResult && shareableSources.length
+    ? visibleAnswerParagraphs.filter((paragraph) => !/^Fuentes?:/i.test(paragraph)).join('\n\n') || responseText
+    : visibleAnswerParagraphs.join('\n\n') || responseText;
+  const displayedClaim = submittedClaim?.trim() || item.claim;
   const shareableSourceNav = shareableSources.length ? `<nav class="claim-share-sources" aria-label="Fuentes principales"><span class="eyebrow">Fuentes principales</span>${shareableSources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</nav>` : '';
   const phaseStatus = phase === 'provisional'
     ? '<p class="claim-enrichment-status" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta provisional · la estamos contrastando; puede cambiar y aún no se puede copiar.</p>'
@@ -303,12 +313,10 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
         ? '<p class="claim-enrichment-status is-final" role="status" aria-live="polite"><span class="claim-enrichment-dot" aria-hidden="true"></span>Respuesta revisada · conservamos el mismo alcance, datos y fuentes.</p>'
       : '';
   const claimMap = renderClaimMap(evidenceGroups);
-  const shareLead = answerLeadFor(responseText);
-  const resultHeading = item.keyFact || stateConclusion(response.state, shareLead);
   const evidenceExplorer = isShareableResult
     ? `<details class="result-details result-evidence-explorer"><summary>Explorar datos, límites y fuentes<span aria-hidden="true">＋</span></summary>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${claimMap}${compoundKnown}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}</details>`
     : `${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}`;
-  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(item.claim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(responseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${visual}${renderResultOverview(evidenceGroups)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(displayedClaim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${headlineRepeatsInAnswer ? 'Datos y límites' : isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(visibleResponseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${visual}${renderResultOverview(evidenceGroups)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
@@ -342,15 +350,15 @@ const setLoading = (text: string, submission: AbortController): void => {
   };
   loadingTicker = window.setInterval(update, 1000);
 };
-const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'processing' }>): void => {
+const renderProcessingPreview = (response: Extract<CheckResponse, { state: 'processing' }>, submittedClaim?: string): void => {
   if (!response.preview) return;
-  renderResult(response.preview, 'provisional');
+  renderResult(response.preview, 'provisional', submittedClaim || response.claim);
   const article = result?.querySelector<HTMLElement>('.claim-result');
   const copyButton = article?.querySelector<HTMLButtonElement>('[data-copy-answer]');
   if (copyButton) { copyButton.disabled = true; copyButton.textContent = 'Esperando respuesta final'; }
 };
-const renderStalledPreview = (preview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, note: string): void => {
-  renderResult(preview, 'provisional');
+const renderStalledPreview = (preview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }>, note: string, submittedClaim?: string): void => {
+  renderResult(preview, 'provisional', submittedClaim);
   const status = result?.querySelector<HTMLElement>('.claim-enrichment-status');
   if (status) {
     status.classList.add('is-stalled');
@@ -374,7 +382,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, submission.signal);
     if (!isCurrentSubmission(submission)) return;
     initialPreview = response.state === 'processing' ? response.preview : undefined;
-    if (response.state === 'processing') renderProcessingPreview(response);
+    if (response.state === 'processing') renderProcessingPreview(response, original);
     // Local model interpretation and evidence planning can take a little
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
@@ -402,7 +410,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     if (response.state === 'processing') {
       if (initialPreview) {
         trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'enrichment_timeout', preview_available: true });
-        renderStalledPreview(initialPreview, 'No han llegado más datos; esta respuesta conserva su carácter provisional.');
+        renderStalledPreview(initialPreview, 'No han llegado más datos; esta respuesta conserva su carácter provisional.', original);
         return;
       }
       trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'processing_timeout', preview_available: false });
@@ -411,13 +419,13 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     if (initialPreview && (response.state === 'unavailable' || response.state === 'clarification'
       || ((response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') && shouldRetainReviewedPreview(initialPreview, response)))) {
       trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'reviewed_preview' });
-      renderResult(initialPreview, 'reviewed');
+      renderResult(initialPreview, 'reviewed', original);
       const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');
       if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar respuesta revisada'; }
       return;
     }
     trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'final' });
-    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined); }
+    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined, original); }
   } catch (error) {
     if (request !== submission) return;
     if (error instanceof DOMException && error.name === 'AbortError' && submission.signal.aborted) { finishLoading(); request = undefined; return; }
@@ -426,7 +434,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     clarificationContext = undefined;
     if (initialPreview) {
       trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'enrichment_failed', preview_available: true });
-      renderStalledPreview(initialPreview, 'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.');
+      renderStalledPreview(initialPreview, 'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.', original);
       return;
     }
     trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: error instanceof Error && error.message === 'request-timeout' ? 'request_timeout' : 'network_or_unexpected', preview_available: false });
