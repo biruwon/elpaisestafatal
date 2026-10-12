@@ -7,7 +7,7 @@ import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { domainProfileFor } from '../../../scripts/knowledge/domain-handlers.mjs';
 
-const source = (id, title, publisher, url, publishedAt) => ({ id, title, publisher, url, publishedAt, retrievedAt: '2026-09-25', role: 'primary' });
+const source = (id, title, publisher, url, publishedAt, retrievedAt = '2026-09-25') => ({ id, title, publisher, url, publishedAt, retrievedAt, role: 'primary' });
 const reviewedVisuals = {
   publicEmploymentTrend: { type: 'line', title: 'Personal de las administraciones públicas · corte anual', unit: 'efectivos', labels: Array.from({ length: 25 }, (_, index) => String(2002 + index)), values: [2296193,2322495,2345765,2380005,2428663,2503991,2574524,2628406,2686983,2674305,2676293,2567083,2541237,2534904,2509976,2509980,2552115,2569118,2587672,2701163,2708325,2970563,2978716,3033304,3071725], sourceId: 'public-administration-epsap-history', evidenceIds: ['public-administration-epsap-history'], breakAfter: [20], note: 'Recuento a 1 de enero. La edición de 2023 introduce una ruptura metodológica: no compares el salto entre 2022 y 2023 con la serie anterior.', interpretation: 'La plantilla registrada aumenta dentro de ambos tramos; el cambio metodológico de 2023 impide interpretar el salto 2022–2023 como crecimiento real.' },
   publicEmploymentByAdministration: { type: 'bar', title: 'Empleo público por nivel de administración · enero de 2026', unit: 'efectivos', labels: ['Comunidades autónomas', 'Administración local', 'Sector público estatal'], values: [1930273,594898,546554], sourceId: 'public-administration-epsap-2026', evidenceIds: ['public-administration-epsap-2026'], note: 'Total: 3.071.725 efectivos; la distribución no mide productividad ni puestos sustituibles.' },
@@ -148,6 +148,7 @@ const packets = [
   {
     id: 'broad-illegal-occupation',
     visuals: [reviewedVisuals.illegalOccupationProcedure],
+    asOf: '2026-10-12',
     matches: /\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b[\s\S]{0,180}\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse|puede)\b|\b(pol[ií]c[ií]a|echar|desaloj\w*|a[nñ]os|meses|quedarse)\b[\s\S]{0,180}\b(okup\w*|ocupaci[oó]n ilegal|morada ajena|allanamiento de morada)\b/i,
     interpretation: { kind: 'legal', subject: 'entrada y permanencia no consentidas en inmuebles', subjectType: 'law', predicate: 'can_be_removed_by', object: 'police and courts under different procedures depending on whether the property is a dwelling', normalizedClaim: 'si la policía no puede desalojar una ocupación ilegal y si los ocupantes pueden quedarse durante años', interpretation: '“Okupación” agrupa situaciones legalmente distintas. Hay que separar allanamiento de morada, usurpación de un inmueble que no constituye morada y duración de cada vía judicial.' },
     headline: 'La policía puede desalojar sin orden si sorprende el delito en el acto',
@@ -158,10 +159,10 @@ const packets = [
     ],
     limitations: ['La media del CGPJ es una estimación de la duración de una clase concreta de proceso civil: no mide el tiempo que permanece cada ocupante ni el plazo total hasta ejecutar el desalojo. La actuación policial depende, entre otros hechos, de si el inmueble es morada y de si el delito se detecta en flagrancia.'],
     sources: [
-      source('illegal-occupation-criminal-code', 'Código Penal · artículos 202 y 245', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1995-25444', '1995-11-23'),
-      source('illegal-occupation-constitution-home', 'Constitución Española · artículo 18.2 · inviolabilidad del domicilio', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', '1978-12-29'),
-      source('illegal-occupation-interior-protocol', 'Protocolo policial ante ocupaciones ilegales · cuándo puede desalojar', 'Ministerio del Interior', 'https://www.interior.gob.es/opencms/es/detalle/articulo/Interior-dota-a-las-Fuerzas-de-Seguridad-del-Estado-de-un-protocolo-de-actuacion-que-mejora-su-respuesta-ante-las-ocupaciones/', '2020-09-17'),
-      source('illegal-occupation-cgpj-duration', 'Panorámica de la Justicia 2023 · duración media de procedimientos', 'Consejo General del Poder Judicial', 'https://www.poderjudicial.es/stfls/ESTADISTICA/FICHEROS/Panoramicajusticia/Panor%C3%A1mica%20Justicia%202023.pdf', '2024-07-01'),
+      source('illegal-occupation-criminal-code', 'Código Penal · artículos 202 y 245', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1995-25444', '1995-11-23', '2026-10-12'),
+      source('illegal-occupation-constitution-home', 'Constitución Española · artículo 18.2 · inviolabilidad del domicilio', 'Boletín Oficial del Estado', 'https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229', '1978-12-29', '2026-10-12'),
+      source('illegal-occupation-interior-protocol', 'Protocolo policial ante ocupaciones ilegales · cuándo puede desalojar', 'Ministerio del Interior', 'https://www.interior.gob.es/opencms/es/detalle/articulo/Interior-dota-a-las-Fuerzas-de-Seguridad-del-Estado-de-un-protocolo-de-actuacion-que-mejora-su-respuesta-ante-las-ocupaciones/', '2020-09-17', '2026-10-12'),
+      source('illegal-occupation-cgpj-duration', 'Panorámica de la Justicia 2023 · duración media de procedimientos', 'Consejo General del Poder Judicial', 'https://www.poderjudicial.es/stfls/ESTADISTICA/FICHEROS/Panoramicajusticia/Panor%C3%A1mica%20Justicia%202023.pdf', '2024-07-01', '2026-10-12'),
     ],
   },
   {
@@ -1088,7 +1089,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     evidenceIds,
     sourceIds,
     sourceLinks: planSources,
-    asOf: '2026-09-25',
+    asOf: packet.asOf || '2026-09-25',
     ...(packet.warehouseSeries ? { warehouseSeries: packet.warehouseSeries } : {}),
     ...(packet.visuals?.length ? { visuals: packet.visuals.map((visual) => ({ ...visual, evidenceIds: visual.evidenceIds || [visual.sourceId].filter(Boolean) })) } : packet.visual ? { visual: { ...packet.visual, evidenceIds: packet.visual.evidenceIds || [packet.visual.sourceId].filter(Boolean) } } : {}),
     ...(shareableSourcesByPacket[packet.id] ? { shareableSourceIds: shareableSourcesByPacket[packet.id] } : {}),
