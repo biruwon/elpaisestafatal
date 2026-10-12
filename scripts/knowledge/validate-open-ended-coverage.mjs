@@ -325,7 +325,7 @@ const freshClaimAnswers = [
   {
     text: 'La amnistía a los independentistas catalanes es inconstitucional y rompe la igualdad ante la ley.',
     id: 'broad-amnesty-constitution',
-    answerEvidence: ['STC 137/2025', 'inconstitucional', 'igualdad', 'avaló la LO 1/2024 en su conjunto salvo preceptos concretos'],
+    answerEvidence: ['STC 137/2025', 'inconstitucional', 'igualdad', 'rechazó el recurso en todo lo demás', 'a quienes actuaron para oponerse a la independencia de Cataluña', 'La sentencia no anuló toda la ley'],
     sourceId: 'amnesty-tc-decision-2025',
   },
   {
@@ -379,8 +379,9 @@ const freshClaimAnswers = [
   {
     text: 'El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.',
     id: 'broad-nuclear-phaseout-risk',
-    answerEvidence: ['19 %', '2035', 'precios mayoristas', 'modelo condicionado'],
+    answerEvidence: ['19 %', 'PNIEC 2023-2030 considera compatible', '2035', 'no una garantía de cero incidencias', 'precio mayorista', 'no una previsión de la factura doméstica'],
     sourceId: 'nuclear-generation-ree-2025',
+    additionalSourceIds: ['nuclear-pniec-security-2024', 'nuclear-almaraz-extension-2026', 'nuclear-price-effects-study-2026'],
   },
   {
     text: 'El Estado de las autonomías mantiene duplicidades y miles de cargos innecesarios; eliminar las comunidades ahorraría miles de millones de euros.',
