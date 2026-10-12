@@ -185,7 +185,7 @@ for (const text of ['Legalización masiva de inmigrantes', '¿Se ha aprobado una
   const plan = answerPlanForBroadDomain(text);
   assert(plan?.headline.includes('Regularización'), `${text}: wording was routed to an unrelated immigration packet`);
   assert(plan?.summary.includes('solicitudes'), `${text}: regularization packet omitted the key distinction between process counts`);
-  assert(plan?.evidenceSummary?.families.some((family) => family.finding?.includes('1.174.978')), `${text}: regularization packet did not expose the official process figures`);
+  assert(plan?.evidenceSummary?.families.some((family) => family.data?.some((value) => value.includes('1.174.978'))), `${text}: regularization packet did not expose the official process figures as scoped data`);
   assert(plan?.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), `${text}: response text omitted the figures already present in the evidence packet`);
 }
 
@@ -210,8 +210,8 @@ assert(compoundPlan.headline !== 'La administración pública requiere medir pla
 assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('1.174.978'), 'compound claim lost regularisation figures');
 const compoundReply = compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
 assert(compoundReply.includes('Inmigración y regularización.') && compoundReply.includes('Servicios públicos.') && compoundReply.includes('Prestaciones.'), 'compound reply did not explain each evidence family separately');
-assert(compoundReply.includes('camas hospitalarias') && compoundReply.includes('2.725.899'), 'compound reply omitted the available service or benefit measurements');
-assert(compoundReply.includes('colapso') && compoundReply.includes('prestaciones'), 'compound reply did not explain what the service and benefit figures do not establish');
+assert(compoundReply.includes('102 días') && compoundReply.includes('2.725.899'), 'compound reply omitted the current service-waiting or benefit measurement');
+assert(compoundReply.includes('colapso') && /prestaciones/i.test(compoundReply), 'compound reply did not explain what the service and benefit figures do not establish');
 assert(!compoundReply.includes('En el balance oficial localizado constan') && !compoundReply.includes('No se ha localizado una medición compatible para'), 'compound reply still presents unrelated family figures as one balance or hides available evidence behind a generic gap');
 assert(compoundReply.includes('\n\n'), 'compound reply did not separate its readable paragraphs');
 assert(compoundPlan.evidenceSummary.missingDimensions?.some((item) => item.includes('servicio concreto')), 'compound claim did not expose missing service measurements');
@@ -228,7 +228,38 @@ const staleBenefitReply = staleBenefitPlan?.blocks.find((block) => block.type ==
 assert(staleBenefitReply.includes('2.725.899') && !staleBenefitReply.includes('Perceptores: 2.532.284'), 'newer reviewed IMV snapshot did not supersede the stale recipient figure');
 assert(staleBenefitPlan.evidenceSummary.families.some((family) => family.data?.some((value) => value.includes('2.335.553 personas (2025-08)') && value.includes('2.725.899 personas (2026-08;'))), 'IMV trend did not preserve the reviewed like-for-like year-on-year series');
 assert(!compoundPlan.sourceLinks.some((source) => /asilo|asylum/i.test(source.title)), 'compound claim presented unrelated asylum evidence');
-assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no establecen causalidad'), 'compound claim omitted the causal limitation');
+assert(compoundPlan.blocks.find((block) => block.type === 'conversation_reply')?.text.includes('no prueban causalidad'), 'compound claim omitted the causal limitation');
+
+const qualityOfLifeClaim = 'La vivienda fatal, la sanidad peor que nunca, el trabajo continua siendo por norma general precario, comida más cara, las relaciones cada vez peores entre la gente, etc.';
+const qualityOfLifePlan = answerPlanForBroadDomains(qualityOfLifeClaim);
+const qualityFamilies = qualityOfLifePlan?.evidenceSummary?.families || [];
+const qualityReply = qualityOfLifePlan?.shareableReply || '';
+assert(qualityOfLifePlan?.id === 'broad-compound-claim', 'multi-domain quality-of-life claim did not use the compound composer');
+assert(qualityFamilies.map((family) => family.familyId).join(',') === 'broad-housing,broad-health,broad-employment,broad-consumer-prices,broad-social-relations', 'quality-of-life claim did not preserve all five topic families in their submitted order');
+assert(qualityFamilies.every((family) => family.data?.length && family.sourceIds?.length && family.status !== 'missing'), 'a quality-of-life family has no compatible sourced measurement');
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('+12,2 %') && value.includes('T2 2026')), 'housing evidence did not include the latest price trend'));
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('102 días') && value.includes('103,29')), 'health response did not balance waiting times with the separate health index'));
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('14,7 %') && value.includes('25,0 %')), 'employment response did not include the temporary-contract trend'));
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('2,3 %') && value.includes('agosto de 2026')), 'food-price response did not include the latest annual CPI rate'));
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('93,90') && value.includes('2024')), 'social-relations response did not include the latest comparable index'));
+assert(['Vivienda.', 'Sanidad.', 'Empleo.', 'Precios de alimentos.', 'Relaciones sociales.'].every((label) => qualityReply.includes(label)), 'main answer omitted at least one topic family');
+assert(qualityReply.includes('+12,2 %') && qualityReply.includes('102 días') && qualityReply.includes('14,7 %') && qualityReply.includes('2,3 %') && qualityReply.includes('93,90'), 'main answer omitted an available data point for one of the five topics');
+assert(qualityReply.trim().split(/\s+/).length <= 180, 'five-family answer is too long to scan');
+assert(!qualityReply.includes('Precio de compraventa: Índice de compraventa') && !qualityReply.includes('Contrato temporal: Asalariados') && !qualityReply.includes('Precio de los alimentos: Alimentos'), 'answer repeats a measure label immediately before the same metric');
+assert(!qualityReply.includes('regularización') && !qualityReply.includes('colapso total'), 'quality-of-life response leaked stale immigration wording');
+assert(!qualityReply.toLocaleLowerCase('es').includes('causalidad'), 'a non-causal list received an unnecessary causal disclaimer');
+assert(qualityOfLifePlan.visuals?.length === 5, 'quality-of-life response did not provide one relevant visual per family');
+assert(qualityOfLifePlan.headline.toLocaleLowerCase('es').includes('vivienda') && qualityOfLifePlan.headline.includes('relaciones sociales'), 'compound headline does not name the actual families');
+
+for (const paraphrase of [
+  'La vivienda se encarece, la sanidad empeora, hay trabajos precarios, los alimentos cuestan más y las relaciones sociales se deterioran.',
+  'Suben los precios de las casas, la atención sanitaria no mejora, abundan empleos inestables, comprar comida cuesta más y cae la convivencia.',
+]) {
+  const plan = answerPlanForBroadDomains(paraphrase);
+  assert(plan?.evidenceSummary?.families.map((family) => family.familyId).join(',') === 'broad-housing,broad-health,broad-employment,broad-consumer-prices,broad-social-relations', `${paraphrase}: paraphrase did not reuse the same five evidence families`);
+}
+assert(!broadDomainPacketsFor('La comida de mi madre es deliciosa').some((packet) => packet.id === 'broad-consumer-prices'), 'food prices were routed without a price-change claim');
+assert(deterministicFallbackCompiler('Empleo, vivienda y sanidad').explicitPropositions.length === 1, 'a nearby bare topic list was split into independent propositions');
 
 const rhetoricalCases = [
   ['Se maquillan las cifras del desempleo', 'unemployment', 'intent'],
@@ -278,8 +309,8 @@ const claimVariants = [
   ['¿La acogida de menores migrantes cuesta 4.000 euros mensuales por cabeza?', 'broad-migrant-minor-cost'],
   ['¿Es inconstitucional la amnistía del procés por dar un trato desigual?', 'broad-amnesty-constitution'],
   ['¿Las familias sin nacionalidad española tienen preferencia en las listas de vivienda protegida?', 'broad-housing-priority-migration'],
-  ['La regularización de inmigrantes saturará la sanidad y disparará las ayudas sociales.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
-  ['Dar papeles a todos los inmigrantes colapsará los hospitales y disparará las prestaciones.', 'broad-immigration-regularization,broad-public-services,broad-benefits-recipients'],
+  ['La regularización de inmigrantes saturará la sanidad y disparará las ayudas sociales.', 'broad-immigration-regularization,broad-health,broad-benefits-recipients'],
+  ['Dar papeles a todos los inmigrantes colapsará los hospitales y disparará las prestaciones.', 'broad-immigration-regularization,broad-health,broad-benefits-recipients'],
   ['Los empleados públicos con plaza fija no trabajan y sobran miles de puestos.', 'broad-public-administration'],
   ['La Administración está llena de funcionarios intocables que calientan la silla.', 'broad-public-administration'],
   ['El envejecimiento hará quebrar las pensiones y hundirá el presupuesto público.', 'broad-demography-pension-finance'],

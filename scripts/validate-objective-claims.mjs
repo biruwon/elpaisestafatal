@@ -38,16 +38,19 @@ for (const [index, text] of claims.entries()) {
   const visuals = assertVisuals(plan, `Exact claim ${index + 1}`);
   if (index === 0) {
     const titles = visuals.map((visual) => visual.title);
-    assert.equal(visuals.length, 3, 'Compound immigration answer should show only the process, one service context, and the IMV trend');
+    assert.equal(visuals.length, 3, 'Compound immigration answer should show the process, a service measure, and the IMV trend');
     assert(titles.some((title) => title.includes('Balance del proceso de regularización')), 'The answer should visualize the relevant application/processing counts');
     assert(titles.some((title) => title.includes('Espera para cirugía no urgente por territorio')), 'The answer should show one clearly scoped public-service indicator');
     assert(!titles.some((title) => title.includes('Espera media para cirugía')), 'The answer should not repeat the same waiting-list indicator in two charts');
     assert(titles.some((title) => title.includes('beneficiarias del IMV')), 'The answer should visualize the benefit series separately');
-    assert(plan.headline.includes('colapso total') && plan.headline.includes('dependencia de ayudas'), 'The heading should state the direct conclusion rather than say the claim mixes topics');
-    assert(plan.shareableReply.includes('cinco meses continuados') && plan.shareableReply.includes('30 de junio de 2026'), 'The response should state the core eligibility period and that applications have closed');
-    assert(plan.shareableReply.includes('1.174.978') && plan.shareableReply.includes('609.737') && plan.shareableReply.includes('tramitados no significa concedidos'), 'The response must distinguish applications and processed files from approvals');
-    assert(plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto de 2025'), 'The response should state a like-for-like IMV comparison');
-    assert(!plan.shareableReply.includes('Evidencia limitada.') && !plan.shareableReply.includes('102 días') && !plan.shareableReply.includes('Andalucía 173'), 'The copyable answer should omit duplicated status text and repeated health-chart values');
+    assert(plan.headline.toLocaleLowerCase('es').includes('inmigración y regularización') && plan.headline.includes('servicios públicos') && plan.headline.includes('prestaciones'), 'The generated heading should name the distinct evidence families');
+    assert(!plan.headline.includes('colapso total') && !plan.headline.includes('dependencia de ayudas'), 'The heading must not be canned to this claim wording');
+    assert(plan.shareableReply.includes('presencia en España antes de 2026') && plan.shareableReply.includes('cinco meses continuados'), 'The response should state the core eligibility conditions');
+    assert(plan.shareableReply.includes('1.174.978') && plan.shareableReply.includes('no equivalen a autorizaciones concedidas'), 'The response must distinguish applications from approvals');
+    assert(plan.evidenceSummary.families.find((family) => family.familyId === 'broad-immigration-regularization').data.some((item) => item.includes('609.737')), 'The detailed evidence must retain the processed-file total even when the concise reply selects one main figure');
+    assert(plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto'), 'The response should give the like-for-like IMV trend and its period');
+    assert(!plan.shareableReply.includes('Evidencia limitada.') && !plan.shareableReply.includes('Andalucía 173'), 'The copyable answer should omit duplicated status text and unrelated chart detail');
+    for (const number of ['1.174.978', '2.725.899']) assert.equal(plan.shareableReply.split(number).length - 1, 1, `${number} should not be repeated in the copyable answer`);
     assert(plan.shareableReply.trim().split(/\s+/).length <= 160, 'The copyable answer should remain concise');
   }
   if (index === 5) assert(visuals.length >= 5, 'Population/IQ claim should visualize population, origins, permit motives, and PISA evidence separately');
@@ -68,7 +71,7 @@ for (const [index, text] of claims.entries()) {
 for (const [index, item] of variants.entries()) {
   for (const [variantIndex, text] of item.cases.entries()) {
     const route = broadDomainPacketsFor(text).map((packet) => packet.id);
-    const expectedRoute = index === 0 ? ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'] : [item.id];
+    const expectedRoute = index === 0 ? ['broad-immigration-regularization', 'broad-health', 'broad-benefits-recipients'] : [item.id];
     assert.deepEqual(route, expectedRoute, `Claim ${index + 1}, paraphrase ${variantIndex + 1} routed to ${route.join(', ') || 'no packet'}`);
     const plan = answerPlanForBroadDomains(text);
     assert.equal(plan?.id, item.id, `Claim ${index + 1}, paraphrase ${variantIndex + 1} composed into the wrong result`);
@@ -114,8 +117,8 @@ assert.match(browserClient, /shouldRetainReviewedPreview\(initialPreview, respon
 const novel = answerPlanForBroadDomains('La regularización de inmigrantes aumenta el precio del alquiler');
 assert(!novel.blocks.find((block) => block.type === 'conversation_reply').text.includes('tres afirmaciones'));
 const healthOnlyRoute = broadDomainPacketsFor('La sanidad tiene listas de espera muy largas').map((packet) => packet.id);
-assert(healthOnlyRoute.includes('broad-public-services') && !healthOnlyRoute.includes('broad-immigration-regularization') && !healthOnlyRoute.includes('broad-benefits-recipients'), 'A nearby health-only claim must not inherit the regularization or benefits evidence');
-assert.deepEqual(broadDomainPacketsFor('El IMV ha crecido tras la regularización').map((packet) => packet.id), ['broad-immigration-regularization', 'broad-benefits-recipients'], 'An immigration-plus-benefits claim must not acquire an unmentioned public-services family');
+assert.deepEqual(healthOnlyRoute, ['broad-health'], 'A nearby health-only claim must use the health evidence once, without a duplicate public-services route');
+assert.deepEqual(broadDomainPacketsFor('El IMV ha crecido tras la regularización').map((packet) => packet.id), ['broad-benefits-recipients', 'broad-immigration-regularization'], 'An immigration-plus-benefits claim must not acquire an unmentioned public-services family and should preserve claim order');
 // Unit, country and nationality changes must not be joined as a time series.
 const imv = answerPlanForBroadDomains('¿Quién recibe el ingreso mínimo vital?', { observations: [
   { id: 'foreign', metricId: 'imv_title_holders_by_nationality', value: 153529, unit: 'personas', period: '2026-07', dimensionLabels: { nationality: 'extranjera' }, dimensions: { nationality: 'foreign' } },
@@ -127,11 +130,11 @@ assert(data.some((value) => value.includes('española') && value.includes('725.6
 assert(data.every((value) => !value.includes('→')), 'Separate populations became a spurious trend');
 // One family with numbers must not suppress another family's research.
 const plan = answerPlanForBroadDomains(claims[0]);
-assert(plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto de 2025'), 'Shareable reply omitted the reviewed like-for-like IMV comparison');
+assert(plan.shareableReply.includes('2.335.553 (2025)') && plan.shareableReply.includes('2.725.899') && plan.shareableReply.includes('16,7 %') && plan.shareableReply.includes('agosto'), 'Shareable reply omitted the reviewed same-month August IMV comparison');
 const dynamicallyEnrichedPlan = answerPlanForBroadDomains(claims[0], { observations: [
   { id: 'older-imv-point', metricId: 'benefit_recipients_by_group', value: 2_682_646, unit: 'Person', period: '2026-07', geography: 'Spain' },
 ] });
-assert(dynamicallyEnrichedPlan.shareableReply.includes('2.725.899') && dynamicallyEnrichedPlan.shareableReply.includes('16,7 %') && dynamicallyEnrichedPlan.shareableReply.includes('agosto de 2025'), 'Live enrichment changed the reviewed like-for-like IMV comparison');
+assert(dynamicallyEnrichedPlan.shareableReply.includes('2.335.553 (2025)') && dynamicallyEnrichedPlan.shareableReply.includes('2.725.899') && dynamicallyEnrichedPlan.shareableReply.includes('16,7 %') && dynamicallyEnrichedPlan.shareableReply.includes('agosto'), 'Live enrichment changed the reviewed same-month August IMV comparison');
 assert(!dynamicallyEnrichedPlan.shareableReply.includes('julio de 2026'), 'A single-month live point replaced the reviewed IMV comparison');
 const dynamicallyEnrichedBenefits = dynamicallyEnrichedPlan.evidenceSummary.families.find((family) => family.familyId === 'broad-benefits-recipients');
 const reviewedTrend = dynamicallyEnrichedBenefits.criteria.find((criterion) => criterion.id === 'benefit-trend-causality');

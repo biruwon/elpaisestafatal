@@ -39,8 +39,9 @@ const updates = {
     sourceIds: ['immigration-crime', securityAdjusted.id], dataKind: 'observed',
   },
   'public-service-waiting-list': {
+    replyPriority: 10,
     preferReviewedFallback: true,
-    finding: 'En diciembre de 2025, la espera media del SNS fue de 102 días para primera consulta externa y 121 días para cirugía no urgente. Son dos medidas de listas de espera sanitarias; no miden todos los servicios públicos ni identifican una causa migratoria.',
+    finding: 'El informe documenta demoras en dos listas sanitarias concretas; no mide todos los servicios públicos ni demuestra por sí solo un colapso general.',
     fallbackData: ['102 días de espera media para primera consulta externa hospitalaria (31-12-2025)', '84 personas por cada 1.000 en lista de espera para primera consulta (31-12-2025)', '121 días de espera media para cirugía no urgente (31-12-2025); 21,6 % llevaba más de seis meses'],
   },
   'spending-and-pensions': { preferReviewedFallback: true },
@@ -64,7 +65,7 @@ const updates = {
     sourceIds: [employmentLaw.id], dataKind: 'context',
   },
   'benefit-trend-causality': {
-    finding: 'En las nóminas de agosto, los beneficiarios del IMV aumentaron entre 2023 y 2026. El crecimiento de una prestación concreta no prueba dependencia, abuso ni que la regularización lo causara.',
+    finding: 'La serie del IMV no identifica a las personas regularizadas; su aumento no prueba crecimiento exponencial ni dependencia.',
     fallbackData: ['Serie localizada: beneficiarios del IMV en agosto: 1.467.252 personas (2023) → 1.957.700 (2024) → 2.335.553 (2025) → 2.725.899 (2026; +16,7 % interanual)', 'Serie interanual del mismo mes: 2.335.553 personas (2025-08) → 2.725.899 personas (2026-08; +16,7 % interanual)'],
     sourceIds: [imvHistoric.id, 'benefits-imv-previous-year-source', 'benefits-imv-august-source'], population: 'personas beneficiarias del Ingreso Mínimo Vital', denominator: 'personas beneficiarias en la nómina de agosto', unit: 'personas', dataKind: 'observed',
   },

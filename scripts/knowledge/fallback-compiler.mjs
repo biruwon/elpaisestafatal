@@ -59,6 +59,8 @@ const semanticConceptAliases = [
   ['healthcare', ['sanidad', 'hospital', 'medico', 'salud', 'espera', 'paciente', 'pacientes', 'lista de espera']],
   ['education', ['educacion', 'colegio', 'escuela', 'becas', 'universidad', 'alumnado']],
   ['prices', ['inflacion', 'inflación', 'precios', 'precio', 'ipc', 'coste', 'caro', 'cara', 'encarecer', 'encarecerse', 'encarece', 'encarecen', 'encarecimiento', 'casa cuesta mas', 'vivienda cuesta mas', 'la vivienda cada vez cuesta', 'la vivienda cuesta', 'la casa cuesta', 'comprar una casa es mas caro', 'comprar vivienda es mas caro', 'precio vivienda']],
+  ['food_prices', ['comida', 'alimento', 'alimentos', 'alimentacion', 'cesta de la compra', 'productos alimentarios']],
+  ['social_relations', ['relaciones sociales', 'relacion social', 'relaciones personales', 'relacion entre las personas', 'relaciones entre la gente', 'convivencia', 'confianza en los demas', 'confianza social', 'soledad', 'aislamiento social']],
   ['nuclear_phaseout', ['nuclear', 'nucleares', 'centrales nucleares', 'calendario nuclear', 'cierre nuclear', 'cierre de centrales nucleares', 'cierre de las centrales nucleares', 'cierre de las nucleares', 'cierre del parque nuclear', 'retirada de las nucleares', 'retirada escalonada de las nucleares', 'retirada de las centrales nucleares', 'desmantelamiento de centrales nucleares', 'fin de las centrales nucleares']],
   ['autonomous_competences', ['competencias autonomicas', 'competencias regionales', 'competencias de las comunidades autonomas', 'transferir competencias autonomicas', 'traspasar competencias autonomicas', 'suprimir las comunidades autonomas', 'eliminar las autonomias', 'estado de las autonomias', 'sistema autonomico']],
   ['hotel_tourism', ['hotel', 'hoteles', 'hotelero', 'hoteleros', 'pernoctacion', 'pernoctaciones', 'noches de hotel', 'turismo hotelero', 'turistas']],
@@ -117,6 +119,9 @@ const semanticConcepts = (value) => {
   let concepts = semanticConceptAliases
     .filter(([, aliases]) => aliases.some((alias) => containsPhrase(value, alias)))
     .map(([concept]) => concept);
+  if (/\brelacion\w*\b[\s\w]{0,60}\b(?:gente|personas|social|personal|convivencia)\b/.test(normalise(value)) && !concepts.includes('social_relations')) {
+    concepts.push('social_relations');
+  }
   // “Millones” expresses magnitude, not a budget event. Do not let a
   // population, GDP, debt, or any other numeric claim inherit the budget
   // evidence family unless fiscal/action language is also present.
@@ -451,6 +456,42 @@ const splitExplicitClauses = (value) => {
     if (!eventList || clause.split(',').length < 2) return [clause];
     return clause.split(',').map(cleanClause).filter((item) => item.length >= 4);
   });
+
+  // Split comma-separated opinion lists only when the segments are themselves
+  // evaluative propositions about distinct, recognized topic families. This
+  // catches compact lists such as "housing is unaffordable, healthcare is
+  // worse, jobs are precarious" without turning ordinary noun lists (for
+  // example, "employment, housing and healthcare") into fake claims.
+  if (clauses.length === 1 && original.includes(',')) {
+    const evaluativeTopics = [
+      ['housing', /\b(viviend\w*|alquil\w*|piso\w*|casas?)\b/],
+      ['healthcare', /\b(sanidad|salud|hospital\w*|m[eé]dic\w*)\b/],
+      ['employment', /\b(trabaj\w*|emple\w*|paro|salari\w*|sueldo\w*)\b/],
+      ['food_prices', /\b(comida|alimentos?|alimentaci[oó]n|cesta de la compra)\b/],
+      ['social_relations', /\b(relaciones? sociales|relaciones? personales|entre la gente|convivencia|confianza social|soledad|aislamiento social)\b/],
+    ];
+    const evaluativeJudgement = /\b(fatal|peor(?:es)?|mejor(?:es)?|precari\w*|car\w*|encarec\w*|cuest\w*|deterior\w*|imposible|dif[ií]cil|grave|cr[ií]tic\w*|empeor\w*|aument\w*|sub\w*|baj\w*|estanc\w*|contin[uú]a|sigue)\b/i;
+    const commaList = original.replace(/,\s*(?:etc\.?|etc[eé]tera)\s*$/i, '');
+    const commaClauses = commaList.split(',').map(cleanClause).filter((item) => item.length >= 8).flatMap((clause) => {
+      const conjunction = clause.match(/^(.*?)\s+y\s+(.*)$/i);
+      if (!conjunction) return [clause];
+      const left = cleanClause(conjunction[1]);
+      const right = cleanClause(conjunction[2]);
+      const leftTopic = evaluativeTopics.find(([, pattern]) => pattern.test(left))?.[0];
+      const rightTopic = evaluativeTopics.find(([, pattern]) => pattern.test(right))?.[0];
+      return leftTopic && rightTopic && leftTopic !== rightTopic
+        && evaluativeJudgement.test(left) && evaluativeJudgement.test(right)
+        ? [left, right]
+        : [clause];
+    });
+    const topicFamilies = commaClauses.map((clause) => evaluativeTopics.find(([, pattern]) => pattern.test(clause))?.[0]);
+    if (commaClauses.length >= 3
+      && topicFamilies.every(Boolean)
+      && new Set(topicFamilies).size >= 3
+      && commaClauses.every((clause) => hasIndependentPredicate(clause) || evaluativeJudgement.test(clause))) {
+      clauses = commaClauses;
+    }
+  }
   return clauses.length > 1 ? clauses.slice(0, 24) : [original];
 };
 

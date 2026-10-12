@@ -30,6 +30,12 @@ const reviewedVisuals = {
   illegalOccupationProcedure: { type: 'line', title: 'Duración media estimada en primera instancia · ocupación ilegal de vivienda', unit: 'meses', labels: ['2019','2020','2021','2022','2023'], values: [5.8,8.1,9.6,10.9,12], axisMin: 0, sourceId: 'illegal-occupation-cgpj-duration', evidenceIds: ['illegal-occupation-cgpj-duration'], note: 'Estimación anual del CGPJ para procedimientos civiles posesorios por ocupación ilegal de viviendas, en primera instancia. La escala parte de cero. No mide cada caso ni el tiempo total hasta el desalojo.' },
   nuclearGenerationContext: { type: 'bar', title: 'Cuota de generación eléctrica española · 2025', unit: '% de la generación', labels: ['Renovables','Nuclear','Ciclo combinado'], values: [55.5,19,16.8], sourceId: 'nuclear-generation-ree-2025', evidenceIds: ['nuclear-generation-ree-2025'], note: 'Porcentajes de generación anual. Se muestran tres tecnologías, no toda la electricidad producida.' },
   regionalGovernmentSpending: { type: 'bar', title: 'Gasto autonómico en funciones seleccionadas · 2023', unit: '% del gasto total', labels: ['Sanidad','Educación','Protección social','Cultura','Servicios generales','Alta dirección','Adm. financiera y tributaria'], values: [32.8,19.5,10.4,0.8,1.6,0.4,0.6], sourceId: 'hacienda-ccaa-finances-2023', evidenceIds: ['hacienda-ccaa-finances-2023'], note: 'Muestra funciones seleccionadas del presupuesto liquidado, no su distribución completa. Las tres categorías administrativas suman un 2,6 %; no equivalen a todo el coste administrativo ni miden puestos prescindibles o duplicidades.' },
+  housingPriceInflation: { type: 'line', title: 'Variación anual del precio de vivienda · España', unit: '% interanual', labels: ['T3 2024','T4 2024','T1 2025','T2 2025','T3 2025','T4 2025','T1 2026','T2 2026'], values: [8.1,11.3,12.2,12.7,12.8,12.9,12.9,12.2], sourceId: 'housing-ipv-ine-2026', evidenceIds: ['housing-ipv-ine-2026'], note: 'Variación anual del Índice de Precios de Vivienda del INE (base 2025). Mide precios de compraventa, no alquileres ni esfuerzo de cada hogar.' },
+  foodInflation: { type: 'bar', title: 'Inflación anual de alimentos · España', unit: '% interanual', labels: ['Julio 2026','Agosto 2026'], values: [1.6,2.3], sourceId: 'food-cpi-ine-2026', evidenceIds: ['food-cpi-ine-2026'], note: 'IPC de alimentos y bebidas no alcohólicas. Es la variación frente al mismo mes del año anterior, no el aumento acumulado desde una fecha anterior.' },
+  employmentTemporaryRate: { type: 'line', title: 'Empleo temporal · asalariados de 20–64 años', unit: '% de asalariados', labels: ['T2 2021','T2 2022','T2 2023','T2 2024','T2 2025','T2 2026'], values: [25.0,22.1,17.2,15.6,15.0,14.7], sourceId: 'employment-temporary-eurostat', evidenceIds: ['employment-temporary-eurostat'], note: 'Porcentaje de asalariados de 20–64 años con contrato temporal, datos trimestrales sin ajuste estacional. No mide salarios, horas, parcialidad involuntaria ni toda la calidad del empleo.' },
+  healthQualityDimension: { type: 'line', title: 'Dimensión de salud del IMCV · España', unit: 'índice (2008 = 100)', labels: ['2023','2024'], values: [101.86,103.29], sourceId: 'quality-of-life-ine-2024', evidenceIds: ['quality-of-life-ine-2024'], note: 'Índice compuesto experimental de calidad de vida. La puntuación subió; no mide directamente listas de espera ni permite afirmar que la sanidad esté “mejor” en todos sus aspectos.' },
+  healthWaitingTimes: { type: 'bar', title: 'Espera media en el SNS · diciembre de 2025', unit: 'días', labels: ['Primera consulta externa','Cirugía no urgente'], values: [102,121], sourceId: 'health-waiting-lists-2025', evidenceIds: ['health-waiting-lists-2025'], note: 'Promedios nacionales de dos listas distintas del Sistema Nacional de Salud; no son el tiempo de espera de cada paciente ni un umbral de colapso.' },
+  socialRelationsDimension: { type: 'line', title: 'Ocio y relaciones sociales · dimensión del IMCV', unit: 'índice (2008 = 100)', labels: ['2023','2024'], values: [94.13,93.90], sourceId: 'quality-of-life-ine-2024', evidenceIds: ['quality-of-life-ine-2024'], note: 'Dimensión compuesta experimental del INE; bajó 0,23 puntos entre 2023 y 2024. No mide cada relación interpersonal ni una tendencia diaria.' },
   immigrationPermitReasons: { type: 'bar', title: 'Primeros permisos a ciudadanos no UE · España, 2024', unit: '% de permisos', labels: ['Familia','Estudios','Trabajo','Otros motivos'], values: [46,20.8,17,16.1], sourceId: 'immigration-permit-reasons-eurostat', evidenceIds: ['immigration-permit-reasons-eurostat'], note: 'Porcentajes redondeados, calculados sobre 561.640 primeros permisos. Solo cubre primeros permisos de residencia a no comunitarios; no representa todos los movimientos migratorios.' },
   pisaShare: { type: 'line', title: 'Alumnado con origen inmigrante · España', unit: '% del alumnado de 15 años', labels: ['2012','2022'], values: [10,15], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'PISA mide alumnado de 15 años y competencias escolares, no IQ ni inteligencia innata.' },
   pisaMathGap: { type: 'comparison', title: 'Brecha matemática PISA 2022 por origen migrante', unit: 'puntos PISA', labels: ['Sin ajustar','Tras ajustar por nivel socioeconómico'], values: [33,7], sourceId: 'replacement-pisa-oecd', evidenceIds: ['replacement-pisa-oecd'], note: 'La OCDE indica que la brecha neta se redujo entre 2012 y 2022. PISA no permite inferir capacidad adulta ni manipulabilidad.' },
@@ -80,7 +86,7 @@ const packets = [
   },
   {
     id: 'broad-immigrant-net-fiscal-contribution',
-    matches: /\b(inmigr\w*|migrant\w*|extranj\w*)\b[\s\w]{0,100}\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*|prestacion\w*|ayuda\w*|servicios? p[uú]blicos?|cuesta|paga\w*)\b|\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*|prestacion\w*|ayuda\w*|servicios? p[uú]blicos?|cuesta|paga\w*)\b[\s\w]{0,100}\b(inmigr\w*|migrant\w*|extranj\w*)\b/i,
+    matches: /\b(inmigr\w*|migrant\w*|extranj\w*)\b[\s\w]{0,100}\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*)\b|\b(carga fiscal|saldo fiscal|contribuci[oó]n fiscal|impuestos?|cotizacion\w*)\b[\s\w]{0,100}\b(inmigr\w*|migrant\w*|extranj\w*)\b/i,
     interpretation: { kind: 'quantitative', subject: 'contribución fiscal de los hogares inmigrantes en España', subjectType: 'group', predicate: 'contributes_to', object: 'ingresos y gastos públicos', normalizedClaim: 'saldo fiscal neto de inmigrantes frente a la población nativa', interpretation: 'El saldo depende de si se cuentan solo impuestos y prestaciones monetarias o también sanidad, educación y otros servicios, además de año, edad y población.' },
     headline: 'El saldo fiscal depende del método: una estimación de 2017 cambia al incluir sanidad y educación',
     summary: 'No hay una cifra única para todos los inmigrantes y todos los años. La AIReF resume un estudio de hogares no europeos para 2017 que estima un saldo directo positivo; al incorporar salud y educación, la comparación relativa con hogares nativos cambia.',
@@ -313,14 +319,14 @@ const packets = [
   {
     id: 'broad-public-services',
     visuals: [reviewedVisuals.surgeryWaitRegions],
-    matches: /\b(servicios? p[uú]blicos?|colapso(?:\s+total)?[^.]{0,80}servicios?|sanidad|educaci[oó]n|atenci[oó]n p[uú]blica)\b/i,
+    matches: /\b(servicios? p[uú]blicos?|colapso(?:\s+total)?[^.]{0,80}servicios?)\b/i,
     interpretation: { kind: 'quantitative', subject: 'capacidad y resultados de los servicios públicos', subjectType: 'institution', predicate: 'has_multiple_measures', normalizedClaim: 'capacidad, uso y resultados de los servicios públicos', interpretation: '“Colapso total” es una conclusión extrema: hay que identificar el servicio, el territorio, el periodo y el umbral observable que la definiría.' },
     headline: 'El estado de los servicios públicos exige indicadores del servicio concreto',
     summary: 'La expresión “colapso total” no es un indicador estadístico. Para comprobarla hay que medir capacidad, demanda, tiempos de atención, cobertura y resultados del servicio afectado, con periodo y territorio definidos.',
     criteria: [
       { id: 'public-service-capacity', label: 'Capacidad y demanda', metricIds: ['hospital_beds_per_100k', 'emergency_wait_declared'], finding: 'No se puede confirmar un colapso sin identificar el servicio y comparar recursos, demanda y capacidad efectiva en el mismo periodo y territorio.', population: 'camas hospitalarias para atención con ingreso y tiempo declarado de espera en urgencias', denominator: 'población residente para camas; minutos de espera para urgencias', unit: 'camas por 100.000 habitantes; minutos', fallbackData: ['camas hospitalarias: 297,92 camas por 100.000 habitantes (2015) → 294,6 camas por 100.000 habitantes (2019)', '216,69 minutos de espera declarada en urgencias (2025)'], missingDimensions: ['servicio concreto', 'territorio', 'periodo', 'umbral de colapso'], sourceIds: ['public-services-source', 'public-services-hospital-source', 'public-services-emergency-source'] },
       { id: 'public-service-outcomes', label: 'Resultados y atención', metricIds: ['unmet_healthcare_waiting_list_rate'], finding: 'La Encuesta Europea de Salud registra necesidades médicas no atendidas por listas de espera; es un indicador de acceso sanitario y no equivale automáticamente a un colapso total de todos los servicios públicos.', population: 'personas de 16 años o más en España', denominator: 'población de 16 años o más', unit: '% de población', fallbackData: ['1,5 % de la población de 16 años o más declaró una necesidad médica no atendida por lista de espera (2025)'], missingDimensions: ['serie comparable de resultados de otros servicios'], sourceIds: ['public-services-health-access-source'] },
-      { id: 'public-service-waiting-list', label: 'Lista de espera hospitalaria', finding: 'El informe del Sistema de Información de Listas de Espera del SNS registró una espera media de 102 días para primera consulta externa hospitalaria a 31 de diciembre de 2025 y 84 personas por cada 1.000 en esa lista; estos datos describen una espera concreta, no todos los servicios públicos.', population: 'personas en lista de espera para primera consulta externa hospitalaria del SNS', denominator: 'personas de la población protegida por el SNS', unit: 'días y personas por 1.000', fallbackData: ['102 días de espera media para primera consulta externa hospitalaria (31-12-2025)', '84 personas por cada 1.000 en lista de espera para primera consulta (31-12-2025)'], missingDimensions: ['comparación causal con inmigración'], sourceIds: ['public-services-waiting-list-source'] },
+      { id: 'public-service-waiting-list', label: 'Lista de espera hospitalaria', replyPriority: 10, finding: 'El informe nacional documenta demoras en una atención concreta; no es una medición de todos los servicios públicos ni demuestra por sí sola un colapso general.', population: 'personas en lista de espera para primera consulta externa hospitalaria del SNS', denominator: 'personas de la población protegida por el SNS', unit: 'días de espera media; personas por 1.000', fallbackData: ['102 días de espera media para primera consulta externa hospitalaria (31-12-2025)', '84 personas por cada 1.000 en lista de espera para primera consulta (31-12-2025)'], missingDimensions: ['comparación causal con inmigración'], sourceIds: ['public-services-waiting-list-source'] },
       { id: 'public-service-education-resources', label: 'Recursos educativos', metricIds: ['government_education_expenditure_ratio'], finding: 'El gasto público en educación fue del 4,1 % del PIB en 2024. Es un indicador de recursos presupuestarios y no una medida suficiente de capacidad, calidad o colapso.', population: 'gasto de las administraciones públicas en educación', denominator: 'PIB', unit: '% del PIB', fallbackData: ['4,1 % del PIB de gasto público en educación (2024)'], missingDimensions: ['resultados y capacidad por nivel educativo y territorio'], sourceIds: ['public-services-education-source'] },
       { id: 'public-service-scope', label: 'Alcance', finding: 'Una experiencia local o una subida de demanda no permite generalizar a toda España sin una serie comparable y un umbral explícito.', missingDimensions: ['ámbito nacional comparable'], sourceIds: ['public-services-source'] },
     ],
@@ -372,7 +378,7 @@ const packets = [
   {
     id: 'broad-benefits-recipients',
     visuals: [reviewedVisuals.imvTrend],
-    matches: /\b(IMV|paguitas?|ayudas? para vivir|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
+    matches: /\b(IMV|paguitas?|ayudas? (?:sociales?|para vivir)|dependientes? de las ayudas|prestaciones?|beneficiarios?|subsidios?|rentas? m[ií]nimas?|ingreso m[ií]nimo vital)\b/i,
     interpretation: { kind: 'quantitative', subject: 'personas perceptoras de prestaciones', subjectType: 'group', predicate: 'has_multiple_measures', normalizedClaim: 'alcance y evolución de las prestaciones sociales', interpretation: '“Paguitas” no identifica un programa oficial ni demuestra dependencia, abuso o inactividad. Hay que especificar la prestación, la población, el periodo y el denominador.' },
     headline: 'Las prestaciones deben identificarse por programa, población y periodo',
     summary: '“Paguitas” es una etiqueta coloquial y no una categoría estadística. El número de perceptores, el gasto y la duración dependen del programa; no permiten por sí solos afirmar que una población necesite ayudas para vivir ni que su aumento sea exponencial.',
@@ -417,13 +423,13 @@ const packets = [
   {
     id: 'broad-immigration-regularization',
     visuals: [reviewedVisuals.regularizationProcess],
-    matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b/i,
+    matches: /\b(legalizaci[oó]n|regularizaci[oó]n|regularizar|regularizad[ao]s?|residencia legal)\b|\bamnist[ií]a migratoria\b|\b(?:dar|conceder|poner)\s+papeles\b[\s\S]{0,80}\b(inmigr\w*|migrant\w*|extranj\w*)\b|\bpapeles\b[\s\w]{0,60}\b(inmigr\w*|migrant\w*|extranj\w*)\b/i,
     interpretation: { kind: 'legal', subject: 'personas migrantes en España', subjectType: 'group', predicate: 'is_covered_by', object: 'un proceso de regularización o legalización', normalizedClaim: 'existencia, alcance y resultado de una medida de regularización migratoria', interpretation: '“Legalización masiva” es una etiqueta imprecisa: hay que identificar la norma o programa y distinguir solicitudes, expedientes tramitados y autorizaciones concedidas.' },
     headline: 'Regularización documentada, pero no se demuestra que sea masiva ni que cause un colapso o más dependencia de prestaciones',
     summary: 'Para comprobar una supuesta legalización masiva hay que identificar la norma o programa, su fecha y sus requisitos. Una regularización puede admitir solicitudes extraordinarias para personas que ya residen en España, pero las solicitudes, los expedientes tramitados y las autorizaciones concedidas son cifras distintas.',
     criteria: [
       { id: 'regularization-measure', label: 'Medida concreta', finding: 'El término “legalización masiva” no identifica por sí solo una ley, decreto o programa; hace falta localizar la norma y comprobar su alcance, requisitos y exclusiones.', missingDimensions: ['norma o programa', 'fecha', 'requisitos y exclusiones'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
-      { id: 'regularization-counts', label: 'Cifras del proceso', finding: 'El balance oficial localizado registra 1.174.978 solicitudes y 609.737 expedientes tramitados; ninguna de esas cifras equivale automáticamente a autorizaciones concedidas.', fallbackData: ['Solicitudes: 1.174.978 (2026-07-02)', 'Expedientes tramitados: 609.737 (2026-07-02)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
+      { id: 'regularization-counts', label: 'Cifras del proceso', replyPriority: 10, finding: 'El RD 316/2026 exigía presencia en España antes de 2026 y cinco meses continuados; solicitudes y expedientes tramitados no equivalen a autorizaciones concedidas.', fallbackData: ['Solicitudes: 1.174.978 (2026-07-02)', 'Expedientes tramitados: 609.737 (2026-07-02)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026', 'regularization-law-2026'] },
       { id: 'regularization-employment', label: 'Afiliación', finding: 'El mismo balance registra nuevas afiliaciones a la Seguridad Social vinculadas al proceso. Es un resultado laboral, no una estimación del uso de prestaciones o servicios públicos.', fallbackData: ['159.097 nuevas afiliaciones a la Seguridad Social (balance a 2026-06-30)'], sourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026'] },
       { id: 'legal-status', label: 'Resultado jurídico', finding: 'Para saber cuántas personas obtuvieron autorización hay que consultar resoluciones concedidas, denegadas y pendientes, además del tipo y duración del permiso.', missingDimensions: ['autorizaciones concedidas', 'denegaciones', 'expedientes pendientes', 'tipo y duración del permiso'], sourceIds: ['regularizacion-requisitos-antecedentes-2026'] },
     ],
@@ -433,8 +439,27 @@ const packets = [
       source('regularizacion-requisitos-antecedentes-2026', 'Preguntas y requisitos de la regularización extraordinaria 2026', 'Administración General del Estado', 'https://www.inclusion.gob.es/web/migraciones/regularizacion-extraordinaria', '2026-07-01'),
     ],
   },
+  {
+    id: 'broad-health',
+    matches: /\b(sanidad|sanitari|hospital|m[eé]dic|lista de espera|salud p[uú]blica|cita|psic[oó]log|odontolog|tratamiento)\w*\b/i,
+    interpretation: { kind: 'mixed', subject: 'acceso y resultados sanitarios en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución del acceso y la calidad de la atención sanitaria', interpretation: '“Peor que nunca” exige una serie histórica comparable; listas de espera, necesidades no atendidas y resultados de salud miden dimensiones distintas.' },
+    headline: 'Hay esperas sanitarias largas, pero no prueban que todo esté peor que nunca',
+    summary: 'Los datos nacionales registran esperas relevantes en el SNS. En cambio, la dimensión de salud del índice compuesto de calidad de vida del INE mejoró entre 2023 y 2024. Son medidas distintas: ninguna, por sí sola, permite resumir toda la sanidad ni establecer un mínimo histórico.',
+    visuals: [reviewedVisuals.healthWaitingTimes],
+    criteria: [
+      { id: 'health-waiting-times', label: 'Listas de espera', replyPriority: 10, finding: 'El índice de salud mejoró, pero mide otra dimensión y no borra las demoras.', fallbackData: ['Espera media: 102 días para primera consulta externa y 121 para cirugía no urgente (31-12-2025); dimensión de salud IMCV: 101,86 (2023) → 103,29 (2024)'], population: 'personas incluidas en las listas de espera del SNS; población residente para el IMCV', denominator: 'pacientes en lista por tipo de atención; índice compuesto base 2008 = 100', unit: 'días e índice', sourceIds: ['health-waiting-lists-2025', 'quality-of-life-ine-2024'] },
+      { id: 'health-unmet-need', label: 'Necesidades no atendidas', finding: 'La Encuesta Europea de Salud midió la proporción de población que declaró no recibir atención médica por una lista de espera; es un indicador de acceso, no una evaluación de toda la calidad asistencial.', fallbackData: ['1,5 % de la población de 16 años o más declaró una necesidad médica no atendida por lista de espera (2025)'], population: 'personas de 16 años o más en España', denominator: 'población de 16 años o más', unit: '%', sourceIds: ['health-unmet-needs-eurostat'] },
+      { id: 'health-quality-index', label: 'Dimensión de salud', finding: 'La dimensión de salud del IMCV aumentó entre 2023 y 2024. El índice es compuesto y experimental; no cancela los problemas de acceso que muestran las listas de espera.', fallbackData: ['Índice de salud IMCV: 101,86 (2023) → 103,29 (2024), base 2008 = 100'], population: 'población residente en España', denominator: 'índice compuesto, base 2008 = 100', unit: 'puntos de índice', sourceIds: ['quality-of-life-ine-2024'] },
+      { id: 'health-historical-claim', label: '“Peor que nunca”', finding: 'No hay aquí un único indicador que combine acceso, recursos y resultados en una serie comparable de toda la sanidad; los datos disponibles no justifican el superlativo histórico.', missingDimensions: ['serie histórica comparable para el conjunto de la sanidad'], sourceIds: ['health-waiting-lists-2025', 'quality-of-life-ine-2024'] },
+    ],
+    limitations: ['Las listas de espera son un problema de acceso documentado, mientras que el IMCV resume otra dimensión. No se deben mezclar ni usar para declarar que todo el sistema está en su peor momento histórico.'],
+    sources: [
+      source('health-waiting-lists-2025', 'Informe de situación de las listas de espera del SNS · diciembre de 2025', 'Ministerio de Sanidad', 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Informe_situacion_listas_de_espera_dic_2025_V1.pdf', '2026-04-27'),
+      source('health-unmet-needs-eurostat', 'Unmet health care needs by reason · Spain', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_08?geo=ES&sinceTimePeriod=2015', '2026-08-20'),
+      source('quality-of-life-ine-2024', 'Indicador Multidimensional de Calidad de Vida · 2024', 'INE', 'https://www.ine.es/dyngs/Prensa/IMCV2024.htm', '2025-10-31'),
+    ],
+  },
   ...[
-    ['health', /\b(sanidad|hospital|m[eé]dic|lista de espera|salud p[uú]blica|cita|psic[oó]log|odontolog|tratamiento)\w*\b/i, 'La sanidad se mide con acceso, resultados, recursos y gasto', 'La salud pública no se puede resumir en una experiencia o una cifra. Hay que separar listas de espera, personal, camas, gasto, resultados y diferencias territoriales.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Healthcare_expenditure_statistics', 'Eurostat'],
     ['education', /\b(educaci[oó]n|escuela|colegio|universidad|abandono escolar|formaci[oó]n|m[aá]ster|t[ií]tulo|fp|academia|clases particulares|estudiante)\w*\b/i, 'La educación requiere separar recursos, acceso y resultados', 'El gasto o el número de docentes no demuestra por sí solo la calidad educativa. Hay que comparar resultados, composición del alumnado, recursos y territorio.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Education_and_training_statistics', 'Eurostat'],
     ['pensions', /\b(pension|jubilaci[oó]n|jubilados|vejez|cotizaci[oó]n|envejec)\w*\b/i, 'Las pensiones requieren separar gasto, ingresos y demografía', 'La sostenibilidad no se decide mirando solo el gasto actual. Hay que combinar afiliación, cotizaciones, pensiones, saldo presupuestario, empleo, productividad y envejecimiento.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Social_protection_statistics', 'Eurostat'],
     ['taxes', /\b(impuesto|impuestos|iva|irpf|fiscal|tribut|recaudaci[oó]n|administraci[oó]n|tr[aá]mite|licencia|asesor|subvenci[oó]n|gasto p[uú]blico|aut[oó]nom)\w*\b/i, 'La carga fiscal requiere separar tipos, bases y efectos', 'La presión fiscal, el tipo legal y lo que paga cada hogar son medidas distintas. Para evaluar una subida hay que fijar impuesto, base, periodo, renta y transferencia recibida.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Tax_revenue_statistics', 'Eurostat'],
@@ -457,19 +482,48 @@ const packets = [
   })),
   {
     id: 'broad-housing',
-    matches: /\b(viviend|alquil|hipotec|piso|okup|inquilin|propietari|rent|gentrific)\w*\b/i,
+    matches: /\b(viviend|alquil|hipotec|piso|casas?|okup|inquilin|propietari|rent|gentrific)\w*\b/i,
     interpretation: { kind: 'mixed', subject: 'acceso y mercado de la vivienda en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'precios, alquileres, oferta y acceso a la vivienda', interpretation: 'Las frases sobre vivienda suelen mezclar precios, oferta, ingresos, regulación y experiencias de acceso; son dimensiones distintas.' },
-    headline: 'La vivienda requiere separar precio, oferta, ingresos y acceso',
-    summary: 'Una afirmación sobre alquiler o vivienda no se puede resolver con un único indicador. Hay que comprobar por separado precios, esfuerzo sobre la renta, oferta disponible, vivienda vacía, construcción, regulación y diferencias territoriales.',
+    headline: 'Los precios de compraventa suben con fuerza; eso no mide por sí solo el acceso',
+    summary: 'El precio de compraventa de vivienda siguió subiendo en 2026, aunque su variación anual se moderó respecto al trimestre anterior. Ese índice no mide alquileres, esfuerzo sobre la renta ni cuántos hogares pueden acceder.',
+    visuals: [reviewedVisuals.housingPriceInflation],
     criteria: [
-      { id: 'housing-prices', label: 'Precios', finding: 'Los índices de precios de vivienda y alquiler permiten medir la evolución, pero no dicen por sí solos si una persona concreta puede acceder.', sourceIds: ['housing-eurostat'] },
-      { id: 'housing-affordability', label: 'Esfuerzo', finding: 'La proporción de renta dedicada a vivienda y el sobreesfuerzo permiten aproximar el acceso; deben compararse con ingresos, tamaño del hogar y territorio.', sourceIds: ['housing-eurostat'] },
-      { id: 'housing-supply', label: 'Oferta y regulación', finding: 'La oferta residencial, la construcción y el régimen del contrato pueden influir conjuntamente; una correlación temporal no identifica por sí sola el efecto de una política.', sourceIds: ['housing-eurostat'] },
+      { id: 'housing-prices', label: 'Precio de compraventa', finding: 'El IPV mide compraventa, no alquileres ni el esfuerzo de cada hogar.', fallbackData: ['Índice de compraventa: +12,2 % interanual y +3,4 % trimestral (T2 2026)'], population: 'viviendas compradas en España', denominator: 'precio de compraventa de vivienda respecto al mismo periodo del año anterior', unit: '% de variación', sourceIds: ['housing-ipv-ine-2026'] },
+      { id: 'housing-affordability', label: 'Acceso y esfuerzo', finding: 'La subida del precio no determina cuánto puede pagar cada hogar. Para medir acceso hacen falta ingresos, alquiler o hipoteca, tamaño del hogar y territorio en una serie compatible.', missingDimensions: ['esfuerzo de vivienda sobre ingresos por hogar y territorio'], sourceIds: ['housing-ipv-ine-2026', 'housing-eurostat'] },
     ],
-    limitations: ['No existe una cifra nacional que demuestre por sí sola que una causa concreta —topes, turismo, okupación o propietarios— explique todo el mercado. Para un veredicto hacen falta ciudad, periodo, población y mecanismo definidos.'],
+    limitations: ['El índice nacional de compraventa no mide alquileres ni asequibilidad por hogar; tampoco prueba por sí solo qué política o actor causó la subida.'],
     sources: [
+      source('housing-ipv-ine-2026', 'Índice de Precios de Vivienda · segundo trimestre de 2026', 'INE', 'https://www.ine.es/dyngs/Prensa/IPV2T26.htm?print=1', '2026-09-07'),
       source('housing-eurostat', 'Housing in Europe — statistics on housing conditions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_in_Europe', '2025-10-01'),
     ],
+  },
+  {
+    id: 'broad-consumer-prices',
+    matches: /\b(comida|alimentos?|alimentaci[oó]n|cesta (?:de la )?compra|productos? alimentarios?)\b[\s\w]{0,50}\b(preci\w*|car\w*|encarec\w*|cost\w*|cuest\w*|sub\w*|m[aá]s por|subid\w*)\b|\b(preci\w*|car\w*|encarec\w*|cost\w*|cuest\w*|sub\w*|m[aá]s por|subid\w*)\b[\s\w]{0,50}\b(comida|alimentos?|alimentaci[oó]n|cesta (?:de la )?compra|productos? alimentarios?)\b/i,
+    interpretation: { kind: 'quantitative', subject: 'precios de alimentos en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución del precio de la alimentación', interpretation: 'La inflación alimentaria compara precios de un periodo con los del año anterior; no equivale al coste total acumulado de la compra ni al gasto de cada hogar.' },
+    headline: 'Los alimentos subieron un 2,3 % interanual en agosto de 2026',
+    summary: 'El IPC del INE registró una subida interanual en alimentos y bebidas no alcohólicas en agosto de 2026. La tasa anual aceleró respecto a julio; no mide cuánto gasta cada hogar ni el aumento acumulado desde años anteriores.',
+    visuals: [reviewedVisuals.foodInflation],
+    criteria: [
+      { id: 'food-inflation', label: 'Precio de los alimentos', finding: 'El IPC mide precios medios, no el gasto de cada hogar ni el aumento acumulado.', fallbackData: ['Alimentos y bebidas no alcohólicas: +2,3 % interanual en agosto de 2026 (1,6 % en julio)'], population: 'bienes de alimentación y bebidas no alcohólicas incluidos en el IPC', denominator: 'precios de agosto frente al mismo mes del año anterior', unit: '% de variación interanual', sourceIds: ['food-cpi-ine-2026'] },
+      { id: 'food-household-burden', label: 'Coste para cada hogar', finding: 'El IPC mide la evolución media de precios, no el gasto real de cada hogar; este depende de cantidades, composición de compra e ingresos.', missingDimensions: ['gasto y cesta efectiva por hogar e ingresos comparables'], sourceIds: ['food-cpi-ine-2026'] },
+    ],
+    limitations: ['El 2,3 % es la variación interanual del grupo de alimentos en agosto de 2026, no el encarecimiento acumulado ni el coste de la cesta de una familia concreta.'],
+    sources: [source('food-cpi-ine-2026', 'Índice de Precios de Consumo · agosto de 2026', 'INE', 'https://www.ine.es/dyngs/Prensa/IPC0826.htm?print=1', '2026-09-15')],
+  },
+  {
+    id: 'broad-social-relations',
+    matches: /\brelaciones?\b[\s\w]{0,60}\b(?:sociales|personales|gente|personas)\b|\bconvivencia\b|\bconfianza (?:en los dem[aá]s|social)\b|\bsoledad\b|\baislamiento social\b/i,
+    interpretation: { kind: 'mixed', subject: 'relaciones sociales y experiencia de vida en España', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'evolución de las relaciones sociales y la convivencia', interpretation: 'Una valoración general de las relaciones necesita una medida definida; el índice del INE resume una dimensión social y no observa cada relación interpersonal.' },
+    headline: 'El índice social del INE cayó ligeramente entre 2023 y 2024',
+    summary: 'La dimensión de ocio y relaciones sociales del IMCV bajó ligeramente en su última comparación anual. Es un indicador compuesto de calidad de vida, no una encuesta diaria sobre el trato entre personas ni evidencia de un deterioro continuo.',
+    visuals: [reviewedVisuals.socialRelationsDimension],
+    criteria: [
+      { id: 'social-relations-index', label: 'Ocio y relaciones sociales', finding: 'El índice no mide cada relación interpersonal ni demuestra un deterioro continuo.', fallbackData: ['Dimensión de ocio y relaciones sociales del IMCV: 94,13 (2023) → 93,90 (2024), base 2008 = 100'], population: 'población residente en España', denominator: 'índice compuesto, base 2008 = 100', unit: 'puntos de índice', sourceIds: ['quality-of-life-ine-2024'] },
+      { id: 'social-relations-scope', label: 'Alcance de la medida', finding: 'El IMCV combina indicadores de calidad de vida; no pregunta si cada persona trata peor a las demás ni establece que el empeoramiento continúe año tras año.', missingDimensions: ['medición directa y serie de largo plazo de relaciones interpersonales'], sourceIds: ['quality-of-life-ine-2024'] },
+    ],
+    limitations: ['La comparación muestra un descenso leve de una dimensión compuesta entre 2023 y 2024; no demuestra un deterioro generalizado ni diario de las relaciones personales.'],
+    sources: [source('quality-of-life-ine-2024', 'Indicador Multidimensional de Calidad de Vida · 2024', 'INE', 'https://www.ine.es/dyngs/Prensa/IMCV2024.htm', '2025-10-31')],
   },
   {
     id: 'broad-agriculture-green-transition',
@@ -511,17 +565,19 @@ const packets = [
     id: 'broad-employment',
     matches: /\b(paro\w*|desemple\w*|empleo\w*|trabaj\w*|ocupad\w*|salari\w*|temporal\w*|precar\w*|sueldo\w*|experiencia\w*|emprend\w*|productividad|datos del paro|mercado laboral)\b/i,
     interpretation: { kind: 'quantitative', subject: 'mercado laboral español', subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: 'situación del empleo y el desempleo en España', interpretation: 'La frase puede referirse a empleo, desempleo, registro administrativo o calidad del trabajo.', confidence: 0.76, evidenceNeeds: ['métrica', 'población', 'periodo', 'definición'] },
-    headline: 'El paro y el empleo se pueden medir, pero no son una sola cifra',
-    summary: 'España combina ocupación récord con una tasa de paro todavía elevada. La EPA y el paro registrado no cuentan exactamente lo mismo, así que una diferencia entre cifras no demuestra por sí sola que alguien esté mintiendo.',
+    headline: 'La temporalidad laboral ha bajado, pero no resume toda la precariedad',
+    summary: 'La proporción de asalariados con contrato temporal cayó de forma marcada entre 2021 y 2026, mientras el paro sigue siendo relevante. Temporalidad es solo una dimensión: el indicador no mide salarios, horas involuntarias, estabilidad anual ni condiciones de cada puesto.',
+    visuals: [reviewedVisuals.employmentTemporaryRate],
     criteria: [
-      { id: 'employment-rate', label: 'Ocupación', finding: 'La ocupación alcanzó 22,293 millones en el primer trimestre de 2026, 527.600 más que un año antes.', sourceIds: ['employment-epa'] },
-      { id: 'unemployment-rate', label: 'Paro', finding: 'La tasa de paro fue del 10,83% y afectó a 2,709 millones de personas en el primer trimestre de 2026.', sourceIds: ['employment-epa'] },
-      { id: 'definitions', label: 'Definiciones', finding: 'La EPA encuesta hogares; el paro registrado cuenta inscripciones administrativas. Una persona puede aparecer de forma distinta en ambas medidas.', sourceIds: ['employment-epa', 'employment-sepe'] },
+      { id: 'employment-quality-temporality', label: 'Contrato temporal', replyPriority: 10, finding: 'Mide temporalidad, no salarios, horas, parcialidad involuntaria ni estabilidad general.', fallbackData: ['Asalariados de 20–64 años con contrato temporal: 25,0 % (T2 2021) → 14,7 % (T2 2026)'], population: 'asalariados de 20–64 años en España', denominator: 'total de asalariados de 20–64 años', unit: '%', missingDimensions: ['salarios reales', 'parcialidad involuntaria', 'horas e ingresos anuales', 'estabilidad y condiciones de trabajo'], sourceIds: ['employment-temporary-eurostat'] },
+      { id: 'employment-rate', label: 'Ocupación', finding: 'La EPA registró más de 22,7 millones de personas ocupadas en el segundo trimestre de 2026, con un aumento interanual.', fallbackData: ['Personas ocupadas: 22,779 millones en T2 2026; +510.200 en un año'], population: 'personas ocupadas según la EPA', denominator: 'personas residentes en España de 16 o más años', unit: 'personas', sourceIds: ['employment-epa'] },
+      { id: 'unemployment-rate', label: 'Paro', finding: 'El paro sigue siendo relevante aunque bajó: la EPA registró una tasa inferior al 10 % en T2 2026.', fallbackData: ['Tasa de paro: 9,87 %; 2,495 millones de personas en T2 2026'], population: 'población activa según la EPA', denominator: 'personas ocupadas más personas desempleadas', unit: '% y personas', sourceIds: ['employment-epa'] },
+      { id: 'definitions', label: 'Alcance', finding: 'Contrato temporal, tasa de paro y número de ocupados responden a preguntas diferentes; ninguno basta para calificar todo el empleo como precario o seguro.', sourceIds: ['employment-epa', 'employment-temporary-eurostat'] },
     ],
-    limitations: ['Para comprobar una acusación de manipulación hace falta señalar una cifra, fuente, periodo y método concretos; el contexto agregado no prueba intención.'],
+    limitations: ['La temporalidad, el paro y la ocupación no bastan para calificar todo el empleo; también hacen falta salarios, horas, parcialidad involuntaria y estabilidad. Una acusación de manipulación exige identificar la cifra y el método concretos.'],
     sources: [
-      source('employment-epa', 'Encuesta de Población Activa · T1 2026', 'INE', 'https://www.ine.es/dyngs/Prensa/EPA1T26.htm', '2026-04-28'),
-      source('employment-sepe', 'EPA y paro registrado responden preguntas distintas', 'INE / SEPE', 'https://www.ine.es/dyngs/Prensa/EPA1T26.htm', '2026-04-28'),
+      source('employment-epa', 'Encuesta de Población Activa · T2 2026', 'INE', 'https://www.ine.es/dyngs/Prensa/es/EPA2T26.htm', '2026-07-28'),
+      source('employment-temporary-eurostat', 'Temporary employees by sex, age and NACE Rev. 2 activity · quarterly', 'Eurostat', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsi_pt_q?freq=Q&wstatus=EMP_TEMP&s_adj=NSA&sex=T&age=Y20-64&unit=PC_SAL&geo=ES&sinceTimePeriod=2021-Q1', '2026-10-01'),
     ],
   },
   {
@@ -717,8 +773,7 @@ export const broadDomainPacketsFor = (text) => {
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
   const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacion|sustitucion (?:poblacional|demografica)|menos iq|menor iq|cociente intelectual|menos inteligent|menor inteligenc|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
   const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
-  const compoundSignal = /legaliz\w*|regulariz\w*|amnistia migratoria|arraigo extraordinario|papeles[\s\S]{0,60}(?:inmigr|migr|extranj)|(?:inmigr|migr|extranj)[\s\S]{0,60}papeles/i.test(value) && /servicios? p[uú]blicos?|colapso|sanidad|hospital|centro de salud|educaci[oó]n/i.test(value) && /paguitas?|prestaci[oó]n|ayuda|subsidio|renta m[ií]nima|ingreso m[ií]nimo|benefici|asistencia social/i.test(value);
-  const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n|reciben? m[aá]s|pagan? menos|impuestos?|cotizacion\w*|prestacion\w*|ayudas?|servicios? p[uú]blicos?)\b/i.test(value);
+  const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n(?: fiscal)?|pagan? menos|impuestos?|cotizacion\w*)\b/i.test(value);
   const regionalMinoritySignal = /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i.test(value) && /\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b/i.test(value);
   const retirementAgeSignal = /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i.test(value) && /\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b/i.test(value);
   const natoExpulsionSignal = /\b(otan|nato)\b/i.test(value) && /\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b/i.test(value);
@@ -726,7 +781,6 @@ export const broadDomainPacketsFor = (text) => {
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
   if (domainProfile?.packetId) return [packetById(domainProfile.packetId)].filter(Boolean);
-  if (compoundSignal) return ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].map(packetById).filter(Boolean);
   if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
   if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
   if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
@@ -741,8 +795,8 @@ export const broadDomainPacketsFor = (text) => {
   if (/nuevos? ["“”«»]?espanoles/.test(value) && securitySignal) return [packetById('broad-security')].filter(Boolean);
   if (securitySignal) return [packetById('broad-security')].filter(Boolean);
   const filteredDirect = direct.filter((packet) => packet.id !== 'broad-public-administration' || administrationSignal);
-  const familyOrder = { 'broad-immigration-regularization': 1, 'broad-public-services': 2, 'broad-benefits-recipients': 3 };
-  const sortFamilies = (items) => items.slice().sort((left, right) => (familyOrder[left.id] || 50) - (familyOrder[right.id] || 50));
+  const firstMatchIndex = (packet) => packet.matches.exec(value)?.index ?? Number.MAX_SAFE_INTEGER;
+  const sortFamilies = (items) => items.slice().sort((left, right) => firstMatchIndex(left) - firstMatchIndex(right));
   const families = sortFamilies(filteredDirect);
   // A regularisation claim should not be replaced by the broader migration
   // stock/flow packet merely because it also contains “inmigrantes”.
@@ -964,7 +1018,7 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
   const paragraphs = [...groups.values()].map((group) => {
     const measured = group.criteria.filter((criterion) => criterion.data?.length).sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0));
     const primaryMeasured = compact ? measured.filter((criterion) => !/nacionalidad|composici[oó]n/i.test(criterion.label || '')) : measured;
-    const orderedMeasured = [...(primaryMeasured.length ? primaryMeasured : measured)].sort((left, right) => Number(right.data?.some((value) => /→/.test(value))) - Number(left.data?.some((value) => /→/.test(value))) || (right.replyPriority || 0) - (left.replyPriority || 0));
+    const orderedMeasured = [...(primaryMeasured.length ? primaryMeasured : measured)].sort((left, right) => (right.replyPriority || 0) - (left.replyPriority || 0) || Number(right.data?.some((value) => /→/.test(value))) - Number(left.data?.some((value) => /→/.test(value))));
     const seenMetricIds = new Set();
     const seenLatestValues = new Set();
     const chosen = orderedMeasured.filter((criterion) => {
@@ -974,17 +1028,24 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
       return true;
     }).filter((criterion) => {
       if (!compact || !criterion.data?.length) return true;
-      const latest = String(criterion.data.at(-1)).match(/([\d.,]+)[^\d]*(?:19|20|21)\d{2}(?:-\d{2})?/g)?.at(-1)?.replace(/[^\d-]/g, '');
-      if (!latest || seenLatestValues.has(latest)) return false;
-      seenLatestValues.add(latest);
+      const signature = normalise(String(criterion.data.at(-1)).replace(/^Serie localizada:\s*/i, ''));
+      if (!signature || seenLatestValues.has(signature)) return false;
+      seenLatestValues.add(signature);
       return true;
-    }).slice(0, compact ? 3 : 2);
-    const valueEntries = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${criterion.label}: ${String(value).replace(/\s*·\s*(?:16 years or over|Total|All ages)[^:]*:?/gi, '').replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))];
+    }).slice(0, compact ? 1 : 2);
+    const labelOverlap = (label, value) => {
+      const leadingMeasure = String(value || '').split(/[:;(→]/, 1)[0];
+      const labelWords = new Set(normalise(label).match(/[a-z0-9]+/g)?.filter((word) => word.length > 3) || []);
+      const measureWords = new Set(normalise(leadingMeasure).match(/[a-z0-9]+/g)?.filter((word) => word.length > 3) || []);
+      if (!labelWords.size || !measureWords.size) return 0;
+      return [...labelWords].filter((word) => measureWords.has(word)).length / Math.min(labelWords.size, measureWords.size);
+    };
+    const valueEntries = [...new Set(chosen.flatMap((criterion) => (criterion.data || []).slice(0, compact ? 1 : 2).map((value) => `${labelOverlap(criterion.label, value) >= 0.5 ? '' : `${criterion.label}: `}${String(value).replace(/\s*·\s*(?:16 years or over|Total|All ages)[^:]*:?/gi, '').replace(new RegExp(`^${String(criterion.label).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}:\\s*`, 'i'), '')}`)))];
     const latestSignature = (value) => value.match(/([\d.,]+)[^\d]*(?:19|20|21)\d{2}(?:-\d{2})?/g)?.at(-1)?.replace(/[^\d-]/g, '');
     const seriesSignatures = new Set(valueEntries.filter((value) => /→/.test(value)).map(latestSignature).filter(Boolean));
     const seriesFinalNumbers = new Set(valueEntries.filter((value) => /→/.test(value)).map((value) => value.match(/→\s*([\d.,]+)/)?.[1]).filter(Boolean));
     const values = valueEntries.filter((value) => !seriesSignatures.has(latestSignature(value)) || /→/.test(value)).filter((value) => /→/.test(value) || ![...seriesFinalNumbers].some((number) => value.includes(number))).join('. ');
-    const rawFinding = (compact && group.criteria.find((criterion) => /No hay aquí|no hay .*recuento/i.test(criterion.finding || ''))?.finding) || group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || chosen[0]?.finding || group.criteria[0]?.finding;
+    const rawFinding = chosen[0]?.finding || group.limitation || group.criteria.find((criterion) => !criterion.data?.length)?.finding || group.criteria[0]?.finding;
     const finding = compact && rawFinding ? (rawFinding.match(/No hay aquí[^.]*\./)?.[0] || rawFinding.split(/(?<=[.!?])\s+/)[0]) : rawFinding;
     const sourceIds = [...new Set(chosen.flatMap((criterion) => criterion.sourceIds || []))];
     const publishers = [...new Set(sourceIds.map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))];
@@ -992,8 +1053,10 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
   });
   const lead = plan.headline.replace(/[.]$/, '') + '.';
   if (compact) {
-    const conclusion = `Conclusión: ${plan.limitation || plan.summary}`;
-    return paragraphs.length ? [...paragraphs.slice(0, -1), `${paragraphs.at(-1)} ${conclusion}`].join('\n\n') : conclusion;
+    const causalConclusion = plan.interpretation?.predicate === 'allegedly_causes'
+      ? 'Conclusión: estas coincidencias no prueban causalidad entre ámbitos.'
+      : '';
+    return paragraphs.length ? [...paragraphs.slice(0, -1), `${paragraphs.at(-1)}${causalConclusion ? ` ${causalConclusion}` : ''}`].join('\n\n') : causalConclusion || plan.summary;
   }
   return [lead, ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`].join('\n\n');
 };
@@ -1140,7 +1203,23 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   if (!familyPlans.length) return undefined;
   if (familyPlans.length === 1) return familyPlans[0];
 
-  const familyNames = { 'broad-immigration-regularization': 'Inmigración y regularización', 'broad-public-services': 'Servicios públicos', 'broad-benefits-recipients': 'Prestaciones', 'broad-tax-burden-purchasing-power': 'Fiscalidad y poder adquisitivo', 'broad-youth-living-housing': 'Condiciones de vida jóvenes', 'broad-security': 'Seguridad', 'broad-immigration': 'Migración', 'broad-emergency-election-powers': 'Límites legales y elecciones', 'broad-population-replacement': 'Demografía, capacidad y política', 'broad-agriculture-green-transition': 'Agricultura y normas ambientales' };
+  const familyNames = {
+    'broad-immigration-regularization': 'Inmigración y regularización',
+    'broad-public-services': 'Servicios públicos',
+    'broad-benefits-recipients': 'Prestaciones',
+    'broad-tax-burden-purchasing-power': 'Fiscalidad y poder adquisitivo',
+    'broad-youth-living-housing': 'Condiciones de vida jóvenes',
+    'broad-security': 'Seguridad',
+    'broad-immigration': 'Migración',
+    'broad-emergency-election-powers': 'Límites legales y elecciones',
+    'broad-population-replacement': 'Demografía, capacidad y política',
+    'broad-agriculture-green-transition': 'Agricultura y normas ambientales',
+    'broad-housing': 'Vivienda',
+    'broad-health': 'Sanidad',
+    'broad-employment': 'Empleo',
+    'broad-consumer-prices': 'Precios de alimentos',
+    'broad-social-relations': 'Relaciones sociales',
+  };
   const families = familyPlans.map((plan) => {
     const entries = plan.evidenceSummary?.families || [];
     const criteria = entries.map((family) => ({ id: family.criterionId || family.label.toLocaleLowerCase('es').replace(/[^a-z0-9]+/g, '-'), label: family.label, replyPriority: family.replyPriority, finding: family.finding || '', status: family.status || evidenceStatusFor(family.data, family.missingDimensions), dataKind: family.dataKind, dimensions: family.dimensions, evidenceIds: family.evidenceIds, sourceIds: family.sourceIds, data: family.data, missingDimensions: family.missingDimensions }));
@@ -1153,7 +1232,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
       evidenceIds: [...new Set(entries.flatMap((family) => family.evidenceIds || []))],
       sourceIds: [...new Set(entries.flatMap((family) => family.sourceIds || []))],
       status,
-      dimensions: { subject: plan.interpretation?.subject, geography: 'España', causalRequirement: /caus|provoc|efecto/i.test(plan.summary || '') ? 'comparación o diseño causal compatible' : undefined },
+      dimensions: { subject: plan.interpretation?.subject, geography: 'España' },
       finding: plan.summary,
       limitation: plan.limitation,
       criteria,
@@ -1170,51 +1249,38 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
   const gaps = [...new Set(families.flatMap((family) => family.missingDimensions || []))];
   const dataPoints = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'data_finding')?.points || []);
   const limitations = familyPlans.flatMap((plan) => plan.blocks.find((block) => block.type === 'cannot_conclude')?.points || []);
-  const dataForCriterion = (packetId, criterionId) => familyPlans
-    .find((familyPlan) => familyPlan.id === packetId)
-    ?.evidenceSummary?.families?.flatMap((family) => family.criteria?.length ? family.criteria : [family])
-    .find((criterion) => (criterion.criterionId || criterion.id) === criterionId)?.data || [];
-  const dataPoint = (packetId, criterionId, pattern) => dataForCriterion(packetId, criterionId).find((value) => pattern.test(value));
-  const applications = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Solicitudes:/i);
-  const processedCases = dataPoint('broad-immigration-regularization', 'regularization-counts', /^Expedientes tramitados:/i);
-  const newAffiliations = dataPoint('broad-immigration-regularization', 'regularization-employment', /afiliaciones? a la Seguridad Social/i);
-  const imvTrend = dataForCriterion('broad-benefits-recipients', 'benefit-trend-causality').find((value) => /→/.test(value));
-  const cleanImvTrend = imvTrend?.replace(/^Serie localizada:\s*/i, '');
-  const latestImvPoint = cleanImvTrend?.match(/→\s*([\d.]+)\s+\((\d{4}); \+([\d,]+) % interanual\)/);
-  const hasRegularizationServicesAndBenefits = ['broad-immigration-regularization', 'broad-public-services', 'broad-benefits-recipients'].every((id) => familyPlans.some((familyPlan) => familyPlan.id === id));
-  const shareableReply = hasRegularizationServicesAndBenefits ? [
-    applications && processedCases ? `El plazo del RD 316/2026 terminó el 30 de junio de 2026. Permitía solicitar un permiso temporal de un año a personas adultas presentes en España antes del 1 de enero, con cinco meses continuados y otros requisitos según la vía. Al 2 de julio constaban ${applications.replace(/^Solicitudes:\s*/i, '').replace(/ \([^)]+\)/, '')} solicitudes y ${processedCases.replace(/^Expedientes tramitados:\s*/i, '').replace(/ \([^)]+\)/, '')} expedientes tramitados; tramitados no significa concedidos.` : '',
-    newAffiliations ? `El Gobierno atribuyó ${newAffiliations.replace(/ nuevas afiliaciones a la Seguridad Social/i, '').replace(/ \([^)]+\)$/, '')} altas a la Seguridad Social al proceso hasta el 30 de junio: empleo, no perceptores de ayudas.` : '',
-    `La lista quirúrgica del SNS utilizada es de diciembre de 2025, anterior al proceso; describe un servicio, no un colapso general ni su efecto.`,
-    latestImvPoint ? `El IMV registró ${latestImvPoint[1]} beneficiarios en agosto de ${latestImvPoint[2]}, un ${latestImvPoint[3]} % más que en agosto de ${Number(latestImvPoint[2]) - 1}. Es una prestación: no identifica a personas regularizadas ni mide dependencia; esta serie no demuestra crecimiento exponencial ni causalidad.` : '',
-  ].filter(Boolean).join('\n\n') : undefined;
+  const causalLink = /\b(?:caus\w*|provoc\w*|gener(?!al)\w*|dispar\w*|debido|por culpa|como consecuencia|hace que|lleva a)\b/i.test(normalise(text));
+  const familyList = families.map((family) => family.familyLabel.toLocaleLowerCase('es')).join(', ');
+  const headlineFamilyList = `${familyList.charAt(0).toLocaleUpperCase('es')}${familyList.slice(1)}`;
   const plan = {
     id: 'broad-compound-claim',
     schemaVersion: '1',
     evidenceLevel: 'limited',
-    headline: 'No se demuestra un colapso total ni que la regularización haya disparado la dependencia de ayudas',
-    summary: familyPlans.map((plan) => plan.headline.replace(/[.]$/, '') + '.').join(' '),
-    shareableReply,
-    shareableSourceIds: ['regularizacion-extraordinaria-solicitudes-julio-2026', 'regularization-law-2026', 'public-services-waiting-list-source', 'benefits-imv-historic-source', 'benefits-imv-august-source', 'benefits-imv-previous-year-source'],
+    headline: `${headlineFamilyList}: indicadores y límites distintos`,
+    summary: `La frase reúne ${families.length} ámbitos. Cada uno se contrasta con sus propios datos y no permite deducir automáticamente los demás.`,
+    shareableSourceIds: sourceIds,
     visuals: familyPlans.flatMap((familyPlan) => familyPlan.visuals?.length ? familyPlan.visuals : familyPlan.visual ? [familyPlan.visual] : []).filter((visual, index, all) => all.findIndex((candidate) => `${candidate.sourceId}:${candidate.title}` === `${visual.sourceId}:${visual.title}`) === index),
     coverage: 'qualified',
     claimType: 'mixed',
-    interpretation: { kind: 'mixed', subject: families.map((family) => family.familyLabel).join(', '), subjectType: 'mixed', predicate: 'allegedly_causes', normalizedClaim: text, interpretation: `Se comprueban por separado ${families.length} familias y las relaciones que se afirman entre ellas.` },
+    interpretation: { kind: 'mixed', subject: families.map((family) => family.familyLabel).join(', '), subjectType: 'mixed', predicate: causalLink ? 'allegedly_causes' : 'combines_independent_claims', normalizedClaim: text, interpretation: causalLink ? `Se comprueban por separado ${families.length} familias y la relación causal que afirma la frase.` : `Se comprueban por separado ${families.length} ámbitos; son indicadores distintos y no un único resultado.` },
     blocks: [
       { type: 'data_finding', evidenceIds, points: dataPoints },
-      { type: 'cannot_conclude', evidenceIds, points: [...limitations, 'La simultaneidad de dos series no demuestra causalidad.'] },
+      { type: 'cannot_conclude', evidenceIds, points: [...limitations, ...(causalLink ? ['La simultaneidad de tendencias no demuestra causalidad entre ámbitos.'] : [])] },
       ...(gaps.length ? [{ type: 'evidence_gap', missing: gaps, needed: ['programa, población, periodo, denominador y unidad compatibles'], nextAction: 'Localizar una serie específica para cada familia antes de cuantificar la afirmación.' }] : []),
       { type: 'conversation_reply', evidenceIds, text: '' },
     ],
-    limitation: 'Cada cifra responde a su propia medida y población. Las tendencias simultáneas no establecen causalidad.',
+    limitation: causalLink
+      ? 'La simultaneidad de tendencias no establece causalidad entre ámbitos; cada cifra conserva su propio periodo y población.'
+      : 'La evidencia permite evaluar cada ámbito con su propio indicador, no asignar una única calificación a todos ellos.',
     evidenceIds,
     sourceIds,
     sourceLinks: familyPlans.flatMap((plan) => plan.sourceLinks || []).filter((source, index, all) => all.findIndex((item) => item.id === source.id) === index),
     asOf: '2026-09-25',
-    evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}), fallbackReason: 'Cada familia conserva solo sus medidas compatibles; no se sustituye una ausencia por una estadística cercana.' },
+    evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}) },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
     knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09-2',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
+  plan.shareableReply = plan.blocks.find((block) => block.type === 'conversation_reply').text;
   return plan;
 };

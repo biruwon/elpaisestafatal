@@ -85,6 +85,13 @@ assert(deterministicFallbackCompiler('Los jóvenes no encuentran trabajo ni casa
 const nounList = deterministicFallbackCompiler('Empleo, vivienda y sanidad');
 assert(nounList.explicitPropositions.length === 1, 'A noun list was incorrectly split into multiple claims');
 
+const broadEvaluativeList = deterministicFallbackCompiler('La vivienda fatal, la sanidad peor que nunca, el trabajo continua siendo por norma general precario, comida más cara, las relaciones cada vez peores entre la gente, etc.');
+assert(broadEvaluativeList.explicitPropositions.length === 5, `A comma-separated set of five evaluative topics was not decomposed: ${broadEvaluativeList.explicitPropositions.length}`);
+assert(broadEvaluativeList.concepts.includes('food_prices') && broadEvaluativeList.concepts.includes('social_relations'), 'Food-price or social-relations concepts were lost from the compound list');
+const broadEvaluativeParaphrase = deterministicFallbackCompiler('La vivienda se encarece, la sanidad empeora, hay trabajos precarios, los alimentos cuestan más y las relaciones sociales se deterioran.');
+assert(broadEvaluativeParaphrase.explicitPropositions.length === 5, 'A paraphrase of a multi-domain evaluative list was not decomposed into five parts');
+assert(deterministicFallbackCompiler('La economía depende de empleo, vivienda y sanidad').explicitPropositions.length === 1, 'A sentence with a normal noun list was split into independent claims');
+
 const normative = deterministicFallbackCompiler('Los españoles deberían tener prioridad en las ayudas');
 assert(normative.claimType === 'normative' && normative.propositions.some((item) => !item.explicit), 'Normative implication was not created');
 assert(deterministicFallbackCompiler('Primero los españoles').claimType === 'normative', 'Terse priority wording was not classified as normative');
