@@ -361,7 +361,7 @@ const freshClaimAnswers = [
   {
     text: 'Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.',
     id: 'broad-illegal-occupation',
-    answerEvidence: ['art. 202', 'art. 245.2', 'art. 245.1', 'violencia o intimidación', 'juicio rápido', '12,0 meses', '11,2 meses'],
+    answerEvidence: ['art. 202', 'art. 245.2', 'art. 245.1', 'violencia o intimidación', 'juicio rápido', '12,0 meses'],
     sourceId: 'illegal-occupation-cgpj-duration',
   },
   {
@@ -410,10 +410,24 @@ for (const claim of freshClaimAnswers) {
   }
 }
 const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
-assert(occupationPlan.headline.includes('descubre la ocupación mientras ocurre') && occupationPlan.headline.includes('puede desalojar sin orden'), 'occupation answer did not lead with a plain-language response to the police claim');
+assert(occupationPlan.headline.includes('detecta la ocupación en el momento') && occupationPlan.headline.includes('puede desalojar sin orden'), 'occupation answer did not lead with a plain-language response to the police claim');
 assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
 assert(!occupationPlan.shareableReply.includes('ambos delitos pueden tramitarse por juicio rápido'), 'occupation reply repeated the inaccurate blanket fast-track claim');
 assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
+assert((occupationPlan.shareableReply.match(/sin orden/g) || []).length === 1, 'occupation answer repeated the police/no-order conclusion in its evidence paragraphs');
+assert(!occupationPlan.shareableReply.includes('11,2 meses'), 'occupation answer misattributed the general verbal-appeal average to illegal-occupation proceedings');
+const occupationVisual = occupationPlan.visuals.find((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration');
+assert(JSON.stringify(occupationVisual.labels) === JSON.stringify(['2019', '2020', '2021', '2022', '2023']), 'occupation chart should show one consistent first-instance series');
+assert(JSON.stringify(occupationVisual.values) === JSON.stringify([5.8, 8.1, 9.6, 10.9, 12]), 'occupation chart should use the CGPJ year-by-year first-instance estimates');
+for (const paraphrase of [
+  '¿Pueden los okupas ser desalojados si la policía los sorprende entrando en una vivienda?',
+  '¿Puede la policía sacar a alguien que ocupa una vivienda ajena?',
+  '¿Qué opciones legales tiene el dueño si alguien se mete y permanece en su casa sin permiso?',
+]) {
+  const paraphrasePlan = answerPlanForBroadDomain(paraphrase);
+  assert(paraphrasePlan.id === 'broad-illegal-occupation', `${paraphrase}: did not use the occupation evidence family`);
+  assert(paraphrasePlan.shareableReply === occupationPlan.shareableReply, `${paraphrase}: should use the same reviewed answer for this claim family`);
+}
 for (const [text, id, sourceId] of [
   ['Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.', 'broad-illegal-occupation', 'illegal-occupation-cgpj-duration'],
   ['El cierre de las centrales nucleares previsto por el Gobierno pone en peligro la seguridad energética de España y hará subir el precio de la luz.', 'broad-nuclear-phaseout-risk', 'nuclear-generation-ree-2025'],
