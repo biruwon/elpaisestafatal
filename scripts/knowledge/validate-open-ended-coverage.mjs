@@ -410,7 +410,7 @@ for (const claim of freshClaimAnswers) {
   }
 }
 const occupationPlan = answerPlanForBroadDomain('Los okupas pueden entrar en tu casa y quedarse durante años; la policía no puede echarlos.');
-assert(occupationPlan.headline.includes('La policía sí puede desalojar en flagrancia'), 'occupation answer did not lead with a direct response to the police claim');
+assert(occupationPlan.headline.includes('descubre la ocupación mientras ocurre') && occupationPlan.headline.includes('puede desalojar sin orden'), 'occupation answer did not lead with a plain-language response to the police claim');
 assert(!occupationPlan.shareableReply.includes('Dato:') && !occupationPlan.shareableReply.includes('Conclusión:'), 'occupation reply added generic filler after its verdict and evidence');
 assert(!occupationPlan.shareableReply.includes('ambos delitos pueden tramitarse por juicio rápido'), 'occupation reply repeated the inaccurate blanket fast-track claim');
 assert(occupationPlan.visuals?.some((visual) => visual.sourceId === 'illegal-occupation-cgpj-duration'), 'occupation answer omitted its source-linked duration chart');
