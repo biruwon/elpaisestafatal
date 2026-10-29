@@ -30,10 +30,11 @@ export const captureClaimDemand = async (
   database: ClaimDemandDatabase | undefined,
   submittedText: string,
   requestedInputType: string,
+  extractionJobId?: string,
 ): Promise<void> => {
   if (!database) return;
   try {
-    const inputType = ['text', 'image', 'audio', 'url'].includes(requestedInputType) ? requestedInputType : 'text';
+    const inputType = ['text', 'image', 'audio', 'document', 'video', 'url'].includes(requestedInputType) ? requestedInputType : 'text';
     if (inputType === 'url' && /^https?:\/\//i.test(submittedText.trim())) return;
     const normalized = normalizedClaim(submittedText);
     // A URL-only or upload-only request contains no claim text to cluster.
@@ -42,12 +43,14 @@ export const captureClaimDemand = async (
     const canonical = normalized;
     const signature = canonicalQuerySignature(canonical) || canonical;
     const semanticSignature = semanticQuerySignature(canonical) || signature;
-    const id = crypto.randomUUID();
+    const id = extractionJobId ? `extracted-${await digest(extractionJobId)}` : crypto.randomUUID();
     const now = new Date().toISOString();
     const clusterId = 'cluster-' + (await digest(semanticSignature)).slice(0, 32);
 
-    await database.prepare('INSERT INTO resolve_requests (id, normalized_text, input_type, created_at) VALUES (?, ?, ?, ?)')
-      .bind(id, normalized, inputType, now).run();
+    const inserted = await database.prepare('INSERT INTO resolve_requests (id, normalized_text, input_type, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO NOTHING RETURNING id')
+      .bind(id, normalized, inputType, now).all<{ id: string }>();
+    // Polling the same completed upload must not inflate research priorities.
+    if (!inserted.results.length) return;
     await database.prepare("INSERT INTO query_clusters (id, canonical_text, canonical_signature, semantic_signature, query_count, last_seen_at, coverage_status) VALUES (?, ?, ?, ?, 1, ?, 'received') ON CONFLICT(semantic_signature) DO UPDATE SET query_count = query_count + 1, last_seen_at = excluded.last_seen_at")
       .bind(clusterId, canonical, signature, semanticSignature, now).run();
     const cluster = await database.prepare('SELECT id FROM query_clusters WHERE semantic_signature = ? LIMIT 1')

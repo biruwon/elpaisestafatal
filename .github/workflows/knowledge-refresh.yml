@@ -51,9 +51,13 @@ jobs:
         run: npm run knowledge:refresh:validate
 
       - name: Refresh approved public sources
+        id: sources
+        continue-on-error: true
         run: npm run knowledge:refresh -- --config config/source-refresh.json
 
       - name: Refresh active domain source packs
+        id: domains
+        continue-on-error: true
         run: npm run knowledge:domain-refresh -- --config config/domain-source-refresh.json
 
       - name: Validate domain refresh report
@@ -79,6 +83,7 @@ jobs:
           npm run knowledge:warehouse:d1
 
       - name: Upload refresh snapshot
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: evidence-warehouse-${{ github.run_id }}
@@ -87,6 +92,7 @@ jobs:
           retention-days: 14
 
       - name: Upload coverage matrix
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: evidence-coverage-${{ github.run_id }}
@@ -95,6 +101,7 @@ jobs:
           retention-days: 14
 
       - name: Upload coverage audit
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: evidence-coverage-audit-${{ github.run_id }}
@@ -103,9 +110,25 @@ jobs:
           retention-days: 14
 
       - name: Upload domain refresh report
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: domain-refresh-report-${{ github.run_id }}
           path: .local/domain-refresh-report.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload public-source refresh report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: source-refresh-report-${{ github.run_id }}
+          path: .local/source-refresh-report.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Report incomplete public-source refresh
+        if: always() && (steps.sources.outcome == 'failure' || steps.domains.outcome == 'failure')
+        run: |
+          echo 'Some public sources failed. Successful snapshots were retained; inspect source-refresh-report.'
+          exit 1

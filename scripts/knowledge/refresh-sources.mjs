@@ -1,5 +1,6 @@
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, mkdir, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { refreshBatch } from './refresh-batch.mjs';
 import { sourceRegistry } from './source-registry.mjs';
 import { boeSummaryCandidates, isBoeSummaryUrl } from './refresh-utils.mjs';
 
@@ -58,7 +59,7 @@ const runIngest = (job, url) => new Promise((resolve, reject) => {
   if (job.title) childArgs.push('--title', job.title);
   if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
   if (job.metricId) childArgs.push('--metric-id', job.metricId);
-  const child = spawn(process.execPath, childArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, childArgs, { stdio: ['ignore', 'pipe', 'pipe'], timeout: 45000 });
   let output = '';
   child.stdout.on('data', (chunk) => { output += chunk; });
   child.stderr.on('data', (chunk) => { output += chunk; });
@@ -68,25 +69,16 @@ const runIngest = (job, url) => new Promise((resolve, reject) => {
     : reject(Object.assign(new Error(`Ingestion failed for ${url} (${code})`), { output })));
 });
 
-for (const job of jobs) {
-  const candidates = job.sourceId === 'boe' && isBoeSummaryUrl(job.url) ? boeSummaryCandidates(job.url) : [job.url];
-  let refreshed = false;
-  let lastError;
-  for (const [index, url] of candidates.entries()) {
-    console.log(`Refreshing ${job.sourceId}: ${url}`);
-    try {
-      const output = await runIngest(job, url);
-      if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
-      refreshed = true;
-      if (index > 0) console.log(`BOE had no publication for the requested day; used the latest available summary (${url}).`);
-      break;
-    } catch (error) {
-      lastError = error;
-      const missingBoeSummary = job.sourceId === 'boe' && isBoeSummaryUrl(url) && /Source returned 404/.test(error?.output || '');
-      if (!missingBoeSummary) throw error;
-      console.warn(`No BOE summary at ${url}; trying the previous day.`);
-    }
-  }
-  if (!refreshed) throw lastError || new Error(`Ingestion failed for ${job.url}`);
-}
-console.log(`Refreshed ${jobs.length} configured source resource(s).`);
+const report = await refreshBatch(jobs, {
+  ingest: async (job, url) => {
+    const output = await runIngest(job, url);
+    if (output.trim()) process.stdout.write(output.endsWith('\n') ? output : `${output}\n`);
+  },
+  candidatesFor: (job) => job.sourceId === 'boe' && isBoeSummaryUrl(job.url) ? boeSummaryCandidates(job.url) : [job.url],
+  retryable: (job, url, error) => job.sourceId === 'boe' && isBoeSummaryUrl(url) && /Source returned 404/.test(error?.output || ''),
+  log: console.log,
+});
+await mkdir('.local', { recursive: true });
+await writeFile('.local/source-refresh-report.json', JSON.stringify(report, null, 2));
+console.log(`Refreshed ${report.succeeded}/${report.attempted} source resources; ${report.failed} failed. Report: .local/source-refresh-report.json`);
+if (report.failed) process.exitCode = 1;

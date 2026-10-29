@@ -1,5 +1,6 @@
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 
 const visualsFromPlan = (plan) => {
   const planned = plan.visuals?.length ? plan.visuals : plan.visual ? [plan.visual] : [];
@@ -29,6 +30,8 @@ const visualsFromPlan = (plan) => {
 };
 
 export const localPublicCheckResponse = (payload, claim = '') => {
+  const extraction = publicExtraction(payload?.extraction);
+  claim = extraction ? extractedClaim(extraction) : claim || payload?.claim || '';
   if (payload?.status === 'processing' && payload.requestId) {
     const fallback = broadDomainPacketsFor(claim).length ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
     const preview = fallback?.status === 'complete'
@@ -38,7 +41,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   }
 
   const plan = payload?.status === 'complete' ? payload.result : undefined;
-  if (!plan || typeof plan !== 'object') return { state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: 'La comprobación local no pudo completarse.', retryable: true };
+  if (!plan || typeof plan !== 'object') return attachExtraction({ state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: extraction?.warnings[0] || 'La comprobación local no pudo completarse.', retryable: true }, extraction);
 
   const blocks = Array.isArray(plan.blocks) ? plan.blocks : [];
   const criteria = blocks
@@ -67,7 +70,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
   const evidenceLevel = plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
 
-  return {
+  return attachExtraction({
     state: evidenceLevel,
     id: payload.requestId || `local-${Date.now().toString(36)}`,
     result: {
@@ -88,5 +91,5 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       evidenceSummary: plan.evidenceSummary,
       evidenceLevel,
     },
-  };
+  }, extraction);
 };

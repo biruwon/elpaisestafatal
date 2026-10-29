@@ -46,7 +46,11 @@ the stored wording can include them. Each submission with claim text gets a
 new event row, and equivalent wording is grouped into a `query_clusters` row
 with an incrementing count. Uploaded files and complete answers are not
 written to these claim tables. URL-only and media-only submissions without
-claim text are not added to the review queue.
+claim text enter the review queue after successful extraction. The extracted
+wording is normalized in the same way as typed text; its source format is
+preserved. A server-generated extraction job ID makes repeated polls
+idempotent, so a single upload does not become multiple demand events. Failed
+extractions do not create a claim from an unread attachment.
 
 To read current demand clusters from the configured remote D1 database, run:
 
@@ -71,6 +75,56 @@ candidates, the local resolver can use its file-backed snapshot. Numeric
 observations and typed `official_publication`, `legal_document`, and
 `legal_rule` records share the generic `observations` table so event and legal
 evidence retain their types without parallel tables.
+
+Specialist domain ingestion writes both a record file and a manifest, including
+the raw source object's hash and retrieval time. The exporter reads these
+manifests alongside statistical feeds. It streams the latest snapshot per
+resource/metric, omits missing numeric cells, and retains observation kind,
+projection/budget status, comparison metadata and legal stage. The loader
+groups compatible observation inserts below D1's statement limit and streams
+bounded import batches. Historical raw snapshots remain available locally.
+
+Source refresh attempts each independent resource even when another publisher
+fails. Public and domain refresh reports preserve failures. Scheduled runs can
+sync successful validated sources and still finish with a failure status when
+the batch was incomplete.
+
+## Submission contract
+
+The browser, Pages Function and resolver share `input-contract.mjs`. Supported
+inputs are text, HTTPS pages, PNG/JPEG/WebP/GIF images, the listed audio formats,
+PDF/DOCX/text documents and MP4/WebM/MOV video. Files are limited to 8 MB; audio
+and video to two minutes. PDF extraction reads up to 20 pages and all extracted
+text is bounded to 12,000 characters. Truncation is explicit. Scanned PDFs
+without extractable text currently require an image or pasted transcription.
+
+Extraction produces a public envelope with the original caption, read text,
+format, completion status and warnings. Immediate and polled responses use the
+extracted claim, with an edit-and-recheck action in the browser. Submitted pages
+are input material, not independent verification sources. Video frame sampling
+is always partial. If extraction fails but a caption can be checked, the answer
+is limited and both the visible and copied answers say that only the caption
+was checked. Uploads never share the text response cache.
+
+`/api/health` reports per-format capability states without model names or
+configuration. Local speech can be prepared with `npm run speech:setup`; the
+resolver discovers the prepared platform-specific runtime on restart. Explicit
+`LOCAL_SPEECH_COMMAND`/`LOCAL_SPEECH_ARGS` adapters remain supported.
+
+## Definitions and evidence fit
+
+Measurement-definition questions are handled before broad topic synthesis.
+Definitions live on metric records with reviewed sources, numerators and
+denominators. The composer resolves overlapping metric aliases, so "youth
+unemployment" alone does not also imply a second overall-unemployment request.
+Numeric and trend claims continue to use observations. Scope-specific requests
+do not inherit general topic packets merely because they share a keyword.
+
+Evidence selection rejects missing numeric values, preserves period, population,
+denominator and source IDs, and labels a mixed-freshness family conservatively.
+Distinct statistical series remain labelled separately. Proposition evidence
+is assigned through explicit relationships rather than its position in an
+array.
 
 Before this change, the refresh job generated a SQL artifact but never loaded
 it into D1, and the export referenced columns missing from the applied schema.

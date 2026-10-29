@@ -17,16 +17,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <button type="button" data-input-mode="url" aria-pressed="false"><span aria-hidden="true">↗</span> Enlace</button>
             <button type="button" data-attach="image"><span aria-hidden="true">▧</span> Imagen</button>
             <button type="button" data-attach="audio"><span aria-hidden="true">◖</span> Audio</button>
+            <button type="button" data-attach="document"><span aria-hidden="true">≡</span> Documento</button>
+            <button type="button" data-attach="video"><span aria-hidden="true">▷</span> Vídeo</button>
           </fieldset>
           <label class="sr-only" for="conversation-input">¿Qué quieres comprobar?</label>
           <div class="conversation-input-wrap">
             <textarea id="conversation-input" name="q" rows="4" maxlength="12000" autocomplete="off" placeholder="Escribe o pega aquí la afirmación…" aria-describedby="conversation-help"></textarea>
-            <div class="drop-hint" aria-hidden="true">Suelta aquí una imagen o un audio</div>
+            <div class="drop-hint" aria-hidden="true">Suelta aquí una imagen, audio, documento o vídeo</div>
             <button type="submit">Comprobar <span aria-hidden="true">→</span></button>
           </div>
-          <input id="conversation-file" name="file" type="file" accept="image/*,audio/*" />
+          <input id="conversation-file" name="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,audio/*,video/mp4,video/webm,video/quicktime,.pdf,.docx,.txt,.csv,.md,.json" />
           <p id="conversation-help" class="conversation-help"><span data-input-help>Puedes pegar una frase, un titular o el texto de un mensaje.</span><span id="conversation-counter" aria-live="polite">0/12000</span></p>
-          <p id="conversation-media-help" class="conversation-media-help" aria-live="polite"><strong data-file-name></strong><span> Las imágenes se leen automáticamente y el audio se transcribe en el equipo local.</span></p>
+          <p id="conversation-media-help" class="conversation-media-help" aria-live="polite"><strong data-file-name></strong><span> Las imágenes se leen automáticamente si el servicio está disponible. Te mostraremos el texto leído y cualquier parte que no se haya podido comprobar.</span></p>
+          <p class="conversation-help">Un archivo de hasta 8 MB · PDF, DOCX y texto · Audio y vídeo de hasta 2 minutos. <span data-input-capabilities></span></p>
         </form>
         <details class="checker-suggestions" id="checker-suggestions">
           <summary><span>¿No sabes qué probar? Mira ejemplos</span><span aria-hidden="true">+</span></summary>
@@ -50,7 +53,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div class="conversation-result" id="conversation-result" role="region" aria-label="Resultado de la comprobación" aria-live="polite" tabindex="-1"></div>
       </div>
       <ol class="checker-how" aria-label="Cómo funciona">
-        <li><span>1</span><div><strong>Envíala</strong><p>Texto, enlace, imagen o audio.</p></div></li>
+        <li><span>1</span><div><strong>Envíala</strong><p>Texto, enlace, imagen, audio, documento o vídeo.</p></div></li>
         <li><span>2</span><div><strong>La contrastamos</strong><p>Primero con datos; después con análisis.</p></div></li>
         <li><span>3</span><div><strong>Decide con contexto</strong><p>Respuesta, fuentes y límites claros.</p></div></li>
       </ol>

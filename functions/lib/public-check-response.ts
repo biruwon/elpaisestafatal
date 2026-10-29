@@ -47,9 +47,12 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   const items = breakdown.items;
   const evidenceBlocks = plan.blocks.filter((block) => block.type === 'data_finding' || block.type === 'confirmed');
   return items.map((item, index) => {
-    const evidenceIds = item.evidenceIds?.length
-      ? item.evidenceIds
-      : (breakdown.evidenceIds || []).filter((_, evidenceIndex) => evidenceIndex % items.length === index);
+    // Evidence belongs to a proposition only through an explicit association.
+    // Positional assignment can attach unrelated numbers to the next claim.
+    const propositionId = breakdown.propositionIds[index];
+    const evidenceIds = item.evidenceIds?.length ? item.evidenceIds : evidenceBlocks
+      .filter((block) => 'propositionIds' in block && block.propositionIds?.includes(propositionId))
+      .flatMap((block) => 'evidenceIds' in block ? block.evidenceIds || [] : []);
     const verdict = item.verdict || (evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient');
     const matchingBlock = evidenceBlocks.find((block) => 'evidenceIds' in block && evidenceIds.some((id) => block.evidenceIds?.includes(id)));
     const finding = matchingBlock && 'points' in matchingBlock && matchingBlock.points?.length
@@ -63,7 +66,8 @@ const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
     evidenceLevel: item.evidenceLevel || (verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none'),
     finding: item.finding || finding,
     evidenceIds,
-    sourceIds: plan.sourceIds || [],
+    sourceIds: (plan.sourceIds || []).filter((sourceId) => (Array.isArray(item.sourceIds) && item.sourceIds.includes(sourceId)) || evidenceIds.includes(sourceId)
+      || (plan.evidenceSummary?.families || []).some((family) => family.evidenceIds.some((id) => evidenceIds.includes(id)) && family.sourceIds?.includes(sourceId))),
     limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
     };
   });
@@ -183,7 +187,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const scorecard = scorecardFromPlan(plan, sources);
   const reply = plan.shareableReply?.trim() || replyFromPlan(plan);
   const visuals = visualsFromPlan(plan);
-  const result: CheckResult = { claim, interpretation, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, shareableSourceIds: plan.shareableSourceIds, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
+  const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, shareableSourceIds: plan.shareableSourceIds, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
   const state = argumentsList.length && argumentEvidence === 0
     ? 'insufficient'

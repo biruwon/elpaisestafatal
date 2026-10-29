@@ -16,11 +16,25 @@ const sourceTypeScore = (source = {}) => source.sourceType === 'official' || sou
 const freshnessScore = (status) => status === 'fresh' ? 0.2 : status === 'stale' ? 0.04 : 0;
 
 const observationKey = (item) => item.metricId || item.metric;
+const numericValue = (value) => (typeof value === 'number' || typeof value === 'string' && value.trim() !== '') && Number.isFinite(Number(value));
+const scopeOf = (item) => Object.fromEntries(Object.entries({
+  geography: item.geography, population: item.population, denominator: item.denominator, unit: item.unit,
+  ...(item.dimensions || {}),
+}).filter(([key, value]) => value !== undefined && value !== null && value !== '' && !['time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b)));
+const seriesKey = (item) => JSON.stringify({ scope: scopeOf(item), dataKind: item.dataKind || 'observed', periodType: item.periodType || 'observation' });
 
 const findingFor = (items, candidate, query) => {
   const latestItems = items.slice().sort((a, b) => String(a.period || a.id).localeCompare(String(b.period || b.id)));
   const latest = latestItems.at(-1);
   const title = latest?.metric || candidate.metricId;
+  const series = new Map();
+  for (const item of latestItems) series.set(seriesKey(item), item);
+  if (series.size > 1 && candidate.metricId !== 'public_housing_actions') {
+    const rows = [...series.values()].slice(0, 6);
+    const values = rows.map((item) => `${Object.values(scopeOf(item)).join(' · ')}: ${item.value}${item.unit ? ` ${item.unit}` : ''}${item.period ? ` (${item.period})` : ''}`).join('; ');
+    return { title, finding: `${title}: ${values}.`, direction: 'qualifies',
+      limitation: 'Son series con ámbitos distintos. No se calcula una media, una tasa común ni una comparación causal entre ellas.' };
+  }
   if (candidate.metricId === 'public_housing_actions' && latestItems.length) {
     const period = latest?.period;
     const recent = latestItems.filter((item) => item.period === period && Number(item.value) > 0).sort((a, b) => Number(b.value) - Number(a.value));
@@ -40,7 +54,7 @@ const findingFor = (items, candidate, query) => {
     const limitation = candidate.limitations?.[0] || 'La comparación usa solo los grupos y el denominador publicados por la fuente.';
     return { title, finding: `${title}: ${values}${latest.period ? ` (${latest.period})` : ''}.`, direction: 'qualifies', limitation };
   }
-  const value = latest && Number.isFinite(Number(latest.value)) ? `${latest.value}${latest.unit ? ` ${latest.unit}` : ''}` : 'datos localizados';
+  const value = latest && numericValue(latest.value) ? `${latest.value}${latest.unit ? ` ${latest.unit}` : ''}` : 'documento localizado, sin medición numérica';
   const period = latest?.period ? ` (${latest.period})` : '';
   const limitation = candidate.limitations?.[0] || (candidate.metricId.endsWith('_europe') ? 'La comparación se refiere a la definición europea de este indicador.' : 'El indicador mide solo esta dimensión y no resume por sí solo el estado general del país.');
   const direction = broadJudgement(normalise(query)) ? 'qualifies' : 'neutral';
@@ -61,7 +75,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   const rejected = [];
   const ranked = [];
   for (const candidate of candidates) {
-    const items = byMetric.get(candidate.metricId) || [];
+    const items = (byMetric.get(candidate.metricId) || []).filter((item) => numericValue(item.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(item.kind));
     if (candidate.metricId === 'public_housing_allocations_by_nationality' && !/euskadi|pa[ií]s\s+vasco|etxebide|capv/i.test(query)) {
       rejected.push({ metricId: candidate.metricId, reason: 'territorial_scope_not_requested' });
       continue;
@@ -92,14 +106,19 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
       rejected.push({ metricId: candidate.metricId, reason: 'comparison_requires_two_source_groups' });
       continue;
     }
-    const decisions = items.map((item) => item.freshness
-      ? { status: item.freshness, action: item.freshness === 'fresh' ? 'use' : 'label-limited', reason: staleSourceReason(item.source) }
-      : freshnessDecision(item.source));
+    const decisions = items.map((item) => {
+      const checked = freshnessDecision(item.source);
+      if (item.freshness === 'invalid') return { status: 'invalid', action: 'exclude' };
+      if (checked.status !== 'fresh') return checked;
+      return item.freshness ? { status: item.freshness, action: item.freshness === 'fresh' ? 'use' : 'label-limited', reason: staleSourceReason(item.source) } : checked;
+    });
     const usable = items.filter((_, index) => decisions[index].action !== 'exclude');
+    // A family is as current as the least-current observation it actually
+    // presents. One fresh historical row cannot freshen a stale newer value.
     const freshness = decisions
       .filter((_, index) => usable.includes(items[index]))
       .map((decision) => decision.status)
-      .sort((a, b) => ({ fresh: 0, unknown: 1, stale: 2, invalid: 3 }[a] ?? 4) - ({ fresh: 0, unknown: 1, stale: 2, invalid: 3 }[b] ?? 4))[0] || 'unknown';
+      .sort((a, b) => ({ fresh: 0, unknown: 1, stale: 2, invalid: 3 }[b] ?? 4) - ({ fresh: 0, unknown: 1, stale: 2, invalid: 3 }[a] ?? 4))[0] || 'unknown';
     if (!usable.length) {
       rejected.push({ metricId: candidate.metricId, reason: decisions[0]?.reason || 'stale_source_not_allowed_for_dynamic_evidence' });
       continue;
@@ -119,14 +138,18 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
       finding: finding.finding,
       direction: finding.direction,
       evidenceIds: items.map((item) => item.id).filter(Boolean),
-      limitation: stale ? `${finding.limitation} La fuente está ${freshness}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation,
+      limitation: stale ? `${finding.limitation} ${freshness === 'stale' ? 'La fuente necesita una actualización' : 'No se ha podido verificar la fecha de consulta de la fuente'}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation,
       freshness,
+      dataKind: items.every((item) => (item.dataKind || 'observed') === (items[0]?.dataKind || 'observed')) ? items[0]?.dataKind || 'observed' : 'context',
+      period: [...new Set(items.map((item) => item.period).filter(Boolean))].sort().join(' · '),
+      dimensions: items.length && new Set(items.map(seriesKey)).size === 1 ? { ...scopeOf(items[0]), period: [...new Set(items.map((item) => item.period).filter(Boolean))].sort().join(' · ') } : undefined,
+      sourceIds: [...new Set(items.map((item) => item.source?.id).filter(Boolean))],
       sourceMode: 'dynamic',
       score: Number((ranked.find((item) => item.candidate.metricId === candidate.metricId)?.score || 0).toFixed(3)),
     };
   });
   const missingDimensions = selected.length ? [] : ['indicador compatible', 'periodo comparable', 'territorio o población'];
-  const overallLevel = selected.length && selected.some((item) => item.freshness === 'fresh') && selected.every((item) => item.direction !== 'supports' || item.evidenceIds.length) ? 'qualified' : 'insufficient';
+  const overallLevel = selected.length && selected.every((item) => item.freshness === 'fresh' && item.evidenceIds.length) ? 'qualified' : 'insufficient';
   return { selected, rejected, missingDimensions, overallLevel };
 };
 
@@ -138,7 +161,10 @@ export const evidenceSummaryForPublic = (selection, { mode = 'dynamic', fallback
     evidenceIds: item.evidenceIds,
     finding: item.finding,
     limitation: item.limitation,
-    period: item.items?.at(-1)?.period,
+    period: item.period,
+    dimensions: item.dimensions,
+    sourceIds: item.sourceIds || [],
+    dataKind: item.dataKind,
   })),
   ...(selection?.missingDimensions?.length ? { missingDimensions: selection.missingDimensions } : {}),
   ...(fallbackReason ? { fallbackReason } : {}),

@@ -84,6 +84,12 @@ export const searchD1Warehouse = async (database: D1Database, query: string): Pr
       clusterId: payload.clusterId,
       support: payload.support,
       status: payload.status,
+      stage: payload.stage,
+      dataKind: payload.dataKind,
+      periodType: payload.periodType,
+      comparison: payload.comparison,
+      quantities: payload.quantities,
+      limitations: payload.limitations,
       source: {
         id: row.source_id,
         publisher: row.publisher,
@@ -95,6 +101,7 @@ export const searchD1Warehouse = async (database: D1Database, query: string): Pr
         aliases: Array.isArray(parseJson<unknown>(row.aliases_json, [])) ? parseJson<string[]>(row.aliases_json, []) : [],
         sourceRegistryId: row.source_registry_id,
         schedule: row.schedule,
+        domain: payload.sourceDomain,
       },
     };
   });

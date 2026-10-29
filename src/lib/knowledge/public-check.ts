@@ -1,4 +1,5 @@
 export type ClaimAssessment = 'true' | 'mostly-true' | 'misleading' | 'unsupported' | 'uncertain' | 'false';
+export type InputExtraction = { inputType: 'image' | 'audio' | 'document' | 'video' | 'url'; status: 'complete' | 'partial' | 'failed'; text: string; submittedText?: string; warnings: string[] };
 export type CheckSource = { id: string; title: string; publisher?: string; url: string; publishedAt?: string; retrievedAt?: string };
 export type CheckVisual = { type: 'line' | 'bar' | 'comparison' | 'money-flow'; title?: string; unit?: string; labels: string[]; values: number[]; evidenceIds: string[]; sourceId?: string; note?: string; interpretation?: string; breakAfter?: number[]; axisMin?: number };
 export type EvidenceStatus = 'available' | 'partial' | 'missing';
@@ -32,12 +33,12 @@ export type ClaimInterpretation = {
 export type CheckCriterion = { id: string; label: string; finding: string; sourceIds?: string[] };
 export type ArgumentVerdict = 'supported' | 'contradicted' | 'mixed' | 'insufficient' | 'not_verifiable';
 export type ArgumentAssessment = { id: string; claim: string; kind: ClaimKind; verdict: ArgumentVerdict; evidenceLevel: 'strong' | 'moderate' | 'limited' | 'none'; finding: string; evidenceIds: string[]; sourceIds: string[]; limitations: string[] };
-export type CheckResult = { claim: string; interpretation?: ClaimInterpretation; thesis?: { text: string; kind: 'factual' | 'evaluative'; conclusion: string; criteria?: string[] }; reply: string; answer: string; shareableReply?: string; shareableSourceIds?: string[]; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; arguments?: ArgumentAssessment[]; coverageSummary?: { total: number; supported: number; contradicted: number; mixed: number; insufficient: number; notVerifiable: number }; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; visuals?: CheckVisual[]; scorecard?: CheckScorecard; canonicalHref?: string; canonicalSlug?: string; evidenceSummary?: PublicEvidenceSummary };
+export type CheckResult = { claim: string; extraction?: InputExtraction; nextQuestion?: string; interpretation?: ClaimInterpretation; thesis?: { text: string; kind: 'factual' | 'evaluative'; conclusion: string; criteria?: string[] }; reply: string; answer: string; shareableReply?: string; shareableSourceIds?: string[]; evidenceLevel?: EvidenceLevel; keyFact?: string; criteria?: CheckCriterion[]; arguments?: ArgumentAssessment[]; coverageSummary?: { total: number; supported: number; contradicted: number; mixed: number; insufficient: number; notVerifiable: number }; whatWeKnow: string[]; limitations: string[]; scope: CheckScope; sources: CheckSource[]; assessment?: ClaimAssessment; visual?: CheckVisual; visuals?: CheckVisual[]; scorecard?: CheckScorecard; canonicalHref?: string; canonicalSlug?: string; evidenceSummary?: PublicEvidenceSummary };
 export type PublicCheckResponse =
-  | { state: 'clarification'; id: string; claim: string; question: string; interpretation?: ClaimInterpretation; options: Array<{ id: string; label: string; interpretation: ClaimInterpretation }> }
+  | { state: 'clarification'; id: string; claim: string; extraction?: InputExtraction; question: string; interpretation?: ClaimInterpretation; options: Array<{ id: string; label: string; interpretation: ClaimInterpretation }> }
   | { state: 'supported' | 'limited' | 'insufficient'; id: string; result: CheckResult }
   | { state: 'processing'; id: string; claim: string; preview?: Extract<PublicCheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> }
-  | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
+  | { state: 'unavailable'; id: string; claim: string; extraction?: InputExtraction; message: string; retryable: boolean };
 const validScorecard = (value: unknown): value is CheckScorecard => {
   if (!value || typeof value !== 'object') return false;
   const scorecard = value as CheckScorecard;

@@ -1,0 +1,81 @@
+# Project assessment — 30 October 2026
+
+## Decision
+
+Keep Astro, Cloudflare Pages/D1, the reviewed content and the provider-neutral
+local resolver. A framework rewrite would not address the main failures. The
+necessary work is to make extraction, semantic fit, evidence freshness and
+production ingestion agree end to end.
+
+The product should offer a useful answer to every accepted submission, while
+distinguishing a measured conclusion, a sourced explanation, a clarification
+and an evidence gap. Accepting a claim does not make a binary verdict possible.
+
+## What the review found and changed
+
+| Finding | Implemented response |
+| --- | --- |
+| Different uploads could share a cache key made from filename, MIME and size. Text keys discarded punctuation significant to numbers. | Uploads and fetched pages bypass shared response caching. Text identity preserves exact numeric punctuation and clarification context; the cache is bounded. |
+| Failed extraction could silently turn a caption into an answer about an unread file. Polling could restore the caption instead of the extracted claim. | A validated extraction envelope survives immediate and delayed responses. Partial or failed readings qualify the visible and copied answer. Users can inspect and correct the read text. |
+| The interface supported only text, URL, image and optional audio. | Added PDF, DOCX, UTF-8 text/CSV/Markdown/JSON and short MP4/WebM/MOV video. Added a reproducible, offline speech setup and capability reporting. |
+| Broad keyword routes could answer a precise measurement question with neighbouring topic statistics. | Scoped measurement requests bypass broad packets. Metric definitions have reviewed sources, numerators and denominators and a reusable explanation composer. Numeric/trend questions still require observations. |
+| Any occurrence of an institutional label could inherit a response about Spain's current government. | Present-day institutional scope is checked. Historical, foreign and unrelated subjects do not inherit that evidence. A constitutional description is qualified as institutional context. |
+| Missing numeric cells could become zero; fresh and stale rows could receive a fresh family label. | Missing values are rejected during parsing and selection. A measured zero is retained. Freshness and distinct series scopes are preserved conservatively. |
+| A province count could be labelled with its autonomous community. Housing CSV column changes broke refresh. | Alias priority and quoted CSV parsing preserve the correct territory, month, administrative stage and numeric convention. Housing actions remain distinct from adjudicated people. |
+| Specialist ingestion wrote records without the manifests read by the production exporter. Some scope/type metadata disappeared during D1 retrieval and ranking. | Domain ingestion now retains raw objects and manifests. Export/retrieval preserve geography, projection/budget status, legal stage, comparison metadata and source cadence. |
+| One unavailable publisher stopped the public-source refresh. Large exports exhausted memory. The production D1 evidence table was empty when inspected. | Refresh records independent failures and continues. Latest-snapshot export and grouped import stream bounded data. A production mirror was loaded and its observation count checked. |
+| Evidence could be distributed among compound propositions by position. | Proposition attribution requires an explicit evidence relationship. |
+
+## Data state from this run
+
+The initial local audit reported 187 stale metrics out of 194 registered metrics.
+The full public refresh succeeded for all 143 resources then configured. Domain
+refresh succeeded for 22 of 23 active feeds after repairing the housing parser.
+The pension-transfer parser was also corrected for an official wording variant,
+and a missing hospital-bed count feed was added with an explicit count unit.
+
+The verified production mirror contains 634,323 observations from 178
+sources with observations. The main import used 9,773 grouped statements in 12
+batches; a small corrective import added the pension-transfer row and the newly
+configured bed counts. Local raw snapshots retain more historical revisions than the production
+index; these are not additional independent evidence.
+
+The audit is an operational coverage report, not an accuracy score. In
+particular, a model-assessed research lead or configured feed does not establish
+that the complete user claim has been demonstrated. Consult the generated
+reports for current per-metric readiness and limitations. The final local audit
+registered 197 metrics, all with configured feeds: 181 ready, 10 stale, three
+with data-quality gaps and three with partial domain evidence.
+
+## Verification and practical limits
+
+Regression checks exercise real PDF/DOCX parsing and video decoding, plus mocked
+provider responses for deterministic API tests. An in-memory SQLite database
+checks upload-demand deduplication and bulk SQL semantics. Definition questions
+have paraphrase tests and nearby numeric/trend claims that must not cross-route.
+Browser testing covers submission, visible extraction, sourced explanation and
+correction. Separate live checks successfully read a Spanish image and
+transcribed Spanish speech without losing its negation.
+
+Files are limited to 8 MB, audio/video to two minutes, PDF reading to 20 pages,
+and extracted text to 12,000 characters. Video uses up to four sampled frames
+plus audio when available and is always labelled partial. A scanned PDF without
+extractable text currently needs an image or pasted transcription. Automatic
+reading can make mistakes; authenticity and speaker identity require separate
+evidence.
+
+The AIReF pension-projection workbook still fails TLS certificate-chain
+verification from this runtime. Its source has not been marked refreshed. Some
+derived rates and group-specific evidence also require further source work;
+national counts, partial programme coverage and unmatched denominators must
+continue to yield qualified explanations or explicit gaps.
+
+## Ongoing product standard
+
+Add evidence by measurement family and source contract. Store definitions,
+denominators, population and methodological breaks with the metric, and keep
+retrieval time separate from publication and measurement periods. Expand
+definition metadata beyond the initial labour-market measures. Evaluate source
+fit and unsupported conclusions alongside answer rate and latency. Promote
+new claim families only with paraphrases and negative-neighbour tests; a large
+catalogue or fluent answer is not a substitute for those checks.

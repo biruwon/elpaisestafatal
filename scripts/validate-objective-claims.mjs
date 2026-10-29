@@ -105,7 +105,7 @@ const endpoint = await readFile(new URL('../functions/api/check.ts', import.meta
 const pollRoute = await readFile(new URL('../functions/api/check/[id].ts', import.meta.url), 'utf8');
 const browserClient = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
 assert.match(endpoint, /reviewedContextualAnswer\(model, contextual\)/, 'POST response selection must preserve the reviewed answer');
-assert.match(endpoint, /chooseResponse\(claim, modelResponse, contextual\)/, 'Final poll must use the same response selection as POST');
+assert.match(endpoint, /resolvedResponse\(claim, safe, id/, 'Final poll must use the same response selection as POST');
 assert.match(endpoint, /request\.method === 'POST'[\s\S]*?request\.json\(\)/, 'The poll endpoint must decode Unicode claim text from a JSON body');
 assert.match(pollRoute, /onRequestGet as onRequestPost/, 'The dynamic polling route must accept the UTF-8 POST contract');
 assert.match(browserClient, /method: 'POST'[\s\S]*?JSON\.stringify\(\{ claim: original \}\)/, 'The final poll must send the original claim as JSON, not a raw HTTP header');

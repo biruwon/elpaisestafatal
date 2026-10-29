@@ -6,7 +6,7 @@ const scalar = (value) => {
   return trimmed;
 };
 
-export const parseDelimitedRows = (text, { rowId = (index) => `row-${index + 1}`, sourceId = '', metricId, retrievedAt = '' } = {}) => {
+export const parseDelimitedRows = (text, { rowId = (index) => `row-${index + 1}`, sourceId = '', metricId, retrievedAt = '', parseScalars = true } = {}) => {
   const sample = String(text || '').split(/\r?\n/, 1)[0] || '';
   const delimiter = [';', '\t', ','].sort((left, right) => (sample.split(right).length - 1) - (sample.split(left).length - 1))[0];
   const rows = [];
@@ -29,5 +29,5 @@ export const parseDelimitedRows = (text, { rowId = (index) => `row-${index + 1}`
   if (field || row.length) { row.push(field.trim()); if (row.some((item) => item !== '')) rows.push(row); }
   const [header, ...data] = rows;
   if (!header?.length) return [];
-  return data.slice(0, 100000).map((values, index) => ({ id: rowId(index), sourceId, metricId, dimensions: Object.fromEntries(header.map((key, column) => [key || `column_${column + 1}`, scalar(values[column] ?? '')])), retrievedAt }));
+  return data.slice(0, 100000).map((values, index) => ({ id: rowId(index), sourceId, metricId, dimensions: Object.fromEntries(header.map((key, column) => [key || `column_${column + 1}`, parseScalars ? scalar(values[column] ?? '') : String(values[column] ?? '').trim()])), retrievedAt }));
 };

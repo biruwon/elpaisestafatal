@@ -1,14 +1,23 @@
+import { parseDelimitedRows } from './parse-delimited.mjs';
+
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 
 const valueFor = (row, aliases) => {
   const entries = Object.entries(row || {});
-  const found = entries.find(([key]) => aliases.some((alias) => normalise(key) === normalise(alias)));
-  return found?.[1] ?? null;
+  for (const alias of aliases) {
+    const found = entries.find(([key]) => normalise(key) === normalise(alias));
+    if (found && found[1] !== '' && found[1] !== undefined && found[1] !== null) return found[1];
+  }
+  return null;
 };
 
 const numberFor = (value) => {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
-  const parsed = Number(String(value ?? '').replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+  const raw = String(value ?? '').trim().replace(/\s/g, '').replace(/%$/, '');
+  if (!/^[+-]?\d[\d.,]*$/.test(raw)) return null;
+  const normalized = raw.includes(',') ? raw.replace(/\./g, '').replace(',', '.')
+    : /^[+-]?\d{1,3}(?:\.\d{3})+$/.test(raw) ? raw.replace(/\./g, '') : raw;
+  const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
 };
 
@@ -51,17 +60,7 @@ const parsers = {
 export const domainConnectorFor = (domain) => parsers[domain];
 
 export const parseDelimited = (text) => {
-  const lines = String(text || '').trim().split(/\r?\n/).filter(Boolean);
-  if (lines.length < 2) return [];
-  const tabCount = (lines[0].match(/\t/g) || []).length;
-  const semicolonCount = (lines[0].match(/;/g) || []).length;
-  const commaCount = (lines[0].match(/,/g) || []).length;
-  const separator = tabCount >= semicolonCount && tabCount >= commaCount ? '\t' : semicolonCount >= commaCount ? ';' : ',';
-  const headers = lines[0].split(separator);
-  return lines.slice(1).map((line) => {
-    const cells = line.split(separator);
-    return Object.fromEntries(headers.map((header, index) => [header.trim(), String(cells[index] || '').trim()]));
-  });
+  return parseDelimitedRows(String(text || '').replace(/^\uFEFF/, ''), { parseScalars: false }).map((row) => row.dimensions);
 };
 
 // Interior's SEC table 03003 is a distinct legal stage from convictions:
@@ -109,9 +108,9 @@ export const parsePublicHousingActionsText = (text) => {
     const year = valueFor(row, ['año', 'ano', 'year']);
     const month = numberFor(valueFor(row, ['mes', 'month']));
     const geography = valueFor(row, ['provincia', 'comunidad autónoma', 'comunidad autonoma', 'territorio']) || null;
-    const value = numberFor(valueFor(row, ['número de viviendas', 'numero de viviendas', 'viviendas', 'value']));
-    if (!year || !geography || value === null) return null;
-    return { period: `${year}-${String(month || 1).padStart(2, '0')}`, geography, group: 'total', category: [valueFor(row, ['tipología', 'tipologia']), valueFor(row, ['estado'])].filter(Boolean).join(' · '), value, metricId: 'public_housing_actions', metric: 'Actuaciones de vivienda protegida', unit: 'viviendas' };
+    const value = numberFor(valueFor(row, ['número de viviendas', 'numero de viviendas', 'num_viviendas', 'viviendas', 'value']));
+    if (!/^\d{4}$/.test(String(year || '')) || !geography || value === null || !Number.isInteger(month) || month < 1 || month > 12) return null;
+    return { period: `${year}-${String(month).padStart(2, '0')}`, geography, population: 'actuaciones de vivienda protegida, no personas adjudicatarias', group: 'total', category: [valueFor(row, ['tipología', 'tipologia', 'tipo_vivienda']), valueFor(row, ['tipo_tramite']), valueFor(row, ['estado'])].filter(Boolean).join(' · '), value, metricId: 'public_housing_actions', metric: 'Actuaciones de vivienda protegida', unit: 'viviendas' };
   }).filter(Boolean);
 };
 
@@ -343,7 +342,7 @@ export const parseSocialSecurityPensionBudgetWorkbook = async (buffer, source) =
 export const parseSocialSecurityPensionTransfersText = (text, source) => {
   const lines = String(text || '').split(/\r?\n/).map((line) => line.replace(/\s+/g, ' ').trim()).filter(Boolean);
   const specs = [
-    ['social_security_minimum_complements_transfer_budget', 'Transferencia presupuestada para complementos a mínimos', /complementos?\s+a\s+m[ií]nimos/i, 'complementos a mínimos'],
+    ['social_security_minimum_complements_transfer_budget', 'Transferencia presupuestada para complementos a mínimos', /complementos?\s+(?:a|por)\s+m[ií]nimos/i, 'complementos a mínimos'],
     ['social_security_noncontributory_transfer_budget', 'Transferencia presupuestada para pensiones no contributivas', /pensiones?\s+no\s+contributivas?/i, 'pensiones no contributivas'],
     ['social_security_pact_toledo_transfer_budget', 'Transferencia presupuestada del Pacto de Toledo', /pacto\s+de\s+toledo/i, 'Pacto de Toledo'],
   ];

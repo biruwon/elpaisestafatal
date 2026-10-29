@@ -6,10 +6,11 @@ interface Context { request: Request; env: Env }
 const response = (body: unknown): Response => Response.json(body, {
   headers: { 'Cache-Control': 'no-store' },
 });
+const fallbackInputs = { text: 'available', url: 'unavailable', image: 'unavailable', audio: 'unavailable', document: 'unavailable', video: 'unavailable' };
 
 export const onRequestGet = async ({ env }: Context): Promise<Response> => {
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
-    return response({ status: 'ok', deterministic: true, dynamic: false });
+    return response({ status: 'ok', deterministic: true, dynamic: false, inputs: fallbackInputs });
   }
   try {
     const headers = new Headers();
@@ -20,10 +21,10 @@ export const onRequestGet = async ({ env }: Context): Promise<Response> => {
     });
     const body = await upstream.json().catch(() => undefined);
     const envelope = upstream.ok ? safeHealthEnvelope(body) : undefined;
-    return response({ status: envelope ? 'ok' : 'degraded', deterministic: true, dynamic: envelope?.dynamic === true, ...(envelope?.metrics ? { metrics: envelope.metrics } : {}), ...(envelope?.queue !== undefined ? { queue: envelope.queue } : {}) });
+    return response({ status: envelope ? 'ok' : 'degraded', deterministic: true, dynamic: envelope?.dynamic === true, inputs: envelope?.inputs || fallbackInputs, ...(envelope?.metrics ? { metrics: envelope.metrics } : {}), ...(envelope?.queue !== undefined ? { queue: envelope.queue } : {}) });
   } catch {
     // The static application remains healthy when the optional dynamic origin
     // is unavailable. Do not expose the origin or failure details publicly.
-    return response({ status: 'degraded', deterministic: true, dynamic: false });
+    return response({ status: 'degraded', deterministic: true, dynamic: false, inputs: fallbackInputs });
   }
 };

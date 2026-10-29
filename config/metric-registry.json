@@ -173,7 +173,22 @@
     "unit": "percent of active population",
     "population": "active population aged 15-24",
     "notEquivalentTo": ["unemployment_rate", "employment_rate"],
-    "dimensions": ["period", "geography", "age", "sex"]
+    "dimensions": ["period", "geography", "age", "sex"],
+    "definition": {
+      "label": "Tasa de paro juvenil",
+      "explanation": "Se refiere a jóvenes activos del grupo de edad de la serie (por ejemplo, 15–24 o 15–29 años). No es el porcentaje de todos los jóvenes que no tienen trabajo.",
+      "numerator": "jóvenes desempleados del grupo de edad analizado",
+      "denominator": "jóvenes activos, ocupados más desempleados, del mismo grupo de edad",
+      "sources": [
+        {
+          "id": "definition-youth_unemployment_rate",
+          "title": "Eurostat · Tasa de paro juvenil",
+          "publisher": "Eurostat",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Youth_unemployment",
+          "retrievedAt": "2026-10-29"
+        }
+      ]
+    }
   },
   "youth_unemployment_rate_europe": {
     "name": "Comparable youth unemployment rate: Spain and the European Union",
@@ -189,7 +204,22 @@
     "unit": "percent of active population",
     "population": "active population aged 15-74",
     "notEquivalentTo": ["employment_rate"],
-    "dimensions": ["period", "geography", "age", "sex"]
+    "dimensions": ["period", "geography", "age", "sex"],
+    "definition": {
+      "label": "Tasa de paro",
+      "explanation": "Expresa qué parte de la población activa está desempleada. La población activa suma personas ocupadas y desempleadas; no incluye a quienes están fuera del mercado laboral.",
+      "numerator": "personas desempleadas del grupo y territorio analizados",
+      "denominator": "personas activas del mismo grupo, territorio y periodo",
+      "sources": [
+        {
+          "id": "definition-unemployment_rate",
+          "title": "Eurostat · Tasa de paro",
+          "publisher": "Eurostat",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Unemployment",
+          "retrievedAt": "2026-10-29"
+        }
+      ]
+    }
   },
   "unemployment_rate_europe": {
     "name": "Comparable unemployment rate across European countries",
@@ -205,7 +235,22 @@
     "unit": "percent of population",
     "population": "population aged 20-64",
     "notEquivalentTo": ["unemployment_rate"],
-    "dimensions": ["period", "geography", "age", "sex"]
+    "dimensions": ["period", "geography", "age", "sex"],
+    "definition": {
+      "label": "Tasa de empleo",
+      "explanation": "Expresa qué parte de una población definida tiene empleo. Su denominador incluye a toda la población de ese grupo, también a las personas inactivas.",
+      "numerator": "personas ocupadas del grupo de edad analizado",
+      "denominator": "población total del mismo grupo de edad, territorio y periodo",
+      "sources": [
+        {
+          "id": "definition-employment_rate",
+          "title": "Eurostat · Tasa de empleo",
+          "publisher": "Eurostat",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Employment_rate",
+          "retrievedAt": "2026-10-29"
+        }
+      ]
+    }
   },
   "employment_rate_europe": {
     "name": "Comparable employment rate: Spain and the European Union",
@@ -1600,5 +1645,71 @@
     "population": "gross final energy consumption from renewable sources",
     "notEquivalentTo": ["renewable_energy_share"],
     "dimensions": ["period", "geography", "energy_type"]
+  },
+  "social_security_minimum_complements_transfer_budget": {
+    "name": "Budgeted State transfer for pension minimum supplements",
+    "aliases": [
+      "transferencia presupuestada para complementos a mínimos",
+      "transferencias del Estado para complementos a mínimos"
+    ],
+    "unit": "million euro",
+    "population": "budgeted State transfers earmarked for pension minimum supplements; not executed expenditure",
+    "notEquivalentTo": [
+      "social_security_current_transfers",
+      "social_security_current_balance",
+      "social_security_contributory_pension_expenditure"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "budget_scope",
+      "budget_measure",
+      "destination",
+      "currency"
+    ]
+  },
+  "social_security_noncontributory_transfer_budget": {
+    "name": "Budgeted State transfer for non-contributory pensions",
+    "aliases": [
+      "transferencia presupuestada para pensiones no contributivas",
+      "transferencias del Estado para pensiones no contributivas"
+    ],
+    "unit": "million euro",
+    "population": "budgeted State transfers earmarked for non-contributory pensions; not executed expenditure",
+    "notEquivalentTo": [
+      "social_security_current_transfers",
+      "social_security_current_balance",
+      "social_security_contributory_pension_expenditure"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "budget_scope",
+      "budget_measure",
+      "destination",
+      "currency"
+    ]
+  },
+  "social_security_pact_toledo_transfer_budget": {
+    "name": "Budgeted State transfer under the Toledo Pact",
+    "aliases": [
+      "transferencia presupuestada del Pacto de Toledo",
+      "transferencias del Estado Pacto de Toledo presupuestadas"
+    ],
+    "unit": "million euro",
+    "population": "budgeted State transfer under the Toledo Pact; not a complete pension-system balance",
+    "notEquivalentTo": [
+      "social_security_current_transfers",
+      "social_security_current_balance",
+      "social_security_contributory_pension_expenditure"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "budget_scope",
+      "budget_measure",
+      "destination",
+      "currency"
+    ]
   }
 }

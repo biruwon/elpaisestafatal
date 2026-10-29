@@ -41,6 +41,12 @@ export const safeHealthMetrics = (value) => {
 };
 
 export const safeHealthQueue = (value) => boundedCounter(value);
+export const safeInputCapabilities = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const capabilities = Object.fromEntries(['text', 'url', 'image', 'audio', 'document', 'video']
+    .filter((key) => ['available', 'unavailable', 'unknown'].includes(value[key])).map((key) => [key, value[key]]));
+  return Object.keys(capabilities).length ? capabilities : undefined;
+};
 
 export const safeHealthEnvelope = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
@@ -48,5 +54,6 @@ export const safeHealthEnvelope = (value) => {
   if (source.status !== 'ok' || source.deterministic !== true || typeof source.dynamic !== 'boolean') return undefined;
   const metrics = safeHealthMetrics(source.metrics);
   const queue = safeHealthQueue(source.queue);
-  return { dynamic: source.dynamic, ...(metrics ? { metrics } : {}), ...(queue !== undefined ? { queue } : {}) };
+  const inputs = safeInputCapabilities(source.inputs);
+  return { dynamic: source.dynamic, ...(inputs ? { inputs } : {}), ...(metrics ? { metrics } : {}), ...(queue !== undefined ? { queue } : {}) };
 };

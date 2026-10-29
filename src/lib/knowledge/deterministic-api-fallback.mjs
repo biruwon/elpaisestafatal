@@ -2,6 +2,8 @@ import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from './scorecard-snapshot.mjs';
 import { answerPlanForBroadDomains } from './broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
+import { spanishInstitutionalScope } from './institutional-scope.mjs';
+import { measurementMeaningPlan } from './measurement-meaning.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -53,23 +55,25 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   const original = String(text || '').trim().slice(0, 1200);
   const guidance = fallbackGuidance(original, inputType);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
+  const meaning = measurementMeaningPlan(original);
+  if (meaning) return { status: 'complete', result: meaning, relatedClaims: [] };
   const related = topicReference(original);
-  const institutionalLabel = /\b(?:dictador|dictadura|autoritari[oa]|fascista)\b/i.test(original);
+  const institutionalLabel = spanishInstitutionalScope(original);
   if (institutionalLabel) {
     const evidenceIds = ['fallback-constitution', 'fallback-congress'];
     const sources = [
-      { id: 'fallback-constitution', title: 'Constitución Española · Estado social y democrático de Derecho', publisher: 'BOE', url: 'https://www.boe.es/legislacion/documentos/ConstitucionCASTELLANO.pdf', retrievedAt: new Date().toISOString() },
-      { id: 'fallback-congress', title: 'Congreso de los Diputados · Funciones y control parlamentario', publisher: 'Congreso de los Diputados', url: 'https://www.congreso.es/funciones', retrievedAt: new Date().toISOString() },
+      { id: 'fallback-constitution', title: 'Constitución Española · Estado social y democrático de Derecho', publisher: 'BOE', url: 'https://www.boe.es/legislacion/documentos/ConstitucionCASTELLANO.pdf' },
+      { id: 'fallback-congress', title: 'Congreso de los Diputados · Funciones y control parlamentario', publisher: 'Congreso de los Diputados', url: 'https://www.congreso.es/funciones' },
     ];
     return {
       status: 'complete', evidenceLevel: 'supported', relatedClaims: [], guidance: { limitation: 'La etiqueta se contrasta con rasgos institucionales observables, no con una valoración partidista.' },
       result: {
-        schemaVersion: '1', evidenceLevel: 'supported', headline: 'La etiqueta no encaja con las instituciones descritas',
-        summary: 'La frase se entiende como una afirmación sobre el ejercicio de poder dictatorial. España mantiene un sistema parlamentario con elecciones, oposición, leyes y control judicial; esa etiqueta no describe esas instituciones.', coverage: 'qualified', claimType: 'definition',
+        schemaVersion: '1', evidenceLevel: 'limited', headline: 'El marco constitucional permite comprobar instituciones, no todas sus actuaciones',
+        summary: 'La Constitución establece un sistema parlamentario, derechos y controles del poder. Ese marco aporta contexto institucional, pero su existencia no demuestra por sí sola cómo se cumple en la práctica ni resuelve una acusación concreta.', coverage: 'qualified', claimType: 'definition',
         blocks: [
           { type: 'confirmed', propositionIds: [], evidenceIds, points: ['La Constitución define un Estado democrático y parlamentario.', 'El Gobierno está sometido al control del Congreso y a las leyes y tribunales.'] },
           { type: 'cannot_conclude', evidenceIds, points: ['Esto no impide examinar decisiones concretas por abuso de poder, ilegalidad o mala gestión.'] },
-          { type: 'conversation_reply', evidenceIds, text: 'Pedro Sánchez no encaja en la definición de dictador: dirige un Gobierno parlamentario, sometido a elecciones, oposición, leyes, tribunales y control del Congreso. Eso no impide analizar por separado decisiones concretas por posible abuso de poder.' },
+          { type: 'conversation_reply', evidenceIds, text: 'La Constitución española establece un sistema parlamentario, derechos y controles judiciales y del Congreso. Es el marco para examinar la afirmación. Para valorar cómo se ejerce el poder en la práctica hacen falta hechos concretos y evidencia sobre elecciones, libertades y funcionamiento de esos controles. La norma, por sí sola, no demuestra su cumplimiento ni descarta abusos.' },
         ], limitation: 'La conclusión se refiere a la etiqueta institucional general, no a la legalidad o calidad de cada decisión.', evidenceIds, sourceIds: evidenceIds, sourceLinks: sources, knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
       },
     };

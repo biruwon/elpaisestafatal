@@ -11,6 +11,10 @@ for (const [id, metric] of Object.entries(registry)) {
   if (!Array.isArray(metric.dimensions) || !metric.dimensions.length || metric.dimensions.some((item) => typeof item !== 'string' || !item.trim())) errors.push(`${id}: dimensions must be non-empty strings`);
   if (!Array.isArray(metric.notEquivalentTo) || metric.notEquivalentTo.some((item) => typeof item !== 'string' || item === id)) errors.push(`${id}: invalid notEquivalentTo list`);
   for (const other of metric.notEquivalentTo || []) if (!registry[other]) errors.push(`${id}: notEquivalentTo references missing metric ${other}`);
+  if (metric.definition) {
+    for (const key of ['label', 'explanation', 'numerator', 'denominator']) if (typeof metric.definition[key] !== 'string' || !metric.definition[key].trim()) errors.push(`${id}: definition requires ${key}`);
+    if (!Array.isArray(metric.definition.sources) || !metric.definition.sources.length || metric.definition.sources.some((source) => !source.id || !source.title || !source.publisher || !/^https:\/\//.test(source.url) || !Number.isFinite(Date.parse(source.retrievedAt)))) errors.push(`${id}: definition requires reviewed, dated source links`);
+  }
 }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`Metric registry valid: ${Object.keys(registry).length} canonical metrics.`);

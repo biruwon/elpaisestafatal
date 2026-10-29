@@ -219,3 +219,10 @@
 .example-claim{font:400 1rem/1.22 var(--serif)}
 .example-hint{margin-top:auto;color:var(--muted);font:.66rem/1.4 var(--mono)}
 @media(max-width:760px){.example-prompts{grid-template-columns:1fr}.example-prompts button{min-height:102px;padding:13px}}
+
+/* Submission reading stays distinct from the independently sourced answer. */
+.submission-reading { margin-bottom: 1.5rem; padding: 1rem 1.25rem; border: 1px solid var(--line, #d9d5cb); border-radius: 12px; background: var(--paper, #f5f1e8); }
+.submission-reading p { margin: 0 0 .65rem; font-size: .9rem; line-height: 1.5; }
+.submission-transcript { max-height: 22rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; }
+.submission-reading button { min-height: 44px; padding: .65rem 1rem; cursor: pointer; }
+.input-modes { flex-wrap: wrap; }

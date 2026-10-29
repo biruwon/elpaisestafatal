@@ -73,16 +73,26 @@ try {
   else if (domain === 'immigration_crime' && /adult population.*sex|population.*18.*nationality|67217/i.test(title)) payload = { __records: parseIneAdultPopulationBySexNationality(JSON.parse(text), { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'public_housing_allocation' && /tenure.*reference|referencia.*nacionalidad|table 9995/i.test(title)) payload = { __records: parseIneHousingTenureReferenceTable(JSON.parse(text), { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'public_housing_allocation' && /euskadi|documentation|identification/i.test(title)) payload = { __records: parseEuskadiHousingDocumentationText(text, { id: 'pending', title, url: response.url.toString() }) };
-  else if (domain === 'public_housing_allocation' && /Número de viviendas|Numero de viviendas/i.test(text)) payload = parsePublicHousingActionsText(text);
+  else if (domain === 'public_housing_allocation' && /Número de viviendas|Numero de viviendas|NUM_VIVIENDAS/i.test(text)) payload = parsePublicHousingActionsText(text);
   else payload = contentType.includes('json') || /^\s*[\[{]/.test(text) ? JSON.parse(text) : parseDelimited(text);
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
-const source = { id: `domain-${hash.slice(0, 16)}`, title, publisher: title, url: response.url.toString(), landingUrl: sourceUrl.toString() };
+const definition = sourceForHost(response.url.hostname) || sourceForHost(sourceUrl.hostname);
+const source = { id: `domain-${hash.slice(0, 16)}`, title, publisher: definition?.publisher || title, url: response.url.toString(), landingUrl: sourceUrl.toString(),
+  sourceRegistryId: definition?.id, schedule: args.get('schedule') || definition?.schedule || 'monthly', trust: definition ? 'approved-domain' : 'discovery-only', connector: `domain-${domain}`, parserVersion: 'domain-v2' };
 const records = payload?.__records
   ? payload.__records.map((record) => ({ ...record, sourceId: source.id, id: record.id.replace('pending', source.id) }))
   : parseDomainPayload(domain, payload, source);
-const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
+const root = process.env.SOURCE_WAREHOUSE_ROOT || new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 await mkdir(join(root, 'records'), { recursive: true });
 const outputPath = join(root, 'records', `${source.id}.json`);
-await writeFile(outputPath, JSON.stringify({ source: { ...source, domain, contentType, sha256: hash, retrievedAt: new Date().toISOString(), recordCount: records.length }, records }, null, 2));
+await mkdir(join(root, 'objects'), { recursive: true });
+const objectPath = join(root, 'objects', hash);
+await writeFile(objectPath, bytes);
+const manifest = { ...source, domain, contentType, sha256: hash, objectPath, retrievedAt: new Date().toISOString(), recordCount: records.length, recordPath: outputPath };
+await writeFile(outputPath, JSON.stringify({ source: manifest, records }, null, 2));
+// The production D1 exporter reads manifests. A record file alone makes the
+// source usable locally while silently omitting it from production retrieval.
+await mkdir(join(root, 'manifests'), { recursive: true });
+await writeFile(join(root, 'manifests', `${source.id}.json`), JSON.stringify(manifest, null, 2));
 console.log(JSON.stringify({ domain, source: source.id, recordCount: records.length, outputPath }, null, 2));

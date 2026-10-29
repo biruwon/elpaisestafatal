@@ -1,4 +1,5 @@
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
+import { publicExtraction } from './submission.mjs';
 
 const statuses = new Set(['published', 'related', 'draft', 'uncovered', 'unavailable', 'complete', 'partial', 'processing']);
 const kinds = new Set(['claim', 'topic']);
@@ -83,7 +84,11 @@ const cleanPlan = (value) => {
 
 export const publicResolveResponse = (value) => {
   if (!value || typeof value !== 'object' || !statuses.has(value.status)) return undefined;
-  if (forbidden.test(JSON.stringify(value))) return undefined;
+  // Submitted material can contain these words. Inspect generated fields
+  // separately so the user's original text is not mistaken for a leak.
+  if (forbidden.test(JSON.stringify({ result: value.result, guidance: value.guidance, relatedClaims: value.relatedClaims, primary: value.primary }))) return undefined;
+  const extraction = value.extraction === undefined ? undefined : publicExtraction(value.extraction);
+  if (value.extraction !== undefined && !extraction) return undefined;
   if (value.status === 'processing') {
     return typeof value.requestId === 'string' ? { status: 'processing', requestId: value.requestId } : undefined;
   }
@@ -93,6 +98,7 @@ export const publicResolveResponse = (value) => {
   if (value.primary !== undefined && !isReference(value.primary)) return undefined;
 
   const response = { status: value.status };
+  if (extraction) response.extraction = extraction;
   for (const key of ['requestId', 'canonicalSignature']) if (typeof value[key] === 'string') response[key] = value[key];
   if (value.input && typeof value.input === 'object') response.input = {
     ...(typeof value.input.original === 'string' ? { original: value.input.original } : {}),

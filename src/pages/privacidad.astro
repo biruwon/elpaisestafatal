@@ -9,6 +9,7 @@ const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
   <p class="lead">No vendemos datos ni usamos publicidad personalizada. El servidor recibe el texto que envías para poder comprobarlo.</p>
 
   <h2>Consultas y afirmaciones</h2>
+  <p>En imágenes, audio, documentos, vídeos y enlaces, la consulta puede proceder del texto leído o transcrito automáticamente. Te mostramos esa lectura para que puedas corregirla. Las extracciones completas o parciales se incorporan al mismo registro de consultas; las consultas repetidas al estado de una extracción cuentan como un solo envío. Los archivos de audio y vídeo usados temporalmente durante el procesamiento se eliminan al terminar esa lectura.</p>
   <p>Para entender qué temas conviene revisar, la base operativa conserva una versión normalizada del texto (en minúsculas, sin acentos ni puntuación y limitada a 600 caracteres), una firma que agrupa formulaciones parecidas, el tipo de entrada, el estado de recepción y la fecha. La normalización no elimina datos personales: el texto guardado puede incluir detalles presentes en la consulta. Cada envío cuenta como una consulta; no se crea un perfil de visitante. Los archivos subidos y las respuestas completas no se guardan en esta base. Los registros se usan internamente y no se publican; el listado público solo muestra temas revisados y aprobados. Los registros de consultas no tienen actualmente un plazo automático de borrado.</p>
 
   <h2>Límites de uso</h2>
@@ -16,7 +17,7 @@ const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
 
   <h2>Analítica</h2>
   {analyticsConfigured ? (
-    <p>Usamos Google Analytics 4 para medir visitas y uso del sitio; la etiqueta se carga al abrir cada página. Recibe las páginas visitadas y eventos limitados como el tipo de entrada (texto, enlace, imagen o audio), el estado de la comprobación y una categoría técnica de error. No enviamos el texto de las afirmaciones, las respuestas, los nombres de archivos ni su contenido. Google puede usar cookies o tecnologías similares; consulta la <a href="https://policies.google.com/privacy">política de privacidad de Google</a>.</p>
+    <p>Usamos Google Analytics 4 para medir visitas y uso del sitio; la etiqueta se carga al abrir cada página. Recibe las páginas visitadas y eventos limitados como el tipo de entrada (texto, enlace, imagen, audio, documento o vídeo), el estado de la comprobación y una categoría técnica de error. No enviamos el texto de las afirmaciones, las respuestas, los nombres de archivos ni su contenido. Google puede usar cookies o tecnologías similares; consulta la <a href="https://policies.google.com/privacy">política de privacidad de Google</a>.</p>
   ) : (
     <p>El sitio está preparado para Google Analytics 4, pero la medición no se activa hasta que se configure el identificador de la propiedad. Si se activa, enviará páginas visitadas y eventos limitados de uso, nunca el texto de las afirmaciones, las respuestas ni el contenido de archivos.</p>
   )}
@@ -26,6 +27,7 @@ const analyticsConfigured = /^G-[A-Z0-9]+$/i.test(analyticsMeasurementId);
 
   <h2>Selección autonómica</h2>
   <p>Si eliges una comunidad autónoma, el nombre se conserva únicamente en el almacenamiento local de tu navegador.</p>
+  <p>El comprobador también conserva hasta seis textos recientes en el almacenamiento local del navegador. Puedes borrarlos desde «Recientes → Limpiar».</p>
 
   <h2>Sin cuentas ni formulario</h2>
   <p>No hay cuentas ni comentarios. Las correcciones se tramitan públicamente mediante <a href="https://github.com/biruwon/elpaisestafatal/issues/new/choose">GitHub Issues</a>; cualquier dato que publiques allí se rige por la política de GitHub.</p>

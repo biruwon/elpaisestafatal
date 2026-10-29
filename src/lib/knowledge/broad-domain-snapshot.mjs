@@ -6,6 +6,7 @@ import { broadObservationFits } from './broad-observation-fit.mjs';
 import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { domainProfileFor } from '../../../scripts/knowledge/domain-handlers.mjs';
+import { needsScopedMeasurement } from './measurement-intent.mjs';
 
 const source = (id, title, publisher, url, publishedAt, retrievedAt = '2026-09-25') => ({ id, title, publisher, url, publishedAt, retrievedAt, role: 'primary' });
 const reviewedVisuals = {
@@ -245,7 +246,7 @@ const packets = [
   },
   {
     id: 'broad-emergency-election-powers',
-    matches: /\b(estado de (alarma|emergencia|excepci[oó]n)|emergencia perpetua|no convocar elecciones|no celebrar elecciones|perpetuarse? en el poder|dictadura|dictaduras?)\b/i,
+    matches: /\b(estado de (alarma|emergencia|excepci[oó]n)|emergencia perpetua|no convocar elecciones|no celebrar elecciones|perpetuarse? en el poder)\b/i,
     interpretation: { kind: 'legal', subject: 'poderes excepcionales y elecciones en España', subjectType: 'institution', predicate: 'could_affect', object: 'duración del mandato y controles constitucionales', normalizedClaim: 'límites legales de los estados excepcionales y continuidad electoral', interpretation: 'La frase mezcla un temor predictivo, una cuestión jurídica sobre poderes excepcionales y una analogía histórica. Hay que comprobar cada parte por separado.' },
     headline: 'Un estado excepcional no equivale por sí solo a suspender las elecciones',
     summary: 'La preocupación debe comprobarse en tres planos: qué estado excepcional se ha declarado, qué límites y controles establece la Constitución y la ley, y qué norma concreta afectaría al calendario electoral. Un estado de alarma o emergencia no demuestra por sí solo una intención de perpetuarse en el poder; la comparación con una dictadura tampoco prueba que el mismo desenlace vaya a ocurrir.',
@@ -759,6 +760,7 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id);
   const domainProfile = domainProfileFor(text);
+  if (needsScopedMeasurement(text) && !domainProfile?.packetId) return [];
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
   const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);

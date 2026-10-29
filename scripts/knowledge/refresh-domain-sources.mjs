@@ -23,6 +23,7 @@ if (!feeds.length) {
 
 const run = (feed) => new Promise((resolve, reject) => {
   const args = ['scripts/knowledge/ingest-domain-source.mjs', '--domain', feed.domain, '--url', feed.url, '--title', feed.title];
+  if (feed.schedule) args.push('--schedule', feed.schedule);
   const child = spawn(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';
   child.stdout.on('data', (chunk) => { output += chunk; });

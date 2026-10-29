@@ -1,9 +1,12 @@
 interface Env { DB?: ClaimDemandDatabase; LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string; LOCAL_MODEL_VERSION?: string; CATALOGUE_VERSION?: string }
 interface Context { request: Request; env: Env; waitUntil(promise: Promise<unknown>): void }
-type InputType = 'text' | 'image' | 'audio' | 'url';
+type InputType = 'text' | 'image' | 'audio' | 'document' | 'video' | 'url';
 
 import { allowRateLimitedRequest } from '../lib/rate-limit';
-import { INPUT_LIMITS, validateInputMetadata } from '../../src/lib/knowledge/input-contract.mjs';
+import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../../src/lib/knowledge/input-contract.mjs';
+import { boundedRequest, RequestTooLargeError } from '../../src/lib/knowledge/bounded-request.mjs';
+import { attachExtraction, extractedClaim } from '../../src/lib/knowledge/submission.mjs';
+import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -17,7 +20,12 @@ import { searchD1Warehouse } from '../lib/d1-warehouse';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'compound-evidence-composer-19-health-superlative-2026-10';
+const responseCacheVersion = 'submission-evidence-boundary-20-2026-10';
+const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
+  if (!key) return;
+  while (cache.size >= 200) cache.delete(cache.keys().next().value!);
+  cache.set(key, value);
+};
 let localCircuitOpenUntil = 0;
 let localFailureCount = 0;
 const circuitBreakAfter = 2;
@@ -30,8 +38,10 @@ const responseCacheBypassed = (request: Request): boolean => {
     || request.headers.get('x-development-no-cache') === '1';
 };
 const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; clarification?: Clarification }, env: Env): string => {
-  const media = body.file ? `${body.file.type}:${body.file.size}:${body.file.name}` : '';
-  return [responseCacheVersion, semanticFingerprint(body.text), semanticFingerprint(body.clarification?.prompt || ''), body.inputType, media, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue'].join('|');
+  // Names, sizes and lossy text fingerprints cannot identify submitted content.
+  // Uploads and fetched pages are never shared through this response cache.
+  if (body.file || body.inputType !== 'text') return '';
+  return JSON.stringify([responseCacheVersion, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -53,7 +63,7 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
   const contentType = request.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
     const value = await request.json() as { text?: unknown; inputType?: unknown; clarification?: unknown };
-    const inputType = value.inputType === 'image' || value.inputType === 'audio' || value.inputType === 'url' ? value.inputType : 'text';
+    const inputType = (typeof value.inputType === 'string' ? value.inputType : 'text') as InputType;
     const clarification = value.clarification && typeof value.clarification === 'object' ? value.clarification as { id?: unknown; prompt?: unknown; interpretation?: { kind?: unknown; normalizedClaim?: unknown } } : undefined;
     return { text: typeof value.text === 'string' ? value.text.trim() : '', inputType, clarification: clarification && typeof clarification.prompt === 'string' ? { id: String(clarification.id || 'custom'), prompt: clarification.prompt.trim(), interpretation: clarification.interpretation && typeof clarification.interpretation.normalizedClaim === 'string' ? { kind: typeof clarification.interpretation.kind === 'string' ? clarification.interpretation.kind : undefined, normalizedClaim: clarification.interpretation.normalizedClaim } : undefined } : undefined };
   }
@@ -66,7 +76,7 @@ const requestBody = async (request: Request): Promise<{ text: string; inputType:
   }
   return {
     text: String(form.get('text') || '').trim(),
-    inputType: ['image', 'audio', 'url'].includes(String(form.get('inputType') || '')) ? String(form.get('inputType')) as InputType : 'text',
+    inputType: String(form.get('inputType') || 'text') as InputType,
     file: candidate instanceof File ? candidate : undefined,
     clarification,
   };
@@ -164,17 +174,34 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
   return model;
 };
 
-export const onRequestPost = async ({ request, env, waitUntil }: Context): Promise<Response> => {
+const resolvedResponse = (claim: string, safe: ResolveResult | undefined, id?: string, requireExtraction = false, allowClarification = true): PublicCheckResponse => {
+  if (requireExtraction && !safe?.extraction) return unavailableCheck(claim, 'No se ha podido leer el contenido. Pega la afirmación para comprobarla.');
+  const extraction = safe?.extraction;
+  const actualClaim = extraction ? extractedClaim(extraction) : claim;
+  const meaning = measurementMeaningPlan(actualClaim) as AnswerPlan | undefined;
+  if (meaning) return attachExtraction(checkFromPlan(actualClaim, meaning, id || safe?.requestId), extraction) as PublicCheckResponse;
+  if (!safe?.result && extraction) return attachExtraction(unavailableCheck(actualClaim, extraction.warnings[0] || 'No se ha podido completar la comprobación.'), extraction) as PublicCheckResponse;
+  const model = safe?.result ? checkFromPlan(actualClaim, safe.result, id || safe.requestId, allowClarification) : undefined;
+  const response = chooseResponse(actualClaim, model, fallbackResponse(actualClaim, 'text'));
+  return attachExtraction(response, extraction) as PublicCheckResponse;
+};
+
+export const onRequestPost = async (context: Context): Promise<Response> => {
+  const { request, env } = context;
   if (!(await allowRateLimitedRequest(request, env, { scope: 'check', limit: 30 }))) return json(unavailableCheck('', 'Has alcanzado el límite temporal de comprobaciones.'), 429);
   const contentLength = Number(request.headers.get('content-length') || 0);
   if (contentLength > INPUT_LIMITS.maxRequestBytes) return json(unavailableCheck('', 'El archivo o texto supera el tamaño permitido.'), 413);
 
   let body: { text: string; inputType: InputType; file?: File; clarification?: Clarification };
-  try { body = await requestBody(request); } catch { return json(unavailableCheck('', 'No hemos podido leer la solicitud.'), 400); }
-  const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type });
-  if (!validation.ok) return json(validation.code === 'empty' ? fallbackResponse(body.text, body.inputType) : unavailableCheck(body.text, validation.code), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
+  try { body = await requestBody(await boundedRequest(request, INPUT_LIMITS.maxRequestBytes)); } catch (error) { return json(unavailableCheck('', error instanceof RequestTooLargeError ? 'El archivo o texto supera el tamaño permitido.' : 'No hemos podido leer la solicitud.'), error instanceof RequestTooLargeError ? 413 : 400); }
+  const validation = validateInputMetadata({ text: body.text, inputType: body.inputType, hasFile: Boolean(body.file), fileSize: body.file?.size, mimeType: body.file?.type, fileName: body.file?.name });
+  if (!validation.ok) return json(unavailableCheck(body.text, inputErrorMessage(validation.code)), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
   const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
-  if (effectiveClaim.trim()) waitUntil(captureClaimDemand(env.DB, effectiveClaim, body.inputType));
+  if (effectiveClaim.length > INPUT_LIMITS.maxTextCharacters || (body.clarification?.prompt.length || 0) > INPUT_LIMITS.maxTextCharacters) return json(unavailableCheck('', inputErrorMessage('text_too_large')), 413);
+  const submissionFallback = (): PublicCheckResponse => body.inputType === 'text'
+    ? fallbackResponse(effectiveClaim, 'text')
+    : unavailableCheck(body.text, 'No hemos podido leer el contenido ahora. Pega el texto de la afirmación para comprobarlo.');
+  if (effectiveClaim.trim() && body.inputType === 'text') context.waitUntil(captureClaimDemand(env.DB, effectiveClaim, body.inputType));
 
   // `fresh=1` is an explicit development escape hatch. Responses are already
   // marked no-store at the HTTP layer, but the Worker also keeps a short-lived
@@ -187,6 +214,8 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
   if (cached) cache.delete(cacheKey);
 
   if (body.inputType === 'text') {
+    const meaning = measurementMeaningPlan(effectiveClaim) as AnswerPlan | undefined;
+    if (meaning) return json(checkFromPlan(effectiveClaim, meaning));
     const routedText = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
     const route = routeCatalogueQuery(routedText, { skipClarification: true });
     // Canonical catalogue entries are safe to serve only when the submitted
@@ -197,12 +226,7 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
     const entry = route.entry && normalize(route.entry.claim) === normalize(routedText) ? route.entry : undefined;
     if (entry) {
       const response = checkFromCatalogue(body.text, entry);
-      if (!bypassResponseCache) cache.set(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
-      return json(response);
-    }
-  if (body.clarification) {
-      const response = fallbackResponse(effectiveClaim, body.inputType);
-      if (!bypassResponseCache && cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+      if (!bypassResponseCache) storeResponse(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
   }
@@ -210,24 +234,24 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
   // Broad-domain packets are already reviewed and deterministic. Return them
   // immediately instead of queueing a slow local-model job; this keeps common
   // open-ended claims answerable even when the provider is saturated.
-  const immediateContext = fallbackResponse(effectiveClaim, body.inputType);
+  const immediateContext = submissionFallback();
   const immediatePlan = (immediateContext as PublicCheckResponse & { result?: AnswerPlan }).result;
   // When the warehouse-backed resolver is configured, let it enrich broad
   // packets with actual observations before returning. The packet remains a
   // safe fallback for deployments without the optional resolver.
   if (immediatePlan && (immediatePlan as ({ id?: string })).id?.startsWith('broad-')
     && (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN)) {
-    if (!bypassResponseCache && cacheKey) cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
+    if (!bypassResponseCache && cacheKey) storeResponse(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response: immediateContext });
     return json(immediateContext);
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
-    const response = fallbackResponse(effectiveClaim, body.inputType);
-    if (!bypassResponseCache && cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
+    const response = submissionFallback();
+    if (!bypassResponseCache && cacheKey && response.state === 'supported') storeResponse(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
-  if (localCircuitOpenUntil > Date.now()) return json(fallbackResponse(effectiveClaim, body.inputType));
+  if (localCircuitOpenUntil > Date.now()) return json(submissionFallback());
 
   try {
     // D1 is the production retrieval index. The local resolver still ranks
@@ -246,7 +270,7 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
       if (body.clarification) form.set('clarification', JSON.stringify(body.clarification));
       if (body.file) form.set('file', body.file, body.file.name || 'upload');
       return form;
-    })() : JSON.stringify({ text: body.text, inputType: body.inputType, clarification: body.clarification, ...(warehouseRecords ? { warehouseRecords } : {}) });
+    })() : JSON.stringify({ text: body.inputType === 'text' ? effectiveClaim : body.text, inputType: body.inputType, clarification: body.clarification, ...(warehouseRecords ? { warehouseRecords } : {}) });
     const headers = new Headers();
     if (!isMultipart) headers.set('content-type', 'application/json');
     headers.set('authorization', `Bearer ${env.LOCAL_CLASSIFIER_TOKEN}`);
@@ -258,7 +282,7 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
     if (!upstreamResponse.ok) {
       localFailureCount += 1;
       if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-      return json(fallbackResponse(effectiveClaim, body.inputType));
+      return json(submissionFallback());
     }
     localFailureCount = 0;
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
@@ -267,28 +291,27 @@ export const onRequestPost = async ({ request, env, waitUntil }: Context): Promi
       // The local resolver has already accepted the job. Expose a deterministic
       // answer when it is sufficiently grounded so the user gets useful
       // context while optional model enrichment continues in the background.
-      const previewResponse = fallbackResponse(effectiveClaim, body.inputType);
+      const previewResponse = submissionFallback();
       const preview = usefulPreview(previewResponse);
       return json(processingCheck(body.text, safe.requestId, preview), 202);
     }
-    const plan = safe?.result;
-    const modelResponse = plan ? checkFromPlan(effectiveClaim, plan, safe?.requestId, !body.clarification) : undefined;
     // A local model may correctly reject the slogan as too broad while the
     // deterministic knowledge layer can still provide scoped, sourced
     // context. Prefer that context only when it improves an insufficient
     // model result; never replace a supported or clarification response.
-    const contextualFallback = fallbackResponse(effectiveClaim, body.inputType);
-    const response = chooseResponse(effectiveClaim, modelResponse, contextualFallback);
-    if (!bypassResponseCache && cacheKey && response.state === 'supported') cache.set(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
+    const response = resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification);
+    if (safe?.extraction && safe.requestId && safe.extraction.status !== 'failed') context.waitUntil(captureClaimDemand(env.DB, extractedClaim(safe.extraction), safe.extraction.inputType, safe.requestId));
+    if (!bypassResponseCache && cacheKey && response.state === 'supported') storeResponse(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
     if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-    return json(fallbackResponse(effectiveClaim, body.inputType));
+    return json(submissionFallback());
   }
 };
 
-export const onRequestGet = async ({ request, env }: Context): Promise<Response> => {
+export const onRequestGet = async (context: Context): Promise<Response> => {
+  const { request, env } = context;
   const id = new URL(request.url).pathname.split('/').filter(Boolean).pop() || '';
   if (!id || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) return json(unavailableCheck('', 'El análisis local no está disponible ahora.'));
   try {
@@ -303,13 +326,11 @@ export const onRequestGet = async ({ request, env }: Context): Promise<Response>
       ? await request.json().catch(() => undefined) as { claim?: unknown } | undefined
       : undefined;
     const requestedClaim = (typeof pollBody?.claim === 'string' ? pollBody.claim : request.headers.get('x-claim-text'))?.slice(0, 12_000).trim() || '';
-    const claim = requestedClaim || (typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim : '');
+    const claim = (typeof (payload as { claim?: unknown })?.claim === 'string' ? (payload as { claim: string }).claim.slice(0, INPUT_LIMITS.maxTextCharacters) : '')
+      || requestedClaim;
     if (safe?.status === 'processing') return json(processingCheck(claim, id), 202);
-    const modelResponse = safe?.result ? checkFromPlan(claim, safe.result, id) : undefined;
-    const contextual = claim ? fallbackResponse(claim, 'text') : undefined;
-    const response = contextual
-      ? chooseResponse(claim, modelResponse, contextual)
-      : modelResponse || unavailableCheck(claim, 'La comprobación no pudo completarse.');
+    const response = resolvedResponse(claim, safe, id, Boolean((payload as { inputType?: string })?.inputType && (payload as { inputType?: string }).inputType !== 'text'));
+    if (safe?.extraction && safe.extraction.status !== 'failed') context.waitUntil(captureClaimDemand(env.DB, extractedClaim(safe.extraction), safe.extraction.inputType, id));
     return json(response);
   } catch {
     // A slow local resolver is still working; preserve the job state so the

@@ -1,9 +1,12 @@
-import { INPUT_LIMITS, validateInputMetadata } from '../lib/knowledge/input-contract.mjs';
+import { INPUT_LIMITS, validateInputMetadata, inputTypeForFile, inputErrorMessage } from '../lib/knowledge/input-contract.mjs';
+import type { InputExtraction } from '../lib/knowledge/public-check';
 import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 import { trackAnalyticsEvent } from '../lib/analytics';
 
 type CheckResult = {
+  extraction?: InputExtraction;
+  nextQuestion?: string;
   claim: string; reply: string; answer: string; shareableReply?: string; shareableSourceIds?: string[]; thesis?: { conclusion: string; criteria?: string[] }; keyFact?: string; whatWeKnow: string[]; limitations: string[];
   scope: { geography?: string; period?: string; checkedAt?: string };
   criteria?: Array<{ id: string; label: string; finding: string }>;
@@ -19,7 +22,7 @@ type EvidenceDataKind = 'observed' | 'projected' | 'snapshot' | 'context';
 type EvidenceCriterion = { id: string; criterionId?: string; label: string; finding?: string; status?: EvidenceStatus; dataKind?: EvidenceDataKind; dimensions?: EvidenceDimensions; evidenceIds?: string[]; sourceIds?: string[]; data?: string[]; missingDimensions?: string[] };
 type EvidenceFamily = { familyId?: string; familyLabel?: string; researchNote?: string; label: string; direction: string; status?: EvidenceStatus; dataKind?: EvidenceDataKind; dimensions?: EvidenceDimensions; evidenceIds: string[]; sourceIds?: string[]; finding?: string; limitation?: string; period?: string; data?: string[]; missingDimensions?: string[]; criteria?: EvidenceCriterion[] };
 type CheckResponse =
-  | { state: 'clarification'; id: string; claim: string; question: string; options: Array<{ id: string; label: string; interpretation: { kind?: string; normalizedClaim: string } }> }
+  | { state: 'clarification'; id: string; claim: string; extraction?: InputExtraction; question: string; options: Array<{ id: string; label: string; interpretation: { kind?: string; normalizedClaim: string } }> }
   | { state: 'supported' | 'limited' | 'insufficient'; id: string; result: CheckResult & { evidenceLevel?: string; interpretation?: { kind: string; normalizedClaim: string } } }
   | { state: 'processing'; id: string; claim: string; preview?: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> }
   | { state: 'unavailable'; id: string; claim: string; message: string; retryable: boolean };
@@ -92,12 +95,27 @@ const finishLoading = (): void => {
 };
 const renderClarification = (response: Extract<CheckResponse, { state: 'clarification' }>): void => {
   if (!result) return; setMode(true);
-  result.innerHTML = `<article class="claim-result claim-clarification"><span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">Otra precisión<textarea rows="2" data-clarification-custom placeholder="Añade una precisión"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>Continuar</button></article>`;
+  result.innerHTML = `<article class="claim-result claim-clarification">${renderExtraction(response.extraction)}<span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">Otra precisión<textarea rows="2" data-clarification-custom placeholder="Añade una precisión"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>Continuar</button></article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-clarification-id]').forEach((button) => button.addEventListener('click', () => { result.querySelectorAll('[data-clarification-id]').forEach((item) => item.removeAttribute('aria-pressed')); button.setAttribute('aria-pressed', 'true'); clarificationContext = { id: button.dataset.clarificationId || '', prompt: button.dataset.clarificationPrompt || '', interpretation: { kind: button.dataset.clarificationKind || 'specific_fact', normalizedClaim: button.dataset.clarificationPrompt || '' } }; }));
-  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const custom = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]')?.value.trim(); if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; form?.requestSubmit(); });
+  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const custom = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]')?.value.trim(); if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; if (response.extraction && input) { selectInputMode('text'); input.value = response.claim.slice(0, INPUT_LIMITS.maxTextCharacters); } form?.requestSubmit(); });
+  bindExtractionCorrection(response.extraction);
   focusResult();
 };
 const renderUnavailable = (response: Extract<CheckResponse, { state: 'unavailable' }>): void => { if (!result) return; setMode(true); result.innerHTML = `<article class="claim-result claim-unavailable"><span class="eyebrow">No hemos podido comprobarla</span><h2>${escapeHtml(response.message)}</h2><button type="button" data-new-check>Volver a intentarlo</button></article>`; result.querySelector('[data-new-check]')?.addEventListener('click', () => { setMode(false); result.innerHTML = ''; input?.focus(); }); focusResult(); };
+const renderExtraction = (extraction?: InputExtraction): string => extraction
+  ? `<section class="submission-reading" aria-label="Lectura del contenido enviado"><p><strong>${extraction.status === 'failed' ? 'El archivo no se ha podido leer' : extraction.status === 'partial' ? 'Solo se ha leído parte del contenido' : 'Qué hemos leído'}</strong></p>${extraction.warnings.map((warning) => `<p>${escapeHtml(warning)}</p>`).join('')}${extraction.text ? `<details class="result-details"><summary>Ver y corregir el texto leído<span aria-hidden="true">＋</span></summary><p>Comprueba que la lectura coincide con tu mensaje. Este texto es la entrada de la comprobación, no una fuente independiente.</p><pre class="submission-transcript">${escapeHtml(extraction.text)}</pre><button type="button" data-edit-extraction>Corregir texto y comprobar de nuevo</button></details>` : ''}</section>` : '';
+const bindExtractionCorrection = (extraction?: InputExtraction): void => {
+  result?.querySelector<HTMLButtonElement>('[data-edit-extraction]')?.addEventListener('click', () => {
+    if (!input || !extraction?.text) return;
+    selectInputMode('text');
+    input.value = extraction.text;
+    clarificationContext = undefined;
+    if (counter) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
+    setMode(false);
+    if (result) result.innerHTML = '';
+    input.focus();
+  });
+};
 const directionLabel = (direction: string): string => publicDirectionLabel(direction);
 const stateConclusion = (state: 'supported' | 'limited' | 'insufficient', answer: string) => answer.trim() || (state === 'supported'
   ? 'La evidencia disponible permite sostener esta afirmación en el alcance indicado.'
@@ -346,7 +364,8 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   const evidenceExplorer = isShareableResult
     ? `<details class="result-details result-evidence-explorer"><summary>Explorar datos, límites y fuentes<span aria-hidden="true">＋</span></summary>${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}</details>`
     : `${scope ? `<p class="claim-scope result-meta">${escapeHtml(scope)}</p>` : ''}${interpretation}${compoundKnown}${claimMap}${scorecard}${groupedFamilies || families}${known}${argumentsView}${groupedMethodology || criteria}${sources}`;
-  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(displayedClaim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${headlineRepeatsInAnswer ? 'Datos y límites' : isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(visibleResponseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${visual}${renderResultOverview(evidenceGroups)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  result.innerHTML = `<article class="claim-result result-redesigned" data-state="${response.state}">${phaseStatus}${renderExtraction(item.extraction)}<header class="claim-result-heading"><div><p class="claim-original">${escapeHtml(displayedClaim)}</p><h2>${escapeHtml(resultHeading)}</h2></div>${assessment}</header><section class="claim-reply result-share" aria-labelledby="claim-reply-title"><div class="result-share-heading"><div class="result-section-heading"><span class="eyebrow">Respuesta principal</span><h3 id="claim-reply-title">${headlineRepeatsInAnswer ? 'Datos y límites' : isShareableResult ? 'Respuesta para compartir' : 'La respuesta'}</h3></div><button type="button" class="claim-copy" data-copy-answer>${isShareableResult ? 'Copiar respuesta breve' : 'Copiar respuesta'}</button></div><div class="claim-reply-text">${renderReplyText(visibleResponseText)}</div><span class="claim-live" aria-live="polite"></span></section>${shareableSourceNav}${item.nextQuestion && response.state === 'insufficient' ? `<p class="result-note"><strong>Para poder comprobarlo:</strong> ${escapeHtml(item.nextQuestion)}</p>` : ''}${visual}${renderResultOverview(evidenceGroups)}${evidenceExplorer}<div class="claim-result-footer"><button type="button" data-new-check>Comprobar otra frase</button></div></article>`;
+  bindExtractionCorrection(item.extraction);
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
   result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
@@ -402,8 +421,9 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   request?.abort();
   const submission = new AbortController();
   request = submission;
-  const inputType = file ? (file.type.startsWith('audio/') ? 'audio' : 'image') : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
-  if (file) { const valid = validateInputMetadata({ text: original, inputType, hasFile: true, fileSize: file.size, mimeType: file.type }); if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: valid.code, retryable: false }); return; } }
+  const inputType = file ? inputTypeForFile(file.type, file.name) || 'unsupported' : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
+  const valid = validateInputMetadata({ text: original, inputType, hasFile: Boolean(file), fileSize: file?.size, mimeType: file?.type, fileName: file?.name });
+  if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: inputErrorMessage(valid.code), retryable: false }); return; }
   if (!clarificationContext) writeRecent(original); setLoading(file?.name || original, submission);
   trackAnalyticsEvent('claim_submit', { input_type: inputType });
   const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
@@ -417,7 +437,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
     // the short network budget used by the hosted deterministic path.
-    const enrichmentDeadline = Date.now() + 120_000;
+    const enrichmentDeadline = Date.now() + (file ? 240_000 : 120_000);
     for (let attempt = 0; response.state === 'processing' && response.id && Date.now() < enrichmentDeadline; attempt += 1) {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
       if (!isCurrentSubmission(submission)) return;
@@ -455,7 +475,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       return;
     }
     trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'final' });
-    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined, original); }
+    if (response.state === 'clarification') renderClarification(response); else if (response.state === 'unavailable') renderUnavailable(response); else if (response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') { if (response.state === 'supported' && response.result.canonicalHref && !response.result.extraction) { window.location.assign(response.result.canonicalHref); return; } renderResult(response, initialPreview ? 'final' : undefined, original); }
   } catch (error) {
     if (request !== submission) return;
     if (error instanceof DOMException && error.name === 'AbortError' && submission.signal.aborted) { finishLoading(); request = undefined; return; }
@@ -476,14 +496,21 @@ form?.addEventListener('submit', submit);
 input?.addEventListener('input', () => { if (counter) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`; });
 fileInput?.addEventListener('change', () => { const file = fileInput.files?.[0]; if (fileName) fileName.textContent = file?.name || 'Sin archivo seleccionado.'; if (mediaHelp) mediaHelp.dataset.fileSelected = file ? 'true' : 'false'; if (file) form?.requestSubmit(); });
 modeButtons.forEach((button) => button.addEventListener('click', () => selectInputMode(button.dataset.inputMode === 'url' ? 'url' : 'text')));
-attachButtons.forEach((button) => button.addEventListener('click', () => { if (!fileInput) return; const type = button.dataset.attach === 'audio' ? 'audio' : 'image'; fileInput.accept = `${type}/*`; fileInput.value = ''; fileInput.click(); }));
+attachButtons.forEach((button) => button.addEventListener('click', () => { if (!fileInput) return; const type = button.dataset.attach || 'image'; fileInput.accept = type === 'document' ? '.pdf,.docx,.txt,.csv,.md,.json' : type === 'video' ? INPUT_LIMITS.videoMimeTypes.join(',') : `${type}/*`; fileInput.value = ''; fileInput.click(); }));
 dropzone?.addEventListener('dragenter', (event) => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
 dropzone?.addEventListener('dragover', (event) => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
 dropzone?.addEventListener('dragleave', (event) => { if (!dropzone.contains(event.relatedTarget as Node | null)) dropzone.classList.remove('is-dragging'); });
-dropzone?.addEventListener('drop', (event) => { event.preventDefault(); dropzone.classList.remove('is-dragging'); const file = event.dataTransfer?.files?.[0]; if (!fileInput || !file || (!file.type.startsWith('image/') && !file.type.startsWith('audio/'))) return; const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
+dropzone?.addEventListener('drop', (event) => { event.preventDefault(); dropzone.classList.remove('is-dragging'); const file = event.dataTransfer?.files?.[0]; if (!fileInput || !file) return; const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
 input?.addEventListener('paste', (event) => { const file = Array.from(event.clipboardData?.files || []).find((item) => item.type.startsWith('image/')); if (!fileInput || !file) return; event.preventDefault(); const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
 checker?.addEventListener('click', (event) => { const target = event.target as HTMLElement; const query = target.closest<HTMLButtonElement>('[data-example], [data-recent-query]'); if (query && input) { input.value = query.dataset.example || query.dataset.recentQuery || ''; form?.requestSubmit(); } if (target.closest('[data-clear-recent]')) { try { localStorage.removeItem(recentChecksStorageKey); } catch { /* optional */ } renderRecent(); } });
 renderRecent();
 if (counter && input) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
 const initial = new URLSearchParams(window.location.search).get('q')?.trim();
 if (initial && input) { input.value = initial.slice(0, INPUT_LIMITS.maxTextCharacters); window.setTimeout(() => form?.requestSubmit(), 0); }
+
+void fetch('/api/health', { signal: AbortSignal.timeout(3000), cache: 'no-store' })
+  .then((response) => response.json()).then((health) => {
+    const notice = document.querySelector<HTMLElement>('[data-input-capabilities]');
+    if (notice && health.inputs?.document === 'unavailable') notice.textContent = 'La lectura de archivos y enlaces no está disponible ahora; puedes pegar el texto.';
+    else if (notice && health.inputs?.audio === 'unavailable') notice.textContent = 'El audio no se puede transcribir ahora; puedes pegar su texto.';
+  }).catch(() => { /* Submission errors still explain unavailable extraction. */ });
