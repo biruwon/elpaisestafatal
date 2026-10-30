@@ -215,6 +215,14 @@
       "schedule": "yearly",
       "mode": "active",
       "title": "Ministry of Health Barometer emergency waiting time"
+    },
+    {
+      "id": "sanidad-primary-care-2026-wave1",
+      "domain": "health_primary_care",
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/BS_2026_CIS_1_OLA_3551.xlsx",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "Barómetro Sanitario 2026, primera oleada: cita y demora de atención primaria"
     }
   ]
 }

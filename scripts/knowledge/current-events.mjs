@@ -12,17 +12,20 @@ export const currentEventSourceRole = (url) => {
 export const detectCurrentEvent = (text) => {
   const value = normalise(text);
   const geography = value.match(/\b(ceuta|melilla|canarias|estrecho|frontera|espana|marruecos)\b/)?.[1];
-  const temporal = /\b(hoy|ayer|anoche|esta semana|reciente|recientemente|actualmente|ahora|202[4-9]|20[3-9]\d)\b/.test(value);
-  const eventLanguage = /\b(invasion|entrada|cruce|frontera|asalto|disturbio|detencion|agresion|violacion|violando|muertes?|heridos?|denunci|investigacion|incidente)\w*\b/.test(value);
-  const allegation = /\b(violacion|violando|agresion|asesin|mat(?:aron|an)|robo|abus)\b/.test(value);
-  const namedInstitution = /\b(gobierno|interior|policia|guardia civil|fiscalia|juzgado|tribunal)\b/.test(value);
-  if (!(geography && (temporal || eventLanguage || allegation || namedInstitution))) return null;
+  const year = value.match(/\b(?:19|20|21)\d{2}\b/)?.[0];
+  const temporal = /\b(hoy|ayer|anoche|esta semana|reciente|recientemente|actualmente|ahora)\b/.test(value);
+  const eventLanguage = /\b(invasion|entrada|cruce|frontera|asalto|disturbio|detencion|agresion|agredid|violacion|violando|asesin|mat(?:aron|an)|robo|muertes?|heridos?|denunci|investigacion|incidente|accidente|inundacion|incendio)\w*\b/.test(value);
+  const borderEvent = /\b(invasion|cruce|frontera|fronteriz\w*|patera\w*|migran\w*|inmigran\w*)\b/.test(value);
+  const sexualAssault = /\b(violacion\w*|violando|agresion(?:es)? sexual(?:es)?|abusos? sexual(?:es)?)\b/.test(value);
+  const assault = sexualAssault || /\b(agresion\w*|agredid\w*)\b/.test(value);
+  if (!(geography && eventLanguage)) return null;
   const neutral = value.replace(/\binvasion\b/g, 'entrada o cruce fronterizo').replace(/\bviolando\b|\bviolacion\b/g, 'agresion sexual').replace(/\bestan\b|\bcon la\b/g, '');
   const propositions = [];
-  propositions.push({ id: 'event', text: `Qué ocurrió en ${geography}`, query: `${geography} entrada cruce fronterizo incidente reciente` });
-  if (allegation) propositions.push({ id: 'allegation', text: 'Si se han denunciado o reportado agresiones sexuales', query: `${geography} denuncia agresion sexual mujeres` });
-  if (allegation) propositions.push({ id: 'attribution', text: 'Si existe atribución oficial de responsabilidad a las personas que cruzaron', query: `${geography} policia fiscalia responsabilidad agresion sexual` });
-  return { geography, period: temporal ? 'reciente' : undefined, neutral: neutral.trim(), propositions, urgency: allegation ? 'high' : 'normal' };
+  propositions.push({ id: 'event', text: `Qué ocurrió en ${geography}`, query: borderEvent ? `${geography} entrada cruce fronterizo incidente ${year || 'reciente'}` : `${neutral.trim().slice(0, 180)} comunicado oficial` });
+  const assaultLabel = sexualAssault ? 'agresiones sexuales' : 'agresiones';
+  if (assault) propositions.push({ id: 'allegation', text: `Si se han denunciado o reportado ${assaultLabel}`, query: `${geography} denuncia ${assaultLabel} ${year || ''}`.trim() });
+  if (assault && borderEvent) propositions.push({ id: 'attribution', text: 'Si existe atribución oficial de responsabilidad a las personas que cruzaron', query: `${geography} policia fiscalia responsabilidad ${assaultLabel} ${year || ''}`.trim() });
+  return { geography, period: year || (temporal ? 'reciente' : undefined), neutral: neutral.trim(), propositions, urgency: assault ? 'high' : 'normal' };
 };
 
 export const buildNeutralQueries = (frame) => frame?.propositions?.slice(0, 3).map((item) => item.query).filter(Boolean) || [];
@@ -43,6 +46,16 @@ export const classifyEventSources = (sources = [], { now = Date.now(), maxAgeDay
   const status = conflicting ? 'disputed' : stale ? 'context_only' : primary ? 'officially_reported' : values.length >= 2 ? 'corroborated_report' : values.length === 1 ? 'single_report' : 'unconfirmed';
   return { sources: values, status, stages: [...stages] };
 };
+
+// Search results supply titles and URLs, not verified evidence that a
+// particular proposition occurred. A trusted publisher or several hits do
+// not by themselves establish reporting, corroboration, or legal stages.
+export const classifyEventSearchLeads = (sources = []) => ({
+  sources: classifyEventSources(sources).sources,
+  status: 'unconfirmed',
+  stages: [],
+  detail: 'Los enlaces son resultados de búsqueda; aún no se ha comprobado que documenten esta parte de la afirmación.',
+});
 
 export const eventStatusFor = (frame, sourcePacket) => ({
   type: 'event_status',

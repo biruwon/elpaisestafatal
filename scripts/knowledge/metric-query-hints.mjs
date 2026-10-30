@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { metricPolicyFor } from './metric-evidence-policy.mjs';
+import { focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
@@ -338,6 +339,8 @@ const metricHints = [
 ];
 
 export const preferredMetricIdsForQuery = (query) => {
+  const focused = focusedMetricIdsFor(query);
+  if (focused) return focused;
   const normalized = normalise(query);
   const preferred = new Set(metricHints
     .filter((hint) => hint.terms.some((term) => normalized.includes(normalise(term))))

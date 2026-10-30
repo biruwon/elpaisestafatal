@@ -7,6 +7,7 @@ import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { domainProfileFor } from '../../../scripts/knowledge/domain-handlers.mjs';
 import { needsScopedMeasurement } from './measurement-intent.mjs';
+import { claimFocusFor, hasSpecificMetricReference } from './claim-focus.mjs';
 
 const source = (id, title, publisher, url, publishedAt, retrievedAt = '2026-09-25') => ({ id, title, publisher, url, publishedAt, retrievedAt, role: 'primary' });
 const reviewedVisuals = {
@@ -448,7 +449,7 @@ const packets = [
     summary: 'Los datos nacionales registran esperas relevantes en el SNS. En cambio, la dimensión de salud del índice compuesto de calidad de vida del INE mejoró entre 2023 y 2024. Son medidas distintas: ninguna, por sí sola, permite resumir toda la sanidad ni establecer un mínimo histórico.',
     visuals: [reviewedVisuals.healthWaitingTimes],
     criteria: [
-      { id: 'health-waiting-times', label: 'Listas de espera', replyPriority: 10, finding: 'No hay una serie comparable de toda la sanidad que respalde “peor que nunca”; el IMCV de salud mejoró.', fallbackData: ['Espera media: 102 días para primera consulta externa y 121 para cirugía no urgente (31-12-2025); dimensión de salud IMCV: 101,86 (2023) → 103,29 (2024)'], population: 'personas incluidas en las listas de espera del SNS; población residente para el IMCV', denominator: 'pacientes en lista por tipo de atención; índice compuesto base 2008 = 100', unit: 'días e índice', sourceIds: ['health-waiting-lists-2025', 'quality-of-life-ine-2024'] },
+      { id: 'health-waiting-times', label: 'Listas de espera', replyPriority: 10, finding: 'Las esperas para primera consulta externa y cirugía no urgente son medidas distintas del acceso hospitalario.', fallbackData: ['Espera media: 102 días para primera consulta externa y 121 para cirugía no urgente (31-12-2025)'], population: 'personas incluidas en cada lista de espera del SNS', denominator: 'pacientes en lista por tipo de atención', unit: 'días', sourceIds: ['health-waiting-lists-2025'] },
       { id: 'health-unmet-need', label: 'Necesidades no atendidas', finding: 'La Encuesta Europea de Salud midió la proporción de población que declaró no recibir atención médica por una lista de espera; es un indicador de acceso, no una evaluación de toda la calidad asistencial.', fallbackData: ['1,5 % de la población de 16 años o más declaró una necesidad médica no atendida por lista de espera (2025)'], population: 'personas de 16 años o más en España', denominator: 'población de 16 años o más', unit: '%', sourceIds: ['health-unmet-needs-eurostat'] },
       { id: 'health-quality-index', label: 'Dimensión de salud', finding: 'La dimensión de salud del IMCV aumentó entre 2023 y 2024. El índice es compuesto y experimental; no cancela los problemas de acceso que muestran las listas de espera.', fallbackData: ['Índice de salud IMCV: 101,86 (2023) → 103,29 (2024), base 2008 = 100'], population: 'población residente en España', denominator: 'índice compuesto, base 2008 = 100', unit: 'puntos de índice', sourceIds: ['quality-of-life-ine-2024'] },
       { id: 'health-historical-claim', label: '“Peor que nunca”', finding: 'No hay aquí un único indicador que combine acceso, recursos y resultados en una serie comparable de toda la sanidad; los datos disponibles no justifican el superlativo histórico.', missingDimensions: ['serie histórica comparable para el conjunto de la sanidad'], sourceIds: ['health-waiting-lists-2025', 'quality-of-life-ine-2024'] },
@@ -470,7 +471,7 @@ const packets = [
     ['agriculture', /\b(agricultura|agricultor|campo|ganader[ií]a|cultivo|regad[ií]o|cosecha|explotaci[oó]n(?:es)? agrari|sector agrario)\w*\b/i, 'El campo requiere separar producción, renta, costes y territorio', 'La producción agraria, la renta de los agricultores, los costes de insumos y el empleo rural pueden moverse de forma distinta.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Agriculture,_forestry_and_fishery_statistics', 'Eurostat'],
     ['economy', /\b(econom[ií]a|productividad|crecimiento|pib|recesi[oó]n|empresa|empresas)\w*\b/i, 'La economía requiere separar crecimiento, productividad, empleo y bienestar', 'El PIB no resume por sí solo el bienestar. Hay que distinguir producción, productividad, renta, empleo, precios, deuda y distribución.', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP', 'Eurostat'],
   ].map(([id, matches, headline, summary, url, publisher]) => ({
-    id: `broad-${id}`, matches,
+    id: `broad-${id}`, matches, methodologyOnly: true,
     interpretation: { kind: 'mixed', subject: id, subjectType: 'country', predicate: 'has_multiple_measures', normalizedClaim: headline, interpretation: summary },
     headline, summary,
     criteria: [
@@ -758,15 +759,16 @@ const supplementalRoutes = [
 
 export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
-  const packetById = (id) => packets.find((packet) => packet.id === id);
+  const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
   const domainProfile = domainProfileFor(text);
-  if (needsScopedMeasurement(text) && !domainProfile?.packetId) return [];
+  const direct = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value));
+  const broadMultiDomain = direct.length >= 2 && !/\d/.test(value) && !claimFocusFor(text);
+  if (needsScopedMeasurement(text) && !domainProfile?.packetId && !(broadMultiDomain && hasSpecificMetricReference(text))) return [];
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
   const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);
   const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value)) || specificPacketIds.has(domainProfile?.packetId);
   if (!hasSpecificClaim && /\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
-  const direct = packets.filter((packet) => packet.matches.test(value));
   const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|empleo p[uú]blico|sector p[uú]blico|plaza fija|calentar (?:la )?silla|no trabaja|automatiz|digitalizaci[oó]n/i.test(value);
   const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|piramide poblacional|ratio (?:de )?cotizantes/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit|quiebr|bancarrota/i.test(value);
@@ -810,7 +812,7 @@ export const broadDomainPacketsFor = (text) => {
   // waiting lists” or “rail maintenance”). Route those phrases to the same
   // reviewed context packet instead of leaving them uncovered.
   const match = supplementalRoutes.find(([, pattern]) => pattern.test(value));
-  return match ? sortFamilies([packets.find((packet) => packet.id === `broad-${match[0]}`)].filter(Boolean)) : [];
+  return match ? sortFamilies([packetById(`broad-${match[0]}`)].filter(Boolean)) : [];
 };
 
 export const broadDomainPacketFor = (text) => broadDomainPacketsFor(text)[0];
@@ -1063,14 +1065,103 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
   return [lead, ...paragraphs, `Conclusión: ${plan.limitation || plan.summary}`].join('\n\n');
 };
 
-export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
-  const packet = broadDomainPacketFor(text);
-  return answerPlanForPacket(packet, { now, observations });
+// A reviewed packet can cover several related concerns. Only include its
+// claim-specific criteria and charts when the submission actually raises
+// those concerns; otherwise the answer invents a proposition to rebut.
+const scopeReviewedPacket = (packet, claim) => {
+  const text = normalise(claim);
+  let criteria = packet.criteria;
+  let visuals = packet.visuals;
+  let headline = packet.headline;
+  let summary = packet.summary;
+  let limitations = packet.limitations;
+  if (packet.id === 'broad-youth-living-housing') {
+    const rent = /alquil|arrendam|inquilin/.test(text);
+    const purchase = /compr|adquir|hipotec|propiedad|entrada|precio.*casa/.test(text);
+    const family = /padres|progenitor|familia|herenc|patrimonio/.test(text);
+    const emigrationCounterfactual = /emigr|marchar|se irian|irse|se van/.test(text) && /sin|si no|de no|herenc/.test(text);
+    const wageTrend = /salari|sueldo|ingreso/.test(text) && /sub|baj|crec|caid|estanc|evoluc|\banos?\b/.test(text);
+    criteria = criteria.filter((criterion) => {
+      if (criterion.id === 'family-support-counterfactual') return emigrationCounterfactual;
+      if (criterion.id === 'family-co-residence') return family;
+      if (criterion.id === 'youth-purchase-effort' || criterion.id === 'youth-housing-access') return purchase || !rent;
+      if (criterion.id === 'youth-rental-effort') return rent || !purchase;
+      if (criterion.id === 'youth-long-run-wage-rent') return rent && wageTrend;
+      if (criterion.id === 'youth-supply') return /oferta|construcc|obra|promoci/.test(text);
+      if (criterion.id === 'youth-cost-of-living') return /costes? de (?:la )?vida|inflacion|ipc|consumo|comida/.test(text);
+      if (criterion.id === 'youth-income-employment') return /paro|desemple|empleo|trabaj/.test(text) || wageTrend;
+      return true;
+    }).map((criterion) => criterion.id === 'youth-income-employment' ? { ...criterion,
+      metricIds: /paro|desemple/.test(text) ? ['youth_unemployment_rate'] : [],
+      finding: /paro|desemple/.test(text) ? 'La tasa de paro juvenil mide personas desempleadas entre jóvenes activos; no mide salarios.' : 'La evolución salarial necesita una serie específica de jóvenes con población, unidad y periodo compatibles.',
+      missingDimensions: /salari|sueldo|ingreso/.test(text) ? ['serie salarial específica de jóvenes y periodo comparable'] : criterion.missingDimensions }
+      : criterion.id === 'youth-housing-access' ? { ...criterion, metricIds: (criterion.metricIds || []).filter((id) => id !== 'housing_cost_overburden_rate'), finding: 'El índice general mide precios de compraventa, no cuánto puede pagar una persona joven.' }
+      : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'El alquiler de una vivienda completa se compara con el salario joven medio de referencia. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
+      : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La convivencia con progenitores es más frecuente con rentas bajas; no mide por sí sola las transferencias ni el apoyo económico familiar.' } : criterion);
+    if (!emigrationCounterfactual) {
+      headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
+      summary = 'El Observatorio de Emancipación compara costes de vivienda con salarios jóvenes de referencia. Una media no describe a cada persona ni permite calcular cuántas superan un umbral concreto.';
+      limitations = ['El esfuerzo varía según el salario, el territorio, el tamaño del hogar y si se comparte vivienda. Los datos medios no indican cuántos jóvenes superan un porcentaje concreto.'];
+    }
+    visuals = (visuals || []).filter((visual) => {
+      if (/Tasa de paro juvenil/.test(visual.title)) return /paro|desemple/.test(text);
+      if (/Índice de precios de vivienda/.test(visual.title)) return purchase || !rent;
+      // Regional percentages were approximated from a graphic, rather than
+      // published as a table. Do not render them as exact individual values.
+      if (/Alquiler de vivienda completa/.test(visual.title)) return false;
+      if (/salario joven y alquiler/.test(visual.title)) return rent && wageTrend;
+      return true;
+    });
+  } else if (packet.id === 'broad-security') {
+    const group = /inmigr|migran|extranj|nacionaliz|nuevos?\W+espanol/.test(text);
+    criteria = criteria.filter((criterion) => criterion.id === 'group-causality' ? group
+      : criterion.id === 'institutional-response' ? /polici|justicia|nadie hace|nadie actua|denuncia|juez|tribunal/.test(text)
+        : criterion.id === 'loaded-label' ? /wokismo/.test(text) : true);
+    if (!group) {
+      headline = 'Las tendencias delictivas varían según el delito y el territorio';
+      summary = 'Las cifras nacionales de delitos registrados permiten describir tendencias por categoría; no describen por sí solas cada barrio ni explican sus causas.';
+      limitations = ['Los delitos registrados, las experiencias de seguridad y la actuación institucional son medidas distintas. Para evaluar un lugar concreto hacen falta periodo, territorio y tipo de delito.'];
+      visuals = (visuals || []).filter((visual) => !/estandarizad|brecha.*tasas/i.test(visual.title));
+    }
+  } else if (packet.id === 'broad-health') {
+    if (!/peor que nunca|peor.*historia|nunca.*peor|minimo historico/.test(text)) {
+      criteria = criteria.filter((criterion) => criterion.id !== 'health-historical-claim');
+      headline = 'Las esperas dependen del servicio sanitario consultado';
+      summary = 'Las listas de espera hospitalarias y las necesidades médicas no atendidas miden aspectos distintos del acceso a la atención.';
+      limitations = ['Los promedios nacionales describen los servicios y periodos citados; no son la espera de cada paciente ni miden el tiempo hasta una cita de atención primaria.'];
+    } else {
+      criteria = criteria.map((criterion) => criterion.id === 'health-waiting-times' ? { ...criterion,
+        finding: 'Las esperas hospitalarias no forman una serie comparable de toda la sanidad que justifique “peor que nunca”.' } : criterion);
+    }
+  }
+  const changed = criteria.length !== packet.criteria.length || headline !== packet.headline || criteria.some((criterion, index) => criterion !== packet.criteria[index]);
+  if (!changed) return packet;
+  const sourceIds = new Set(criteria.flatMap((criterion) => criterion.sourceIds || []));
+  return { ...packet, criteria, visuals, headline, summary, limitations, scopedReply: true,
+    sources: packet.sources.filter((source) => sourceIds.has(source.id)) };
 };
 
-const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {}) => {
+const composeScopedReply = (plan) => {
+  const families = plan.evidenceSummary?.families || [];
+  const measured = families.filter((family) => family.data?.length)
+    .sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0)).slice(0, 3);
+  const findings = measured.map((family) => `${family.label}: ${family.data[0]}.`.replace(/\.{2,}/g, '.'));
+  const missing = [...new Set(families.flatMap((family) => family.missingDimensions || []))].slice(0, 4);
+  const gap = missing.length ? `Falta evidencia sobre ${missing.join('; ')}.` : '';
+  const limitation = String(plan.limitation || '').split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+  const publishers = [...new Set(measured.flatMap((family) => family.sourceIds || [])
+    .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
+  return [plan.headline.replace(/[.]$/, '') + '.', ...findings, gap, limitation, publishers.length ? `Fuentes: ${publishers.join('; ')}.` : ''].filter(Boolean).join('\n\n');
+};
+
+export const answerPlanForBroadDomain = (text, { now = Date.now(), observations = [] } = {}) => {
+  const packet = broadDomainPacketFor(text);
+  return answerPlanForPacket(packet, { now, observations, claim: text });
+};
+
+const answerPlanForPacket = (packet, { now = Date.now(), observations = [], claim = '' } = {}) => {
   if (!packet) return undefined;
-  packet = supplementReviewedPacket(packet);
+  packet = scopeReviewedPacket(supplementReviewedPacket(packet), claim);
   const lifecycle = snapshotLifecycle(BROAD_SNAPSHOT_POLICY, now);
   if (!lifecycle.usable) return undefined;
   const matchedObservations = packet.criteria.map((criterion) => ({
@@ -1133,6 +1224,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     : packet.limitations[0];
   const plan = {
     id: packet.id,
+    ...(packet.scopedReply ? { scopedPresentation: true } : {}),
     schemaVersion: '1',
     evidenceLevel: 'limited',
     headline: packet.headline,
@@ -1192,15 +1284,15 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [] } = {
     knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
-  const shareableReply = shareableReplyForPacket(packet.id, plan.evidenceSummary.families)
-    || composeFamilyReply(plan, { compact: true });
+  const shareableReply = packet.scopedReply ? composeScopedReply(plan)
+    : shareableReplyForPacket(packet.id, plan.evidenceSummary.families) || composeFamilyReply(plan, { compact: true });
   if (shareableReply) plan.shareableReply = shareableReply;
   return plan;
 };
 
 export const answerPlanForBroadDomains = (text, { now = Date.now(), observations = [] } = {}) => {
   const familyPlans = broadDomainPacketsFor(text)
-    .map((packet) => answerPlanForPacket(packet, { now, observations }))
+    .map((packet) => answerPlanForPacket(packet, { now, observations, claim: text }))
     .filter(Boolean);
   if (!familyPlans.length) return undefined;
   if (familyPlans.length === 1) return familyPlans[0];

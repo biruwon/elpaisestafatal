@@ -1,4 +1,12 @@
 const longTailBenchmarkCases = [
+  ['working-poverty-total', '¿Qué porcentaje de las personas ocupadas está en riesgo de pobreza?', 'in_work_poverty_rate'],
+  ['working-poverty-paraphrase', 'La pobreza laboral afecta también a quienes tienen un empleo', 'in_work_poverty_rate'],
+  ['working-poverty-full-time', 'Trabajar a jornada completa no evita estar en riesgo de pobreza', 'in_work_poverty_full_time_rate'],
+  ['working-poverty-full-time-paraphrase', '¿Hay trabajadores pobres incluso a tiempo completo?', 'in_work_poverty_full_time_rate'],
+  ['primary-care-delay', '¿Cuántos días se espera para el médico de familia?', 'primary_care_wait_days'],
+  ['primary-care-delay-paraphrase', 'Demora media para una cita en atención primaria', 'primary_care_wait_days'],
+  ['primary-care-rate', '¿Qué porcentaje espera más de un día por una cita en atención primaria?', 'primary_care_wait_over_one_day_rate'],
+  ['primary-care-rate-paraphrase', 'Proporción de pacientes sin cita al día siguiente con el médico de familia', 'primary_care_wait_over_one_day_rate'],
   ['electricidad-hogares', '¿La factura de electricidad de los hogares ha subido?', 'household_electricity_price'],
   ['electricidad-domestica', 'Precio de la luz para las familias españolas', 'household_electricity_price'],
   ['electricidad-coste', '¿Cómo cambia el coste de la electricidad doméstica?', 'household_electricity_price'],

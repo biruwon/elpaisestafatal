@@ -1,5 +1,6 @@
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { readFile } from 'node:fs/promises';
+import { contextualPropositionEvidence } from './lib/compound-evidence.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const immigration = 'Aumento dramático de la inseguridad en las calles. Los nuevos españoles provocan acuchillamientos, hurtos, robos, violaciones y palizas.';
@@ -16,6 +17,10 @@ assert(sanchezResult.explicitPropositions.some((item) => /pensiones/i.test(item.
 assert(evaluative.explicitPropositions.length >= 3, 'Evaluative thesis and short supporting events were collapsed');
 assert(/peor presidente/i.test(evaluative.explicitPropositions[0].text), 'Evaluative thesis was not preserved');
 assert(resolver.includes('const compoundAnswer ='), 'Compound answers must be composed from detected propositions');
-assert(resolver.includes('verdict: linked.length ? \'mixed\' : \'insufficient\''), 'Compound propositions must receive independent evidence statuses');
+const revenue = { id: 'revenue', metricId: 'government_revenue_ratio', value: 42.9, period: '2025' };
+const revenuePart = contextualPropositionEvidence({ text: 'La recaudación aumenta', type: 'trend' }, [revenue], () => '42,9 % del PIB en 2025');
+const servicePart = contextualPropositionEvidence({ text: 'Los ciudadanos no notan mejoras en los servicios públicos', type: 'descriptive' }, [revenue], () => '42,9 % del PIB en 2025');
+assert(revenuePart.verdict === 'insufficient' && /proporción del PIB/.test(revenuePart.finding), 'A revenue ratio must not prove a nominal revenue claim');
+assert(servicePart.evidenceIds.length === 0 && servicePart.verdict === 'insufficient', 'Revenue must not be assigned to perceived service quality');
 assert(!resolver.includes("text: 'La frase reúne varias cuestiones. Conviene discutir cada indicador por separado antes de extraer una conclusión general.'"), 'Compound answers must not fall back to editorial-only copy');
 console.log('Compound claim fixtures passed: independent sentences, event lists, and policy bullets remain addressable.');

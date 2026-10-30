@@ -3,33 +3,14 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { detectCurrentEvent } from './current-events.mjs';
 
 const errors = [];
-const broad = acceptanceCases.find((item) => item.id === 'acceptance-broad-left-country-worse');
-const broadResult = deterministicApiFallback({ text: broad.input });
-if (broadResult.result?.answerMode !== 'scorecard' || broadResult.result?.resultState !== 'answered' || broadResult.result?.reviewed !== false) {
-  errors.push('Broad political acceptance case must resolve to an answered, non-reviewed scorecard.');
-}
-if (broadResult.result?.blocks?.some((block) => block.type === 'verdict' || block.type === 'overall_grade')) {
-  errors.push('Broad political acceptance case must not publish an overall partisan verdict.');
-}
-const namedBroad = acceptanceCases.find((item) => item.id === 'acceptance-named-government-country-worse');
-const namedBroadResult = deterministicApiFallback({ text: namedBroad.input });
-if (namedBroadResult.result?.answerMode !== 'scorecard' || namedBroadResult.result?.resultState !== 'answered' || namedBroadResult.result?.reviewed !== false) {
-  errors.push('Named broad political acceptance case must resolve to an answered, non-reviewed scorecard.');
-}
-const namedVariant = acceptanceCases.find((item) => item.id === 'acceptance-named-government-country-worse-variant');
-const namedVariantResult = deterministicApiFallback({ text: namedVariant.input });
-if (namedVariantResult.result?.answerMode !== 'scorecard' || namedVariantResult.result?.resultState !== 'answered' || namedVariantResult.result?.reviewed !== false) {
-  errors.push('Named broad political variant must resolve to an answered, non-reviewed scorecard.');
-}
-const namedPositive = acceptanceCases.find((item) => item.id === 'acceptance-named-government-country-better');
-const namedPositiveResult = deterministicApiFallback({ text: namedPositive.input });
-if (namedPositiveResult.result?.answerMode !== 'scorecard' || namedPositiveResult.result?.resultState !== 'answered' || namedPositiveResult.result?.reviewed !== false) {
-  errors.push('Positive named broad political variant must resolve to an answered, non-reviewed scorecard.');
-}
-const countryPositive = acceptanceCases.find((item) => item.id === 'acceptance-country-better');
-const countryPositiveResult = deterministicApiFallback({ text: countryPositive.input });
-if (countryPositiveResult.result?.answerMode !== 'scorecard' || countryPositiveResult.result?.resultState !== 'answered' || countryPositiveResult.result?.reviewed !== false) {
-  errors.push('Positive country-level broad variant must resolve to an answered, non-reviewed scorecard.');
+for (const id of ['acceptance-broad-left-country-worse', 'acceptance-named-government-country-worse',
+  'acceptance-named-government-country-worse-variant', 'acceptance-named-government-country-better', 'acceptance-country-better']) {
+  const entry = acceptanceCases.find((item) => item.id === id);
+  const result = entry && deterministicApiFallback({ text: entry.input });
+  const scorecard = result?.result?.blocks?.find((block) => block.type === 'scorecard');
+  if (result?.status !== 'complete' || !scorecard?.items?.length || !result.result.sourceLinks?.length) errors.push(`${id} must resolve to a sourced indicator scorecard.`);
+  if (result?.result?.blocks?.some((block) => block.type === 'verdict' || block.type === 'overall_grade')) errors.push(`${id} must not publish an overall partisan verdict.`);
+  if (!result?.result?.blocks?.some((block) => block.type === 'cannot_conclude' && block.points?.some((point) => /causalidad/i.test(point)))) errors.push(`${id} must not attribute changes to the government without causal evidence.`);
 }
 
 const event = acceptanceCases.find((item) => item.id === 'acceptance-ceuta-cross-border-allegation');

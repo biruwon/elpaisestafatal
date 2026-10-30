@@ -121,6 +121,44 @@ export const parseSpreadsheetBuffer = async (buffer) => {
   return sheet ? utils.sheet_to_json(sheet, { defval: '' }) : [];
 };
 
+export const parsePrimaryCareBarometerWorkbook = async (buffer, source) => {
+  const { read, utils } = await import('xlsx');
+  const workbook = read(buffer, { type: 'buffer', cellDates: false });
+  const sheet = workbook.Sheets.Marginales;
+  if (!sheet) throw new Error('Barometer workbook has no Marginales sheet');
+  const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  const heading = rows.slice(0, 6).flat().join(' ');
+  const year = heading.match(/BAR[ÓO]METRO SANITARIO\s+(20\d{2})/i)?.[1];
+  const wave = /PRIMERA OLEADA/i.test(heading) ? 1 : /SEGUNDA OLEADA/i.test(heading) ? 2 : /TERCERA OLEADA/i.test(heading) ? 3 : null;
+  if (!year || !wave) throw new Error('Barometer survey year/wave is not explicit');
+  const block = (question) => {
+    const start = rows.findIndex((row) => String(row[0]).trim() === `Pregunta ${question}`);
+    if (start < 0) throw new Error(`Barometer question ${question} missing`);
+    const next = rows.findIndex((row, index) => index > start && /^Pregunta\s/.test(String(row[0])));
+    return rows.slice(start + 1, next < 0 ? undefined : next);
+  };
+  const appointment = block('5c');
+  const delay = block('5c_01');
+  if (!appointment[0]?.[0]?.includes('familia')) throw new Error('Barometer appointment question changed service');
+  const rate = numberFor(appointment.find((row) => /Pasó más de un día porque no había cita antes/i.test(String(row[0])))?.[1]);
+  const mean = numberFor(delay.find((row) => /^Media\s*\(días\)$/i.test(String(row[0]).trim()))?.[1]);
+  const base = numberFor(appointment.find((row) => row[0] === '(N)')?.[1]);
+  const eligible = numberFor(delay.find((row) => row[0] === '(N)')?.[1]);
+  const responses = numberFor(delay.find((row) => row[0] === 'N')?.[1]);
+  if (rate === null || rate < 0 || rate > 100 || mean === null || mean < 0 || !base || !eligible || !responses) throw new Error('Barometer values or respondent bases are missing');
+  const population = 'personas adultas que consultaron por un problema propio con medicina de familia pública en los últimos 12 meses, excluida mutualidad con atención privada';
+  const common = { kind: 'observation', sourceId: source.id, datasetId: source.title, period: `${year}-O${wave}`, periodType: 'survey_wave', geography: 'España',
+    population, url: source.url, dataKind: 'observed',
+    limitations: ['Resultados provisionales de una oleada, no del año completo. La última consulta se refiere a los 12 meses previos. La demora media corresponde solo al subgrupo que esperó más de un día por falta de cita.'] };
+  return [
+    { ...common, id: `${source.id}-primary-care-unavailable`, metricId: 'primary_care_wait_over_one_day_rate', metric: 'Espera superior a un día por falta de cita en atención primaria', value: rate, unit: '%',
+      denominator: 'pacientes de la base de la pregunta 5c', dimensions: { service: 'primary_care', surveyYear: year, surveyWave: String(wave), provisional: true, question: '5c', sampleSize: base } },
+    { ...common, id: `${source.id}-primary-care-delay`, metricId: 'primary_care_wait_days', metric: 'Demora media declarada entre quienes esperaron más de un día por falta de cita', value: mean, unit: 'días',
+      population: `${population}; solo quienes esperaron más de un día por falta de cita`, denominator: 'personas de la pregunta 5c_01 con respuesta válida en días',
+      dimensions: { service: 'primary_care', surveyYear: year, surveyWave: String(wave), provisional: true, question: '5c_01', eligibleSampleSize: eligible, validResponseSampleSize: responses } },
+  ];
+};
+
 export const parseImvWorkbookBuffer = async (buffer, source) => {
   const { read, utils } = await import('xlsx');
   const workbook = read(buffer, { type: 'buffer', cellDates: false });

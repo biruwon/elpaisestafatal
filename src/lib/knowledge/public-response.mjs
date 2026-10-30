@@ -76,6 +76,8 @@ const cleanPlan = (value) => {
     || (value.evidenceLevel !== undefined && !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel))
     || !['supported', 'limited', 'insufficient'].includes(value.evidenceLevel)
     || !validEvidenceSummary(value.evidenceSummary)
+    || (value.answerScope !== undefined && (!value.answerScope || value.answerScope.kind !== 'measurement'
+      || typeof value.answerScope.family !== 'string' || !strings(value.answerScope.directMetrics) || !strings(value.answerScope.contextMetrics)))
     || (value.shareableReply !== undefined && typeof value.shareableReply !== 'string')
     || (value.shareableSourceIds !== undefined && (!strings(value.shareableSourceIds) || value.shareableSourceIds.some((id) => !value.sourceIds.includes(id))))
     || !validVisual(value.visual, value.sourceIds)) return undefined;

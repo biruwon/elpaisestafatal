@@ -1,4 +1,4 @@
-import { buildNeutralQueries, classifyEventSources, detectCurrentEvent, eventStatusFor } from './current-events.mjs';
+import { buildNeutralQueries, classifyEventSearchLeads, classifyEventSources, detectCurrentEvent, eventStatusFor } from './current-events.mjs';
 import { readFile } from 'node:fs/promises';
 
 const failures = [];
@@ -8,6 +8,18 @@ if (!resolverSource.includes('item.page_age || item.publishedAt || item.date')) 
 const frame = detectCurrentEvent('con la invasion de Ceuta están violando a las mujeres');
 if (!frame || frame.geography !== 'ceuta' || frame.propositions.length !== 3 || buildNeutralQueries(frame).length !== 3) failures.push('Ceuta allegation must decompose into event, allegation and attribution propositions');
 if (buildNeutralQueries(frame).some((query) => /invasion|violando|violacion/i.test(query))) failures.push('neutral queries must not contain loaded allegation wording');
+for (const claim of ['El Gobierno de España aprobó una ley ayer', 'El salario medio en España fue mayor en 2025']) {
+  if (detectCurrentEvent(claim)) failures.push(`An unrelated claim must not become a border incident: ${claim}`);
+}
+for (const claim of ['Ceuta: ¿se han denunciado agresiones?', 'En Ceuta hubo un robo ayer', 'Un incendio afectó a Canarias esta semana']) {
+  const generic = detectCurrentEvent(claim);
+  if (!generic || generic.propositions.some((item) => /sexuales|cruzaron/.test(item.text))) failures.push(`A different event inherited sexual or border allegations: ${claim}`);
+  if (generic && buildNeutralQueries(generic).some((query) => /cruce fronterizo/.test(query))) failures.push(`A different event inherited a border search: ${claim}`);
+}
+const genderWithoutSexual = detectCurrentEvent('Invasión Ceuta mujeres agredidas');
+if (!genderWithoutSexual || genderWithoutSexual.propositions.some((item) => /sexuales/.test(item.text))) failures.push('A report of women being assaulted does not specify a sexual assault');
+const historical = detectCurrentEvent('En 2021 hubo un cruce fronterizo en Ceuta y se denunciaron agresiones');
+if (historical?.period !== '2021' || buildNeutralQueries(historical).some((query) => !query.includes('2021'))) failures.push('An explicit historical year must remain attached to every event search');
 const noSources = classifyEventSources([]);
 if (noSources.status !== 'unconfirmed' || noSources.sources.length) failures.push('no-source event must remain unconfirmed');
 const one = classifyEventSources([{ id: 'efe-1', url: 'https://efe.com/ceuta/story', publisher: 'EFE' }]);
@@ -24,6 +36,12 @@ const independent = classifyEventSources([
   { id: 'rtve-2', url: 'https://rtve.es/noticias/ceuta/story-2', publisher: 'RTVE' },
 ]);
 if (independent.status !== 'corroborated_report' || independent.sources.length !== 2) failures.push('two independent media sources must be corroborated');
+const searchLeads = classifyEventSearchLeads([
+  { id: 'official-lead', url: 'https://interior.gob.es/noticias/unrelated', publisher: 'Interior', title: 'An unrelated announcement' },
+  { id: 'press-lead', url: 'https://efe.com/other-story', publisher: 'EFE', title: 'Another unrelated result' },
+]);
+if (searchLeads.status !== 'unconfirmed' || searchLeads.sources.length !== 2 || !/resultados de búsqueda/.test(searchLeads.detail)) failures.push('search results must stay unconfirmed even when official and independent domains appear');
+if (eventStatusFor(frame, searchLeads).propositions.some((item) => item.status !== 'unconfirmed')) failures.push('search leads must not become proof of any event proposition');
 const stale = classifyEventSources([{ id: 'efe-old', url: 'https://efe.com/ceuta/old', publisher: 'EFE', publishedAt: '2020-01-01T00:00:00Z' }], { now: Date.parse('2026-08-01T00:00:00Z') });
 if (stale.status !== 'context_only') failures.push('stale reports must be context only');
 const disputed = classifyEventSources([

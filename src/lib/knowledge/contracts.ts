@@ -134,6 +134,8 @@ export type AnswerBlock =
 
 
 export type AnswerPlan = {
+  scopedPresentation?: boolean;
+  answerScope?: { kind: 'measurement'; family: string; directMetrics: string[]; contextMetrics: string[] };
   schemaVersion: '1';
   headline: string;
   summary: string;

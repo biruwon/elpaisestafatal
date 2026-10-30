@@ -4,6 +4,10 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 
 const resolveMode = process.argv.includes('--resolve');
 const deterministicMode = process.argv.includes('--deterministic');
+const includeAnswers = process.argv.includes('--answers');
+const idsArg = process.argv.find((arg) => arg.startsWith('--ids='));
+const selectedIds = idsArg ? new Set(idsArg.slice(6).split(',')) : undefined;
+const outputArg = process.argv.find((arg) => arg.startsWith('--output='));
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
 const offsetArg = process.argv.find((arg) => arg.startsWith('--offset='));
 const timeoutArg = process.argv.find((arg) => arg.startsWith('--timeout='));
@@ -26,6 +30,12 @@ const candidates = data.candidates.map((candidate) => ({
 }));
 const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 10) || 1) : candidates.length;
 const resolveOffset = offsetArg ? Math.max(0, Number.parseInt(offsetArg.slice(9), 10) || 0) : 0;
+const auditCandidates = candidates.filter((candidate) => !selectedIds || selectedIds.has(candidate.id)).slice(resolveOffset, resolveOffset + resolveLimit);
+const answerDetails = (candidate, result) => includeAnswers ? {
+  claim: candidate.claim, headline: result?.headline, reply: result?.shareableReply || result?.blocks?.find((block) => block.type === 'conversation_reply')?.text || result?.summary,
+  evidenceLevel: result?.evidenceLevel, limitation: result?.limitation, answerScope: result?.answerScope,
+  families: result?.evidenceSummary?.families, sourceLinks: result?.sourceLinks,
+} : {};
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
 const normalizeText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const publicPhrases = new Set(runtimeCatalogue.filter((entry) => entry.status === 'published' && entry.basis !== 'model').flatMap((entry) => [entry.claim, ...(entry.aliases || [])]).map(normalizeText));
@@ -57,11 +67,11 @@ for (const candidate of candidates || []) {
   if (publicPhrases.has(normalizeText(candidate.claim))) exactCatalogue += 1;
   else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
-const report = { inputPath, claims: candidates?.length || 0, requiredFields: required, fieldUsage, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+const report = { inputPath, claims: candidates?.length || 0, measures: 'Operational routing and retrieval only. Completion and source counts are not factual accuracy. Inspect the saved answers for claim/evidence fit.', requiredFields: required, fieldUsage, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
 if (deterministicMode) {
-  const outcomes = candidates.map((candidate) => {
+  const outcomes = auditCandidates.map((candidate) => {
     const result = deterministicApiFallback({ text: candidate.claim, inputType: 'text' });
-    return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0 };
+    return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, ...answerDetails(candidate, result.result) };
   });
   report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
   const candidateById = new Map(candidates.map((candidate) => [candidate.id, candidate]));
@@ -75,7 +85,7 @@ if (deterministicMode) {
 if (resolveMode) {
   const base = (process.env.WEB_CLAIMS_RESOLVE_URL || 'http://127.0.0.1:8789').replace(/\/$/, '');
   const outcomes = [];
-  const resolveCandidates = candidates.slice(resolveOffset, resolveOffset + resolveLimit);
+  const resolveCandidates = auditCandidates;
   let cursor = 0;
   const resolveOne = async (candidate) => {
     const started = Date.now();
@@ -85,13 +95,13 @@ if (resolveMode) {
       for (let attempt = 0; attempt < Math.ceil(resolveTimeoutMs / 1000) && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(Math.min(10000, resolveTimeoutMs)) }).then((item) => item.json()); }
       const result = payload.result;
       const timedOut = payload.status === 'processing';
-      return { id: candidate.id, status: timedOut ? 'timeout' : payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started };
+      return { id: candidate.id, status: timedOut ? 'timeout' : payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started, ...answerDetails(candidate, result) };
     } catch (error) { return { id: candidate.id, status: 'error', error: error instanceof Error ? error.message : String(error), latencyMs: Date.now() - started }; }
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
   report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
-await writeFile('.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
+await writeFile(outputArg ? outputArg.slice(9) : '.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
 console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered` : ''}; all remain explicitly unverified discovery inputs.`);

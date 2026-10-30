@@ -25,15 +25,18 @@ The system has five product-level stages. Internal modules remain separate where
 | --- | --- | --- |
 | Interpret and route | `fallback-compiler`, local compiler, semantic family routing, metric hints | The claim is translated into measurable propositions without inventing numbers. |
 | Retrieve and select evidence | warehouse query, semantic search, evidence selection, freshness policy | Only compatible observations and sources are retained. |
-| Synthesize and qualify | evidence packet, answer planner, domain/causal/legal handlers | Evidence is summarized without turning correlation, totals, or rhetoric into proof. |
+| Synthesize and qualify | structured evidence, reviewed composers, domain/causal/legal handlers | Evidence is summarized without turning correlation, totals, or rhetoric into proof. |
 | Fallback and present | snapshots, public response contract, UX labels, provenance | The answer clearly says whether it is dynamic, snapshot-based, mixed, limited, or unsupported. |
 | Learn and refresh | triage, research loop, LLM assessment, materialization, coverage audit | New claims improve the warehouse and future routing automatically. |
 
 The five stages are the public architecture. The individual modules should not be merged when doing so would remove a boundary—for example, interpretation must remain separate from evidence selection, and evidence selection must remain separate from synthesis.
 
 The model-selection and fine-tuning decision is documented in
-[`model-strategy.md`](./model-strategy.md). In short: models interpret and
-synthesize supplied evidence; reviewed sources remain the factual authority.
+[`model-strategy.md`](./model-strategy.md). Models can assist interpretation
+and research planning. The visible answer comes from the structured evidence
+and reviewed composers: matching a source ID or number is insufficient to
+prove that a generated rewrite preserves meaning, scope and uncertainty.
+Search-result titles and URLs are leads until their contents are verified.
 
 ## User-submitted claims and demand export
 

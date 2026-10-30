@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSocialSecurityPensionFinanceText, parseSocialSecurityPensionTransfersText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
+import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 
 const args = new Map(process.argv.slice(2).reduce((pairs, value, index, values) => {
   if (value.startsWith('--')) pairs.push([value.slice(2), values[index + 1] && !values[index + 1].startsWith('--') ? values[index + 1] : 'true']);
@@ -48,6 +49,7 @@ const text = bytes.toString('utf8');
 let payload;
 try {
   if (domain === 'public_housing_allocation' && /plan vive/i.test(title) && contentType.includes('html')) payload = { __records: parseMadridPlanViveText(text, { id: 'pending', title, url: response.url.toString() }) };
+  else if (domain === 'health_primary_care') payload = { __records: await parsePrimaryCareBarometerWorkbook(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'immigration_benefits' && (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname))) payload = { __records: await parseImvWorkbookBuffer(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'pension_finance' && /AIReF.*2026.*series/i.test(title)) payload = { __records: await parseAirefPensionProjectionWorkbook(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'pension_finance' && /Presupuesto.*2025P.*pensiones/i.test(title)) payload = { __records: await parseSocialSecurityPensionBudgetWorkbook(bytes, { id: 'pending', title, url: response.url.toString() }) };

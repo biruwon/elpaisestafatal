@@ -7,6 +7,7 @@ import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../../sr
 import { boundedRequest, RequestTooLargeError } from '../../src/lib/knowledge/bounded-request.mjs';
 import { attachExtraction, extractedClaim } from '../../src/lib/knowledge/submission.mjs';
 import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
+import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -20,7 +21,7 @@ import { searchD1Warehouse } from '../lib/d1-warehouse';
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'submission-evidence-boundary-20-2026-10';
+const responseCacheVersion = 'claim-measurement-focus-21-2026-10';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -113,6 +114,8 @@ const rhetoricalClaim = (claim: string): boolean => {
 // explicitly carry qualification; otherwise use the domain packet, which
 // preserves the distinction between measurable facts and the slogan.
 export const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+  if ((model?.state === 'supported' || model?.state === 'limited' || model?.state === 'insufficient')
+    && model.result.answerScope?.kind === 'measurement' && claimFocusFor(claim)?.id === model.result.answerScope.family) return model;
   const reviewed = reviewedContextualAnswer(model, contextual);
   if (reviewed) return reviewed as PublicCheckResponse;
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;

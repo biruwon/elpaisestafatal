@@ -75,6 +75,7 @@ for (const manifest of latestManifests.values()) {
       periodType: record.periodType,
       comparison: record.comparison,
       limitations: record.limitations,
+      denominator: record.denominator,
       sourceDomain: source.domain,
     }).filter(([, value]) => value !== undefined));
     if (Buffer.byteLength(JSON.stringify(preserved), 'utf8') > 32_000) {
@@ -89,6 +90,7 @@ for (const manifest of latestManifests.values()) {
         periodType: record.periodType,
         comparison: compact(record.comparison),
         limitations: compact(record.limitations),
+        denominator: record.denominator,
         sourceDomain: source.domain,
       };
     }

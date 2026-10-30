@@ -89,6 +89,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       visual: plannedVisuals[0],
       visuals: plannedVisuals.length > 1 ? plannedVisuals : undefined,
       evidenceSummary: plan.evidenceSummary,
+      answerScope: plan.answerScope,
       evidenceLevel,
     },
   }, extraction);

@@ -79,3 +79,55 @@ definition metadata beyond the initial labour-market measures. Evaluate source
 fit and unsupported conclusions alongside answer rate and latency. Promote
 new claim families only with paraphrases and negative-neighbour tests; a large
 catalogue or fluent answer is not a substitute for those checks.
+
+## Text-answer follow-up — 30 October 2026
+
+Text accuracy is the current priority. An audit of unverified, web-observed
+claims found that broad topic packets sometimes answered a specific question
+with a neighbouring indicator: for example, temporary contracts for a wage
+question, house-purchase prices for rental supply, or hospital lists for GP
+appointments. A compound question also linked government revenue to a separate
+statement about perceived services because both contained the word “public”.
+
+The resolver now uses reusable measurement contracts for frequent families,
+distinguishes a directly relevant measure from context, and keeps a missing
+measurement visible. Reviewed explanations of pension financing and electricity
+markets carry their own sources and expiry. Compound propositions require an
+explicit link or their own metric match; unrelated countries, populations and
+units do not become one trend. Reviewed context packets also omit unasked
+claims and approximate charts that could be mistaken for precise observations.
+Exact submitted text, including negation and numeric punctuation, is preserved
+in answer-cache identities. Semantic signatures remain useful for grouping
+research demand but do not share an answer between different claims.
+
+The model can propose research queries, but its unrestricted answer rewrite is
+not used: checking only that a number or evidence ID appeared in a packet could
+not establish that the rewritten statement preserved its meaning. Current-event
+search results are labelled unconfirmed leads; a publisher's domain or several
+search hits alone do not establish that the event or allegation was reported.
+
+Two Eurostat poverty series and two measures from the first 2026 Health
+Barometer wave were added to the refreshed warehouse. The latter distinguish
+the proportion waiting over a day from the mean delay within that subgroup;
+the survey wave is provisional and excludes mutualities with private care.
+The production mirror contains 634,347 observations from 181 sources with
+observations. The current coverage audit reports 201 configured metrics: 185
+ready, 10 stale, three with data-quality failures and three with partial domain
+evidence. These are operational checks, not a score for factual accuracy.
+
+An exploratory run selected 24 varied discovery claims; six requests did not
+complete within its time limit. A subsequent eight-claim run completed, and its
+answers were inspected rather than scored merely for having sources. That
+review still found a compound electricity explanation needing improvement;
+the regression suite now tests that semantic boundary and neighbouring claims.
+The suite also covers 33 measurement-family paraphrases, negative neighbours,
+survey bases, absent values, mismatched locations and periods, and keeping a
+specific result when a provisional topic answer was shown first. These checks
+do not establish accuracy for every possible claim or replace source review.
+
+Important remaining source work includes comparable wage-and-price series for
+real-wage changes, local rental availability and the distribution of rental
+costs relative to earnings, service-quality perceptions and their comparison
+with public revenue, and evidence on private insurance and waiting times. When
+those measurements are absent, the result must describe the gap rather than
+convert a nearby national statistic into a verdict.

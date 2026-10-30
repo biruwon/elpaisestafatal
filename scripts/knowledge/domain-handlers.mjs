@@ -4,7 +4,7 @@ const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
-  .replace(/ñ/g, 'n');
+  .replace(/ñ/g, 'n').replace(/[-–—]/g, ' ');
 
 const hasAny = (text, terms) => terms.some((term) => text.includes(term));
 const hasConcept = (concepts, ...ids) => ids.some((id) => concepts.has(id));
@@ -13,6 +13,34 @@ const hasConcept = (concepts, ...ids) => ids.some((id) => concepts.has(id));
 // contain answer text: the selected reviewed packet supplies evidence and the
 // shared response composer turns it into a reply.
 const profiles = [
+  {
+    id: 'tax_policy_tradeoffs', packetId: 'broad-tax-burden-purchasing-power',
+    when: (text) => hasAny(text, ['impuestos', 'irpf', 'iva'])
+      && hasAny(text, ['deflact', 'progresividad en frio', 'bajar el iva', 'rebajar el iva', 'bajar los impuestos']) && !/\d/.test(text),
+    needs: ['tipo y base fiscal', 'hogar y periodo', 'recaudación y financiación del cambio'],
+    sources: ['OCDE', 'AEAT', 'Ministerio de Hacienda'],
+  },
+  {
+    id: 'youth_housing_access', packetId: 'broad-youth-living-housing',
+    when: (text) => (hasAny(text, ['joven', 'juventud']) || /menores? de (?:30|treinta)/.test(text)) && hasAny(text, ['vivienda', 'casa', 'piso', 'alquiler', 'alquilar', 'emancip'])
+      && hasAny(text, ['salario', 'sueldo', 'ingreso', 'padres', 'familia', 'herencia', 'emancip']),
+    needs: ['alquiler e ingresos de la misma población joven', 'emancipación observada', 'apoyo familiar y periodo'],
+    sources: ['Consejo de la Juventud de España', 'INE', 'Eurostat'],
+  },
+  {
+    id: 'tax_prices_financing_tradeoffs', packetId: 'broad-tax-burden-purchasing-power',
+    when: (text) => hasAny(text, ['impuestos', 'irpf', 'iva']) && hasAny(text, ['salario', 'sueldo', 'poder de compra', 'poder adquisitivo'])
+      && hasAny(text, ['pensiones', 'baby boom', 'gasto publico', 'sistema solo aguanta']),
+    needs: ['impuestos y cotizaciones de un hogar definido', 'salarios y precios comparables', 'financiación y gasto público'],
+    sources: ['OCDE', 'INE', 'Ministerio de Hacienda'],
+  },
+  {
+    id: 'youth_housing_family_counterfactual', packetId: 'broad-youth-living-housing',
+    when: (text) => hasAny(text, ['joven', 'juventud']) && hasAny(text, ['vivienda', 'alquiler', 'emancip', 'coste de vida'])
+      && hasAny(text, ['emigr', 'marcharse', 'irse del pais']) && hasAny(text, ['padres', 'familia', 'herencia']),
+    needs: ['ingresos y costes de vivienda de la misma población joven', 'emancipación observada', 'encuesta o modelo contrafactual de emigración sin apoyo familiar'],
+    sources: ['Consejo de la Juventud de España', 'INE', 'Eurostat'],
+  },
   {
     id: 'illegal_occupation',
     packetId: 'broad-illegal-occupation',

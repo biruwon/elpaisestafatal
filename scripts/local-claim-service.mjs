@@ -11,15 +11,17 @@ import { discoverOfficialDocuments, discoveryObservation } from './knowledge/off
 import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata, fileMimeType } from '../src/lib/knowledge/input-contract.mjs';
 import { resolveExtractedSubmission } from './lib/submission-extraction.mjs';
-import { alignPropositionOutcomes } from './lib/compound-evidence.mjs';
+import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, contextualPropositionEvidence, propositionPlanCompatible } from './lib/compound-evidence.mjs';
 import { measurementMeaningPlan } from '../src/lib/knowledge/measurement-meaning.mjs';
+import { claimCacheIdentity } from '../src/lib/knowledge/claim-cache-identity.mjs';
+import { claimFocusFor, focusedMetricIdsFor } from '../src/lib/knowledge/claim-focus.mjs';
+import { focusedEvidencePlan } from '../src/lib/knowledge/focused-evidence-plan.mjs';
 import { displayMetric, displayPeriod, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
 import { criteriaProfiles, profileText } from './knowledge/criteria-profiles.mjs';
-import { applySafePlanUpgrade, buildEvidencePacket, plannerSchema, validateEvidencePacket } from './knowledge/evidence-packet.mjs';
 import { neutralWebQuery } from './knowledge/trusted-web-discovery.mjs';
 import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
@@ -37,7 +39,7 @@ import { excludedMetricIdsForQuery, metricCandidatesForQuery, metricQueryTextFor
 import { evidenceSummaryForPublic, selectEvidence } from './knowledge/evidence-selection.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 import { createModelTasks } from './model-tasks.mjs';
-import { detectCurrentEvent, buildNeutralQueries, classifyEventSources, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
+import { detectCurrentEvent, buildNeutralQueries, classifyEventSearchLeads, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
@@ -63,10 +65,9 @@ const visionModel = process.env.OLLAMA_VISION_MODEL || routerModel;
 const ollamaKeepAliveSeconds = Math.min(3600, Math.max(60, Number(process.env.OLLAMA_KEEP_ALIVE_SECONDS || 600)));
 const broadPacketMetricQueryLimit = 12;
 const broadPacketEvidenceRowLimit = 72;
-// Local development should use the installed Ollama model automatically for
-// structured answer enrichment. Set LOCAL_ANSWER_PLANNER=0 to benchmark the
-// deterministic path in isolation. Every planner failure still returns the
-// already-built deterministic result.
+// The model can suggest research queries and clarification questions; the
+// answer itself comes from the structured evidence and reviewed composers.
+// Keep this legacy switch for benchmarking the deterministic path alone.
 const answerPlannerEnabled = process.env.LOCAL_ANSWER_PLANNER !== '0';
 // The compiler is enabled by default, but deterministic evaluation and
 // incident diagnosis need a way to isolate the reusable evidence resolver
@@ -98,14 +99,11 @@ const currentEventCacheTtlMs = 5 * 60 * 1000;
 // hundreds of full answer plans is worse than evicting old entries.
 const maxCacheEntries = 128;
 const maxCompilerCacheEntries = 128;
-const maxPlannerCacheEntries = 128;
 const maxResolveJobs = 32;
 const answerCache = new Map();
 const answerCacheExpiry = (text) => Date.now() + (detectCurrentEvent(text) ? currentEventCacheTtlMs : cacheTtlMs);
 const compilerCache = new Map();
 const compilerInflight = new Map();
-const plannerCache = new Map();
-const plannerInflight = new Map();
 const resolveJobs = new Map();
 const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], stageLatencies: {}, statusCounts: {}, evidenceModes: {}, staleEvidence: 0, unresolvedCandidates: 0 };
 const inferenceBackoffMs = 30 * 1000;
@@ -156,14 +154,14 @@ const compoundMetricIdsForInput = (text) => {
   }
   return ids;
 };
-const metricIdsForInput = (text, compiler = {}) => new Set([
+const metricIdsForInput = (text, compiler = {}) => (compiler.explicitPropositions?.length > 1 ? undefined : focusedMetricIdsFor(text)) || new Set([
   ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
   ...preferredMetricIdsForQuery(text),
   ...compoundMetricIdsForInput(text),
   ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
     .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
 ]);
-const metricIdsForBroadInput = (text, compiler = {}) => metricCandidatesForQuery(text, [
+const metricIdsForBroadInput = (text, compiler = {}) => focusedMetricIdsFor(text) || metricCandidatesForQuery(text, [
   ...(Array.isArray(compiler.concepts) ? compiler.concepts : []),
   ...(Array.isArray(compiler.propositions) ? compiler.propositions.flatMap((item) => item?.concepts || []) : []),
 ], 4);
@@ -326,11 +324,9 @@ const pruneRuntimeState = () => {
   const now = Date.now();
   for (const [key, item] of answerCache) if (!item || item.expiresAt <= now) answerCache.delete(key);
   for (const [key, item] of compilerCache) if (!item || item.expiresAt <= now) compilerCache.delete(key);
-  for (const [key, item] of plannerCache) if (!item || item.expiresAt <= now) plannerCache.delete(key);
   for (const [key, item] of resolveJobs) if (!item || (item.completedAt && item.completedAt + cacheTtlMs <= now) || (!item.completedAt && item.createdAt + cacheTtlMs <= now)) resolveJobs.delete(key);
   while (answerCache.size > maxCacheEntries) answerCache.delete(answerCache.keys().next().value);
   while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
-  while (plannerCache.size > maxPlannerCacheEntries) plannerCache.delete(plannerCache.keys().next().value);
   while (resolveJobs.size > maxResolveJobs) resolveJobs.delete(resolveJobs.keys().next().value);
 };
 setInterval(pruneRuntimeState, 60 * 1000).unref();
@@ -403,54 +399,6 @@ const modelTasks = createModelTasks({
   keepAlive: ollamaKeepAliveSeconds,
 });
 
-const planAnswerWithLocalModel = async (text, classified, result, observations) => {
-  if (!answerPlannerEnabled || !result?.result) return result?.result;
-  // A deterministic supported plan already has the required evidence,
-  // sources, and public reply. Avoid spending another model turn rewriting a
-  // result that is safe to show as-is.
-  if (result.result.evidenceLevel === 'supported'
-    && result.result.blocks?.some((block) => block.type === 'conversation_reply')
-    && result.result.sourceLinks?.length) return result.result;
-  const fallbackHandler = handlerForInput(classified.compiler || { retrievalHints: [text] }, classified.compiler?.claimType || '');
-  const handlerId = handlerForSemanticProfile(classified.compiler?.criteriaProfile, fallbackHandler);
-  const packet = buildEvidencePacket({ text, compiler: classified.compiler, handlerId, plan: result.result, observations });
-  if (!validateEvidencePacket(packet).ok) return result.result;
-  const cacheKey = digest(JSON.stringify({
-    schemaVersion: packet.schemaVersion,
-    model: routerModel,
-    plannerSchema: RUNTIME_VERSIONS.answerPlanSchema,
-    handlerId: packet.handlerId,
-    claimType: packet.claimType,
-    resultStatus: result.status,
-    deterministicPlan: packet.deterministicPlan,
-    evidence: packet.evidence,
-    sourceLinks: packet.sourceLinks,
-    knowledgeVersion: result.result.knowledgeVersion || RUNTIME_VERSIONS.indexKnowledge,
-  }));
-  const cached = plannerCache.get(cacheKey);
-  if (cached?.expiresAt > Date.now()) { telemetry.plannerCacheHits += 1; return cached.value; }
-  if (cached) plannerCache.delete(cacheKey);
-  const existing = plannerInflight.get(cacheKey);
-  if (existing) { telemetry.plannerInflightJoins += 1; return existing; }
-  telemetry.plannerCacheMisses += 1;
-  const work = (async () => {
-    const prompt = `Adapta únicamente la presentación de este plan de aclaración en español. No cambies la conclusión, no añadas datos, cifras, fuentes ni bloques. Usa solo la evidencia y el plan suministrados. Devuelve únicamente JSON según el esquema. Si no puedes cumplirlo, devuelve cadenas vacías.\n\nPAQUETE:\n${JSON.stringify(packet).slice(0, 24000)}`;
-    let planned = result.result;
-    const plannerStartedAt = Date.now();
-    try {
-      const draft = await modelTasks.composeGroundedAnswer({ schema: plannerSchema, options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: prompt }], timeoutMs: 15000 });
-      const upgraded = normalizeAnswerPlan(applySafePlanUpgrade(result.result, draft, packet));
-      if (validateAnswerPlan(upgraded, { provisional: result.status === 'draft' }).ok) planned = upgraded;
-    } catch { /* The deterministic plan remains the safe presentation fallback. */ }
-    recordStage('answer_planner', plannerStartedAt);
-    plannerCache.set(cacheKey, { value: planned, expiresAt: Date.now() + cacheTtlMs });
-    while (plannerCache.size > maxPlannerCacheEntries) plannerCache.delete(plannerCache.keys().next().value);
-    return planned;
-  })();
-  plannerInflight.set(cacheKey, work);
-  try { return await work; } finally { plannerInflight.delete(cacheKey); }
-};
-
 const planResearchWithModel = async (text, classified) => {
   if (!answerPlannerEnabled || !classified?.compiler || classified.primary) return null;
 const prompt = `Plan research for this Spanish claim without deciding whether it is true. Return only JSON using the supplied schema. Use at most six neutral search queries. Do not add facts, sources, numbers, or verdicts.\n\nCLAIM:\n${JSON.stringify({ text: text.slice(0, 2400), propositions: classified.compiler.propositions?.slice(0, 24), evidenceNeeds: classified.compiler.evidenceNeeds?.slice(0, 24) })}`;
@@ -461,11 +409,7 @@ const prompt = `Plan research for this Spanish claim without deciding whether it
     const neutralQueries = [...new Set(plan.neutralQueries.map((query) => neutralWebQuery(String(query)).slice(0, 240)).filter((query) => query.length >= 8))].slice(0, 3);
     const requiredDimensions = [...new Set(plan.requiredDimensions.map((item) => String(item).trim().slice(0, 80)).filter(Boolean))].slice(0, 8);
     if (!neutralQueries.length || !requiredDimensions.length) return null;
-    let clarificationQuestion = '';
-    try {
-      const clarification = await modelTasks.chooseClarification({ options: { temperature: 0, num_predict: 120, num_ctx: 4096 }, messages: [{ role: 'user', content: `Elige una sola pregunta de aclaración de alto valor para esta afirmación. Solo pregunta por una dimensión necesaria: ${requiredDimensions.join(', ')}. No respondas la afirmación ni inventes datos.\n${text.slice(0, 800)}` }], timeoutMs: 8000 });
-      clarificationQuestion = typeof clarification?.question === 'string' ? clarification.question.trim().slice(0, 300) : '';
-    } catch { /* Clarification is optional; deterministic guidance remains available. */ }
+    const clarificationQuestion = '¿Qué periodo y lugar concretos quieres comprobar?';
     return { propositions: plan.propositions.slice(0, 24), metricCandidates: plan.metricCandidates?.slice(0, 24) || [], neutralQueries, requiredDimensions, clarificationQuestion };
   } catch {
     // Research planning must remain useful when Ollama is cold, unavailable,
@@ -495,20 +439,6 @@ const prompt = `Plan research for this Spanish claim without deciding whether it
   } finally {
     recordStage('research_planner', researchStartedAt);
   }
-};
-
-const extractCurrentEventEvidence = async (frame, sources) => {
-  if (!sources?.length || !answerPlannerEnabled) return null;
-  const sourceText = sources.slice(0, 6).map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url })).filter((item) => item.title || item.url);
-  try {
-    const extracted = await modelTasks.extractSourceEvidence({ options: { temperature: 0, num_predict: 420, num_ctx: 8192 }, messages: [{ role: 'user', content: `Extrae únicamente hallazgos explícitos de estas fuentes sobre el evento. No determines que una acusación es cierta. Usa solo JSON según el esquema y asigna cada hallazgo a event, allegation o attribution.\n\nPROPOSICIONES:\n${JSON.stringify(frame.propositions)}\n\nFUENTES:\n${JSON.stringify(sourceText)}` }], timeoutMs: 15000 });
-    const findings = Array.isArray(extracted?.findings) ? extracted.findings.slice(0, 12).map((item) => ({ propositionId: String(item.propositionId || ''), finding: String(item.finding || '').slice(0, 700), support: item.support, stage: item.stage, sourceId: sourceText.find((source) => source.id === item.sourceId)?.id })).filter((item) => item.propositionId && item.finding) : [];
-    let comparison;
-    if (sources.length > 1) {
-      try { comparison = await modelTasks.compareEvidence({ options: { temperature: 0, num_predict: 160, num_ctx: 4096 }, messages: [{ role: 'user', content: `Compara estas fuentes solo para detectar acuerdo, conflicto, sindicación o insuficiencia. No resuelvas la verdad de la acusación. Devuelve JSON según el esquema.\n${JSON.stringify(sourceText)}` }], timeoutMs: 10000 }); } catch { /* deterministic source classification remains authoritative */ }
-    }
-    return { findings, comparison: comparison && typeof comparison.status === 'string' ? { status: comparison.status, reason: String(comparison.reason || '').slice(0, 500) } : undefined };
-  } catch { return null; }
 };
 
 const normalizeAnswerPlan = (plan) => {
@@ -552,15 +482,9 @@ const criteriaProfileFor = async (compiled) => {
 };
 
 const compileClaim = async (text, candidates = []) => {
-  const deterministic = deterministicFallbackCompiler(text);
-  const familyKeys = semanticFamilyKeys(deterministic.semanticSignature).sort();
-  // Prefer the normalized evidence-family contract over surface proposition
-  // serialization. Equivalent Spanish wording can produce slightly different
-  // deterministic signatures while still belonging to the same safe family.
-  // Ambiguous inputs retain their full signature instead.
-  const strongestFamilyKey = familyKeys[0];
-  const cacheStructure = strongestFamilyKey ? `family:${strongestFamilyKey}` : `signature:${deterministic.semanticSignature}`;
-  const cacheKey = digest(JSON.stringify({ structure: cacheStructure, model: routerModel, contract: RUNTIME_VERSIONS.compilerContract, fallbackKnowledge: RUNTIME_VERSIONS.fallbackKnowledge, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
+  // Compiler output includes the submitted propositions and polarity. A
+  // shared topic family does not prove that two inputs have the same meaning.
+  const cacheKey = digest(JSON.stringify({ input: claimCacheIdentity(text), model: routerModel, contract: RUNTIME_VERSIONS.compilerContract, fallbackKnowledge: RUNTIME_VERSIONS.fallbackKnowledge, candidates: candidates.slice(0, 8).map((entry) => entry.slug).filter(Boolean) }));
   const cached = compilerCache.get(cacheKey);
   if (cached?.expiresAt > Date.now()) { telemetry.compilerCacheHits += 1; return cached.value; }
   if (cached) compilerCache.delete(cacheKey);
@@ -845,7 +769,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds, records: warehouseRecords, useProvidedRecords: Array.isArray(warehouseRecords) });
   const candidates = rawCandidates.filter((item) => {
-    const explicitMetricCandidate = hintedMetricIds.has(item.metricId) && (item.matchedTerms?.length || 0) >= 2;
+    const explicitMetricCandidate = hintedMetricIds.has(item.metricId);
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     // Stale observations remain available as explicitly limited context; an
     // invalid/future timestamp is never evidence.
@@ -853,7 +777,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
     if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
     // A location or comparison word alone is not evidence of subject fit.
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
-    if (subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
+    if (!explicitMetricCandidate && subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
     // An explicit metric phrase is a stronger population contract than an
     // uncertain small-model label. For example, “alquileres” should retrieve
     // the rental series even if the compiler guessed a generic resident
@@ -1236,9 +1160,10 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // changed compiler, packet, or presentation is visible without restarting
   // the whole stack. The timestamp is only used as an internal cache key and
   // is never added to the submitted claim.
-  const key = bypassCache ? `${normalise(text)}|fresh:${Date.now()}` : normalise(text);
+  const identity = claimCacheIdentity(text);
+  const key = bypassCache ? `${identity}|fresh:${Date.now()}` : identity;
   const broadComplaintInput = broadComplaintText(text)
-    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(key);
+    || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(normalise(text));
   const broadPacketInput = broadDomainPacketsFor(text).length > 0;
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
@@ -1950,7 +1875,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
 };
 
 const resolveCacheVersion = [RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
-const requestId = (text) => digest(`${resolveCacheVersion}|${String(text).normalize('NFC').trim()}`).slice(0, 24);
+const requestId = (text) => digest(`${resolveCacheVersion}|${claimCacheIdentity(text)}`).slice(0, 24);
 
 const startResolveJob = (text, origin = 'runtime', bypassCache = false, warehouseRecords) => {
   const id = bypassCache ? `${requestId(text)}-${Date.now().toString(36)}` : requestId(text);
@@ -1958,16 +1883,14 @@ const startResolveJob = (text, origin = 'runtime', bypassCache = false, warehous
   if (meaning) return { status: 'complete', requestId: id, claim: text, inputType: 'text', result: meaning, relatedClaims: [] };
   const numericIdentity = (String(text).match(/[+-]?\d+(?:[.,]\d+)*/g) || []).join('|');
   const signature = canonicalSignatureFor(text) + (numericIdentity ? `|numbers:${numericIdentity}` : '');
-  // Coalesce equivalent text submissions by their deterministic claim
-  // signature. The signature removes conversational wrappers such as “mi
-  // cuñado insiste”, while preserving meaningful words and polarity, so one
-  // local inference job can serve the same claim phrased in several ways.
+  // Only reuse the job for the identical submitted claim. The semantic
+  // signature can omit negation or punctuation and is retained for analysis,
+  // not for sharing a response between different claims.
   const existingById = bypassCache ? undefined : resolveJobs.get(id);
-  const existingEquivalent = bypassCache ? undefined : [...resolveJobs.values()].find((item) => item.canonicalSignature === signature && !['uncovered', 'unavailable'].includes(item.status));
   // An uncovered result can mean that discovery timed out or a provider was
   // temporarily unavailable. Do not reuse that failure for every paraphrase
   // in the same semantic cluster; the next request should get one retry.
-  const existing = existingById && !['uncovered', 'unavailable'].includes(existingById.status) ? existingById : existingEquivalent;
+  const existing = existingById && !['uncovered', 'unavailable'].includes(existingById.status) ? existingById : undefined;
   if (existing) return existing;
   pruneRuntimeState();
   telemetry.received += 1;
@@ -2005,18 +1928,22 @@ const startResolveJob = (text, origin = 'runtime', bypassCache = false, warehous
       for (let offset = 0; offset < propositions.length; offset += 3) {
         const batch = propositions.slice(offset, offset + 3).map(async (item, batchIndex) => {
           const partText = String(item.text).trim();
-          const researchText = partText.length < 48
-            ? `${partText}. Contexto de la publicación: ${text.slice(0, 900)}`
-            : partText;
+          // Do not append the entire original post to each short clause:
+          // that makes evidence for one subject appear relevant to another.
+          const researchText = partText;
           const partClassified = await classify(researchText, { bypassCache });
           return enrichResolve(researchText, partClassified, undefined, `${id}-${offset + batchIndex + 1}`, warehouseRecords);
         });
         parts.push(...await Promise.allSettled(batch));
       }
-      const successful = parts.filter((part) => part.status === 'fulfilled').map((part) => part.value).filter((part) => part?.result);
+      const successful = parts.flatMap((part, index) => part.status === 'fulfilled' && propositionPlanCompatible(propositions[index], part.value?.result) ? [part.value] : []);
       const breakdown = resolved.result.blocks.find((block) => block.type === 'claim_breakdown');
       if (breakdown && 'items' in breakdown && breakdown.items?.length) {
-        breakdown.items = alignPropositionOutcomes(breakdown.items, parts);
+        breakdown.items = alignPropositionOutcomes(breakdown.items, parts, propositions, { requireCompatibility: true });
+        const reply = composePropositionFindings(breakdown.items, boundedExcerpt);
+        const conversation = resolved.result.blocks.find((block) => block.type === 'conversation_reply');
+        if (conversation && reply) conversation.text = reply;
+        if (reply) { resolved.result.summary = reply; resolved.result.shareableReply = reply; }
       }
       const mergedBlocks = successful.flatMap((part) => part.result.blocks.filter((block) => block.type === 'data_finding' || block.type === 'confirmed' || block.type === 'cannot_conclude'));
       resolved.result.blocks = resolved.result.blocks.concat(mergedBlocks).slice(0, 80);
@@ -2069,7 +1996,9 @@ const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
 
 const startUrlResolveJob = (url) => startMediaResolveJob(url, 'url');
 
-const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined, eventEvidence = undefined) => {
+const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
+  const focusedPlan = !classified.primary ? focusedEvidencePlan(text, { observations, propositions: classified.compiler?.explicitPropositions || [] }) : undefined;
+  if (focusedPlan) return { status: 'complete', requestId: resultRequestId, result: focusedPlan, relatedClaims: [] };
   const evidenceSelection = classified.compiler?.evidenceSelection;
   // Keep broad-domain routing available while rendering the final answer.
   // These flags are intentionally derived here as well as in classify(): the
@@ -2339,11 +2268,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     headline: 'La criminalidad registrada debe concretarse por categoría',
     summary: 'La fuente disponible separa homicidios, robos, fraudes y otras categorías. No hemos localizado un total nacional único que permita responder a “la criminalidad” en general sin mezclar medidas distintas.',
   } : null;
-  const compilerBreakdown = classified.compiler?.propositions?.length ? {
+  const explicitBreakdown = compilerPropositions.filter((item) => item.explicit !== false);
+  const compilerBreakdown = explicitBreakdown.length ? {
     type: 'claim_breakdown',
     propositionIds: [],
     evidenceIds: observations.map((item) => item.id),
-    items: classified.compiler.propositions.slice(0, 24).map((item) => ({ text: item.text, type: item.type, explicit: item.explicit !== false })),
+    items: explicitBreakdown.slice(0, 24).map((item) => ({ ...(item.id ? { id: item.id } : {}), text: item.text, type: item.type, explicit: true })),
   } : requestedHandler === 'government_event' || vagueTaxJudgement(text) ? {
     type: 'claim_breakdown',
     propositionIds: [],
@@ -2575,20 +2505,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   // into whichever family happened to rank first. The renderer can reuse the
   // existing data_finding card without inventing a bespoke answer format.
   const compoundFamilyBlocks = compoundClaim
-    ? [...observations
-      .filter((item) => (item.metricId || item.metric) && typeof item.value === 'number' && Number.isFinite(item.value))
-      .reduce((families, item) => {
-        const metricId = item.metricId || item.metric;
-        const family = families.get(metricId) || [];
-        family.push(item);
-        families.set(metricId, family);
-        return families;
-      }, new Map())]
-      .filter(([, items]) => items.length > 0)
+    ? comparableObservationGroups(observations)
       .slice(0, 24)
-      .map(([metricId, items]) => {
+      .map((items) => {
         const latest = items.at(-1);
         const first = items[0];
+        const metricId = latest.metricId || latest.metric;
         const label = displayMetric(latest);
         const period = displayPeriod(latest.period || latest.id, metricId);
         const points = [
@@ -2602,26 +2524,14 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     : [];
   const compoundEvidenceCount = compoundFamilyBlocks.length;
   if (compilerBreakdown?.items?.length && observations.length) {
-    const words = (value) => new Set(normalise(value).split(' ').filter((word) => word.length > 3));
-    compilerBreakdown.items = compilerBreakdown.items.map((item) => {
-      const claimWords = words(item.text);
-      const scored = observations.map((observation) => {
-        const metricWords = words(`${observation.metricId || ''} ${observation.metric || ''} ${displayMetric(observation)} ${observation.dimensionLabels?.category || ''}`);
-        const score = [...claimWords].filter((word) => metricWords.has(word)).length;
-        return { observation, score };
-      }).filter((entry) => entry.score > 0).sort((a, b) => b.score - a.score);
-      const bestScore = scored[0]?.score || 0;
-      const evidenceIds = bestScore ? scored.filter((entry) => entry.score === bestScore).slice(0, 24).map((entry) => entry.observation.id) : [];
-      const linked = observations.filter((observation) => evidenceIds.includes(observation.id));
-      const evidenceText = linked.slice(0, 2).map((observation) => `${displayMetric(observation)}: ${String(observation.value)} ${displayUnit(observation.unit, observation.metricId)} (${displayPeriod(observation.period || observation.id, observation.metricId)})`).join('; ');
-      const sensitiveType = ['causal', 'predictive', 'normative', 'legal'].includes(item.type);
-      const finding = linked.length
-        ? sensitiveType
-          ? `Hay evidencia relacionada (${evidenceText}), pero no basta por sí sola para demostrar toda esta parte de la afirmación.`
-          : `La evidencia localizada para esta parte es: ${evidenceText}. Debe comprobarse su definición, periodo y alcance.`
-        : 'No hemos localizado una observación revisada que mida o documente exactamente esta parte de la afirmación.';
-      return { ...item, evidenceIds, verdict: linked.length ? 'mixed' : 'insufficient', evidenceLevel: linked.length ? 'limited' : 'none', finding };
-    });
+    compilerBreakdown.items = compilerBreakdown.items.map((item) => contextualPropositionEvidence(item, observations, (observation) => {
+      const location = observation.geography || observation.dimensionLabels?.geo || observation.dimensions?.geo;
+      const label = location ? ` · ${observation.geography || displayWarehouseGroup(observation)}` : '';
+      const value = typeof observation.value === 'number' && Number.isFinite(observation.value)
+        ? `${new Intl.NumberFormat('es-ES', { maximumFractionDigits: 4 }).format(observation.value)} ${displayUnit(observation.unit, observation.metricId)}`
+        : 'documento localizado sin una cifra estructurada';
+      return `${displayMetric(observation)}${label}: ${value} (${displayPeriod(observation.period || observation.id, observation.metricId)})`;
+    }));
   }
   if (compilerBreakdown?.items?.length && !observations.length) {
     compilerBreakdown.items = compilerBreakdown.items.map((item) => ({
@@ -2633,11 +2543,10 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     }));
   }
   const compoundSummary = compoundEvidenceCount > 1
-    ? `La frase contiene ${compoundEvidenceCount} afirmaciones comprobables. Cada una se ha contrastado con su propia familia de datos para no mezclar indicadores.`
+    ? `La frase contiene ${compilerPropositions.length} afirmaciones. Cada dato se vincula solo a la medida que describe; las partes sin evidencia compatible quedan pendientes.`
     : undefined;
   const compoundAnswer = compoundClaim && compilerBreakdown?.items?.length
-    ? compilerBreakdown.items.slice(0, 8).map((item) => `«${boundedExcerpt(item.text, 180)}»: ${item.finding || (item.evidenceIds?.length ? 'La evidencia relacionada requiere una comprobación específica.' : 'No hay evidencia revisada suficiente para confirmarla.')}`).join(' ')
-    : undefined;
+    ? composePropositionFindings(compilerBreakdown.items, boundedExcerpt) : undefined;
   // An open-ended topic may contain one proposition but still span several
   // reviewed metric families. Preserve those findings instead of presenting
   // only the first series selected by the ranking logic.
@@ -2703,19 +2612,12 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     ? evidenceLadderForCompiler(classified.compiler, source, handlerId)
     : null;
   const metricEvidenceGap = explicitMetricRoute && !observations.length && !primary;
-  const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, eventPackets || (observations.length ? classifyEventSources(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null)) : null;
-  if (eventBlock && eventEvidence?.findings?.length) {
-    eventBlock.propositions = eventBlock.propositions.map((item) => {
-      const propositionId = currentEvent.propositions.find((proposition) => proposition.text === item.text)?.id;
-      const detail = eventEvidence.findings.filter((finding) => finding.propositionId === propositionId).map((finding) => finding.finding).join(' ');
-      return detail ? { ...item, detail: detail.slice(0, 700) } : item;
-    });
-  }
+  const eventBlock = currentEvent && !primary ? eventStatusFor(currentEvent, eventPackets || (observations.length ? classifyEventSearchLeads(observations.map((item) => ({ id: item.id, url: item.source?.url, title: item.source?.title, publisher: item.source?.publisher }))) : null)) : null;
   const contextualSummary = primary ? answer : valuesContext?.summary || groupContext?.summary || quantityContext?.summary || metricContext?.summary || budgetContext?.summary || (isGovernmentEvent ? 'La comprobación debe separar el acto que se publicó de su ejecución, alcance, impacto e intención.' : undefined) || predictionContext?.summary || legalContext?.summary || definitionContext?.summary || localContext?.summary || recordedOffenceContext?.summary || causalContext?.summary || ranking?.summary || trend?.summary || (metricEvidenceGap ? 'La formulación encaja con una familia de datos reutilizable, pero el almacén local todavía no contiene observaciones compatibles para ese indicador.' : sourceLeadSummary || (relatedTopic ? `La frase parece referirse a ${relatedTopic.title.toLocaleLowerCase('es')}, pero hace falta concretar el hecho o la decisión para comprobarla.` : answer));
   const answerSummary = scorecardRequested
     ? `Comparamos seis indicadores con el último dato anterior al periodo de ${latestGovernmentPeriod.start}. No calculamos una nota global ni atribuimos causalidad al Gobierno.`
     : currentEvent
-      ? 'Hemos separado el hecho, las posibles agresiones y la atribución de responsabilidad. El estado indica qué está reportado, no qué queda probado.'
+      ? 'La búsqueda ofrece posibles fuentes para investigar lo ocurrido. Cada parte permanece sin confirmar hasta comprobar el contenido de esas fuentes.'
       : compoundAnswer || (compoundClaim ? (compoundSummary || 'No hemos podido evaluar por separado las partes de esta afirmación.') : contextualSummary);
   const result = {
     schemaVersion: RUNTIME_VERSIONS.answerPlanSchema,
@@ -2735,8 +2637,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       criteriaProfile: classified.compiler.criteriaProfile,
       confidence: classified.compiler.criteriaProfileConfidence || classified.compiler.interpretationConfidence,
     } : undefined,
-    evidenceLevel: primary || broadConditionRequested || (warehouseSeries && explicitMetricRoute && evidenceSelection?.selected?.some((item) => item.freshness === 'fresh')) ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
-    evidenceLevel: primary || broadConditionRequested || (warehouseSeries && explicitMetricRoute && evidenceSelection?.selected?.some((item) => item.freshness === 'fresh')) ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
+    evidenceLevel: !compoundClaim && !['causal', 'predictive', 'normative'].includes(resolvedClaimType) && (primary || broadConditionRequested || (warehouseSeries && explicitMetricRoute && evidenceSelection?.selected?.some((item) => item.freshness === 'fresh'))) ? 'supported' : currentEvent || observations.length ? 'limited' : 'insufficient',
     asOf: currentEvent || observations.length ? new Date().toISOString() : undefined,
     headline: scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: answerSummary,
@@ -2872,7 +2773,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
         const proposition = eventFrame.propositions[index];
         const propositionSources = [];
         try {
-          const response = await fetch(`https://api.search.brave.com/res/v1/news/search?q=${encodeURIComponent(query.slice(0, 400))}&country=ES&search_lang=es&freshness=pm&count=6`, { headers: { accept: 'application/json', 'x-subscription-token': token } });
+          const freshness = /^\d{4}$/.test(eventFrame.period || '') ? '' : '&freshness=pm';
+          const response = await fetch(`https://api.search.brave.com/res/v1/news/search?q=${encodeURIComponent(query.slice(0, 400))}&country=ES&search_lang=es${freshness}&count=6`, { headers: { accept: 'application/json', 'x-subscription-token': token } });
           if (!response.ok) continue;
           const payload = await response.json();
           for (const item of payload.results || []) {
@@ -2889,15 +2791,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
             if (eventSources.length >= 6) break;
           }
         } catch { /* live research is provisional and may be unavailable */ }
-        eventPackets[proposition?.id || `proposition-${index}`] = classifyEventSources(propositionSources);
+        eventPackets[proposition?.id || `proposition-${index}`] = classifyEventSearchLeads(propositionSources);
         if (eventSources.length >= 6) break;
       }
     }
-    const packet = classifyEventSources(eventSources);
+    const packet = classifyEventSearchLeads(eventSources);
     const observations = packet.sources.map((item) => ({ id: item.id, kind: 'current_event_source', source: item, score: 1, finding: { type: 'current_event', status: packet.status } }));
     const eventClassified = { ...classified, primary: undefined, status: 'uncovered', compiler: { ...(classified.compiler || {}), clarificationRequired: false, claimType: 'descriptive' } };
-    const eventEvidence = await extractCurrentEventEvidence(eventFrame, eventSources);
-    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations, eventPackets, eventEvidence);
+    const eventResult = toResolveResult(text, eventClassified, packet.sources[0], resultRequestId, observations, eventPackets);
     return eventResult;
   }
   const retrievalText = [text, ...(classified.compiler?.retrievalHints || []), ...(classified.compiler?.entities || []), ...(classified.compiler?.evidenceNeeds || [])].join(' ').slice(0, 6000);
@@ -2923,9 +2824,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const preservePublishedClaim = classified.primary?.kind === 'claim'
     && classified.status === 'published'
     && !broadPacketAvailable
+    && !claimFocusFor(text)
     && (!explicitMetricRoute || classified.compiler?.claimType === 'causal')
     && !predictionLike;
-  const retrievalClassified = (explicitMetricRoute || compoundInput || vagueTaxJudgement(text) || predictionLike || broadPacketAvailable) && !preservePublishedClaim
+  const retrievalClassified = (explicitMetricRoute || claimFocusFor(text) || compoundInput || vagueTaxJudgement(text) || predictionLike || broadPacketAvailable) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right
@@ -3012,8 +2914,11 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const packetMetricIds = broadPacketAvailable
     ? [...broadMetricIdsFor(text)].slice(0, broadPacketMetricQueryLimit)
     : [];
+  const focusedMetricQueries = !broadPacketAvailable && claimFocusFor(text)
+    ? [...hintedMetricIds].slice(0, 5) : [];
   const warehouseQueries = broadPacketAvailable
     ? packetMetricIds.map((metricId) => `${metricQueryTextForIds(new Set([metricId]))} España`)
+    : focusedMetricQueries.length ? focusedMetricQueries.map((metricId) => `${metricQueryTextForIds(new Set([metricId]))} España`)
     : [...new Set([
       // Explicit clauses come first so the bounded packet is representative of
       // the claim, not merely of the full sentence's highest-scoring topic.
@@ -3032,6 +2937,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
       // series before the results can be combined.
       const queryMetricIds = broadPacketAvailable
         ? new Set([packetMetricIds[index]])
+        : focusedMetricQueries.length ? new Set([focusedMetricQueries[index]])
         : preferredMetricIdsForQuery(query);
       const queryCompiler = queryMetricIds.size
         ? { ...retrievalClassified.compiler, metricIds: [...queryMetricIds], retrievalMetricIds: [...queryMetricIds] }
@@ -3043,7 +2949,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // extracted by the classifier. Retry the canonical metric query directly so
   // a new claim such as “the rent has exploded” can use the existing series
   // even when its conversational wording mentions several unrelated causes.
-  if (!broadPacketAvailable && !retrievalClassified.primary && !suppressUnrelatedContext && metricFallbackQuery) {
+  if (!broadPacketAvailable && !focusedMetricQueries.length && !retrievalClassified.primary && !suppressUnrelatedContext && metricFallbackQuery) {
     // Put the explicitly requested metric first. A broad first query can
     // legitimately find contextual observations (for example crime terms in
     // a housing claim); those must not crowd the direct series out of the
@@ -3210,9 +3116,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
       if (researchPlan.clarificationQuestion && !deterministic.result.clarificationQuestion) deterministic.result.clarificationQuestion = researchPlan.clarificationQuestion;
     }
   }
-  if (!answerPlannerEnabled || !deterministic.result) return deterministic;
-  const upgraded = await planAnswerWithLocalModel(text, classified, deterministic, observations);
-  return upgraded === deterministic.result ? deterministic : { ...deterministic, result: upgraded };
+  // A valid evidence ID and matching number do not prove that generated prose
+  // preserves a claim's polarity, population, comparison or uncertainty. Keep
+  // the reviewed/structured answer until that equivalence can be established.
+  return deterministic;
 };
 
 const readText = async (request) => {

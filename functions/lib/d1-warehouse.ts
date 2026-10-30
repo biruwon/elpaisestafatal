@@ -75,6 +75,7 @@ export const searchD1Warehouse = async (database: D1Database, query: string): Pr
       period: row.period,
       geography: row.geography,
       population: row.population,
+      denominator: payload.denominator,
       dimensions: parseJson<Record<string, unknown>>(row.dimensions_json, {}),
       dimensionLabels: parseJson<Record<string, unknown>>(row.dimension_labels_json, {}),
       url: row.url || row.source_url,

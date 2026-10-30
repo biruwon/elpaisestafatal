@@ -1711,5 +1711,111 @@
       "destination",
       "currency"
     ]
+  },
+  "in_work_poverty_rate": {
+    "name": "In-work at-risk-of-poverty rate",
+    "displayName": "Personas ocupadas en riesgo de pobreza",
+    "aliases": [
+      "pobreza laboral",
+      "trabajadores pobres",
+      "trabajar y no llegar a fin de mes",
+      "riesgo de pobreza entre ocupados"
+    ],
+    "unit": "percent",
+    "population": "personas ocupadas de 18 años o más, empleadas más de la mitad del año de referencia",
+    "notEquivalentTo": [
+      "unemployment_rate",
+      "temporary_employment_rate",
+      "arope_rate"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "age",
+      "sex",
+      "employment_status"
+    ],
+    "denominator": "personas ocupadas de 18 años o más",
+    "limitations": [
+      "Renta disponible equivalente del hogar inferior al 60 % de la mediana nacional tras transferencias; no mide directamente dificultad para llegar a fin de mes. El año de la encuesta no coincide necesariamente con el año de ingresos."
+    ]
+  },
+  "in_work_poverty_full_time_rate": {
+    "name": "In-work at-risk-of-poverty rate, full-time",
+    "displayName": "Personas ocupadas a jornada completa en riesgo de pobreza",
+    "aliases": [
+      "pobreza laboral a jornada completa",
+      "trabajar a tiempo completo y ser pobre",
+      "riesgo de pobreza con jornada completa"
+    ],
+    "unit": "percent",
+    "population": "personas ocupadas de 18 años o más a tiempo completo, EU-SILC",
+    "notEquivalentTo": [
+      "in_work_poverty_rate",
+      "temporary_employment_rate",
+      "unemployment_rate"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "worktime"
+    ],
+    "denominator": "personas ocupadas a tiempo completo de 18 años o más",
+    "limitations": [
+      "Renta equivalente disponible del hogar inferior al 60 % de la mediana nacional tras transferencias. No mide si cada salario individual cubre los gastos ni coincide con la percepción de llegar a fin de mes."
+    ]
+  },
+  "primary_care_wait_days": {
+    "name": "Self-reported primary-care appointment delay among patients waiting more than one day",
+    "displayName": "Demora en atención primaria entre quienes esperaron más de un día",
+    "aliases": [
+      "espera para el médico de familia",
+      "demora en atención primaria",
+      "cita con el médico de cabecera",
+      "días hasta la cita en el centro de salud"
+    ],
+    "unit": "days",
+    "population": "pacientes de medicina de familia pública que esperaron más de un día por falta de cita y declararon días de demora",
+    "notEquivalentTo": [
+      "emergency_wait_declared",
+      "unmet_healthcare_waiting_list_rate"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "service",
+      "surveyWave",
+      "question"
+    ],
+    "denominator": "personas con respuesta válida a la pregunta 5c_01 del Barómetro Sanitario",
+    "limitations": [
+      "Media de un subgrupo, no de todos los pacientes. Cada oleada conserva su periodo y carácter provisional; una media nacional no describe cada centro de salud."
+    ]
+  },
+  "primary_care_wait_over_one_day_rate": {
+    "name": "Patients waiting more than one day because no earlier primary-care appointment was available",
+    "displayName": "Pacientes que esperaron más de un día por falta de cita en atención primaria",
+    "aliases": [
+      "porcentaje sin cita al día siguiente en atención primaria",
+      "pacientes con espera superior a un día por falta de cita",
+      "falta de cita con el médico de familia"
+    ],
+    "unit": "percent",
+    "population": "pacientes adultos de medicina de familia pública, base de la pregunta 5c del Barómetro Sanitario",
+    "notEquivalentTo": [
+      "primary_care_wait_days",
+      "emergency_wait_declared"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "service",
+      "surveyWave",
+      "question"
+    ],
+    "denominator": "pacientes de la base de la pregunta 5c, excluida mutualidad con atención privada",
+    "limitations": [
+      "Demora declarada para la última consulta de los 12 meses previos; no mide toda la población ni cada centro. Cada oleada es provisional hasta completarse el año."
+    ]
   }
 }

@@ -216,7 +216,7 @@ const recordText = (record) => [
 
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
-  if (wanted.length < 2) return [];
+  if (wanted.length < 2 && !metricIds?.size) return [];
   const scopedRecords = filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records))).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
@@ -227,8 +227,9 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
   return scopedRecords.map((record) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
-    return { record, score: matched.length / wanted.length, matched: matched.length, matchedTokens: matched };
-  }).filter(({ score, matched, record }) => score >= 0.34 && matched >= 2 && (typeof record.value === 'number' && Number.isFinite(record.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
+    const contract = metricIds?.has(record.metricId);
+    return { record, score: Math.max(contract ? 0.5 : 0, wanted.length ? matched.length / wanted.length : 0), matched: matched.length, matchedTokens: matched, contract };
+  }).filter(({ score, matched, record, contract }) => (contract || score >= 0.34 && matched >= 2) && (typeof record.value === 'number' && Number.isFinite(record.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
     .map(({ record, score, matchedTokens }) => ({
@@ -242,6 +243,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
       period: record.period,
       geography: record.geography,
       population: record.population,
+      denominator: record.denominator,
       dataKind: record.dataKind,
       periodType: record.periodType,
       comparison: record.comparison,

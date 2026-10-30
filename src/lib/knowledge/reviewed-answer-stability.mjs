@@ -20,6 +20,10 @@ const visualsFor = (response) => [
 // answer's evidence families and every chart that made that answer useful.
 // Otherwise keep the reviewed preview instead of changing scope during polling.
 export const shouldRetainReviewedPreview = (preview, completed) => {
+  // A broad preview is provisional context. A completed measurement answer
+  // may deliberately narrow it to the quantity the user actually asked for.
+  // Keep the family-preservation rule for enrichments of that same context.
+  if (completed?.result?.answerScope?.kind === 'measurement') return false;
   const reviewedFamilies = familiesFor(preview);
   const completedFamilies = familiesFor(completed);
   if (reviewedFamilies.length && (reviewedFamilies.length !== completedFamilies.length

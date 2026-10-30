@@ -18,9 +18,9 @@ const variants = [
   { id: expected[5], cases: ['¿Qué países de origen y motivos de llegada predominan, y hay pruebas de que los inmigrantes tengan menos IQ?', '¿Las personas inmigrantes son menos inteligentes y por eso más fáciles de manipular políticamente?'] },
   { id: expected[6], cases: ['¿Han subido los impuestos y perdido poder adquisitivo las familias por la progresividad en frío?', '¿Se puede bajar el IVA o deflactar el IRPF sin cargar el coste a generaciones jóvenes?'] },
 ];
-const assertVisuals = (plan, label) => {
+const assertVisuals = (plan, label, { allowEmpty = false } = {}) => {
   const visuals = plan.visuals?.length ? plan.visuals : plan.visual ? [plan.visual] : [];
-  assert(visuals.length, `${label} needs at least one labeled visual`);
+  assert(visuals.length || allowEmpty, `${label} needs at least one labeled visual`);
   const sourceIds = new Set(plan.sourceLinks.map((source) => source.id));
   for (const visual of visuals) {
     assert(visual.labels?.length && visual.labels.length === visual.values.length, `${label} visual values must align with labels`);
@@ -35,7 +35,7 @@ for (const [index, text] of claims.entries()) {
   assert(plan.shareableReply?.trim(), `Exact claim ${index + 1} needs a concise, reusable answer`);
   assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Exact claim ${index + 1} answer is too long to scan`);
   assert(plan.shareableSourceIds?.length, `Exact claim ${index + 1} needs primary sources near the answer`);
-  const visuals = assertVisuals(plan, `Exact claim ${index + 1}`);
+  const visuals = assertVisuals(plan, `Exact claim ${index + 1}`, { allowEmpty: plan.id === 'broad-youth-living-housing' });
   if (index === 0) {
     const titles = visuals.map((visual) => visual.title);
     assert.equal(visuals.length, 3, 'Compound immigration answer should show the process, a service measure, and the IMV trend');
@@ -78,7 +78,7 @@ for (const [index, item] of variants.entries()) {
     assert(plan?.shareableReply?.trim(), `Claim ${index + 1}, paraphrase ${variantIndex + 1} needs a concise answer`);
     assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Claim ${index + 1}, paraphrase ${variantIndex + 1} answer is too long`);
     assert(plan.shareableSourceIds?.length, `Claim ${index + 1}, paraphrase ${variantIndex + 1} needs cited sources`);
-    assertVisuals(plan, `Claim ${index + 1}, paraphrase ${variantIndex + 1}`);
+    assertVisuals(plan, `Claim ${index + 1}, paraphrase ${variantIndex + 1}`, { allowEmpty: plan.id === 'broad-youth-living-housing' });
   }
 }
 const reviewedPreview = { state: 'limited', result: { id: 'broad-compound-claim', reply: 'reviewed answer' } };

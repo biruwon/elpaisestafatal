@@ -4,6 +4,7 @@ import { answerPlanForBroadDomains } from './broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
+import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -57,6 +58,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
   const meaning = measurementMeaningPlan(original);
   if (meaning) return { status: 'complete', result: meaning, relatedClaims: [] };
+  const focused = focusedEvidencePlan(original);
+  if (focused) return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
   const related = topicReference(original);
   const institutionalLabel = spanishInstitutionalScope(original);
   if (institutionalLabel) {

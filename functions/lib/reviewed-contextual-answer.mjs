@@ -4,6 +4,7 @@
 // seconds later with a differently composed response.
 export const reviewedContextualAnswer = (model, contextual) => {
   if (model?.state === 'clarification') return undefined;
+  if (model?.result?.answerScope?.kind === 'measurement') return undefined;
   const packetId = contextual?.result?.id;
   return typeof packetId === 'string' && packetId.startsWith('broad-') ? contextual : undefined;
 };

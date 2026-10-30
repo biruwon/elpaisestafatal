@@ -156,7 +156,8 @@ const youthLivingWithData = answerPlanForBroadDomain('Precariedad de la poblaci�
   ],
 });
 const youthReply = youthLivingWithData?.blocks.find((block) => block.type === 'conversation_reply')?.text || '';
-assert(youthReply.includes('118,4') && youthReply.includes('24,9') && youthLivingWithData.evidenceSummary.families.some((family) => family.data?.some((value) => value.includes('154,2'))), 'youth living packet did not render available cross-domain measurements');
+assert(youthReply.includes('118,4') && !youthReply.includes('24,9') && youthLivingWithData.evidenceSummary.families.some((family) => family.data?.some((value) => value.includes('154,2'))), 'youth living packet must retain relevant prices without presenting unrequested unemployment data');
+assert(!youthLivingWithData.evidenceSummary.families.some((family) => family.data?.some((value) => /12,10|9,1 %/.test(value))), 'All-age wages and housing burdens must not be relabelled as youth measures');
 assert(youthLivingWithData?.evidenceSummary?.families.some((family) => family.label === 'Apoyo familiar y emigración' && family.missingDimensions?.length), 'youth living packet hid the unavailable counterfactual dimension');
 
 const securityClaim = 'La seguridad en España se ha ido a la mierda. Los nuevos españoles son los que acuchillan, roban, violan y pegan palizas, pero nadie hace nada porque no hay policía ni justicia, con tanto wokismo.';
@@ -238,7 +239,8 @@ assert(qualityOfLifePlan?.id === 'broad-compound-claim', 'multi-domain quality-o
 assert(qualityFamilies.map((family) => family.familyId).join(',') === 'broad-housing,broad-health,broad-employment,broad-consumer-prices,broad-social-relations', 'quality-of-life claim did not preserve all five topic families in their submitted order');
 assert(qualityFamilies.every((family) => family.data?.length && family.sourceIds?.length && family.status !== 'missing'), 'a quality-of-life family has no compatible sourced measurement');
 assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('+12,2 %') && value.includes('T2 2026')), 'housing evidence did not include the latest price trend'));
-assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('102 días') && value.includes('103,29')), 'health response did not balance waiting times with the separate health index'));
+assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('102 días')) && family.data.some((value) => value.includes('103,29'))
+  && family.data.every((value) => !(value.includes('102 días') && value.includes('103,29'))), 'waiting times and the health index must retain separate scopes and sources'));
 assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('14,7 %') && value.includes('25,0 %')), 'employment response did not include the temporary-contract trend'));
 assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('2,3 %') && value.includes('agosto de 2026')), 'food-price response did not include the latest annual CPI rate'));
 assert(qualityFamilies.some((family) => family.data.some((value) => value.includes('93,90') && value.includes('2024')), 'social-relations response did not include the latest comparable index'));
@@ -278,7 +280,7 @@ for (const [text, concept, profileKey] of rhetoricalCases) {
 for (const text of ['Nos mienten con los datos del paro', 'Los inmigrantes nos invaden', 'No se puede salir a la calle de cómo está el país', 'El alquiler es imposible para los jóvenes']) {
   const plan = answerPlanForBroadDomain(text);
   assert(plan?.evidenceSummary?.mode === 'snapshot', `${text}: no reviewed broad-domain fallback`);
-  assert((plan.evidenceSummary.families || []).length >= 2, `${text}: snapshot did not preserve independent families`);
+  assert((plan.evidenceSummary.families || []).some((family) => family.data?.length && family.sourceIds?.length), `${text}: snapshot did not retain a relevant sourced measure`);
   assert(plan.limitation, `${text}: snapshot omitted limitation`);
 }
 
@@ -493,6 +495,7 @@ for (const text of ['El Pacto Verde está destruyendo la agricultura española.'
   assert(plan.evidenceSummary?.families.some((family) => family.label === 'Efecto de las normas' && family.missingDimensions?.includes('contrafactual o diseño causal')), `${text}: did not disclose what is missing to test causality`);
   assert(plan.sourceLinks?.some((item) => item.id === 'farm-income-mapa-2025') && plan.sourceLinks?.some((item) => item.id === 'cap-strategic-plan-summary'), `${text}: did not expose primary MAPA sources`);
 }
-assert(broadDomainPacketsFor('Las explotaciones agrarias necesitan relevo generacional.').map((packet) => packet.id).join(',') === 'broad-agriculture', 'non-environmental farming wording was captured by the narrower green-policy packet');
+assert(!broadDomainPacketsFor('Las explotaciones agrarias necesitan relevo generacional.').some((packet) => packet.id === 'broad-agriculture-green-transition'), 'non-environmental farming wording was captured by the narrower green-policy packet');
+assert(!answerPlanForBroadDomains('El turismo depende demasiado de mano de obra barata.'), 'A methodology-only topic must not masquerade as sourced evidence for a specific claim');
 
 console.log(`Open-ended coverage validation passed: ${cases.length} unseen formulations, ${rhetoricalCases.length} rhetorical variants, and broad snapshot routing.`);
