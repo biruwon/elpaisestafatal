@@ -1,4 +1,4 @@
-import registry from '../../../config/metric-registry.json' with { type: 'json' };
+import registry from './measurement-definitions.generated.mjs';
 import { asksForMeasurementMeaning } from './measurement-intent.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 
