@@ -292,6 +292,25 @@
     "notEquivalentTo": ["temporary_employment_rate", "employment_rate_europe", "unemployment_rate_europe", "part_time_employment_rate_europe"],
     "dimensions": ["period", "geography", "age", "sex", "citizenship"]
   },
+  "annual_hourly_wage_index": {
+    "name": "Annual index of gross wages and salaries per hour worked",
+    "displayName": "Índice anual de salarios brutos por hora trabajada",
+    "aliases": ["índice anual de salarios por hora", "evolución del coste salarial por hora", "índice de sueldos y salarios por hora", "salarios brutos por hora y precios"],
+    "unit": "index, 2020=100",
+    "population": "employees in industry, construction and services (NACE B-S), excluding agriculture, household employers and extraterritorial organisations",
+    "notEquivalentTo": ["median_hourly_earnings", "minimum_wage_monthly", "median_equivalised_income"],
+    "dimensions": ["period", "geography", "activity", "labour_cost_component", "base_year"],
+    "limitations": ["Es un índice de salarios brutos por hora trabajada, no el sueldo neto, la mediana ni la evolución salarial de cada persona.", "Los cambios en la composición del empleo dentro de cada sector pueden afectar al índice."]
+  },
+  "annual_hicp_index": {
+    "name": "Annual average harmonised consumer price index, all items",
+    "displayName": "Índice anual medio de precios de consumo armonizado",
+    "aliases": ["índice armonizado anual de precios", "media anual del IPC armonizado", "precios de consumo promedio anual", "índice anual de precios de consumo"],
+    "unit": "annual average index",
+    "population": "consumer prices for all items in the harmonised household consumption basket",
+    "notEquivalentTo": ["house_price_index", "rental_price_index", "inflation_rate"],
+    "dimensions": ["period", "geography", "consumption_group", "index_reference"]
+  },
   "median_hourly_earnings": {
     "name": "Median gross hourly earnings",
     "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],

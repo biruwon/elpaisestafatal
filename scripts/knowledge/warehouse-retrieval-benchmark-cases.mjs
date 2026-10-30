@@ -1,4 +1,8 @@
 const longTailBenchmarkCases = [
+  ['hourly-wage-index', '¿Cómo evoluciona el índice anual de salarios brutos por hora?', 'annual_hourly_wage_index'],
+  ['hourly-wage-index-paraphrase', 'Evolución del coste salarial por hora trabajada en España', 'annual_hourly_wage_index'],
+  ['annual-hicp-index', '¿Cómo cambia el índice armonizado anual de precios?', 'annual_hicp_index'],
+  ['annual-hicp-index-paraphrase', 'Media anual de los precios de consumo armonizados', 'annual_hicp_index'],
   ['working-poverty-total', '¿Qué porcentaje de las personas ocupadas está en riesgo de pobreza?', 'in_work_poverty_rate'],
   ['working-poverty-paraphrase', 'La pobreza laboral afecta también a quienes tienen un empleo', 'in_work_poverty_rate'],
   ['working-poverty-full-time', 'Trabajar a jornada completa no evita estar en riesgo de pobreza', 'in_work_poverty_full_time_rate'],

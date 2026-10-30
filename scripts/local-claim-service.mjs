@@ -707,6 +707,10 @@ const comparableObservationSeriesKey = (item) => {
 // downstream evidence packets report the real covered range without making
 // the bounded runtime payload unreasonably large.
 const boundedSeries = (items, limit = 12) => {
+  // A real-wage comparison needs every annual observation in the requested
+  // interval, including source flags for breaks or missing years. These two
+  // narrow series remain small enough to retain their complete history.
+  if (['annual_hourly_wage_index', 'annual_hicp_index'].includes(items[0]?.metricId)) limit = Math.max(limit, 40);
   const ordered = items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
   if (ordered.length <= limit) return ordered;
   return [ordered[0], ...ordered.slice(-(limit - 1))];
@@ -731,8 +735,9 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
       ? (includesAny(units, ['rate', 'change', 'variacion', 'growth', 'percent', 'porcentaje']) ? 0.3 : 0)
       : (includesAny(units, ['index', 'indice', 'level', 'nivel']) ? 0.3 : 0);
     const geographyPreference = wantsSpain && group.some((item) => includesAny(normalise(`${item.dimensionLabels?.geo || ''} ${item.dimensions?.geo || ''}`), ['espana', 'spain', 'es'])) ? 0.35 : 0;
-    return { group, score: unitPreference + geographyPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000 };
-  }).sort((left, right) => right.score - left.score);
+    return { group, score: unitPreference + geographyPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000,
+      retrievedAt: Math.max(...group.map((item) => Date.parse(item.source?.retrievedAt || '') || 0)) };
+  }).sort((left, right) => right.score - left.score || right.retrievedAt - left.retrievedAt);
   const selected = ranked[0]?.group || observations;
   return boundedSeries(selected);
 };

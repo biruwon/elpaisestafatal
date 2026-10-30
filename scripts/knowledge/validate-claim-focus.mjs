@@ -84,6 +84,9 @@ const fullTime = focusedEvidencePlan('Trabajar a jornada completa no impide ser 
 assert.deepEqual(fullTime.evidenceIds, ['full-time-poverty']);
 assert.match(fullTime.shareableReply, /9,5/);
 assert.doesNotMatch(fullTime.shareableReply, /11,2|14,7/);
+const stalePoverty = focusedEvidencePlan('Trabajar a jornada completa no impide ser pobre', { observations: [{ ...poverty[0], freshness: 'stale', status: 'p' }] });
+assert.match(stalePoverty.shareableReply, /fuente no se ha actualizado/);
+assert.match(stalePoverty.shareableReply, /dato como provisional/);
 const endsMeet = focusedEvidencePlan('A jornada completa no se llega a fin de mes', { observations: poverty });
 assert.ok(endsMeet.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((part) => /dificultad declarada/.test(part))));
 assert.equal(endsMeet.evidenceSummary.families[0].dataKind, 'context', 'A poverty threshold does not directly measure difficulty making ends meet');

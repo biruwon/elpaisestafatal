@@ -245,6 +245,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
       population: record.population,
       denominator: record.denominator,
       dataKind: record.dataKind,
+      status: record.status,
       periodType: record.periodType,
       comparison: record.comparison,
       stage: record.stage,

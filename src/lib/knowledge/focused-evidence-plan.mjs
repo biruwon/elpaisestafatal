@@ -1,6 +1,7 @@
 import { claimFocusFor, focusedMetricIdsFor } from './claim-focus.mjs';
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
+import { realWagePlan } from './real-wage-comparison.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -110,6 +111,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return /^(?:una|otra|esa|esta)\s+(?:parte|porcion)\s+(?:se|es|sea|son|puede|podria)\b/.test(normalize(item.text));
   };
   if (propositions.length > 1 && propositions.some((item) => !continuesSameSubject(item))) return undefined;
+  if (focus.id === 'real-wages') {
+    const matched = realWagePlan(claim, { observations, now });
+    if (matched) return matched;
+  }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const asksAboutTeachers = /\b(?:por (?:profesor\w*|docent\w*)|alumn\w* (?:por|entre) (?:profesor\w*|docent\w*))\b/.test(normalize(claim));
   const allowedDirect = focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
@@ -131,6 +136,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const missing = direct.length ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, 2);
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
+    fact.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
+    /^[bep ,]*p[bep ,]*$/i.test(fact.latest.status || '') ? 'La fuente marca este dato como provisional.' : '',
+    /^[bep ,]*e[bep ,]*$/i.test(fact.latest.status || '') ? 'La fuente marca este dato como estimado.' : '',
     fact.latest.dimensions?.provisional === true ? 'Resultados provisionales de una oleada; no equivalen al año completo.' : '',
     /^primary_care_wait_/.test(fact.id) ? 'La encuesta se refiere a la última consulta de adultos en medicina de familia pública durante los 12 meses anteriores; excluye mutualidades con asistencia privada.' : '',
     /^household_electricity_price/.test(fact.id) && fact.latest.dimensions?.nrg_cons === 'TOT_KWH' && fact.latest.dimensions?.tax === 'I_TAX'

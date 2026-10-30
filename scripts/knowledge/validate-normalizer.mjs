@@ -22,6 +22,9 @@ if (records.some((record) => record.metric !== 'Nacional. Índice general. Índi
 if (records[0].period !== '2025-12' || records[1].period !== '2025-11') throw new Error('INE periods were not normalized');
 if (records.some((record) => record.metric === 'FK_Unidad' || record.metric === 'FK_Escala')) throw new Error('INE implementation fields were emitted as metrics');
 
+const flagged = normalizeJsonPayload({ id: ['time'], size: [2], dimension: { time: { category: { index: { '2024': 0, '2025': 1 }, label: { '2024': '2024', '2025': '2025' } } } }, value: { '0': 100, '1': 103 }, status: { '0': 'b', '1': 'p' } }, { id: 'source-jsonstat', title: 'Flagged statistical series' });
+if (flagged[0].status !== 'b' || flagged[1].status !== 'p') throw new Error('JSON-stat observation status flags were lost');
+
 const boeRecords = normalizeJsonPayload({
   data: { sumario: { metadatos: { fecha_publicacion: '20260718' }, diario: [{ seccion: [{ nombre: 'I. Disposiciones generales', departamento: [{ nombre: 'MINISTERIO DE PRUEBA', epigrafe: [{ nombre: 'Normas', item: { identificador: 'BOE-A-1', titulo: 'Una disposición de prueba', url_html: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-1' } }] }] }] }] } },
 }, { id: 'source-boe-fixture', title: 'BOE fixture' });

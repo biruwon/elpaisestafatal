@@ -16,12 +16,12 @@ import { checkFromCatalogue, checkFromPlan, processingCheck, unavailableCheck } 
 import { reviewedContextualAnswer } from '../lib/reviewed-contextual-answer.mjs';
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 import { captureClaimDemand, type ClaimDemandDatabase } from '../lib/claim-demand';
-import { searchD1Warehouse } from '../lib/d1-warehouse';
+import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-warehouse';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-measurement-focus-21-2026-10';
+const responseCacheVersion = 'claim-measurement-focus-22-real-wages-2026-10';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -262,7 +262,13 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // from the mirror populated by the daily refresh workflow.
     let warehouseRecords: Record<string, unknown>[] | undefined;
     if (env.DB && body.inputType === 'text') {
-      try { warehouseRecords = await searchD1Warehouse(env.DB, effectiveClaim); } catch { /* Fall back to the local source snapshot if D1 is unavailable. */ }
+      const comparisonMetrics = claimFocusFor(effectiveClaim)?.id === 'real-wages' ? ['annual_hourly_wage_index', 'annual_hicp_index'] : [];
+      const [contractRows, searchRows] = await Promise.all([
+        comparisonMetrics.length ? searchD1WarehouseByMetricIds(env.DB, comparisonMetrics).catch(() => []) : Promise.resolve([]),
+        searchD1Warehouse(env.DB, effectiveClaim).catch(() => []),
+      ]);
+      // Put the typed series first: the downstream payload has a 500-row cap.
+      warehouseRecords = [...new Map([...contractRows, ...searchRows].map((row) => [row.id, row])).values()].slice(0, 500);
     }
     const isMultipart = Boolean(body.file);
     const payload = isMultipart ? (() => {

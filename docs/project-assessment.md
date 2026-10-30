@@ -126,8 +126,34 @@ specific result when a provisional topic answer was shown first. These checks
 do not establish accuracy for every possible claim or replace source review.
 
 Important remaining source work includes comparable wage-and-price series for
-real-wage changes, local rental availability and the distribution of rental
-costs relative to earnings, service-quality perceptions and their comparison
-with public revenue, and evidence on private insurance and waiting times. When
-those measurements are absent, the result must describe the gap rather than
-convert a nearby national statistic into a verdict.
+net pay and specific occupations or demographic groups, local rental
+availability and the distribution of rental costs relative to earnings,
+service-quality perceptions and their comparison with public revenue, and
+evidence on private insurance and waiting times. When those measurements are
+absent, the result must describe the gap rather than convert a nearby national
+statistic into a verdict.
+
+## Aligned wage and price evidence
+
+The text resolver can compare an annual gross wage index per hour worked with
+the annual average harmonised consumer price index for Spain. Both are sourced
+from Eurostat: the wage series is the D11 component for NACE B–S of the
+[annual labour cost index](https://ec.europa.eu/eurostat/cache/metadata/EN/lci_esms.htm),
+and the price series is the all-items annual average HICP. The calculation
+divides the wage-index growth factor (end value divided by start value) by the
+price-index growth factor for the same years; it does not subtract or divide
+percentage changes. For the 2020–2025
+observations available on 30 October 2026, this yields an approximate 4.6%
+decline, while the 2018–2025 comparison yields an approximate 1.0% increase.
+Those are different periods, not contradictory results.
+
+The series measures gross wages and salaries per hour for employees in
+industry, construction and services. It excludes agriculture and household
+employers, is not median or take-home pay, and may be affected by shifts in
+employment composition. The HICP is a harmonised price index, not a complete
+cost-of-living index for each household. The comparison cannot establish that
+each worker or every year had the same experience, or attribute causes. The resolver requires matching
+annual periods, a consistent source revision and valid source flags; a missing
+year or a break in the series prevents a numeric comparison. It does not apply
+the aggregate result as a direct answer about a particular sex, age, occupation,
+minimum wage, net pay, foreign country or locality.

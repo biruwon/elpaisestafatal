@@ -40,6 +40,10 @@ const flattenJsonStat = (payload, source) => {
     dimensions: Object.fromEntries(coordinate.map((value, index) => [dimensions[index].id, value])),
     dimensionLabels: dimensionLabels(payload, coordinate, dimensions),
     value: valueAt(payload.value, position),
+    // JSON-stat status flags qualify individual observations (for example a
+    // provisional estimate or a break in a time series). Keep them with the
+    // numeric cell instead of silently dropping the source's warning.
+    ...(typeof valueAt(payload.status, position) === 'string' ? { status: valueAt(payload.status, position) } : {}),
     unit: unitLabel(payload, coordinate, dimensions),
   }));
 };

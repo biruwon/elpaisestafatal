@@ -45,8 +45,8 @@ const focuses = [
   },
   {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
-    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* reales|perdi\w* poder)\b/.test(t),
-    direct: [], context: ['median_hourly_earnings', 'cpi_index'],
+    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t),
+    direct: [], context: ['annual_hourly_wage_index', 'annual_hicp_index', 'median_hourly_earnings', 'cpi_index'],
     needs: ['una serie salarial y una de precios con las mismas fechas', 'salario bruto o neto y población', 'cambio acumulado descontando inflación'],
     explanation: 'El poder adquisitivo cambia según cuánto sube el salario respecto a los precios. Hay que comparar ambas series entre las mismas fechas.',
     limitation: 'Un salario nominal o un IPC aislado no demuestra una pérdida salarial real. Tampoco la temporalidad o la cuña fiscal responden a esa comparación.',

@@ -277,6 +277,18 @@
       "metricId": "temporary_employment_rate_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_a?geo=ES&nace_r2=B-S&lcstruct=D11&unit=I20&sinceTimePeriod=2010",
+      "title": "Índice anual de salarios y sueldos brutos por hora en España · Eurostat",
+      "aliases": ["índice anual de salarios por hora", "evolución del coste salarial por hora", "índice de sueldos y salarios por hora"],
+      "metricId": "annual_hourly_wage_index"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_ainr?geo=ES&coicop18=TOTAL&unit=INX_A_AVG&sinceTimePeriod=2010",
+      "title": "Índice armonizado anual medio de precios en España · Eurostat",
+      "aliases": ["índice armonizado anual de precios", "media anual del IPC armonizado", "precios de consumo promedio anual"],
+      "metricId": "annual_hicp_index"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses_pub2s?geo=ES&sizeclas=GE10&sex=T&unit=EUR&sinceTimePeriod=2010",
       "title": "Salario bruto mediano por hora en España · Eurostat",
       "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],
