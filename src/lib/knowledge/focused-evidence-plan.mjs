@@ -126,6 +126,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const direct = facts.filter((fact) => directIds.includes(fact.id));
   const context = facts.filter((fact) => !directIds.includes(fact.id));
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
+  const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
+  const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanation?.sources || []).map((source) => source.id)])];
   const missing = direct.length ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, 2);
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
@@ -138,7 +140,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const gap = !direct.length ? `Falta una medición directa de ${needs.join('; ')}.` : '';
   const reply = [explanation ? explanation.facts.join('\n\n') : focus.explanation, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanation ? '' : gap,
     direct.length ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), focus.limitation].filter(Boolean).join('\n\n');
-  const evidenceLevel = facts.length || explanation ? 'limited' : 'insufficient';
+  const evidenceLevel = directEvidenceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);
     return {
@@ -150,7 +152,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       evidenceIds: matching.flatMap((fact) => fact.items.map((item) => item.id)).filter(Boolean),
       sourceIds: [...new Set(matching.flatMap((fact) => fact.sourceIds))],
       dimensions: matching.length === 1 ? { subject: focus.label, period: matching[0].latest.period, geography: matching[0].latest.geography || matching[0].latest.dimensionLabels?.geo,
-        population: matching[0].latest.population || vocabulary.get(id)?.population, denominator: matching[0].latest.denominator, unit: matching[0].latest.unit } : undefined,
+        population: matching[0].latest.population || vocabulary.get(id)?.population, denominator: matching[0].latest.denominator, unit: unitFor(matching[0].latest) } : undefined,
       ...(directIds.includes(id) ? {} : { missingDimensions: needs }),
     };
   });
@@ -160,7 +162,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
     interpretation: { kind: 'quantitative', subject: focus.label, predicate: 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
-      { type: 'claim_breakdown', items: [{ text: claim, type: 'descriptive', explicit: true }], propositionIds: ['submitted-claim'] },
+      { type: 'claim_breakdown', items: [{ text: claim, type: 'descriptive', explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
+        verdict: 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
+        finding: explanation ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
       ...(explanation ? [{ type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [fact.finding] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: needs, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),

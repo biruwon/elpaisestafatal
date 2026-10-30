@@ -1,6 +1,7 @@
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
+import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 
 const visualsFromPlan = (plan) => {
   const planned = plan.visuals?.length ? plan.visuals : plan.visual ? [plan.visual] : [];
@@ -50,7 +51,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       id: `evidence-${blockIndex + 1}-${pointIndex + 1}`,
       label: pointIndex ? 'Contexto' : 'Dato respaldado',
       finding,
-      sourceIds: Array.isArray(block.evidenceIds) ? block.evidenceIds : [],
+      sourceIds: sourcesForEvidenceIds(plan, Array.isArray(block.evidenceIds) ? block.evidenceIds : []),
     })));
   const plannedVisuals = visualsFromPlan(plan);
   const shareableSourceIds = Array.isArray(plan.shareableSourceIds) ? plan.shareableSourceIds : [];

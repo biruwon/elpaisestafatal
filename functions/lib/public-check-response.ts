@@ -3,6 +3,7 @@ import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment, CheckScorecard } from '../../src/lib/knowledge/public-check';
 import { composeFamilyReply } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
 
 // Interpretation confidence, model metadata and extraction provenance are
@@ -37,10 +38,10 @@ const replyFromPlan = (plan?: AnswerPlan): string => {
 const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
   const points = 'points' in block ? block.points || [] : [];
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
-  return points.map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: evidenceIds }));
+  return points.map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: sourcesForEvidenceIds(plan, evidenceIds) }));
 }).concat(plan.blocks.filter((block) => block.type === 'scorecard').flatMap((block, index) => {
   if (!('items' in block) || !Array.isArray(block.items)) return [];
-  return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: item.evidenceIds || [] }));
+  return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: sourcesForEvidenceIds(plan, item.evidenceIds || []) }));
 }));
 const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
   const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
@@ -116,7 +117,7 @@ const scorecardFromPlan = (plan: AnswerPlan, sources: CheckSource[]): CheckScore
       label: publicMetricLabel(item.label), unit: item.unit || 'valor',
       baseline: item.baseline, comparison: item.comparison, change: item.change,
       direction: item.direction, caveat: item.caveat,
-      sources: item.evidenceIds.map((id) => sourceById.get(id)).filter((source): source is CheckSource => Boolean(source)),
+      sources: sourcesForEvidenceIds(plan, item.evidenceIds).map((id: string) => sourceById.get(id)).filter((source: CheckSource | undefined): source is CheckSource => Boolean(source)),
     })),
   };
 };
