@@ -1,4 +1,5 @@
 import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
+import assert from 'node:assert/strict';
 
 const source = { id: 'eurostat', title: 'Desempleo en Europa', url: 'https://ec.europa.eu/eurostat/' };
 const records = [
@@ -39,6 +40,19 @@ const educationComparisonRecords = [
 ];
 const educationComparison = summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la Unión Europea?', educationComparisonRecords);
 if (!educationComparison || educationComparison.metricId !== 'early_school_leaving_rate_europe' || !educationComparison.summary.includes('12,8') || !educationComparison.summary.includes('9,1') || !educationComparison.points.some((point) => point.includes('3,7 puntos porcentuales más')) || !educationComparison.reply.includes('tasa española de abandono escolar temprano fue más alta')) throw new Error('European education comparison did not preserve the same-period Spain/EU comparison or education denominator caveat');
+for (const status of ['d', 'u', 'z']) {
+  const flagged = educationComparisonRecords.map((item, index) => index === 0 ? { ...item, status } : item);
+  assert.equal(summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la UE?', flagged).comparisonBlocked, true);
+  assert.equal(summarizeWarehouseRanking('¿España tiene la tasa más alta de Europa?', flagged).comparisonBlocked, true);
+}
+const estimated = educationComparisonRecords.map((item, index) => index === 0 ? { ...item, status: 'pe' } : item);
+assert.match(summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la UE?', estimated).reply, /provisional.*estimado/);
+const samePeriodBreak = educationComparisonRecords.map((item, index) => index === 0 ? { ...item, status: 'b' } : item);
+assert.notEqual(summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la UE?', samePeriodBreak).comparisonBlocked, true);
+const flaggedRegional = regionalRecords.map((item) => item.id === 'madrid-2024' ? { ...item, status: 'd' } : item);
+assert.equal(summarizeWarehouseRegionalComparison('Madrid tiene más densidad que Andalucía', flaggedRegional).comparisonBlocked, true);
+const incompatibleEuropean = educationComparisonRecords.map((item, index) => index === 1 ? { ...item, dimensions: { ...item.dimensions, age: 'Y25-34' } } : item);
+assert.equal(summarizeWarehouseEuropeanComparison('¿España tiene más abandono escolar que la UE?', incompatibleEuropean), null, 'Do not compare different population definitions');
 const neetComparisonRecords = [
   { id: 'neet-es-2025', metricId: 'neet_rate_europe', datasetId: 'NEET comparison', value: 11.5, unit: 'Percentage of population aged 15 to 29', period: '2025', dimensions: { geo: 'ES', age: 'Y15-29', sex: 'T', training: 'NO_FE_NO_NFE', wstatus: 'NEMP' }, dimensionLabels: { geo: 'Spain' }, source },
   { id: 'neet-eu-2025', metricId: 'neet_rate_europe', datasetId: 'NEET comparison', value: 11, unit: 'Percentage of population aged 15 to 29', period: '2025', dimensions: { geo: 'EU27_2020', age: 'Y15-29', sex: 'T', training: 'NO_FE_NO_NFE', wstatus: 'NEMP' }, dimensionLabels: { geo: 'European Union - 27 countries (from 2020)' }, source },

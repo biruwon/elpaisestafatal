@@ -1,5 +1,6 @@
 import { metricCandidatesForIds } from './metric-query-hints.mjs';
 import { staleSourceReason, freshnessDecision } from './source-freshness.mjs';
+import { observationFlagNotes } from '../../src/lib/knowledge/observation-quality.mjs';
 
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
@@ -131,6 +132,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   const selected = ranked.slice(0, maxFamilies).map(({ candidate, items, freshness }) => {
     const finding = findingFor(items, candidate, query);
     const stale = freshness !== 'fresh';
+    const qualityNotes = [...new Set(items.flatMap((item) => observationFlagNotes(item.status)))].join(' ');
     return {
       metricId: candidate.metricId,
       family: candidate.family,
@@ -138,7 +140,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
       finding: finding.finding,
       direction: finding.direction,
       evidenceIds: items.map((item) => item.id).filter(Boolean),
-      limitation: stale ? `${finding.limitation} ${freshness === 'stale' ? 'La fuente necesita una actualización' : 'No se ha podido verificar la fecha de consulta de la fuente'}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation,
+      limitation: `${stale ? `${finding.limitation} ${freshness === 'stale' ? 'La fuente necesita una actualización' : 'No se ha podido verificar la fecha de consulta de la fuente'}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation}${qualityNotes ? ` ${qualityNotes}` : ''}`,
       freshness,
       dataKind: items.every((item) => (item.dataKind || 'observed') === (items[0]?.dataKind || 'observed')) ? items[0]?.dataKind || 'observed' : 'context',
       period: [...new Set(items.map((item) => item.period).filter(Boolean))].sort().join(' · '),

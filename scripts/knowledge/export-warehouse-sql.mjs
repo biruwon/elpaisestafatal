@@ -55,7 +55,9 @@ for (const manifest of latestManifests.values()) {
   sourceCount += 1;
   const emittedDatasets = new Set();
   for (const record of Array.isArray(payload.records) ? payload.records : []) {
-    if (!(typeof record.value === 'number' && Number.isFinite(record.value)) && !['official_publication', 'legal_document', 'legal_rule'].includes(record.kind) && !record.finding) continue;
+    // Retain a break flag even when the corresponding statistical cell has no
+    // value; otherwise downstream comparisons could silently cross the break.
+    if (!(typeof record.value === 'number' && Number.isFinite(record.value)) && !String(record.status || '').toLowerCase().includes('b') && !['official_publication', 'legal_document', 'legal_rule'].includes(record.kind) && !record.finding) continue;
     const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
     const dimensions = JSON.stringify(record.dimensions || {});
     const dimensionLabels = JSON.stringify(record.dimensionLabels || {});

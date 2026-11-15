@@ -229,7 +229,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
     const matched = wanted.filter((token) => available.has(token));
     const contract = metricIds?.has(record.metricId);
     return { record, score: Math.max(contract ? 0.5 : 0, wanted.length ? matched.length / wanted.length : 0), matched: matched.length, matchedTokens: matched, contract };
-  }).filter(({ score, matched, record, contract }) => (contract || score >= 0.34 && matched >= 2) && (typeof record.value === 'number' && Number.isFinite(record.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
+  }).filter(({ score, matched, record, contract }) => (contract || score >= 0.34 && matched >= 2) && (typeof record.value === 'number' && Number.isFinite(record.value) || record.value == null && String(record.status || '').toLowerCase().includes('b') || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
     .sort((left, right) => right.score - left.score || right.matched - left.matched)
     .slice(0, limit)
     .map(({ record, score, matchedTokens }) => ({

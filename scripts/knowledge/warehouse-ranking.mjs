@@ -1,3 +1,6 @@
+import { comparisonQuality } from '../../src/lib/knowledge/observation-quality.mjs';
+import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
+
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 const metricPrecision = { household_electricity_price_europe: 4 };
 const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-ES', { maximumFractionDigits: metricPrecision[metricId] || 2 });
@@ -37,23 +40,35 @@ const regionMatches = (query, region) => {
 export const requestedSpanishRegions = (query) => spanishRegions.filter((region) => regionMatches(query, region));
 
 export const summarizeWarehouseRegionalComparison = (text, observations) => {
+  observations = preferLatestSourceRevisions(observations);
   const regions = requestedSpanishRegions(text);
   if (regions.length < 2) return null;
   const regional = observations.filter((item) => item.metricId === 'regional_population_density' && /^ES\d/.test(String(item.dimensions?.geo || '')));
   if (!regional.length) return null;
-  const matching = regions.map((region) => ({ region, observations: regional.filter((item) => regionMatches(region.label, { aliases: [regionName(item)] })) }));
-  if (matching.some((item) => !item.observations.length)) return null;
-  const commonPeriods = matching.reduce((periods, item) => {
-    const values = new Set(item.observations.map((observation) => String(observation.period)));
-    return new Set([...periods].filter((period) => values.has(period)));
-  }, new Set(matching[0].observations.map((observation) => String(observation.period))));
-  const period = [...commonPeriods].sort((left, right) => right.localeCompare(left))[0];
-  if (!period) return null;
-  const rows = matching.map(({ region, observations: items }) => ({ region, item: items.find((item) => String(item.period) === period) })).filter((item) => item.item);
+  const groups = new Map();
+  for (const item of regional) groups.set(baseKey(item), [...(groups.get(baseKey(item)) || []), item]);
+  const choices = [...groups.values()].flatMap((items) => {
+    const matching = regions.map((region) => ({ region, observations: items.filter((item) => regionMatches(region.label, { aliases: [regionName(item)] })) }));
+    if (matching.some((item) => !item.observations.length)) return [];
+    const common = matching.reduce((periods, item) => {
+      const values = new Set(item.observations.map((observation) => String(observation.period)));
+      return new Set([...periods].filter((period) => values.has(period)));
+    }, new Set(matching[0].observations.map((observation) => String(observation.period))));
+    return [...common].map((period) => ({ period, rows: matching.map(({ region, observations: values }) => ({ region, item: values.find((item) => String(item.period) === period) })) }));
+  }).sort((left, right) => right.period.localeCompare(left.period));
+  const { period, rows } = choices[0] || {};
+  if (!rows) return null;
   if (rows.length < 2) return null;
   const unit = 'personas por km²';
   const values = rows.map(({ region, item }) => `${region.label}: ${formatNumber(item.value)} ${unit}`);
   const [first, second] = rows;
+  const quality = comparisonQuality(rows.map(({ item }) => item));
+  if (quality.blocked) return {
+    regional: true, comparisonBlocked: true, observations: rows.map(({ item }) => item),
+    headline: `Densidad de población en ${period}: comparación pendiente`, summary: quality.reason,
+    points: [...values, quality.reason, ...quality.notes], reply: quality.reason,
+    replyEvidenceIds: rows.map(({ item }) => item.id),
+  };
   const comparison = Number(first.item.value) === Number(second.item.value)
     ? 'registran la misma densidad'
     : Number(first.item.value) > Number(second.item.value)
@@ -67,8 +82,9 @@ export const summarizeWarehouseRegionalComparison = (text, observations) => {
     points: [
       ...values,
       'La comparación usa densidad de población: personas por kilómetro cuadrado; no mide por sí sola saturación de servicios ni calidad de vida.',
+      ...quality.notes,
     ],
-    reply: `En ${period}, ${first.region.label} registra ${formatNumber(first.item.value)} ${unit} y ${second.region.label} ${formatNumber(second.item.value)} ${unit}. Es una comparación de densidad, no una explicación automática de las diferencias entre territorios.`,
+    reply: `En ${period}, ${first.region.label} registra ${formatNumber(first.item.value)} ${unit} y ${second.region.label} ${formatNumber(second.item.value)} ${unit}. Es una comparación de densidad, no una explicación automática de las diferencias entre territorios.${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`,
     replyEvidenceIds: rows.map(({ item }) => item.id),
   };
 };
@@ -370,6 +386,7 @@ const europeanComparisonDefinitions = {
 };
 
 export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
+  observations = preferLatestSourceRevisions(observations);
   const definition = observations.map((item) => europeanComparisonDefinitions[item.metricId]).find(Boolean);
   if (!definition) return null;
   const metricId = Object.keys(europeanComparisonDefinitions).find((id) => europeanComparisonDefinitions[id] === definition);
@@ -377,19 +394,26 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
   if (!candidate.length) return null;
   const byPeriod = new Map();
   candidate.forEach((item) => {
-    const rows = byPeriod.get(String(item.period)) || [];
+    const key = JSON.stringify([baseKey(item), String(item.period)]);
+    const rows = byPeriod.get(key) || [];
     rows.push(item);
-    byPeriod.set(String(item.period), rows);
+    byPeriod.set(key, rows);
   });
-  const period = [...byPeriod.keys()].sort((left, right) => right.localeCompare(left)).find((value) => {
-    const rows = byPeriod.get(value) || [];
-    return rows.some(isSpainObservation) && rows.some(isEuropeanUnionObservation);
-  });
-  if (!period) return null;
-  const rows = byPeriod.get(period) || [];
+  const rows = [...byPeriod.values()].filter((items) => items.some(isSpainObservation) && items.some(isEuropeanUnionObservation))
+    .sort((left, right) => String(right[0].period).localeCompare(String(left[0].period)) || (Date.parse(right[0].source?.retrievedAt || '') || 0) - (Date.parse(left[0].source?.retrievedAt || '') || 0))[0];
+  if (!rows) return null;
+  const period = String(rows[0].period);
   const spain = rows.find(isSpainObservation);
   const europeanUnion = rows.find(isEuropeanUnionObservation);
   if (!spain || !europeanUnion) return null;
+  const quality = comparisonQuality([spain, europeanUnion]);
+  if (quality.blocked) return {
+    european: true, metricId, comparisonBlocked: true, observations: [spain, europeanUnion],
+    headline: `${definition.label}: comparación pendiente (${period})`, summary: quality.reason,
+    points: [`España: ${formatNumber(spain.value, metricId)} ${definition.unit}.`, `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`, quality.reason, ...quality.notes],
+    reply: `En ${period}, la fuente registra ${formatNumber(spain.value, metricId)} ${definition.unit} para España y ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} para la Unión Europea. ${quality.reason}`,
+    replyEvidenceIds: [spain.id, europeanUnion.id],
+  };
   const difference = Number(spain.value) - Number(europeanUnion.value);
   const directionIndex = Math.abs(difference) < 0.000001 ? 2 : difference > 0 ? 0 : 1;
   const direction = directionIndex === 2 ? 'al mismo ritmo que' : directionIndex === 0 ? 'por encima de' : 'por debajo de';
@@ -404,13 +428,15 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
       `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`,
       `Diferencia: ${formatNumber(Math.abs(difference), metricId)} ${definition.differenceUnit || 'puntos porcentuales'} ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
       definition.method,
+      ...quality.notes,
     ],
-    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value, metricId)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value, metricId)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}`,
+    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value, metricId)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value, metricId)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
 };
 
 export const summarizeWarehouseRanking = (text, observations) => {
+  observations = preferLatestSourceRevisions(observations);
   const query = normalise(text);
   const queryTerms = new Set(query.split(' ').filter(Boolean));
   const internationalRegionalQuery = ['europa', 'europea', 'europeas', 'union europea', 'paises europeos', 'comparar paises'].some((term) => query.includes(term)) || queryTerms.has('ue');
@@ -443,6 +469,13 @@ export const summarizeWarehouseRanking = (text, observations) => {
   const rawUnit = String(spain?.unit || rows[0].unit || '').trim();
   const unit = isRegionalDensity ? 'personas por km²' : normalise(rawUnit) === 'percentage of population in the labour force' ? '%' : rawUnit;
   const suffix = unit ? ` ${unit}` : '';
+  const quality = comparisonQuality(rows);
+  if (quality.blocked) return {
+    comparisonBlocked: true, observations: rows,
+    headline: `${metric}: clasificación pendiente (${period})`, summary: quality.reason,
+    points: [quality.reason, ...quality.notes], reply: quality.reason,
+    replyEvidenceIds: rows.map((item) => item.id),
+  };
   const highest = rows[0];
   const claimsLowest = query.includes('mas baja') || query.includes('mas bajo') || query.includes('menor');
   const claimsHighest = !claimsLowest && (query.includes('mas') || query.includes('mayor') || query.includes('alta') || query.includes('alto'));
@@ -452,6 +485,7 @@ export const summarizeWarehouseRanking = (text, observations) => {
     `El valor más alto del conjunto es ${formatNumber(highest.value)}${suffix} (${countryName(highest)}).`,
   ];
   if ((claimsHighest || claimsLowest) && spain) points.push(matchesClaim ? 'España ocupa la posición que expresa la afirmación en este conjunto y periodo.' : 'España no ocupa la posición que expresa la afirmación en este conjunto y periodo.');
+  points.push(...quality.notes);
   return {
     observations: rows,
     headline: isRegionalDensity ? `La mayor densidad regional en ${period}` : `${metric}: ranking comparable de ${period}`,
@@ -462,7 +496,7 @@ export const summarizeWarehouseRanking = (text, observations) => {
         : `Se ha localizado una comparación de ${rows.length} territorios para ${period}.`,
     points,
     reply: spain
-      ? `En ${period}, España aparece en el puesto ${spainIndex + 1} de ${rows.length} territorios con ${formatNumber(spain.value)}${suffix}. El resultado depende de esta definición, población y conjunto de países.`
+      ? `En ${period}, España aparece en el puesto ${spainIndex + 1} de ${rows.length} territorios con ${formatNumber(spain.value)}${suffix}. El resultado depende de esta definición, población y conjunto de países.${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`
       : isRegionalDensity
         ? `En ${period}, ${countryName(highest)} registra la mayor densidad del conjunto localizado con ${formatNumber(highest.value)}${suffix}. La densidad no mide por sí sola la presión sobre servicios o la calidad de vida.`
         : 'La comparación localizada no incluye una observación identificable de España.',

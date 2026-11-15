@@ -37,6 +37,7 @@ const rows = await searchD1WarehouseByMetricIds(d1, ids);
 assert.equal(rows.length, 13);
 assert.equal(rows.find((row) => row.id === 'w-2025').status, 'p', 'The D1 payload lost its provisional flag');
 assert.equal(rows.find((row) => row.id === 'w-2020').source.id, 'wages');
+assert.equal(rows.find((row) => row.id === 'w-2020').source.publishedAt, undefined, 'A missing D1 publication date must remain optional');
 const ranked = rankWarehouseObservations('índice anual de salarios y precios', rows, 100, { metricIds: new Set(ids) });
 assert.equal(ranked.find((row) => row.id === 'w-2025').status, 'p', 'Retrieval lost its provisional flag');
 const plan = realWagePlan('Los salarios pierden poder adquisitivo frente a los precios', { observations: ranked, now });

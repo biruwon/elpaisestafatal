@@ -62,7 +62,7 @@ const hydrateRows = (rows: WarehouseRow[]): Record<string, unknown>[] => rows.ma
     periodType: payload.periodType, comparison: payload.comparison, quantities: payload.quantities, limitations: payload.limitations,
     source: {
       id: row.source_id, publisher: row.publisher, title: row.title || row.publisher, url: row.source_url,
-      publishedAt: row.published_at, retrievedAt: row.retrieved_at, trust: row.trust_tier,
+      publishedAt: row.published_at ?? undefined, retrievedAt: row.retrieved_at, trust: row.trust_tier,
       aliases: Array.isArray(parseJson<unknown>(row.aliases_json, [])) ? parseJson<string[]>(row.aliases_json, []) : [],
       sourceRegistryId: row.source_registry_id, schedule: row.schedule, domain: payload.sourceDomain,
     },
@@ -88,15 +88,23 @@ export const searchD1Warehouse = async (database: D1Database, query: string): Pr
   const terms = tokens(query);
   if (terms.length < 2) return [];
   const match = terms.map((term) => `${term}*`).join(' OR ');
-  const rows = await database.prepare(`
+  const queryRows = async (year?: string, qualityFlags = false) => database.prepare(`
     SELECT ${warehouseColumns}
     FROM observations_fts
     JOIN observations o ON o.rowid = observations_fts.rowid
     JOIN source_documents s ON s.id = o.source_document_id
-    WHERE observations_fts MATCH ?
+    WHERE observations_fts MATCH ? ${year ? 'AND o.period LIKE ?' : ''}
+      ${qualityFlags ? "AND CASE WHEN json_valid(o.payload_json) THEN lower(COALESCE(json_extract(o.payload_json, '$.status'), '')) NOT IN ('', 'p', 'e', 'pe', 'ep') ELSE 0 END" : ''}
     ORDER BY bm25(observations_fts), o.period DESC
-    LIMIT 500
-  `).bind(match).all<WarehouseRow>();
+    LIMIT ${year || qualityFlags ? 100 : 500}
+  `).bind(...(year ? [match, `${year}%`] : [match])).all<WarehouseRow>();
 
-  return hydrateRows(rows.results);
+  // A monthly source can occupy the entire search window with recent points.
+  // Reserve space for requested years before applying the public payload cap.
+  const normalized = query.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const years = /\b(?:desde|entre)\b/.test(normalized) || /\b(?:de|del)\b.*\b(?:a|hasta|y)\b/.test(normalized)
+    ? [...new Set(normalized.match(/\b(?:19|20)\d{2}\b/g) || [])].slice(0, 2) : [];
+  const results = await Promise.all([...years.map((year) => queryRows(year)), ...(years.length ? [queryRows(undefined, true)] : []), queryRows()]);
+  const unique = new Map(results.flatMap((result) => result.results).map((row) => [row.id, row]));
+  return hydrateRows([...unique.values()].slice(0, 500));
 };

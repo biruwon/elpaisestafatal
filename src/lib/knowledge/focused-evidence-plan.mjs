@@ -2,6 +2,7 @@ import { claimFocusFor, focusedMetricIdsFor } from './claim-focus.mjs';
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
+import { observationFlagNotes } from './observation-quality.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -74,19 +75,6 @@ const scopeKey = (item) => JSON.stringify({
 });
 const sourceValid = (source) => {
   try { return Boolean(source?.id && source?.title && new URL(source.url).protocol === 'https:'); } catch { return false; }
-};
-const observationFlagNotes = (status) => {
-  const flags = String(status || '').toLowerCase().replace(/[\s,]/g, '');
-  if (!flags) return [];
-  const notes = [
-    flags.includes('p') ? 'La fuente marca este dato como provisional.' : '',
-    flags.includes('e') ? 'La fuente marca este dato como estimado.' : '',
-    flags.includes('d') ? 'La fuente señala que la definición de este dato difiere; consulta sus metadatos antes de compararlo.' : '',
-    flags.includes('b') ? 'La fuente señala una ruptura en la serie; los periodos pueden no ser comparables.' : '',
-    flags.includes('u') ? 'La fuente advierte de baja fiabilidad para este dato.' : '',
-    /[^bdepu]/.test(flags) ? 'La fuente adjunta otra marca de calidad que debe revisarse en sus metadatos.' : '',
-  ];
-  return notes.filter(Boolean);
 };
 const factsForMetric = (id, observations, claim) => {
   const series = new Map();

@@ -1,3 +1,7 @@
+import { priceMeasurement, priceRateRequested } from '../../src/lib/knowledge/measurement-units.mjs';
+import { comparisonQuality, observationFlags } from '../../src/lib/knowledge/observation-quality.mjs';
+import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
+
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
 const metricPrecision = {
@@ -100,6 +104,12 @@ const offenceLabels = {
   'acts against computer systems': 'Delitos contra sistemas informáticos',
 };
 export const displayMetric = (item) => {
+  if (['house_price_index', 'rental_price_index'].includes(item.metricId)) {
+    const subject = item.metricId === 'rental_price_index' ? 'del alquiler' : 'de la vivienda';
+    const measurement = priceMeasurement(item);
+    return measurement.kind === 'rate' ? `Variación ${measurement.period} de los precios ${subject} en España`
+      : measurement.kind === 'index' ? `Índice de precios ${subject} en España` : `Medida de precios ${subject} en España`;
+  }
   if (item.metricId === 'recorded_offences') {
     const category = normalise(item.dimensionLabels?.iccs || item.dimensions?.iccs || '');
     return offenceLabels[category] ? `${offenceLabels[category]} registrados en España` : 'Delitos registrados en España';
@@ -128,8 +138,7 @@ const displayUnit = (item) => {
   if (metricId === 'unmet_healthcare_waiting_list_rate_europe') return '% de la población de 16 años o más';
   if (metricId === 'median_equivalised_income_europe') return 'PPS por persona';
   if (metricId === 'median_hourly_earnings' || metricId === 'median_hourly_earnings_europe') return '€ por hora';
-  if (metricId === 'house_price_index') return 'índice (2015=100)';
-  if (metricId === 'rental_price_index') return 'índice (2015=100)';
+  if (metricId === 'house_price_index' || metricId === 'rental_price_index') return priceMeasurement(item).unit;
   if (metricId === 'housing_cost_overburden_rate' || metricId === 'housing_cost_overburden_rate_europe' || metricId === 'older_population_share' || metricId === 'young_population_share' || metricId === 'arope_rate' || metricId === 'arope_rate_europe') return '% de la población';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'resident_population' || metricId === 'foreign_born_population' || metricId === 'foreign_citizenship_population' || metricId === 'immigration_flows') return 'personas';
@@ -147,7 +156,7 @@ const displayUnit = (item) => {
   return String(item.unit || '').trim();
 };
 const deltaUnit = (unit) => {
-  if (unit === 'índice (2015=100)') return 'puntos del índice';
+  if (unit.startsWith('índice')) return 'puntos del índice';
   if (unit.startsWith('%')) return 'puntos porcentuales';
   return unit;
 };
@@ -176,28 +185,60 @@ const seriesKey = (item) => JSON.stringify({
   dimensions: comparableDimensions(item),
 });
 
-export const compatibleTrendSeries = (observations) => {
+const trendGroup = (observations) => {
   const groups = new Map();
-  for (const item of observations) {
-    if (typeof item.value !== 'number' || !Number.isFinite(item.value) || !item.period) continue;
+  for (const item of preferLatestSourceRevisions(observations)) {
+    if ((!Number.isFinite(item.value) && !observationFlags(item.status).includes('b')) || !item.period) continue;
     const key = seriesKey(item);
     const group = groups.get(key) || [];
     group.push(item);
     groups.set(key, group);
   }
-  const best = [...groups.values()].sort((left, right) => right.length - left.length)[0] || [];
+  const best = [...groups.values()].sort((left, right) => right.filter((item) => Number.isFinite(item.value)).length - left.filter((item) => Number.isFinite(item.value)).length)[0] || [];
   return best.slice().sort((left, right) => String(left.period).localeCompare(String(right.period)));
 };
 
+export const compatibleTrendSeries = (observations) => trendGroup(observations).filter((item) => Number.isFinite(item.value));
+
 export const summarizeWarehouseTrend = (text, observations) => {
-  const numeric = compatibleTrendSeries(observations);
+  const group = trendGroup(observations);
+  let numeric = group.filter((item) => Number.isFinite(item.value));
   if (numeric.length < 2) return null;
+  const normalized = normalise(text);
+  const years = [...normalized.matchAll(/\b(?:19|20)\d{2}\b/g)].map((match) => match[0]);
+  const wantsRange = /\b(?:desde|entre)\b/.test(normalized) || (years.length >= 2 && /\b(?:de|del)\b/.test(normalized));
+  const requestedYears = wantsRange ? [...new Set(years)].slice(0, 2) : [];
+  const missing = requestedYears.find((year) => !numeric.some((item) => String(item.period).startsWith(year)));
+  const invalidRange = requestedYears.length > 1 && requestedYears[0] > requestedYears[1];
+  if (requestedYears.length && !missing && !invalidRange) {
+    const start = requestedYears[0];
+    const end = requestedYears[1];
+    numeric = numeric.filter((item) => String(item.period).slice(0, 4) >= start && (!end || String(item.period).slice(0, 4) <= end));
+  }
   const first = numeric[0];
   const latest = numeric[numeric.length - 1];
+  const metric = displayMetric(latest);
+  const measurement = ['house_price_index', 'rental_price_index'].includes(latest.metricId) ? priceMeasurement(latest) : null;
+  const relevant = group.filter((item) => String(item.period) >= String(first.period) && String(item.period) <= String(latest.period));
+  const quality = comparisonQuality(relevant, { temporal: true, firstPeriod: first.period });
+  const reason = missing ? `La serie recuperada no incluye ${missing}, el año solicitado; no podemos calcular el cambio pedido.`
+    : invalidRange ? 'El periodo solicitado está invertido; aclara qué año debe ser el inicio y cuál el final.'
+    : numeric.length < 2 ? 'No hay dos observaciones compatibles en el periodo solicitado.'
+    : measurement?.kind === 'unknown' ? 'La fuente no identifica con claridad si la unidad es un índice o una tasa; hay que revisar sus metadatos.'
+    : measurement?.kind === 'rate' && !priceRateRequested(text) ? 'La serie recuperada mide tasas de variación, no el nivel del índice de precios solicitado. Hace falta localizar el índice para responder.'
+    : quality.reason;
+  if (reason) return {
+    observations: numeric,
+    comparisonBlocked: true,
+    headline: `${metric}: comparación pendiente`,
+    summary: reason,
+    points: [reason, ...quality.notes],
+    reply: reason,
+    replyEvidenceIds: relevant.map((item) => item.id),
+  };
   const delta = latest.value - first.value;
   const unit = displayUnit(latest) || displayUnit(first);
   const suffix = unit ? ` ${unit}` : '';
-  const metric = displayMetric(latest);
   const direction = Math.abs(delta) < 0.000001 ? 'se mantuvo prácticamente estable' : delta < 0 ? 'bajó' : 'subió';
   const changeUnit = deltaUnit(unit);
   const change = `${formatNumber(Math.abs(delta), latest.metricId)}${changeUnit ? ` ${changeUnit}` : ''}`;
@@ -210,16 +251,18 @@ export const summarizeWarehouseTrend = (text, observations) => {
     `${metric} ${direction}, de ${formatNumber(first.value, first.metricId)}${suffix} (${firstPeriod}) a ${formatNumber(latest.value, latest.metricId)}${suffix} (${latestPeriod}).`,
     `El cambio entre esos dos puntos es de ${change}${delta < 0 ? ' menos' : delta > 0 ? ' más' : ''}.`,
   ];
-  if ((expectedLower || expectedHigher) && Math.abs(delta) >= 0.000001) {
+  if (expectedLower !== expectedHigher && Math.abs(delta) >= 0.000001) {
     const agrees = (expectedLower && delta < 0) || (expectedHigher && delta > 0);
     points.push(agrees ? 'La dirección de la serie coincide con la comparación expresada en la afirmación.' : 'La dirección de la serie no coincide con la comparación expresada en la afirmación.');
   }
+  points.push(...quality.notes);
+  const rateCaveat = measurement?.kind === 'rate' ? ' Una tasa positiva más baja indica que los precios siguen subiendo, pero más despacio; no implica que hayan bajado.' : '';
   return {
     observations: numeric,
     headline: `${metric}: comparación entre ${firstPeriod} y ${latestPeriod}`,
     summary: `${metric} ${direction} entre el primer y el último periodo localizado (${firstPeriod}–${latestPeriod}).`,
     points,
-    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} a ${formatNumber(latest.value, latest.metricId)}${suffix}. Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.${metricReplyCaveats[latest.metricId] || ''}`,
-    replyEvidenceIds: numeric.map((item) => item.id),
+    reply: `${metric} ${direction}: pasó de ${formatNumber(first.value, first.metricId)}${suffix} (${firstPeriod}) a ${formatNumber(latest.value, latest.metricId)}${suffix} (${latestPeriod}). Es una comparación descriptiva de la serie; por sí sola no demuestra la causa del cambio.${rateCaveat}${metricReplyCaveats[latest.metricId] || ''}${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`,
+    replyEvidenceIds: relevant.map((item) => item.id),
   };
 };
