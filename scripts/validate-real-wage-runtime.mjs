@@ -27,6 +27,8 @@ for (const [year, wage, price] of [[2018, 94.1, 81.69], [2019, 96.3, 82.33], [20
   records.push({ id: `wage-${year}`, metricId: 'annual_hourly_wage_index', value: wage, period: String(year), unit: 'Index, 2020=100', dimensions, source: wageSource });
   records.push({ id: `price-${year}`, metricId: 'annual_hicp_index', value: price, period: String(year), unit: 'Annual average index', dimensions: { freq: 'A', geo: 'ES', unit: 'INX_A_AVG', coicop18: 'TOTAL', time: String(year) }, source: priceSource });
 }
+records.push({ id: 'unemployment-2025', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', dimensions: { geo: 'ES', age: 'Y15-74', sex: 'T' }, source: { ...priceSource, id: 'unemployment-source', title: 'Tasa de paro de España' } });
+records.push({ id: 'temporary-2025', metricId: 'temporary_employment_rate', value: 14, period: '2025', unit: '%', geography: 'España', source: { ...priceSource, id: 'temporary-source', title: 'Temporalidad en España' } });
 try {
   await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`Resolver did not start: ${logs.slice(-1000)}`)), 20000);
@@ -57,6 +59,13 @@ try {
   const youth = await check('Los salarios de los jóvenes pierden poder adquisitivo frente a los precios');
   assert.equal(youth.evidenceLevel, 'insufficient');
   assert.doesNotMatch(youth.shareableReply, /4,6 %|1 %/);
+  for (const text of ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'No hay empleo temporal']) {
+    const opportunities = await check(text);
+    assert.equal(opportunities.id, 'measurement-job-opportunities', `A published topic alias replaced the availability question: ${text}`);
+    assert.equal(opportunities.evidenceLevel, 'insufficient');
+    assert.doesNotMatch(opportunities.shareableReply, /14 %|temporalidad laboral ha bajado/i);
+    assert.match(opportunities.shareableReply, /no cuenta los puestos disponibles/);
+  }
 } finally {
   child.kill('SIGTERM');
   await Promise.race([once(child, 'exit').catch(() => {}), new Promise((resolve) => setTimeout(resolve, 2000))]);

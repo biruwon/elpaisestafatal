@@ -34,6 +34,8 @@ const observationFitsClaim = (claim, item) => {
   return true;
 };
 const labels = {
+  unemployment_rate: 'Tasa de paro entre personas activas de 15 a 74 años',
+  unemployment_rate_europe: 'Tasa de paro entre personas activas de 15 a 74 años',
   median_hourly_earnings: 'Salario mediano bruto por hora',
   median_hourly_earnings_europe: 'Salario mediano bruto por hora en Europa',
   cpi_index: 'IPC general', harmonised_price_index: 'Índice armonizado de precios',
@@ -73,6 +75,19 @@ const scopeKey = (item) => JSON.stringify({
 const sourceValid = (source) => {
   try { return Boolean(source?.id && source?.title && new URL(source.url).protocol === 'https:'); } catch { return false; }
 };
+const observationFlagNotes = (status) => {
+  const flags = String(status || '').toLowerCase().replace(/[\s,]/g, '');
+  if (!flags) return [];
+  const notes = [
+    flags.includes('p') ? 'La fuente marca este dato como provisional.' : '',
+    flags.includes('e') ? 'La fuente marca este dato como estimado.' : '',
+    flags.includes('d') ? 'La fuente señala que la definición de este dato difiere; consulta sus metadatos antes de compararlo.' : '',
+    flags.includes('b') ? 'La fuente señala una ruptura en la serie; los periodos pueden no ser comparables.' : '',
+    flags.includes('u') ? 'La fuente advierte de baja fiabilidad para este dato.' : '',
+    /[^bdepu]/.test(flags) ? 'La fuente adjunta otra marca de calidad que debe revisarse en sus metadatos.' : '',
+  ];
+  return notes.filter(Boolean);
+};
 const factsForMetric = (id, observations, claim) => {
   const series = new Map();
   for (const item of observations.filter((row) => row.metricId === id && validNumber(row.value) && row.period && row.freshness !== 'invalid'
@@ -85,7 +100,22 @@ const factsForMetric = (id, observations, claim) => {
   }
   // Do not join two populations, territories, units, stages, or survey bases.
   return [...series.values()].slice(0, 3).map((items) => {
-    const rows = [...new Map(items.map((item) => [item.period, item])).values()].sort((a, b) => String(a.period).localeCompare(String(b.period)));
+    const periods = new Map();
+    for (const item of items) {
+      const candidates = periods.get(item.period) || [];
+      candidates.push(item);
+      periods.set(item.period, candidates);
+    }
+    const rows = [];
+    for (const candidates of periods.values()) {
+      candidates.sort((a, b) => (Date.parse(b.source?.retrievedAt || '') || 0) - (Date.parse(a.source?.retrievedAt || '') || 0) || String(a.id || '').localeCompare(String(b.id || '')));
+      const newestTime = Date.parse(candidates[0].source?.retrievedAt || '') || 0;
+      const newest = candidates.filter((item) => (Date.parse(item.source?.retrievedAt || '') || 0) === newestTime);
+      // Equal-time conflicting values or flags have no defensible winner.
+      if (newest.some((item) => item.value !== newest[0].value || String(item.status || '') !== String(newest[0].status || ''))) return null;
+      rows.push(newest[0]);
+    }
+    rows.sort((a, b) => String(a.period).localeCompare(String(b.period)));
     const latest = rows.at(-1);
     const value = `${number(latest.value, id)} ${unitFor(latest)}`.trim();
     const metric = vocabulary.get(id);
@@ -93,7 +123,7 @@ const factsForMetric = (id, observations, claim) => {
     const place = placeLabel(latest);
     const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}: ${value} (${periodLabel(latest.period)}).`;
     return { id, items: rows, latest, finding, scope, sourceIds: [...new Set(rows.map((item) => item.source.id))] };
-  });
+  }).filter(Boolean);
 };
 
 // This composer reports only the supplied observations. It cannot turn a
@@ -137,8 +167,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const primaryFacts = (direct.length ? direct : context).slice(0, 2);
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
     fact.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
-    /^[bep ,]*p[bep ,]*$/i.test(fact.latest.status || '') ? 'La fuente marca este dato como provisional.' : '',
-    /^[bep ,]*e[bep ,]*$/i.test(fact.latest.status || '') ? 'La fuente marca este dato como estimado.' : '',
+    ...observationFlagNotes(fact.latest.status),
     fact.latest.dimensions?.provisional === true ? 'Resultados provisionales de una oleada; no equivalen al año completo.' : '',
     /^primary_care_wait_/.test(fact.id) ? 'La encuesta se refiere a la última consulta de adultos en medicina de familia pública durante los 12 meses anteriores; excluye mutualidades con asistencia privada.' : '',
     /^household_electricity_price/.test(fact.id) && fact.latest.dimensions?.nrg_cons === 'TOT_KWH' && fact.latest.dimensions?.tax === 'I_TAX'

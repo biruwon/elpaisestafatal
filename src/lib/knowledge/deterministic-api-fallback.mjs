@@ -5,6 +5,7 @@ import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
 import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
+import { deterministicFallbackCompiler } from '../../../scripts/knowledge/fallback-compiler.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -52,13 +53,16 @@ const fallbackGuidance = (text, inputType) => {
   };
 };
 
-export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {}) => {
+export const deterministicApiFallback = ({ text = '', inputType = 'text', now = Date.now() } = {}) => {
   const original = String(text || '').trim().slice(0, 1200);
   const guidance = fallbackGuidance(original, inputType);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
   const meaning = measurementMeaningPlan(original);
   if (meaning) return { status: 'complete', result: meaning, relatedClaims: [] };
-  const focused = focusedEvidencePlan(original);
+  // A focused answer must not erase a second independent proposition while
+  // the warehouse-backed resolver is unavailable or still processing.
+  const propositions = deterministicFallbackCompiler(original).explicitPropositions;
+  const focused = focusedEvidencePlan(original, { propositions, now });
   if (focused) return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
   const related = topicReference(original);
   const institutionalLabel = spanishInstitutionalScope(original);
@@ -81,7 +85,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       },
     };
   }
-  if (broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
+  if (broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
       evidenceLevel: 'supported',
@@ -111,7 +115,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text' } = {})
       },
     };
   }
-  const broadDomainPlan = answerPlanForBroadDomains(original);
+  const broadDomainPlan = answerPlanForBroadDomains(original, { now });
   if (broadDomainPlan) {
     return {
       status: 'complete',

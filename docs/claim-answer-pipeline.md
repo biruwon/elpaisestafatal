@@ -90,7 +90,11 @@ bounded import batches. Historical raw snapshots remain available locally.
 Source refresh attempts each independent resource even when another publisher
 fails. Public and domain refresh reports preserve failures. Scheduled runs can
 sync successful validated sources and still finish with a failure status when
-the batch was incomplete.
+the batch was incomplete. The job must have the Cloudflare account ID and an
+appropriately scoped D1 token configured as repository secrets; without both,
+it reports that production was not synchronized instead of implying that the
+uploaded artifact refreshed the live database. A missing metric is reported in
+the coverage assessment without blocking the import of valid source snapshots.
 
 ## Submission contract
 

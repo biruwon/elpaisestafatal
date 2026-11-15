@@ -41,7 +41,7 @@ if (!ready) {
 
 const smoke = spawn(process.execPath, ['scripts/smoke-production.mjs'], {
   stdio: 'inherit',
-  env: { ...process.env, SMOKE_BASE_URL: base, SMOKE_ALLOW_OPERATIONAL_UNAVAILABLE: '1' },
+  env: { ...process.env, SMOKE_BASE_URL: base },
 });
 const exitCode = await new Promise((resolve) => smoke.once('exit', (code, signal) => resolve(code ?? (signal ? 1 : 0))));
 stop();

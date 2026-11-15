@@ -8,6 +8,10 @@ if (textPlan?.['sourceLinks'] || textPlan?.evidenceIds?.length) throw new Error(
 
 const housing = deterministicApiFallback({ text: 'La vivienda está imposible', inputType: 'text' });
 if (!/precios|alquileres|vivienda pública|disponibilidad/i.test(housing.guidance.questions[0])) throw new Error('topic-aware fallback lost housing guidance');
+for (const input of ['No hay trabajo y los salarios bajan', 'No hay trabajo y la vivienda es cara']) {
+  const result = deterministicApiFallback({ text: input, inputType: 'text' });
+  if (result.result?.id === 'measurement-job-opportunities') throw new Error(`A focused fallback silently discarded a separate proposition: ${input}`);
+}
 
 const political = deterministicApiFallback({ text: 'pedro sanchez está destruyendo españa', inputType: 'text' });
 if (political.relatedClaims?.[0]?.kind !== 'topic' || political.relatedClaims[0].slug !== 'politica') throw new Error('political fallback did not preserve topic-only context');
@@ -17,8 +21,11 @@ if (/impuestos/i.test(JSON.stringify(political))) throw new Error('political fal
 const broadPolitical = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });
 if (broadPolitical.relatedClaims?.[0]?.kind !== 'topic' || broadPolitical.relatedClaims[0].slug !== 'politica') throw new Error('broad political fallback did not preserve topic-only context');
 if (broadPolitical.result?.evidenceIds?.length || broadPolitical.result?.sourceIds?.length) throw new Error('broad political fallback invented evidence');
-const broadPositive = deterministicApiFallback({ text: 'España está mejorando', inputType: 'text' });
+const reviewedAt = Date.parse('2026-10-30T12:00:00Z');
+const broadPositive = deterministicApiFallback({ text: 'España está mejorando', inputType: 'text', now: reviewedAt });
 if (broadPositive.result?.evidenceLevel !== 'supported') throw new Error('positive broad political fallback did not produce a supported scorecard');
+const expiredPositive = deterministicApiFallback({ text: 'España está mejorando', inputType: 'text', now: Date.parse('2026-11-01T12:00:00Z') });
+if (expiredPositive.result?.blocks?.some((block) => block.type === 'scorecard')) throw new Error('expired scorecard must not be served as current evidence');
 
 for (const [input, expected] of [
   ['Pedro Sánchez está destruyendo el país', 'supported'],
@@ -26,7 +33,7 @@ for (const [input, expected] of [
   ['Los inmigrantes nos invaden', 'limited'],
   ['No se puede salir a la calle de cómo está el país', 'limited'],
 ]) {
-  const result = deterministicApiFallback({ text: input, inputType: 'text' });
+  const result = deterministicApiFallback({ text: input, inputType: 'text', now: reviewedAt });
   if (result.result?.evidenceLevel !== expected || !result.result?.sourceLinks?.length) throw new Error(`broad claim did not receive scoped evidence: ${input}`);
   const evidenceGap = result.result?.blocks?.find((block) => block.type === 'evidence_gap');
   if (evidenceGap && (!String(result.result?.knowledgeVersion || '').startsWith('broad-domain-snapshot-')

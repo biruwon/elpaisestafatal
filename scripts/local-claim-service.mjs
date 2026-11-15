@@ -2696,10 +2696,9 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const meaning = measurementMeaningPlan(text);
   if (meaning) return { status: 'complete', requestId: resultRequestId, result: meaning, relatedClaims: [] };
   const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, compiler, queryEmbedding, warehouseRecords);
-  // Enrichment must never replace a canonical published answer with a
-  // provisional warehouse composition. Resolve the normalized title/alias
-  // again at this boundary because this is where dynamic retrieval can
-  // otherwise overwrite a valid published classification.
+  // Preserve a canonical published answer. A short alias may express a
+  // different measurement from its editorial page, so focused measurement
+  // claims must not inherit an answer merely because an alias matches.
   const enrichmentIndex = await getIndex();
   const broadPacketAvailable = broadDomainPacketsFor(text).length > 0;
   if (!classified.primary && answerPlannerEnabled && !broadPacketAvailable) {
@@ -2716,7 +2715,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const enrichmentCompiler = deterministicFallbackCompiler(text);
   const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
   const canonicalPublished = !vagueTaxJudgement(text) && enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
-    && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));
+    && [entry.title, ...(claimFocusFor(text) ? [] : entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));
   if (process.env.LOCAL_DEBUG_ROUTING === '1' && !canonicalPublished) {
     console.error('Published canonical miss:', { text, enrichmentCanonical, entries: enrichmentIndex.entries.length, sample: enrichmentIndex.entries.filter((entry) => entry.slug === 'poblacion-residente-supera-49m').map((entry) => ({ kind: entry.kind, published: entry.published, title: entry.title, aliases: entry.aliases })) });
   }

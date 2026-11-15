@@ -105,12 +105,12 @@ export const parseCrimeSeriesText = (text) => {
 export const parsePublicHousingActionsText = (text) => {
   const rows = parseDelimited(text);
   return rows.map((row) => {
-    const year = valueFor(row, ['año', 'ano', 'year']);
+    const year = valueFor(row, ['año', 'ano', 'anio', 'year']);
     const month = numberFor(valueFor(row, ['mes', 'month']));
-    const geography = valueFor(row, ['provincia', 'comunidad autónoma', 'comunidad autonoma', 'territorio']) || null;
+    const geography = valueFor(row, ['provincia', 'nom_prov', 'comunidad autónoma', 'comunidad autonoma', 'nom_ccaa', 'territorio']) || null;
     const value = numberFor(valueFor(row, ['número de viviendas', 'numero de viviendas', 'num_viviendas', 'viviendas', 'value']));
     if (!/^\d{4}$/.test(String(year || '')) || !geography || value === null || !Number.isInteger(month) || month < 1 || month > 12) return null;
-    return { period: `${year}-${String(month).padStart(2, '0')}`, geography, population: 'actuaciones de vivienda protegida, no personas adjudicatarias', group: 'total', category: [valueFor(row, ['tipología', 'tipologia', 'tipo_vivienda']), valueFor(row, ['tipo_tramite']), valueFor(row, ['estado'])].filter(Boolean).join(' · '), value, metricId: 'public_housing_actions', metric: 'Actuaciones de vivienda protegida', unit: 'viviendas' };
+    return { period: `${year}-${String(month).padStart(2, '0')}`, geography, population: 'actuaciones de vivienda protegida, no personas adjudicatarias', group: 'total', category: [valueFor(row, ['tipología', 'tipologia', 'tipo_vivienda']), valueFor(row, ['tipo_tramite']), valueFor(row, ['estado', 'estado_tramitacion'])].filter(Boolean).join(' · '), value, metricId: 'public_housing_actions', metric: 'Actuaciones de vivienda protegida', unit: 'viviendas' };
   }).filter(Boolean);
 };
 

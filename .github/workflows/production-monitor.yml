@@ -31,5 +31,6 @@ jobs:
 
       - name: Check live static and clarification boundaries
         env:
-          SMOKE_ALLOW_OPERATIONAL_UNAVAILABLE: '1'
+          SMOKE_BASE_URL: https://elpaisestafatal.es
+          SMOKE_REQUIRE_TERMINAL: '1'
         run: npm run smoke:production

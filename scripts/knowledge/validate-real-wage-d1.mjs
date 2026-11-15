@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { build } from 'esbuild';
 import { rankWarehouseObservations } from './warehouse-query.mjs';
 import { realWagePlan } from '../../src/lib/knowledge/real-wage-comparison.mjs';
+import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 
 const compiled = await build({ entryPoints: ['functions/lib/d1-warehouse.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const { searchD1WarehouseByMetricIds } = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -17,6 +18,7 @@ const sources = [
   ['wages', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_a', recent],
   ['prices', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_ainr', recent],
   ['old-wages', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_a', older],
+  ['unemployment', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a', recent],
 ];
 const insertSource = database.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)');
 for (const [id, url, retrieved] of sources) insertSource.run(id, 'Eurostat', id, url, retrieved, 'primary', '[]', 'eurostat', 'daily');
@@ -28,6 +30,7 @@ for (const [year, wage, price] of [[2020, 100, 82.05], [2021, 100.3, 84.52], [20
   insert.run(`p-${year}`, 'observation', 'price-dataset', null, 'annual_hicp_index', price, 'Annual average index', String(year), null, null, JSON.stringify(priceDimensions), '{}', null, null, '{}', 'prices');
 }
 insert.run('old-2025', 'observation', 'old-dataset', null, 'annual_hourly_wage_index', 999, 'Index, 2020=100', '2025', null, null, JSON.stringify({ freq: 'A', geo: 'ES', unit: 'I20', nace_r2: 'B-S', lcstruct: 'D11' }), '{}', null, null, '{}', 'old-wages');
+insert.run('unemployment-2025', 'observation', 'unemployment-dataset', null, 'unemployment_rate', 10.5, 'percent', '2025', 'España', null, JSON.stringify({ geo: 'ES', age: 'Y15-74', sex: 'T' }), '{}', null, null, JSON.stringify({ status: 'd' }), 'unemployment');
 const d1 = { prepare(sql) { let values = []; return { bind(...args) { values = args; return this; }, async all() { return { results: database.prepare(sql).all(...values) }; } }; } };
 const ids = ['annual_hourly_wage_index', 'annual_hicp_index'];
 const rows = await searchD1WarehouseByMetricIds(d1, ids);
@@ -65,6 +68,22 @@ try {
   assert.match(publicResult.result.reply, /índice salarial bajó aproximadamente un 4,6 %/);
   assert.deepEqual(new Set(received.warehouseRecords.map((item) => item.metricId)), new Set(ids));
   assert.ok(publicResult.result.criteria.every((criterion) => criterion.sourceIds.every((id) => publicResult.result.sources.some((source) => source.id === id))));
+  await Promise.all(pending);
+  globalThis.fetch = async (_url, init) => {
+    received = JSON.parse(init.body);
+    const observations = rankWarehouseObservations(received.text, received.warehouseRecords, 100, { metricIds: new Set(['unemployment_rate']) });
+    return Response.json({ status: 'complete', requestId: 'jobs-api-test', result: focusedEvidencePlan(received.text, { observations, now }) });
+  };
+  const shortClaim = 'No hay trabajo';
+  const jobsResponse = await api.onRequestPost({ request: new Request('https://site.test/api/check', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: shortClaim, inputType: 'text' }) }),
+    env: { DB: d1, LOCAL_CLASSIFIER_ENDPOINT: 'https://resolver.test', LOCAL_CLASSIFIER_TOKEN: 'test' }, waitUntil: (promise) => pending.push(promise) });
+  const jobsResult = await jobsResponse.json();
+  assert.equal(jobsResult.state, 'insufficient');
+  assert.ok(received.warehouseRecords.some((item) => item.metricId === 'unemployment_rate'), 'A short job claim must retrieve the relevant D1 metric even when FTS has no usable query');
+  assert.match(jobsResult.result.reply, /10,5 %/);
+  assert.match(jobsResult.result.reply, /definición de este dato difiere/);
+  assert.match(jobsResult.result.reply, /no cuenta los puestos disponibles/);
+  assert.ok(jobsResult.result.sources.some((source) => /une_rt_a/.test(source.url)));
   await Promise.all(pending);
 } finally { globalThis.fetch = originalFetch; }
 database.close();

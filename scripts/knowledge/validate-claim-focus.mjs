@@ -13,6 +13,7 @@ import { alignPropositionOutcomes, comparableObservationGroups, composePropositi
 import { rankWarehouseObservations } from './warehouse-query.mjs';
 
 const cases = [
+  ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
   ['rental-affordability', ['Con un sueldo normal ya no se puede alquilar un piso entero solo', 'El alquiler se lleva la mitad de los ingresos', 'La renta mensual consume casi todo el salario']],
@@ -29,12 +30,49 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
-for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual']) {
+for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual']) {
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
 }
 assert.deepEqual([...focusedMetricIdsFor('Trabajar a jornada completa y ser pobre')].filter((id) => id.includes('poverty')), ['in_work_poverty_full_time_rate']);
 
 const source = { id: 'sanidad-wave-one', title: 'Barómetro Sanitario 2026, primera oleada', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/home_BS.htm', retrievedAt: '2026-10-30' };
+const jobsSource = { id: 'unemployment', title: 'Tasa de paro', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/', retrievedAt: '2026-11-15' };
+const opportunities = focusedEvidencePlan('No hay trabajo', { observations: [
+  { id: 'unemployment-observation', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', dimensions: { geo: 'ES', age: 'Y15-74', sex: 'T' }, source: jobsSource },
+  { id: 'temporality-observation', metricId: 'temporary_employment_rate', value: 14, period: '2025', unit: '%', geography: 'España', source: jobsSource },
+] });
+assert.match(opportunities.shareableReply, /personas activas/);
+assert.match(opportunities.shareableReply, /no cuenta los puestos disponibles/);
+assert.match(opportunities.shareableReply, /Como contexto.*10 %/);
+assert.doesNotMatch(opportunities.shareableReply, /14 %/);
+assert.equal(opportunities.evidenceLevel, 'insufficient', 'Unemployment alone cannot establish the number of available jobs');
+assert.deepEqual(opportunities.answerScope.directMetrics, []);
+assert.ok(opportunities.blocks.some((block) => block.type === 'evidence_gap'));
+const revisedOpportunities = focusedEvidencePlan('No hay trabajo', { observations: [
+  { id: 'new-rate', metricId: 'unemployment_rate', value: 10.5, period: '2025', unit: '%', geography: 'España', status: 'dp', source: { ...jobsSource, id: 'new-source', retrievedAt: '2026-11-15' } },
+  { id: 'old-rate', metricId: 'unemployment_rate', value: 12, period: '2025', unit: '%', geography: 'España', source: { ...jobsSource, id: 'old-source', retrievedAt: '2026-10-29' } },
+] });
+assert.match(revisedOpportunities.shareableReply, /10,5 %/);
+assert.doesNotMatch(revisedOpportunities.shareableReply, /12 %/);
+assert.match(revisedOpportunities.shareableReply, /definición de este dato difiere/);
+assert.match(revisedOpportunities.shareableReply, /provisional/);
+assert.deepEqual(revisedOpportunities.sourceIds, ['new-source']);
+const conflicting = focusedEvidencePlan('No hay trabajo', { observations: [
+  { id: 'a', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', source: jobsSource },
+  { id: 'b', metricId: 'unemployment_rate', value: 11, period: '2025', unit: '%', geography: 'España', source: jobsSource },
+] });
+assert.doesNotMatch(conflicting.shareableReply, /10 %|11 %/, 'Conflicting observations from the same source revision must not be chosen by input order');
+for (const claim of ['No hay empleo temporal', 'Hay pocos trabajos bien pagados']) {
+  const specific = focusedEvidencePlan(claim, { observations: [
+    { id: 'all-workers', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', source: jobsSource },
+  ] });
+  assert.doesNotMatch(specific.shareableReply, /10 %/, 'An all-worker rate must not stand in for vacancies with specific conditions');
+  assert.ok(specific.blocks.some((block) => block.type === 'evidence_gap'));
+}
+const youthOpportunities = focusedEvidencePlan('Los jóvenes no encuentran empleo', { observations: [
+  { id: 'adult-unemployment', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', dimensions: { age: 'Y15-74', sex: 'T' }, source: jobsSource },
+] });
+assert.doesNotMatch(youthOpportunities.shareableReply, /10 %/, 'An all-age rate cannot be presented as a youth rate');
 const rows = [
   ['3551/0 BARÓMETRO SANITARIO 2026 (PRIMERA OLEADA)'],
   ['Pregunta 5c'], ['Desde que pidió cita hasta que le atendió el médico de familia, ¿cuánto tiempo pasó?'],

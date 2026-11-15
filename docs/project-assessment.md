@@ -157,3 +157,24 @@ annual periods, a consistent source revision and valid source flags; a missing
 year or a break in the series prevents a numeric comparison. It does not apply
 the aggregate result as a direct answer about a particular sex, age, occupation,
 minimum wage, net pay, foreign country or locality.
+
+## Text and source operations follow-up — 15 November 2026
+
+Broad claims about the availability of work were reaching an employment-quality
+packet led by temporary-contract rates. The focused response now distinguishes
+finding a job from the share of employees on temporary contracts and treats an
+overall unemployment rate as context, not a count of vacancies. Claims about a
+particular contract or salary do not receive an all-worker rate as a substitute.
+Independent propositions are kept from being collapsed into this one answer.
+
+The protected-housing source changed its CSV column names. Its current format is
+now parsed with province, month and administrative stage preserved. The
+production monitor now targets the public site and waits for queued responses;
+the refresh job reports missing credentials and can synchronize valid snapshots
+even when other sources or coverage checks fail. At inspection, the scheduled
+job had no Cloudflare credentials, so it had not refreshed the production
+warehouse. The two Eurostat wage/price sources were fetched again and their
+existing production records were marked retrieved on 15 November only after
+their source hashes and 16 observations each matched. Complete automatic data
+refresh still requires configured credentials and repair of the remaining
+unavailable feeds; historical failures have not been treated as successful.

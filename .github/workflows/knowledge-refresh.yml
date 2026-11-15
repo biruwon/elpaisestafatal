@@ -66,21 +66,34 @@ jobs:
       - name: Materialize derived crime rates
         run: npm run knowledge:crime:rates
 
-      - name: Validate the derived warehouse
+      - name: Validate and export the derived warehouse
         run: |
           npm run knowledge:warehouse
           npm run knowledge:freshness
           npm run knowledge:warehouse:sql
+
+      # A missing feed is a coverage failure, not evidence that successful
+      # snapshots are corrupt. Keep it visible while allowing those validated
+      # snapshots to reach D1; the upsert export does not delete older rows.
+      - name: Assess materialized coverage
+        id: coverage
+        continue-on-error: true
+        run: |
           npm run knowledge:coverage:validate:materialized
-          npm run knowledge:coverage:audit
-          npm run knowledge:coverage:audit:validate
-          npm run knowledge:coverage:promote
 
       - name: Apply D1 migrations and load the warehouse
         if: steps.d1.outputs.configured == 'true'
         run: |
           npm run d1:migrate
           npm run knowledge:warehouse:d1
+
+      - name: Generate and validate coverage audit
+        run: |
+          npm run knowledge:coverage:audit
+          npm run knowledge:coverage:audit:validate
+          if [[ -f .local/query-clusters.json ]]; then
+            npm run knowledge:coverage:promote
+          fi
 
       - name: Upload refresh snapshot
         if: always()
@@ -106,7 +119,7 @@ jobs:
         with:
           name: evidence-coverage-audit-${{ github.run_id }}
           path: .local/coverage-audit.*
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Upload domain refresh report
@@ -128,7 +141,13 @@ jobs:
           retention-days: 14
 
       - name: Report incomplete public-source refresh
-        if: always() && (steps.sources.outcome == 'failure' || steps.domains.outcome == 'failure')
+        if: always() && (steps.sources.outcome == 'failure' || steps.domains.outcome == 'failure' || steps.coverage.outcome == 'failure')
         run: |
-          echo 'Some public sources failed. Successful snapshots were retained; inspect source-refresh-report.'
+          echo 'Some sources or coverage checks failed. Inspect the refresh and coverage reports.'
+          exit 1
+
+      - name: Report missing production sync configuration
+        if: always() && steps.d1.outputs.configured != 'true'
+        run: |
+          echo 'Production evidence was not synchronized: Cloudflare credentials are not configured.'
           exit 1

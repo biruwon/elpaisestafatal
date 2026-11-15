@@ -7,7 +7,7 @@ import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../../sr
 import { boundedRequest, RequestTooLargeError } from '../../src/lib/knowledge/bounded-request.mjs';
 import { attachExtraction, extractedClaim } from '../../src/lib/knowledge/submission.mjs';
 import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
-import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -21,7 +21,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-measurement-focus-22-real-wages-2026-10';
+const responseCacheVersion = 'claim-measurement-focus-23-job-opportunities-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -262,7 +262,9 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // from the mirror populated by the daily refresh workflow.
     let warehouseRecords: Record<string, unknown>[] | undefined;
     if (env.DB && body.inputType === 'text') {
-      const comparisonMetrics = claimFocusFor(effectiveClaim)?.id === 'real-wages' ? ['annual_hourly_wage_index', 'annual_hicp_index'] : [];
+      const focus = claimFocusFor(effectiveClaim);
+      const comparisonMetrics = focus?.id === 'real-wages' ? ['annual_hourly_wage_index', 'annual_hicp_index']
+        : focus?.id === 'job-opportunities' ? [...(focusedMetricIdsFor(effectiveClaim) || [])] : [];
       const [contractRows, searchRows] = await Promise.all([
         comparisonMetrics.length ? searchD1WarehouseByMetricIds(env.DB, comparisonMetrics).catch(() => []) : Promise.resolve([]),
         searchD1Warehouse(env.DB, effectiveClaim).catch(() => []),

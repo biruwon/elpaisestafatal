@@ -43,6 +43,9 @@ if (deployScript && /d1['\"]\s*,\s*'migrations['\"]\s*,\s*'apply['\"][^\]]*'--ye
 if (packageJson?.scripts?.['d1:migrate']?.includes('--yes')) failures.push('d1:migrate must not pass the unsupported --yes flag to Wrangler migrations');
 const smokeInvocation = deployScript?.indexOf("await run('npm', ['run', 'smoke:production'") ?? -1;
 if (deployScript && smokeInvocation < deployScript.indexOf('let healthVerified')) failures.push('deploy wrapper must verify canonical health before running the full smoke suite');
+const monitor = await readFile('.github/workflows/production-monitor.yml', 'utf8');
+if (!/SMOKE_BASE_URL:\s*https:\/\/elpaisestafatal\.es\s/.test(monitor)) failures.push('production monitor must target the canonical live site');
+if (!/SMOKE_REQUIRE_TERMINAL:\s*['"]1['"]/.test(monitor)) failures.push('production monitor must wait for asynchronous checks to finish');
 
 if (failures.length) {
   console.error(failures.join('\n'));
