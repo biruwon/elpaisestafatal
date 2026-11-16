@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
+import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
@@ -78,6 +79,27 @@ const filterForeignCitizenshipObservations = (observations) => observations.filt
   const citizenship = normalise(item.dimensionLabels?.citizen || item.dimensions?.citizen || '');
   return citizenship === 'foreign country and stateless' || citizenship === 'for stls';
 });
+
+const filterResidentPopulationObservations = (query, observations) => {
+  const text = normalise(query);
+  const asksAgeBreakdown = /\b(?:edad|edades|menor(?:es)?|mayor(?:es)?|joven(?:es)?|juvenil|infantil|ni[nñ]os?|adolescentes?|adultos?|65|18)\b/.test(text);
+  const asksSexBreakdown = /\b(?:por sexo|por genero|por hombres y mujeres|por mujeres y hombres|cada sexo|ambos sexos)\b/.test(text);
+  const asksWomen = /\b(?:mujeres?|femenin[oa]s?)\b/.test(text);
+  const asksMen = /\b(?:hombres?|masculin[oa]s?)\b/.test(text);
+  return observations.filter((item) => {
+    if (item.metricId !== 'resident_population') return true;
+    const age = normalise(item.dimensions?.age || item.dimensionLabels?.age || '');
+    const sex = normalise(item.dimensions?.sex || item.dimensionLabels?.sex || '');
+    // A general resident-population question means the full population, not
+    // whichever age or sex category happens to rank first in the warehouse.
+    if (!asksAgeBreakdown && age && !['total', 'all', 't'].includes(age)) return false;
+    if (!asksSexBreakdown && !asksWomen && !asksMen && sex && !['total', 't', 'all'].includes(sex)) return false;
+    if (asksWomen && !asksMen && !asksSexBreakdown && sex && !['f', 'female', 'females', 'women', 'mujeres'].includes(sex)) return false;
+    if (asksMen && !asksWomen && !asksSexBreakdown && sex && !['m', 'male', 'males', 'men', 'hombres'].includes(sex)) return false;
+    if ((asksSexBreakdown || asksWomen && asksMen) && sex && ['total', 't', 'all'].includes(sex)) return false;
+    return true;
+  });
+};
 
 const populationVocabulary = [
   { aliases: ['inmigrante', 'inmigrantes', 'extranjero', 'extranjeros', 'foreign', 'migrant', 'migrants', 'nacido en el extranjero'], terms: ['inmigr', 'extranj', 'foreign', 'migr', 'born abroad'] },
@@ -228,21 +250,19 @@ const recordText = (record) => [
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2 && !metricIds?.size) return [];
-  const scopedRecords = filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records))).filter((record) => {
+  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;
     const label = normalise(record.dimensionLabels?.iccs || record.dimensions?.iccs || '');
     return category.labels.some((candidate) => label.includes(normalise(candidate)));
   });
-  return scopedRecords.map((record) => {
+  const ranked = scopedRecords.map((record) => {
     const available = record.searchTokenSet instanceof Set ? record.searchTokenSet : new Set(tokens(recordText(record)));
     const matched = wanted.filter((token) => available.has(token));
     const contract = metricIds?.has(record.metricId);
     return { record, score: Math.max(contract ? 0.5 : 0, wanted.length ? matched.length / wanted.length : 0), matched: matched.length, matchedTokens: matched, contract };
   }).filter(({ score, matched, record, contract }) => (contract || score >= 0.34 && matched >= 2) && (typeof record.value === 'number' && Number.isFinite(record.value) || record.value == null && String(record.status || '').toLowerCase().includes('b') || ['official_publication', 'legal_document', 'legal_rule'].includes(record.kind)))
-    .sort((left, right) => right.score - left.score || right.matched - left.matched)
-    .slice(0, limit)
     .map(({ record, score, matchedTokens }) => ({
       id: record.id,
       kind: record.kind,
@@ -273,6 +293,9 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
       populationFit: 'not_requested',
       freshness: sourceFreshness(record.source),
     }));
+  return preferLatestSourceRevisions(ranked)
+    .sort((left, right) => right.score - left.score || (Date.parse(right.source?.retrievedAt || '') || 0) - (Date.parse(left.source?.retrievedAt || '') || 0))
+    .slice(0, limit);
 };
 
 export const findWarehouseObservations = async (query, limit = 12, { metricIds, records, useProvidedRecords = false } = {}) => {

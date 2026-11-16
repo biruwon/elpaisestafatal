@@ -3,6 +3,8 @@ import { hasCausalClaimLanguage } from './fallback-compiler.mjs';
 const normalized = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
 const includesAny = (value, words) => words.some((word) => value.includes(word));
+const numericThreshold = (text) => /\b(?:mas de|menos de|supera|superan|excede|exceden|rebasa|rebasan|pasa de|pasan de|por encima de|por debajo de|al menos|como minimo|no llega a|no supera|no menos de|no baja de|no cae por debajo de|no es inferior a|no mas de|como maximo|a lo sumo)\b[\s\S]{0,28}\b\d[\d.,]*\b/.test(text);
+const namesComparisonTarget = (text) => /\b(?:que|frente a|respecto a|comparad[oa]s? con|versus|vs\.?)\s+(?:(?:la|el|los|las|un|una)\s+)?(?:europa|ue|francia|alemania|italia|portugal|reino unido|estados unidos|inmigrantes|extranjeros|espanoles|hombres|mujeres|mayores|jubilados|jovenes|hogares|familias|otro grupo|resto|media|promedio)\b/.test(text);
 
 export const handlerForInput = (input, claimType = '') => {
   const text = normalized([
@@ -14,13 +16,19 @@ export const handlerForInput = (input, claimType = '') => {
     ? input.impliedPropositions
     : Array.isArray(input?.propositions) ? input.propositions : [];
   const impliedDefinition = propositions.some((item) => item && item.explicit === false && item.type === 'definition');
-  const budgetMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'se lleva', 'lleva', 'quita', 'quitar', 'recorta', 'recorte', 'pierde', 'pierden', 'pasa', 'pasan', 'destina', 'asigna'])
-    && includesAny(text, ['presupuesto', 'millones', 'dinero', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
+  const budgetDomain = includesAny(text, ['presupuesto', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
+  const explicitFinancialMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'quita', 'quitar', 'recorta', 'recorte', 'destina', 'asigna'])
+    && includesAny(text, ['millones', 'euros', 'dinero', 'credito']);
+  const budgetMovement = explicitFinancialMovement || budgetDomain
+    && includesAny(text, ['se lleva', 'lleva', 'pierde', 'pierden', 'pasa', 'pasan']);
   const budgetSignal = includesAny(text, ['presupuesto', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
   if (budgetSignal) return 'budget_transfer';
   const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])
     && includesAny(text, ['aprueba', 'aprobo', 'autoriza', 'autorizo', 'acuerda', 'acordo', 'nombra', 'designa', 'cesa', 'concede', 'conceder', 'subvencion', 'ayuda', 'decreto', 'resolucion', 'adjudica', 'adjudico']);
   if (governmentEventSignal) return 'government_event';
+  // A numeric threshold is a measurement of one quantity. It becomes a group
+  // comparison only when the claim also names a second population or territory.
+  if (numericThreshold(text) && !namesComparisonTarget(text)) return 'quantity';
   const groupLanguageSignal = includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'ayudas', 'beneficiarios', 'nacionalidad']);
   if (groupLanguageSignal && includesAny(text, ['desproporcion', 'más ayudas', 'mas ayudas', 'menos ayudas', 'reciben más', 'reciben mas', 'delinquen', 'cometen delitos'])) return 'group_comparison';
   const proportionSignal = includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', 'por cada', 'uno de cada', 'mitad', 'tercio', 'cuarto', '%']);
@@ -66,6 +74,14 @@ export const handlerForSemanticProfile = (profile, fallback = 'quantity') => {
   };
   return mapping[profile] || fallback;
 };
+
+// Generated paraphrases are for retrieval, not for reclassifying a reviewed
+// answer. Route canonical visuals from the published title and claim type so
+// a wrapper such as “¿Pasa esto ...?” cannot turn a count into a budget flow.
+export const handlerForPublishedClaim = (claim) => handlerForInput(
+  { retrievalHints: [String(claim?.title || '')] },
+  String(claim?.claimType || ''),
+);
 
 export const visualBlockForHandler = (handler, visualId, evidenceIds = []) => {
   if (!visualId || !evidenceIds.length) return null;

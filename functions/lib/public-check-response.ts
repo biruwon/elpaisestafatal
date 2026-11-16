@@ -190,13 +190,17 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const reply = plan.shareableReply?.trim() || replyFromPlan(plan);
   const visuals = visualsFromPlan(plan);
   const hasVisibleFindings = criteria.length > 0
-    || (plan.evidenceSummary?.families || []).some((family) => Boolean(family.finding?.trim() || family.data?.length))
+    || (plan.evidenceSummary?.families || []).some((family) => family.status !== 'missing' && Boolean(family.finding?.trim() || family.data?.length))
     || visuals.length > 0
     || Boolean(scorecard?.items.length);
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
+  const coverageGap = plan.blocks.find((block) => block.type === 'evidence_gap');
+  const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
+    ? plan.limitation?.trim() || coverageGap.nextAction
+    : undefined;
   const publicReply = missingPublicEvidence
-    ? 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
+    ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
     : reply;
   const publicLimitation = 'La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.';
   const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, shareableSourceIds: plan.shareableSourceIds, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, answerScope: plan.answerScope, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };

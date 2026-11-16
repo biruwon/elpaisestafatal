@@ -10,6 +10,40 @@ const comparableDimensions = (item) => Object.entries(item.dimensions || {})
   .sort(([left], [right]) => left.localeCompare(right));
 const baseKey = (item) => JSON.stringify({ source: item.source?.id || item.sourceId || '', metric: item.metric || item.datasetId || '', unit: item.unit || '', dimensions: comparableDimensions(item) });
 const countryName = (item) => String(item.dimensionLabels?.geo || item.dimensions?.geo || item.geo || 'Territorio');
+const euAliases = new Set(['eu', 'eu27 2020', 'european union', 'union europea', 'europa']);
+const countryAliases = (() => {
+  const names = new Set();
+  const spanish = new Intl.DisplayNames(['es'], { type: 'region' });
+  const english = new Intl.DisplayNames(['en'], { type: 'region' });
+  for (let first = 65; first <= 90; first += 1) for (let second = 65; second <= 90; second += 1) {
+    const code = String.fromCharCode(first, second);
+    for (const display of [spanish.of(code), english.of(code)]) {
+      const normalized = normalise(display || '');
+      if (normalized && normalized !== normalise(code)) names.add(normalized);
+    }
+  }
+  return names;
+})();
+const observationGeographyAliases = (item) => {
+  const code = String(item.dimensions?.geo || item.geo || '').trim().toUpperCase();
+  const aliases = new Set([normalise(code), normalise(item.dimensionLabels?.geo || ''), normalise(item.geography || '')].filter(Boolean));
+  if (code.length === 2) {
+    for (const locale of ['es', 'en']) {
+      try { aliases.add(normalise(new Intl.DisplayNames([locale], { type: 'region' }).of(code) || '')); } catch { /* Unknown geography codes use the source label. */ }
+    }
+  }
+  if (['EU', 'EU27_2020'].includes(code)) for (const alias of euAliases) aliases.add(alias);
+  return aliases;
+};
+
+export const rankingCoversNamedTerritories = (propositions, observations) => {
+  const targets = [...new Set((propositions || []).filter((item) => item.type === 'comparative')
+    .flatMap((item) => [item.subject, item.object]).map((value) => normalise(value || '')).filter(Boolean))];
+  const namedTerritories = targets.filter((target) => countryAliases.has(target) || euAliases.has(target));
+  if (namedTerritories.length < 2) return true;
+  const observedTerritories = new Set((observations || []).flatMap((item) => [...observationGeographyAliases(item)]));
+  return namedTerritories.every((target) => observedTerritories.has(target));
+};
 
 const spanishRegions = [
   { label: 'Galicia', aliases: ['galicia'] },

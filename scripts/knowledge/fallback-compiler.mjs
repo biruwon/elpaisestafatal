@@ -429,9 +429,9 @@ const hasIndependentPredicate = (value) => {
     ' empeora ', ' empeoran ', ' construye ', ' construyen ', ' anuncia ', ' anuncian ',
     ' recibe ', ' reciben ', ' gana ', ' ganan ', ' corrige ', ' corrigen ',
     ' queda ', ' quedan ', ' encuentra ', ' encuentran ', ' paga ', ' pagan ',
-    ' cuesta ',
+    ' cuesta ', ' supera ', ' superan ', ' excede ', ' exceden ',
   ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra|tarda|tardan|gasta|gastan|dedica|dedican)\b/.test(text)
-    || /\b(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|suben|baja|bajan|crece|crecen|aumenta|aumentan|disminuye|disminuyen|reduce|reducen|recorta|recortan|quita|quitan|transfiere|transfieren|llega|llegan|cobra|cobran|representa|representan|demuestra|demuestran|sigue|siguen|mantiene|mantienen|falta|faltan|tarda|tardan|gasta|gastan|dedica|dedican|encarece|encarecen|pierde|pierden|empeora|empeoran|construye|construyen|anuncia|anuncian|gana|ganan|corrige|corrigen|queda|quedan|encuentra|encuentran|paga|pagan|cuesta)\b/.test(text);
+    || /\b(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|suben|baja|bajan|crece|crecen|aumenta|aumentan|disminuye|disminuyen|reduce|reducen|recorta|recortan|quita|quitan|transfiere|transfieren|llega|llegan|cobra|cobran|representa|representan|demuestra|demuestran|sigue|siguen|mantiene|mantienen|falta|faltan|tarda|tardan|gasta|gastan|dedica|dedican|encarece|encarecen|pierde|pierden|empeora|empeoran|construye|construyen|anuncia|anuncian|gana|ganan|corrige|corrigen|queda|quedan|encuentra|encuentran|paga|pagan|cuesta|supera|superan|excede|exceden)\b/.test(text);
 };
 
 const splitExplicitClauses = (value) => {

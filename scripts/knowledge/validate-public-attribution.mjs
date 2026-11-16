@@ -73,4 +73,47 @@ const localNeighbor = localPublicCheckResponse({ status: 'complete', requestId: 
 assert.equal(localNeighbor.state, 'insufficient', 'A stronger nearby claim must not inherit the canonical verdict');
 assert.equal(localNeighbor.result.canonicalHref, undefined);
 assert.match(localNeighbor.result.reply, /no la damos por confirmada/i);
+
+const uncoveredPlan = {
+  schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'No hay una medida compatible localizada',
+  summary: 'No se ha localizado una medición que responda a esta formulación.', coverage: 'insufficient', claimType: 'descriptive',
+  limitation: 'Falta una medida directa con el periodo y la población solicitados.',
+  blocks: [
+    { type: 'cannot_conclude', evidenceIds: [], points: ['Sin una medición compatible no se puede confirmar ni descartar la afirmación.'] },
+    { type: 'conversation_reply', evidenceIds: [], text: 'No se ha localizado una medición compatible; esto no demuestra que la afirmación sea falsa.' },
+  ],
+  evidenceIds: [], sourceIds: [], knowledgeVersion: 'test',
+  evidenceSummary: { mode: 'none', families: [{ label: 'Medición solicitada', direction: 'neutral', status: 'missing', evidenceIds: [], finding: 'No se ha localizado una medida directa.', missingDimensions: ['periodo y población comparables'] }], missingDimensions: ['periodo y población comparables'] },
+};
+const uncoveredLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'uncovered-gap', result: uncoveredPlan }, '¿Esta afirmación está respaldada por los datos?');
+assert.equal(uncoveredLocal.state, 'insufficient', 'A deliberate evidence gap should be explained, not reported as a service outage');
+assert.match(uncoveredLocal.result.reply, /esto no demuestra que la afirmación sea falsa/i);
+assert.equal(uncoveredLocal.result.evidenceSummary?.families[0]?.status, 'missing');
+const uncoveredPages = checkFromPlan('¿Esta afirmación está respaldada por los datos?', uncoveredPlan, 'uncovered-gap');
+assert.equal(uncoveredPages.state, 'insufficient');
+assert.match(uncoveredPages.result.reply, /esto no demuestra que la afirmación sea falsa/i);
+assert.equal(uncoveredPages.result.evidenceSummary?.families[0]?.status, 'missing');
+
+const periodGapPlan = {
+  schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Falta el periodo solicitado',
+  summary: 'Hay observaciones de otros años, pero no del periodo solicitado.', coverage: 'insufficient', claimType: 'trend',
+  limitation: 'La serie consultada no incluye 2010; no podemos calcular el cambio pedido.',
+  blocks: [
+    { type: 'data_finding', evidenceIds: ['rent-2015', 'rent-2025'], points: ['La serie registra 100 en 2015 y 120 en 2025.'] },
+    { type: 'conversation_reply', evidenceIds: ['rent-2015', 'rent-2025'], text: 'La serie registra 100 en 2015 y 120 en 2025, pero falta 2010.' },
+    { type: 'evidence_gap', missing: ['2010'], needed: ['Observación para 2010'], nextAction: 'Buscar una serie que incluya 2010.' },
+  ],
+  evidenceIds: ['rent-2015', 'rent-2025'], sourceIds: ['rent-source'],
+  sourceLinks: [{ id: 'rent-source', title: 'Índice de alquiler', publisher: 'Eurostat', url: 'https://example.test/rent' }],
+  knowledgeVersion: 'test',
+};
+const periodGapPages = checkFromPlan('¿Cómo ha cambiado el índice desde 2010?', periodGapPlan, 'period-gap');
+const periodGapLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'period-gap', result: periodGapPlan }, '¿Cómo ha cambiado el índice desde 2010?');
+for (const result of [periodGapPages, periodGapLocal]) {
+  assert.equal(result.state, 'insufficient');
+  assert.match(result.result.reply, /no incluye 2010/i, 'The missing requested period should remain visible');
+  assert.doesNotMatch(result.result.reply, /100|120/, 'Unattributed values from other periods must stay hidden');
+  assert.deepEqual(result.result.criteria, [], 'Nearby years without source attribution must not appear as findings');
+  assert.deepEqual(result.result.sources, [], 'A source without an observation-to-document link must not be attributed');
+}
 console.log('Public attribution passed: Pages and local results preserve direct evidence, source documents and contextual gaps.');

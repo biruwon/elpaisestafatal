@@ -1,4 +1,4 @@
-import { summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
+import { rankingCoversNamedTerritories, summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
 import assert from 'node:assert/strict';
 
 const source = { id: 'eurostat', title: 'Desempleo en Europa', url: 'https://ec.europa.eu/eurostat/' };
@@ -10,6 +10,9 @@ const records = [
 ];
 const result = summarizeWarehouseRanking('España tiene la tasa de paro más alta de Europa', records);
 if (!result || !result.points.some((point) => point.includes('España ocupa la posición'))) throw new Error('Ranking handler did not rank Spain correctly');
+const territoryClaim = [{ type: 'comparative', subject: 'espana', object: 'francia' }];
+if (rankingCoversNamedTerritories(territoryClaim, [records[0]])) throw new Error('A Spain-only series was accepted for a Spain-France comparison');
+if (!rankingCoversNamedTerritories(territoryClaim, [records[0], records[2]])) throw new Error('A matched Spain-France series was rejected');
 const contradictory = summarizeWarehouseRanking('España tiene la tasa de paro más baja de Europa', records);
 if (!contradictory || !contradictory.points.some((point) => point.includes('España no ocupa la posición'))) throw new Error('Ranking handler did not flag a contradictory ranking');
 const regionalSource = { id: 'eurostat-regional', title: 'Densidad de población por región · Eurostat', url: 'https://ec.europa.eu/eurostat/' };

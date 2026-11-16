@@ -12,6 +12,25 @@ if (result.some((item) => item.evidenceFit !== 'direct' || !item.matchedTerms?.l
 if (rankWarehouseObservations('unknown metric', records).length) throw new Error('Warehouse query returned unrelated observations');
 if (warehouseEvidenceFit(0.34) !== 'weak' || warehouseEvidenceFit(0.5) !== 'qualified' || warehouseEvidenceFit(0.8) !== 'direct') throw new Error('Warehouse evidence-fit thresholds are invalid');
 
+const residentRows = [
+  { id: 'resident-total', metricId: 'resident_population', metric: 'resident population', value: 49128297, unit: 'Number', period: '2025', dimensions: { geo: 'ES', age: 'TOTAL', sex: 'T' }, source: { id: 'source-population', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/' } },
+  { id: 'resident-men', metricId: 'resident_population', metric: 'resident population', value: 24090369, unit: 'Number', period: '2025', dimensions: { geo: 'ES', age: 'TOTAL', sex: 'M' }, source: { id: 'source-population', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/' } },
+  { id: 'resident-women', metricId: 'resident_population', metric: 'resident population', value: 25037928, unit: 'Number', period: '2025', dimensions: { geo: 'ES', age: 'TOTAL', sex: 'F' }, source: { id: 'source-population', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/' } },
+  { id: 'resident-child', metricId: 'resident_population', metric: 'resident population', value: 318907, unit: 'Number', period: '2025', dimensions: { geo: 'ES', age: 'Y_LT1', sex: 'T' }, source: { id: 'source-population', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/' } },
+];
+const residents = (query) => rankWarehouseObservations(query, residentRows, 20, { metricIds: new Set(['resident_population']) });
+const totalResidents = residents('Población residente en España, habitantes');
+if (totalResidents.length !== 1 || totalResidents[0].id !== 'resident-total') throw new Error('A general population query mixed the total with age or sex subgroups');
+const womenResidents = residents('Población residente de mujeres en España');
+if (womenResidents.length !== 1 || womenResidents[0].id !== 'resident-women') throw new Error('A women-only population query used the overall total or another sex');
+const sexBreakdown = residents('Población residente por sexo en España');
+if (sexBreakdown.length !== 2 || sexBreakdown.some((item) => !['resident-men', 'resident-women'].includes(item.id))) throw new Error('A sex breakdown did not preserve the two requested groups');
+const sourceRevisions = rankWarehouseObservations('España población habitantes', [
+  { ...residentRows[0], id: 'resident-old', value: 48000000, source: { id: 'source-old', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/', retrievedAt: '2025-01-01T00:00:00.000Z' } },
+  { ...residentRows[0], id: 'resident-current', value: 49128297, source: { id: 'source-current', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/', retrievedAt: '2026-11-16T00:00:00.000Z' } },
+], 20, { metricIds: new Set(['resident_population']) });
+if (sourceRevisions.length !== 1 || sourceRevisions[0].id !== 'resident-current') throw new Error('An older copy of the same source series overrode the newest retrieval');
+
 const immigrantObservation = { population: 'Foreign-born residents', dimensions: { geo: 'ES' }, dimensionLabels: { group: 'Foreign nationals' } };
 const residentObservation = { population: 'Resident population', dimensions: { geo: 'ES' }, dimensionLabels: { group: 'Total' } };
 if (populationEvidenceFit('personas inmigrantes o extranjeras', immigrantObservation) !== 'direct') throw new Error('Warehouse population fit did not recognize the requested group');

@@ -2,6 +2,7 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
+import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 
 const normalizedClaim = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const exactPublishedSlugFor = (payload, claim) => {
@@ -43,17 +44,18 @@ const visualsFromPlan = (plan) => {
 };
 
 export const localPublicCheckResponse = (payload, claim = '') => {
-  const extraction = publicExtraction(payload?.extraction);
-  claim = extraction ? extractedClaim(extraction) : claim || payload?.claim || '';
-  if (payload?.status === 'processing' && payload.requestId) {
+  const safePayload = publicResolveResponse(payload);
+  const extraction = publicExtraction(safePayload?.extraction || payload?.extraction);
+  claim = extraction ? extractedClaim(extraction) : claim || safePayload?.claim || payload?.claim || '';
+  if (safePayload?.status === 'processing' && safePayload.requestId) {
     const fallback = broadDomainPacketsFor(claim).length ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
     const preview = fallback?.status === 'complete'
-      ? localPublicCheckResponse({ ...fallback, requestId: payload.requestId }, claim)
+      ? localPublicCheckResponse({ ...fallback, requestId: safePayload.requestId }, claim)
       : undefined;
-    return { state: 'processing', id: payload.requestId, claim, ...(preview ? { preview } : {}) };
+    return { state: 'processing', id: safePayload.requestId, claim, ...(preview ? { preview } : {}) };
   }
 
-  const plan = payload?.status === 'complete' ? payload.result : undefined;
+  const plan = safePayload && ['complete', 'partial', 'uncovered', 'draft'].includes(safePayload.status) ? safePayload.result : undefined;
   if (!plan || typeof plan !== 'object') return attachExtraction({ state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: extraction?.warnings[0] || 'La comprobación local no pudo completarse.', retryable: true }, extraction);
 
   const blocks = Array.isArray(plan.blocks) ? plan.blocks : [];
@@ -83,16 +85,20 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
   const evidenceFamilies = plan.evidenceSummary?.families || [];
   const hasVisibleFindings = criteria.length > 0
-    || evidenceFamilies.some((family) => Boolean(family.finding?.trim() || family.data?.length))
+    || evidenceFamilies.some((family) => family.status !== 'missing' && Boolean(family.finding?.trim() || family.data?.length))
     || plannedVisuals.length > 0;
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
-  const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(payload, claim) : undefined;
+  const coverageGap = blocks.find((block) => block?.type === 'evidence_gap');
+  const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
+    ? plan.limitation?.trim() || coverageGap.nextAction
+    : undefined;
+  const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
   if (publishedSlug) {
     const message = 'Esta afirmación tiene una ficha revisada con datos, fuentes y límites. Abrimos esa comprobación.';
     return {
       state: 'supported',
-      id: payload.requestId || `local-${Date.now().toString(36)}`,
+      id: safePayload.requestId || `local-${Date.now().toString(36)}`,
       result: {
         claim, reply: message, answer: message, keyFact: 'Ficha revisada disponible',
         criteria: [], whatWeKnow: [], limitations: [], scope: {}, sources: [],
@@ -102,12 +108,12 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   }
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
   const publicReply = missingPublicEvidence
-    ? 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
+    ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
     : reply;
 
   return attachExtraction({
     state: evidenceLevel,
-    id: payload.requestId || `local-${Date.now().toString(36)}`,
+    id: safePayload.requestId || `local-${Date.now().toString(36)}`,
     result: {
       claim,
       interpretation: plan.interpretation,

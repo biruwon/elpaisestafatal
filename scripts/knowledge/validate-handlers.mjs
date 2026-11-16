@@ -1,4 +1,4 @@
-import { handlerForInput } from './handlers.mjs';
+import { handlerForInput, handlerForPublishedClaim } from './handlers.mjs';
 
 const required = [
   'trend',
@@ -40,6 +40,27 @@ if (handlerForInput('Los menas reciben más dinero que los jubilados', 'comparat
 if (handlerForInput('La inmigración ha disparado la delincuencia', 'descriptive') !== 'causal') throw new Error('Causal wording with disparar was not routed as causal');
 if (handlerForInput('Los okupas pueden quedarse en tu casa durante años', 'descriptive') !== 'legal_rule') throw new Error('Occupation claims must use legal guidance');
 if (handlerForInput(probes.group_comparison, 'comparative') !== 'group_comparison') throw new Error('Comparative group claims must remain group comparisons');
+for (const wording of [
+  'España supera los 49 millones de residentes',
+  'La población residente en España está por encima de 49 millones',
+  'La población residente de España pasa de 49 millones',
+  '¿Hay más de 49 millones de habitantes en España?',
+]) {
+  if (handlerForInput(wording, 'comparative') !== 'quantity') throw new Error(`A numeric population threshold was routed as a group ranking: ${wording}`);
+}
+if (handlerForPublishedClaim({
+  title: 'España supera los 49 millones de residentes.',
+  claimType: 'mixed',
+  keywords: ['juventud', 'inmigracion'],
+  aliases: ['¿Pasa esto en España: España supera los 49 millones de residentes?'],
+}) !== 'quantity') throw new Error('Generated published-claim paraphrases changed the canonical population metric handler');
+for (const wording of [
+  'España tiene más habitantes que Francia',
+  'Los inmigrantes reciben más ayudas que los españoles',
+]) {
+  const expected = wording.includes('inmigrantes') ? 'group_comparison' : 'ranking';
+  if (handlerForInput(wording, 'comparative') !== expected) throw new Error(`A named-group comparison crossed into numeric-threshold routing: ${wording}`);
+}
 for (const wording of ['Uno de cada tres jóvenes está en paro', 'La mitad de los hogares llega justo a fin de mes']) {
   if (handlerForInput(wording, 'descriptive') !== 'proportion') throw new Error(`Natural fraction wording was not routed as a proportion: ${wording}`);
 }

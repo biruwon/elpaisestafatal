@@ -118,6 +118,18 @@ assert(deterministicCompound.explicitPropositions.length >= 2, 'Deterministic co
 assert(normalizedCompound.explicitPropositions.length >= 2, 'Model output collapsed independently testable compound clauses');
 assert(normalizedCompound.propositions.length >= 2 && normalizedCompound.claimType === deterministicCompound.claimType, 'Compound normalization lost structure or deterministic claim type');
 
+for (const wording of [
+  'España supera los 49 millones de habitantes y ya no hay sitio',
+  'La población residente en España pasa de 49 millones, pero falta espacio para vivir',
+]) {
+  const parsed = deterministicFallbackCompiler(wording);
+  assert(parsed.explicitPropositions.length === 2, `The threshold and its separate consequence were not split: ${wording}`);
+  assert(parsed.explicitPropositions[0].text.toLocaleLowerCase('es').includes('49 millones'), `The measurable threshold was not retained as its own clause: ${wording}`);
+  assert(parsed.explicitPropositions[1].text.toLocaleLowerCase('es').includes('sitio') || parsed.explicitPropositions[1].text.toLocaleLowerCase('es').includes('espacio'), `The separate capacity claim was not preserved: ${wording}`);
+}
+const populationComparison = deterministicFallbackCompiler('España tiene más habitantes que Francia');
+assert(populationComparison.explicitPropositions.length === 1 && populationComparison.claimType === 'comparative', 'A named country comparison was incorrectly split as a numeric threshold claim');
+
 const novelBudget = deterministicFallbackCompiler('El Gobierno quita 310 millones de Educación para pagar personal de Presidencia');
 assert(novelBudget.evidenceNeeds.includes('importe') && novelBudget.evidenceNeeds.includes('partida') && novelBudget.evidenceNeeds.includes('impacto'), 'Novel budget claims do not expose the evidence dimensions needed for official retrieval');
 

@@ -30,12 +30,20 @@ const check = async (test) => {
     }
     if (result.state === 'clarification' && (!result.question || !Array.isArray(result.options) || result.options.length < 2)) failures.push(`${test.text}: clarification has no concrete options`);
     if (['limited', 'insufficient'].includes(result.state) && !result.result?.evidenceLevel) failures.push(`${test.text}: evidence-level result is missing its level`);
+    const reply = String(result.result?.reply || '');
+    for (const fragment of test.replyIncludes || []) if (!reply.toLocaleLowerCase('es').includes(fragment.toLocaleLowerCase('es'))) failures.push(`${test.text}: reply is missing “${fragment}”`);
+    if (test.sourceRequired && !result.result?.sources?.length) failures.push(`${test.text}: evidence-backed reply has no visible source`);
+    if (test.noSources && result.result?.sources?.length) failures.push(`${test.text}: an unsupported comparison displays an unrelated source`);
+    if (test.replyMustNotContainNumber && /\d/.test(reply)) failures.push(`${test.text}: reply contains a number without comparable evidence`);
     if (JSON.stringify(result).match(/ollama|127\.0\.0\.1|localhost|cloudflare.*token/i)) failures.push(`${test.text}: response leaked implementation details`);
   } catch (error) { failures.push(`${test.text}: ${error instanceof Error ? error.message : String(error)}`); }
 };
 
 const cases = [
   { text: 'España supera los 49 millones de residentes.', state: 'supported' },
+  { text: 'La población residente de España está por encima de 49 millones', state: 'limited', replyIncludes: ['49.128.297', '2025', '2026'], sourceRequired: true },
+  { text: 'España supera los 49 millones de habitantes y ya no hay sitio', state: 'limited', replyIncludes: ['49.128.297', 'ya no hay sitio', 'No hemos localizado'], sourceRequired: true },
+  { text: 'España tiene más habitantes que Francia', state: 'insufficient', replyIncludes: ['No hemos localizado datos para los dos territorios'], noSources: true, replyMustNotContainNumber: true },
   { text: 'España gasta menos por habitante en sanidad que la Unión Europea', state: 'supported' },
   { text: 'La amnistía rompe la igualdad ante la ley.', state: 'supported' },
   { text: 'No hay trabajo', state: 'clarification' },

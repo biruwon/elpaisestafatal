@@ -59,7 +59,7 @@ const seriesKey = (item) => JSON.stringify({ scope: scopeOf(item), dataKind: ite
 const findingFor = (items, candidate, query, requestedYears = []) => {
   const latestItems = items.slice().sort((a, b) => String(a.period || a.id).localeCompare(String(b.period || b.id)));
   const latest = latestItems.at(-1);
-  const title = latest?.metric || candidate.metricId;
+  const title = latest?.source?.title || latest?.metric || candidate.title || candidate.metricId;
   const series = new Map();
   for (const item of latestItems) series.set(seriesKey(item), item);
   if (series.size > 1 && candidate.metricId !== 'public_housing_actions') {
@@ -119,7 +119,8 @@ const findingFor = (items, candidate, query, requestedYears = []) => {
     const limitation = candidate.limitations?.[0] || 'La comparación usa solo los grupos y el denominador publicados por la fuente.';
     return { title, finding: `${title}: ${values}${latest.period ? ` (${latest.period})` : ''}.`, direction: 'qualifies', limitation };
   }
-  const value = latest && numericValue(latest.value) ? `${displayNumber(latest.value)}${latest.unit ? ` ${latest.unit}` : ''}` : 'documento localizado, sin medición numérica';
+  const unit = candidate.metricId === 'resident_population' && /^(?:number|nr)$/i.test(String(latest?.unit || '')) ? 'personas' : latest?.unit;
+  const value = latest && numericValue(latest.value) ? `${displayNumber(latest.value)}${unit ? ` ${unit}` : ''}` : 'documento localizado, sin medición numérica';
   const period = latest?.period ? ` (${latest.period})` : '';
   const limitation = candidate.limitations?.[0] || (candidate.metricId.endsWith('_europe') ? 'La comparación se refiere a la definición europea de este indicador.' : 'El indicador mide solo esta dimensión y no resume por sí solo el estado general del país.');
   const direction = broadJudgement(normalise(query)) ? 'qualifies' : 'neutral';
