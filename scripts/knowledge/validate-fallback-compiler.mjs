@@ -1,4 +1,6 @@
-import { deterministicFallbackCompiler, propositionShapeFor } from './fallback-compiler.mjs';
+import { deterministicFallbackCompiler, hasCausalClaimLanguage, propositionShapeFor } from './fallback-compiler.mjs';
+import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
+import { handlerForInput, hasHouseholdArrangementContrast } from './handlers.mjs';
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -32,6 +34,36 @@ const subgroup = deterministicFallbackCompiler('Los marroquíes reciben más ayu
 assert(subgroup.claimType === 'comparative' && subgroup.entities.includes('inmigración') && subgroup.population === 'personas de una nacionalidad concreta', 'Named demographic subgroup was not extracted for comparison');
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
 assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.length === 1, 'Explicit/implied proposition groups were not created');
+
+const rentalCausalParaphrases = [
+  'La falta de vivienda nueva explica buena parte de la subida del alquiler',
+  'La escasez de nuevas viviendas causa el encarecimiento de los alquileres',
+];
+const rentalCausalRoutes = rentalCausalParaphrases.map((text) => {
+  const compiled = deterministicFallbackCompiler(text);
+  const contract = normalizeCompilerOutput(null, text);
+  assert(compiled.claimType === 'causal' && compiled.evidenceNeeds.includes('causa'), `Housing supply attribution was not kept on the causal evidence path: ${text}`);
+  assert(handlerForInput({ original: text }, compiled.claimType) === 'causal', `Causal paraphrase was routed to a descriptive handler: ${text}`);
+  assert(contract.metricIds.includes('rental_price_index'), `Causal rent paraphrase lost its shared rent context metric: ${text}`);
+  return contract.metricIds.filter((metricId) => metricId === 'rental_price_index');
+});
+assert(rentalCausalRoutes.every((route) => route.length === 1), 'Causal paraphrases did not retain the same bounded rent evidence family');
+for (const text of [
+  'La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales',
+  'La vivienda protegida es demasiado escasa para influir de forma apreciable en los precios',
+  'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual',
+  'La vivienda se ha convertido en una transferencia de renta de jóvenes inquilinos hacia propietarios de más edad',
+]) {
+  const compiled = deterministicFallbackCompiler(text);
+  assert(compiled.claimType === 'causal' && compiled.evidenceNeeds.includes('causa'), `Attribution or distribution claim was not classified conservatively: ${text}`);
+  assert(handlerForInput({ original: text }, compiled.claimType) === 'causal', `Attribution or distribution claim bypassed causal evidence review: ${text}`);
+}
+const nearbyRentalTrend = deterministicFallbackCompiler('El alquiler sube cada vez más en España');
+assert(nearbyRentalTrend.claimType === 'trend' && !hasCausalClaimLanguage('El alquiler sube cada vez más en España'), 'A nearby descriptive rent trend was incorrectly classified as causal');
+const livingArrangementComparison = deterministicFallbackCompiler('Alquilar una vivienda es mucho más fácil para parejas que para personas solas');
+assert(livingArrangementComparison.claimType === 'comparative' && handlerForInput({ original: livingArrangementComparison.normalized }, livingArrangementComparison.claimType) === 'group_comparison', 'A household-type comparison was routed as a general price trend');
+assert(hasHouseholdArrangementContrast('Las parejas encuentran más fácil alquilar que quienes viven solos'), 'A household-type paraphrase did not keep the pairwise group route');
+assert(!hasHouseholdArrangementContrast('El alquiler sube cada vez más para los jóvenes'), 'A single-population rent trend was misclassified as a household comparison');
 
 const association = deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas en España');
 const reversedAssociation = deterministicFallbackCompiler('Existe una relación entre la delincuencia y la inmigración en España');

@@ -8,7 +8,8 @@ export const compareGroupObservations = (observations = []) => {
   const numeric = observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value) && groupLabel(item));
   const buckets = new Map();
   for (const item of numeric) {
-    const key = `${periodLabel(item)}|${geographyLabel(item)}|${item.metricId || item.metric || ''}`;
+    const denominator = item.denominator || item.dimensions?.denominator || item.dimensionLabels?.denominator || '';
+    const key = `${periodLabel(item)}|${geographyLabel(item)}|${item.metricId || item.metric || ''}|${item.unit || ''}|${denominator}`;
     if (!buckets.has(key)) buckets.set(key, []);
     buckets.get(key).push(item);
   }

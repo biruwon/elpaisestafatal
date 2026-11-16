@@ -1,3 +1,5 @@
+import { hasCausalClaimLanguage } from './fallback-compiler.mjs';
+
 const normalized = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 
 const includesAny = (value, words) => words.some((word) => value.includes(word));
@@ -14,7 +16,7 @@ export const handlerForInput = (input, claimType = '') => {
   const impliedDefinition = propositions.some((item) => item && item.explicit === false && item.type === 'definition');
   const budgetMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'se lleva', 'lleva', 'quita', 'quitar', 'recorta', 'recorte', 'pierde', 'pierden', 'pasa', 'pasan', 'destina', 'asigna'])
     && includesAny(text, ['presupuesto', 'millones', 'dinero', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
-  const budgetSignal = includesAny(text, ['presupuesto', 'transferencia', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
+  const budgetSignal = includesAny(text, ['presupuesto', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
   if (budgetSignal) return 'budget_transfer';
   const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])
     && includesAny(text, ['aprueba', 'aprobo', 'autoriza', 'autorizo', 'acuerda', 'acordo', 'nombra', 'designa', 'cesa', 'concede', 'conceder', 'subvencion', 'ayuda', 'decreto', 'resolucion', 'adjudica', 'adjudico']);
@@ -25,13 +27,14 @@ export const handlerForInput = (input, claimType = '') => {
   if (proportionSignal) return 'proportion';
   if ((claimType === 'normative' && includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'debe tener', 'deben tener'])) || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'okupa', 'okupas', 'ocupante', 'ocupacion', 'desalojo', 'desahucio', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
-  if (claimType === 'causal' || includesAny(text, ['causa', 'provoca', 'provocan', 'por culpa', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'genera', 'dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';
+  if (claimType === 'causal' || hasCausalClaimLanguage(text) || includesAny(text, ['dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';
   if (claimType === 'predictive' || includesAny(text, ['pasara', 'caera', 'caer', 'acabara', 'destruira', 'preve', 'pronostico', 'va a'])) return 'prediction';
   if (includesAny(text, ['densidad de poblacion', 'densidad poblacion', 'personas por kilometro', 'personas por km']) && includesAny(text, ['comunidad', 'region', 'madrid', 'andalucia'])) return 'ranking';
   if (claimType === 'trend') return 'trend';
   if (claimType === 'definition' || impliedDefinition) return 'definition';
   const groupSignal = includesAny(text, ['inmigrante', 'extranjero', 'español', 'marroqui', 'rumano', 'latino', 'senegales', 'colombiano', 'venezolano', 'patera', 'barco', 'ayudas', 'beneficiarios', 'hombres', 'mujeres', 'mayores', 'jubilados', 'politicos', 'trabajadores', 'hogares', 'jóvenes', 'jovenes']);
   const universalSignal = includesAny(text, ['todos', 'todas', 'todo', 'toda', 'nadie', 'ningun', 'ninguna', 'ninguno']);
+  if (hasHouseholdArrangementContrast(text)) return 'group_comparison';
   if (groupSignal && universalSignal) return 'group_comparison';
   if (groupSignal) return 'group_comparison';
   if (universalSignal) return 'proportion';
@@ -40,6 +43,13 @@ export const handlerForInput = (input, claimType = '') => {
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'crecimiento', 'aumento', 'disminuye', 'record', 'historico', 'historia', 'nunca'])) return 'trend';
   if (includesAny(text, ['que significa', 'que se entiende por', 'significado de', 'que es', 'se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   return 'quantity';
+};
+
+export const hasHouseholdArrangementContrast = (value) => {
+  const text = normalized(value);
+  const coupleHouseholds = /\bparej\w*\b/.test(text);
+  const singlePersonHouseholds = /\b(?:personas?\s+solas?|quien(?:es)?\s+viven\s+solos?|los\s+que\s+viven\s+solos?|solter\w*|hogares?\s+unipersonales?)\b/.test(text);
+  return coupleHouseholds && singlePersonHouseholds;
 };
 
 // Once the semantic compiler has selected a criteria profile, that profile is

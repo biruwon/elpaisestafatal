@@ -91,10 +91,15 @@ if (resolveMode) {
   let cursor = 0;
   const resolveOne = async (candidate) => {
     const started = Date.now();
+    const deadline = started + resolveTimeoutMs;
     try {
       const response = await fetch(`${base}/v1/classify`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-knowledge-gap-origin': 'web-observed-audit' }, body: JSON.stringify({ text: candidate.claim, inputType: 'text' }), signal: AbortSignal.timeout(resolveTimeoutMs) });
       let payload = await response.json();
-      for (let attempt = 0; attempt < Math.ceil(resolveTimeoutMs / 1000) && payload.status === 'processing'; attempt += 1) { await new Promise((wait) => setTimeout(wait, 1000)); payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(Math.min(10000, resolveTimeoutMs)) }).then((item) => item.json()); }
+      for (let attempt = 0; attempt < Math.ceil(resolveTimeoutMs / 1000) && payload.status === 'processing' && Date.now() < deadline; attempt += 1) {
+        await new Promise((wait) => setTimeout(wait, Math.min(1000, Math.max(0, deadline - Date.now()))));
+        if (Date.now() >= deadline) break;
+        payload = await fetch(`${base}/v1/classify/${encodeURIComponent(payload.requestId)}`, { signal: AbortSignal.timeout(Math.max(1000, deadline - Date.now())) }).then((item) => item.json());
+      }
       const result = payload.result;
       const timedOut = payload.status === 'processing';
       return { id: candidate.id, status: timedOut ? 'timeout' : payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started, ...answerDetails(candidate, result) };

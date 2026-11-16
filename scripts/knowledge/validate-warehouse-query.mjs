@@ -1,5 +1,5 @@
 import { populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
-import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const records = [
   { id: 'obs-1', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 68.2, unit: '%', period: '2026-Q1', dimensions: { geography: 'Spain' }, source: { id: 'source-ine', publisher: 'INE', url: 'https://www.ine.es/' } },
@@ -218,6 +218,36 @@ if (!preferredMetricIdsForQuery('Las familias destinan demasiado dinero a la viv
 if (!preferredMetricIdsForQuery('La sanidad dedica más recursos por persona').has('health_expenditure_per_capita')) throw new Error('Natural health-resource wording did not resolve to the health-expenditure metric');
 if (!preferredMetricIdsForQuery('La economía crece más despacio que la Unión Europea').has('gdp_real_growth_europe')) throw new Error('Natural GDP-comparison wording did not resolve to the European GDP-growth metric');
 if (!preferredMetricIdsForQuery('El salario por hora es inferior al europeo').has('median_hourly_earnings_europe')) throw new Error('Natural hourly-pay wording did not resolve to the European hourly-earnings metric');
+
+const rentalTemporalityParaphrases = [
+  'La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales',
+  'Las normas del alquiler trasladan viviendas a contratos de temporada',
+  'Algunos caseros ofrecen arrendamientos temporales por los cambios en las reglas del alquiler',
+];
+for (const query of rentalTemporalityParaphrases) {
+  const preferred = preferredMetricIdsForQuery(query);
+  const excluded = excludedMetricIdsForQuery(query);
+  const candidates = metricCandidatesForQuery(query);
+  if (preferred.has('temporary_employment_rate') || preferred.has('temporary_employment_rate_europe')) {
+    throw new Error(`Housing lease wording routed to employment temporality: ${query}`);
+  }
+  if (!excluded.has('temporary_employment_rate') || !excluded.has('temporary_employment_rate_europe')) {
+    throw new Error(`Housing lease wording did not suppress employment temporality during retrieval: ${query}`);
+  }
+  if (candidates.has('temporary_employment_rate') || candidates.has('temporary_employment_rate_europe')) {
+    throw new Error(`Housing lease wording retained employment temporality as a metric candidate: ${query}`);
+  }
+  if (!preferred.has('rental_price_index')) throw new Error(`Housing lease paraphrase lost its rental context route: ${query}`);
+}
+if (!preferredMetricIdsForQuery('¿Qué porcentaje de los contratos de trabajo temporales hay?').has('temporary_employment_rate')) {
+  throw new Error('Explicit temporary-employment wording did not retain the employment metric');
+}
+if (excludedMetricIdsForQuery('¿Qué porcentaje de los contratos de trabajo temporales hay?').has('temporary_employment_rate')) {
+  throw new Error('Explicit temporary-employment wording was incorrectly excluded');
+}
+if (!preferredMetricIdsForQuery('El empleo temporal dificulta alquilar una vivienda').has('temporary_employment_rate')) {
+  throw new Error('An explicitly employment-related housing claim lost its employment context route');
+}
 
 const manifestFiles = [
   { file: 'employment.json', metricIds: new Set(['employment_rate']), sourceTokens: new Set(['employment', 'rate', 'spain']), manifested: true },

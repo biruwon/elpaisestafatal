@@ -378,12 +378,30 @@ const populationAliases = [
   ['personas mayores', ['personas mayores', 'adultos mayores', 'tercera edad', '65 anos', 'jubilado', 'jubilados']],
 ];
 
+const causalClaimSignals = [
+  'causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'por culpa', 'tiene la culpa',
+  'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad',
+  'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano',
+  'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa',
+  'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas',
+  'empuja', 'empujado', 'empujando', 'influir', 'influencia', 'impacta', 'impacto', 'desplaza', 'desplazando', 'transfiere renta',
+  'transferencia de renta', 'redistribuye renta', 'redistribucion de renta', 'a costa de',
+];
+
+export const hasCausalClaimLanguage = (value) => {
+  const text = normalise(value);
+  return includesAny(text, causalClaimSignals)
+    || /\bexplic(?:a|an|ar[ií]a|ar[ií]an|ado|ada)\b.{0,60}\b(?:subida|aumento|alza|encarecimiento|bajada|ca[ií]da|descenso|reducci[oó]n|problema|crisis)\b/.test(text)
+    || /\b(?:influye|influyen|influir|influencia)\b/.test(text)
+    || /\b(?:ha|han|est[aá]|est[aá]n|estaba|estaban)?\s*empuj(?:a|an|ado|ando|ar)\b/.test(text);
+};
+
 const claimTypeFor = (value) => {
   const text = normalise(value);
   const futureVerb = /\b[\p{L}]+(?:aré|arás|ará|aremos|aréis|arán|eré|erás|erá|eremos|eréis|erán|iré|irás|irá|iremos|iréis|irán)\b/iu.test(String(value || ''));
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir', 'primero los espanoles', 'espanoles primero', 'los espanoles antes', 'prioridad para los espanoles'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
-  if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
+  if (hasCausalClaimLanguage(text) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
   if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text) || futureVerb) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'creciendo', 'crecimiento', 'aumento', 'aumenta', 'aumentando', 'está aumentando', 'esta aumentando', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'mas caro', 'mas cara', 'mas caros', 'mas caras', 'mucho mas caro', 'mucho mas cara', 'mas costoso', 'mas costosa', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'envejece', 'envejecemos', 'envejecimiento', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'sigue creciendo', 'siguen creciendo', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'va a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';

@@ -11,6 +11,12 @@ const normalise = (value) => String(value || '')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
 
+const hasHousingContextWithoutEmployment = (normalizedQuery) => {
+  const housingContext = /(?:viviend|alquiler|arrend|piso|casero|propietari|inquilin|contrato de temporada)/.test(normalizedQuery);
+  const explicitEmploymentContext = /(?:empleo|trabaj|laboral|ocupacion|asalariad|mercado de trabajo|puesto de trabajo)/.test(normalizedQuery);
+  return housingContext && !explicitEmploymentContext;
+};
+
 // The hand-tuned hints below protect high-risk ambiguities (for example
 // employment versus unemployment). The registry is the scalable fallback:
 // every metric can contribute its reviewed aliases without requiring a new
@@ -88,6 +94,10 @@ const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(nor
         : domain === 'pensions'
           ? new Set(['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_benefit_share_by_nationality', 'crime_convictions_by_nationality', 'crime_conviction_rate_by_nationality', 'recorded_offences'])
           : new Set();
+  if (hasHousingContextWithoutEmployment(normalized)) {
+    excluded.add('temporary_employment_rate');
+    excluded.add('temporary_employment_rate_europe');
+  }
   const conceptIds = [...new Set([...concepts.map((item) => normalise(item)), ...(domain ? [domain] : [])].filter((item) => conceptMetricFamilies[item]))];
   // Interleave families so a multi-topic sentence keeps at least one route
   // for each concept instead of exhausting the limit on the first concept.
@@ -346,8 +356,14 @@ const metricHints = [
 
 export const preferredMetricIdsForQuery = (query) => {
   const focused = focusedMetricIdsFor(query);
-  if (focused) return focused;
   const normalized = normalise(query);
+  if (focused) {
+    if (!hasHousingContextWithoutEmployment(normalized)) return focused;
+    const scoped = new Set(focused);
+    scoped.delete('temporary_employment_rate');
+    scoped.delete('temporary_employment_rate_europe');
+    return scoped;
+  }
   const preferred = new Set(metricHints
     .filter((hint) => hint.terms.some((term) => normalized.includes(normalise(term))))
     .flatMap((hint) => hint.ids));
@@ -775,6 +791,10 @@ export const preferredMetricIdsForQuery = (query) => {
   if (hasAny('pension', 'pensiones') && hasAny('presupuest') && hasAny('gasto', 'total')) {
     preferScopedMetric('social_security_pension_budget_total', ['old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita', 'pension_system_expenditure_projected']);
   }
+  if (hasHousingContextWithoutEmployment(normalized)) {
+    preferred.delete('temporary_employment_rate');
+    preferred.delete('temporary_employment_rate_europe');
+  }
   return preferred;
 };
 
@@ -816,6 +836,10 @@ export const excludedMetricIdsForQuery = (query) => {
     && ['espana', 'pais', 'gobierno', 'sanchez', 'politic'].some((term) => normalized.includes(term));
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
+  if (hasHousingContextWithoutEmployment(normalized)) {
+    excluded.add('temporary_employment_rate');
+    excluded.add('temporary_employment_rate_europe');
+  }
   if (genericUnemployment && !youthRequested) excluded.add('youth_unemployment_rate');
   if (employmentEuropeRequested) excluded.add('employment_rate');
   if (educationContext && !youthRequested) excluded.add('youth_unemployment_rate');
