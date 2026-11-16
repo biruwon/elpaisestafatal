@@ -30,6 +30,7 @@ const extractRanges = (value, { requireContext = true } = {}) => {
 const requestedScopesFor = (value) => {
   const text = String(value || '');
   const scopes = extractRanges(text);
+  if (/\b(?:all ages|todas las edades|cualquier edad|any age)\b/i.test(text)) scopes.push({ kind: 'all' });
   for (const match of text.matchAll(/\bmenores?\s+de\s+(\d{1,3})\s*(?:a[nñ]os?)?\b|\bunder\s+(\d{1,3})\s+years?\b/gi)) {
     const limit = Number(match[1] || match[2]);
     if (Number.isInteger(limit) && limit > 0 && limit <= 120) scopes.push({ kind: 'under', limit });

@@ -39,6 +39,10 @@ const ageComparison = ageQuery('Compara la tasa de paro de personas de 20 a 34 a
 if (ageComparison.length !== 2 || ageComparison.some((item) => !['unemployment-20-34', 'unemployment-35-44'].includes(item.id))) throw new Error('An age-group comparison did not retain exactly its requested groups');
 const unscopedAgeRows = ageQuery('Unemployment rate in Spain');
 if (unscopedAgeRows.length !== ageRows.length) throw new Error('An unscoped query was unexpectedly restricted to an age group');
+for (const query of ['Tasa de paro de todas las edades', 'Unemployment rate for all ages']) {
+  const allAges = ageQuery(query);
+  if (allAges.length !== 1 || allAges[0].id !== 'unemployment-all-ages') throw new Error(`An all-ages request was answered with an age subgroup: ${query}`);
+}
 if (ageQuery('Tasa de paro para menores de 15 años').length) throw new Error('An age request was answered using missing or unrelated age metadata');
 if (!observationMatchesAgeScope('Tasa de paro para menores de 15 años', { dimensions: { age: 'Y_LT15' } })) throw new Error('The exact under-15 dimension did not match');
 if (observationMatchesAgeScope('Tasa de paro para menores de 15 años', { dimensions: { age: 'Y_LE15' } })) throw new Error('An inclusive at-most age dimension was treated as strictly under the requested age');
