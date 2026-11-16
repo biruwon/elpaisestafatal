@@ -1,4 +1,4 @@
-import { populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
+import { indexLegacyWarehouseRecordPayload, indexWarehouseRecordFiles, populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
 import { excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const records = [
@@ -276,6 +276,54 @@ const manifestFiles = [
   { file: 'legacy-domain.json', metricIds: new Set(), sourceTokens: new Set(), manifested: false },
 ];
 const manifestNames = manifestFiles.map((item) => item.file);
+const sourceRevisionIndex = indexWarehouseRecordFiles(['employment-old.json', 'employment-current.json', 'unemployment-current.json'], [
+  { recordPath: '/records/employment-old.json', metricId: 'employment_rate', url: 'https://source.test/rates?geo=ES', retrievedAt: '2025-01-01T00:00:00.000Z', title: 'Employment rate Spain' },
+  { recordPath: '/records/employment-current.json', metricId: 'employment_rate', url: 'https://source.test/rates?geo=ES', retrievedAt: '2026-01-01T00:00:00.000Z', title: 'Employment rate Spain' },
+  { recordPath: '/records/unemployment-current.json', metricId: 'unemployment_rate', url: 'https://source.test/rates?geo=ES', retrievedAt: '2025-06-01T00:00:00.000Z', title: 'Unemployment rate Spain' },
+]);
+const employmentFilesFromSameSeries = selectWarehouseRecordFiles(
+  ['employment-old.json', 'employment-current.json', 'unemployment-current.json'],
+  sourceRevisionIndex,
+  { query: 'employment rate Spain', metricIds: new Set(['employment_rate']) },
+);
+if (!employmentFilesFromSameSeries.includes('employment-old.json') || !employmentFilesFromSameSeries.includes('employment-current.json') || employmentFilesFromSameSeries.includes('unemployment-current.json')) throw new Error('Warehouse file pruning dropped historical records or crossed into a nearby metric');
+const unemploymentFiles = selectWarehouseRecordFiles(
+  ['employment-old.json', 'employment-current.json', 'unemployment-current.json'],
+  sourceRevisionIndex,
+  { query: 'unemployment rate Spain', metricIds: new Set(['unemployment_rate']) },
+);
+if (unemploymentFiles.length !== 1 || unemploymentFiles[0] !== 'unemployment-current.json') throw new Error('Independent metrics from the same source URL were incorrectly crossed');
+const lexicalRevisionFiles = selectWarehouseRecordFiles(
+  ['employment-old.json', 'employment-current.json', 'unemployment-current.json'],
+  sourceRevisionIndex,
+  { query: 'employment rate Spain' },
+);
+if (!lexicalRevisionFiles.includes('employment-current.json') || !lexicalRevisionFiles.includes('employment-old.json')) throw new Error('Lexical warehouse lookup dropped a possibly distinct historical observation');
+const legacyHousingFile = indexLegacyWarehouseRecordPayload('legacy-housing.json', {
+  source: { id: 'legacy-housing', title: 'Protected-housing actions by province and month', publisher: 'Housing ministry', url: 'https://source.test/protected-housing.csv', domain: 'public_housing_allocation' },
+  records: [
+    { metricId: 'public_housing_actions', datasetId: 'Housing actions', metric: 'public allocation' },
+    { metricId: 'public_housing_actions', datasetId: 'Protected-housing actions', metric: 'protected housing actions', dimensions: { province: 'Madrid' } },
+  ],
+});
+const legacyHousingSelection = selectWarehouseRecordFiles(
+  ['employment-current.json', 'legacy-housing.json'],
+  [sourceRevisionIndex[1], legacyHousingFile],
+  { query: 'employment rate Spain', metricIds: new Set(['employment_rate']) },
+);
+if (legacyHousingSelection.includes('legacy-housing.json')) throw new Error('An unrelated large legacy source was loaded for a different metric');
+const targetedLegacySelection = selectWarehouseRecordFiles(
+  ['employment-current.json', 'legacy-housing.json'],
+  [sourceRevisionIndex[1], legacyHousingFile],
+  { query: 'protected housing actions', metricIds: new Set(['public_housing_actions']) },
+);
+if (!targetedLegacySelection.includes('legacy-housing.json')) throw new Error('A matching unmanifested legacy metric was dropped from targeted retrieval');
+const deepLegacyTextSelection = selectWarehouseRecordFiles(
+  ['employment-current.json', 'legacy-housing.json'],
+  [sourceRevisionIndex[1], legacyHousingFile],
+  { query: 'protected housing actions Madrid' },
+);
+if (!deepLegacyTextSelection.includes('legacy-housing.json')) throw new Error('Legacy lexical index ignored searchable text that appeared after the first record');
 const employmentFiles = selectWarehouseRecordFiles(manifestNames, manifestFiles, { query: 'employment rate Spain', metricIds: new Set(['employment_rate']) });
 if (!employmentFiles.includes('employment.json') || employmentFiles.includes('debt.json')) throw new Error('Manifest lookup did not keep explicit metric retrieval scoped');
 if (!employmentFiles.includes('legacy-domain.json')) throw new Error('Manifest lookup dropped a legacy domain record without a manifest');

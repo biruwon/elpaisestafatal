@@ -64,6 +64,10 @@ const migrationHousingDemandCause = (t) => foreignHousingPriceCause(t)
 const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|tecnolog\w*)\b/;
 const sectorWages = (t) => (namedSector.test(t) || /\bsectores?\b/.test(t))
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*)\b/.test(t);
+const selfEmploymentCostViability = (t) =>
+  /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
+  && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
+  && /\b(ingres\w*|factur\w*|rentab\w*|viable|inviable|compens\w*|irregular\w*|estable)\b/.test(t);
 const futurePensionOutlook = (t) => /\b(pension\w*|jubil\w*|cotiz\w*)\b/.test(t)
   && /\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|en (?:20|21)\d{2}|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t)
   && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
@@ -270,6 +274,14 @@ const focuses = [
       sources: [{ id: 'eurostat-structure-earnings-survey', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-16' }],
     },
     limitation: 'Sin distribuciones salariales por sector y una medida comparable de productividad —por ejemplo, valor añadido por hora trabajada para la misma actividad y periodo— no se puede afirmar qué sectores generan más salarios altos ni que el turismo cause por sí solo una diferencia salarial. Si también se compara su aportación al PIB, hay que medir el valor añadido del mismo sector y periodo; el valor total no equivale a productividad ni a salarios.',
+  },
+  {
+    id: 'self-employment-cost-viability', label: 'costes fijos y viabilidad del trabajo autónomo',
+    when: selfEmploymentCostViability,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['ingresos netos, cuotas y gastos fijos de autónomos con ingresos bajos o irregulares, para el mismo periodo', 'altas, continuidad y bajas de esas actividades, con motivo de cierre si se atribuye a los costes'],
+    explanation: 'Para comprobarlo hay que comparar los ingresos netos con las cuotas y demás gastos fijos de los mismos autónomos, y observar si sus actividades continúan o cierran.',
+    limitation: 'Los totales de cotizaciones, la renta mediana y los salarios medios no muestran ese balance por autónomo ni prueban por qué cerró una actividad.',
   },
   {
     id: 'matched-pay', label: 'salarios de perfiles profesionales comparables',

@@ -1,4 +1,4 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
@@ -11,6 +11,8 @@ let recordCache = { expiresAt: 0, key: '', records: [] };
 const recordLoadPromises = new Map();
 const recordFileLoadPromises = new Map();
 let recordFileIndex = { expiresAt: 0, key: '', entries: [] };
+let recordFileIndexPromise;
+const legacyRecordIndexCache = new Map();
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
@@ -130,38 +132,101 @@ export const populationEvidenceFit = (requestedPopulation, record) => {
   return requested.terms.some((term) => actual.includes(normalise(term))) ? 'direct' : 'mismatch';
 };
 
+export const indexWarehouseRecordFiles = (files, manifests) => {
+  // Narrow by source family and metric, but retain every snapshot: an older
+  // snapshot may contain a population or dimension omitted from a newer one.
+  // Exact duplicate observations are resolved after retrieval.
+  const entriesByFile = new Map();
+  for (const manifest of manifests || []) {
+    const file = manifest?.recordPath ? basename(manifest.recordPath) : '';
+    if (!file) continue;
+    const manifestMetricIds = Array.isArray(manifest.metricIds) ? manifest.metricIds : [];
+    const aliases = Array.isArray(manifest.aliases) ? manifest.aliases : [];
+    const metricIds = [manifest.metricId, ...manifestMetricIds].filter(Boolean);
+    const entry = entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set(), manifested: true };
+    for (const metricId of metricIds) {
+      entry.metricIds.add(metricId);
+    }
+    for (const token of tokens([manifest.metricId, ...manifestMetricIds, manifest.title, ...aliases].join(' '))) entry.sourceTokens.add(token);
+    entriesByFile.set(file, entry);
+  }
+  return files.map((file) => entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set(), manifested: false });
+};
+
+export const indexLegacyWarehouseRecordPayload = (file, payload) => {
+  const source = payload?.source || {};
+  const records = Array.isArray(payload?.records) ? payload.records : [];
+  const metricIds = new Set([source.metricId, ...records.map((record) => record?.metricId)].filter(Boolean));
+  const aliases = Array.isArray(source.aliases) ? source.aliases : [];
+  const sourceTokens = new Set(tokens([source.id, source.title, source.publisher, source.url, source.domain, ...aliases, ...metricIds].join(' ')));
+  for (const record of records) {
+    for (const token of tokens(recordText({ ...record, metricId: record?.metricId || source.metricId, source }))) sourceTokens.add(token);
+  }
+  return {
+    file,
+    metricIds,
+    sourceTokens,
+    manifested: false,
+    legacyIndexed: metricIds.size > 0 || sourceTokens.size >= 2,
+  };
+};
+
 const loadRecordFileIndex = async (files) => {
   const key = files.join('|');
   if (recordFileIndex.key === key && recordFileIndex.expiresAt > Date.now()) return recordFileIndex.entries;
-  const entriesByFile = new Map();
-  let manifestFiles = [];
-  try { manifestFiles = (await readdir(join(root, 'manifests'))).filter((file) => file.endsWith('.json')); } catch { /* The warehouse may only contain records in a degraded local setup. */ }
-  for (const file of manifestFiles) {
-    try {
-      const manifest = JSON.parse(await readFile(join(root, 'manifests', file), 'utf8'));
-      const recordFile = manifest.recordPath ? basename(manifest.recordPath) : '';
-      if (!recordFile) continue;
-      const entry = entriesByFile.get(recordFile) || { file: recordFile, metricIds: new Set(), sourceTokens: new Set(), manifested: true };
-      if (manifest.metricId) entry.metricIds.add(manifest.metricId);
-      for (const metricId of manifest.metricIds || []) entry.metricIds.add(metricId);
-      for (const token of tokens([manifest.metricId, manifest.title, ...(manifest.aliases || [])].join(' '))) entry.sourceTokens.add(token);
-      entriesByFile.set(recordFile, entry);
-    } catch { /* Malformed manifests are handled by warehouse validation. */ }
-  }
-  const entries = files.map((file) => entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set(), manifested: false });
-  recordFileIndex = { expiresAt: Date.now() + recordCacheTtlMs * 5, key, entries };
-  return entries;
+  if (recordFileIndexPromise?.key === key) return recordFileIndexPromise.promise;
+  const promise = (async () => {
+    let manifestFiles = [];
+    try { manifestFiles = (await readdir(join(root, 'manifests'))).filter((file) => file.endsWith('.json')); } catch { /* The warehouse may only contain records in a degraded local setup. */ }
+    const manifests = [];
+    for (const file of manifestFiles) {
+      try { manifests.push(JSON.parse(await readFile(join(root, 'manifests', file), 'utf8'))); } catch { /* Malformed manifests are handled by warehouse validation. */ }
+    }
+    const entries = indexWarehouseRecordFiles(files, manifests);
+    const manifestCoverage = files.length ? entries.filter((entry) => entry.manifested).length / files.length : 1;
+    // Older domain imports predate manifests. Index their source and metric
+    // metadata once when the manifest index is otherwise authoritative, so
+    // unrelated claims do not parse tens of megabytes of legacy records.
+    if (manifestCoverage >= 0.9) {
+      const seenLegacyFiles = new Set();
+      for (let index = 0; index < entries.length; index += 1) {
+        if (entries[index].manifested) continue;
+        const file = entries[index].file;
+        seenLegacyFiles.add(file);
+        try {
+          const metadata = await stat(join(root, 'records', file));
+          const signature = `${metadata.size}:${metadata.mtimeMs}`;
+          const cached = legacyRecordIndexCache.get(file);
+          if (cached?.signature === signature) {
+            entries[index] = cached.entry;
+            continue;
+          }
+          const payload = await readRecordPayload(file);
+          const entry = indexLegacyWarehouseRecordPayload(file, payload);
+          legacyRecordIndexCache.set(file, { signature, entry });
+          entries[index] = entry;
+        } catch { /* Keep the legacy file in the compatibility scan if it cannot be indexed. */ }
+      }
+      for (const file of legacyRecordIndexCache.keys()) if (!seenLegacyFiles.has(file)) legacyRecordIndexCache.delete(file);
+    }
+    recordFileIndex = { expiresAt: Date.now() + recordCacheTtlMs * 5, key, entries };
+    return entries;
+  })();
+  const pending = { key, promise };
+  recordFileIndexPromise = pending;
+  try { return await promise; } finally { if (recordFileIndexPromise === pending) recordFileIndexPromise = undefined; }
 };
 
 export const selectWarehouseRecordFiles = (files, fileIndex, { query = '', metricIds } = {}) => {
-  const indexedCount = fileIndex.filter((entry) => entry.manifested).length;
+  const isIndexed = (entry) => entry.manifested || entry.legacyIndexed;
+  const indexedCount = fileIndex.filter(isIndexed).length;
   const indexCoverage = files.length ? indexedCount / files.length : 1;
   // Old warehouse snapshots may predate manifests. Keep their compatibility
   // path, but use the manifest index as authoritative once it covers the
   // current records; otherwise a no-match query scans gigabytes of JSON.
   if (indexCoverage < 0.9) return files;
 
-  const unindexedFiles = fileIndex.filter((entry) => !entry.manifested).map((entry) => entry.file);
+  const unindexedFiles = fileIndex.filter((entry) => !isIndexed(entry)).map((entry) => entry.file);
   const wanted = tokens(query);
   const overlapCount = (entry) => wanted.filter((token) => entry.sourceTokens.has(token)).length;
   const minimumOverlap = Math.min(2, wanted.length);
@@ -169,13 +234,13 @@ export const selectWarehouseRecordFiles = (files, fileIndex, { query = '', metri
   if (metricIds?.size) {
     const directMetricFiles = fileIndex.filter((entry) => [...entry.metricIds].some((metricId) => metricIds.has(metricId)));
     const untypedMatches = wanted.length
-      ? fileIndex.filter((entry) => entry.manifested && entry.metricIds.size === 0 && overlapCount(entry) >= minimumOverlap)
+      ? fileIndex.filter((entry) => isIndexed(entry) && entry.metricIds.size === 0 && overlapCount(entry) >= minimumOverlap)
       : [];
     return [...new Set([...directMetricFiles, ...untypedMatches].map((entry) => entry.file).concat(unindexedFiles))];
   }
 
   const queryMatches = wanted.length
-    ? fileIndex.filter((entry) => entry.manifested && overlapCount(entry) >= minimumOverlap)
+    ? fileIndex.filter((entry) => isIndexed(entry) && overlapCount(entry) >= minimumOverlap)
     : [];
   return [...new Set([...queryMatches.map((entry) => entry.file), ...unindexedFiles])];
 };
@@ -224,7 +289,7 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
   try { return await load; } finally { if (recordLoadPromises.get(cacheKey) === load) recordLoadPromises.delete(cacheKey); }
 };
 
-export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordFileIndex = { expiresAt: 0, key: '', entries: [] }; recordLoadPromises.clear(); recordFileLoadPromises.clear(); };
+export const clearWarehouseRecordCache = () => { recordCache = { expiresAt: 0, key: '', records: [] }; recordFileIndex = { expiresAt: 0, key: '', entries: [] }; recordFileIndexPromise = undefined; legacyRecordIndexCache.clear(); recordLoadPromises.clear(); recordFileLoadPromises.clear(); };
 
 const recordText = (record) => [
   record.datasetId,
@@ -234,7 +299,7 @@ const recordText = (record) => [
   record.period,
   record.source?.publisher,
   record.source?.title,
-  ...(record.source?.aliases || []),
+  ...(Array.isArray(record.source?.aliases) ? record.source.aliases : []),
   record.source?.url,
   record.url,
   record.excerpt,
