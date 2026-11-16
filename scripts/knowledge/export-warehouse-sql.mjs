@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 import { sourceRegistry } from './source-registry.mjs';
 import { warehouseUpsert } from './warehouse-upsert.mjs';
+import { warehouseSourceMarker } from './warehouse-import.mjs';
 
 const root = process.env.SOURCE_WAREHOUSE_ROOT || new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const outputPath = join(root, 'warehouse-load.sql');
@@ -52,6 +53,7 @@ for (const manifest of latestManifests.values()) {
   const retrievedAt = manifest.retrievedAt || source.retrievedAt;
   if (!retrievedAt || !Number.isFinite(Date.parse(retrievedAt)) || Date.parse(retrievedAt) > Date.now() + 300_000) continue;
   const trust = manifest.trust || source.trust;
+  const sourceSha256 = manifest.sha256 || source.sha256 || '';
   await appendStatement(warehouseUpsert({
     table: 'source_documents',
     columns: ['id', 'publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
@@ -59,6 +61,14 @@ for (const manifest of latestManifests.values()) {
     updateColumns: ['publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
   }));
   sourceCount += 1;
+  await appendStatement(warehouseSourceMarker('data', manifest.id, sourceSha256));
+  await appendStatement(warehouseUpsert({
+    table: 'warehouse_source_imports',
+    conflictColumn: 'source_id',
+    columns: ['source_id', 'sha256', 'status', 'updated_at'],
+    values: [sql(manifest.id), sql(sourceSha256), sql('in_progress'), sql(retrievedAt)],
+    updateColumns: ['sha256', 'status', 'updated_at'],
+  }));
   const emittedDatasets = new Set();
   for (const record of Array.isArray(payload.records) ? payload.records : []) {
     // Retain a break flag even when the corresponding statistical cell has no
@@ -118,6 +128,14 @@ for (const manifest of latestManifests.values()) {
     }));
     observationCount += 1;
   }
+  await appendStatement(warehouseUpsert({
+    table: 'warehouse_source_imports',
+    conflictColumn: 'source_id',
+    columns: ['source_id', 'sha256', 'status', 'updated_at'],
+    values: [sql(manifest.id), sql(sourceSha256), sql('complete'), sql(retrievedAt)],
+    updateColumns: ['sha256', 'status', 'updated_at'],
+  }));
+  await appendStatement(warehouseSourceMarker('end', manifest.id, sourceSha256));
 }
 await flush();
 } finally { await output.close(); }
