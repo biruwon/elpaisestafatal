@@ -2,6 +2,7 @@ import { readdir, readFile, open, rename } from 'node:fs/promises';
 import { join } from 'node:path';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 import { sourceRegistry } from './source-registry.mjs';
+import { warehouseUpsert } from './warehouse-upsert.mjs';
 
 const root = process.env.SOURCE_WAREHOUSE_ROOT || new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const outputPath = join(root, 'warehouse-load.sql');
@@ -51,7 +52,12 @@ for (const manifest of latestManifests.values()) {
   const retrievedAt = manifest.retrievedAt || source.retrievedAt;
   if (!retrievedAt || !Number.isFinite(Date.parse(retrievedAt)) || Date.parse(retrievedAt) > Date.now() + 300_000) continue;
   const trust = manifest.trust || source.trust;
-  await appendStatement(`INSERT INTO source_documents (id, publisher, title, aliases_json, source_registry_id, schedule, url, content_type, published_at, retrieved_at, sha256, trust_tier, parser_version) VALUES (${sql(manifest.id)}, ${sql(publisher)}, ${sql(title)}, ${sql(JSON.stringify(aliases))}, ${sql(sourceRegistryId)}, ${sql(schedule)}, ${sql(manifest.url)}, ${sql(manifest.contentType || 'application/octet-stream')}, ${sql(manifest.publishedAt || source.publishedAt || null)}, ${sql(retrievedAt)}, ${sql(manifest.sha256 || source.sha256 || '')}, ${sql(trust === 'primary' || trust === 'approved-domain' ? 'primary' : 'discovery')}, ${sql(manifest.connector || source.connector || 'generic')}) ON CONFLICT (id) DO UPDATE SET publisher = excluded.publisher, title = excluded.title, aliases_json = excluded.aliases_json, source_registry_id = excluded.source_registry_id, schedule = excluded.schedule, url = excluded.url, content_type = excluded.content_type, published_at = excluded.published_at, retrieved_at = excluded.retrieved_at, sha256 = excluded.sha256, trust_tier = excluded.trust_tier, parser_version = excluded.parser_version;`);
+  await appendStatement(warehouseUpsert({
+    table: 'source_documents',
+    columns: ['id', 'publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
+    values: [sql(manifest.id), sql(publisher), sql(title), sql(JSON.stringify(aliases)), sql(sourceRegistryId), sql(schedule), sql(manifest.url), sql(manifest.contentType || 'application/octet-stream'), sql(manifest.publishedAt || source.publishedAt || null), sql(retrievedAt), sql(manifest.sha256 || source.sha256 || ''), sql(trust === 'primary' || trust === 'approved-domain' ? 'primary' : 'discovery'), sql(manifest.connector || source.connector || 'generic')],
+    updateColumns: ['publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
+  }));
   sourceCount += 1;
   const emittedDatasets = new Set();
   for (const record of Array.isArray(payload.records) ? payload.records : []) {
@@ -97,9 +103,19 @@ for (const manifest of latestManifests.values()) {
       };
     }
     const searchText = normalise([publisher, title, ...aliases, metricId, ...searchAliasesForMetric(metricId), record.datasetId, record.metric, excerpt, record.unit, record.period, record.geography, record.population, dimensions, dimensionLabels, url, JSON.stringify(finding || {}).slice(0, 4000)].filter(Boolean).join(' '));
-    if (!emittedDatasets.has(datasetId)) await appendStatement(`INSERT INTO datasets (id, source_document_id, title, metric, unit, geography, population, period_start, period_end, definition) VALUES (${sql(datasetId)}, ${sql(manifest.id)}, ${sql(record.datasetId || 'Observations')}, ${sql(record.metric || null)}, ${sql(record.unit || null)}, ${sql(record.geography || null)}, ${sql(record.population || null)}, ${sql(record.period || null)}, ${sql(record.period || null)}, ${sql(record.definition || null)}) ON CONFLICT (id) DO UPDATE SET title = excluded.title, metric = excluded.metric, unit = excluded.unit, geography = excluded.geography, population = excluded.population, period_start = excluded.period_start, period_end = excluded.period_end, definition = excluded.definition;`);
+    if (!emittedDatasets.has(datasetId)) await appendStatement(warehouseUpsert({
+      table: 'datasets',
+      columns: ['id', 'source_document_id', 'title', 'metric', 'unit', 'geography', 'population', 'period_start', 'period_end', 'definition'],
+      values: [sql(datasetId), sql(manifest.id), sql(record.datasetId || 'Observations'), sql(record.metric || null), sql(record.unit || null), sql(record.geography || null), sql(record.population || null), sql(record.period || null), sql(record.period || null), sql(record.definition || null)],
+      updateColumns: ['title', 'metric', 'unit', 'geography', 'population', 'period_start', 'period_end', 'definition'],
+    }));
     emittedDatasets.add(datasetId);
-    await appendStatement(`INSERT INTO observations (id, dataset_id, source_document_id, metric, metric_id, value, unit, period, geography, population, dimensions_json, dimension_labels_json, kind, url, excerpt, search_text, payload_json) VALUES (${sql(record.id)}, ${sql(datasetId)}, ${sql(manifest.id)}, ${sql(record.metric || null)}, ${sql(metricId || null)}, ${number(record.value)}, ${sql(record.unit || null)}, ${sql(record.period || null)}, ${sql(record.geography || null)}, ${sql(record.population || null)}, ${sql(dimensions)}, ${sql(dimensionLabels)}, ${sql(record.kind || 'observation')}, ${sql(url)}, ${sql(excerpt)}, ${sql(searchText)}, ${sql(JSON.stringify(preserved))}) ON CONFLICT (id) DO UPDATE SET dataset_id = excluded.dataset_id, source_document_id = excluded.source_document_id, metric = excluded.metric, metric_id = excluded.metric_id, value = excluded.value, unit = excluded.unit, period = excluded.period, geography = excluded.geography, population = excluded.population, dimensions_json = excluded.dimensions_json, dimension_labels_json = excluded.dimension_labels_json, kind = excluded.kind, url = excluded.url, excerpt = excluded.excerpt, search_text = excluded.search_text, payload_json = excluded.payload_json;`);
+    await appendStatement(warehouseUpsert({
+      table: 'observations',
+      columns: ['id', 'dataset_id', 'source_document_id', 'metric', 'metric_id', 'value', 'unit', 'period', 'geography', 'population', 'dimensions_json', 'dimension_labels_json', 'kind', 'url', 'excerpt', 'search_text', 'payload_json'],
+      values: [sql(record.id), sql(datasetId), sql(manifest.id), sql(record.metric || null), sql(metricId || null), number(record.value), sql(record.unit || null), sql(record.period || null), sql(record.geography || null), sql(record.population || null), sql(dimensions), sql(dimensionLabels), sql(record.kind || 'observation'), sql(url), sql(excerpt), sql(searchText), sql(JSON.stringify(preserved))],
+      updateColumns: ['dataset_id', 'source_document_id', 'metric', 'metric_id', 'value', 'unit', 'period', 'geography', 'population', 'dimensions_json', 'dimension_labels_json', 'kind', 'url', 'excerpt', 'search_text', 'payload_json'],
+    }));
     observationCount += 1;
   }
 }
