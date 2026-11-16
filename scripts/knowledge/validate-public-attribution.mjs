@@ -43,4 +43,34 @@ const explanationPublic = checkFromPlan('¿Las pensiones públicas usan reparto 
 assert.equal(explanationPublic.state, 'limited');
 assert.deepEqual(explanationPublic.result.arguments[0].sourceIds, ['social-security-pay-as-you-go']);
 assert.deepEqual(sourcesForEvidenceIds({ sourceLinks: [{ id: 'known' }], evidenceSummary: { families: [] } }, ['unrelated-observation']), [], 'Unknown observations must not acquire guessed sources');
+
+const exactClaim = 'España supera los 49 millones de residentes.';
+const sourceFreePlan = {
+  schemaVersion: '1', evidenceLevel: 'supported', headline: exactClaim,
+  summary: 'La formulación coincide con una afirmación publicada.', coverage: 'strong', claimType: 'descriptive',
+  blocks: [
+    { type: 'confirmed', propositionIds: [], evidenceIds: ['poblacion-residente-supera-49m'], points: [] },
+    { type: 'conversation_reply', evidenceIds: ['poblacion-residente-supera-49m'], text: 'La formulación coincide con una afirmación publicada.' },
+  ],
+  evidenceIds: ['poblacion-residente-supera-49m'], sourceIds: ['poblacion-residente-espana-eurostat'],
+  sourceLinks: [], knowledgeVersion: 'test',
+};
+const sourceFreePages = checkFromPlan(exactClaim, sourceFreePlan, 'source-free');
+assert.equal(sourceFreePages.state, 'insufficient', 'A supported label without public findings and citations must fail closed');
+assert.match(sourceFreePages.result.reply, /no hemos podido recuperar datos y fuentes verificables/i);
+assert.deepEqual(sourceFreePages.result.sources, []);
+assert.deepEqual(sourceFreePages.result.whatWeKnow, []);
+const sourceFreeLimited = checkFromPlan(exactClaim, { ...sourceFreePlan, evidenceLevel: 'limited' }, 'source-free-limited');
+assert.equal(sourceFreeLimited.state, 'insufficient', 'A limited response without any source must not be presented as an evidence finding');
+assert.match(sourceFreeLimited.result.reply, /no hemos podido recuperar datos y fuentes verificables/i);
+
+const exactReference = { kind: 'claim', slug: 'poblacion-residente-supera-49m', title: exactClaim, href: '/afirmaciones/poblacion-residente-supera-49m', confidence: 1 };
+const localExact = localPublicCheckResponse({ status: 'complete', requestId: 'source-free-exact', result: sourceFreePlan, relatedClaims: [exactReference] }, exactClaim);
+assert.equal(localExact.state, 'supported');
+assert.equal(localExact.result.canonicalHref, '/comprobar/poblacion-residente-supera-49m', 'An exact published claim must open its sourced canonical page');
+
+const localNeighbor = localPublicCheckResponse({ status: 'complete', requestId: 'source-free-neighbor', result: sourceFreePlan, relatedClaims: [exactReference] }, 'España supera los 49 millones de habitantes y ya no hay sitio.');
+assert.equal(localNeighbor.state, 'insufficient', 'A stronger nearby claim must not inherit the canonical verdict');
+assert.equal(localNeighbor.result.canonicalHref, undefined);
+assert.match(localNeighbor.result.reply, /no la damos por confirmada/i);
 console.log('Public attribution passed: Pages and local results preserve direct evidence, source documents and contextual gaps.');

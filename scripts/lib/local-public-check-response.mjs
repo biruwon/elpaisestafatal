@@ -3,6 +3,18 @@ import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snap
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 
+const normalizedClaim = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const exactPublishedSlugFor = (payload, claim) => {
+  const references = [...(Array.isArray(payload?.relatedClaims) ? payload.relatedClaims : []), ...(payload?.primary ? [payload.primary] : [])];
+  for (const reference of references) {
+    const href = typeof reference?.href === 'string' ? reference.href : '';
+    const match = href.match(/^\/afirmaciones\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+    if (reference?.kind === 'claim' && Number(reference.confidence) === 1
+      && normalizedClaim(reference.title) === normalizedClaim(claim) && match) return match[1];
+  }
+  return undefined;
+};
+
 const visualsFromPlan = (plan) => {
   const planned = plan.visuals?.length ? plan.visuals : plan.visual ? [plan.visual] : [];
   const valid = planned.filter((visual) => Array.isArray(visual.labels)
@@ -69,7 +81,29 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     .map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
   const composedReply = blocks.find((block) => block?.type === 'conversation_reply')?.text;
   const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
-  const evidenceLevel = plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
+  const evidenceFamilies = plan.evidenceSummary?.families || [];
+  const hasVisibleFindings = criteria.length > 0
+    || evidenceFamilies.some((family) => Boolean(family.finding?.trim() || family.data?.length))
+    || plannedVisuals.length > 0;
+  const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
+    || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
+  const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(payload, claim) : undefined;
+  if (publishedSlug) {
+    const message = 'Esta afirmación tiene una ficha revisada con datos, fuentes y límites. Abrimos esa comprobación.';
+    return {
+      state: 'supported',
+      id: payload.requestId || `local-${Date.now().toString(36)}`,
+      result: {
+        claim, reply: message, answer: message, keyFact: 'Ficha revisada disponible',
+        criteria: [], whatWeKnow: [], limitations: [], scope: {}, sources: [],
+        evidenceLevel: 'supported', canonicalHref: `/comprobar/${publishedSlug}`,
+      },
+    };
+  }
+  const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
+  const publicReply = missingPublicEvidence
+    ? 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
+    : reply;
 
   return attachExtraction({
     state: evidenceLevel,
@@ -77,20 +111,20 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     result: {
       claim,
       interpretation: plan.interpretation,
-      reply,
-      answer: reply || plan.summary || plan.headline,
-      shareableReply: plan.shareableReply,
-      shareableSourceIds: shareableSourceIds.length ? shareableSourceIds : undefined,
-      keyFact: plan.headline,
-      criteria,
-      whatWeKnow: criteria.map((item) => item.finding),
-      limitations: [plan.limitation].filter(Boolean),
+      reply: publicReply,
+      answer: publicReply || plan.summary || plan.headline,
+      shareableReply: missingPublicEvidence ? undefined : plan.shareableReply,
+      shareableSourceIds: !missingPublicEvidence && shareableSourceIds.length ? shareableSourceIds : undefined,
+      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : plan.headline,
+      criteria: missingPublicEvidence ? [] : criteria,
+      whatWeKnow: missingPublicEvidence ? [] : criteria.map((item) => item.finding),
+      limitations: [...new Set([plan.limitation, ...(missingPublicEvidence ? ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.'] : [])].filter(Boolean))],
       scope: { checkedAt: plan.asOf },
-      sources,
-      visual: plannedVisuals[0],
-      visuals: plannedVisuals.length > 1 ? plannedVisuals : undefined,
-      evidenceSummary: plan.evidenceSummary,
-      answerScope: plan.answerScope,
+      sources: missingPublicEvidence ? [] : sources,
+      visual: missingPublicEvidence ? undefined : plannedVisuals[0],
+      visuals: missingPublicEvidence ? undefined : plannedVisuals.length > 1 ? plannedVisuals : undefined,
+      evidenceSummary: missingPublicEvidence ? undefined : plan.evidenceSummary,
+      answerScope: missingPublicEvidence ? undefined : plan.answerScope,
       evidenceLevel,
     },
   }, extraction);
