@@ -236,9 +236,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanation?.sources || []).map((source) => source.id)])];
+  const explanationMeasuresClaim = Boolean(explanation?.directClaimEvidence && explanation.facts?.length && explanation.sources?.length);
   const missing = educationOutcome
     ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
-    : direct.length ? [] : needs;
+    : direct.length || explanationMeasuresClaim ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
   const trendNotes = educationTrendRequested ? primaryFacts.flatMap((fact) => {
     const quality = comparisonQuality(fact.items, { temporal: true, firstPeriod: fact.items[0]?.period || '' });
@@ -274,9 +275,22 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ...(directIds.includes(id) ? {} : { missingDimensions: needs }),
     };
   });
+  if (explanationMeasuresClaim) families.push({
+    familyId: focus.id,
+    familyLabel: focus.label,
+    label: focus.label,
+    direction: 'qualifies',
+    status: 'available',
+    dataKind: 'snapshot',
+    finding: explanation.facts.join(' '),
+    data: explanation.facts,
+    evidenceIds: explanation.sources.map((source) => source.id),
+    sourceIds: explanation.sources.map((source) => source.id),
+    dimensions: explanation.dimensions,
+  });
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanation ? focus.explanationHeadline || `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
+    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
     interpretation: { kind: focus.claimType === 'causal' ? 'causal' : 'quantitative', subject: focus.label, predicate: focus.claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [

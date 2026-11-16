@@ -361,6 +361,48 @@ for (const claim of [migrationWageClaim, migrationFiscalClaim, healthcareStaffin
 }
 assert.equal(claimFocusFor('Los jóvenes con estudios superiores están sobrecualificados en su empleo')?.id, 'education-employment-outcomes', 'A youth overqualification claim must retain its reviewed education family');
 assert.equal(claimFocusFor('¿Cuántos días se espera para una cita con el médico de familia?')?.id, 'primary-care-waits', 'Appointment delays must remain separate from staffing shortage causes');
+const specialistWaitParaphrases = [
+  'Las listas de espera varían demasiado entre comunidades autónomas',
+  '¿Qué diferencias hay en la espera media de las consultas externas del SNS entre comunidades autónomas?',
+  'Los tiempos de espera de los especialistas cambian según la región',
+];
+for (const claim of specialistWaitParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'specialist-outpatient-regional-waits', `A regional specialist-wait paraphrase lost its evidence family: ${claim}`);
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer.answerScope.family, 'specialist-outpatient-regional-waits');
+  assert.equal(answer.evidenceLevel, 'limited');
+  assert.match(answer.headline, /variaron entre territorios en 2025/);
+  assert.match(answer.shareableReply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
+  assert.match(answer.limitation, /no establece si son excesivas ni por qu[eé]/);
+  assert.ok(answer.sourceLinks.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+  const family = answer.evidenceSummary.families.find((item) => item.familyId === 'specialist-outpatient-regional-waits');
+  assert.equal(family.dataKind, 'snapshot');
+  assert.equal(family.dimensions.period, '2025-12-31');
+  assert.equal(family.dimensions.denominator, 'pacientes registrados en la lista estructural de consultas externas de cada territorio');
+  assert.match(family.dimensions.population, /listas estructurales de espera de consultas externas del SNS/);
+  assert.equal(family.dimensions.unit, 'días de espera media');
+  assert.ok(!answer.blocks.some((block) => block.type === 'evidence_gap'), 'A directly measured regional comparison must not claim that the comparison data are missing');
+  const publicAnswer = localPublicCheckResponse({ status: 'complete', requestId: 'specialist-waits', result: answer }, claim);
+  assert.equal(publicAnswer.state, 'limited', 'A scoped regional comparison should appear as a limited public answer');
+  assert.match(publicAnswer.result.reply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
+  assert.ok(publicAnswer.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+}
+assert.notEqual(claimFocusFor('En muchas zonas hay que esperar demasiado para conseguir cita con el médico de familia')?.id,
+  'specialist-outpatient-regional-waits', 'Primary-care appointment delays must not inherit outpatient-specialist data');
+for (const claim of [
+  'Las listas quirúrgicas varían mucho entre comunidades autónomas',
+  'La espera de especialistas ha aumentado desde 2020',
+  'Las listas de espera varían demasiado entre comunidades como Cataluña y Madrid',
+  'Las listas de espera de los trenes varían entre comunidades autónomas',
+  'Las esperas de consultas externas cambian cada año entre comunidades autónomas',
+  'Las demoras varían entre comunidades porque faltan médicos',
+  'Las demoras de una especialidad concreta varían entre CCAA',
+  'Las listas de espera varían entre comunidades autónomas en 2024',
+  'Las listas de espera de especialistas varían entre comunidades autónomas en 2026',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'specialist-outpatient-regional-waits', `An incompatible wait-list claim crossed into the 2025 regional consultation snapshot: ${claim}`);
+const portugalWaits = focusedEvidencePlan('Las listas de espera varían entre regiones de Portugal');
+assert.equal(portugalWaits.answerScope.family, 'specialist-outpatient-regional-waits');
+assert.equal(portugalWaits.sourceLinks.length, 0, 'Spain-only waiting-list evidence must not appear for Portugal');
 assert.equal(claimFocusFor('Los titulados universitarios trabajan en empleos inferiores a su preparación')?.id, 'education-employment-outcomes', 'A general graduate claim must not be inferred to concern migrants');
 assert.equal(claimFocusFor('Hay muchos médicos en España, aunque no se repartan bien por comunidades')?.id, undefined, 'A general physician distribution claim must not be mistaken for a shortage caused by working conditions');
 assert.notEqual(claimFocusFor('¿Qué parte de todas las personas que reciben prestaciones por desempleo es extranjera?')?.id, 'migration-fiscal-contribution', 'Unemployment-benefit recipients must not be mistaken for a net fiscal contribution');

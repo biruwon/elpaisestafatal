@@ -143,7 +143,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         result: reviewedContext,
       };
     }
-    return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
+    return { status: focused.evidenceLevel === 'limited' ? 'partial' : 'uncovered', result: focused, relatedClaims: [], guidance };
   }
   const institutionalLabel = analysisWasTruncated ? undefined : spanishInstitutionalScope(original);
   if (institutionalLabel) {

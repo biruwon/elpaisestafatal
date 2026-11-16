@@ -72,6 +72,12 @@ if (independenceClaim.status !== 'uncovered' || independenceClaim.result?.id !==
   || independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding' && /temporalidad|paro/.test(block.points?.join(' ') || ''))) {
   throw new Error('A full-time-work housing claim inherited unrelated employment metrics or an unsupported verdict.');
 }
+const specialistRegionalWait = deterministicApiFallback({ text: 'Las listas de espera varían demasiado entre comunidades autónomas', inputType: 'text' });
+if (specialistRegionalWait.status !== 'partial' || specialistRegionalWait.result?.evidenceLevel !== 'limited'
+  || !specialistRegionalWait.result?.sourceIds?.includes('sisle-sns-regional-consultations-dec-2025')
+  || specialistRegionalWait.result?.blocks?.some((block) => block.type === 'evidence_gap')) {
+  throw new Error('A dated, source-backed regional waiting-time comparison was still marked as uncovered or as missing the data it contains.');
+}
 const foreignHousingCause = deterministicApiFallback({ text: 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras' });
 if (foreignHousingCause.status !== 'uncovered' || foreignHousingCause.result?.id !== 'measurement-foreign-housing-price-causality'
   || foreignHousingCause.result?.claimType !== 'causal' || foreignHousingCause.result?.evidenceLevel !== 'insufficient'
@@ -105,7 +111,7 @@ for (const claim of youthRentClaims) {
   if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /porcentaje de renta individual/.test(item)))) {
     throw new Error(`A contextual average was presented without the gap for the claimed individual threshold: ${claim}`);
   }
-  if (!/no indican cuántos jóvenes superan un porcentaje concreto/.test(result.result?.limitation || '')) {
+  if (!/no muestra cu[aá]ntas personas superan el 50 % de su salario individual/.test(result.result?.limitation || '')) {
     throw new Error(`Youth-rent answer did not preserve the individual-threshold caveat: ${claim}`);
   }
   const reply = result.result?.shareableReply || '';

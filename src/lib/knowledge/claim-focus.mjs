@@ -26,6 +26,19 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|titulad\w*|graduad\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
+const specialistOutpatientRegionalWaits = (t) => {
+  const wait = /\blistas? de espera\b/.test(t)
+    || /\b(espera\w*|demora\w*)\b/.test(t) && /\b(consultas? externas?|atencion especializada|especialistas?|sanidad|salud|medic\w*|hospital\w*)\b/.test(t);
+  const regionalComparison = /\b(comunidades? autonomas?|ccaa|region(?:es)?|regional\w*|territorios?)\b/.test(t)
+    && /\b(vari\w*|cambi\w*|diferenc\w*|desigual\w*|compar\w*|mayor\w*|menor\w*|mas|menos|brecha\w*)\b/.test(t);
+  const incompatibleService = /\b(atencion primaria|medic\w* de (?:familia|cabecera)|cirug\w*|quirurg\w*|operacion\w*|urgencias?|pruebas? diagnosticas?|codigo postal|municipio\w*|barrio\w*|hospital\w* concret\w*|privad\w*|trenes?|ferroviar\w*|autobuses?|transporte|licencias?|administrativ\w*)\b/.test(t);
+  const causalOrTrend = /\b(caus\w*|provoc\w*|empuj\w*|oblig\w*|porque|debido|por culpa|se debe|responsab\w*|consecuencia|falta de (?:medic\w*|personal sanitario|profesional\w* sanitari\w*)|desde (?:19|20)\d{2}|desde la pandemia|desde hace|cada vez|cada a[nñ]o|a lo largo|ultim\w* a[nñ]os|serie temporal|tendencia|aument\w*|crec\w*|baj\w*|disminu\w*|evoluci\w*)\b/.test(t);
+  const specificSpecialty = /\b(dermatolog\w*|traumatolog\w*|oftalmolog\w*|neurolog\w*|cardiolog\w*|ginecolog\w*|urolog\w*|digestiv\w*|otorrinolaringolog\w*|especialidades?)\b/.test(t);
+  const specificTerritory = /\b(andalucia|aragon|asturias|baleares|canarias|cantabria|castilla(?: y leon| la mancha)?|cataluna|extremadura|galicia|madrid|murcia|navarra|pais vasco|rioja|ceuta|melilla|valencia)\b/.test(t);
+  const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+  return wait && regionalComparison && !incompatibleService && !causalOrTrend && !specificSpecialty && !specificTerritory
+    && (!years.length || years.every((year) => year === '2025'));
+};
 const bankSpainRentEffortSource = {
   id: 'bank-spain-housing-annual-2025',
   title: 'Informe Anual 2025 · esfuerzo del alquiler y acceso a la vivienda',
@@ -236,6 +249,33 @@ const focuses = [
     needs: ['impuestos y cotizaciones atribuibles al mismo hogar', 'primas y pagos directos del seguro privado', 'cobertura, servicios y periodo comparables'],
     explanation: 'Pagar impuestos y una prima privada son dos vías de financiación; eso por sí solo no mide si un hogar paga dos veces por el mismo servicio ni cuánto soporta en total.',
     limitation: 'Las listas de espera públicas no miden primas privadas, pagos directos, solapamiento de coberturas ni la carga total por hogar.',
+  },
+  {
+    id: 'specialist-outpatient-regional-waits', label: 'demoras de consultas externas del SNS por territorio',
+    when: specialistOutpatientRegionalWaits,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [],
+    explanationHeadline: 'Las demoras registradas en consultas externas variaron entre territorios en 2025',
+    explanation: 'El informe del Ministerio de Sanidad compara las listas de espera de consultas externas del Sistema Nacional de Salud por comunidad autónoma y ciudad autónoma.',
+    explanationEvidence: {
+      directClaimEvidence: true,
+      expiresAt: '2027-03-24', territories: ['ES'],
+      dimensions: {
+        subject: 'espera media de pacientes en listas estructurales de consultas externas del SNS, agregada en diez especialidades',
+        population: 'pacientes registrados en listas estructurales de espera de consultas externas del SNS',
+        period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas',
+        denominator: 'pacientes registrados en la lista estructural de consultas externas de cada territorio', unit: 'días de espera media',
+      },
+      facts: [
+        'A 31 de diciembre de 2025, la espera media total de consultas externas registrada por el SNS iba de 16 días en Melilla a 162 días en Canarias. El informe presenta el total de diez especialidades para cada territorio.',
+        'El Ministerio indicó el 24 de septiembre de 2026 que esos datos de diciembre de 2025 eran los últimos disponibles y que el informe se había actualizado tras corregir los datos aportados por Castilla-La Mancha. También advierte que las cifras dependen de la información remitida por cada comunidad autónoma y que cada administración responde de su exactitud y del cumplimiento de los criterios comunes.',
+      ],
+      sources: [
+        { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Datos_ccaa_dic2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-17' },
+        { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-17' },
+      ],
+    },
+    limitation: 'La comparación muestra diferencias en el tiempo medio registrado para consultas externas del SNS; no establece si son excesivas ni por qué existen. No mide atención primaria, cirugía, pruebas diagnósticas, hospitales concretos ni tiempos individuales. El Ministerio advierte que los datos proceden de las comunidades autónomas.',
   },
   {
     id: 'entrepreneurial-risk-perception', label: 'riesgo percibido al emprender y empleo público',

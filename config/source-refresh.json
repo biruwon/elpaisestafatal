@@ -11,6 +11,11 @@
       "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2025/Totales/Informe_BS_2025.pdf",
       "title": "Barómetro Sanitario 2025 · Ministerio de Sanidad",
       "aliases": ["urgencias", "tiempo de espera", "sanidad pública", "barómetro sanitario"]
+    },
+    {
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm",
+      "title": "Últimos datos de listas de espera del SNS · Ministerio de Sanidad",
+      "aliases": ["consultas externas", "espera media por comunidad autónoma", "listas de espera sanitarias por territorio", "demoras de especialistas", "SISLE-SNS"]
     }
   ],
   "boe": [
