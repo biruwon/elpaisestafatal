@@ -246,10 +246,19 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           return [];
         });
         if (lookupFailed) {
-          if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) {
-            return json(unavailableCheck(effectiveClaim, focus.id === 'rental-price-amount'
-              ? 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'
-              : `No hemos podido consultar datos compatibles sobre ${focus.label}. No sustituimos esa medida por cifras de otro tema.`));
+          if (focus.id === 'rental-price-amount') {
+            return json(unavailableCheck(effectiveClaim, 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+          }
+          // Context metrics (for example, unemployment as background to a
+          // claim about job opportunities) cannot answer the direct claim.
+          // If their lookup is unavailable, retain the measurement gap rather
+          // than turning a transient D1 failure into an empty public response.
+          if (focus.direct.length === 0) {
+            const plan = focusedEvidencePlan(effectiveClaim, { observations: [] }) as AnswerPlan | undefined;
+            if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
+            if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse || submissionFallback());
+          } else if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) {
+            return json(unavailableCheck(effectiveClaim, `No hemos podido consultar datos compatibles sobre ${focus.label}. No sustituimos esa medida por cifras de otro tema.`));
           }
           focusedObservations = undefined;
         } else {
@@ -258,6 +267,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
             warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
             if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
           }
+        }
+      } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0) {
+        // A context-only family has no direct metric that can support the
+        // submitted claim. Explain the missing measurement even when D1 is
+        // not bound or has no matching metric IDs.
+        const plan = focusedEvidencePlan(effectiveClaim, { observations: [] }) as AnswerPlan | undefined;
+        if (plan) {
+          warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
+          if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
         }
       }
     }
