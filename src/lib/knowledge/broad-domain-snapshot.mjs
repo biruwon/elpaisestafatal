@@ -778,6 +778,9 @@ export const broadDomainPacketsFor = (text) => {
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
   const taxBroadSignal = taxSignal && /inflaci[oó]n|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
   const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|piso|casa|hipotec|emancip/i.test(value);
+  const focusedHousingFamily = claimFocusFor(text)?.id;
+  const reviewedYouthPurchaseContext = youthSignal && focusedHousingFamily === 'purchase-affordability'
+    && /compr|entrada|hipotec|ahorr|deposit|aval/i.test(value);
   const broadYouthAccess = youthSignal
     && /alquil|viviend|piso|casa|emancip|independiz|acceso/i.test(value)
     && !/compit|transfer|redistribu|retras|atras|caus|provoc|encarec|desplaz|patrimoni|riqueza|generacion|baby boom|cotiz|paternidad|natalidad|hij\w*|ahorr|reduc|aument|sube|baja|compar|mas\s+que|menos\s+que|mejor|peor|superior|inferior|frente a|extran|migrant|inmigr/i.test(value);
@@ -788,7 +791,7 @@ export const broadDomainPacketsFor = (text) => {
     && (packet.id !== 'broad-tax-burden-purchasing-power' || taxBroadSignal)
     && (packet.id !== 'broad-housing' || !explicitHousingMeasure)).length;
   const explicitPropositionCount = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition.explicit !== false).length;
-  const youthSpecificMismatch = youthSignal && !broadYouthAccess;
+  const youthSpecificMismatch = youthSignal && !broadYouthAccess && !reviewedYouthPurchaseContext;
   const explicitMultiDomainClaim = !youthSpecificMismatch && matchedDomainCount >= 3 && compiledClaim.concepts.length >= 3
     && (explicitPropositionCount >= 3 || (matchedDomainCount >= 4 && compiledClaim.concepts.length >= 4));
   const broadMultiDomain = matchedDomainCount >= 2
@@ -838,7 +841,7 @@ export const broadDomainPacketsFor = (text) => {
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
   const broadYouthProfile = ['youth_housing_access', 'youth_housing_family_counterfactual'].includes(domainProfile?.id);
-  if (dedicatedProfile && (!broadYouthProfile || domainProfile.id === 'youth_housing_family_counterfactual' || !needsScopedMeasurement(text) || (domainProfile.id === 'youth_housing_access' && broadYouthAccess))) return [packetById(domainProfile.packetId)].filter(Boolean);
+  if (dedicatedProfile && (!broadYouthProfile || domainProfile.id === 'youth_housing_family_counterfactual' || !needsScopedMeasurement(text) || (domainProfile.id === 'youth_housing_access' && (broadYouthAccess || reviewedYouthPurchaseContext)))) return [packetById(domainProfile.packetId)].filter(Boolean);
   if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
   if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
   if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
@@ -847,7 +850,7 @@ export const broadDomainPacketsFor = (text) => {
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (securityGroupAttribution && /\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value)) return [packetById('broad-immigration-security')].filter(Boolean);
   if (securityGroupAttribution) return [packetById('broad-security')].filter(Boolean);
-  if (needsScopedMeasurement(text) && !broadHousingAccess && !broadYouthAccess && !taxBroadSignal && !reviewedCompoundRoute && !publicAdministrationPerformanceSignal) return [];
+  if (needsScopedMeasurement(text) && !broadHousingAccess && !broadYouthAccess && !reviewedYouthPurchaseContext && !taxBroadSignal && !reviewedCompoundRoute && !publicAdministrationPerformanceSignal) return [];
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
   if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
   if (taxBroadSignal) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
@@ -1156,9 +1159,19 @@ const scopeReviewedPacket = (packet, claim) => {
       : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'En España, el alquiler mensual medio de una vivienda completa se compara con el salario individual mensual medio de referencia de la juventud en el Observatorio 2025. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
       : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La ECV 2025 muestra diferencias de convivencia por renta personal; describe una asociación, no mide transferencias familiares ni demuestra qué causó esa convivencia.' } : criterion);
     if (!emigrationCounterfactual) {
-      headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
-      summary = 'El Observatorio de Emancipación compara costes de vivienda con salarios jóvenes de referencia. Una media no describe a cada persona ni permite calcular cuántas superan un umbral concreto.';
-      limitations = ['El esfuerzo varía según el salario, el territorio, el tamaño del hogar y si se comparte vivienda. Los datos medios no indican cuántos jóvenes superan un porcentaje concreto.'];
+      if (purchase && !rent) {
+        const asksAboutFamilySupport = /padres|progenitor|familia|herenc|patrimoni/.test(text);
+        headline = 'La entrada media equivale a 4,7 años del salario joven íntegro de referencia';
+        summary = 'El Observatorio de Emancipación estima una entrada para comprar vivienda libre en España y la compara con el salario anual individual de referencia de la juventud. La equivalencia supone dedicar el salario íntegro; no mide el tiempo real de ahorro ni cuántos hogares consiguen comprar.';
+        limitations = [
+          'El cálculo usa una media nacional y no mide el ahorro disponible, los ingresos del hogar ni las condiciones hipotecarias de cada territorio.',
+          ...(asksAboutFamilySupport ? ['La ECV recoge motivos declarados de convivencia, pero no mide el efecto de las ayudas familiares o herencias sobre el acceso individual a la compra.'] : []),
+        ];
+      } else {
+        headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
+        summary = 'El Observatorio de Emancipación compara costes de vivienda con salarios jóvenes de referencia. Una media no describe a cada persona ni permite calcular cuántas superan un umbral concreto.';
+        limitations = ['El esfuerzo varía según el salario, el territorio, el tamaño del hogar y si se comparte vivienda. Los datos medios no indican cuántos jóvenes superan un porcentaje concreto.'];
+      }
     }
     visuals = (visuals || []).filter((visual) => {
       if (/Tasa de paro juvenil/.test(visual.title)) return /paro|desemple/.test(text);
@@ -1206,14 +1219,21 @@ const composeScopedReply = (plan) => {
     const purchase = dataFor('youth-purchase-effort');
     const coResidence = dataFor('family-co-residence');
     const housingBarrier = dataFor('family-housing-barrier');
+    const familyTransferGap = families.some((family) => family.criterionId === 'family-housing-barrier'
+      && family.missingDimensions?.includes('efecto causal de transferencias familiares'));
     const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
     const parts = [plan.headline.replace(/[.]$/, '') + '.'];
-    const marketFacts = [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
+    const marketFacts = rental && purchase
+      ? ['España: alquiler de vivienda completa, 1.176 €/mes (98,7 % del salario individual mensual medio joven); entrada de compra, 66.900 € (4,7 años del salario anual individual de referencia, dedicado íntegramente).']
+      : [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
     if (marketFacts.length) parts.push(`Observatorio de Emancipación 2025: ${marketFacts.join('; ')}.`);
-    if (coResidence) parts.push(`INE, ECV 2025: ${coResidence}.`);
+    if (coResidence && !housingBarrier) parts.push(`INE, ECV 2025: ${coResidence.split(';')[0]}.`);
     if (housingBarrier) parts.push(housingBarrier);
-    if (housingBarrier) parts.push('El motivo es una respuesta declarada entre quienes ya vivían con sus progenitores; no mide el alquiler como proporción del salario.');
-    else if (rental) parts.push('La media no indica cuántos jóvenes superan un porcentaje concreto de su renta ni describe el gasto y el salario de cada persona.');
+    if (purchase) parts.push('Los 4,7 años suponen dedicar todo el salario; no son el tiempo real de ahorro ni prueban imposibilidad para todos.');
+    if (housingBarrier && familyTransferGap) parts.push('El 47,3 % es un motivo declarado por convivientes; la ECV no mide el efecto de ayudas familiares o herencias.');
+    else if (housingBarrier) parts.push('El 47,3 % es un motivo declarado por convivientes; no mide el gasto de cada hogar.');
+    else if (familyTransferGap) parts.push('La ECV no mide el efecto de las ayudas familiares o herencias sobre la compra.');
+    if (rental) parts.push('La media no indica cuántos jóvenes superan un porcentaje concreto de su renta ni describe el gasto y el salario de cada persona.');
     if (migration) parts.push('La ECV 2025 no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no da una cifra para ese contrafactual.');
     const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
       .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);

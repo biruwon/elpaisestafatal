@@ -21,7 +21,7 @@ for (const claim of youthRentClaims) {
     || !result.result?.evidenceSummary?.families?.some((family) => family.criterionId === 'youth-rental-effort' && family.data?.some((item) => /98,7 %/.test(item)))) {
     throw new Error(`Youth-rent context lost its reviewed source or measured comparison: ${claim}`);
   }
-  if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /porcentaje de ingresos/.test(item)))) {
+  if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /porcentaje de renta individual/.test(item)))) {
     throw new Error(`A contextual average was presented without the gap for the claimed individual threshold: ${claim}`);
   }
   if (!/no indican cuántos jóvenes superan un porcentaje concreto/.test(result.result?.limitation || '')) {
@@ -33,14 +33,48 @@ for (const claim of youthRentClaims) {
     throw new Error(`Youth-rent answer omitted its geography, period, population, denominator, or named source: ${claim}`);
   }
 }
+const youthPurchaseClaims = [
+  'Comprar una vivienda es imposible para muchos jóvenes sin ayuda familiar o una herencia',
+  'Los jóvenes necesitan ahorrar más de cuatro años de sueldo para la entrada de una vivienda',
+];
+for (const claim of youthPurchaseClaims) {
+  const result = deterministicApiFallback({ text: claim, inputType: 'text', now: reviewedAt });
+  if (result.result?.id !== 'broad-youth-living-housing' || result.result?.evidenceLevel !== 'limited') {
+    throw new Error(`A reviewed youth down-payment comparison was hidden by a generic purchase-affordability gap: ${claim}`);
+  }
+  if (!result.result?.sourceIds?.includes('cje-emancipation-2025')
+    || !result.result?.evidenceSummary?.families?.some((family) => family.criterionId === 'youth-purchase-effort'
+      && family.data?.some((item) => /66\.900 €/.test(item) && /4,7 años/.test(item)))) {
+    throw new Error(`Youth purchase answer lost its reviewed down-payment evidence: ${claim}`);
+  }
+  if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap'
+    && block.missing.some((item) => /proporción de jóvenes/.test(item)))) {
+    throw new Error(`A reference average was presented as the distribution of youth home-buying access: ${claim}`);
+  }
+  const reply = result.result?.shareableReply || '';
+  if (!/España/.test(reply) || !/2025/.test(reply) || !/66\.900 €/.test(reply)
+    || !/salario individual anual/.test(reply) || !/dedicar.*íntegro/.test(reply)
+    || !/Consejo de la Juventud de España/.test(reply)) {
+    throw new Error(`Youth purchase answer omitted its geography, period, denominator, assumption, or source: ${claim}`);
+  }
+  if (/ayuda familiar|herencia/i.test(claim)
+    && (!/no mide el efecto de (?:las )?ayudas familiares o herencias/.test(reply)
+      || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /herencias/.test(item))))) {
+    throw new Error(`Youth purchase answer treated family support as measured when it is not: ${claim}`);
+  }
+}
 for (const claim of [
   'El alquiler medio consume casi todo el salario de trabajadores adultos en España',
   'En Madrid, los jóvenes destinan más de la mitad de su sueldo al alquiler',
   'En Portugal, muchos jóvenes gastan más de la mitad de su salario en alquiler',
+  'En Madrid, comprar una vivienda es imposible para jóvenes sin ayuda familiar',
+  'En Portugal, jóvenes no pueden comprar vivienda sin heredar',
+  'Comprar casa consume varios años de salario de trabajadores adultos en España',
+  'La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda',
 ]) {
   const result = deterministicApiFallback({ text: claim, inputType: 'text', now: reviewedAt });
   if (result.result?.id === 'broad-youth-living-housing' || result.result?.sourceIds?.includes('cje-emancipation-2025')) {
-    throw new Error(`Spain-wide youth-rent evidence crossed a population or geography boundary: ${claim}`);
+    throw new Error(`Spain-wide youth-housing evidence crossed a population, geography, or measurement boundary: ${claim}`);
   }
 }
 

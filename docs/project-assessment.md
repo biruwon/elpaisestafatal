@@ -178,3 +178,29 @@ existing production records were marked retrieved on 15 November only after
 their source hashes and 16 observations each matched. Complete automatic data
 refresh still requires configured credentials and repair of the remaining
 unavailable feeds; historical failures have not been treated as successful.
+
+## Youth affordability fallback — 16 November 2026
+
+A generic focused affordability gap could hide reviewed national youth-housing
+evidence when the offline text fallback had no observations. The fallback now
+uses the reviewed family only when its matching CJE evidence is present, and
+adds a claim-specific gap for the population distribution or household support
+that the averages do not measure. Rental comparisons retain the full-dwelling
+scope and individual-salary denominator. Purchase comparisons state that the
+€66,900 entry estimate equals 4.7 years of the CJE's reference annual youth
+salary only if the entire salary were devoted to it; this is not observed
+savings time or a count of households able to buy. The
+[CJE's 2025 Observatory](https://www.cje.org/ca/observatorio_2025/) reports
+these figures, while the [INE's 2025 Living Conditions Survey](https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm)
+reports that 47.3% of people
+aged 26–34 already living with their parents cited inability to afford buying
+or renting as their main reason. That response does not measure the effect of
+family support or inheritance.
+
+The 300-item web-observed corpus is explicitly unverified and was used only as
+a deterministic-fallback routing audit. Four submissions returned a
+`complete` API status with limited evidence, 296 remained uncovered and 28 had
+any source or evidence attached. These counts measure routing and source
+attachment only; they cannot establish factual accuracy or full
+production-resolver performance. Adult, Madrid-specific, Portugal and monthly
+mortgage-payment claims keep their separate scope or measurement gaps.

@@ -46,6 +46,31 @@ const reviewedContextForFocusedGap = {
   'measurement-rental-affordability': {
     packetId: 'broad-youth-living-housing',
     criterionId: 'youth-rental-effort',
+    evidenceGap: () => ({
+      missing: ['distribución de jóvenes según el porcentaje de renta individual destinado al alquiler'],
+      needed: ['renta personal y gasto en alquiler cruzados por edad, periodo y territorio'],
+      nextAction: 'Buscar una fuente que publique la distribución individual del esfuerzo de alquiler; el promedio no indica cuántos jóvenes superan un umbral.',
+    }),
+  },
+  'measurement-purchase-affordability': {
+    packetId: 'broad-youth-living-housing',
+    criterionId: 'youth-purchase-effort',
+    evidenceGap: (claim) => {
+      const asksAboutFamilySupport = /padres|progenit|famil|herenc|patrimoni|ayud/i.test(String(claim || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      return {
+        missing: [
+          'proporción de jóvenes que puede reunir la entrada y pagar la cuota hipotecaria',
+          ...(asksAboutFamilySupport ? ['efecto de las ayudas familiares o herencias en el acceso a la compra'] : []),
+        ],
+        needed: [
+          'ahorro disponible, ingresos del hogar, precio local y condiciones hipotecarias comparables',
+          ...(asksAboutFamilySupport ? ['transferencias o herencias recibidas y una comparación que permita medir su efecto'] : []),
+        ],
+        nextAction: asksAboutFamilySupport
+          ? 'Buscar datos de acceso a la compra por hogar y separar la barrera económica del efecto de la ayuda familiar o la herencia.'
+          : 'Buscar datos de acceso a la compra por hogar, con ahorro, ingresos, precio local y financiación comparables.',
+      };
+    },
   },
 };
 
@@ -61,14 +86,12 @@ const reviewedContextForGap = (focused, claim, now) => {
     && family.sourceIds?.some((sourceId) => planSources.has(sourceId)));
   if (!sourcedFamily) return undefined;
 
-  const gap = focused.blocks?.find((block) => block.type === 'evidence_gap');
-  if (!gap) return plan;
+  const gap = bridge.evidenceGap(claim);
   const blocks = [...(plan.blocks || [])];
   const conclusionIndex = blocks.findIndex((block) => block.type === 'cannot_conclude');
   blocks.splice(conclusionIndex < 0 ? blocks.length : conclusionIndex, 0, {
+    type: 'evidence_gap',
     ...gap,
-    missing: [...gap.missing],
-    needed: [...gap.needed],
   });
   return { ...plan, blocks };
 };
