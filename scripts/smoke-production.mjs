@@ -4,6 +4,9 @@ const checks = [
   { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'supported' },
   { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient', 'processing'] },
   { text: 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', inputType: 'text', states: ['limited', 'insufficient', 'processing'] },
+  { text: 'Un título universitario ya no garantiza encontrar un empleo cualificado', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
+  { text: 'El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
+  { text: 'Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
   { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient', 'processing'] },
 ];
 const failures = [];

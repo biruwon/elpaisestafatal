@@ -131,9 +131,16 @@ const factsForMetric = (id, observations, claim) => {
 export const focusedEvidencePlan = (claim, { observations = [], propositions = [], now = Date.now() } = {}) => {
   const focus = claimFocusFor(claim);
   if (!focus) return undefined;
+  const normalizedClaim = normalize(claim);
+  const sectorNames = [/\bturis\w*\b/, /\bhosteler\w*\b/, /\bhotel\w*\b/, /\bagricultur\w*\b/, /\bsector primario\b/, /\bconstrucci\w*\b/, /\bindustri\w*\b/, /\bmanufactur\w*\b/, /\bcomerci\w*\b/, /\btransporte\b/, /\bfinancier\w*\b/, /\btecnolog\w*\b/];
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus) return clauseFocus.id === focus.id;
+    const clauseText = normalize(item.text);
+    const sameSectorOutput = focus.id === 'sector-wage-comparison'
+      && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(clauseText)
+      && sectorNames.some((pattern) => pattern.test(normalizedClaim) && pattern.test(clauseText));
+    if (sameSectorOutput) return true;
     // A clause such as “una parte se produce más barata” can refer back to
     // the preceding subject. A new named subject must remain a separate
     // proposition rather than silently inheriting this measurement contract.
@@ -146,16 +153,25 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const asksAboutTeachers = /\b(?:por (?:profesor\w*|docent\w*)|alumn\w* (?:por|entre) (?:profesor\w*|docent\w*))\b/.test(normalize(claim));
+  const asksAboutEducationJobFit = focus.id === 'education-employment-outcomes'
+    && /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(normalize(claim));
+  const comparesSectorOutput = focus.id === 'sector-wage-comparison'
+    && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(normalizedClaim);
   const allowedDirect = focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
   const ids = [...focusedMetricIdsFor(claim)];
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
   const needs = asksAboutMakingEndsMeet ? ['dificultad declarada para llegar a fin de mes', 'situación laboral y jornada de las personas consultadas', 'periodo y población']
-    : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso'] : focus.needs;
+    : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso']
+      : focus.id === 'education-employment-outcomes' ? [
+        'tasa de empleo o paro desglosada por nivel educativo, con la misma edad, cohorte, territorio y periodo',
+        ...(asksAboutEducationJobFit ? ['nivel de estudios requerido por el puesto y formación de quienes lo ocupan'] : []),
+      ] : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const facts = ids.flatMap((id) => factsForMetric(id, observations, claim));
   const territories = requestedTerritories(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
-    && territories.every(([id]) => focus.explanationEvidence.territories?.includes(id)) ? focus.explanationEvidence : undefined;
+    && territories.every(([id]) => focus.explanationEvidence.territories?.includes(id))
+    && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
   const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
   const direct = facts.filter((fact) => directIds.includes(fact.id));
   const context = facts.filter((fact) => !directIds.includes(fact.id));

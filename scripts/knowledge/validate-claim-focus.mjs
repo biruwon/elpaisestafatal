@@ -16,6 +16,7 @@ import { rankWarehouseObservations } from './warehouse-query.mjs';
 
 const cases = [
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
+  ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
@@ -26,10 +27,12 @@ const cases = [
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
-  ['pension-wage-comparison', ['Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', 'Los jubilados cobran pensiones más altas que el salario de muchos jóvenes empleados', 'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes']],
+  ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
+  ['pension-wage-comparison', ['Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', 'Los jubilados cobran pensiones más altas que el salario de muchos jóvenes empleados', 'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes', 'Los jubilados cobran más que los trabajadores jóvenes']],
   ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
   ['entrepreneurial-risk-perception', ['Emprender en España se percibe como más arriesgado que buscar una plaza pública', 'Crear una empresa parece más arriesgado que preparar una oposición', 'El riesgo percibido de emprender es mayor que el de trabajar como funcionario']],
   ['housing-supply', ['Los pisos turísticos retiran vivienda del alquiler residencial', 'Los apartamentos turísticos reducen la oferta de viviendas para residentes', '¿Cuántas casas vacías hay disponibles en la ciudad?']],
+  ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
   ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
 ];
@@ -39,9 +42,10 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
 }
 assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
 assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotizaciones actuales?')?.id, 'pension-financing', 'A funding question must stay in the pension-financing family, not a salary comparison');
-for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada', '¿Cómo ha crecido el PIB real en España?', '¿Cuál es la renta mediana equivalente de los hogares españoles?', 'La renta mediana equivalente creció más que el PIB en 2025']) {
+for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'El porcentaje de jóvenes de 25 a 34 años con estudios superiores aumentó', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada', '¿Cómo ha crecido el PIB real en España?', 'El turismo aporta más al PIB', '¿Cuál es la renta mediana equivalente de los hogares españoles?', 'La renta mediana equivalente creció más que el PIB en 2025']) {
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
 }
+assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones vigentes')?.id, 'pension-financing', 'Current pension financing must stay separate from future benefit projections');
 const specificButUncovered = [
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',
   'Muchos autónomos necesitan pagar una gestoría solo para cumplir con Hacienda y Seguridad Social',
@@ -97,6 +101,70 @@ assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');
 assert.match(pensionPayGap.shareableReply, /misma unidad y periodo/);
 assert.match(pensionPayGap.shareableReply, /distribuciones comparables/);
 assert.equal(pensionPayGap.sourceLinks.length, 0, 'A pension/salary comparison must not cite unrelated youth housing figures');
+const futurePension = focusedEvidencePlan('Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', { observations: [
+  { id: 'current-pension', metricId: 'old_age_survivors_benefits_per_capita', value: 1200, period: '2025', unit: 'EUR per month', geography: 'España' },
+  { id: 'current-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
+], propositions: [
+  { text: 'Los jóvenes actuales pagarán pensiones durante décadas' },
+  { text: 'cobrarán una pensión relativamente menor' },
+] });
+assert.equal(futurePension.answerScope.family, 'future-pension-outlook');
+assert.equal(futurePension.evidenceLevel, 'limited', 'Official projection methodology adds context but cannot predict an individual future pension');
+assert.equal(futurePension.sourceLinks.length, 1);
+assert.doesNotMatch(futurePension.shareableReply, /1\.200|17 €/);
+assert.match(futurePension.shareableReply, /modelo de cohortes/);
+assert.match(futurePension.shareableReply, /no predice la pensi[oó]n concreta de cada persona/);
+assert.match(futurePension.shareableReply, /cohortes de nacimiento/);
+const graduateRate = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
+  { id: 'overall-graduate-context', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
+] });
+assert.equal(graduateRate.answerScope.family, 'education-employment-outcomes');
+assert.deepEqual(graduateRate.answerScope.contextMetrics, []);
+assert.equal(graduateRate.sourceLinks.length, 0, 'Overqualification among employed graduates must not be attached to an unemployment-rate claim');
+assert.doesNotMatch(graduateRate.shareableReply, /10 %|nivel de estudios requerido por el puesto/);
+const graduateMatch = focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado', { observations: [
+  { id: 'tertiary-attainment', metricId: 'tertiary_education_attainment_rate', value: 50, period: '2025', unit: '% of population aged 25 to 34', geography: 'España' },
+  { id: 'overall-unemployment', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
+  { id: 'national-wages', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
+] });
+assert.equal(graduateMatch.answerScope.family, 'education-employment-outcomes');
+assert.equal(graduateMatch.evidenceLevel, 'limited', 'The official overqualification measure supplies context but does not settle guarantees or unemployment');
+assert.deepEqual(graduateMatch.answerScope.contextMetrics, []);
+assert.equal(graduateMatch.sourceLinks.length, 1);
+assert.match(graduateMatch.shareableReply, /sobrecualificaci[oó]n/);
+assert.match(graduateMatch.shareableReply, /que ya est[aá]n empleadas/);
+assert.match(graduateMatch.shareableReply, /[Nn]o mide a quienes siguen desempleados/);
+assert.match(graduateMatch.shareableReply, /tasa de empleo o paro agregada/);
+assert.match(graduateMatch.shareableReply, /34,0 % en 2025/);
+assert.match(graduateMatch.shareableReply, /no mide si una titulaci[oó]n garantiza/);
+assert.doesNotMatch(graduateMatch.shareableReply, /50 %|10 %|17 €/);
+const graduatePublic = localPublicCheckResponse({ status: 'complete', requestId: 'graduate-employment', result: graduateMatch }, 'Un título universitario ya no garantiza encontrar un empleo cualificado');
+assert.equal(graduatePublic.state, 'limited');
+assert.equal(graduatePublic.result.sources[0].url, graduateMatch.sourceLinks[0].url);
+assert.match(graduatePublic.result.reply, /34,0 % en 2025/);
+assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado en Francia')?.sourceLinks.length, 0, 'Spain-specific overqualification data must not appear for France');
+assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado', { now: Date.parse('2027-05-01') })?.sourceLinks.length, 0, 'Expired overqualification data must not appear as current');
+const sectorWageGap = focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { observations: [
+  { id: 'national-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
+  { id: 'tourism-value-added', metricId: 'gross_value_added_by_activity', value: 10, period: '2025', unit: 'million EUR', geography: 'España', dimensions: { activity: 'Accommodation and food service activities' } },
+], propositions: [
+  { text: 'El turismo aumenta el PIB' },
+  { text: 'El turismo genera menos salarios altos que sectores de mayor productividad' },
+] });
+assert.equal(sectorWageGap.answerScope.family, 'sector-wage-comparison');
+assert.equal(sectorWageGap.evidenceLevel, 'limited', 'Official survey metadata gives coverage context but no aligned wage and productivity comparison');
+assert.deepEqual(sectorWageGap.answerScope.contextMetrics, []);
+assert.equal(sectorWageGap.sourceLinks.length, 1);
+assert.match(sectorWageGap.shareableReply, /mediano nacional no separa las diferencias entre sectores/);
+assert.match(sectorWageGap.shareableReply, /valor a[nñ]adido por hora trabajada/);
+assert.match(sectorWageGap.shareableReply, /cada cuatro a[nñ]os/);
+assert.match(sectorWageGap.shareableReply, /excluye agricultura/);
+assert.doesNotMatch(sectorWageGap.shareableReply, /17 €/);
+assert.ok(sectorWageGap.evidenceSummary.missingDimensions.some((item) => /aportaci[oó]n del mismo sector al PIB/.test(item)), 'A compound sector claim must retain its GDP contribution requirement');
+assert.equal(focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { propositions: [
+  { text: 'La vivienda se encarece en Madrid' },
+  { text: 'El turismo genera menos salarios altos que sectores de mayor productividad' },
+] }), undefined, 'A related wage family must not swallow an unrelated housing proposition');
 const doubleHealthcarePayment = focusedEvidencePlan('Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado');
 assert.equal(doubleHealthcarePayment.answerScope.family, 'healthcare-double-payment');
 assert.match(doubleHealthcarePayment.shareableReply, /no mide si un hogar paga dos veces/);

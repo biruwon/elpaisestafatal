@@ -23,6 +23,18 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && /\b(?:hogar\w*|famili\w*|nivel de vida|condiciones de vida|bienestar|distribucion de la renta|desigualdad)\b/.test(t)
   && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
+const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
+  && /\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t);
+const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|tecnolog\w*)\b/;
+const sectorWages = (t) => (namedSector.test(t) || /\bsectores?\b/.test(t))
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*)\b/.test(t);
+const futurePensionOutlook = (t) => /\b(pension\w*|jubil\w*|cotiz\w*)\b/.test(t)
+  && /\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|en (?:20|21)\d{2}|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t)
+  && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
+const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t)
+  && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
+    || /\b(cobr\w*|pagan?)\b/.test(t) && /\b(trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t))
+  && /\b(mas que|mas (?:alt\w*|elevad\w*|grand\w*) que|menos que|por encima|por debajo|superior\w*|inferior\w*|super\w*|mayor\w*|menor\w*|compar\w*|frente a|mejor pagad\w*)\b/.test(t);
 
 // Measurement contracts are reusable semantic families, not answer templates.
 // Direct measures and contextual proxies stay distinct all the way to the
@@ -71,9 +83,24 @@ const focuses = [
     limitation: 'Esta descripción de la financiación no calcula tu futura pensión ni demuestra por sí sola la sostenibilidad del sistema. Eso requiere reglas, periodos cotizados y escenarios demográficos y económicos.',
   },
   {
+    id: 'future-pension-outlook', label: 'pensiones futuras de una generación',
+    when: futurePensionOutlook,
+    direct: [], context: [],
+    needs: ['cohorte de nacimiento y año previsto de jubilación', 'proyección de prestaciones bajo reglas, cotizaciones y supuestos económicos explícitos', 'tasa de sustitución o prestación neta y bruta, con carrera laboral y unidad comparables'],
+    explanation: 'La pensión de una generación que aún trabaja es una proyección, no una prestación observada. La pensión media actual de quienes ya se jubilaron no permite estimar por sí sola cuánto cobrará esa generación.',
+    explanationEvidence: {
+      expiresAt: '2027-04-30', territories: ['ES'],
+      facts: [
+        'La metodología de AIReF para el gasto público en pensiones usa un modelo de cohortes y separa las proyecciones de pensiones medias y número de prestaciones por sexo, edad y tipo de pensión, bajo escenarios demográficos y macroeconómicos.',
+        'Es una proyección agregada de gasto y prestaciones medias; no predice la pensión concreta de cada persona ni su tasa de sustitución individual.',
+      ],
+      sources: [{ id: 'airef-pension-projection-method-2025', title: 'Metodología del modelo para estimar el gasto en pensiones · Documento técnico 3/25', publisher: 'AIReF', url: 'https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250225_DT_metodologia_pensiones.pdf', retrievedAt: '2026-11-16' }],
+    },
+    limitation: 'Una comparación actual entre pensión media y salario medio no demuestra que las generaciones jóvenes cobrarán relativamente menos. Para responder hacen falta cohortes de nacimiento y años de jubilación definidos, además de separar el importe nominal de la tasa de sustitución y publicar las reglas y supuestos de cada escenario.',
+  },
+  {
     id: 'pension-wage-comparison', label: 'pensiones y salarios de la población trabajadora',
-    when: (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t) && (has(t, wages) || /\bingres\w*\b/.test(t))
-      && /\b(mas que|mas (?:alt\w*|elevad\w*|grand\w*) que|menos que|por encima|por debajo|superior\w*|inferior\w*|super\w*|mayor\w*|menor\w*|compar\w*|frente a|mejor pagad\w*)\b/.test(t),
+    when: pensionWageComparison,
     direct: [], context: [],
     needs: ['importe de pensiones y salarios en la misma unidad y periodo', 'población trabajadora y pensionista definida por edad y tipo de prestación', 'distribución de importes si se afirma que muchas personas superan a otras'],
     explanation: 'Comparar pensiones con salarios exige fijar si los importes son brutos o netos y mensuales o anuales, además de usar el mismo periodo. Una pensión media y un salario medio no indican cuántas personas de un grupo cobran más que las del otro.',
@@ -114,6 +141,23 @@ const focuses = [
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
     limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
+  },
+  {
+    id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',
+    when: educationEmploymentOutcome,
+    direct: [], context: [],
+    needs: ['tasa de empleo o paro desglosada por nivel educativo, con la misma edad, cohorte, territorio y periodo', 'nivel de estudios requerido por el puesto y formación de quienes lo ocupan cuando se afirma que no hay ajuste', 'campo de estudios y jornada si se comparan titulaciones o empleos'],
+    explanation: 'Las tasas de empleo o paro por nivel educativo muestran si las personas tituladas trabajan; no indican por sí solas si el puesto corresponde a sus estudios. Acceso al empleo y ajuste entre formación y ocupación son resultados distintos.',
+    explanationEvidence: {
+      when: (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t),
+      expiresAt: '2027-04-30', territories: ['ES'],
+      facts: [
+        'Eurostat calcula la tasa de sobrecualificación entre las personas de 20 a 64 años con estudios terciarios que ya están empleadas: indica qué proporción trabaja en ocupaciones que no requieren ese nivel. No mide a quienes siguen desempleados ni si el empleo coincide con su campo de estudios.',
+        'En España, esa tasa fue del 34,0 % en 2025. Es evidencia de desajuste entre nivel educativo y ocupación entre quienes sí tienen empleo; por sí sola no mide si una titulación garantiza encontrar trabajo ni prueba que el desajuste esté aumentando.',
+      ],
+      sources: [{ id: 'eurostat-employment-annual-2025', title: 'Employment - annual statistics', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Employment_-_annual_statistics', retrievedAt: '2026-11-16' }],
+    },
+    limitation: 'Una tasa de empleo o paro agregada para toda la población activa no describe el resultado de quienes tienen cada nivel de estudios. La tasa de sobrecualificación solo cuenta a quienes ya trabajan; para comprobar el acceso al empleo hacen falta tasas por nivel educativo, y para medir el ajuste también se necesita comparar educación y ocupación.',
   },
   {
     id: 'job-opportunities', label: 'oportunidades para encontrar empleo',
@@ -157,6 +201,22 @@ const focuses = [
     needs: ['precio y ahorro inicial', 'ingresos, intereses y plazo de financiación', 'territorio y tipo de hogar'],
     explanation: 'El acceso a una hipoteca depende de la entrada y los gastos iniciales, los ingresos y las condiciones de financiación.',
     limitation: 'El precio de compraventa por sí solo no mide cuántos hogares pueden reunir la entrada ni pagar la cuota.',
+  },
+  {
+    id: 'sector-wage-comparison', label: 'salarios y productividad por sector',
+    when: sectorWages,
+    direct: [], context: [],
+    needs: ['distribución salarial por sector y ocupación, incluidos jornada, tipo de contrato y salarios brutos o netos', 'productividad sectorial medida con una definición comparable, como valor añadido por hora trabajada', 'misma clasificación sectorial, territorio y periodo para salarios y productividad'],
+    explanation: 'El salario mediano nacional no permite comparar sectores. Una comparación sectorial necesita alinear salarios y productividad por actividad y periodo; el valor añadido total de un sector tampoco equivale a productividad por trabajador u hora.',
+    explanationEvidence: {
+      expiresAt: '2027-11-16', territories: ['ES'],
+      facts: [
+        'El salario mediano nacional no separa las diferencias entre sectores. Eurostat dispone de encuestas armonizadas de estructura salarial que desglosan las remuneraciones brutas por actividad económica y características de las personas empleadas. Se realizan cada cuatro años; la edición de referencia más reciente que recoge la ficha consultada es 2022.',
+        'La cobertura obligatoria incluye unidades con al menos 10 empleados y excluye agricultura, pesca, hogares privados y organizaciones extraterritoriales; la administración pública se recoge voluntariamente. Ese alcance debe tenerse en cuenta al hablar de sectores o empresas pequeñas.',
+      ],
+      sources: [{ id: 'eurostat-structure-earnings-survey', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-16' }],
+    },
+    limitation: 'Sin distribuciones salariales por sector y una medida comparable de productividad —por ejemplo, valor añadido por hora trabajada para la misma actividad y periodo— no se puede afirmar qué sectores generan más salarios altos ni que el turismo cause por sí solo una diferencia salarial. Si también se compara su aportación al PIB, hay que medir el valor añadido del mismo sector y periodo; el valor total no equivale a productividad ni a salarios.',
   },
   {
     id: 'matched-pay', label: 'salarios de perfiles profesionales comparables',
