@@ -6,6 +6,26 @@ const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
+const migrationPopulation = /\b(inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera|nacid\w* en el extranjero|personas de origen extranjero|ciudadania extranjera|nacionalidad extranjera|ciudadan\w* europea|nacionalidad europea|ciudadan\w* de (?:otro pais|otros paises) (?:de )?(?:la )?(?:ue|union europea)|nacionalidad de otro pais (?:de )?(?:la )?(?:ue|union europea))\b/;
+const migrationCredentialRecognition = (t) => migrationPopulation.test(t)
+  && /\b(titul\w*|estudios? (?:superiores?|universitarios?)|cualific\w*|formacion|sobrecualific\w*)\b/.test(t)
+  && /\b(homolog\w*|reconoc\w*|convalid\w*|revalid\w*|equivalen\w*|sobrecualific\w*|por debajo|inferior\w*|desajust\w*|desencaj\w*|baja cualificaci\w*|trabaj\w*[^.]{0,45}(?:formacion|titulaci\w*|cualificaci\w*)|acab\w*[^.]{0,45}(?:emple\w*|puesto\w*))\b/.test(t)
+  && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const migrationOverqualification = (t) => migrationPopulation.test(t)
+  && (/\bsobrecualific\w*\b/.test(t)
+    || /\b(titul\w*|estudios? (?:superiores?|universitarios?|terciarios?)|educacion (?:superior|terciaria)|universitari\w*)\b/.test(t)
+      && /\b(?:ocupacion\w*|puesto\w*|empleo\w*)[\s\w]{0,40}\b(?:menor\w*|inferior\w*|baj\w*)\b[\s\w]{0,25}\b(?:cualific\w*|nivel|estudios?)\b/.test(t))
+  && !/\b(homolog\w*|reconoc\w*|convalid\w*|revalid\w*|equivalen\w*)\b/.test(t);
+const migrationFiscalContribution = (t) => migrationPopulation.test(t)
+  && /\b(fiscal\w*|impuest\w*|hacienda|recaud\w*|tribut\w*|cotiz\w*|contribucion\w*|arcas? publicas|cuentas? publicas|presupuest\w*|gasto publico)\b/.test(t)
+  && /\b(aport\w*|contribu\w*|net\w*|balance\w*|pag\w*|recib\w*|cost\w*|benefici\w*|mas|menos|cualific\w*|salari\w*|sueld\w*|ingres\w*|cotiz\w*)\b/.test(t);
+const migrationWageEffects = (t) => migrationPopulation.test(t)
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*|cobr\w*|gan\w*)\b/.test(t)
+  && /\b(press\w*|baj\w*|reduc\w*|afect\w*|compar\w*|menor\w*|mayor\w*|diferenc\w*|mas|menos|a la baja|por debajo)\b/.test(t)
+  && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
+  && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
+  && /\b(condicion\w*|titulad\w*|graduad\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
 const bankSpainRentEffortSource = {
   id: 'bank-spain-housing-annual-2025',
   title: 'Informe Anual 2025 · esfuerzo del alquiler y acceso a la vivienda',
@@ -14,6 +34,11 @@ const bankSpainRentEffortSource = {
   publishedAt: '2026-06-18',
   retrievedAt: '2026-11-16',
   role: 'primary',
+};
+const eurostatOverqualificationEvidence = {
+  expiresAt: '2027-11-16', territories: ['ES'],
+  facts: ['La tasa de sobrecualificación de Eurostat se calcula entre personas ocupadas de 20 a 64 años con educación terciaria que trabajan en ocupaciones ISCO 4–9. El denominador son las personas ocupadas con educación terciaria del grupo correspondiente; la tabla permite desglosar por ciudadanía.'],
+  sources: [{ id: 'eurostat-overqualification-by-citizenship', title: 'Over-qualification rates by citizenship · Eurostat (lfsa_eoqgan)', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en', retrievedAt: '2026-11-16' }],
 };
 const bankSpainRentEffortEvidence = {
   expiresAt: '2027-06-18',
@@ -48,6 +73,7 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
+  && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
 const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t)
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
@@ -86,6 +112,25 @@ const educationOutcomeMetrics = (claim) => {
   else if (!qualificationFit || employmentAccess) metrics.push('employment_rate_tertiary_education');
   if (qualificationFit) metrics.push('tertiary_overqualification_rate');
   return metrics;
+};
+export const tertiaryOverqualificationCitizenshipGroupsForClaim = (claim) => {
+  const text = normalize(claim);
+  if (/\b(nacid\w*|pais de nacimiento|lugar de nacimiento|nacimiento fuera|nacimiento en el extranjero|nativ\w*)\b/.test(text)) return [];
+  const foreignRequest = /\b(inmigr\w*|migr\w*|extranjer\w*|foreign|ciudadania extranjera|nacionalidad extranjera)\b/.test(text);
+  const nonEuRequest = /\b(no ue|fuera de la ue|terceros paises|extracomunitari\w*|no comunitari\w*)\b/.test(text);
+  const euForeignRequest = /\b(ciudadania|ciudadanos?|nacionalidad|nacionales?)\b[\s\S]{0,35}\b(ue|union europea|comunitari\w*)\b/.test(text);
+  const nationalCitizenRequest = /\b(espanol\w*|nacionales\b|ciudadania espanola|nacionalidad espanola|nacionalidades? espanolas?|ciudadanos? (?:de )?espana)\b/.test(text);
+  const nationalityBreakdownRequest = /\b(por nacionalidades?|por ciudadanias?|desglos\w* (?:por )?(?:nacionalidades?|ciudadanias?)|breakdown by citizenship)\b/.test(text);
+  if (nonEuRequest) return nationalCitizenRequest ? ['NEU27_2020_FOR', 'NAT'] : ['NEU27_2020_FOR'];
+  if (euForeignRequest) return nationalCitizenRequest ? ['EU27_2020_FOR', 'NAT'] : ['EU27_2020_FOR'];
+  if (foreignRequest) return nationalCitizenRequest ? ['FOR', 'NAT'] : ['FOR'];
+  if (nationalityBreakdownRequest) return ['NAT', 'EU27_2020_FOR', 'NEU27_2020_FOR'];
+  return ['TOTAL'];
+};
+export const tertiaryOverqualificationCitizenshipFitsClaim = (claim, item) => {
+  if (!['tertiary_overqualification_rate', 'tertiary_overqualification_rate_age_20_34'].includes(item?.metricId)) return true;
+  const citizen = String(item.dimensions?.citizen || '').toUpperCase();
+  return tertiaryOverqualificationCitizenshipGroupsForClaim(claim).includes(citizen);
 };
 const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t)
@@ -243,6 +288,48 @@ const focuses = [
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
     limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
+  },
+  {
+    id: 'migration-fiscal-contribution', label: 'aportación fiscal de la población migrante por nivel laboral',
+    when: migrationFiscalContribution,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['ingresos fiscales y prestaciones atribuibles a personas comparables por país de nacimiento o ciudadanía', 'nivel de estudios, empleo, salarios y periodo de cada grupo', 'método que calcule contribución neta y no confunda programas o transferencias con el balance fiscal total'],
+    explanation: 'Contar prestaciones o comparar salarios no mide la aportación fiscal neta de un grupo. La afirmación necesita ingresos y gastos públicos atribuibles a poblaciones comparables, con una definición explícita de contribución.',
+    limitation: 'Los datos de beneficiarios de un programa y las tasas laborales por ciudadanía no permiten concluir qué grupo aporta más al conjunto de las cuentas públicas, ni separar el resultado por cualificación sin una medición específica.',
+  },
+  {
+    id: 'migration-wage-effects', label: 'salarios y efecto de la inmigración en el mercado laboral',
+    when: migrationWageEffects,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['salarios por ocupación, sector, jornada y ciudadanía o país de nacimiento', 'población trabajadora comparable y mismo territorio y periodo', 'un diseño que permita separar el efecto migratorio de productividad, composición ocupacional, negociación y ciclo económico'],
+    explanation: 'Una diferencia salarial entre personas migrantes y el resto no demuestra por sí sola que la inmigración haya reducido el sueldo de otras personas. Para comparar salarios hay que igualar ocupación, sector, jornada y periodo.',
+    limitation: 'Las medias salariales nacionales, el desempleo por ciudadanía y la tasa de sobrecualificación miden resultados distintos; no establecen una brecha salarial por ciudadanía ni un efecto causal sobre los salarios de un sector.',
+  },
+  {
+    id: 'migration-overqualification', label: 'sobrecualificación entre personas extranjeras con estudios terciarios',
+    when: migrationOverqualification,
+    direct: ['tertiary_overqualification_rate'], context: [],
+    needs: ['tasa del mismo grupo de ciudadanía, edad, territorio y periodo', 'denominador de personas ocupadas con estudios terciarios, no toda la población migrante'],
+    explanation: 'Eurostat publica la tasa de sobrecualificación entre personas ocupadas de 20 a 64 años con estudios terciarios y permite desglosarla por ciudadanía. Cuenta como sobrecualificadas a quienes trabajan en ocupaciones ISCO 4–9.',
+    explanationEvidence: eurostatOverqualificationEvidence,
+    limitation: 'El dato describe ciudadanía extranjera, no país de nacimiento; el denominador son personas ocupadas con estudios terciarios, no toda la población migrante. La tasa no registra dónde se obtuvo el título ni si fue homologado.',
+  },
+  {
+    id: 'migrant-credential-recognition', label: 'reconocimiento de títulos y adecuación laboral por ciudadanía',
+    when: migrationCredentialRecognition,
+    direct: [], context: ['tertiary_overqualification_rate'],
+    needs: ['nivel y país de obtención del título, reconocimiento u homologación y ocupación posterior', 'tiempo de tramitación y población solicitante comparable', 'una comparación que permita atribuir el desajuste al proceso de reconocimiento'],
+    explanation: 'Eurostat mide la sobrecualificación por ciudadanía: personas ocupadas con educación terciaria que trabajan en ocupaciones de cualificación baja o media. El indicador puede describir un desajuste laboral, pero no registra el país donde se obtuvo el título ni si fue homologado.',
+    explanationEvidence: eurostatOverqualificationEvidence,
+    limitation: 'Una tasa por ciudadanía no equivale a una tasa por país de nacimiento y no mide solicitudes, retrasos ni decisiones de homologación. Aunque haya diferencias entre grupos, no demuestra que el reconocimiento de títulos las cause.',
+  },
+  {
+    id: 'healthcare-staffing-causality', label: 'disponibilidad territorial de profesionales sanitarios y condiciones de trabajo',
+    when: healthcareWorkforceCausality,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['médicos en ejercicio, vacantes y población por especialidad y territorio', 'graduados que se incorporan al sistema y puestos que aceptan', 'condiciones laborales comparables y una medida que permita atribuir las vacantes a esas condiciones'],
+    explanation: 'El número de titulados no equivale al número de médicos disponibles en cada zona. También importan la especialidad, la incorporación al sistema, las vacantes y las condiciones de los puestos.',
+    limitation: 'Un total nacional de médicos o de graduados no permite establecer por qué faltan profesionales en una zona concreta. Para atribuirlo a las condiciones laborales hacen falta datos territoriales y una comparación del mismo periodo.',
   },
   {
     id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',

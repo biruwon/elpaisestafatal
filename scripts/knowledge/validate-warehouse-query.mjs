@@ -314,6 +314,38 @@ const birthRecords = [
 const birthResults = rankWarehouseObservations('residentes nacieron fuera de España', birthRecords);
 if (birthResults.length !== 1 || birthResults[0].id !== 'birth-total-2015') throw new Error('Warehouse query exposed a country category instead of the foreign-born total');
 
+const overqualificationSource = { id: 'source-overqualification', title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan', retrievedAt: '2026-11-16' };
+const overqualificationRows = ['TOTAL', 'FOR', 'NAT', 'EU27_2020_FOR', 'NEU27_2020_FOR'].flatMap((citizen) => [2015, 2018, 2021, 2023, 2024, 2025].map((year) => ({
+  id: `overqualification-${citizen}-${year}`, metricId: 'tertiary_overqualification_rate', metric: 'over-qualification rate',
+  value: year - 1980, unit: 'Percentage', period: String(year), geography: 'Spain',
+  population: 'employed people aged 20 to 64 with tertiary education',
+  dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8', citizen, sex: 'T', unit: 'PC', time: String(year) },
+  dimensionLabels: { geo: 'Spain', citizen: { TOTAL: 'All citizenships', FOR: 'Foreign citizenship', NAT: 'Spanish citizenship', EU27_2020_FOR: 'EU citizenship', NEU27_2020_FOR: 'Non-EU citizenship' }[citizen] },
+  source: overqualificationSource,
+})));
+const overqualificationMetricIds = new Set(['tertiary_overqualification_rate']);
+const generalOverqualification = rankWarehouseObservations('sobrecualificación de titulados universitarios en España', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+if (generalOverqualification.length !== 6 || generalOverqualification.some((item) => item.dimensions.citizen !== 'TOTAL')) throw new Error('A general over-qualification query mixed citizenship subgroups into the all-citizen rate');
+const overqualificationTimeComparison = rankWarehouseObservations('Compara la tasa de sobrecualificación de titulados universitarios en 2023 y 2025', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+if (overqualificationTimeComparison.length !== 2 || overqualificationTimeComparison.some((item) => item.dimensions.citizen !== 'TOTAL') || overqualificationTimeComparison.map((item) => item.period).sort().join(',') !== '2023,2025') throw new Error('A period comparison of all graduates was confused with a citizenship breakdown');
+const citizenshipBreakdown = rankWarehouseObservations('Sobrecualificación por ciudadanía en España', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+for (const citizen of ['NAT', 'EU27_2020_FOR', 'NEU27_2020_FOR']) {
+  if (!citizenshipBreakdown.some((item) => item.dimensions.citizen === citizen && item.period === '2025')) throw new Error(`An explicit citizenship breakdown lost the latest ${citizen} series`);
+}
+if (citizenshipBreakdown.some((item) => ['TOTAL', 'FOR'].includes(item.dimensions.citizen))) throw new Error('A citizenship breakdown mixed aggregate rows with mutually exclusive groups');
+const foreignOverqualification = rankWarehouseObservations('sobrecualificación de inmigrantes con estudios superiores en España', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+if (foreignOverqualification.length !== 6 || foreignOverqualification.some((item) => item.dimensions.citizen !== 'FOR')) throw new Error('A migrant over-qualification query did not stay within the foreign-citizenship series');
+const euCitizenOverqualification = rankWarehouseObservations('tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+if (euCitizenOverqualification.length !== 6 || euCitizenOverqualification.some((item) => item.dimensions.citizen !== 'EU27_2020_FOR')) throw new Error('An EU-citizenship query did not stay within the requested subgroup');
+const birthplaceOverqualification = rankWarehouseObservations('sobrecualificación de titulados nacidos fuera de España', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+if (birthplaceOverqualification.length) throw new Error('A citizenship rate answered a claim about country of birth');
+const citizenshipComparison = rankWarehouseObservations('sobrecualificación de extranjeros mayor que españoles en España', overqualificationRows, 12, { metricIds: overqualificationMetricIds });
+for (const citizen of ['FOR', 'NAT']) {
+  const latest = citizenshipComparison.find((item) => item.dimensions.citizen === citizen && item.period === '2025');
+  if (!latest) throw new Error(`A capped citizenship comparison lost the latest ${citizen} observation`);
+}
+if (citizenshipComparison.some((item) => !['FOR', 'NAT'].includes(item.dimensions.citizen))) throw new Error('A foreign-versus-Spanish comparison included an unrelated citizenship group');
+
 const publication = rankWarehouseObservations('Banco de España tipos hipotecarios', [
   { id: 'doc-1', kind: 'official_publication', metric: 'Resolución del Banco de España sobre tipos de interés hipotecarios', value: null, period: '20260718', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-1', dimensions: { department: 'BANCO DE ESPAÑA' }, source: { id: 'source-boe', title: 'BOE', url: 'https://www.boe.es/' } },
 ]);

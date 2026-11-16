@@ -7,6 +7,7 @@ import { ageScopeMatcherFor } from '../../src/lib/knowledge/age-scope.mjs';
 import { periodScopeMatcherFor } from '../../src/lib/knowledge/period-scope.mjs';
 import { geographyScopeMatcherFor } from '../../src/lib/knowledge/geography-scope.mjs';
 import { sexScopeMatcherFor } from '../../src/lib/knowledge/sex-scope.mjs';
+import { tertiaryOverqualificationCitizenshipFitsClaim, tertiaryOverqualificationCitizenshipGroupsForClaim } from '../../src/lib/knowledge/claim-focus.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
@@ -323,7 +324,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
   const matchesPeriod = periodScopeMatcherFor(query);
   const matchesGeography = geographyScopeMatcherFor(query);
   const matchesSex = sexScopeMatcherFor(query);
-  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => matchesAge(record) && matchesPeriod(record) && matchesGeography(record) && matchesSex(record)).filter((record) => {
+  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => matchesAge(record) && matchesPeriod(record) && matchesGeography(record) && matchesSex(record) && tertiaryOverqualificationCitizenshipFitsClaim(query, record)).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;
@@ -366,9 +367,22 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
       populationFit: 'not_requested',
       freshness: sourceFreshness(record.source),
     }));
-  return preferLatestSourceRevisions(ranked)
+  const ordered = preferLatestSourceRevisions(ranked)
     .sort((left, right) => right.score - left.score || (Date.parse(right.source?.retrievedAt || '') || 0) - (Date.parse(left.source?.retrievedAt || '') || 0))
-    .slice(0, limit);
+  const overqualificationGroups = tertiaryOverqualificationCitizenshipGroupsForClaim(query);
+  const overqualificationRows = ordered.filter((item) => ['tertiary_overqualification_rate', 'tertiary_overqualification_rate_age_20_34'].includes(item.metricId));
+  if (overqualificationRows.length && overqualificationGroups.length > 1) {
+    // Keep the newest point for each requested citizenship group before the
+    // cap, so a long series for one group cannot hide the other denominator.
+    const metrics = [...new Set(overqualificationRows.map((item) => item.metricId))];
+    const latestByRequestedGroup = metrics.flatMap((metricId) => overqualificationGroups.map((citizen) => overqualificationRows
+      .filter((item) => item.metricId === metricId && String(item.dimensions?.citizen || '').toUpperCase() === citizen)
+      .sort((left, right) => String(right.period || right.dimensions?.time || '').localeCompare(String(left.period || left.dimensions?.time || ''), 'en', { numeric: true }) || right.score - left.score)[0])
+      .filter(Boolean));
+    const reserved = new Set(latestByRequestedGroup);
+    return [...latestByRequestedGroup, ...ordered.filter((item) => !reserved.has(item))].slice(0, Math.max(limit, latestByRequestedGroup.length));
+  }
+  return ordered.slice(0, limit);
 };
 
 export const findWarehouseObservations = async (query, limit = 12, { metricIds, records, useProvidedRecords = false } = {}) => {

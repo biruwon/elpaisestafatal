@@ -55,7 +55,9 @@ countryCodes.set('UK', 'GB');
 countryCodes.set('GR', 'EL');
 
 const requestedTerritories = (value) => {
-  let normalized = normalize(value);
+  // An EU mention can describe citizenship rather than the territory being
+  // measured. Keep “EU citizens in Spain” scoped to Spain, not EU geography.
+  let normalized = normalize(value).replace(/\b(?:ciudadania|nacionalidad|ciudadanos?|nacionales?|extranjeros?|citizenship|nationality|citizens?)\b[\s\S]{0,45}\b(?:union europea|european union|ue|eu27)\b|\b(?:union europea|european union|ue|eu27)\b[\s\S]{0,45}\b(?:ciudadania|nacionalidad|ciudadanos?|nacionales?|extranjeros?|citizenship|nationality|citizens?)\b/g, ' ');
   for (const [, type, aliases] of territoryAliases) if (type === 'country') for (const alias of aliases) {
     normalized = normalized.replaceAll(`banco de ${alias}`, ' ').replaceAll(`bank of ${alias}`, ' ');
   }

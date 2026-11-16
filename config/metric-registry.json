@@ -863,7 +863,7 @@
   },
   "tertiary_overqualification_rate": {
     "name": "Over-qualification rate among employed people aged 20 to 64 with tertiary education",
-    "aliases": ["tasa de sobrecualificación de titulados superiores", "personas universitarias sobrecualificadas", "titulados con estudios superiores en puestos que no requieren estudios terciarios"],
+    "aliases": ["tasa de sobrecualificación de titulados superiores", "personas universitarias sobrecualificadas", "titulados con estudios superiores en puestos que no requieren estudios terciarios", "tasa de sobrecualificación por ciudadanía", "sobrecualificación por nacionalidad", "sobrecualificación de personas con ciudadanía extranjera y estudios terciarios"],
     "unit": "percent of employed people aged 20 to 64 with tertiary education",
     "population": "employed residents aged 20 to 64 with tertiary education (ISCED 2011 levels 5 to 8); denominator is all employed people in this age and education group",
     "notEquivalentTo": ["tertiary_education_attainment_rate", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education", "tertiary_overqualification_rate_age_20_34"],

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { utils, write } from 'xlsx';
-import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor, tertiaryOverqualificationCitizenshipGroupsForClaim } from '../../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
@@ -36,6 +36,11 @@ const cases = [
   ['housing-supply', ['Los pisos turísticos retiran vivienda del alquiler residencial', 'Los apartamentos turísticos reducen la oferta de viviendas para residentes', '¿Cuántas casas vacías hay disponibles en la ciudad?']],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
+  ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral', 'La inmigración presiona los salarios en los sectores con sueldos bajos']],
+  ['migration-fiscal-contribution', ['La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios', 'Los inmigrantes aportan más a la Hacienda pública de lo que reciben en prestaciones', 'El balance fiscal de la población migrante depende del empleo y de cuánto cotiza']],
+  ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
+  ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
+  ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
@@ -282,6 +287,83 @@ const graduateGap = focusedEvidencePlan('Un título universitario ya no garantiz
 assert.equal(graduateGap.evidenceLevel, 'insufficient');
 assert.equal(graduateGap.sourceLinks.length, 0);
 assert.doesNotMatch(graduateGap.shareableReply, /34 %|83,2 %/, 'A missing warehouse observation must not be replaced with a hard-coded percentage');
+const migrationWageClaim = 'La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores';
+const migrationFiscalClaim = 'La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios';
+const migrantCredentialClaim = 'La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación';
+const healthcareStaffingClaim = 'La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados';
+assert.deepEqual([...focusedMetricIdsFor(migrationWageClaim)], [], 'A total wage or graduate series must not stand in for migration wage effects');
+assert.deepEqual([...focusedMetricIdsFor(migrationFiscalClaim)], [], 'A programme or graduate series must not stand in for group-level net fiscal contribution');
+assert.deepEqual([...focusedMetricIdsFor(migrantCredentialClaim)], ['tertiary_overqualification_rate'], 'Credential claims may use only the citizenship-specific overqualification measure as context');
+assert.deepEqual([...focusedMetricIdsFor(healthcareStaffingClaim)], [], 'Graduate employment must not stand in for regional physician staffing or its causes');
+const citizenshipOverqualificationSource = (citizen) => ({
+  id: `eurostat-overqualification-${citizen.toLocaleLowerCase('en')}`,
+  title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat',
+  url: `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan?freq=A&citizen=${citizen}&age=Y20-64&sex=T&unit=PC&geo=ES&sinceTimePeriod=2015`,
+  retrievedAt: '2026-11-16',
+});
+const citizenshipOverqualificationObservations = [
+  ['foreign', 'FOR', 46.4, 'ciudadanía extranjera'],
+  ['national', 'NAT', 32.7, 'ciudadanía española'],
+  ['non-eu', 'NEU27_2020_FOR', 52.3, 'ciudadanía de fuera de la UE'],
+  ['total', 'TOTAL', 34, 'total'],
+].map(([id, citizen, value, group]) => ({
+  id: `overqualification-${id}-2025`, metricId: 'tertiary_overqualification_rate', value, period: '2025',
+  unit: 'Percentage', geography: 'España', population: 'employed residents aged 20 to 64 with tertiary education',
+  dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8', citizen, sex: 'T', unit: 'PC', time: '2025' },
+  dimensionLabels: { geo: 'Spain', citizen: group }, status: 'd', freshness: 'fresh',
+  source: citizenshipOverqualificationSource(citizen),
+}));
+const migrantCredentialContext = focusedEvidencePlan(migrantCredentialClaim, { observations: citizenshipOverqualificationObservations });
+assert.equal(migrantCredentialContext.answerScope.family, 'migrant-credential-recognition');
+assert.deepEqual(migrantCredentialContext.answerScope.directMetrics, [], 'Citizenship-group overqualification is context, not evidence that slow credential recognition caused the outcome');
+assert.deepEqual(migrantCredentialContext.answerScope.contextMetrics, ['tertiary_overqualification_rate']);
+assert.equal(migrantCredentialContext.evidenceLevel, 'limited');
+assert.match(migrantCredentialContext.shareableReply, /ciudadan[ií]a extranjera/);
+assert.match(migrantCredentialContext.shareableReply, /46,4 %/);
+assert.match(migrantCredentialContext.shareableReply, /homologaci[oó]n/);
+assert.match(migrantCredentialContext.shareableReply, /no demuestra que el reconocimiento de t[ií]tulos las cause/);
+assert.doesNotMatch(migrantCredentialContext.shareableReply, /32,7 %|52,3 %|34 %/, 'A single-group migration claim must not silently add nationals, non-EU citizens, or the all-citizen total');
+assert(migrantCredentialContext.sourceLinks.some((source) => source.id === 'eurostat-overqualification-for'));
+const migrantCredentialComparison = focusedEvidencePlan('La tasa de sobrecualificación de extranjeros es mayor que la de españoles', { observations: citizenshipOverqualificationObservations });
+assert.equal(migrantCredentialComparison.answerScope.family, 'migration-overqualification', 'A measured citizenship gap must not be framed as a credential-recognition cause');
+assert.deepEqual(migrantCredentialComparison.answerScope.directMetrics, ['tertiary_overqualification_rate']);
+assert.deepEqual(migrantCredentialComparison.answerScope.contextMetrics, []);
+assert.equal(migrantCredentialComparison.evidenceLevel, 'limited', 'The direct series must retain Eurostat quality flags');
+assert.match(migrantCredentialComparison.shareableReply, /46,4 %/);
+assert.match(migrantCredentialComparison.shareableReply, /32,7 %/);
+assert.match(migrantCredentialComparison.shareableReply, /definici[oó]n de este dato difiere/, 'A flagged cross-group comparison must retain the source quality note');
+assert.match(migrantCredentialComparison.shareableReply, /ciudadan[ií]a extranjera/);
+assert.match(migrantCredentialComparison.shareableReply, /ciudadan[ií]a espa[nñ]ola/);
+assert.doesNotMatch(migrantCredentialComparison.shareableReply, /52,3 %|34 %/);
+const foreignGraduateOverqualification = focusedEvidencePlan('La tasa de sobrecualificación de personas con ciudadanía extranjera', { observations: citizenshipOverqualificationObservations });
+assert.equal(foreignGraduateOverqualification.answerScope.family, 'migration-overqualification');
+assert.deepEqual(foreignGraduateOverqualification.answerScope.directMetrics, ['tertiary_overqualification_rate']);
+assert.equal(foreignGraduateOverqualification.evidenceLevel, 'limited', 'The direct foreign-citizenship rate must remain limited by the source flag');
+assert.match(foreignGraduateOverqualification.shareableReply, /46,4 %/);
+assert.match(foreignGraduateOverqualification.shareableReply, /ciudadan[ií]a extranjera/);
+assert.match(foreignGraduateOverqualification.shareableReply, /personas ocupadas de 20 a 64 a[nñ]os/);
+const genericGraduateOverqualification = focusedEvidencePlan('Los titulados universitarios están sobrecualificados en sus empleos', { observations: citizenshipOverqualificationObservations });
+assert.match(genericGraduateOverqualification.shareableReply, /34 %/);
+assert.doesNotMatch(genericGraduateOverqualification.shareableReply, /46,4 %|32,7 %|52,3 %/, 'A general graduate claim must use the all-citizen measure only');
+const birthplaceCredentialClaim = 'Los titulados nacidos fuera de España trabajan por debajo de su formación';
+const birthplaceCredential = focusedEvidencePlan(birthplaceCredentialClaim, { observations: citizenshipOverqualificationObservations });
+assert.equal(birthplaceCredential.answerScope.family, 'migrant-credential-recognition');
+assert.doesNotMatch(birthplaceCredential.shareableReply, /46,4 %|32,7 %|52,3 %/, 'Citizenship observations must not answer a country-of-birth claim');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim('Compara la tasa de sobrecualificación de titulados universitarios en 2023 y 2025'), ['TOTAL'], 'A period comparison must keep the all-citizen denominator');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim('La tasa de sobrecualificación de extranjeros es mayor que la de españoles'), ['FOR', 'NAT'], 'A citizenship comparison must include only the named groups');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim('Compara la tasa de sobrecualificación de personas de fuera de la UE con la de españoles'), ['NEU27_2020_FOR', 'NAT'], 'A non-EU comparison must use the matching citizen groups');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim('La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea'), ['EU27_2020_FOR'], 'An EU-citizenship claim must use the EU foreign-citizenship subgroup');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim('Sobrecualificación por ciudadanía'), ['NAT', 'EU27_2020_FOR', 'NEU27_2020_FOR'], 'An explicit citizenship breakdown must return disjoint subgroup series');
+assert.deepEqual(tertiaryOverqualificationCitizenshipGroupsForClaim(birthplaceCredentialClaim), [], 'Country-of-birth questions must not use citizenship categories');
+for (const claim of [migrationWageClaim, migrationFiscalClaim, healthcareStaffingClaim]) {
+  const answer = focusedEvidencePlan(claim, { observations: citizenshipOverqualificationObservations });
+  assert.equal(answer.sourceLinks.length, 0, `A nearby group metric crossed into an unsupported family: ${claim}`);
+}
+assert.equal(claimFocusFor('Los jóvenes con estudios superiores están sobrecualificados en su empleo')?.id, 'education-employment-outcomes', 'A youth overqualification claim must retain its reviewed education family');
+assert.equal(claimFocusFor('¿Cuántos días se espera para una cita con el médico de familia?')?.id, 'primary-care-waits', 'Appointment delays must remain separate from staffing shortage causes');
+assert.equal(claimFocusFor('Los titulados universitarios trabajan en empleos inferiores a su preparación')?.id, 'education-employment-outcomes', 'A general graduate claim must not be inferred to concern migrants');
+assert.equal(claimFocusFor('Hay muchos médicos en España, aunque no se repartan bien por comunidades')?.id, undefined, 'A general physician distribution claim must not be mistaken for a shortage caused by working conditions');
+assert.notEqual(claimFocusFor('¿Qué parte de todas las personas que reciben prestaciones por desempleo es extranjera?')?.id, 'migration-fiscal-contribution', 'Unemployment-benefit recipients must not be mistaken for a net fiscal contribution');
 const youngOverqualificationSource = {
   id: 'eurostat-tertiary-overqualification-age-20-34',
   title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat',

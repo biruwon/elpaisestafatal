@@ -1,4 +1,4 @@
-import { claimFocusFor, focusedMetricIdsFor } from './claim-focus.mjs';
+import { claimFocusFor, focusedMetricIdsFor, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
@@ -18,6 +18,7 @@ const observationFitsClaim = (claim) => {
   const text = normalize(claim);
   return (item) => {
     if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item) || !matchesSex(item)) return false;
+    if (!tertiaryOverqualificationCitizenshipFitsClaim(claim, item)) return false;
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
     if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
@@ -74,6 +75,12 @@ const scopeKey = (item) => JSON.stringify({
   dimensions: Object.fromEntries(Object.entries(item.dimensions || {}).filter(([key]) => !['time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b))),
   dataKind: item.dataKind || 'observed',
 });
+const citizenshipGroupLabel = (item) => ({
+  NAT: 'ciudadanía española',
+  FOR: 'ciudadanía extranjera',
+  EU27_2020_FOR: 'ciudadanía de otro país de la UE',
+  NEU27_2020_FOR: 'ciudadanía de fuera de la UE',
+}[String(item.dimensions?.citizen || '').toUpperCase()]);
 const sourceValid = (source) => {
   try { return Boolean(source?.id && source?.title && new URL(source.url).protocol === 'https:'); } catch { return false; }
 };
@@ -117,9 +124,10 @@ const factsForMetric = (id, observations, fitsClaim) => {
     const latest = rows.at(-1);
     const value = `${number(latest.value, id)} ${unitFor(latest)}`.trim();
     const metric = vocabulary.get(id);
-    const scope = [latest.geography || latest.dimensionLabels?.geo, latest.population || metric?.population].filter(Boolean).join(' · ');
+    const citizenship = citizenshipGroupLabel(latest);
+    const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship, latest.population || metric?.population].filter(Boolean).join(' · ');
     const place = placeLabel(latest);
-    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}: ${value} (${periodLabel(latest.period)}).`;
+    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship ? ` · ${citizenship}` : ''}: ${value} (${periodLabel(latest.period)}).`;
     return { id, items: rows, latest, finding, scope, sourceIds: [...new Set(rows.map((item) => item.source.id))] };
   }).filter(Boolean);
 };
