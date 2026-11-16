@@ -402,6 +402,10 @@ const ageScopedYouthOpportunities = focusedEvidencePlan('Los jóvenes de 25 a 34
 assert.match(ageScopedYouthOpportunities.shareableReply, /13,2 %/, 'A matching age band should remain available as contextual evidence');
 assert.doesNotMatch(ageScopedYouthOpportunities.shareableReply, /10 %/, 'An adjacent all-age band must not be presented for an explicit age request');
 assert.deepEqual(ageScopedYouthOpportunities.evidenceIds, ['matching-youth-age'], 'The focused answer should retain only evidence from the requested age group');
+const educationPeriodRange = focusedEvidencePlan('La tasa de paro de titulados universitarios subió entre 2018 y 2020', { observations: [2017, 2018, 2019, 2020, 2021].map((year) => ({
+  id: `graduate-unemployment-${year}`, metricId: 'unemployment_rate_tertiary_education', value: 8, period: String(year), unit: '%', geography: 'España', source: jobsSource,
+})) });
+assert.deepEqual(educationPeriodRange.evidenceIds, ['graduate-unemployment-2018', 'graduate-unemployment-2019', 'graduate-unemployment-2020'], 'A requested year interval must include its full period and exclude observations outside it');
 const rows = [
   ['3551/0 BARÓMETRO SANITARIO 2026 (PRIMERA OLEADA)'],
   ['Pregunta 5c'], ['Desde que pidió cita hasta que le atendió el médico de familia, ¿cuánto tiempo pasó?'],

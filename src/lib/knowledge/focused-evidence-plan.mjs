@@ -4,6 +4,7 @@ import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 import { observationMatchesAgeScope } from './age-scope.mjs';
+import { observationMatchesPeriodScope } from './period-scope.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -19,17 +20,11 @@ const requestedTerritories = (claim) => {
   return found.some(([id]) => id.length > 2) ? found.filter(([id]) => id !== 'ES') : found;
 };
 const observationFitsClaim = (claim, item) => {
-  if (!observationMatchesAgeScope(claim, item)) return false;
+  if (!observationMatchesAgeScope(claim, item) || !observationMatchesPeriodScope(claim, item)) return false;
   const territories = requestedTerritories(claim);
   const actual = ` ${normalize([item.geography, item.dimensions?.geo, item.dimensionLabels?.geo].filter(Boolean).join(' '))} `;
   const europeanComparator = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(normalize(claim)) && /\b(eu27 2020|european union|union europea)\b/.test(actual);
   if (territories.length && !europeanComparator && !territories.some(([id, aliases]) => actual.includes(` ${normalize(id)} `) || aliases.some((alias) => actual.includes(` ${alias} `)))) return false;
-  const years = String(claim).match(/\b(?:19|20|21)\d{2}\b/g) || [];
-  if (years.length) {
-    const year = Number(String(item.period).slice(0, 4));
-    const since = /\bdesde\s+(?:el\s+)?(?:ano\s+)?(?:19|20|21)\d{2}\b/.test(normalize(claim));
-    if (!(since ? year >= Math.min(...years.map(Number)) : years.includes(String(year)))) return false;
-  }
   const text = normalize(claim);
   const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
   if (/\bmujeres\b/.test(text) && !/\bfemale\b|\bmujeres\b|"sex"\s*:\s*"F"/i.test(population) && item.dimensions?.sex !== 'F') return false;

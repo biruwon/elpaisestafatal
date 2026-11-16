@@ -29,11 +29,44 @@ for (const query of ['Tasa de paro de personas de 25 a 34 años', 'Unemployment 
 }
 const adjacentAge = ageQuery('Tasa de paro de personas de 35 a 44 años');
 if (adjacentAge.length !== 1 || adjacentAge[0].id !== 'unemployment-35-44') throw new Error('A nearby age claim crossed into the 25–34 group');
+const yearRows = [2015, 2016, 2018, 2020, 2021].map((year) => ({
+  id: `unemployment-${year}`, metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', period: String(year), source: ageSource,
+})).concat([{ id: 'unemployment-period-missing', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', source: ageSource }]);
+const yearQuery = (query) => rankWarehouseObservations(query, yearRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Unemployment rate from 2015 to 2020', 'Unemployment rate between 2015 and 2020']) {
+  const scoped = yearQuery(query);
+  if (scoped.length !== 4 || scoped.some((item) => ![2015, 2016, 2018, 2020].some((year) => item.id === `unemployment-${year}`))) throw new Error(`An inclusive year range returned a record outside its requested period: ${query}`);
+}
+const selectedYears = yearQuery('Compare unemployment in 2015 and 2020');
+if (selectedYears.length !== 2 || selectedYears.some((item) => !['unemployment-2015', 'unemployment-2020'].includes(item.id))) throw new Error('A comparison of selected years was broadened into an interval');
+for (const query of ['Unemployment rate since 2018', 'Tasa de paro desde el año 2018']) {
+  const sinceYear = yearQuery(query);
+  if (sinceYear.length !== 3 || sinceYear.some((item) => !['unemployment-2018', 'unemployment-2020', 'unemployment-2021'].includes(item.id))) throw new Error(`A since-year request did not retain later observations or included earlier data: ${query}`);
+}
+const untilYear = yearQuery('Unemployment rate up to 2016');
+if (untilYear.length !== 2 || untilYear.some((item) => !['unemployment-2015', 'unemployment-2016'].includes(item.id))) throw new Error('An up-to-year request did not stop at its stated end year');
+if (yearQuery('Unemployment rate in Spain').length !== yearRows.length) throw new Error('An unscoped query was unexpectedly restricted to a year');
+const quarterRows = ['2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2020'].map((period) => ({
+  id: `unemployment-${period}`, metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', period, source: ageSource,
+}));
+const quarterQuery = (query) => rankWarehouseObservations(query, quarterRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Unemployment rate in Q2 2020', 'Unemployment rate in Q2 of 2020', 'Tasa de paro en el segundo trimestre de 2020', 'Tasa de paro en 2020-Q2']) {
+  const scoped = quarterQuery(query);
+  if (scoped.length !== 1 || scoped[0].id !== 'unemployment-2020-Q2') throw new Error(`An explicit quarter request returned another quarter or an annual total: ${query}`);
+}
+const monthRows = ['2025-01', '2025-02', '2025-03', '2025'].map((period) => ({
+  id: `unemployment-${period}`, metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', period, source: ageSource,
+}));
+const monthQuery = (query) => rankWarehouseObservations(query, monthRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Tasa de paro en febrero de 2025', 'Unemployment rate in February 2025']) {
+  const scoped = monthQuery(query);
+  if (scoped.length !== 1 || scoped[0].id !== 'unemployment-2025-02') throw new Error(`An explicit month request returned another month or an annual total: ${query}`);
+}
 const periodAndAmountQueries = ['La tasa pasó del 20 al 34 % entre 2015 y 2020', 'El coste está entre 20 y 34 euros al mes'];
 for (const query of periodAndAmountQueries) {
   if (requestedAgeScopes(query).length) throw new Error(`A year range or money amount was parsed as an age request: ${query}`);
 }
-const historicalAgeQuery = ageQuery('Tasa de paro de 25 a 34 años entre 2015 y 2020');
+const historicalAgeQuery = ageQuery('Tasa de paro de 25 a 34 años entre 2020 y 2025');
 if (historicalAgeQuery.length !== 1 || historicalAgeQuery[0].id !== 'unemployment-25-34') throw new Error('A period range contaminated the explicitly requested age band');
 const ageComparison = ageQuery('Compara la tasa de paro de personas de 20 a 34 años y de 35 a 44 años');
 if (ageComparison.length !== 2 || ageComparison.some((item) => !['unemployment-20-34', 'unemployment-35-44'].includes(item.id))) throw new Error('An age-group comparison did not retain exactly its requested groups');
