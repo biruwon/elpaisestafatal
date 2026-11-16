@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { utils, write } from 'xlsx';
-import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
@@ -13,6 +13,7 @@ import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
 import { rankWarehouseObservations } from './warehouse-query.mjs';
+import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const cases = [
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
@@ -44,6 +45,27 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const focusedTextClaim = 'La tasa de paro de titulados universitarios ha subido';
+const focusedTextCompilation = deterministicFallbackCompiler(focusedTextClaim);
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: focusedTextCompilation.clarificationRequired, claimType: focusedTextCompilation.claimType }), true, 'A reviewed descriptive measurement claim can use deterministic interpretation');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: focusedTextCompilation.clarificationRequired, claimType: 'comparative' }), false, 'A comparison must retain structured interpretation');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: focusedTextCompilation.clarificationRequired }), false, 'An unknown claim type must retain structured interpretation');
+const focusedTextCompound = 'La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares, y los precios de vivienda suben';
+const focusedTextCompoundCompilation = deterministicFallbackCompiler(focusedTextCompound);
+assert.equal(focusedTextCompoundCompilation.explicitPropositions.length, 2, 'A reviewed claim with an unrelated second proposition must be detected as compound');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextCompound, { propositions: focusedTextCompoundCompilation.explicitPropositions, clarificationRequired: focusedTextCompoundCompilation.clarificationRequired, claimType: focusedTextCompoundCompilation.claimType }), false, 'A compound claim must retain structured interpretation');
+const partlyParsedCompound = 'La tasa de paro de titulados universitarios ha subido, y los precios de vivienda suben';
+const partlyParsedCompilation = deterministicFallbackCompiler(partlyParsedCompound);
+assert.equal(partlyParsedCompilation.explicitPropositions.length, 1, 'This nearby conjunction currently remains one fallback proposition');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(partlyParsedCompound, { propositions: partlyParsedCompilation.explicitPropositions, clarificationRequired: partlyParsedCompilation.clarificationRequired, claimType: partlyParsedCompilation.claimType }), false, 'A conjunction must not enter the fast path if the parser leaves it unsplit');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: true, claimType: focusedTextCompilation.claimType }), false, 'A clarification-required claim must retain structured interpretation');
+const causalFocusedClaim = 'Las compras de vivienda por extranjeros no residentes encarecen las zonas costeras';
+const causalFocusedCompilation = deterministicFallbackCompiler(causalFocusedClaim);
+assert.equal(claimFocusFor(causalFocusedClaim)?.claimType, 'causal', 'The foreign-housing family must retain its causal evidence contract');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(causalFocusedClaim, { propositions: causalFocusedCompilation.explicitPropositions, clarificationRequired: causalFocusedCompilation.clarificationRequired, claimType: causalFocusedCompilation.claimType }), false, 'A causal family must retain structured model interpretation even when fallback wording looks descriptive');
+const employerContributionClaim = 'Las cotizaciones empresariales ocultan parte del coste laboral real que soporta cada empleo';
+const employerContributionCompilation = deterministicFallbackCompiler(employerContributionClaim);
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(employerContributionClaim, { propositions: employerContributionCompilation.explicitPropositions, clarificationRequired: employerContributionCompilation.clarificationRequired, claimType: employerContributionCompilation.claimType }), false, 'A nearby, non-focused claim must retain normal compiler selection');
 for (const [claim, expected] of [
   ['Un título universitario no garantiza encontrar un empleo acorde con los estudios', ['employment_rate_tertiary_education', 'tertiary_overqualification_rate']],
   ['La tasa de paro de titulados superiores ha subido', ['unemployment_rate_tertiary_education']],

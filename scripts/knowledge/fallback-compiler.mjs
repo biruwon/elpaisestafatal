@@ -429,9 +429,11 @@ const hasIndependentPredicate = (value) => {
     ' empeora ', ' empeoran ', ' construye ', ' construyen ', ' anuncia ', ' anuncian ',
     ' recibe ', ' reciben ', ' gana ', ' ganan ', ' corrige ', ' corrigen ',
     ' queda ', ' quedan ', ' encuentra ', ' encuentran ', ' paga ', ' pagan ',
+    ' hace ', ' hacen ', ' impide ', ' impiden ', ' obliga ', ' obligan ',
+    ' permite ', ' permiten ', ' afecta ', ' afectan ',
     ' cuesta ', ' supera ', ' superan ', ' excede ', ' exceden ',
   ]) || /^(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|baja|crece|aumenta|disminuye|reduce|recorta|quita|transfiere|llega|llegan|cobra|cobran|representa|representan|demuestra|tarda|tardan|gasta|gastan|dedica|dedican)\b/.test(text)
-    || /\b(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|sube|suben|baja|bajan|crece|crecen|aumenta|aumentan|disminuye|disminuyen|reduce|reducen|recorta|recortan|quita|quitan|transfiere|transfieren|llega|llegan|cobra|cobran|representa|representan|demuestra|demuestran|sigue|siguen|mantiene|mantienen|falta|faltan|tarda|tardan|gasta|gastan|dedica|dedican|encarece|encarecen|pierde|pierden|empeora|empeoran|construye|construyen|anuncia|anuncian|gana|ganan|corrige|corrigen|queda|quedan|encuentra|encuentran|paga|pagan|cuesta|supera|superan|excede|exceden)\b/.test(text);
+    || /\b(?:es|son|hay|tiene|tienen|recibe|reciben|causa|causan|genera|generan|crea|crean|hace|hacen|sube|suben|baja|bajan|crece|crecen|aumenta|aumentan|disminuye|disminuyen|reduce|reducen|recorta|recortan|quita|quitan|transfiere|transfieren|llega|llegan|cobra|cobran|representa|representan|demuestra|demuestran|sigue|siguen|mantiene|mantienen|falta|faltan|tarda|tardan|gasta|gastan|dedica|dedican|encarece|encarecen|pierde|pierden|empeora|empeoran|construye|construyen|anuncia|anuncian|gana|ganan|corrige|corrigen|queda|quedan|encuentra|encuentran|paga|pagan|impide|impiden|obliga|obligan|permite|permiten|afecta|afectan|cuesta|supera|superan|excede|exceden)\b/.test(text);
 };
 
 const splitExplicitClauses = (value) => {
@@ -459,9 +461,16 @@ const splitExplicitClauses = (value) => {
   // when both sides look like clauses. This prevents ordinary noun lists
   // from becoming noisy claim breakdowns.
   if (clauses.length === 1) {
-    const match = clauses[0].match(/^(.*?)\s+(?:y|ni)\s+(.*)$/i);
-    if (match && match[1].length >= 8 && match[2].length >= 8 && hasIndependentPredicate(match[1]) && hasIndependentPredicate(match[2])) {
-      clauses = [cleanClause(match[1]), cleanClause(match[2])].filter((clause) => clause.length >= 8);
+    const candidates = [...clauses[0].matchAll(/\s+(?:y|ni)\s+/gi)];
+    const boundary = candidates.find((match) => {
+      const left = clauses[0].slice(0, match.index);
+      const right = clauses[0].slice(match.index + match[0].length);
+      return left.length >= 8 && right.length >= 8 && hasIndependentPredicate(left) && hasIndependentPredicate(right);
+    });
+    if (boundary) {
+      const left = clauses[0].slice(0, boundary.index);
+      const right = clauses[0].slice(boundary.index + boundary[0].length);
+      clauses = [cleanClause(left), cleanClause(right)].filter((clause) => clause.length >= 8);
     }
   }
 

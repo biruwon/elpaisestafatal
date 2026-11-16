@@ -363,6 +363,25 @@ export const claimFocusFor = (claim) => {
   return focuses.find((focus) => focus.when(text));
 };
 
+export const canSkipLocalCompilerForFocusedMeasurement = (claim, {
+  propositions,
+  clarificationRequired = false,
+  claimType,
+} = {}) => {
+  const focus = claimFocusFor(claim);
+  const explicit = Array.isArray(propositions)
+    ? propositions.filter((item) => item?.explicit !== false && String(item?.text || '').trim())
+    : [];
+  const rawClaim = String(claim || '');
+  const normalizedClaim = normalize(rawClaim);
+  // The lightweight clause parser can miss unfamiliar joins, so keep this
+  // optimization to claims with no visible second-clause cue.
+  const hasCompoundCue = /[,;.\n]/.test(rawClaim)
+    || /\b(?:y|ni|pero|aunque|mientras|sin embargo|por eso|por tanto|por ello|asi que|porque|ya que|debido a que)\b/.test(normalizedClaim);
+  return Boolean(focus && focus.claimType !== 'causal' && ['descriptive', 'trend'].includes(claimType)
+    && !clarificationRequired && explicit.length === 1 && !hasCompoundCue);
+};
+
 const broadAliases = new Set(['coste de vida', 'sanidad publica', 'servicios publicos', 'gasto publico', 'ayudas sociales', 'mercado laboral', 'sector publico', 'proteccion social', 'pensiones publicas', 'calidad de vida']);
 const preciseAliases = metricVocabulary.flatMap((metric) => metric.aliases.map(normalize)
   .filter((alias) => !broadAliases.has(alias) && /\b(tasa|porcentaje|ratio|indice|media|mediano|mediana|precio|precios|numero|recuento|por hora|por habitante|per capita|por persona|ipc|smi|pib)\b/.test(alias)))

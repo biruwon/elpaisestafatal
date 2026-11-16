@@ -14,7 +14,7 @@ import { resolveExtractedSubmission } from './lib/submission-extraction.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, contextualPropositionEvidence, propositionPlanCompatible } from './lib/compound-evidence.mjs';
 import { measurementMeaningPlan } from '../src/lib/knowledge/measurement-meaning.mjs';
 import { claimCacheIdentity } from '../src/lib/knowledge/claim-cache-identity.mjs';
-import { claimFocusFor, focusedMetricIdsFor } from '../src/lib/knowledge/claim-focus.mjs';
+import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor } from '../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../src/lib/knowledge/focused-evidence-plan.mjs';
 import { priceMeasurement, priceRateRequested } from '../src/lib/knowledge/measurement-units.mjs';
 import { comparisonQuality, observationFlags } from '../src/lib/knowledge/observation-quality.mjs';
@@ -108,7 +108,7 @@ const answerCacheExpiry = (text) => Date.now() + (detectCurrentEvent(text) ? cur
 const compilerCache = new Map();
 const compilerInflight = new Map();
 const resolveJobs = new Map();
-const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], stageLatencies: {}, statusCounts: {}, evidenceModes: {}, staleEvidence: 0, unresolvedCandidates: 0 };
+const telemetry = { received: 0, completed: 0, unavailable: 0, cacheHits: 0, cacheMisses: 0, compilerCacheHits: 0, compilerCacheMisses: 0, compilerInflightJoins: 0, focusedCompilerSkips: 0, plannerCacheHits: 0, plannerCacheMisses: 0, plannerInflightJoins: 0, latencies: [], stageLatencies: {}, statusCounts: {}, evidenceModes: {}, staleEvidence: 0, unresolvedCandidates: 0 };
 const inferenceBackoffMs = 30 * 1000;
 let inferenceDisabledUntil = 0;
 let indexPromise;
@@ -1893,8 +1893,20 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // destruida” and can leave the UI looking stuck. Keep the fast clarification
   // path synchronous; reserve model extraction for claims that can benefit
   // from proposition parsing or candidate disambiguation.
-  const needsModelCompilation = shouldUseLocalCompiler({ text, deterministic: deterministicCompiler, hasPlausibleCandidate })
+  const focusedSingleProposition = canSkipLocalCompilerForFocusedMeasurement(
+    text,
+    {
+      propositions: routingCompiler.explicitPropositions || routingCompiler.propositions,
+      clarificationRequired: routingCompiler.clarificationRequired,
+      claimType: routingCompiler.claimType,
+    },
+  );
+  const modelCompilationRequested = shouldUseLocalCompiler({ text, deterministic: deterministicCompiler, hasPlausibleCandidate })
     || (!deterministicCompiler.clarificationRequired && compilerNeedsStructure);
+  const focusedCompilerSkip = focusedSingleProposition && localCompilerEnabled && !broadPacketInput
+    && !evidenceUnavailableSignal(text) && modelCompilationRequested;
+  if (focusedCompilerSkip) telemetry.focusedCompilerSkips += 1;
+  const needsModelCompilation = !focusedSingleProposition && modelCompilationRequested;
   const compiledCandidate = !broadPacketInput && localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
     : fallbackCompiler(text);
@@ -3420,7 +3432,7 @@ const server = createServer(async (request, response) => {
     const index = await getIndex();
     let builtCatalogEntries = null;
     try { builtCatalogEntries = JSON.parse(await readFile(builtCatalogPath, 'utf8')).length; } catch { /* The local service may run without a build artifact. */ }
-    response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, inputs: { text: 'available', url: 'available', image: 'unknown', audio: speechCommand ? 'unknown' : 'unavailable', document: 'available', video: 'unknown' }, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), stageP95LatencyMs: Object.fromEntries(Object.entries(telemetry.stageLatencies).map(([stage, values]) => [stage, stagePercentile(values, 0.95)])), statusCounts: telemetry.statusCounts, evidenceModes: telemetry.evidenceModes, staleEvidence: telemetry.staleEvidence, unresolvedCandidates: telemetry.unresolvedCandidates } }));
+      response.end(JSON.stringify({ status: 'ok', deterministic: true, dynamic: Date.now() >= inferenceDisabledUntil, inputs: { text: 'available', url: 'available', image: 'unknown', audio: speechCommand ? 'unknown' : 'unavailable', document: 'available', video: 'unknown' }, modelReady, model: routerModel, modelLastProbeAt, modelLastProbeError, queue: [...resolveJobs.values()].filter((item) => item.status === 'processing').length, indexEntries: index.entries.length, builtCatalogEntries, indexKnowledge: RUNTIME_VERSIONS.indexKnowledge, metrics: { received: telemetry.received, completed: telemetry.completed, unavailable: telemetry.unavailable, cacheHitRate: totalLookups ? Number((telemetry.cacheHits / totalLookups).toFixed(3)) : 0, compilerCacheHits: telemetry.compilerCacheHits, compilerCacheMisses: telemetry.compilerCacheMisses, compilerInflightJoins: telemetry.compilerInflightJoins, focusedCompilerSkips: telemetry.focusedCompilerSkips, plannerCacheHits: telemetry.plannerCacheHits, plannerCacheMisses: telemetry.plannerCacheMisses, plannerInflightJoins: telemetry.plannerInflightJoins, p95LatencyMs: percentile(telemetry.latencies, 0.95), stageP95LatencyMs: Object.fromEntries(Object.entries(telemetry.stageLatencies).map(([stage, values]) => [stage, stagePercentile(values, 0.95)])), statusCounts: telemetry.statusCounts, evidenceModes: telemetry.evidenceModes, staleEvidence: telemetry.staleEvidence, unresolvedCandidates: telemetry.unresolvedCandidates } }));
     return;
   }
   if (!request.url?.startsWith('/api/check') && !request.url?.startsWith('/v1/classify')) { response.writeHead(404); response.end(); return; }
