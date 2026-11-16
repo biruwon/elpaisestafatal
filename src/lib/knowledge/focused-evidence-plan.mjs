@@ -2,7 +2,7 @@ import { claimFocusFor, focusedMetricIdsFor } from './claim-focus.mjs';
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
-import { observationFlagNotes } from './observation-quality.mjs';
+import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -48,6 +48,9 @@ const labels = {
   household_electricity_price: 'Precio doméstico de electricidad',
   household_electricity_price_europe: 'Precio doméstico de electricidad',
   education_personnel: 'Personal docente',
+  employment_rate_tertiary_education: 'Tasa de empleo de personas con estudios terciarios',
+  unemployment_rate_tertiary_education: 'Tasa de paro de personas con estudios terciarios',
+  tertiary_overqualification_rate: 'Tasa de sobrecualificación entre personas con estudios terciarios ocupadas',
   in_work_poverty_rate: 'Personas ocupadas de 18 años o más en riesgo de pobreza',
   in_work_poverty_full_time_rate: 'Personas ocupadas de 18 años o más a jornada completa en riesgo de pobreza',
   primary_care_wait_days: 'Demora entre quienes esperaron más de un día',
@@ -125,6 +128,28 @@ const factsForMetric = (id, observations, claim) => {
   }).filter(Boolean);
 };
 
+const educationOutcomeFinding = (fact) => {
+  const item = fact.latest;
+  const value = `${number(item.value, fact.id)} %`;
+  const period = periodLabel(item.period);
+  const place = placeLabel(item) || 'el territorio consultado';
+  const source = item.source?.publisher || 'Eurostat';
+  if (fact.id === 'employment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 64 años con educación terciaria (ISCED 5–8) estaba ocupada en ${period}.`;
+  if (fact.id === 'unemployment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de la población activa de 20 a 64 años con educación terciaria (ISCED 5–8) estaba en paro en ${period}.`;
+  if (fact.id === 'tertiary_overqualification_rate') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 64 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9 que no requieren ese nivel en ${period}.`;
+  return fact.finding;
+};
+const educationOutcomeLimitation = (ids, fallback) => {
+  const employment = ids.includes('employment_rate_tertiary_education');
+  const unemployment = ids.includes('unemployment_rate_tertiary_education');
+  const overqualification = ids.includes('tertiary_overqualification_rate');
+  if (employment && overqualification) return 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.';
+  if (unemployment) return 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.';
+  if (overqualification) return 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.';
+  if (employment) return 'La tasa de empleo usa como denominador a todas las personas residentes de 20 a 64 años con educación terciaria. No se limita a recién graduados ni mide si el puesto coincide con sus estudios.';
+  return fallback;
+};
+
 // This composer reports only the supplied observations. It cannot turn a
 // contextual proxy into a verdict on a different measurement or silently
 // infer a real-wage change from unmatched wage and price periods.
@@ -153,21 +178,28 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const asksAboutTeachers = /\b(?:por (?:profesor\w*|docent\w*)|alumn\w* (?:por|entre) (?:profesor\w*|docent\w*))\b/.test(normalize(claim));
-  const asksAboutEducationJobFit = focus.id === 'education-employment-outcomes'
-    && /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(normalize(claim));
+  const educationOutcome = focus.id === 'education-employment-outcomes';
+  const educationTrendRequested = educationOutcome
+    && /\b(ya no|antes|ahora|cada vez|subid\w*|aument\w*|crec\w*|bajad\w*|descend\w*|disminu\w*|mejor\w*|peor\w*|empeor\w*|desde|entre \d{4} y \d{4})\b/.test(normalizedClaim);
   const comparesSectorOutput = focus.id === 'sector-wage-comparison'
     && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(normalizedClaim);
-  const allowedDirect = focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
   const ids = [...focusedMetricIdsFor(claim)];
+  const allowedDirect = educationOutcome ? ids : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
+  const educationNeedForMetric = (id) => id === 'employment_rate_tertiary_education'
+    ? 'tasa de empleo entre residentes de 20 a 64 años con educación terciaria; denominador: toda la población residente de ese grupo'
+    : id === 'unemployment_rate_tertiary_education'
+      ? 'tasa de paro entre personas activas de 20 a 64 años con educación terciaria; denominador: ocupados más desempleados de ese grupo'
+      : id === 'tertiary_overqualification_rate'
+        ? 'sobrecualificación entre personas ocupadas de 20 a 64 años con educación terciaria; denominador: todas las personas ocupadas de ese grupo'
+        : '';
   const needs = asksAboutMakingEndsMeet ? ['dificultad declarada para llegar a fin de mes', 'situación laboral y jornada de las personas consultadas', 'periodo y población']
     : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso']
-      : focus.id === 'education-employment-outcomes' ? [
-        'tasa de empleo o paro desglosada por nivel educativo, con la misma edad, cohorte, territorio y periodo',
-        ...(asksAboutEducationJobFit ? ['nivel de estudios requerido por el puesto y formación de quienes lo ocupan'] : []),
-      ] : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
+      : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : focus.needs
+        : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const facts = ids.flatMap((id) => factsForMetric(id, observations, claim));
+  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation) : focus.limitation;
   const territories = requestedTerritories(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(([id]) => focus.explanationEvidence.territories?.includes(id))
@@ -178,21 +210,28 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanation?.sources || []).map((source) => source.id)])];
-  const missing = direct.length ? [] : needs;
-  const primaryFacts = (direct.length ? direct : context).slice(0, 2);
+  const missing = educationOutcome
+    ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
+    : direct.length ? [] : needs;
+  const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
+  const trendNotes = educationTrendRequested ? primaryFacts.flatMap((fact) => {
+    const quality = comparisonQuality(fact.items, { temporal: true, firstPeriod: fact.items[0]?.period || '' });
+    return [`La respuesta muestra el dato más reciente (${periodLabel(fact.latest.period)}); no compara dos periodos y no demuestra por sí sola que la tasa haya subido o bajado.${quality.blocked ? ` ${quality.reason}` : ''}`];
+  }) : [];
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
     fact.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
     fact.latest.freshness === 'unknown' ? 'No se ha podido comprobar cuándo se consultó esta fuente.' : '',
     ...observationFlagNotes(fact.latest.status),
+    ...trendNotes,
     fact.latest.dimensions?.provisional === true ? 'Resultados provisionales de una oleada; no equivalen al año completo.' : '',
     /^primary_care_wait_/.test(fact.id) ? 'La encuesta se refiere a la última consulta de adultos en medicina de familia pública durante los 12 meses anteriores; excluye mutualidades con asistencia privada.' : '',
     /^household_electricity_price/.test(fact.id) && fact.latest.dimensions?.nrg_cons === 'TOT_KWH' && fact.latest.dimensions?.tax === 'I_TAX'
       ? 'Es un precio medio de los hogares para todos los tramos de consumo, con impuestos y tasas incluidos.' : '',
   ]).filter(Boolean))];
-  const findingText = primaryFacts.map((fact) => fact.finding).join(' ');
-  const gap = !direct.length ? `Falta una medición directa de ${needs.join('; ')}.` : '';
+  const findingText = primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
+  const gap = missing.length ? `Falta una medición directa de ${missing.join('; ')}.` : '';
   const reply = [explanation ? explanation.facts.join('\n\n') : focus.explanation, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanation ? '' : gap,
-    direct.length ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), focus.limitation].filter(Boolean).join('\n\n');
+    direct.length ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);
@@ -217,14 +256,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: focus.claimType || 'descriptive', explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
         verdict: 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
-        finding: explanation ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
+        finding: explanation ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
       ...(explanation ? [{ type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),
-      ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [fact.finding] })),
-      ...(missing.length ? [{ type: 'evidence_gap', missing, needed: needs, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
-      { type: 'cannot_conclude', evidenceIds: [], points: [focus.limitation] },
+      ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [educationOutcome ? educationOutcomeFinding(fact) : fact.finding] })),
+      ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
+      { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
       { type: 'conversation_reply', evidenceIds, text: reply },
     ],
-    limitation: focus.limitation, evidenceIds, sourceIds: sources.map((source) => source.id), sourceLinks: sources,
+    limitation, evidenceIds, sourceIds: sources.map((source) => source.id), sourceLinks: sources,
     evidenceSummary: { mode: facts.length ? 'dynamic' : explanation ? 'snapshot' : 'none', families, ...(missing.length ? { missingDimensions: missing } : {}) },
     answerScope: { kind: 'measurement', family: focus.id, directMetrics: directIds, contextMetrics: ids.filter((id) => !directIds.includes(id)) },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,

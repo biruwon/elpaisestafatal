@@ -280,3 +280,43 @@ a synthetic no-match lookup returned no observations in 1.222 seconds. These
 measure the file-search step only. End-to-end production latency still needs
 to be remeasured after the resolver process reloads and accumulates new
 requests.
+
+## Education-to-work text claims — 16 November 2026
+
+The education-employment claim family previously attached a reviewed 2025
+overqualification percentage from a static answer snapshot. It now retrieves
+annual Eurostat observations for employment, unemployment and overqualification
+among people aged 20–64 with tertiary education (ISCED 2011 levels 5–8).
+The employment rate uses all residents in that age and education group as its
+denominator; the unemployment rate uses their labour force; the
+overqualification rate uses only those already employed. Eurostat defines
+overqualification by occupation groups that do not require tertiary education
+([dataset](https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en),
+[methodology](https://ec.europa.eu/eurostat/web/skills/methodology)).
+
+The three Eurostat feeds refreshed successfully into the local warehouse, with
+11 annual observations each for 2015–2025. The local answer composer now reads
+the 2025 values from those records (83.2% employed and 34.0% overqualified)
+and carries their observation flags into the response. Eurostat marks these
+2025 observations with a definition-difference flag and marks a 2021 series
+break for the employment and overqualification series. The composer therefore
+shows the latest observations but does not claim a rise or fall from them.
+These group rates do not establish an individual guarantee, recent-graduate
+outcomes, field-of-study match or employer requirements for a master's degree.
+
+The family keeps unemployment, employment and job-fit questions distinct.
+Recent-graduate claims, comparisons with vocational qualifications,
+cross-country requests, and claims about advertised degree requirements remain
+evidence gaps because these feeds do not measure those populations or outcomes.
+Paraphrases route to the relevant measure; adjacent groups and comparisons are
+kept out of scope.
+
+The text metric router now applies the same scope distinctions across the
+broader catalogue: comparison geography, nationality, denominator, urbanisation,
+sex, legal stage, and aggregate versus per-person units. The 490-input retrieval
+benchmark resolves the expected metric within the top three for 463 of 479
+supported formulations, rejects all 11 unsupported formulations, and produces
+zero top matches marked incompatible with the expected measure. This benchmark
+checks metric routing, not end-to-end factual accuracy. A per-person final-energy
+comparison remains unsupported because the registry contains only aggregate
+energy totals; those totals are kept out of the answer path.

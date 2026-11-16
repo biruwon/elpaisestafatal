@@ -46,6 +46,12 @@ const longTailBenchmarkCases = [
   ['empleo-adultos', '¿Qué proporción de adultos tiene empleo en España?', 'employment_rate'],
   ['empleo-ocupacion-aumenta', 'La ocupación española ha aumentado', 'employment_rate'],
   ['empleo-edad-laboral', '¿Cuántas personas en edad laboral trabajan?', 'employment_rate'],
+  ['empleo-titulados-terciarios', '¿Qué tasa de empleo tienen en España las personas de 20 a 64 años con estudios superiores?', 'employment_rate_tertiary_education'],
+  ['empleo-universitarios-paraphrase', '¿Qué proporción de personas con educación universitaria trabaja?', 'employment_rate_tertiary_education'],
+  ['paro-titulados-terciarios', '¿Cuál es la tasa de paro de personas de 20 a 64 años con estudios superiores?', 'unemployment_rate_tertiary_education'],
+  ['paro-universitarios-paraphrase', '¿Qué porcentaje de la población activa universitaria está desempleada?', 'unemployment_rate_tertiary_education'],
+  ['sobrecualificacion-terciarios', '¿Qué proporción de personas ocupadas con estudios superiores trabaja en puestos que no requieren ese nivel?', 'tertiary_overqualification_rate'],
+  ['sobrecualificacion-universitarios-paraphrase', '¿Cuántos titulados superiores están sobrecualificados en su empleo?', 'tertiary_overqualification_rate'],
   ['empleo-ue-compara', '¿Cómo queda el empleo español frente al europeo?', 'employment_rate_europe'],
   ['empleo-ue-menor', '¿La tasa de empleo de España es inferior a la de Europa?', 'employment_rate_europe'],
   ['empleo-ue-comparacion', 'Comparación europea de la ocupación española', 'employment_rate_europe'],
@@ -489,4 +495,5 @@ export const warehouseRetrievalBenchmarkCases = [
   ['none-jueces', 'Los jueces españoles son todos de derechas', null],
   ['none-educacion', 'La educación pública adoctrina a los niños', null],
   ['none-marruecos', 'Marruecos terminará invadiendo España', null],
+  ['none-energy-per-capita', '¿Cuánta energía final se consume por habitante en España frente a la Unión Europea?', null],
 ].map(([id, query, expectedMetricId]) => ({ id, query, expectedMetricId }));

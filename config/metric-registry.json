@@ -831,6 +831,54 @@
     "notEquivalentTo": ["tertiary_education_attainment_rate", "early_school_leaving_rate_europe", "employment_rate_europe", "youth_unemployment_rate_europe"],
     "dimensions": ["period", "geography", "age", "sex", "education_level"]
   },
+  "employment_rate_tertiary_education": {
+    "name": "Employment rate among people aged 20 to 64 with tertiary education",
+    "aliases": ["tasa de empleo de titulados superiores", "tasa de empleo de personas con estudios terciarios", "empleo de titulados universitarios de 20 a 64 años"],
+    "unit": "percent of population aged 20 to 64 with tertiary education",
+    "population": "usual residents aged 20 to 64 with tertiary education (ISCED 2011 levels 5 to 8); denominator is all residents in this age and education group",
+    "notEquivalentTo": ["employment_rate", "unemployment_rate_tertiary_education", "tertiary_education_attainment_rate", "tertiary_overqualification_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "citizenship", "education_level"],
+    "definition": {
+      "label": "Tasa de empleo de personas con estudios terciarios",
+      "explanation": "Mide qué proporción de las personas residentes de 20 a 64 años con educación terciaria está ocupada. No se limita a recién titulados y no mide si el puesto corresponde a sus estudios.",
+      "numerator": "personas ocupadas de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "denominator": "población residente total de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "sources": [{"id": "definition-employment-rate-tertiary-education", "title": "Eurostat · Employment rates by educational attainment level and citizenship (lfsa_ergaedn)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_ergaedn/default/table?lang=en", "retrievedAt": "2026-11-16"}]
+    }
+  },
+  "unemployment_rate_tertiary_education": {
+    "name": "Unemployment rate among the labour force aged 20 to 64 with tertiary education",
+    "aliases": ["tasa de paro de titulados superiores", "paro de personas con estudios terciarios", "desempleo de personas con educación terciaria"],
+    "unit": "percent of labour force aged 20 to 64 with tertiary education",
+    "population": "labour force aged 20 to 64 with tertiary education (ISCED 2011 levels 5 to 8); denominator is employed plus unemployed people in this group",
+    "notEquivalentTo": ["unemployment_rate", "employment_rate_tertiary_education", "tertiary_education_attainment_rate", "tertiary_overqualification_rate"],
+    "dimensions": ["period", "geography", "age", "sex", "education_level"],
+    "definition": {
+      "label": "Tasa de paro de personas con estudios terciarios",
+      "explanation": "Es el porcentaje de la población activa de 20 a 64 años con educación terciaria que está desempleada. El denominador no es toda la población con estudios terciarios ni solo las personas recién graduadas.",
+      "numerator": "personas desempleadas de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "denominator": "población activa ocupada más desempleada de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "sources": [{"id": "definition-unemployment-rate-tertiary-education", "title": "Eurostat · Unemployment by educational attainment level - annual data (une_educ_a)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/product/page/une_educ_a", "retrievedAt": "2026-11-16"}]
+    }
+  },
+  "tertiary_overqualification_rate": {
+    "name": "Over-qualification rate among employed people aged 20 to 64 with tertiary education",
+    "aliases": ["tasa de sobrecualificación de titulados superiores", "personas universitarias sobrecualificadas", "titulados con estudios superiores en puestos que no requieren estudios terciarios"],
+    "unit": "percent of employed people aged 20 to 64 with tertiary education",
+    "population": "employed residents aged 20 to 64 with tertiary education (ISCED 2011 levels 5 to 8); denominator is all employed people in this age and education group",
+    "notEquivalentTo": ["tertiary_education_attainment_rate", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education"],
+    "dimensions": ["period", "geography", "age", "sex", "citizenship", "education_level", "occupation_requirement"],
+    "definition": {
+      "label": "Tasa de sobrecualificación entre personas con estudios terciarios ocupadas",
+      "explanation": "Eurostat clasifica como sobrecualificadas a las personas ocupadas con educación terciaria que trabajan en ocupaciones de los grupos principales 4 a 9 de ISCO, que no requieren ese nivel. Solo cuenta a personas que ya tienen empleo; no mide el desempleo, el ajuste del campo de estudios ni las titulaciones que piden los anuncios de trabajo.",
+      "numerator": "personas ocupadas de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8) en ocupaciones ISCO grupos principales 4 a 9",
+      "denominator": "todas las personas ocupadas de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "sources": [
+        {"id": "definition-tertiary-overqualification-rate", "title": "Eurostat · Over-qualification rates by citizenship (lfsa_eoqgan)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en", "retrievedAt": "2026-11-16"},
+        {"id": "definition-eurostat-skills-mismatch", "title": "Eurostat · Skills mismatch methodology", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/web/skills/methodology", "retrievedAt": "2026-11-16"}
+      ]
+    }
+  },
   "neet_rate": {
     "name": "Young people neither in employment nor in education or training",
     "aliases": ["ni estudian ni trabajan", "jóvenes que ni estudian ni trabajan", "ni trabaja ni estudia", "ninis", "jóvenes ninis", "jóvenes fuera de estudio y empleo"],

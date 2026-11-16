@@ -43,6 +43,22 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+for (const [claim, expected] of [
+  ['Un título universitario no garantiza encontrar un empleo acorde con los estudios', ['employment_rate_tertiary_education', 'tertiary_overqualification_rate']],
+  ['La tasa de paro de titulados superiores ha subido', ['unemployment_rate_tertiary_education']],
+  ['¿Cuál es la tasa de empleo de titulados superiores?', ['employment_rate_tertiary_education']],
+  ['Los titulados universitarios están sobrecualificados en sus empleos', ['tertiary_overqualification_rate']],
+  ['¿Qué proporción de personas ocupadas con estudios superiores trabaja en puestos que no requieren ese nivel?', ['tertiary_overqualification_rate']],
+]) assert.deepEqual([...focusedMetricIdsFor(claim)], expected, `Education-employment paraphrase selected the wrong measures: ${claim}`);
+for (const claim of [
+  'Cada vez se exige un máster para los puestos de titulados universitarios',
+  'Los graduados tienen más empleo que quienes cursan formación profesional',
+  'El empleo de universitarios es menor que el de otros titulados',
+  'Los recién graduados no encuentran su primer empleo',
+  'La tasa de paro de titulados universitarios de 25 a 34 años',
+  'Compara el empleo de titulados superiores de 20 a 64 años con el de 25 a 34 años',
+  'La tasa de empleo de titulados universitarios en Europa',
+]) assert.deepEqual([...focusedMetricIdsFor(claim)], [], `A nearby education claim used an incompatible tertiary series: ${claim}`);
 assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
 assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotizaciones actuales?')?.id, 'pension-financing', 'A funding question must stay in the pension-financing family, not a salary comparison');
 for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'El porcentaje de jóvenes de 25 a 34 años con estudios superiores aumentó', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada', '¿Cómo ha crecido el PIB real en España?', 'El turismo aporta más al PIB', '¿Cuál es la renta mediana equivalente de los hogares españoles?', 'La renta mediana equivalente creció más que el PIB en 2025']) {
@@ -162,33 +178,55 @@ assert.match(futurePension.shareableReply, /no predice la pensi[oó]n concreta d
 assert.match(futurePension.shareableReply, /cohortes de nacimiento/);
 const graduateRate = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
   { id: 'overall-graduate-context', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
+  { id: 'graduate-overqualification-neighbour', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: '%', geography: 'España' },
 ] });
 assert.equal(graduateRate.answerScope.family, 'education-employment-outcomes');
 assert.deepEqual(graduateRate.answerScope.contextMetrics, []);
-assert.equal(graduateRate.sourceLinks.length, 0, 'Overqualification among employed graduates must not be attached to an unemployment-rate claim');
-assert.doesNotMatch(graduateRate.shareableReply, /10 %|nivel de estudios requerido por el puesto/);
+assert.deepEqual(graduateRate.answerScope.directMetrics, ['unemployment_rate_tertiary_education']);
+assert.equal(graduateRate.sourceLinks.length, 0, 'General unemployment and overqualification among employed graduates must not answer an education-specific unemployment claim');
+assert.doesNotMatch(graduateRate.shareableReply, /10 %|34 %/);
+const graduateUnemployment = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
+  { id: 'overall-unemployment-neighbour', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
+  { id: 'graduate-unemployment', metricId: 'unemployment_rate_tertiary_education', value: 6.4, period: '2025', unit: 'Percentage of population in the labour force', geography: 'España', population: 'labour force aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: { id: 'eurostat-tertiary-unemployment', title: 'Unemployment by educational attainment level · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_educ_a', retrievedAt: '2026-11-16' } },
+  { id: 'graduate-overqualification-neighbour', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: '%', geography: 'España' },
+] });
+assert.deepEqual(graduateUnemployment.answerScope.directMetrics, ['unemployment_rate_tertiary_education']);
+assert.equal(graduateUnemployment.sourceLinks.length, 1);
+assert.match(graduateUnemployment.shareableReply, /6,4 % de la poblaci[oó]n activa/);
+assert.match(graduateUnemployment.shareableReply, /no compara dos periodos/);
+assert.match(graduateUnemployment.shareableReply, /definici[oó]n de este dato difiere/);
+assert.doesNotMatch(graduateUnemployment.shareableReply, /10 %|34 %/);
+const employmentSource = { id: 'eurostat-tertiary-employment', title: 'Employment rates by educational attainment level · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_ergaedn', retrievedAt: '2026-11-16' };
+const overqualificationSource = { id: 'eurostat-tertiary-overqualification', title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan', retrievedAt: '2026-11-16' };
 const graduateMatch = focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado', { observations: [
   { id: 'tertiary-attainment', metricId: 'tertiary_education_attainment_rate', value: 50, period: '2025', unit: '% of population aged 25 to 34', geography: 'España' },
   { id: 'overall-unemployment', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
   { id: 'national-wages', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
+  { id: 'tertiary-employment', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', population: 'residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: employmentSource },
+  { id: 'tertiary-overqualification', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: 'Percentage', geography: 'España', population: 'employed residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8', citizen: 'TOTAL' }, status: 'd', freshness: 'fresh', source: overqualificationSource },
 ] });
 assert.equal(graduateMatch.answerScope.family, 'education-employment-outcomes');
 assert.equal(graduateMatch.evidenceLevel, 'limited', 'The official overqualification measure supplies context but does not settle guarantees or unemployment');
+assert.deepEqual(graduateMatch.answerScope.directMetrics, ['employment_rate_tertiary_education', 'tertiary_overqualification_rate']);
 assert.deepEqual(graduateMatch.answerScope.contextMetrics, []);
-assert.equal(graduateMatch.sourceLinks.length, 1);
+assert.equal(graduateMatch.sourceLinks.length, 2);
 assert.match(graduateMatch.shareableReply, /sobrecualificaci[oó]n/);
-assert.match(graduateMatch.shareableReply, /que ya est[aá]n empleadas/);
-assert.match(graduateMatch.shareableReply, /[Nn]o mide a quienes siguen desempleados/);
-assert.match(graduateMatch.shareableReply, /tasa de empleo o paro agregada/);
-assert.match(graduateMatch.shareableReply, /34,0 % en 2025/);
-assert.match(graduateMatch.shareableReply, /no mide si una titulaci[oó]n garantiza/);
+assert.match(graduateMatch.shareableReply, /83,2 % de las personas residentes de 20 a 64 a[nñ]os/);
+assert.match(graduateMatch.shareableReply, /34 % de las personas ocupadas de 20 a 64 a[nñ]os/);
+assert.match(graduateMatch.shareableReply, /ocupaciones ISCO 4–9/);
+assert.match(graduateMatch.shareableReply, /no garantizan el resultado de cada persona/);
+assert.match(graduateMatch.shareableReply, /no compara dos periodos/);
+assert.match(graduateMatch.shareableReply, /definici[oó]n de este dato difiere/);
 assert.doesNotMatch(graduateMatch.shareableReply, /50 %|10 %|17 €/);
 const graduatePublic = localPublicCheckResponse({ status: 'complete', requestId: 'graduate-employment', result: graduateMatch }, 'Un título universitario ya no garantiza encontrar un empleo cualificado');
 assert.equal(graduatePublic.state, 'limited');
-assert.equal(graduatePublic.result.sources[0].url, graduateMatch.sourceLinks[0].url);
-assert.match(graduatePublic.result.reply, /34,0 % en 2025/);
+assert.deepEqual(graduatePublic.result.sources.map((source) => source.url), graduateMatch.sourceLinks.map((source) => source.url));
+assert.match(graduatePublic.result.reply, /34 %/);
 assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado en Francia')?.sourceLinks.length, 0, 'Spain-specific overqualification data must not appear for France');
-assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado', { now: Date.parse('2027-05-01') })?.sourceLinks.length, 0, 'Expired overqualification data must not appear as current');
+const graduateGap = focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado');
+assert.equal(graduateGap.evidenceLevel, 'insufficient');
+assert.equal(graduateGap.sourceLinks.length, 0);
+assert.doesNotMatch(graduateGap.shareableReply, /34 %|83,2 %/, 'A missing warehouse observation must not be replaced with a hard-coded percentage');
 const sectorWageGap = focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { observations: [
   { id: 'national-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
   { id: 'tourism-value-added', metricId: 'gross_value_added_by_activity', value: 10, period: '2025', unit: 'million EUR', geography: 'España', dimensions: { activity: 'Accommodation and food service activities' } },

@@ -499,6 +499,24 @@
       "metricId": "tertiary_education_attainment_rate"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_ergaedn?freq=A&geo=ES&citizen=TOTAL&sex=T&age=Y20-64&isced11=ED5-8&unit=PC&sinceTimePeriod=2015",
+      "title": "Tasa de empleo de personas de 20 a 64 años con educación terciaria en España · Eurostat",
+      "aliases": ["empleo de personas con educación terciaria", "tasa de empleo de titulados superiores", "empleo de universitarios"],
+      "metricId": "employment_rate_tertiary_education"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_educ_a?freq=A&geo=ES&sex=T&age=Y20-64&isced11=ED5-8&unit=PC_ACT&sinceTimePeriod=2015",
+      "title": "Tasa de paro de personas activas de 20 a 64 años con educación terciaria en España · Eurostat",
+      "aliases": ["paro de personas con educación terciaria", "tasa de paro de titulados superiores", "desempleo de universitarios"],
+      "metricId": "unemployment_rate_tertiary_education"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan?freq=A&citizen=TOTAL&age=Y20-64&sex=T&unit=PC&geo=ES&sinceTimePeriod=2015",
+      "title": "Tasa de sobrecualificación entre personas ocupadas de 20 a 64 años con educación terciaria en España · Eurostat",
+      "aliases": ["sobrecualificación de titulados superiores", "personas universitarias sobrecualificadas", "ocupaciones que no requieren educación terciaria"],
+      "metricId": "tertiary_overqualification_rate"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/edat_lfse_20?geo=ES&sex=T&age=Y15-29&training=NO_FE_NO_NFE&wstatus=NEMP&unit=PC&sinceTimePeriod=2015",
       "title": "Jóvenes que ni estudian ni trabajan en España · Eurostat",
       "aliases": ["ni estudian ni trabajan", "jóvenes ninis", "jóvenes fuera de estudio y empleo"],

@@ -25,6 +25,32 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t);
+const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t)
+  || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
+  || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
+  || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|cualificaci\w*|nivel de estudios)\b/.test(t);
+const educationJobRequirement = (t) => /\b(master\w*|maestr\w*|posgrado\w*|postgrado\w*)\b/.test(t)
+  && /\b(exig\w*|requier\w*|necesit\w*|ped\w*|solicit\w*|ofert\w*)\b/.test(t)
+  && /\b(emple\w*|trabaj\w*|puesto\w*)\b/.test(t);
+const educationLevelComparison = (t) => /\b(formacion profesional|fp|grado medio|grado superior)\b/.test(t)
+  && /\b(menos|mas|mayor|menor|compar\w*|diferent\w*|frente a|entre)\b/.test(t);
+const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|peor|superior|inferior)\b[\s\S]{0,35}\b(?:que|frente a|respecto a|comparad\w* con)\b/.test(t)
+  || /\b(?:en comparacion con|comparad\w* con|que quienes)\b/.test(t);
+const educationOutcomeMetrics = (claim) => {
+  const t = normalize(claim);
+  const unsupportedPopulation = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|recien titulad\w*|recien graduad\w*|primer empleo|joven\w*|juvenil|europa|europe[oa]s?|ue|union europea)\b/.test(t);
+  const requestedAges = [...String(claim).matchAll(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/gi)];
+  if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedPopulation
+    || educationCrossGroupComparison(t) || requestedAges.some(([, start, end]) => start !== '20' || end !== '64')) return [];
+  const qualificationFit = educationJobFit(t);
+  const unemployment = /\b(paro|desemple\w*)\b/.test(t);
+  const employmentAccess = /\b(tasa de empleo|encontr\w*|consegu\w*|garantiz\w*|asegur\w*|acced\w*|menos empleo|mas empleo|mayor empleo|menor empleo)\b/.test(t);
+  const metrics = [];
+  if (unemployment) metrics.push('unemployment_rate_tertiary_education');
+  else if (!qualificationFit || employmentAccess) metrics.push('employment_rate_tertiary_education');
+  if (qualificationFit) metrics.push('tertiary_overqualification_rate');
+  return metrics;
+};
 const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t)
   && /\b(independiz\w*|emancip\w*|vivir por su cuenta|vivir por cuenta propia|vivir de forma independiente|vivir solo|mudarse solo)\b/.test(t);
@@ -182,18 +208,9 @@ const focuses = [
     id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',
     when: educationEmploymentOutcome,
     direct: [], context: [],
-    needs: ['tasa de empleo o paro desglosada por nivel educativo, con la misma edad, cohorte, territorio y periodo', 'nivel de estudios requerido por el puesto y formación de quienes lo ocupan cuando se afirma que no hay ajuste', 'campo de estudios y jornada si se comparan titulaciones o empleos'],
+    needs: ['tasa de empleo o paro del nivel educativo y la población comparados, con el mismo periodo y territorio', 'ocupaciones que requieren educación terciaria y nivel educativo de quienes las ocupan', 'para afirmar qué titulación exigen las ofertas, requisitos de anuncios de empleo comparables en el tiempo'],
     explanation: 'Las tasas de empleo o paro por nivel educativo muestran si las personas tituladas trabajan; no indican por sí solas si el puesto corresponde a sus estudios. Acceso al empleo y ajuste entre formación y ocupación son resultados distintos.',
-    explanationEvidence: {
-      when: (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t),
-      expiresAt: '2027-04-30', territories: ['ES'],
-      facts: [
-        'Eurostat calcula la tasa de sobrecualificación entre las personas de 20 a 64 años con estudios terciarios que ya están empleadas: indica qué proporción trabaja en ocupaciones que no requieren ese nivel. No mide a quienes siguen desempleados ni si el empleo coincide con su campo de estudios.',
-        'En España, esa tasa fue del 34,0 % en 2025. Es evidencia de desajuste entre nivel educativo y ocupación entre quienes sí tienen empleo; por sí sola no mide si una titulación garantiza encontrar trabajo ni prueba que el desajuste esté aumentando.',
-      ],
-      sources: [{ id: 'eurostat-employment-annual-2025', title: 'Employment - annual statistics', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Employment_-_annual_statistics', retrievedAt: '2026-11-16' }],
-    },
-    limitation: 'Una tasa de empleo o paro agregada para toda la población activa no describe el resultado de quienes tienen cada nivel de estudios. La tasa de sobrecualificación solo cuenta a quienes ya trabajan; para comprobar el acceso al empleo hacen falta tasas por nivel educativo, y para medir el ajuste también se necesita comparar educación y ocupación.',
+    limitation: 'Las tasas de empleo, paro y sobrecualificación tienen denominadores distintos: residentes con estudios terciarios, personas activas con esos estudios y personas ocupadas con esos estudios. Las series no prueban una garantía individual, no se limitan a recién titulados y no miden anuncios que exigen un máster ni el campo de estudios.',
   },
   {
     id: 'job-opportunities', label: 'oportunidades para encontrar empleo',
@@ -349,7 +366,8 @@ export const focusedMetricIdsFor = (claim) => {
   if (!focus) return undefined;
   const known = new Set(metricVocabulary.map((metric) => metric.id));
   const text = normalize(claim);
-  const direct = focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
+  const direct = focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
+    : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
     : focus.id === 'primary-care-waits' && /\b(porcentaje|proporcion|por ciento)\b/.test(text) ? ['primary_care_wait_over_one_day_rate']
       : focus.id === 'primary-care-waits' && /\b(cuantos dias|demora media|tiempo medio)\b/.test(text) ? ['primary_care_wait_days'] : focus.direct;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);

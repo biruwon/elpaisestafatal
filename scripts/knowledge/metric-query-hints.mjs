@@ -17,6 +17,12 @@ const normalise = (value) => String(value || '')
 // if/else branch here. Only distinctive aliases are promoted, so generic
 // words such as “economía” cannot silently route a claim to a metric.
 const registry = JSON.parse(readFileSync(fileURLToPath(new URL('../../config/metric-registry.json', import.meta.url)), 'utf8'));
+const finalEnergyPerCapitaMetricIds = new Set(Object.entries(registry)
+  .filter(([id, definition]) => {
+    const text = normalise([id, definition.name, ...(definition.aliases || []), definition.unit, definition.population].join(' '));
+    return /(?:final energy|energy consumption|energy use)/.test(text) && /(?:per capita|per inhabitant|por habitante|por persona)/.test(text);
+  })
+  .map(([id]) => id));
 const registryAliases = Object.entries(registry).flatMap(([id, definition]) =>
   [...new Set([definition.name, ...(definition.aliases || [])])]
     .map((alias) => ({ id, alias, normalized: normalise(alias), tokens: normalise(alias).split(' ').filter(Boolean) }))
@@ -645,12 +651,139 @@ export const preferredMetricIdsForQuery = (query) => {
   if (vagueJudgement && !concreteMetricQualifier) {
     for (const id of ['government_current_taxes_income_wealth_europe', 'government_revenue_ratio', 'government_revenue_ratio_europe', 'government_expenditure_ratio', 'government_expenditure_ratio_europe']) preferred.delete(id);
   }
+  // Preserve the measure the user actually named when a broad alias also
+  // matches a nearby metric. These are reusable scope/denominator rules:
+  // nationality, legal stage, urbanisation, units, and comparison geography
+  // change what the observation means.
+  const preferScopedMetric = (id, replace = []) => {
+    for (const candidate of replace) preferred.delete(candidate);
+    preferred.add(id);
+  };
+  const nationality = hasAny('nacionalidad', 'nacionalidades', 'espanoles y extranjeros', 'espanoles o extranjeros', 'extranjeros y espanoles', 'extranjeras y espanolas');
+  const foreignGroup = nationality || hasAny('extranjero', 'extranjera', 'extranjeros', 'extranjeras', 'inmigrante', 'inmigrantes');
+  if (hasAny('ingreso minimo vital', 'imv') && hasAny('poblacion adulta', 'residentes adultos', 'denominador', 'base de comparacion', 'poblacion usada para comparar')) {
+    preferScopedMetric('imv_comparable_population_by_nationality', ['imv_title_holders_by_nationality', 'imv_beneficiary_average_age', 'foreign_citizenship_population', 'resident_population']);
+  }
+  if (hasAny('ingreso minimo vital', 'imv') && hasAny('edad media', 'edad promedio', 'edad de quienes reciben', 'edad de beneficiarios')) {
+    preferScopedMetric('imv_beneficiary_average_age', ['imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'imv_comparable_population_by_nationality']);
+  }
+  if (foreignGroup && hasAny('paro', 'desempleo') && hasAny('tasa', 'porcentaje', 'proporcion', 'parte', 'fraccion')) {
+    if (hasAny('beneficiario', 'beneficiarios', 'cobra', 'cobran', 'prestacion', 'prestaciones', 'ayuda', 'ayudas')) {
+      preferScopedMetric('unemployment_benefit_share_by_nationality', ['unemployment_rate', 'unemployment_rate_by_nationality', 'unemployment_beneficiaries_by_nationality', 'imv_title_holders_by_nationality']);
+    } else {
+      preferScopedMetric('unemployment_rate_by_nationality', ['unemployment_rate', 'youth_unemployment_rate', 'unemployment_beneficiaries_by_nationality']);
+    }
+  }
+  if (foreignGroup && hasAny('condena', 'condenas', 'condenado', 'condenados', 'sentencia firme')) {
+    if (hasAny('tasa', 'por cada', 'por mil', 'por 1.000')) {
+      preferScopedMetric('crime_conviction_rate_by_nationality', ['crime_convictions_by_nationality', 'crime_rate_by_group', 'recorded_offences']);
+    } else {
+      preferScopedMetric('crime_convictions_by_nationality', ['crime_conviction_rate_by_nationality', 'crime_rate_by_group', 'recorded_offences']);
+    }
+  }
+  if (hasAny('delito', 'delitos', 'criminalidad') && hasAny('por grupo', 'entre grupos', 'por nacionalidad', 'comparar', 'comparan', 'comparacion')) {
+    preferScopedMetric('crime_rate_by_group', ['recorded_offences']);
+  }
+  if (hasAny('vivienda publica', 'viviendas publicas', 'vivienda protegida', 'viviendas protegidas', 'vivienda social', 'viviendas sociales', 'etxebide')
+    && hasAny('dni', 'nie', 'pasaporte', 'documentacion', 'documento identificativo')) {
+    preferScopedMetric('public_housing_allocations_by_documentation', ['public_housing_allocations_by_group', 'public_housing_allocations_by_nationality', 'foreign_citizenship_population']);
+  } else if (hasAny('vivienda publica', 'viviendas publicas', 'vivienda protegida', 'viviendas protegidas', 'vivienda social', 'viviendas sociales', 'etxebide') && nationality) {
+    preferScopedMetric('public_housing_allocations_by_nationality', ['public_housing_allocations_by_group', 'public_housing_allocations_by_documentation', 'foreign_citizenship_population']);
+  }
+  if (hasAny('incendio', 'incendios', 'incendio forestal', 'incendios forestales')
+    && hasAny('superficie', 'hectarea', 'hectareas', 'area afectada', 'superficie quemada', 'superficie afectada')) {
+    preferScopedMetric('wildfire_surface_affected', ['wildfire_incidents']);
+  }
+  if (hasAny('paro', 'desempleo') && hasAny('urbano', 'urbanas', 'urbanizacion', 'ciudad', 'ciudades', 'municipio', 'municipios', 'tamano de municipio')) {
+    preferScopedMetric('urban_unemployment_rate', ['unemployment_rate', 'unemployment_rate_europe', 'youth_unemployment_rate']);
+  }
+  if (hasAny('paro', 'desempleo') && hasAny('por sexo', 'sexo', 'hombres y mujeres', 'mujeres y hombres', 'masculino y femenino')) {
+    for (const id of ['employment_rate', 'employment_rate_by_sex', 'employment_rate_europe', 'unemployment_rate', 'unemployment_rate_europe', 'unemployment_rate_by_nationality', 'youth_unemployment_rate', 'youth_unemployment_rate_europe']) preferred.delete(id);
+  } else if (hasAny('empleo', 'ocupacion') && hasAny('por sexo', 'sexo', 'hombres y mujeres', 'mujeres y hombres', 'masculino y femenino')) {
+    preferScopedMetric('employment_rate_by_sex', ['employment_rate', 'unemployment_rate']);
+  }
+  if (hasAny('camas hospitalarias', 'camas de hospital', 'plazas hospitalarias')
+    && /\b(?:100\s?000|cien mil)\b/.test(normalized)) {
+    preferScopedMetric('hospital_beds_per_100k', ['hospital_beds']);
+  }
+  if (hasAny('pension', 'pensiones', 'vejez', 'supervivencia') && hasAny('gasto total', 'total', 'millones', 'euros corrientes')) {
+    preferScopedMetric('old_age_survivors_benefits_total', ['old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe']);
+  }
+  if (hasAny('quintil', 'quintiles', 's80 s20', 's80 s 20')) {
+    preferScopedMetric('income_quintile_share_ratio', ['gini_coefficient']);
+  }
+  const medianHousingCost = hasAny('coste de vivienda', 'coste de la vivienda', 'costes de vivienda', 'carga de vivienda', 'esfuerzo de vivienda')
+    || hasAny('vivienda', 'alquiler') && hasAny('gasto', 'coste', 'renta', 'ingresos') && hasAny('mediana', 'mediano');
+  if (medianHousingCost && hasAny('mediana', 'mediano')) {
+    preferScopedMetric('housing_cost_burden_median', ['housing_cost_overburden_rate']);
+  }
+  if (hasEuropeReference && hasAny('sanidad', 'sanitario', 'sanitaria', 'salud') && hasAny('gasto', 'gasta', 'por persona', 'por habitante')) {
+    preferScopedMetric('health_expenditure_per_capita_europe', ['health_expenditure_per_capita', 'government_expenditure_ratio_europe']);
+  }
+  if (hasEuropeReference && hasAny('pension', 'pensiones', 'jubilacion', 'vejez', 'supervivencia') && hasAny('gasto', 'gasta', 'por persona', 'por habitante', 'por residente', 'residentes')) {
+    preferScopedMetric('old_age_survivors_benefits_per_capita_europe', ['old_age_survivors_benefits_per_capita', 'social_protection_benefits_per_capita', 'government_expenditure_ratio', 'health_expenditure_per_capita']);
+  }
+  if (hasEuropeReference && hasAny('recauda', 'recaudacion', 'ingresos publicos', 'ingresos del estado')) {
+    preferScopedMetric('government_revenue_ratio_europe', ['government_revenue_ratio', 'government_expenditure_ratio', 'government_deficit_ratio']);
+  }
+  if (hasEuropeReference && hasAny('gasta', 'gasto publico', 'gasto del estado', 'gasto publico total') && hasAny('pib', 'porcentaje', 'parte de la economia')) {
+    preferScopedMetric('government_expenditure_ratio_europe', ['government_expenditure_ratio', 'government_revenue_ratio', 'government_deficit_ratio']);
+  }
+  if (hasEuropeReference && hasAny('nini', 'ninis', 'ni estudia ni trabaja', 'ni estudian ni trabajan', 'fuera del empleo y la educacion', 'fuera del empleo y la formacion')) {
+    preferScopedMetric('neet_rate_europe', ['neet_rate', 'youth_unemployment_rate', 'youth_unemployment_rate_europe', 'early_school_leaving_rate_europe', 'tertiary_education_attainment_rate_europe']);
+  }
+  if (hasEuropeReference && hasAny('consumo final de energia', 'consumo energetico', 'uso de energia', 'energia consumida', 'energia final')) {
+    preferScopedMetric('final_energy_consumption_europe', ['final_energy_consumption']);
+  }
+  const perCapitaEnergyComparison = hasEuropeReference && hasAny('energia', 'energetico', 'consumo energetico')
+    && hasAny('por habitante', 'por persona', 'por residente', 'per capita');
+  if (perCapitaEnergyComparison) {
+    for (const id of preferred) if (!finalEnergyPerCapitaMetricIds.has(id)) preferred.delete(id);
+    for (const id of finalEnergyPerCapitaMetricIds) preferred.add(id);
+  }
+  if (hasEuropeReference && hasAny('obesidad adulta', 'obesidad entre adultos', 'obesidad')) {
+    preferScopedMetric('adult_obesity_rate_europe', ['adult_obesity_rate']);
+  }
+  if (hasEuropeReference && hasAny('brecha salarial', 'diferencia salarial') && hasAny('genero', 'hombres y mujeres', 'salario', 'salarial')) {
+    preferScopedMetric('gender_pay_gap_europe', ['gender_pay_gap']);
+  }
+  if (foreignGroup && hasAny('condena', 'condenas', 'condenado', 'condenados')
+    && hasAny('estandarizado', 'estandarizada', 'estandarizados', 'estandarizadas', 'por tipo de delito')) {
+    preferScopedMetric('crime_standardised_conviction_offence_rate_by_nationality', ['crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_convictions_by_nationality', 'crime_rate_by_group', 'recorded_offences']);
+  } else if (foreignGroup && hasAny('condena', 'condenas', 'condenado', 'condenados') && hasAny('menor', 'menores', 'infancia')) {
+    preferScopedMetric('crime_conviction_rate_minor_by_nationality', ['crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_convictions_by_nationality', 'crime_rate_by_group', 'recorded_offences']);
+  } else if (foreignGroup && hasAny('condena', 'condenas', 'condenado', 'condenados') && hasAny('sexo', 'hombres y mujeres', 'mujeres y hombres')) {
+    const convictionMetric = hasAny('tasa', 'por cada', 'por mil', 'por 1.000') ? 'crime_conviction_rate_by_sex_nationality' : 'crime_convictions_by_sex_nationality';
+    preferScopedMetric(convictionMetric, ['crime_conviction_rate_by_nationality', 'crime_convictions_by_nationality', 'crime_rate_by_group', 'recorded_offences']);
+  }
+  if (hasAny('vivienda publica', 'viviendas publicas', 'vivienda protegida', 'viviendas protegidas', 'vivienda social', 'viviendas sociales', 'etxebide')
+    && nationality && hasAny('solicitud', 'solicitudes', 'solicitante', 'solicitantes')) {
+    preferScopedMetric('public_housing_applications_by_nationality', ['public_housing_allocations_by_nationality', 'public_housing_allocations_by_group', 'public_housing_allocation_rate_by_programme']);
+  }
+  if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
+    && hasAny('sistema', 'gasto', 'expenditure')) {
+    preferScopedMetric('pension_system_expenditure_projected', ['old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita', 'social_security_pension_budget_total']);
+  }
+  if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
+    && hasAny('contributivo', 'contributiva', 'contributivos', 'contributivas', 'cotizaciones')
+    && !hasAny('no contributivo', 'no contributiva', 'no contributivos', 'no contributivas')) {
+    preferScopedMetric('pension_contributory_expenditure_projected', ['pension_system_expenditure_projected', 'pension_noncontributory_expenditure_projected']);
+  } else if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
+    && hasAny('no contributivo', 'no contributiva', 'no contributivos', 'no contributivas')) {
+    preferScopedMetric('pension_noncontributory_expenditure_projected', ['pension_system_expenditure_projected', 'pension_contributory_expenditure_projected']);
+  }
+  if (hasAny('pension', 'pensiones') && hasAny('presupuest') && hasAny('gasto', 'total')) {
+    preferScopedMetric('social_security_pension_budget_total', ['old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita', 'pension_system_expenditure_projected']);
+  }
   return preferred;
 };
 
 export const excludedMetricIdsForQuery = (query) => {
   const normalized = normalise(query);
   const preferred = preferredMetricIdsForQuery(query);
+  const categoricalIdeologyClaim = /\b(?:derech\w*|izquierd\w*|conservador\w*|progresista\w*|liberal\w*)\b/.test(normalized)
+    && /\b(?:tod\w*|siempre|son de|es de)\b/.test(normalized);
+  if (categoricalIdeologyClaim) return new Set(Object.keys(registry).filter((id) => id !== 'official_publication'));
   const youthRequested = ['paro juvenil', 'desempleo juvenil', 'jovenes sin trabajo', 'jovenes activos', '15-24'].some((term) => normalized.includes(normalise(term)));
   const earlyEducationRequested = metricHints.find((hint) => hint.ids.includes('early_school_leaving_rate'))?.terms.some((term) => normalized.includes(normalise(term))) || false;
   const earlyEducationEuropeRequested = preferred.has('early_school_leaving_rate_europe');
@@ -697,6 +830,11 @@ export const excludedMetricIdsForQuery = (query) => {
     excluded.add('government_education_expenditure_ratio_europe');
   }
   if (neetRequested && !neetEuropeRequested) excluded.add('neet_rate_europe');
+  const sexSpecificUnemployment = /\b(?:paro|desemple\w*|unemployment)\b/.test(normalized)
+    && /\b(?:por sexo|sexo|hombres y mujeres|mujeres y hombres|masculino y femenino)\b/.test(normalized);
+  if (sexSpecificUnemployment) {
+    for (const id of ['employment_rate', 'employment_rate_by_sex', 'employment_rate_europe', 'unemployment_rate', 'unemployment_rate_europe', 'unemployment_rate_by_nationality', 'youth_unemployment_rate', 'youth_unemployment_rate_europe']) excluded.add(id);
+  }
   if (tertiaryEducationEuropeRequested) excluded.add('tertiary_education_attainment_rate');
   if (aropeEuropeRequested) excluded.add('arope_rate');
   if (aropeRequested && !aropeEuropeRequested) excluded.add('arope_rate_europe');
@@ -704,6 +842,12 @@ export const excludedMetricIdsForQuery = (query) => {
   if (lifeExpectancyRequested && !lifeExpectancyEuropeRequested) excluded.add('life_expectancy_at_birth_europe');
   if (preferred.has('fertility_rate_europe')) excluded.add('fertility_rate');
   if (preferred.has('fertility_rate') && !preferred.has('fertility_rate_europe')) excluded.add('fertility_rate_europe');
+  const perCapitaEnergyComparison = /\b(?:europa|europeo|europea|europeos|europeas|ue|union europea)\b/.test(normalized)
+    && /\b(?:energia|energetic\w*|consumo energetico)\b/.test(normalized)
+    && /\b(?:por habitante|por persona|por residente|per capita)\b/.test(normalized);
+  if (perCapitaEnergyComparison) {
+    for (const id of Object.keys(registry)) if (!finalEnergyPerCapitaMetricIds.has(id)) excluded.add(id);
+  }
   // Per-capita spending is useful context, but it cannot answer a broad claim
   // that the health system has collapsed or that access has deteriorated.
   if (vagueHealthOutcome && !healthSpendRequested) excluded.add('health_expenditure_per_capita');
