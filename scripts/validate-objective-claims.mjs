@@ -13,7 +13,7 @@ const variants = [
   { id: expected[0], cases: ['¿La amnistía migratoria está saturando hospitales y disparando las ayudas sociales?', '¿La regularización extraordinaria hará colapsar la sanidad y aumentará los beneficiarios del ingreso mínimo vital?'] },
   { id: expected[1], cases: ['¿Cuántas plazas públicas pueden automatizarse y cuántos funcionarios están calentando silla?', 'El funcionariado está anquilosado: puestos innecesarios ocupados por gente con plaza fija que no trabaja.'] },
   { id: expected[2], cases: ['La pirámide poblacional envejece y las pensiones quebrarán las cuentas del Estado.', '¿Cuál es la ratio de cotizantes y pensionistas y por qué el sistema es insostenible?'] },
-  { id: expected[3], cases: ['Los menores de 30 no pueden emanciparse: el alquiler se lleva todo el sueldo y necesitan dinero de sus padres.', 'Los precios de la casa y los salarios estancados dejan a la gente joven sin futuro; ¿cuántos se irían sin herencia?'] },
+  { id: expected[3], cases: ['Los menores de 30 no pueden emanciparse: el alquiler se lleva todo el sueldo y necesitan dinero de sus padres.', 'Los precios de la casa y los salarios estancados dejan a la gente joven sin futuro; ¿cuántos se irían sin herencia?', 'La ECV muestra que jóvenes de 26 a 34 años que viven con sus padres no pueden permitirse alquilar o comprar.'] },
   { id: 'broad-immigration-security', cases: ['¿Es cierto que la inmigración ha traído más robos y agresiones a España?', 'Los extranjeros han provocado una ola de inseguridad y nadie les pone freno.'] },
   { id: expected[5], cases: ['¿Qué países de origen y motivos de llegada predominan, y hay pruebas de que los inmigrantes tengan menos IQ?', '¿Las personas inmigrantes son menos inteligentes y por eso más fáciles de manipular políticamente?'] },
   { id: expected[6], cases: ['¿Han subido los impuestos y perdido poder adquisitivo las familias por la progresividad en frío?', '¿Se puede bajar el IVA o deflactar el IRPF sin cargar el coste a generaciones jóvenes?'] },
@@ -36,6 +36,15 @@ for (const [index, text] of claims.entries()) {
   assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Exact claim ${index + 1} answer is too long to scan`);
   assert(plan.shareableSourceIds?.length, `Exact claim ${index + 1} needs primary sources near the answer`);
   const visuals = assertVisuals(plan, `Exact claim ${index + 1}`, { allowEmpty: plan.id === 'broad-youth-living-housing' });
+  if (index === 3) {
+    const coResidence = plan.evidenceSummary.families.find((family) => family.criterionId === 'family-co-residence');
+    const housingBarrier = plan.evidenceSummary.families.find((family) => family.criterionId === 'family-housing-barrier');
+    assert(coResidence?.data?.[0].includes('44,3 %') && coResidence.data[0].includes('55,5 %') && coResidence.data[0].includes('29,4 %'), 'Youth co-residence figures must retain the total and income-group scopes');
+    assert.equal(coResidence.dimensions.denominator, 'total de personas de 26–34 años en cada grupo de renta personal neta anual', 'Income rates must use the full age cohort within each income group as denominator');
+    assert(housingBarrier?.data?.[0].includes('47,3 %') && housingBarrier.data[0].includes('34,6 %') && housingBarrier.data[0].includes('12,7 %'), 'The survey reason must distinguish people already living with parents and separate rent from purchase');
+    assert.equal(housingBarrier.dimensions.denominator, 'personas de 26–34 años que convivían con sus progenitores en 2025', 'Housing-reason denominator must be limited to co-residents');
+    assert(plan.shareableReply.includes('47,3 %') && plan.shareableReply.includes('no pregunta cuántas personas se habrían trasladado fuera de España'), 'The easy-to-share reply must include the reported reason and scope the unmeasured migration counterfactual');
+  }
   if (index === 0) {
     const titles = visuals.map((visual) => visual.title);
     assert.equal(visuals.length, 3, 'Compound immigration answer should show the process, a service measure, and the IMV trend');
@@ -79,8 +88,24 @@ for (const [index, item] of variants.entries()) {
     assert(plan.shareableReply.trim().split(/\s+/).length <= 160, `Claim ${index + 1}, paraphrase ${variantIndex + 1} answer is too long`);
     assert(plan.shareableSourceIds?.length, `Claim ${index + 1}, paraphrase ${variantIndex + 1} needs cited sources`);
     assertVisuals(plan, `Claim ${index + 1}, paraphrase ${variantIndex + 1}`, { allowEmpty: plan.id === 'broad-youth-living-housing' });
+    if (index === 3) {
+      const barrier = plan.evidenceSummary.families.find((family) => family.criterionId === 'family-housing-barrier');
+      assert(barrier?.sourceIds?.includes('youth-family-housing-ine'), `Youth paraphrase ${variantIndex + 1} lost the INE evidence`);
+      assert(plan.shareableReply.includes('47,3 %'), `Youth paraphrase ${variantIndex + 1} omitted the scoped INE result`);
+    }
   }
 }
+for (const outOfScope of [
+  'En Portugal, los jóvenes no pueden emanciparse porque el alquiler se lleva todo el sueldo.',
+  'En Madrid, los jóvenes no pueden emanciparse porque el alquiler se lleva todo el sueldo.',
+  'En la Unión Europea, los jóvenes no pueden emanciparse porque el alquiler se lleva todo el sueldo.',
+]) {
+  assert(!broadDomainPacketsFor(outOfScope).some((packet) => packet.id === 'broad-youth-living-housing'), `Spain-only youth evidence leaked into an out-of-scope claim: ${outOfScope}`);
+  assert.equal(answerPlanForBroadDomains(outOfScope), undefined, `An out-of-scope youth claim got a Spain-only answer: ${outOfScope}`);
+}
+assert(!broadDomainPacketsFor('El alquiler medio consume casi todo el salario de trabajadores adultos en España.').some((packet) => packet.id === 'broad-youth-living-housing'), 'Youth housing evidence leaked into an adult-wage claim');
+const rentOnlyYouthClaim = answerPlanForBroadDomains('Los jóvenes de 26 a 34 años no pueden emanciparse porque no pueden pagar el alquiler y viven con sus padres.');
+assert(rentOnlyYouthClaim && !rentOnlyYouthClaim.shareableReply.includes('66.900 €'), 'A rental-only youth claim acquired an unasked home-purchase figure');
 const reviewedPreview = { state: 'limited', result: { id: 'broad-compound-claim', reply: 'reviewed answer' } };
 assert.equal(reviewedContextualAnswer({ state: 'supported', result: { id: 'model-answer' } }, reviewedPreview), reviewedPreview, 'A late model answer replaced a reviewed broad-domain answer');
 assert.equal(reviewedContextualAnswer({ state: 'clarification' }, reviewedPreview), undefined, 'An explicit clarification was swallowed by the reviewed fallback');
@@ -153,7 +178,8 @@ try {
   await researchFamilyGaps(plan, { cacheDirectory: directory, discover: async () => { throw new Error('Should reuse receipt'); }, search: async () => [] });
   assert.equal(calls.length, requests.length);
 } finally { await rm(directory, { recursive: true, force: true }); }
-console.log('Seven exact claims and fourteen paraphrases, citations, multiple visuals, IMV labels, and stable final responses validated.');
+const variantCount = variants.reduce((total, item) => total + item.cases.length, 0);
+console.log(`Seven exact claims and ${variantCount} paraphrases, citations, multiple visuals, scoped youth housing evidence, IMV labels, and stable final responses validated.`);
 
 assert(!broadObservationFits({ metricId: 'cpi_index', value: 3, period: '2025', unit: '%' }, { metricIds: ['cpi_index'] }));
 assert(!broadObservationFits({ metricId: 'cpi_index', value: 120, period: '2025', unit: 'index', dimensions: { geo: 'FR' } }, { metricIds: ['cpi_index'] }));

@@ -3,6 +3,8 @@ const source = await readFile('src/pages/index.astro', 'utf8');
 const required = [
   ['id="conversation-form"', 'checker form'],
   ['id="conversation-input"', 'checker input'],
+  ['Escribe o pega una afirmación sobre España.', 'text-first input explanation'],
+  ['Pega la afirmación completa; añade fecha, lugar o fuente si los conoces.', 'scope-aware text input guidance'],
   ['id="conversation-result"', 'result region'],
   ['id="recent-checks"', 'recent checks'],
   ['id="checker-suggestions"', 'suggestions disclosure'],
@@ -21,8 +23,11 @@ const required = [
 ];
 const failures = required.filter(([fragment]) => !source.includes(fragment)).map(([, label]) => `homepage is missing ${label}`);
 if (source.includes('claim-catalog.json') || source.includes('claimIndexData')) failures.push('homepage must not embed or fetch the full catalogue');
+for (const mediaControl of ['data-attach=', 'id="conversation-file"', 'data-media-dropzone', 'Suelta aquí una imagen', 'conversation-media-help', 'Audio y vídeo']) {
+  if (source.includes(mediaControl)) failures.push(`homepage should focus on text before enabling media input: ${mediaControl}`);
+}
 for (const retiredSection of ['popular-home', 'latest-home', 'warehouse-home', 'topics-home', 'home-how']) {
   if (source.includes(`class="${retiredSection}"`)) failures.push(`homepage still contains retired discovery section: ${retiredSection}`);
 }
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log('Homepage UX validation passed: checker, examples, recent checks, and no embedded catalogue.');
+console.log('Homepage UX validation passed: text-first checker, examples, recent checks, and no embedded catalogue.');

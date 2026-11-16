@@ -1,4 +1,4 @@
-import { INPUT_LIMITS, validateInputMetadata, inputTypeForFile, inputErrorMessage } from '../lib/knowledge/input-contract.mjs';
+import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../lib/knowledge/input-contract.mjs';
 import type { InputExtraction } from '../lib/knowledge/public-check';
 import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
@@ -29,12 +29,8 @@ type CheckResponse =
 
 const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
-const fileInput = document.querySelector<HTMLInputElement>('#conversation-file');
 const result = document.querySelector<HTMLElement>('#conversation-result');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
-const fileName = document.querySelector<HTMLElement>('[data-file-name]');
-const mediaHelp = document.querySelector<HTMLElement>('#conversation-media-help');
-const dropzone = document.querySelector<HTMLElement>('[data-media-dropzone]');
 const recent = document.querySelector<HTMLElement>('#recent-checks');
 const recentList = document.querySelector<HTMLElement>('[data-recent-list]');
 const suggestions = document.querySelector<HTMLDetailsElement>('#checker-suggestions');
@@ -42,7 +38,6 @@ const checker = document.querySelector<HTMLElement>('.hero-checker');
 const checkerPage = document.querySelector<HTMLElement>('.checker-page');
 const homepage = document.querySelector<HTMLElement>('.homepage');
 const modeButtons = document.querySelectorAll<HTMLButtonElement>('[data-input-mode]');
-const attachButtons = document.querySelectorAll<HTMLButtonElement>('[data-attach]');
 const inputHelp = document.querySelector<HTMLElement>('[data-input-help]');
 const recentChecksStorageKey = 'elpaisestafatal:recent-checks:v2';
 let loadingTicker: number | undefined;
@@ -78,8 +73,6 @@ const renderRecent = (): void => { if (!recent || !recentList) return; const val
 const setMode = (active: boolean): void => { checker?.classList.toggle('has-result', active); checkerPage?.classList.toggle('has-result', active); homepage?.classList.toggle('has-result', active); if (active) suggestions?.removeAttribute('open'); };
 const selectInputMode = (mode: 'text' | 'url'): void => {
   selectedInputMode = mode;
-  if (fileInput) fileInput.value = '';
-  if (mediaHelp) mediaHelp.dataset.fileSelected = 'false';
   modeButtons.forEach((button) => { const active = button.dataset.inputMode === mode; button.classList.toggle('is-active', active); button.setAttribute('aria-pressed', String(active)); });
   if (input) { input.placeholder = mode === 'url' ? 'Pega aquí el enlace que quieres comprobar…' : 'Escribe o pega aquí la afirmación…'; input.inputMode = mode === 'url' ? 'url' : 'text'; input.focus(); }
   if (inputHelp) inputHelp.textContent = mode === 'url' ? 'Leeremos el contenido del enlace para identificar la afirmación.' : 'Puedes pegar una frase, un titular o el texto de un mensaje.';
@@ -368,7 +361,7 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
   bindExtractionCorrection(item.extraction);
   result.querySelector<HTMLButtonElement>('[data-copy-answer]')?.addEventListener('click', async () => { try { await copyText(answer); result.querySelector('.claim-live')!.textContent = 'Respuesta copiada'; } catch { result.querySelector('.claim-live')!.textContent = 'No se ha podido copiar automáticamente'; } });
   result.querySelectorAll<HTMLAnchorElement>('.result-overview-link').forEach((link) => link.addEventListener('click', () => { const explorer = result.querySelector<HTMLDetailsElement>('.result-evidence-explorer'); if (explorer) explorer.open = true; }));
-  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; if (fileInput) fileInput.value = ''; if (mediaHelp) mediaHelp.dataset.fileSelected = 'false'; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  result.querySelector<HTMLButtonElement>('[data-new-check]')?.addEventListener('click', () => { request?.abort(); request = undefined; finishLoading(); setMode(false); result.innerHTML = ''; clarificationContext = undefined; input?.focus({ preventScroll: true }); input?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   focusResult();
 };
 const isCurrentSubmission = (submission: AbortController): boolean => request === submission && !submission.signal.aborted;
@@ -417,19 +410,19 @@ const renderStalledPreview = (preview: Extract<CheckResponse, { state: 'supporte
   if (copyButton) { copyButton.disabled = false; copyButton.textContent = 'Copiar contexto provisional'; }
 };
 const submit = async (event: SubmitEvent): Promise<void> => {
-  event.preventDefault(); const original = input?.value.trim() || ''; const file = fileInput?.files?.[0]; if (!original && !file) return;
+  event.preventDefault(); const original = input?.value.trim() || ''; if (!original) return;
   request?.abort();
   const submission = new AbortController();
   request = submission;
-  const inputType = file ? inputTypeForFile(file.type, file.name) || 'unsupported' : selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
-  const valid = validateInputMetadata({ text: original, inputType, hasFile: Boolean(file), fileSize: file?.size, mimeType: file?.type, fileName: file?.name });
+  const inputType = selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
+  const valid = validateInputMetadata({ text: original, inputType });
   if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: inputErrorMessage(valid.code), retryable: false }); return; }
-  if (!clarificationContext) writeRecent(original); setLoading(file?.name || original, submission);
+  if (!clarificationContext) writeRecent(original); setLoading(original, submission);
   trackAnalyticsEvent('claim_submit', { input_type: inputType });
-  const payload = file ? (() => { const value = new FormData(); value.set('text', original); value.set('inputType', inputType); if (clarificationContext) value.set('clarification', JSON.stringify(clarificationContext)); value.set('file', file); return value; })() : JSON.stringify({ text: original, inputType, clarification: clarificationContext });
+  const payload = JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   let initialPreview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined;
   try {
-    let response = await fetchJson('/api/check', { method: 'POST', headers: file ? undefined : { 'content-type': 'application/json' }, body: payload }, file ? 60_000 : 45_000, submission.signal);
+    let response = await fetchJson('/api/check', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload }, 45_000, submission.signal);
     if (!isCurrentSubmission(submission)) return;
     initialPreview = response.state === 'processing' ? response.preview : undefined;
     if (response.state === 'processing') renderProcessingPreview(response, original);
@@ -437,7 +430,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
     // longer on a cold worker. Keep the animated status visible while the
     // request is still healthy instead of presenting a misleading timeout at
     // the short network budget used by the hosted deterministic path.
-    const enrichmentDeadline = Date.now() + (file ? 240_000 : 120_000);
+    const enrichmentDeadline = Date.now() + 120_000;
     for (let attempt = 0; response.state === 'processing' && response.id && Date.now() < enrichmentDeadline; attempt += 1) {
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(1500, 500 + attempt * 100)));
       if (!isCurrentSubmission(submission)) return;
@@ -494,23 +487,9 @@ const submit = async (event: SubmitEvent): Promise<void> => {
 
 form?.addEventListener('submit', submit);
 input?.addEventListener('input', () => { if (counter) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`; });
-fileInput?.addEventListener('change', () => { const file = fileInput.files?.[0]; if (fileName) fileName.textContent = file?.name || 'Sin archivo seleccionado.'; if (mediaHelp) mediaHelp.dataset.fileSelected = file ? 'true' : 'false'; if (file) form?.requestSubmit(); });
 modeButtons.forEach((button) => button.addEventListener('click', () => selectInputMode(button.dataset.inputMode === 'url' ? 'url' : 'text')));
-attachButtons.forEach((button) => button.addEventListener('click', () => { if (!fileInput) return; const type = button.dataset.attach || 'image'; fileInput.accept = type === 'document' ? '.pdf,.docx,.txt,.csv,.md,.json' : type === 'video' ? INPUT_LIMITS.videoMimeTypes.join(',') : `${type}/*`; fileInput.value = ''; fileInput.click(); }));
-dropzone?.addEventListener('dragenter', (event) => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
-dropzone?.addEventListener('dragover', (event) => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
-dropzone?.addEventListener('dragleave', (event) => { if (!dropzone.contains(event.relatedTarget as Node | null)) dropzone.classList.remove('is-dragging'); });
-dropzone?.addEventListener('drop', (event) => { event.preventDefault(); dropzone.classList.remove('is-dragging'); const file = event.dataTransfer?.files?.[0]; if (!fileInput || !file) return; const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
-input?.addEventListener('paste', (event) => { const file = Array.from(event.clipboardData?.files || []).find((item) => item.type.startsWith('image/')); if (!fileInput || !file) return; event.preventDefault(); const transfer = new DataTransfer(); transfer.items.add(file); fileInput.files = transfer.files; fileInput.dispatchEvent(new Event('change', { bubbles: true })); });
 checker?.addEventListener('click', (event) => { const target = event.target as HTMLElement; const query = target.closest<HTMLButtonElement>('[data-example], [data-recent-query]'); if (query && input) { input.value = query.dataset.example || query.dataset.recentQuery || ''; form?.requestSubmit(); } if (target.closest('[data-clear-recent]')) { try { localStorage.removeItem(recentChecksStorageKey); } catch { /* optional */ } renderRecent(); } });
 renderRecent();
 if (counter && input) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
 const initial = new URLSearchParams(window.location.search).get('q')?.trim();
 if (initial && input) { input.value = initial.slice(0, INPUT_LIMITS.maxTextCharacters); window.setTimeout(() => form?.requestSubmit(), 0); }
-
-void fetch('/api/health', { signal: AbortSignal.timeout(3000), cache: 'no-store' })
-  .then((response) => response.json()).then((health) => {
-    const notice = document.querySelector<HTMLElement>('[data-input-capabilities]');
-    if (notice && health.inputs?.document === 'unavailable') notice.textContent = 'La lectura de archivos y enlaces no está disponible ahora; puedes pegar el texto.';
-    else if (notice && health.inputs?.audio === 'unavailable') notice.textContent = 'El audio no se puede transcribir ahora; puedes pegar su texto.';
-  }).catch(() => { /* Submission errors still explain unavailable extraction. */ });

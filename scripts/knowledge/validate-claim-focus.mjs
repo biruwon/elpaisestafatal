@@ -343,7 +343,8 @@ assert.equal(comparableObservationGroups([revenue, { ...revenue, id: 'eu-revenue
 assert.equal(rankWarehouseObservations('appointment delay', observations, 10, { metricIds: new Set(['primary_care_wait_days']) }).length, 1, 'An explicit metric ID must retrieve its source across languages');
 const youthRent = answerPlanForBroadDomains('El alquiler se come más de la mitad del sueldo de muchos jóvenes');
 assert.match(youthRent.shareableReply, /98,7/);
-assert.match(youthRent.shareableReply, /no indican cuántos jóvenes superan un porcentaje/);
+assert.match(youthRent.shareableReply, /no indica cuántos jóvenes superan un porcentaje/);
+assert.deepEqual(youthRent.shareableSourceIds, ['cje-emancipation-2025'], 'A rental-only youth answer must not link family survey evidence it did not use');
 assert.doesNotMatch(youthRent.shareableReply, /emigra|66\.900|peor que nunca/i);
 assert.ok(!youthRent.evidenceSummary.families.some((family) => family.criterionId === 'family-support-counterfactual'));
 assert.ok(!youthRent.visuals?.some((visual) => /Alquiler de vivienda completa/.test(visual.title)), 'An approximated graphic must not present exact regional values');

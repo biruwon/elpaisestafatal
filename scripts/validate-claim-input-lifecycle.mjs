@@ -7,9 +7,10 @@ const required = [
   "state: 'clarification'",
   'validateInputMetadata',
   "form?.addEventListener('submit', submit)",
-  "if (file) form?.requestSubmit()",
-  'data-media-dropzone',
-  'dataTransfer?.files',
+  "selectedInputMode === 'url' || /^https:",
+  "? 'url' : 'text'",
+  'validateInputMetadata({ text: original, inputType })',
+  'JSON.stringify({ text: original, inputType, clarification: clarificationContext })',
   'localStorage',
   'data-recent-query',
   "state: 'processing'",
@@ -34,4 +35,4 @@ if (!retainsPreviewAfterTimeout && !source.includes("response.state === 'process
 if (!source.includes('const renderStalledPreview =') || !source.includes('renderStalledPreview(initialPreview, \'La revisión adicional no se pudo completar; conservamos esta respuesta provisional con sus fuentes.\', original)')) throw new Error('A failed enrichment must retain the locally submitted claim and make the reviewed preview copyable rather than replacing it with a generic service error');
 if (!source.includes('const displayedClaim = submittedClaim?.trim() || item.claim') || !source.includes("renderResult(response, initialPreview ? 'final' : undefined, original)")) throw new Error('Final and provisional answers must display the original locally submitted wording');
 if (!source.includes("state: 'unavailable'")) throw new Error('Claim checker must preserve unavailable state');
-console.log('Claim-checker lifecycle validation passed: unified submission, media, polling, recent checks, and terminal states are wired.');
+console.log('Claim-checker lifecycle validation passed: text and URL submission, polling, recent checks, and terminal states are wired.');

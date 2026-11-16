@@ -230,8 +230,13 @@ if (!match) {
     },
     {
       slug: 'juventud-emancipacion',
-      prompt: 'Casi la mitad de las personas de 26 a 34 años sigue viviendo con sus padres',
-      variants: ['jóvenes viven con sus padres', 'la mitad de los jóvenes no se emancipa'],
+      prompt: 'En 2025, el 44,3% de las personas de 26 a 34 años convivía con alguno de sus progenitores',
+      variants: ['jóvenes viven con sus padres', 'la mitad de los jóvenes no se emancipa', 'el 44,3% de las personas de 26 a 34 años vivía con sus padres'],
+    },
+    {
+      slug: 'precariedad-juvenil-vivienda-ayuda-familiar',
+      prompt: 'La precariedad, el coste de la vida y la vivienda impiden a los jóvenes independizarse; sin ayuda familiar muchos tendrían que emigrar',
+      variants: ['muchos jóvenes de 26 a 34 años viven con sus padres porque no pueden pagar un alquiler', 'los jóvenes no pueden permitirse alquilar una vivienda', 'la vivienda impide emanciparse a muchos jóvenes'],
     },
     {
       slug: 'politicos-corruptos',

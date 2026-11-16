@@ -401,18 +401,20 @@ const packets = [
   },
   {
     id: 'broad-youth-living-housing',
+    asOf: '2026-11-16',
     visuals: [reviewedVisuals.youthUnemployment, reviewedVisuals.youthHousingPrices, reviewedVisuals.youthRegionalRent, reviewedVisuals.youthWageRent],
     matches: /\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b[\s\S]{0,220}\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*\b|\b(viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad)\w*[\s\S]{0,220}\b(j[oó]ven(?:es)?|juventud|poblaci[oó]n joven)\b/i,
     interpretation: { kind: 'mixed', subject: 'condiciones de vida de la población joven', subjectType: 'group', predicate: 'faces_multiple_constraints', object: 'empleo, precios y acceso a vivienda', normalizedClaim: 'coste de vida, salarios, oportunidades y acceso joven a la vivienda', interpretation: 'La afirmación combina evolución de precios, ingresos, empleo, vivienda y una pregunta contrafactual sobre el apoyo familiar. Son dimensiones distintas y no deben resumirse en un único índice.' },
-    headline: 'La vivienda supone una barrera económica para los jóvenes; no hay una cifra observada de cuántos emigrarían sin ayuda familiar',
-    summary: 'La precariedad o la falta de oportunidades de la población joven no se pueden medir con el precio de la vivienda por sí solo. Hay que comprobar por separado el coste de vida, la evolución de los ingresos, el empleo juvenil, los precios y el esfuerzo de vivienda, la construcción y la emancipación; la pregunta sobre cuántas personas emigrarían sin ayuda familiar es contrafactual y no tiene una cifra observada equivalente.',
+    headline: 'La ECV 2025 registra dificultades de acceso a la vivienda entre jóvenes que viven con sus progenitores',
+    summary: 'La precariedad o la falta de oportunidades de la población joven no se pueden medir con el precio de la vivienda por sí solo. Hay que comprobar por separado el coste de vida, la evolución de los ingresos, el empleo juvenil, los precios y el esfuerzo de vivienda, la construcción y la emancipación; la ECV 2025 no estima cuántas personas emigrarían si no recibieran ayuda familiar.',
     criteria: [
       { id: 'youth-cost-of-living', label: 'Coste de vida', finding: 'El IPC mide la evolución de los precios de consumo, no cuánto puede pagar cada joven ni el coste específico de una vivienda.', metricIds: ['cpi_index'], sourceIds: ['youth-living-eurostat'] },
       { id: 'youth-income-employment', label: 'Ingresos y empleo', finding: 'La evolución salarial y el desempleo juvenil deben medirse con series separadas y con su población, unidad y periodo definidos.', metricIds: ['median_hourly_earnings', 'youth_unemployment_rate'], sourceIds: ['youth-labour-eurostat'] },
       { id: 'youth-housing-access', label: 'Vivienda', finding: 'El precio de la vivienda y la sobrecarga de costes describen presión residencial, pero no prueban por sí solos que nadie pueda comprar ni explican el papel de cada territorio.', metricIds: ['house_price_index', 'housing_cost_overburden_rate'], sourceIds: ['youth-housing-eurostat'] },
       { id: 'youth-supply', label: 'Oferta', finding: 'La construcción puede medirse con su índice de producción, pero no equivale automáticamente a viviendas disponibles para jóvenes ni a precios asequibles.', metricIds: ['construction_output_index'], sourceIds: ['youth-housing-eurostat'] },
-      { id: 'family-co-residence', label: 'Convivencia y renta', finding: 'La convivencia con progenitores es mucho más frecuente con rentas bajas, lo que respalda una barrera económica. No mide por sí sola transferencias familiares ni necesidad de emigrar.', fallbackData: ['Personas de 26 a 34 años que vivían con sus progenitores: 44,3 % en total; 55,5 % con renta inferior a 6.000 €; 29,4 % con renta superior a 24.000 € (2025)'], sourceIds: ['youth-family-housing-ine'] },
-      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'No hay una estadística observada que indique cuántos jóvenes emigrarían si no recibieran ayuda o patrimonio familiar; es un contrafactual que requiere una encuesta o modelo explícito.', missingDimensions: ['encuesta o modelo contrafactual', 'definición de emigración evitada'], sourceIds: ['youth-family-housing-ine', 'youth-emancipation-source'] },
+      { id: 'family-co-residence', label: 'Convivencia y renta', replyPriority: 9, finding: 'La ECV 2025 registró que el 44,3 % de todas las personas de 26 a 34 años vivía con sus progenitores. La proporción era del 55,5 % en el grupo con renta personal neta anual de 6.000 € o menos y del 29,4 % por encima de 24.000 €; son tasas dentro de cada grupo de renta, no una medida de transferencias familiares.', fallbackData: ['En 2025, vivía con sus progenitores el 44,3 % de todas las personas de 26–34 años; por grupo de renta personal neta anual: 55,5 % con ≤6.000 € y 29,4 % con >24.000 €'], population: 'personas de 26–34 años residentes en España, desglosadas por renta personal neta anual', denominator: 'total de personas de 26–34 años en cada grupo de renta personal neta anual', unit: '%', sourceIds: ['youth-family-housing-ine'] },
+      { id: 'family-housing-barrier', label: 'Dificultad declarada para alquilar o comprar', replyPriority: 10, finding: 'Entre las personas de 26 a 34 años que ya vivían con sus progenitores, el 47,3 % declaró que su motivo principal era no poder permitirse alquilar o comprar. La encuesta separa no poder alquilar (34,6 %) de no poder comprar (12,7 %); son respuestas declaradas, no una ratio entre alquiler y salario.', fallbackData: ['Entre las personas de 26–34 años que vivían con sus progenitores en 2025, 47,3 % señaló no poder permitirse alquilar o comprar como motivo principal (34,6 % alquiler; 12,7 % compra)'], population: 'personas de 26–34 años residentes en España que vivían con alguno de sus progenitores', denominator: 'personas de 26–34 años que convivían con sus progenitores en 2025', unit: '% que declaró cada motivo principal', dataKind: 'observed', missingDimensions: ['importe del alquiler como proporción de la renta personal', 'efecto causal de transferencias familiares'], sourceIds: ['youth-family-housing-ine'] },
+      { id: 'family-support-counterfactual', label: 'Apoyo familiar y emigración', finding: 'La ECV 2025 no pregunta cuántas personas se habrían trasladado fuera de España si no recibieran ayuda o patrimonio familiar. Para estimar ese escenario haría falta una encuesta o un modelo contrafactual con supuestos explícitos.', missingDimensions: ['encuesta o modelo contrafactual sobre emigración evitada', 'definición de emigración evitada'], sourceIds: ['youth-family-housing-ine'] },
     ],
     limitations: ['Sin edad, ciudad o territorio, periodo y definición de “precariedad” no se puede estimar la imposibilidad de comprar una vivienda. Tampoco se puede convertir la convivencia con los padres en un número de emigraciones evitadas sin una hipótesis identificable.'],
     sources: [
@@ -420,7 +422,7 @@ const packets = [
       source('youth-labour-eurostat', 'Youth labour market statistics', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Youth_statistics_-_employment', '2025-10-01'),
       source('youth-housing-eurostat', 'Housing in Europe — statistics on housing conditions', 'Eurostat', 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_in_Europe', '2025-10-01'),
       source('youth-emancipation-source', 'Observatorio de Emancipación', 'Consejo de la Juventud de España', 'https://www.cje.org/', '2025-10-01'),
-      source('youth-family-housing-ine', 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', 'INE', 'https://www.ine.es/dyngs/Prensa/m3ECV2025.htm?print=1', '2026-05-01'),
+      source('youth-family-housing-ine', 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', 'INE', 'https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm', '2026-04-27', '2026-11-16'),
     ],
   },
   {
@@ -696,9 +698,19 @@ const shareableReplyForPacket = (packetId, families) => {
   if (packetId === 'broad-youth-living-housing') {
     const rent = value('youth-rental-effort', /1\.176/);
     const downPayment = value('youth-purchase-effort', /66\.900/);
-    const coResidence = value('family-co-residence', /55,5 %/);
-    if (!rent || !downPayment || !coResidence) return undefined;
-    return `El Observatorio de Emancipación cifra el alquiler medio en 1.176 € al mes (el 98,7 % del salario joven de referencia); la entrada media estimada para comprar es 66.900 €, equivalente a 4,7 años de salario íntegro. En la ECV 2025, vivía con sus progenitores el 55,5 % de las personas de 26–34 años con renta inferior a 6.000 €, frente al 29,4 % con más de 24.000 € (44,3 % en total). Hay una barrera económica clara, pero no es una imposibilidad universal; no hay una cifra observada de cuántas personas emigrarían sin apoyo familiar.`;
+    const coResidence = value('family-co-residence', /44,3 %/);
+    const housingBarrier = value('family-housing-barrier', /47,3 %/);
+    const asksMigrationCounterfactual = families.some((family) => family.criterionId === 'family-support-counterfactual');
+    const marketData = [rent, downPayment].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
+    const parts = [];
+    if (marketData.length) parts.push(`El Observatorio de Emancipación 2025 registra: ${marketData.join('; ')}.`);
+    if (coResidence) parts.push(`ECV 2025 del INE: ${coResidence}.`);
+    if (housingBarrier) parts.push(housingBarrier);
+    if (!parts.length) return undefined;
+    if (housingBarrier) parts.push('El 47,3 % es un motivo principal declarado entre quienes ya vivían con sus progenitores; no es una ratio de alquiler y salario.');
+    else if (rent) parts.push('El alquiler medio no describe el gasto ni el salario de cada persona.');
+    if (asksMigrationCounterfactual) parts.push('La ECV no estima cuántas personas emigrarían sin apoyo familiar.');
+    return parts.join(' ');
   }
   if (packetId === 'broad-security') {
     const total = value('total-offences', /1\.217\.476/);
@@ -803,6 +815,8 @@ export const broadDomainPacketsFor = (text) => {
   const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);
   const dedicatedProfileIds = new Set(['tax_policy_tradeoffs', 'tax_prices_financing_tradeoffs', 'youth_housing_access', 'youth_housing_family_counterfactual', 'illegal_occupation', 'sexual_consent_law_effects', 'gender_law_evidence_standard', 'nuclear_phaseout', 'autonomous_competence_savings', 'migrant_minor_accommodation_cost', 'amnesty_constitution', 'public_housing_allocation']);
   const dedicatedProfile = Boolean(domainProfile?.packetId && dedicatedProfileIds.has(domainProfile.id));
+  const youthOutOfScopeGeography = /\b(?:portugal|portugues\w*|francia|frances\w*|alemania|aleman\w*|italia|italian\w*|reino unido|inglaterra|paises bajos|belgica|grecia|dinamarca|suecia|noruega|suiza|europa|union europea|ue|andalucia|aragon|asturias|baleares|canarias|cantabria|castilla y leon|castilla la mancha|cataluna|comunidad valenciana|extremadura|galicia|madrid|murcia|navarra|pais vasco|la rioja|ceuta|melilla|barcelona|valencia|sevilla)\b/.test(value);
+  if (youthSignal && youthOutOfScopeGeography) return [];
   const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value)) || specificPacketIds.has(domainProfile?.packetId);
   if (!hasSpecificClaim && /\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
@@ -1126,7 +1140,7 @@ const scopeReviewedPacket = (packet, claim) => {
     const wageTrend = /salari|sueldo|ingreso/.test(text) && /sub|baj|crec|caid|estanc|evoluc|\banos?\b/.test(text);
     criteria = criteria.filter((criterion) => {
       if (criterion.id === 'family-support-counterfactual') return emigrationCounterfactual;
-      if (criterion.id === 'family-co-residence') return family;
+      if (criterion.id === 'family-co-residence' || criterion.id === 'family-housing-barrier') return family;
       if (criterion.id === 'youth-purchase-effort' || criterion.id === 'youth-housing-access') return purchase || !rent;
       if (criterion.id === 'youth-rental-effort') return rent || !purchase;
       if (criterion.id === 'youth-long-run-wage-rent') return rent && wageTrend;
@@ -1140,7 +1154,7 @@ const scopeReviewedPacket = (packet, claim) => {
       missingDimensions: /salari|sueldo|ingreso/.test(text) ? ['serie salarial específica de jóvenes y periodo comparable'] : criterion.missingDimensions }
       : criterion.id === 'youth-housing-access' ? { ...criterion, metricIds: (criterion.metricIds || []).filter((id) => id !== 'housing_cost_overburden_rate'), finding: 'El índice general mide precios de compraventa, no cuánto puede pagar una persona joven.' }
       : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'El alquiler de una vivienda completa se compara con el salario joven medio de referencia. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
-      : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La convivencia con progenitores es más frecuente con rentas bajas; no mide por sí sola las transferencias ni el apoyo económico familiar.' } : criterion);
+      : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La ECV 2025 muestra diferencias de convivencia por renta personal; describe una asociación, no mide transferencias familiares ni demuestra qué causó esa convivencia.' } : criterion);
     if (!emigrationCounterfactual) {
       headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
       summary = 'El Observatorio de Emancipación compara costes de vivienda con salarios jóvenes de referencia. Una media no describe a cada persona ni permite calcular cuántas superan un umbral concreto.';
@@ -1186,6 +1200,26 @@ const scopeReviewedPacket = (packet, claim) => {
 
 const composeScopedReply = (plan) => {
   const families = plan.evidenceSummary?.families || [];
+  if (plan.id === 'broad-youth-living-housing') {
+    const dataFor = (criterionId) => families.find((family) => family.criterionId === criterionId)?.data?.[0];
+    const rental = dataFor('youth-rental-effort');
+    const purchase = dataFor('youth-purchase-effort');
+    const coResidence = dataFor('family-co-residence');
+    const housingBarrier = dataFor('family-housing-barrier');
+    const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
+    const parts = [plan.headline.replace(/[.]$/, '') + '.'];
+    const marketFacts = [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
+    if (marketFacts.length) parts.push(`Observatorio de Emancipación 2025: ${marketFacts.join('; ')}.`);
+    if (coResidence) parts.push(`INE, ECV 2025: ${coResidence}.`);
+    if (housingBarrier) parts.push(housingBarrier);
+    if (housingBarrier) parts.push('El motivo es una respuesta declarada entre quienes ya vivían con sus progenitores; no mide el alquiler como proporción del salario.');
+    else if (rental) parts.push('La media no indica cuántos jóvenes superan un porcentaje concreto de su renta ni describe el gasto y el salario de cada persona.');
+    if (migration) parts.push('La ECV 2025 no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no da una cifra para ese contrafactual.');
+    const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
+      .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
+    if (publishers.length) parts.push(`Fuentes: ${publishers.join('; ')}.`);
+    return parts.join('\n\n');
+  }
   const measured = families.filter((family) => family.data?.length)
     .sort((a, b) => (b.replyPriority || 0) - (a.replyPriority || 0)).slice(0, 3);
   const findings = measured.map((family) => `${family.label}: ${family.data[0]}.`.replace(/\.{2,}/g, '.'));
@@ -1247,9 +1281,15 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [], clai
       ? [...dynamic, ...fallback]
       : dynamic;
   };
+  const hasMeasuredNumberInFinding = (finding) => {
+    const withoutDates = String(finding)
+      .replace(/\b\d{1,2}[./-]\d{1,2}[./-](?:19|20)\d{2}\b/g, '')
+      .replace(/\b(?:19|20)\d{2}(?:[-/.]\d{1,2}(?:[-/.]\d{1,2})?)?\b/g, '');
+    return /\d/.test(withoutDates);
+  };
   const missingCriteria = matchedObservations
     .map(({ criterion, observations: items }, index) => ({ criterion, items, missing: unresolvedDimensions[index] }))
-    .filter(({ criterion, items, missing }) => !items.length && !criterion.fallbackData?.length && !/\d/.test(criterion.finding) && missing.length)
+    .filter(({ criterion, items, missing }) => !items.length && !criterion.fallbackData?.length && !hasMeasuredNumberInFinding(criterion.finding) && missing.length)
     .flatMap(({ missing }) => missing);
   const scopedMissingDimensions = [...new Set([
     ...unresolvedDimensions.flat(),
@@ -1327,6 +1367,11 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [], clai
     knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
+  if (packet.id === 'broad-youth-living-housing') {
+    plan.shareableSourceIds = [...new Set(plan.evidenceSummary.families
+      .filter((family) => family.data?.length || family.criterionId === 'family-support-counterfactual')
+      .flatMap((family) => family.sourceIds || []))].filter((id) => plan.sourceIds.includes(id));
+  }
   const shareableReply = packet.scopedReply ? composeScopedReply(plan)
     : shareableReplyForPacket(packet.id, plan.evidenceSummary.families) || composeFamilyReply(plan, { compact: true });
   if (shareableReply) plan.shareableReply = shareableReply;

@@ -1,0 +1,13 @@
+{
+  "id": "prop-precariedad-juvenil-vivienda-barrera-ine-2025",
+  "claimSlug": "precariedad-juvenil-vivienda-ayuda-familiar",
+  "text": "Entre las personas de 26 a 34 años que vivían con sus progenitores, el 47,3% declaró no poder permitirse alquilar o comprar una vivienda como motivo principal.",
+  "type": "descriptive",
+  "subject": "young_adults_living_with_parents",
+  "predicate": "report_housing_unaffordability_as_main_reason",
+  "object": "rent_or_purchase",
+  "geography": "España",
+  "period": "2025",
+  "status": "supported",
+  "evidenceIds": ["ine-ecv-motivos-convivencia-vivienda-26-34-2025"]
+}

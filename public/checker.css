@@ -110,12 +110,7 @@
 .conversation-input-wrap textarea{min-height:132px;padding:19px 20px;border:0;background:transparent;font:1.18rem/1.45 var(--sans);resize:vertical}
 .conversation-input-wrap>button{align-self:stretch;min-width:145px;padding:18px;border:0;background:var(--ink);color:var(--paper);font:700 .75rem var(--sans)}
 .conversation-input-wrap>button:hover{background:var(--red)}
-.drop-hint{display:none;position:absolute;inset:8px;z-index:2;place-items:center;border:2px dashed var(--red);background:var(--paper);color:var(--red);font:700 .82rem var(--sans)}
-.conversation-form.is-dragging .drop-hint{display:grid}
-#conversation-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .conversation-help{margin:10px 5px 3px;font:.68rem/1.4 var(--sans)}
-.conversation-media-help{display:none;margin:9px 5px 2px;padding:8px 10px;background:var(--paper-deep);font:.72rem/1.35 var(--sans)}
-.conversation-media-help[data-file-selected=true]{display:block}
 .checker-suggestions{margin-top:16px;border-top:0;border-bottom:1px solid var(--line)}
 .checker-suggestions summary{min-height:46px;padding:0 4px;color:var(--muted);text-transform:none;font:600 .76rem var(--sans)}
 .checker-how{max-width:760px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:34px auto 0;padding:1px;list-style:none;background:var(--line)}
@@ -136,7 +131,7 @@
   .checker-lead{font-size:1rem;line-height:1.48}
   .hero-checker{margin-top:32px}
   .conversation-form{padding:6px}
-  .input-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+  .input-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
   .input-modes button{min-width:0;padding:8px 3px;gap:4px;font-size:.65rem}
   .conversation-input-wrap{grid-template-columns:1fr}
   .conversation-input-wrap textarea{min-height:120px;padding:15px;font-size:1.02rem}

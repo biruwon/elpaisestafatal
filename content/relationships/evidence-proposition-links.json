@@ -511,25 +511,18 @@
       "reviewedAt": "2026-08-02"
     },
     {
-      "evidenceId": "juventud-observatorio-de-emancipacion",
+      "evidenceId": "ine-ecv-convivencia-progenitores-renta-2025",
       "propositionId": "prop-juventud-emancipacion-core",
       "relationship": "supports",
       "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-02"
+      "reviewedAt": "2026-11-16"
     },
     {
-      "evidenceId": "juventud-convivencia-con-progenitores-por-renta-26-34-labels-6-000-total-24-000-v",
-      "propositionId": "prop-juventud-emancipacion-core",
+      "evidenceId": "ine-ecv-motivos-convivencia-vivienda-26-34-2025",
+      "propositionId": "prop-juventud-emancipacion-barrera-ine-2025",
       "relationship": "supports",
       "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-02"
-    },
-    {
-      "evidenceId": "juventud-encuesta-de-poblacion-activa-t1-2026",
-      "propositionId": "prop-juventud-emancipacion-core",
-      "relationship": "supports",
-      "reviewStatus": "reviewed",
-      "reviewedAt": "2026-08-02"
+      "reviewedAt": "2026-11-16"
     },
     {
       "evidenceId": "empleo-encuesta-de-poblacion-activa-t1-2026",
@@ -25449,7 +25442,14 @@
       "propositionId": "prop-precariedad-juvenil-vivienda-ayuda-familiar-core",
       "relationship": "supports",
       "reviewStatus": "reviewed",
-      "reviewedAt": "2026-09-17"
+      "reviewedAt": "2026-11-16"
+    },
+    {
+      "evidenceId": "ine-ecv-motivos-convivencia-vivienda-26-34-2025",
+      "propositionId": "prop-precariedad-juvenil-vivienda-barrera-ine-2025",
+      "relationship": "supports",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-11-16"
     },
     {
       "evidenceId": "interior-criminalidad-2025",
