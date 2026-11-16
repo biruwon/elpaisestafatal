@@ -65,6 +65,14 @@ const focuses = [
     limitation: 'Un salario nominal o un IPC aislado no demuestra una pérdida salarial real. Tampoco la temporalidad o la cuña fiscal responden a esa comparación.',
   },
   {
+    id: 'rental-price-amount', label: 'importe mensual del alquiler',
+    when: (t) => has(t, rents) && has(t, absoluteRentAmount) && !has(t, rentalBurden),
+    direct: [], context: ['rental_price_index'],
+    needs: ['importe del alquiler expresado en euros por vivienda y periodo', 'territorio, tipo de vivienda y contrato comparables'],
+    explanation: 'Para saber cuánto se paga por un alquiler hace falta un importe en euros por vivienda y periodo; un índice solo registra cambios relativos de precios.',
+    limitation: 'El índice armonizado de alquiler sigue los precios que pagan los hogares, pero no publica el importe mensual medio en euros ni el precio anunciado de un piso. Tampoco identifica por sí solo la ciudad, el tipo de vivienda o el contrato.',
+  },
+  {
     id: 'rental-affordability', label: 'alquiler e ingresos',
     when: (t) => has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],

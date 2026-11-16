@@ -145,10 +145,12 @@ try {
     '¿Cuál es el importe en euros del alquiler medio más reciente en España?',
     '¿Qué importe mensual en euros tiene el alquiler vigente de una vivienda en España?',
     'En España, ¿cuánto se paga de alquiler al mes en euros según el dato oficial más reciente?',
+    '¿Qué último dato oficial indica cuánto cuesta alquilar una vivienda al mes, en euros, en España?',
   ]) {
     const absoluteRentPrice = await check(query);
     assert.notEqual(absoluteRentPrice.state, 'supported');
-    assert.match(absoluteRentPrice.result.reply, /no el importe del alquiler en euros/);
+    assert.equal(absoluteRentPrice.result.answerScope?.family, 'rental-price-amount');
+    assert.match(absoluteRentPrice.result.reply, /(?:no el importe del alquiler en euros|no publica el importe mensual medio en euros)/);
     assert.doesNotMatch(absoluteRentPrice.result.reply, /compraventa|precio de la vivienda/i);
     assert.equal(absoluteRentPrice.result.visual, undefined);
     assert.deepEqual(absoluteRentPrice.result.sources.map((source) => source.url), [url], JSON.stringify(absoluteRentPrice.result.sources));

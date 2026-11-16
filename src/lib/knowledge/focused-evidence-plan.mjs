@@ -57,6 +57,8 @@ const unitFor = (item) => /^household_electricity_price/.test(item.metricId || '
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
   : /^household_electricity_price/.test(item.metricId || '') && /eur|euro/i.test(item.unit || '') ? '€/kWh'
   : /percent|percentage|^pc$|%/i.test(item.unit || '') ? '%' : /days|d[ií]as/i.test(item.unit || '') ? 'días'
+  : item.metricId === 'rental_price_index' && /index|índice/i.test(item.unit || '')
+    ? `índice${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/) ? ` (${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/)[0].replace(/\s/g, '')})` : ''}`
   : item.metricId === 'cpi_index' || /index/i.test(item.unit || '') ? 'índice'
     : /median_hourly_earnings/.test(item.metricId || '') && /eur/i.test(item.unit || '') ? '€/hora' : item.displayUnit || item.unit || '';
 const number = (value, metricId) => new Intl.NumberFormat('es-ES', { maximumFractionDigits:
@@ -67,6 +69,10 @@ const placeLabel = (item) => {
 };
 const periodLabel = (period) => String(period).replace(/^(\d{4})-O([123])$/, '$1 · oleada $2');
 const validNumber = (value) => typeof value === 'number' && Number.isFinite(value);
+const isRentalIndexObservation = (item) => {
+  const unit = normalize(item.unit || '');
+  return /\bindex\b|\bindice\b/.test(unit) && !/\b(?:rate|tasa|change)\b/.test(unit);
+};
 const scopeKey = (item) => JSON.stringify({
   geography: item.geography || item.dimensions?.geo || '',
   population: item.population || '', denominator: item.denominator || '', unit: item.unit || '',
@@ -78,8 +84,13 @@ const sourceValid = (source) => {
 };
 const factsForMetric = (id, observations, claim) => {
   const series = new Map();
-  for (const item of observations.filter((row) => row.metricId === id && validNumber(row.value) && row.period && row.freshness !== 'invalid'
+  const metricRows = observations.filter((row) => row.metricId === id);
+  const hasActiveRentalIndex = id === 'rental_price_index' && metricRows.some((item) => isRentalIndexObservation(item)
+    && String(item.source?.url || '').includes('/prc_hicp_minr'));
+  for (const item of metricRows.filter((row) => validNumber(row.value) && row.period && row.freshness !== 'invalid'
     && !['projected', 'budget'].includes(row.dataKind) && sourceValid(row.source) && observationFitsClaim(claim, row)
+    && (id !== 'rental_price_index' || isRentalIndexObservation(row)
+      && (!hasActiveRentalIndex || String(row.source?.url || '').includes('/prc_hicp_minr')))
     && (!/^household_electricity_price/.test(id) || !/^(?:kilowatt-hour|kwh)$/i.test(row.unit || '') || Boolean(row.dimensions?.currency)))) {
     const key = scopeKey(item);
     const rows = series.get(key) || [];

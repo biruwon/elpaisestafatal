@@ -40,6 +40,8 @@ if (preferredMetricIdsForQuery('España tiene más renta mediana que la Unión E
 if (!preferredMetricIdsForQuery('sobrecarga del coste de la vivienda').has('housing_cost_overburden_rate')) throw new Error('Metric hints did not prefer housing cost overburden for affordability wording');
 const monetaryRentQuestion = preferredMetricIdsForQuery('¿Cuál es el importe en euros del alquiler medio más reciente en España?');
 if (!monetaryRentQuestion.has('rental_price_index') || monetaryRentQuestion.has('house_price_index')) throw new Error('Metric hints did not keep a monetary rent request on the rent measure or protect it from home-sale prices');
+const rentVerbAmountQuestion = preferredMetricIdsForQuery('¿Qué último dato oficial indica cuánto cuesta alquilar una vivienda al mes, en euros, en España?');
+if (!rentVerbAmountQuestion.has('rental_price_index') || rentVerbAmountQuestion.has('house_price_index') || rentVerbAmountQuestion.has('housing_cost_overburden_rate')) throw new Error('Metric hints routed a monthly rent amount to home-sale or affordability measures');
 if (!preferredMetricIdsForQuery('gasto sanitario por habitante').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for resource wording');
 if (!preferredMetricIdsForQuery('¿España paga más por la electricidad que Europa?').has('household_electricity_price_europe')) throw new Error('Metric hints did not prefer the Spain/EU household electricity comparison');
 if (preferredMetricIdsForQuery('¿España paga más por la electricidad que Europa?').has('household_electricity_price')) throw new Error('Metric hints kept Spain-only household electricity alongside European comparison wording');

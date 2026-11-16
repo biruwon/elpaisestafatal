@@ -8,6 +8,7 @@ import { boundedRequest, RequestTooLargeError } from '../../src/lib/knowledge/bo
 import { attachExtraction, extractedClaim } from '../../src/lib/knowledge/submission.mjs';
 import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -21,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-statistical-comparability-24-2026-11';
+const responseCacheVersion = 'claim-statistical-comparability-25-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -231,6 +232,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       const response = checkFromCatalogue(body.text, entry);
       if (!bypassResponseCache) storeResponse(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
+    }
+    const focus = claimFocusFor(effectiveClaim);
+    if (focus?.id === 'rental-price-amount') {
+      const metricIds = [...(focusedMetricIdsFor(effectiveClaim) || [])];
+      const observations: Record<string, unknown>[] = env.DB && metricIds.length
+        ? await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => [])
+        : [];
+      const plan = focusedEvidencePlan(effectiveClaim, { observations: observations as never[] }) as AnswerPlan | undefined;
+      if (plan) return json(checkFromPlan(effectiveClaim, plan));
     }
   }
 
