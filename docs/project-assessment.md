@@ -204,3 +204,29 @@ any source or evidence attached. These counts measure routing and source
 attachment only; they cannot establish factual accuracy or full
 production-resolver performance. Adult, Madrid-specific, Portugal and monthly
 mortgage-payment claims keep their separate scope or measurement gaps.
+
+## Uncovered text and multi-part claims — 16 November 2026
+
+The fallback previously turned an uncovered sentence into one undifferentiated
+argument. For claims with multiple explicit clauses, it now preserves the full
+statement and shows each clause separately. A causal statement remains visible
+as a whole, and the missing-evidence request includes the causal link. Every
+item remains insufficient and has no attached evidence or sources. The result
+screen labels this as what is missing to check each part. When the generic
+uncovered fallback receives a claim longer than the compiler's 300-character
+limit, it says that the whole text was not analyzed and asks for a shorter
+claim.
+
+The claim parser also recognizes inflected Spanish future-tense verbs as
+predictions, so the fallback asks for a forecast horizon and published
+assumptions rather than treating a future claim as a present-day measurement.
+A present-tense employment claim remains in its own family.
+
+The unverified 300-claim audit distinguishes 111 parser outputs, which include
+synthetic evidence requirements, from 43 submissions with multiple explicit
+clauses. The fallback now structures 40 of those; the other three matched
+measurement-specific evidence-gap plans, which preserve the whole question and
+its limitation as one assessment. Four submissions still return complete API
+status with limited evidence, 296 remain uncovered and 28 have any evidence or
+source attached. These counts describe routing and answer structure only, not
+truth or factual accuracy.

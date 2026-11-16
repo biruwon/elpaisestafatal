@@ -380,10 +380,11 @@ const populationAliases = [
 
 const claimTypeFor = (value) => {
   const text = normalise(value);
+  const futureVerb = /\b[\p{L}]+(?:aré|arás|ará|aremos|aréis|arán|eré|erás|erá|eremos|eréis|erán|iré|irás|irá|iremos|iréis|irán)\b/iu.test(String(value || ''));
   if (includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'deberia recibir', 'primero los espanoles', 'espanoles primero', 'los espanoles antes', 'prioridad para los espanoles'])) return 'normative';
   if (['que significa', 'que se entiende por', 'significado de', 'que es'].some((phrase) => containsPhrase(text, phrase)) || includesAny(text, ['se considera', 'son parados', 'parados ocultos', 'fijos discontinuos', 'definicion'])) return 'definition';
   if (includesAny(text, ['causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'por culpa', 'tiene la culpa', 'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad', 'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano', 'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa', 'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas']) || /^(?:a|con) mas .+ (?:hay|aumenta|sube) mas/.test(text) || /^cuanto mas .+ mas /.test(text)) return 'causal';
-  if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text)) return 'predictive';
+  if (includesAny(text, ['pasara', 'caera', 'destruira', 'preve', 'pronostico']) || /\bva a (?:subir|bajar|caer|aumentar|disminuir|mejorar|empeorar|ser|estar)\b/.test(text) || futureVerb) return 'predictive';
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'creciendo', 'crecimiento', 'aumento', 'aumenta', 'aumentando', 'está aumentando', 'esta aumentando', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'mas caro', 'mas cara', 'mas caros', 'mas caras', 'mucho mas caro', 'mucho mas cara', 'mas costoso', 'mas costosa', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'envejece', 'envejecemos', 'envejecimiento', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'sigue creciendo', 'siguen creciendo', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'va a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
   if ((includesAny(text, ['inmigracion', 'inmigrantes', 'extranjeros', 'extranjero']) && includesAny(text, ['ayuda', 'ayudas', 'prestacion', 'prestaciones', 'subsidio', 'beneficio']) && includesAny(text, ['mas', 'desproporcionad', 'mayor']))
@@ -567,8 +568,10 @@ export const evidenceNeedsFor = (value, claimType, propositions = []) => {
   return [...needs].slice(0, 8);
 };
 
+export const FALLBACK_CLAIM_MAX_CHARS = 300;
+
 export const deterministicFallbackCompiler = (text) => {
-  const original = String(text || '').trim().slice(0, 300);
+  const original = String(text || '').trim().slice(0, FALLBACK_CLAIM_MAX_CHARS);
   // Conversation wrappers are presentation, not claim semantics. Strip a
   // bounded set before extracting entities, propositions, and family keys so
   // “¿Es verdad que X?” reuses exactly the same evidence as “X”.

@@ -324,8 +324,10 @@ const renderResult = (response: Extract<CheckResponse, { state: 'supported' | 'l
     const linkedSources = argument.sourceIds?.map((id) => item.sources.find((source) => source.id === id)).filter((source): source is CheckResult['sources'][number] => Boolean(source)).slice(0, 2) || [];
     return `<article><h4><span class="argument-verdict argument-${escapeHtml(argument.verdict)}">${escapeHtml(argumentVerdictLabel(argument.verdict))}</span>${escapeHtml(argument.claim)}</h4><p>${escapeHtml(argument.finding)}</p>${argument.limitations?.[0] ? `<small>${escapeHtml(argument.limitations[0])}</small>` : ''}${linkedSources.map((source) => `<a class="argument-source" href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)} ↗</a>`).join('')}</article>`;
   }).join('') || '';
+  const argumentsHaveEvidence = item.arguments?.some((argument) => argument.evidenceIds.length > 0 || argument.sourceIds.length > 0) || false;
+  const argumentsHeading = argumentsHaveEvidence ? 'Qué responde la evidencia' : 'Qué falta para comprobar cada parte';
   const argumentsView = item.arguments?.length ? item.arguments.length > 1
-    ? `<section class="result-section result-arguments"><div class="result-section-heading"><span class="eyebrow">Partes de la afirmación</span><h3>Qué responde la evidencia</h3></div><div class="result-arguments-grid">${argumentCards}</div></section>`
+    ? `<section class="result-section result-arguments"><div class="result-section-heading"><span class="eyebrow">Partes de la afirmación</span><h3>${argumentsHeading}</h3></div><div class="result-arguments-grid">${argumentCards}</div></section>`
     : `<details class="claim-arguments result-details"><summary>Ver argumento comprobado<span aria-hidden="true">＋</span></summary>${argumentCards}</details>` : '';
   const criteria = item.criteria?.length ? `<details class="result-details"><summary>Cómo se ha comprobado<span aria-hidden="true">＋</span></summary><div>${item.criteria.map((criterion) => `<p><strong>${escapeHtml(criterion.label)}:</strong> ${escapeHtml(criterion.finding)}</p>`).join('')}</div></details>` : '';
   const visualList = item.visuals?.length ? item.visuals : item.visual ? [item.visual] : [];

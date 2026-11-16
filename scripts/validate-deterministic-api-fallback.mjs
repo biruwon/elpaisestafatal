@@ -1,10 +1,70 @@
 import { deterministicApiFallback } from '../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { deterministicFallbackCompiler, FALLBACK_CLAIM_MAX_CHARS } from './knowledge/fallback-compiler.mjs';
 
 const text = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });
 if (text.status !== 'uncovered' || !text.result?.blocks?.some((block) => block.type === 'claim_breakdown')) throw new Error('text fallback did not preserve a structured clarification');
 if (!/hecho concreto|periodo|lugar|decisión del Gobierno|instituciones/i.test(text.result?.clarificationQuestion || '')) throw new Error('text fallback did not offer a concrete next question');
 const textPlan = text.result;
 if (textPlan?.['sourceLinks'] || textPlan?.evidenceIds?.length) throw new Error('text fallback invented evidence or sources');
+
+for (const claim of [
+  'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual',
+  'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años',
+]) {
+  const result = deterministicApiFallback({ text: claim, inputType: 'text' });
+  const compiled = deterministicFallbackCompiler(claim);
+  const breakdown = result.result?.blocks?.find((block) => block.type === 'claim_breakdown');
+  const items = breakdown?.items || [];
+  if (result.status !== 'uncovered' || result.result?.evidenceLevel !== 'insufficient') {
+    throw new Error(`An ungrounded compound claim was not left explicitly insufficient: ${claim}`);
+  }
+  if (items.length !== compiled.explicitPropositions.length + 1 || items[0]?.text !== claim || items[0]?.type !== compiled.claimType
+    || compiled.explicitPropositions.some((proposition, index) => items[index + 1]?.text !== proposition.text)) {
+    throw new Error(`The compound fallback did not preserve the full claim and each explicit clause: ${claim}`);
+  }
+  if (items.some((item) => item.verdict !== 'insufficient' || item.evidenceLevel !== 'none' || item.evidenceIds?.length || item.sourceIds?.length)) {
+    throw new Error(`The compound fallback attached support to an unevidenced clause: ${claim}`);
+  }
+  if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing?.length)) {
+    throw new Error(`The compound fallback hid its missing evidence dimensions: ${claim}`);
+  }
+}
+
+const longUncoveredText = `Una afirmación pendiente de revisión ${'sin evidencia compatible '.repeat(20)}`;
+const longUncovered = deterministicApiFallback({ text: longUncoveredText, inputType: 'text' });
+if (longUncoveredText.length <= FALLBACK_CLAIM_MAX_CHARS || longUncovered.result?.evidenceLevel !== 'insufficient'
+  || !longUncovered.result?.summary?.includes(`primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres`)
+  || !longUncovered.guidance?.questions?.[0]?.includes(String(FALLBACK_CLAIM_MAX_CHARS))) {
+  throw new Error('The text fallback silently implied that it analyzed input beyond its bounded compiler limit.');
+}
+const longDefinition = deterministicApiFallback({ text: `¿Qué mide la tasa de empleo? ${'Contexto adicional que el fallback no interpreta. '.repeat(8)}` });
+if (longDefinition.status !== 'uncovered' || longDefinition.result?.evidenceIds?.length || longDefinition.result?.sourceIds?.length
+  || !longDefinition.result?.summary?.includes(`primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres`)) {
+  throw new Error('A measurement definition matched in a parsed prefix was presented as an answer to a longer, unanalyzed submission.');
+}
+const forecast = deterministicFallbackCompiler('Los robots eliminarán todos los empleos del mundo en diez años');
+const presentTense = deterministicFallbackCompiler('Los robots eliminan puestos de trabajo en la industria');
+if (forecast.claimType !== 'predictive' || !forecast.evidenceNeeds.includes('fecha')
+  || presentTense.claimType === 'predictive') {
+  throw new Error('A future-tense forecast was confused with a present employment claim or lacks a time-horizon requirement.');
+}
+const forecastResult = deterministicApiFallback({ text: 'Los robots eliminarán todos los empleos del mundo en diez años', inputType: 'text' });
+if (forecastResult.result?.claimType !== 'predictive'
+  || !forecastResult.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /plazo definido/.test(item)))
+  || forecastResult.result?.evidenceIds?.length || forecastResult.result?.sourceIds?.length
+  || !/horizonte temporal/i.test(forecastResult.result?.clarificationQuestion || '')) {
+  throw new Error('The unsupported forecast did not request a horizon and projection evidence.');
+}
+const legalGap = deterministicApiFallback({ text: 'Es ilegal que una empresa no declare este pago' });
+const normativeGap = deterministicApiFallback({ text: 'El ayuntamiento debería priorizar los parques frente a las carreteras' });
+if (legalGap.result?.claimType !== 'legal' || !/jurisdicci[oó]n/.test(legalGap.result?.clarificationQuestion || '')
+  || !legalGap.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /norma vigente/.test(item)))) {
+  throw new Error('An unsupported legal claim did not ask for jurisdiction and the applicable rule.');
+}
+if (normativeGap.result?.claimType !== 'normative' || !/criterio expl[ií]cito/.test(normativeGap.result?.clarificationQuestion || '')
+  || !normativeGap.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /criterio de valoraci[oó]n/.test(item)))) {
+  throw new Error('An unsupported value judgment did not ask for a criterion before factual evaluation.');
+}
 
 const reviewedAt = Date.parse('2026-11-16T12:00:00Z');
 const youthRentClaims = [
@@ -71,6 +131,7 @@ for (const claim of [
   'En Portugal, jóvenes no pueden comprar vivienda sin heredar',
   'Comprar casa consume varios años de salario de trabajadores adultos en España',
   'La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda',
+  'El problema de la vivienda no se corrige porque muchos votantes propietarios se benefician de precios altos',
 ]) {
   const result = deterministicApiFallback({ text: claim, inputType: 'text', now: reviewedAt });
   if (result.result?.id === 'broad-youth-living-housing' || result.result?.sourceIds?.includes('cje-emancipation-2025')) {

@@ -5,7 +5,7 @@ import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
 import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
-import { deterministicFallbackCompiler } from '../../../scripts/knowledge/fallback-compiler.mjs';
+import { deterministicFallbackCompiler, FALLBACK_CLAIM_MAX_CHARS } from '../../../scripts/knowledge/fallback-compiler.mjs';
 
 const topicQuestion = (text) => {
   const value = String(text || '').toLocaleLowerCase('es');
@@ -96,7 +96,7 @@ const reviewedContextForGap = (focused, claim, now) => {
   return { ...plan, blocks };
 };
 
-const fallbackGuidance = (text, inputType) => {
+const fallbackGuidance = (text, inputType, analysisWasTruncated = false) => {
   if (!text) {
     const subject = inputType === 'audio' ? 'el audio' : inputType === 'image' ? 'la captura' : 'el contenido';
     return {
@@ -104,22 +104,33 @@ const fallbackGuidance = (text, inputType) => {
       questions: ['Escribe la frase, titular o mensaje que quieres comprobar.'],
     };
   }
+  if (analysisWasTruncated) {
+    return {
+      limitation: `El análisis automático de respaldo solo interpreta los primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres. Selecciona una afirmación concreta o divídela antes de comprobarla.`,
+      questions: [`¿Qué afirmación concreta de hasta ${FALLBACK_CLAIM_MAX_CHARS} caracteres quieres comprobar?`],
+    };
+  }
   return {
-    limitation: 'No hay evidencia pública suficiente para responderla todavía. El sistema puede investigar una versión más concreta si aportas un periodo, lugar o indicador.',
+    limitation: 'No se ha localizado evidencia compatible en las fuentes revisadas disponibles para esta comprobación. Esto no demuestra que la afirmación sea falsa; concretar el periodo, territorio y medida puede ayudar a buscar mejor.',
     questions: [topicQuestion(text)],
   };
 };
 
 export const deterministicApiFallback = ({ text = '', inputType = 'text', now = Date.now() } = {}) => {
   const original = String(text || '').trim().slice(0, 1200);
-  const guidance = fallbackGuidance(original, inputType);
+  const analysisWasTruncated = original.length > FALLBACK_CLAIM_MAX_CHARS;
+  const guidance = fallbackGuidance(original, inputType, analysisWasTruncated);
   if (!original) return { status: 'uncovered', relatedClaims: [], guidance };
-  const meaning = measurementMeaningPlan(original);
+  // Never let a match found in the parsed prefix stand in for a longer claim.
+  // The fallback compiler only interprets 300 characters, while public text
+  // submissions can be much longer.
+  const meaning = analysisWasTruncated ? undefined : measurementMeaningPlan(original);
   if (meaning) return { status: 'complete', result: meaning, relatedClaims: [] };
   // A focused answer must not erase a second independent proposition while
   // the warehouse-backed resolver is unavailable or still processing.
-  const propositions = deterministicFallbackCompiler(original).explicitPropositions;
-  const focused = focusedEvidencePlan(original, { propositions, now });
+  const compiledClaim = deterministicFallbackCompiler(original);
+  const propositions = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition?.explicit !== false && proposition?.text);
+  const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { propositions, now });
   const related = topicReference(original);
   if (focused) {
     const reviewedContext = reviewedContextForGap(focused, original, now);
@@ -134,7 +145,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     }
     return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
   }
-  const institutionalLabel = spanishInstitutionalScope(original);
+  const institutionalLabel = analysisWasTruncated ? undefined : spanishInstitutionalScope(original);
   if (institutionalLabel) {
     const evidenceIds = ['fallback-constitution', 'fallback-congress'];
     const sources = [
@@ -154,7 +165,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       },
     };
   }
-  if (broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
+  if (!analysisWasTruncated && broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
     return {
       status: 'complete',
       evidenceLevel: 'supported',
@@ -184,7 +195,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       },
     };
   }
-  const broadDomainPlan = answerPlanForBroadDomains(original, { now });
+  const broadDomainPlan = analysisWasTruncated ? undefined : answerPlanForBroadDomains(original, { now });
   if (broadDomainPlan) {
     return {
       status: 'complete',
@@ -194,6 +205,100 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       result: broadDomainPlan,
     };
   }
+  const fullyAnalyzedCompound = !analysisWasTruncated && propositions.length > 1;
+  const breakdownItems = fullyAnalyzedCompound
+    ? [
+      {
+        text: original,
+        type: compiledClaim.claimType || 'mixed',
+        explicit: true,
+        verdict: 'insufficient',
+        evidenceLevel: 'none',
+        finding: compiledClaim.claimType === 'causal'
+          ? 'No se ha localizado evidencia compatible que permita valorar la relación causal completa.'
+          : 'No se ha localizado evidencia compatible para evaluar la afirmación completa.',
+      },
+      ...propositions.map((proposition) => ({
+        text: proposition.text,
+        type: proposition.type || compiledClaim.claimType || 'mixed',
+        explicit: true,
+        verdict: 'insufficient',
+        evidenceLevel: 'none',
+        finding: 'No se han localizado datos compatibles para evaluar esta parte por separado.',
+      })),
+    ]
+    : [{
+      text: original,
+      type: analysisWasTruncated ? 'mixed' : compiledClaim.claimType || 'mixed',
+      explicit: true,
+      verdict: 'insufficient',
+      evidenceLevel: 'none',
+      finding: analysisWasTruncated
+        ? `El analizador de respaldo solo interpretó los primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres; no se pudo evaluar el texto completo.`
+        : 'No se han localizado datos o fuentes compatibles para evaluar esta afirmación.',
+    }];
+  const missing = fullyAnalyzedCompound
+    ? [
+      'evidencia compatible para cada parte explícita de la afirmación',
+      ...(compiledClaim.claimType === 'causal' ? ['evidencia que permita valorar la relación causal entre esas partes'] : []),
+      ...(compiledClaim.claimType === 'normative' ? ['criterio de valoración que se aplicará a la afirmación completa'] : []),
+    ]
+    : analysisWasTruncated
+      ? [`interpretación y comprobación del texto posterior a los primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres`]
+      : compiledClaim.claimType === 'causal'
+        ? ['datos compatibles para las partes relacionadas', 'evidencia que permita valorar el vínculo causal']
+        : compiledClaim.claimType === 'predictive'
+          ? ['resultado previsto y plazo definido', 'supuestos de la proyección y evidencia de resultados observados']
+          : compiledClaim.claimType === 'legal'
+            ? ['jurisdicción y norma vigente', 'hechos concretos que permitan aplicar la norma']
+            : compiledClaim.claimType === 'normative'
+              ? ['criterio de valoración explícito', 'afirmaciones factuales que puedan comprobarse por separado']
+              : ['una fuente compatible con el indicador, la población, el territorio y el periodo de la afirmación'];
+  const needed = fullyAnalyzedCompound
+    ? [
+      'una fuente que mida cada parte con su población, territorio y periodo',
+      ...(compiledClaim.claimType === 'causal' ? ['un diseño o comparación que permita evaluar el vínculo causal'] : []),
+      ...(['comparative', 'mixed'].includes(compiledClaim.claimType) ? ['definiciones, periodos y denominadores comparables'] : []),
+    ]
+    : analysisWasTruncated
+      ? ['una afirmación concreta dentro del límite analizado', 'una fuente compatible con su población, territorio y periodo']
+      : compiledClaim.claimType === 'causal'
+        ? ['medidas comparables de los hechos relacionados', 'evidencia del mecanismo o diseño que permita atribuir causalidad']
+        : compiledClaim.claimType === 'predictive'
+          ? ['una proyección publicada con plazo y supuestos explícitos', 'una medida que permita evaluar el resultado previsto']
+          : compiledClaim.claimType === 'legal'
+            ? ['la norma vigente en la jurisdicción pertinente', 'los hechos concretos a los que se aplicaría']
+            : compiledClaim.claimType === 'normative'
+              ? ['un criterio explícito para la valoración', 'los hechos que puedan comprobarse por separado']
+              : ['una fuente pública que mida directamente la afirmación', 'población, territorio y periodo definidos'];
+  const nextAction = fullyAnalyzedCompound
+    ? compiledClaim.claimType === 'causal'
+      ? 'Comprobar cada parte por separado y buscar evidencia del vínculo causal; que dos hechos coincidan no demuestra que uno cause el otro.'
+      : 'Buscar evidencia para cada parte con población, territorio y periodo explícitos antes de resumirlas juntas.'
+    : analysisWasTruncated
+      ? `Seleccionar una frase concreta de hasta ${FALLBACK_CLAIM_MAX_CHARS} caracteres para evitar omitir el resto del texto.`
+      : compiledClaim.claimType === 'causal'
+        ? 'Separar los hechos relacionados y buscar un estudio o comparación que permita valorar el vínculo causal.'
+        : compiledClaim.claimType === 'predictive'
+          ? 'Fijar qué resultado y plazo se predicen y contrastarlos con un escenario publicado y sus supuestos.'
+          : compiledClaim.claimType === 'legal'
+            ? 'Concretar la jurisdicción y los hechos del caso, y consultar la norma vigente aplicable.'
+            : compiledClaim.claimType === 'normative'
+              ? 'Acordar el criterio de valoración y comprobar por separado las afirmaciones factuales.'
+              : 'Concretar el indicador, la población, el territorio y el periodo, y contrastarlos con una fuente primaria.';
+  const clarificationQuestion = analysisWasTruncated
+    ? guidance.questions[0]
+    : compiledClaim.claimType === 'causal'
+      ? '¿Qué hechos, población y periodo quieres usar para comprobar también el vínculo causal?'
+      : compiledClaim.claimType === 'predictive'
+        ? '¿Qué resultado y horizonte temporal quieres comprobar?'
+        : compiledClaim.claimType === 'legal'
+          ? '¿En qué jurisdicción y sobre qué hechos concretos quieres comprobar la norma?'
+          : compiledClaim.claimType === 'normative'
+            ? '¿Qué criterio explícito quieres usar para valorar esta prioridad?'
+            : fullyAnalyzedCompound
+              ? '¿Qué parte quieres comprobar primero y con qué población, territorio y periodo?'
+              : guidance.questions[0];
   return {
     status: 'uncovered',
     relatedClaims: related ? [related] : [],
@@ -202,15 +307,17 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       schemaVersion: '1',
       evidenceLevel: 'insufficient',
       headline: 'No hay evidencia suficiente todavía',
-      summary: 'No hemos encontrado datos o fuentes compatibles que permitan sostener una respuesta factual para esta frase.',
+      summary: analysisWasTruncated
+        ? `El analizador de respaldo solo interpreta los primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres, así que no puede evaluar el texto completo. No se ha localizado evidencia compatible dentro de esa parte; esto no permite concluir sobre el resto ni demuestra que la afirmación sea falsa.`
+        : 'No se ha localizado evidencia compatible en las fuentes revisadas disponibles para esta comprobación. Esto no demuestra que la afirmación sea falsa.',
       coverage: 'insufficient',
-      claimType: 'mixed',
+      claimType: analysisWasTruncated ? 'mixed' : compiledClaim.claimType || 'mixed',
       blocks: [
-        { type: 'claim_breakdown', propositionIds: [], items: [{ text: original, type: 'mixed', explicit: true }] },
-        { type: 'evidence_gap', missing: ['Un indicador y un periodo compatibles'], needed: ['Una fuente pública que mida directamente la afirmación'], nextAction: 'La siguiente búsqueda debe fijar el indicador, el periodo, el territorio y la población antes de extraer una conclusión.' },
-        { type: 'cannot_conclude', evidenceIds: [], points: ['No debemos convertir una coincidencia temática o una frase cercana en un veredicto.', 'Concreta el indicador, el periodo o el lugar para buscar una evidencia comparable.'] },
+        { type: 'claim_breakdown', propositionIds: breakdownItems.map((_, index) => `unresolved-proposition-${index + 1}`), items: breakdownItems },
+        { type: 'evidence_gap', missing, needed, nextAction },
+        { type: 'cannot_conclude', evidenceIds: [], points: ['La ausencia de una medida compatible en las fuentes revisadas no demuestra que la afirmación sea falsa.', ...(compiledClaim.claimType === 'causal' ? ['La coincidencia de dos hechos no demuestra una relación causal.'] : []), ...(analysisWasTruncated ? [`El texto posterior a ${FALLBACK_CLAIM_MAX_CHARS} caracteres no se interpretó.`] : [])] },
       ],
-      clarificationQuestion: guidance.questions[0],
+      clarificationQuestion,
       limitation: guidance.limitation,
       researchPlan: {
         claim: original,
@@ -220,7 +327,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       },
       evidenceIds: [],
       sourceIds: [],
-      evidenceSummary: { mode: 'none', families: [], missingDimensions: ['indicador compatible', 'periodo comparable'], fallbackReason: 'No se encontró una fuente dinámica ni un snapshot compatible.' },
+      evidenceSummary: { mode: 'none', families: [], missingDimensions: missing, fallbackReason: 'No se localizó una fuente dinámica ni un snapshot compatible en las fuentes revisadas disponibles para esta comprobación.' },
       knowledgeVersion: RUNTIME_VERSIONS.fallbackKnowledge,
     },
   };

@@ -50,7 +50,8 @@ if (data.schemaVersion !== 'web-observed-catalogue-v1') errors.push(`unexpected 
 if (!Array.isArray(candidates) || candidates.length !== data.candidateCount) errors.push('candidateCount does not match candidates array');
 const seen = new Set();
 const typeCounts = {};
-let multiProposition = 0;
+let parserMultiIncludingImplied = 0;
+let explicitMultiProposition = 0;
 let metricRouted = 0;
 let exactCatalogue = 0;
 const unroutedExamples = [];
@@ -62,18 +63,19 @@ for (const candidate of candidates || []) {
   if (candidate.basis !== 'sourced' || candidate.researchStatus !== 'unverified' || candidate.status !== 'planned') errors.push(`${candidate.id} is not marked as an unverified discovery candidate`);
   const compiled = normalizeCompilerOutput(null, candidate.claim);
   typeCounts[compiled.claimType] = (typeCounts[compiled.claimType] || 0) + 1;
-  if (compiled.propositions.length > 1) multiProposition += 1;
+  if (compiled.propositions.length > 1) parserMultiIncludingImplied += 1;
+  if ((compiled.explicitPropositions || compiled.propositions.filter((item) => item.explicit !== false)).length > 1) explicitMultiProposition += 1;
   if (compiled.metricIds?.length) metricRouted += 1;
   if (publicPhrases.has(normalizeText(candidate.claim))) exactCatalogue += 1;
   else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
-const report = { inputPath, claims: candidates?.length || 0, measures: 'Operational routing and retrieval only. Completion and source counts are not factual accuracy. Inspect the saved answers for claim/evidence fit.', requiredFields: required, fieldUsage, typeCounts, multiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+const report = { inputPath, claims: candidates?.length || 0, measures: 'Operational routing and retrieval only. Completion and source counts are not factual accuracy. Inspect the saved answers for claim/evidence fit.', requiredFields: required, fieldUsage, typeCounts, parserMultiIncludingImplied, explicitMultiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
 if (deterministicMode) {
   const outcomes = auditCandidates.map((candidate) => {
     const result = deterministicApiFallback({ text: candidate.claim, inputType: 'text' });
     return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, ...answerDetails(candidate, result.result) };
   });
-  report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length };
   const candidateById = new Map(candidates.map((candidate) => [candidate.id, candidate]));
   report.deterministic.uncoveredByTopic = {};
   report.deterministic.uncoveredExamples = outcomes.filter((item) => item.status === 'uncovered').slice(0, 50).map((item) => ({ id: item.id, claim: candidateById.get(item.id)?.claim, claimType: candidateById.get(item.id)?.claimType }));
@@ -100,8 +102,8 @@ if (resolveMode) {
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, compoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length };
 }
 await writeFile(outputArg ? outputArg.slice(9) : '.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
-console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.multiProposition} compound, ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered` : ''}; all remain explicitly unverified discovery inputs.`);
+console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.explicitMultiProposition} with multiple explicit clauses (${report.parserMultiIncludingImplied} parser outputs including implied requirements), ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}, ${report.resolve.structuredCompoundResponses} structured compound responses` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered, ${report.deterministic.structuredCompoundResponses} structured compound responses` : ''}; all remain explicitly unverified discovery inputs.`);
