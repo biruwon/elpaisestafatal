@@ -236,9 +236,13 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     const focus = claimFocusFor(effectiveClaim);
     if (focus?.id === 'rental-price-amount') {
       const metricIds = [...(focusedMetricIdsFor(effectiveClaim) || [])];
-      const observations: Record<string, unknown>[] = env.DB && metricIds.length
-        ? await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => [])
-        : [];
+      if (!env.DB || !metricIds.length) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+      let lookupFailed = false;
+      const observations: Record<string, unknown>[] = await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => {
+        lookupFailed = true;
+        return [];
+      });
+      if (lookupFailed) return json(unavailableCheck(effectiveClaim, 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
       const plan = focusedEvidencePlan(effectiveClaim, { observations: observations as never[] }) as AnswerPlan | undefined;
       if (plan) return json(checkFromPlan(effectiveClaim, plan));
     }

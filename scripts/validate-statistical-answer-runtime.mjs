@@ -81,7 +81,7 @@ let logs = '';
 child.stderr.on('data', (chunk) => { logs += chunk.toString(); });
 const pending = [];
 const env = { DB: d1, LOCAL_CLASSIFIER_ENDPOINT: `http://127.0.0.1:${port}`, LOCAL_CLASSIFIER_TOKEN: 'fixture' };
-const context = (request) => ({ request, env, waitUntil: (promise) => pending.push(promise) });
+const context = (request, overrides = {}) => ({ request, env: { ...env, ...overrides }, waitUntil: (promise) => pending.push(promise) });
 const nativeFetch = globalThis.fetch;
 if (process.env.DEBUG_STATISTICAL_FIXTURE) globalThis.fetch = async (...args) => {
   const response = await nativeFetch(...args);
@@ -155,6 +155,28 @@ try {
     assert.equal(absoluteRentPrice.result.visual, undefined);
     assert.deepEqual(absoluteRentPrice.result.sources.map((source) => source.url), [url], JSON.stringify(absoluteRentPrice.result.sources));
   }
+  const quotaLimitedDb = {
+    prepare(sql) {
+      const statement = d1.prepare(sql);
+      return {
+        bind(...values) {
+          const bound = statement.bind(...values);
+          return {
+            async all() {
+              if (sql.includes('WHERE o.metric_id = ?')) throw new Error('D1 daily row read limit');
+              return bound.all();
+            },
+            async run() { return bound.run(); },
+          };
+        },
+      };
+    },
+  };
+  const quotaRequest = new Request('https://site.test/api/check?fresh=1', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: '¿Cuánto cuesta el alquiler medio ahora?', inputType: 'text' }) });
+  const quotaResponse = await api.onRequestPost(context(quotaRequest, { DB: quotaLimitedDb }));
+  const quotaBody = await quotaResponse.json();
+  assert.equal(quotaBody.state, 'unavailable');
+  assert.match(quotaBody.message, /no hemos podido consultar la serie estad[ií]stica/i);
   const currentRentIndex = await check('¿Cuál es el índice de precios del alquiler actual?');
   assert.match(currentRentIndex.result.reply, /índice \(2015=100\).*2026-09/);
   assert.deepEqual(currentRentIndex.result.sources.map((source) => source.url), [url]);
