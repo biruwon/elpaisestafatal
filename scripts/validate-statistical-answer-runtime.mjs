@@ -143,6 +143,7 @@ try {
   for (const query of [
     '¿Cuánto cuesta el alquiler medio ahora?',
     '¿Cuál es el importe en euros del alquiler medio más reciente en España?',
+    '¿Qué importe mensual en euros tiene el alquiler vigente de una vivienda en España?',
   ]) {
     const absoluteRentPrice = await check(query);
     assert.notEqual(absoluteRentPrice.state, 'supported');

@@ -260,8 +260,11 @@ export const summarizeWarehouseLatest = (text, observations, metricIds = []) => 
   const isPriceMetric = ['house_price_index', 'rental_price_index'].includes(latest.metricId);
   const measurement = isPriceMetric ? priceMeasurement(latest) : null;
   const wantsRate = priceRateRequested(text);
-  const asksForAbsolutePrice = /\b(?:cuant[oa] (?:cuesta|vale|paga)|precio (?:actual|medio)|alquiler (?:medio|mensual))\b/.test(normalise(text))
-    && !/\bindice\b/.test(normalise(text));
+  const amountQuery = normalise(text);
+  const asksForAbsolutePrice = !/\bindice\b/.test(amountQuery) && (
+    /\b(?:cuant\w*\s+(?:cuesta|vale|paga)|precio (?:actual|medio|mensual)|alquiler (?:medio|mensual))\b/.test(amountQuery)
+    || /\b(?:importe\w*|cantid\w*|cuant[ií]a\w*|coste\w*|euros?|eur|mensual\w*|€)\b/.test(amountQuery) && /\b(?:alquil\w*|renta\w*)\b/.test(amountQuery)
+  );
   const metric = displayMetric(latest);
   const period = displayPeriod(latest.period, latest.metricId);
   const unit = displayUnit(latest);
