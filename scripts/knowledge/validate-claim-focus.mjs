@@ -156,6 +156,16 @@ for (const claim of ['Las listas de espera sanitarias son muy largas', 'La tempo
   assert.ok(broadDomainPacketsFor(claim).length, `A broad claim lost its reviewed context: ${claim}`);
 }
 assert.equal(claimFocusFor('¿El alquiler se lleva más de la mitad del sueldo?')?.id, 'rental-affordability', 'A question about rent relative to income must remain an affordability claim');
+const cityRentAffordability = focusedEvidencePlan('Con un sueldo normal ya no se puede alquilar un piso entero solo en las grandes ciudades españolas');
+assert.equal(cityRentAffordability.evidenceLevel, 'limited');
+assert.match(cityRentAffordability.headline, /no permite saber si un sueldo normal alcanza/);
+assert.match(cityRentAffordability.shareableReply, /26,7 %.*Madrid.*31,6 %.*M[aá]laga.*34,5 %/s);
+assert.match(cityRentAffordability.shareableReply, /no es el sueldo individual/i);
+assert.match(cityRentAffordability.limitation, /hogares que ya viv[ií]an de alquiler/);
+assert.equal(cityRentAffordability.sourceLinks[0].id, 'bank-spain-housing-annual-2025');
+assert.equal(focusedEvidencePlan('Con un sueldo normal no se puede alquilar un piso entero en 2025').sourceLinks.length, 0, 'The 2024 household snapshot must not answer a 2025 request');
+assert.equal(focusedEvidencePlan('El alquiler se lleva cada vez más sueldo en las ciudades').sourceLinks.length, 0, 'A single 2024 snapshot must not answer a rent-trend claim');
+assert.equal(focusedEvidencePlan('El alquiler se lleva la mitad de los ingresos de los jóvenes').sourceLinks.length, 0, 'General-household rent data must not replace the youth-specific population');
 for (const claim of [
   'En España, ¿cuánto se paga de alquiler al mes en euros según el dato oficial más reciente?',
   '¿Cuál es el importe en euros del alquiler medio más reciente en España?',
@@ -549,7 +559,9 @@ assert.ok(!youthPurchase.shareableSourceIds.includes('bank-spain-housing-annual-
 assert.ok(!youthPurchase.evidenceSummary.families.some((family) => ['youth-rental-household-effort', 'youth-rental-overburden', 'youth-rental-potential-effort'].includes(family.criterionId)));
 const nonYouthRent = focusedEvidencePlan('El alquiler se come más de la mitad del sueldo de muchas familias');
 assert.equal(nonYouthRent.answerScope.family, 'rental-affordability');
-assert.equal(nonYouthRent.sourceLinks.length, 0, 'Youth-specific rental evidence crossed into a nearby all-household claim');
+assert.ok(nonYouthRent.sourceLinks.some((source) => source.id === 'bank-spain-housing-annual-2025'), 'All-household rent claims should use the all-renter measure');
+assert.match(nonYouthRent.shareableReply, /26,7 %/);
+assert.doesNotMatch(nonYouthRent.shareableReply, /27,4 %|34,2 %|36,3 %/, 'Youth-only measures crossed into a nearby all-household claim');
 const security = answerPlanForBroadDomains('No se puede salir a la calle de cómo está la seguridad');
 assert.doesNotMatch(security.shareableReply, /extranj|nacionaliz|wokismo/i);
 assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId === 'group-causality'));

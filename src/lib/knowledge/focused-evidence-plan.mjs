@@ -268,7 +268,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   });
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanation ? `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
+    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanation ? focus.explanationHeadline || `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
     interpretation: { kind: focus.claimType === 'causal' ? 'causal' : 'quantitative', subject: focus.label, predicate: focus.claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [

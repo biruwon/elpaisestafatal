@@ -6,6 +6,30 @@ const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
+const bankSpainRentEffortSource = {
+  id: 'bank-spain-housing-annual-2025',
+  title: 'Informe Anual 2025 · esfuerzo del alquiler y acceso a la vivienda',
+  publisher: 'Banco de España',
+  url: 'https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/InfAnual_2025.pdf',
+  publishedAt: '2026-06-18',
+  retrievedAt: '2026-11-16',
+  role: 'primary',
+};
+const bankSpainRentEffortEvidence = {
+  expiresAt: '2027-06-18',
+  territories: ['ES'],
+  when: (claim) => {
+    const years = [...claim.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+    const asksYouthOrSubgroup = /\b(j[oó]ven\w*|juventud|menores? de \d+|mujeres?|hombres?|por sexo|por g[eé]nero)\b/.test(claim);
+    const asksTrendOrCause = /\b(evoluci[oó]n|cada vez|desde (?:19|20)\d{2}|entre \d{4} y \d{4}|subid\w*|aument\w*|crec\w*|duplic\w*|triplic\w*|caus\w*|provoc\w*|debido|por culpa|responsable)\b/.test(claim);
+    return !asksYouthOrSubgroup && !asksTrendOrCause && (!years.length || years.every((year) => year === '2024'));
+  },
+  facts: [
+    'En 2024, los hogares que ya vivían de alquiler destinaban de media el 26,7 % de su renta neta al alquiler en España. En seis grandes ciudades, el promedio fue: Madrid 31,6 %, Barcelona 32,4 %, València 30,2 %, Sevilla 31,3 %, Zaragoza 24,1 % y Málaga 34,5 %.',
+    'El indicador compara el alquiler medio de la sección censal con la renta neta media de los hogares arrendatarios. No es el sueldo individual ni el precio anunciado de un piso concreto.',
+  ],
+  sources: [bankSpainRentEffortSource],
+};
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
@@ -260,8 +284,10 @@ const focuses = [
     when: (t) => has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],
     needs: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo', 'porcentaje de ingresos destinado al alquiler'],
-    explanation: 'Para saber si un alquiler es asumible hay que compararlo con los ingresos del mismo tipo de hogar, ciudad y periodo.',
-    limitation: 'El índice de alquiler mide cambios de precios, no el alquiler anunciado de un piso concreto. La sobrecarga de vivienda de todos los hogares tampoco mide automáticamente a una persona que vive sola.',
+    explanationHeadline: 'El dato disponible no permite saber si un sueldo normal alcanza para alquilar solo',
+    explanation: 'El esfuerzo medio del alquiler depende de los ingresos y del tipo de hogar. Un promedio de hogares arrendatarios aporta contexto, pero no responde por sí solo si una persona con un sueldo concreto puede alquilar una vivienda completa.',
+    explanationEvidence: bankSpainRentEffortEvidence,
+    limitation: 'El promedio describe hogares que ya vivían de alquiler; no incluye el gasto de cada persona ni a quienes no lograron acceder. Para comprobar si alguien puede alquilar un piso entero hacen falta el alquiler y el ingreso neto individual comparables por ciudad y periodo. El índice de alquiler mide cambios de precios, no importes mensuales.',
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',
