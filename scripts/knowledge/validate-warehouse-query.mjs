@@ -82,6 +82,22 @@ if (regionalClaim.length !== 1 || regionalClaim[0].id !== 'unemployment-madrid')
 const regionalComparison = geographyQuery('Compare unemployment in Madrid with Spain');
 if (regionalComparison.length !== 2 || regionalComparison.some((item) => !['unemployment-madrid', 'unemployment-spain'].includes(item.id))) throw new Error('A regional/national comparison did not retain exactly its requested places');
 if (geographyQuery('Unemployment rate in France').some((item) => item.id === 'unemployment-geography-missing')) throw new Error('A geography-specific claim accepted an observation with unknown geography');
+const sexRows = [
+  { id: 'unemployment-women', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 12, period: '2025', dimensions: { geo: 'ES', sex: 'F' }, dimensionLabels: { geo: 'Spain', sex: 'Women' }, source: ageSource },
+  { id: 'unemployment-men', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 8, period: '2025', dimensions: { geo: 'ES', sex: 'M' }, dimensionLabels: { geo: 'Spain', sex: 'Men' }, source: ageSource },
+  { id: 'unemployment-total-sex', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, period: '2025', dimensions: { geo: 'ES', sex: 'T' }, dimensionLabels: { geo: 'Spain', sex: 'Total' }, source: ageSource },
+];
+const sexQuery = (query) => rankWarehouseObservations(query, sexRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Tasa de paro de las mujeres', 'Unemployment rate among women']) {
+  const scoped = sexQuery(query);
+  if (scoped.length !== 1 || scoped[0].id !== 'unemployment-women') throw new Error(`A women-specific claim did not use the women-only series: ${query}`);
+}
+const menRate = sexQuery('Tasa de paro de los hombres');
+if (menRate.length !== 1 || menRate[0].id !== 'unemployment-men') throw new Error('A men-specific claim did not use the men-only series');
+const sexBreakdownRows = sexQuery('Unemployment rate by sex');
+if (sexBreakdownRows.length !== 2 || sexBreakdownRows.some((item) => !['unemployment-women', 'unemployment-men'].includes(item.id))) throw new Error('A sex breakdown included the aggregate total or omitted a requested group');
+const defaultSexTotal = sexQuery('Unemployment rate in Spain');
+if (defaultSexTotal.length !== 1 || defaultSexTotal[0].id !== 'unemployment-total-sex') throw new Error('An unqualified metric claim selected a sex subgroup over the total');
 const periodAndAmountQueries = ['La tasa pasó del 20 al 34 % entre 2015 y 2020', 'El coste está entre 20 y 34 euros al mes'];
 for (const query of periodAndAmountQueries) {
   if (requestedAgeScopes(query).length) throw new Error(`A year range or money amount was parsed as an age request: ${query}`);

@@ -6,6 +6,7 @@ import { comparisonQuality, observationFlagNotes } from './observation-quality.m
 import { ageScopeMatcherFor } from './age-scope.mjs';
 import { periodScopeMatcherFor } from './period-scope.mjs';
 import { geographyScopeMatcherFor, requestedGeographyScopes } from './geography-scope.mjs';
+import { sexScopeMatcherFor } from './sex-scope.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -13,11 +14,11 @@ const observationFitsClaim = (claim) => {
   const matchesAge = ageScopeMatcherFor(claim);
   const matchesPeriod = periodScopeMatcherFor(claim);
   const matchesGeography = geographyScopeMatcherFor(claim);
+  const matchesSex = sexScopeMatcherFor(claim);
   const text = normalize(claim);
   return (item) => {
-    if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item)) return false;
+    if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item) || !matchesSex(item)) return false;
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
-    if (/\bmujeres\b/.test(text) && !/\bfemale\b|\bmujeres\b|"sex"\s*:\s*"F"/i.test(population) && item.dimensions?.sex !== 'F') return false;
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
     if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
       && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
