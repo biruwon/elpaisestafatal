@@ -1,5 +1,6 @@
 import { indexLegacyWarehouseRecordPayload, indexWarehouseRecordFiles, populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
 import { excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { observationMatchesAgeScope, requestedAgeScopes } from '../../src/lib/knowledge/age-scope.mjs';
 
 const records = [
   { id: 'obs-1', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 68.2, unit: '%', period: '2026-Q1', dimensions: { geography: 'Spain' }, source: { id: 'source-ine', publisher: 'INE', url: 'https://www.ine.es/' } },
@@ -11,6 +12,38 @@ if (result.length !== 2 || result[0].id !== 'obs-1') throw new Error('Warehouse 
 if (result.some((item) => item.evidenceFit !== 'direct' || !item.matchedTerms?.length)) throw new Error('Warehouse query did not preserve evidence-fit metadata');
 if (rankWarehouseObservations('unknown metric', records).length) throw new Error('Warehouse query returned unrelated observations');
 if (warehouseEvidenceFit(0.34) !== 'weak' || warehouseEvidenceFit(0.5) !== 'qualified' || warehouseEvidenceFit(0.8) !== 'direct') throw new Error('Warehouse evidence-fit thresholds are invalid');
+
+const ageSource = { id: 'source-age-rates', title: 'Unemployment by age', url: 'https://example.org/unemployment-by-age' };
+const ageRows = [
+  { id: 'unemployment-15-24', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 23.1, unit: '%', period: '2025', dimensions: { geo: 'ES', age: 'Y15-24' }, dimensionLabels: { age: '15 to 24 years' }, source: ageSource },
+  { id: 'unemployment-20-34', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 14.8, unit: '%', period: '2025', dimensions: { geo: 'ES', age: 'Y20-34' }, dimensionLabels: { age: '20 to 34 years' }, source: ageSource },
+  { id: 'unemployment-25-34', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 12.6, unit: '%', period: '2025', dimensions: { geo: 'ES', age: 'Y25-34' }, dimensionLabels: { age: '25 to 34 years' }, source: ageSource },
+  { id: 'unemployment-35-44', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 9.4, unit: '%', period: '2025', dimensions: { geo: 'ES', age: 'Y35-44' }, dimensionLabels: { age: '35 to 44 years' }, source: ageSource },
+  { id: 'unemployment-all-ages', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10.2, unit: '%', period: '2025', dimensions: { geo: 'ES', age: 'TOTAL' }, dimensionLabels: { age: 'All ages' }, source: ageSource },
+  { id: 'unemployment-age-missing', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 8.7, unit: '%', dimensions: { geo: 'ES' }, source: ageSource },
+];
+const ageQuery = (query) => rankWarehouseObservations(query, ageRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Tasa de paro de personas de 25 a 34 años', 'Unemployment rate for people aged 25 to 34']) {
+  const scoped = ageQuery(query);
+  if (scoped.length !== 1 || scoped[0].id !== 'unemployment-25-34') throw new Error(`Explicit age request returned evidence from another age band: ${query}`);
+}
+const adjacentAge = ageQuery('Tasa de paro de personas de 35 a 44 años');
+if (adjacentAge.length !== 1 || adjacentAge[0].id !== 'unemployment-35-44') throw new Error('A nearby age claim crossed into the 25–34 group');
+const periodAndAmountQueries = ['La tasa pasó del 20 al 34 % entre 2015 y 2020', 'El coste está entre 20 y 34 euros al mes'];
+for (const query of periodAndAmountQueries) {
+  if (requestedAgeScopes(query).length) throw new Error(`A year range or money amount was parsed as an age request: ${query}`);
+}
+const historicalAgeQuery = ageQuery('Tasa de paro de 25 a 34 años entre 2015 y 2020');
+if (historicalAgeQuery.length !== 1 || historicalAgeQuery[0].id !== 'unemployment-25-34') throw new Error('A period range contaminated the explicitly requested age band');
+const ageComparison = ageQuery('Compara la tasa de paro de personas de 20 a 34 años y de 35 a 44 años');
+if (ageComparison.length !== 2 || ageComparison.some((item) => !['unemployment-20-34', 'unemployment-35-44'].includes(item.id))) throw new Error('An age-group comparison did not retain exactly its requested groups');
+const unscopedAgeRows = ageQuery('Unemployment rate in Spain');
+if (unscopedAgeRows.length !== ageRows.length) throw new Error('An unscoped query was unexpectedly restricted to an age group');
+if (ageQuery('Tasa de paro para menores de 15 años').length) throw new Error('An age request was answered using missing or unrelated age metadata');
+if (!observationMatchesAgeScope('Tasa de paro para menores de 15 años', { dimensions: { age: 'Y_LT15' } })) throw new Error('The exact under-15 dimension did not match');
+if (observationMatchesAgeScope('Tasa de paro para menores de 15 años', { dimensions: { age: 'Y_LE15' } })) throw new Error('An inclusive at-most age dimension was treated as strictly under the requested age');
+if (!observationMatchesAgeScope('Tasa de paro de personas de 65 años o más', { dimensions: { age: 'Y_GE65' } })) throw new Error('The exact 65-or-older dimension did not match');
+if (observationMatchesAgeScope('Tasa de paro de personas de 65 años o más', { dimensions: { age: 'Y_GT65' } })) throw new Error('A strictly over-65 dimension was treated as 65-or-older');
 
 const residentRows = [
   { id: 'resident-total', metricId: 'resident_population', metric: 'resident population', value: 49128297, unit: 'Number', period: '2025', dimensions: { geo: 'ES', age: 'TOTAL', sex: 'T' }, source: { id: 'source-population', title: 'Eurostat resident population', url: 'https://ec.europa.eu/eurostat/' } },

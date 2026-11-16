@@ -395,6 +395,13 @@ const youthOpportunities = focusedEvidencePlan('Los jóvenes no encuentran emple
   { id: 'adult-unemployment', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', dimensions: { age: 'Y15-74', sex: 'T' }, source: jobsSource },
 ] });
 assert.doesNotMatch(youthOpportunities.shareableReply, /10 %/, 'An all-age rate cannot be presented as a youth rate');
+const ageScopedYouthOpportunities = focusedEvidencePlan('Los jóvenes de 25 a 34 años no encuentran empleo', { observations: [
+  { id: 'wrong-youth-age', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España', dimensions: { age: 'Y15-74', sex: 'T' }, dimensionLabels: { age: 'All active people aged 15 to 74' }, source: jobsSource },
+  { id: 'matching-youth-age', metricId: 'unemployment_rate', value: 13.2, period: '2025', unit: '%', geography: 'España', population: 'Youth active population aged 25 to 34', dimensions: { age: 'Y25-34', sex: 'T' }, dimensionLabels: { age: 'Youth aged 25 to 34' }, source: jobsSource },
+] });
+assert.match(ageScopedYouthOpportunities.shareableReply, /13,2 %/, 'A matching age band should remain available as contextual evidence');
+assert.doesNotMatch(ageScopedYouthOpportunities.shareableReply, /10 %/, 'An adjacent all-age band must not be presented for an explicit age request');
+assert.deepEqual(ageScopedYouthOpportunities.evidenceIds, ['matching-youth-age'], 'The focused answer should retain only evidence from the requested age group');
 const rows = [
   ['3551/0 BARÓMETRO SANITARIO 2026 (PRIMERA OLEADA)'],
   ['Pregunta 5c'], ['Desde que pidió cita hasta que le atendió el médico de familia, ¿cuánto tiempo pasó?'],

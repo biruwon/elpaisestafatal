@@ -3,6 +3,7 @@ import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
+import { observationMatchesAgeScope } from './age-scope.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -18,6 +19,7 @@ const requestedTerritories = (claim) => {
   return found.some(([id]) => id.length > 2) ? found.filter(([id]) => id !== 'ES') : found;
 };
 const observationFitsClaim = (claim, item) => {
+  if (!observationMatchesAgeScope(claim, item)) return false;
   const territories = requestedTerritories(claim);
   const actual = ` ${normalize([item.geography, item.dimensions?.geo, item.dimensionLabels?.geo].filter(Boolean).join(' '))} `;
   const europeanComparator = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(normalize(claim)) && /\b(eu27 2020|european union|union europea)\b/.test(actual);
