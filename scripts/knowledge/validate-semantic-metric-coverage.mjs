@@ -95,9 +95,17 @@ const cases = [
   ['¿Qué tasa de condenas firmes tienen los menores según nacionalidad?', 'crime_conviction_rate_minor_by_nationality'],
   ['¿Qué nacionalidades presentan más solicitudes de vivienda protegida?', 'public_housing_applications_by_nationality'],
   ['¿Qué gasto de pensiones prevé el sistema para los próximos años?', 'pension_system_expenditure_projected'],
+  ['¿Cuánto prevé gastar en pensiones el sistema público?', 'pension_system_expenditure_projected'],
+  ['¿Cómo evolucionará el gasto total del sistema de pensiones?', 'pension_system_expenditure_projected'],
   ['¿Cuánto gasto contributivo en pensiones proyectan las previsiones?', 'pension_contributory_expenditure_projected'],
   ['¿Qué gasto proyectado corresponde a pensiones no contributivas?', 'pension_noncontributory_expenditure_projected'],
+  ['¿Qué saldo proyecta AIReF para el sistema público de pensiones?', 'pension_system_balance_projected'],
+  ['¿Qué cotizaciones dedicadas a pensiones prevén las proyecciones?', 'pension_contributory_income_projected'],
+  ['¿Qué transferencias implícitas necesitará el sistema para financiar las pensiones?', 'pension_implicit_transfers_projected'],
+  ['¿Qué transferencias explícitas de la Administración Central prevé AIReF para las pensiones?', 'pension_public_transfers_projected'],
   ['¿Cuánto se presupuesta en total para las pensiones de la Seguridad Social?', 'social_security_pension_budget_total'],
+  ['¿Qué presupuesto inicial se aprobó para las pensiones contributivas?', 'social_security_contributory_pension_budget'],
+  ['¿Cuánto se presupuestó este año para pensiones contributivas?', 'social_security_contributory_pension_budget'],
 ];
 
 const intentionallyUnderspecified = [
@@ -134,6 +142,19 @@ const sexSpecificUnemployment = '¿Cuál es la tasa de paro según sexo?';
 if (preferredMetricIdsForQuery(sexSpecificUnemployment).size
   || !excludedMetricIdsForQuery(sexSpecificUnemployment).has('employment_rate_by_sex')) {
   throw new Error('An employment-by-sex rate must not answer an unemployment-by-sex request');
+}
+const pensionNearNeighbors = [
+  ['¿Qué déficit proyecta AIReF para el sistema público de pensiones?', 'pension_system_balance_projected', 'pension_system_expenditure_projected'],
+  ['¿Qué transferencias implícitas necesitará el sistema para equilibrar las pensiones?', 'pension_implicit_transfers_projected', 'pension_public_transfers_projected'],
+  ['¿Qué transferencias de la Administración Central prevé AIReF para las pensiones?', 'pension_public_transfers_projected', 'pension_implicit_transfers_projected'],
+  ['¿Qué presupuesto inicial corresponde a las pensiones contributivas?', 'social_security_contributory_pension_budget', 'pension_contributory_expenditure_projected'],
+  ['¿Cuánto gasto de pensiones de vejez se registró por habitante?', 'old_age_survivors_benefits_per_capita', 'pension_system_expenditure_projected'],
+];
+for (const [query, expected, forbidden] of pensionNearNeighbors) {
+  const ids = preferredMetricIdsForQuery(query);
+  if (!ids.has(expected) || ids.has(forbidden)) {
+    throw new Error(`${query}: expected ${expected} without adjacent measure ${forbidden}; got ${[...ids].join(', ')}`);
+  }
 }
 
 const failures = [];

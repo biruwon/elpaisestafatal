@@ -776,20 +776,58 @@ export const preferredMetricIdsForQuery = (query) => {
     && nationality && hasAny('solicitud', 'solicitudes', 'solicitante', 'solicitantes')) {
     preferScopedMetric('public_housing_applications_by_nationality', ['public_housing_allocations_by_nationality', 'public_housing_allocations_by_group', 'public_housing_allocation_rate_by_programme']);
   }
-  if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
-    && hasAny('sistema', 'gasto', 'expenditure')) {
-    preferScopedMetric('pension_system_expenditure_projected', ['old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita', 'social_security_pension_budget_total']);
+  const pensionContext = hasAny('pension', 'pensiones', 'jubilacion', 'jubilaciones');
+  const pensionProjection = hasAny('proyect', 'prevision', 'preve', 'previst', 'futura', 'futuro', 'tendra', 'evolucionara')
+    || /\b20(?:3|4|5|6|7|8|9)\d\b/.test(normalized);
+  const pensionTargets = new Set();
+  if (pensionContext && !hasEuropeReference) {
+    const implicitTransferClaim = hasAny('transferencias implicitas', 'transferencia implicita', 'necesidad de transferencias implicitas')
+      || (hasAny('necesita transferencias', 'necesitara transferencias', 'necesidad de transferencias', 'transferencias para equilibrar', 'transferencias necesarias')
+        && hasAny('financiar', 'equilibrar', 'sistema de pensiones', 'pensiones'));
+    const transferClaim = hasAny('transferencia', 'transferencias')
+      && hasAny('administracion central', 'transferencias de ac', 'estado', 'publicas', 'publicos');
+    const balanceClaim = hasAny('saldo', 'balance', 'deficit', 'superavit', 'resultado financiero');
+    const expenditureClaim = hasAny('gasto', 'gastos', 'gasta', 'coste', 'costos', 'expenditure');
+    const noncontributoryClaim = hasAny('no contributivo', 'no contributiva', 'no contributivos', 'no contributivas');
+    const contributoryClaim = hasAny('contributivo', 'contributiva', 'contributivos', 'contributivas');
+    const contributionIncomeClaim = hasAny('cotizacion', 'cotizaciones', 'ingreso contributivo', 'ingresos contributivos', 'contribuciones');
+
+    if (implicitTransferClaim) pensionTargets.add('pension_implicit_transfers_projected');
+    if (pensionProjection && balanceClaim) pensionTargets.add('pension_system_balance_projected');
+    if (pensionProjection && transferClaim && !implicitTransferClaim) pensionTargets.add('pension_public_transfers_projected');
+    if (pensionProjection && contributionIncomeClaim) pensionTargets.add('pension_contributory_income_projected');
+    if (pensionProjection && !contributionIncomeClaim && hasAny('ingreso', 'ingresos', 'recaudacion') && !expenditureClaim) {
+      pensionTargets.add('pension_system_income_projected');
+    }
+    if (pensionProjection && expenditureClaim && noncontributoryClaim) pensionTargets.add('pension_noncontributory_expenditure_projected');
+    if (pensionProjection && expenditureClaim && contributoryClaim && !noncontributoryClaim) {
+      pensionTargets.add('pension_contributory_expenditure_projected');
+    }
+    if (pensionProjection && expenditureClaim && !noncontributoryClaim && !contributoryClaim) {
+      pensionTargets.add('pension_system_expenditure_projected');
+    }
+
+    if (hasAny('presupuest')) {
+      if (hasAny('complemento a minimos', 'complementos a minimos')) pensionTargets.add('social_security_pension_complements_minimum_budget');
+      if (noncontributoryClaim) pensionTargets.add('social_security_noncontributory_pension_budget');
+      if (contributoryClaim && !noncontributoryClaim) pensionTargets.add('social_security_contributory_pension_budget');
+      if (!noncontributoryClaim && !contributoryClaim && !hasAny('complemento a minimos', 'complementos a minimos')) {
+        pensionTargets.add('social_security_pension_budget_total');
+      }
+    }
   }
-  if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
-    && hasAny('contributivo', 'contributiva', 'contributivos', 'contributivas', 'cotizaciones')
-    && !hasAny('no contributivo', 'no contributiva', 'no contributivos', 'no contributivas')) {
-    preferScopedMetric('pension_contributory_expenditure_projected', ['pension_system_expenditure_projected', 'pension_noncontributory_expenditure_projected']);
-  } else if (hasAny('pension', 'pensiones') && hasAny('proyect', 'prevision', 'preve', 'previsto', 'prevista')
-    && hasAny('no contributivo', 'no contributiva', 'no contributivos', 'no contributivas')) {
-    preferScopedMetric('pension_noncontributory_expenditure_projected', ['pension_system_expenditure_projected', 'pension_contributory_expenditure_projected']);
-  }
-  if (hasAny('pension', 'pensiones') && hasAny('presupuest') && hasAny('gasto', 'total')) {
-    preferScopedMetric('social_security_pension_budget_total', ['old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita', 'pension_system_expenditure_projected']);
+  if (pensionTargets.size) {
+    const pensionScopeIds = [
+      'pension_contributory_income_projected', 'pension_public_transfers_projected',
+      'pension_contributory_expenditure_projected', 'pension_noncontributory_expenditure_projected',
+      'pension_system_income_projected', 'pension_system_expenditure_projected',
+      'pension_system_balance_projected', 'pension_implicit_transfers_projected',
+      'social_security_contributory_pension_budget', 'social_security_pension_complements_minimum_budget',
+      'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total',
+      'old_age_survivors_benefits_total', 'old_age_survivors_benefits_per_capita',
+    ];
+    for (const id of pensionScopeIds) if (!pensionTargets.has(id)) preferred.delete(id);
+    for (const id of pensionTargets) preferred.add(id);
   }
   if (hasHousingContextWithoutEmployment(normalized)) {
     preferred.delete('temporary_employment_rate');

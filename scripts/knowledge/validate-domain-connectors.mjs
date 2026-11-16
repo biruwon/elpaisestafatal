@@ -88,12 +88,13 @@ XLSX.utils.book_append_sheet(airefBook, XLSX.utils.aoa_to_sheet([
   ['', '', 'Gasto', 'No contributivas', 0.2, 0.2, 0.2],
   ['', '', '', '', '', '', ''],
   ['', 'TOTAL', 'Ingresos', '', 11.5, 12.6, 12.4],
-  ['', 'TOTAL', 'Gastos', '', 14.0, 12.9, 15.4],
-  ['', 'TOTAL', 'Saldo', '', -2.5, -0.3, -3.0],
-  ['', 'TOTAL', '', 'Transferencias implícitas', 2.5, 0.3, 3.0],
+  ['', '', 'Gastos', '', 14.0, 12.9, 15.4],
+  ['', '', 'Saldo', '', -2.5, -0.3, -3.0],
+  ['', '', '', 'Transferencias implícitas', 2.5, 0.3, 3.0],
 ]), 'Gráfico 12');
 const airefRows = await parseAirefPensionProjectionWorkbook(XLSX.write(airefBook, { type: 'buffer', bookType: 'xlsx' }), { ...source, id: 'airef-source', title: 'AIReF projection workbook' });
-if (airefRows.length !== 24 || !airefRows.some((row) => row.metricId === 'pension_system_balance_projected' && row.period === '2070' && row.value === -3) || !airefRows.every((row) => row.dataKind === 'projected' && row.unit === '% del PIB' && row.dimensions.scenario)) throw new Error('AIReF projection parser did not preserve annual projected pension-finance series');
+const airefMetricIds = new Set(airefRows.map((row) => row.metricId));
+if (airefRows.length !== 24 || airefMetricIds.size !== 8 || !airefRows.some((row) => row.metricId === 'pension_system_balance_projected' && row.period === '2070' && row.value === -3) || !airefRows.some((row) => row.metricId === 'pension_system_expenditure_projected' && row.period === '2020' && row.value === 14) || !airefRows.some((row) => row.metricId === 'pension_implicit_transfers_projected' && row.period === '2025' && row.value === 0.3) || !airefRows.every((row) => row.dataKind === 'projected' && row.unit === '% del PIB' && row.dimensions.scenario)) throw new Error('AIReF projection parser did not preserve all annual projected pension-finance series');
 const budgetBook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(budgetBook, XLSX.utils.aoa_to_sheet([
   ['Cuadro 9.4'],

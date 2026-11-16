@@ -1,5 +1,6 @@
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { X509Certificate } from 'node:crypto';
 import { spawn } from 'node:child_process';
 
 const configPath = process.argv.includes('--config')
@@ -21,18 +22,49 @@ if (!feeds.length) {
   process.exit(0);
 }
 
-const run = (feed) => new Promise((resolve, reject) => {
+const environmentFor = async (feed) => {
+  const env = { ...process.env };
+  if (!feed.tlsCaCertificate) return env;
+  if (feed.id !== 'airef-pension-projection-tables-2026' || new URL(feed.url).hostname !== 'www.airef.es') {
+    throw new Error(`Source-specific TLS CA is not approved for domain feed ${feed.id}`);
+  }
+
+  const certificatePath = resolve(feed.tlsCaCertificate.path);
+  const certificatePem = await readFile(certificatePath, 'utf8');
+  const certificate = new X509Certificate(certificatePem);
+  const currentTime = Date.now();
+  if (!certificate.ca
+    || certificate.fingerprint256 !== feed.tlsCaCertificate.sha256
+    || Date.parse(certificate.validFrom) > currentTime
+    || Date.parse(certificate.validTo) <= currentTime) {
+    throw new Error(`Unexpected TLS CA certificate for domain feed ${feed.id}`);
+  }
+
+  const existingCaPem = env.NODE_EXTRA_CA_CERTS
+    ? await readFile(resolve(env.NODE_EXTRA_CA_CERTS), 'utf8')
+    : '';
+  const bundlePath = resolve('.local/domain-refresh-ca', `${feed.id}.pem`);
+  await mkdir(dirname(bundlePath), { recursive: true });
+  await writeFile(bundlePath, [existingCaPem, certificatePem].filter(Boolean).join('\n'), { mode: 0o600 });
+  env.NODE_EXTRA_CA_CERTS = bundlePath;
+  return env;
+};
+
+const run = async (feed) => {
   const args = ['scripts/knowledge/ingest-domain-source.mjs', '--domain', feed.domain, '--url', feed.url, '--title', feed.title];
   if (feed.schedule) args.push('--schedule', feed.schedule);
-  const child = spawn(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'] });
-  let output = '';
-  child.stdout.on('data', (chunk) => { output += chunk; });
-  child.stderr.on('data', (chunk) => { output += chunk; });
-  child.on('error', reject);
-  child.on('exit', (code) => code === 0
-    ? resolve(output)
-    : reject(new Error(`Domain feed ${feed.id} failed (${code})\n${output}`)));
-});
+  const env = await environmentFor(feed);
+  return new Promise((resolveRun, reject) => {
+    const child = spawn(process.execPath, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+    let output = '';
+    child.stdout.on('data', (chunk) => { output += chunk; });
+    child.stderr.on('data', (chunk) => { output += chunk; });
+    child.on('error', reject);
+    child.on('exit', (code) => code === 0
+      ? resolveRun(output)
+      : reject(new Error(`Domain feed ${feed.id} failed (${code})\n${output}`)));
+  });
+};
 
 const failures = [];
 const successes = [];

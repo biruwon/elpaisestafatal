@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { X509Certificate } from 'node:crypto';
 
 const file = path.resolve('config/domain-source-refresh.json');
 const config = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -24,6 +25,27 @@ for (const feed of feeds ?? []) {
   try {
     const url = new URL(feed.url);
     if (url.protocol !== 'https:') errors.push(`feed must use HTTPS: ${feed.id}`);
+    if (feed.tlsCaCertificate) {
+      if (feed.id !== 'airef-pension-projection-tables-2026' || url.hostname !== 'www.airef.es') {
+        errors.push(`source-specific TLS CA is not approved for ${feed.id}`);
+      }
+      const certificatePath = path.resolve(feed.tlsCaCertificate.path || '');
+      if (!certificatePath.startsWith(`${path.resolve('config/certificates')}${path.sep}`)) {
+        errors.push(`TLS CA certificate must be stored under config/certificates for ${feed.id}`);
+      } else {
+        try {
+          const certificate = new X509Certificate(fs.readFileSync(certificatePath, 'utf8'));
+          if (!certificate.ca
+            || certificate.fingerprint256 !== feed.tlsCaCertificate.sha256
+            || Date.parse(certificate.validFrom) > Date.now()
+            || Date.parse(certificate.validTo) <= Date.now()) {
+            errors.push(`TLS CA certificate fingerprint or CA constraint mismatch for ${feed.id}`);
+          }
+        } catch {
+          errors.push(`TLS CA certificate cannot be read for ${feed.id}`);
+        }
+      }
+    }
   } catch {
     errors.push(`invalid URL: ${feed.id}`);
   }

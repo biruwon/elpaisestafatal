@@ -12,19 +12,51 @@ const normalise = (value) => String(value || '')
 
 const broadJudgement = (value) => /\b(?:fatal|abandonad|invad|destruy|colaps|peor|mentir|mienten|desastre|ruina|insegur|peligro)\w*/.test(value);
 const supportsForClaim = (claimType = '') => claimType === 'causal' ? ['descriptive', 'trend'] : [claimType || 'descriptive', 'descriptive', 'trend'];
+const displayNumber = (value) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return String(value);
+  const maximumFractionDigits = Number.isInteger(number) ? 0 : Math.abs(number) < 1 ? 4 : 2;
+  return new Intl.NumberFormat('es-ES', { maximumFractionDigits }).format(number);
+};
 
 const sourceTypeScore = (source = {}) => source.sourceType === 'official' || source.role === 'primary' ? 0.2 : source.sourceType === 'academic' ? 0.15 : 0;
 const freshnessScore = (status) => status === 'fresh' ? 0.2 : status === 'stale' ? 0.04 : 0;
 
 const observationKey = (item) => item.metricId || item.metric;
 const numericValue = (value) => (typeof value === 'number' || typeof value === 'string' && value.trim() !== '') && Number.isFinite(Number(value));
+const yearsIn = (value) => [...new Set(String(value || '').match(/\b(?:19|20)\d{2}\b/g) || [])];
+const requestedYearsFor = (query) => {
+  const text = String(query || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
+  const allYears = yearsIn(text);
+  const metadataYears = new Set([...text.matchAll(/\b(?:airef|ine|informe|estudio|report|study|encuesta|barometro|ecv|epa)\s+(?:(?:de|del|of)\s+)?((?:19|20)\d{2})\b/g)].map((match) => match[1]));
+  const requested = new Set();
+  const addYear = (year) => { if (year && !metadataYears.has(year)) requested.add(year); };
+  for (const match of text.matchAll(/\b(?:en|in|para|for|durante|during|desde|since|hasta|until|entre|between|de|from|a|to|al)\s+((?:19|20)\d{2})\b/g)) addYear(match[1]);
+  for (const match of text.matchAll(/\b((?:19|20)\d{2})\s*(?:[-–—]|\s+(?:y|and|a|to|hasta|vs|versus)\s+)\s*((?:19|20)\d{2})\b/g)) {
+    addYear(match[1]);
+    addYear(match[2]);
+  }
+  if (requested.size) return [...requested].sort();
+  const nonMetadataYears = allYears.filter((year) => !metadataYears.has(year));
+  return nonMetadataYears;
+};
+const itemsForRequestedYears = (items, requestedYears) => {
+  const requested = new Set(requestedYears);
+  const selected = items.filter((item) => {
+    const years = yearsIn(item.period);
+    if (years.length === 1) return requested.has(years[0]);
+    return years.length > 1 && years.length === requested.size && years.every((year) => requested.has(year));
+  });
+  const covered = new Set(selected.flatMap((item) => yearsIn(item.period)).filter((year) => requested.has(year)));
+  return { items: selected, missing: requestedYears.filter((year) => !covered.has(year)) };
+};
 const scopeOf = (item) => Object.fromEntries(Object.entries({
   geography: item.geography, population: item.population, denominator: item.denominator, unit: item.unit,
   ...(item.dimensions || {}),
 }).filter(([key, value]) => value !== undefined && value !== null && value !== '' && !['time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b)));
 const seriesKey = (item) => JSON.stringify({ scope: scopeOf(item), dataKind: item.dataKind || 'observed', periodType: item.periodType || 'observation' });
 
-const findingFor = (items, candidate, query) => {
+const findingFor = (items, candidate, query, requestedYears = []) => {
   const latestItems = items.slice().sort((a, b) => String(a.period || a.id).localeCompare(String(b.period || b.id)));
   const latest = latestItems.at(-1);
   const title = latest?.metric || candidate.metricId;
@@ -32,9 +64,41 @@ const findingFor = (items, candidate, query) => {
   for (const item of latestItems) series.set(seriesKey(item), item);
   if (series.size > 1 && candidate.metricId !== 'public_housing_actions') {
     const rows = [...series.values()].slice(0, 6);
-    const values = rows.map((item) => `${Object.values(scopeOf(item)).join(' · ')}: ${item.value}${item.unit ? ` ${item.unit}` : ''}${item.period ? ` (${item.period})` : ''}`).join('; ');
+    const values = rows.map((item) => `${Object.values(scopeOf(item)).join(' · ')}: ${displayNumber(item.value)}${item.unit ? ` ${item.unit}` : ''}${item.period ? ` (${item.period})` : ''}`).join('; ');
     return { title, finding: `${title}: ${values}.`, direction: 'qualifies',
       limitation: 'Son series con ámbitos distintos. No se calcula una media, una tasa común ni una comparación causal entre ellas.' };
+  }
+  if (candidate.metricId === 'pension_system_balance_projected') {
+    const projection = latest?.dimensions?.projection || 'AIReF 2026';
+    const scenario = latest?.dimensions?.scenario || 'escenario publicado';
+    const values = requestedYears.length > 1
+      ? latestItems.map((item) => `${item.period}: ${displayNumber(item.value)}${item.unit ? ` ${item.unit}` : ''}`).join('; ')
+      : `${displayNumber(latest?.value)}${latest?.unit ? ` ${latest.unit}` : ''}${latest?.period ? ` (${latest.period})` : ''}`;
+    const signNote = latestItems.some((item) => Number(item.value) < 0) ? ' El signo negativo indica que los gastos proyectados superan a los ingresos.' : '';
+    return {
+      title: 'Saldo proyectado del sistema público de pensiones',
+      finding: `Saldo de ingresos menos gastos: ${values}.${signNote}`,
+      direction: 'neutral',
+      limitation: `Proyección ${projection}, ${scenario}; no es un dato observado ni el déficit público total.`,
+    };
+  }
+  if (candidate.metricId === 'pension_implicit_transfers_projected') {
+    const projection = latest?.dimensions?.projection || 'AIReF 2026';
+    const scenario = latest?.dimensions?.scenario || 'escenario publicado';
+    const values = requestedYears.length > 1
+      ? latestItems.map((item) => `${item.period}: ${displayNumber(item.value)}${item.unit ? ` ${item.unit}` : ''}`).join('; ')
+      : `${displayNumber(latest?.value)}${latest?.unit ? ` ${latest.unit}` : ''}${latest?.period ? ` (${latest.period})` : ''}`;
+    return {
+      title: 'Transferencias implícitas para equilibrar el sistema de pensiones',
+      finding: `Transferencias adicionales estimadas para equilibrar el sistema: ${values}.`,
+      direction: 'neutral',
+      limitation: `Proyección ${projection}, ${scenario}; estima la necesidad de financiación, no el total de transferencias explícitas de la Administración Central.`,
+    };
+  }
+  if (requestedYears.length > 1 && latestItems.length > 1) {
+    const values = latestItems.map((item) => `${item.period}: ${item.value}${item.unit ? ` ${item.unit}` : ''}`).join('; ');
+    return { title, finding: `${title}: ${values}.`, direction: 'neutral',
+      limitation: 'Se muestran los periodos solicitados; no se extrapola a otros años.' };
   }
   if (candidate.metricId === 'public_housing_actions' && latestItems.length) {
     const period = latest?.period;
@@ -43,7 +107,7 @@ const findingFor = (items, candidate, query) => {
     const place = item?.geography ? ` en ${item.geography}` : '';
     return {
       title,
-      finding: `${title}: ${item?.value ?? 'datos localizados'}${item?.unit ? ` ${item.unit}` : ''}${place}${period ? ` (${period})` : ''}.`,
+      finding: `${title}: ${item?.value == null ? 'datos localizados' : displayNumber(item.value)}${item?.unit ? ` ${item.unit}` : ''}${place}${period ? ` (${period})` : ''}.`,
       direction: 'qualifies',
       limitation: 'Describe actuaciones administrativas de vivienda protegida, no adjudicaciones por nacionalidad ni prioridad entre grupos.',
     };
@@ -51,11 +115,11 @@ const findingFor = (items, candidate, query) => {
   const samePeriod = latest?.period ? latestItems.filter((item) => item.period === latest.period) : latestItems;
   const groups = samePeriod.filter((item) => item.dimensions?.group || item.group);
   if (groups.length >= 2 && (candidate.metricId.includes('by_nationality') || candidate.metricId.includes('by_group'))) {
-    const values = groups.map((item) => `${item.dimensions?.group || item.group}: ${item.value}${item.unit ? ` ${item.unit}` : ''}`).join('; ');
+    const values = groups.map((item) => `${item.dimensions?.group || item.group}: ${displayNumber(item.value)}${item.unit ? ` ${item.unit}` : ''}`).join('; ');
     const limitation = candidate.limitations?.[0] || 'La comparación usa solo los grupos y el denominador publicados por la fuente.';
     return { title, finding: `${title}: ${values}${latest.period ? ` (${latest.period})` : ''}.`, direction: 'qualifies', limitation };
   }
-  const value = latest && numericValue(latest.value) ? `${latest.value}${latest.unit ? ` ${latest.unit}` : ''}` : 'documento localizado, sin medición numérica';
+  const value = latest && numericValue(latest.value) ? `${displayNumber(latest.value)}${latest.unit ? ` ${latest.unit}` : ''}` : 'documento localizado, sin medición numérica';
   const period = latest?.period ? ` (${latest.period})` : '';
   const limitation = candidate.limitations?.[0] || (candidate.metricId.endsWith('_europe') ? 'La comparación se refiere a la definición europea de este indicador.' : 'El indicador mide solo esta dimensión y no resume por sí solo el estado general del país.');
   const direction = broadJudgement(normalise(query)) ? 'qualifies' : 'neutral';
@@ -75,8 +139,10 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   const supportedTypes = supportsForClaim(claimType);
   const rejected = [];
   const ranked = [];
+  const requestedYears = requestedYearsFor(query);
+  const missingRequestedYears = new Set();
   for (const candidate of candidates) {
-    const items = (byMetric.get(candidate.metricId) || []).filter((item) => numericValue(item.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(item.kind));
+    let items = (byMetric.get(candidate.metricId) || []).filter((item) => numericValue(item.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(item.kind));
     if (candidate.metricId === 'public_housing_allocations_by_nationality' && !/euskadi|pa[ií]s\s+vasco|etxebide|capv/i.test(query)) {
       rejected.push({ metricId: candidate.metricId, reason: 'territorial_scope_not_requested' });
       continue;
@@ -88,6 +154,15 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
     if (!items.length) {
       rejected.push({ metricId: candidate.metricId, reason: 'no_compatible_observations' });
       continue;
+    }
+    if (requestedYears.length) {
+      const requestedSelection = itemsForRequestedYears(items, requestedYears);
+      if (requestedSelection.missing.length) {
+        for (const year of requestedSelection.missing) missingRequestedYears.add(year);
+        rejected.push({ metricId: candidate.metricId, reason: `requested_period_not_available:${requestedSelection.missing.join(',')}` });
+        continue;
+      }
+      items = requestedSelection.items;
     }
     if (candidate.supports?.length && !candidate.supports.some((type) => supportedTypes.includes(type))) {
       rejected.push({ metricId: candidate.metricId, reason: `claim_type_not_supported:${claimType}` });
@@ -130,7 +205,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   }
   ranked.sort((a, b) => b.score - a.score);
   const selected = ranked.slice(0, maxFamilies).map(({ candidate, items, freshness }) => {
-    const finding = findingFor(items, candidate, query);
+    const finding = findingFor(items, candidate, query, requestedYears);
     const stale = freshness !== 'fresh';
     const qualityNotes = [...new Set(items.flatMap((item) => observationFlagNotes(item.status)))].join(' ');
     return {
@@ -150,8 +225,10 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
       score: Number((ranked.find((item) => item.candidate.metricId === candidate.metricId)?.score || 0).toFixed(3)),
     };
   });
-  const missingDimensions = selected.length ? [] : ['indicador compatible', 'periodo comparable', 'territorio o población'];
-  const overallLevel = selected.length && selected.every((item) => item.freshness === 'fresh' && item.evidenceIds.length) ? 'qualified' : 'insufficient';
+  const missingDimensions = missingRequestedYears.size
+    ? [`periodo solicitado sin observaciones compatibles: ${[...missingRequestedYears].sort().join(' y ')}`]
+    : selected.length ? [] : ['indicador compatible', 'periodo comparable', 'territorio o población'];
+  const overallLevel = selected.length && !missingRequestedYears.size && selected.every((item) => item.freshness === 'fresh' && item.evidenceIds.length) ? 'qualified' : 'insufficient';
   return { selected, rejected, missingDimensions, overallLevel };
 };
 

@@ -17,16 +17,66 @@ const manifestDirectory = new URL('../../.local/source-warehouse/manifests/', im
 let files = [];
 try { files = (await readdir(manifestDirectory)).filter((file) => file.endsWith('.json')); } catch { /* A clean checkout has no derived snapshots yet. */ }
 const failures = [];
+const manifests = [];
 for (const file of files) {
-  try {
-    const manifest = JSON.parse(await readFile(join(manifestDirectory, file), 'utf8'));
-    // Discovery snapshots may carry the host's registry id without being an
-    // approved scheduled feed. They are useful leads, but they must not make
-    // the authoritative refresh gate fail after their one-off retrieval ages.
+  try { manifests.push({ file, ...JSON.parse(await readFile(join(manifestDirectory, file), 'utf8')) }); }
+  catch { failures.push(`${file}: invalid manifest`); }
+}
+const loadReport = async (relativePath) => {
+  try { return { present: true, value: JSON.parse(await readFile(new URL(`../../${relativePath}`, import.meta.url), 'utf8')) }; }
+  catch (error) { return error?.code === 'ENOENT' ? { present: false } : { present: true, error }; }
+};
+const [sourceReport, domainReport] = await Promise.all([
+  loadReport('.local/source-refresh-report.json'),
+  loadReport('.local/domain-refresh-report.json'),
+]);
+const reports = [
+  { ...sourceReport, label: 'public source', kind: 'source' },
+  { ...domainReport, label: 'domain source', kind: 'domain' },
+];
+const hasRefreshReport = reports.some((report) => report.present);
+const normalizeUrl = (value) => { try { return new URL(value).href; } catch { return String(value || ''); } };
+let checkedSnapshots = 0;
+
+if (hasRefreshReport) {
+  for (const report of reports) {
+    if (!report.present) continue;
+    if (report.error) {
+      failures.push(`${report.label} refresh report is invalid: ${report.error.message}`);
+      continue;
+    }
+    const value = report.value;
+    if (!Array.isArray(value?.successes)) {
+      failures.push(`${report.label} refresh report has no successes list`);
+      continue;
+    }
+    if (Number(value.failed || 0) > 0) failures.push(`${report.label} refresh report records ${value.failed} failed feed(s)`);
+    for (const success of value.successes) {
+      const matches = manifests.filter((manifest) => report.kind === 'source'
+        ? manifest.sourceRegistryId === success.sourceId
+          && normalizeUrl(manifest.url) === normalizeUrl(success.url)
+          && (!success.metricId || manifest.metricId === success.metricId)
+        : manifest.domain === success.domain
+          && normalizeUrl(manifest.landingUrl || manifest.url) === normalizeUrl(success.url));
+      const latest = matches.sort((left, right) => (Date.parse(right.retrievedAt || '') || 0) - (Date.parse(left.retrievedAt || '') || 0))[0];
+      const label = success.id || [success.sourceId, success.metricId, success.url].filter(Boolean).join(':');
+      if (!latest) {
+        failures.push(`${report.label} ${label}: successful refresh has no matching warehouse manifest`);
+        continue;
+      }
+      checkedSnapshots += 1;
+      if (sourceFreshness(latest, now) !== 'fresh') failures.push(`${latest.file}: ${staleSourceReason(latest, now)}`);
+    }
+  }
+} else {
+  // Discovery and archived source snapshots do not represent a current feed.
+  // During scheduled refreshes, use the reports above to validate the latest
+  // revision instead of making retained history fail the current-feed gate.
+  for (const manifest of manifests) {
     if (!manifest.schedule && !manifest.metricId) continue;
-    const status = sourceFreshness(manifest);
-    if (status === 'stale' || status === 'invalid') failures.push(`${file}: ${staleSourceReason(manifest)}`);
-  } catch { failures.push(`${file}: invalid manifest`); }
+    const status = sourceFreshness(manifest, now);
+    if (status === 'stale' || status === 'invalid' || status === 'unknown') failures.push(`${manifest.file}: ${staleSourceReason(manifest, now)}`);
+  }
 }
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
-console.log(`Source freshness validation passed: schedule-aware states are deterministic${files.length ? ` and ${files.length} local manifest(s) are current` : ''}.`);
+console.log(`Source freshness validation passed: schedule-aware states are deterministic${checkedSnapshots ? ` and ${checkedSnapshots} snapshots from the latest refresh reports are current` : files.length ? ` across ${files.length} local manifest(s)` : ''}.`);

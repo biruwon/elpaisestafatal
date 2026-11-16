@@ -327,20 +327,29 @@ export const parseAirefPensionProjectionWorkbook = async (buffer, source) => {
   const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
   const header = rows[4] || [];
   const yearColumns = header.flatMap((value, index) => /^20\d{2}$/.test(String(value).trim()) ? [[index, String(value).trim()]] : []);
-  const rowFor = (predicate) => rows.find((row) => predicate(row.map((value) => String(value || '').trim())));
+  const normalizedRows = rows.map((row) => row.map((value) => String(value || '').trim()));
+  const totalIncomeIndex = normalizedRows.findIndex((row) => row[1] === 'TOTAL' && row[2] === 'Ingresos');
+  const rowFor = (spec) => {
+    if (spec.totalOffset !== undefined) {
+      if (totalIncomeIndex < 0) return null;
+      const row = normalizedRows[totalIncomeIndex + spec.totalOffset];
+      return row && spec.totalPredicate(row) ? row : null;
+    }
+    return normalizedRows.find(spec.predicate);
+  };
   const specs = [
     { metricId: 'pension_contributory_income_projected', metric: 'Cotizaciones SSS dedicadas a pensiones', predicate: (row) => row[1] === 'Pensiones contributivas' && row[2] === 'Ingreso' && /Cotizaciones SSS dedicadas a pensiones/i.test(row[3]), population: 'cotizaciones sociales dedicadas a pensiones contributivas' },
     { metricId: 'pension_public_transfers_projected', metric: 'Transferencias de la Administración Central a pensiones', predicate: (row) => row[2] === 'Ingreso' && /Transferencias de AC/i.test(row[3]), population: 'transferencias de la Administración Central al sistema público de pensiones' },
     { metricId: 'pension_contributory_expenditure_projected', metric: 'Pensiones de la Seguridad Social y complemento a mínimos', predicate: (row) => row[2] === 'Gasto' && /Pensiones SS \+ complemento a mínimos/i.test(row[3]), population: 'pensiones de la Seguridad Social y complementos a mínimos' },
     { metricId: 'pension_noncontributory_expenditure_projected', metric: 'Pensiones no contributivas', predicate: (row) => row[2] === 'Gasto' && row[3] === 'No contributivas', population: 'pensiones no contributivas' },
     { metricId: 'pension_system_income_projected', metric: 'Ingresos totales del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Ingresos', population: 'ingresos totales del sistema público de pensiones' },
-    { metricId: 'pension_system_expenditure_projected', metric: 'Gastos totales del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Gastos', population: 'gastos totales del sistema público de pensiones' },
-    { metricId: 'pension_system_balance_projected', metric: 'Saldo anual del sistema público de pensiones', predicate: (row) => row[1] === 'TOTAL' && row[2] === 'Saldo', population: 'ingresos totales menos gastos totales del sistema público de pensiones' },
-    { metricId: 'pension_implicit_transfers_projected', metric: 'Transferencias implícitas necesarias para equilibrar pensiones', predicate: (row) => row[1] === 'TOTAL' && row[3] === 'Transferencias implícitas', population: 'transferencias implícitas necesarias para financiar el sistema público de pensiones' },
+    { metricId: 'pension_system_expenditure_projected', metric: 'Gastos totales del sistema público de pensiones', totalOffset: 1, totalPredicate: (row) => row[2] === 'Gastos', population: 'gastos totales del sistema público de pensiones' },
+    { metricId: 'pension_system_balance_projected', metric: 'Saldo anual del sistema público de pensiones', totalOffset: 2, totalPredicate: (row) => row[2] === 'Saldo', population: 'ingresos totales menos gastos totales del sistema público de pensiones' },
+    { metricId: 'pension_implicit_transfers_projected', metric: 'Transferencias implícitas necesarias para equilibrar pensiones', totalOffset: 3, totalPredicate: (row) => row[3] === 'Transferencias implícitas', population: 'transferencias implícitas necesarias para financiar el sistema público de pensiones' },
   ];
   const dimensions = { projection: 'AIReF 2026', scenario: 'escenario base de políticas constantes', denominator: 'PIB', periodDefinition: 'serie anual proyectada 2020–2070' };
   return specs.flatMap((spec) => {
-    const row = rowFor(spec.predicate);
+    const row = rowFor(spec);
     if (!row) return [];
     return yearColumns.flatMap(([index, period]) => {
       const value = numberFor(row[index]);

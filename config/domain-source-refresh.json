@@ -14,6 +14,10 @@
       "url": "https://www.airef.es/wp-content/uploads/2026/05/Pensiones/AIReF.-Tablas-y-graficos.-Estudio-de-evaluacion-de-la-regla-de-gasto-en-pensiones.xlsx",
       "schedule": "yearly",
       "mode": "active",
+      "tlsCaCertificate": {
+        "path": "config/certificates/fnmt-ac-componentes-informaticos.pem",
+        "sha256": "F0:38:42:1F:07:F2:0D:63:A2:0D:36:91:E5:A1:78:AB:84:59:EB:E5:70:C1:64:7B:76:90:55:4E:F2:38:76:AB"
+      },
       "title": "AIReF 2026: series anuales proyectadas de ingresos, gastos y saldo de pensiones"
     },
     {
