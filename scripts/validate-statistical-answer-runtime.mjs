@@ -140,11 +140,17 @@ try {
   assert.match(explicitEuropeanComparison.result.reply, /3,4 % interanual.*España.*2,8 % interanual.*Unión Europea/);
   assert.equal(explicitEuropeanComparison.result.sources.length, 1);
   assert.equal(explicitEuropeanComparison.result.sources[0].url, inflationEuropeUrl);
-  const absoluteRentPrice = await check('¿Cuánto cuesta el alquiler medio ahora?');
-  assert.notEqual(absoluteRentPrice.state, 'supported');
-  assert.match(absoluteRentPrice.result.reply, /no el importe del alquiler en euros/);
-  assert.equal(absoluteRentPrice.result.visual, undefined);
-  assert.deepEqual(absoluteRentPrice.result.sources.map((source) => source.url), [url], JSON.stringify(absoluteRentPrice.result.sources));
+  for (const query of [
+    '¿Cuánto cuesta el alquiler medio ahora?',
+    '¿Cuál es el importe en euros del alquiler medio más reciente en España?',
+  ]) {
+    const absoluteRentPrice = await check(query);
+    assert.notEqual(absoluteRentPrice.state, 'supported');
+    assert.match(absoluteRentPrice.result.reply, /no el importe del alquiler en euros/);
+    assert.doesNotMatch(absoluteRentPrice.result.reply, /compraventa|precio de la vivienda/i);
+    assert.equal(absoluteRentPrice.result.visual, undefined);
+    assert.deepEqual(absoluteRentPrice.result.sources.map((source) => source.url), [url], JSON.stringify(absoluteRentPrice.result.sources));
+  }
   const currentRentIndex = await check('¿Cuál es el índice de precios del alquiler actual?');
   assert.match(currentRentIndex.result.reply, /índice \(2015=100\).*2026-09/);
   assert.deepEqual(currentRentIndex.result.sources.map((source) => source.url), [url]);

@@ -342,6 +342,7 @@ for (const [text, excludedId] of [
   ['¿Qué tasa anual de inflación registra España ahora?', 'broad-tax-burden-purchasing-power'],
   ['¿Cuánto cuesta el IRPF?', 'broad-tax-burden-purchasing-power'],
   ['¿Cuánto cuesta el alquiler medio ahora?', 'broad-housing'],
+  ['¿Cuál es el importe en euros del alquiler medio más reciente en España?', 'broad-housing'],
   ['¿Cuál es el índice de precios del alquiler actual?', 'broad-housing'],
   ['¿Puede la Policía ocupar un puesto de trabajo vacante?', 'broad-illegal-occupation'],
   ['¿Puede el propietario desahuciar a un inquilino que ha dejado de pagar el alquiler?', 'broad-illegal-occupation'],

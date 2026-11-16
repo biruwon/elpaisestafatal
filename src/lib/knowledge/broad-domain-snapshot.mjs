@@ -765,7 +765,7 @@ export const broadDomainPacketsFor = (text) => {
   const taxBroadSignal = taxSignal && /inflaci[oó]n|precios?|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
   const broadMultiDomain = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)).length >= 2
     && !/\d/.test(value) && !claimFocusFor(text);
-  const explicitHousingMeasure = /\b(?:cuant\w*|precio\w*|coste\w*|indice\w*|tasa\w*|porcentaje\w*|media\w*|promedio\w*|evoluc\w*|cambi\w*|subid\w*|aument\w*|baj\w*|desde|entre|compar\w*)\b/i.test(value)
+  const explicitHousingMeasure = /\b(?:cuant\w*|importe\w*|cantid\w*|valor\w*|precio\w*|coste\w*|euro\w*|indice\w*|tasa\w*|porcentaje\w*|med\w*|promedio\w*|mensual\w*|anual\w*|evoluc\w*|cambi\w*|subid\w*|aument\w*|baj\w*|desde|entre|compar\w*)\b/i.test(value)
     && /\b(?:viviend\w*|alquil\w*|renta\w*|hipotec\w*|piso\w*|casas?)\b/i.test(value);
   const direct = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)
     && (packet.id !== 'broad-tax-burden-purchasing-power' || taxBroadSignal)
