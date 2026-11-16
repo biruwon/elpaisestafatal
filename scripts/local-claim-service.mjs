@@ -742,9 +742,15 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
       ? (includesAny(units, ['rate', 'change', 'variacion', 'growth', 'percent', 'porcentaje']) ? 0.3 : 0)
       : (includesAny(units, ['index', 'indice', 'level', 'nivel']) ? 0.3 : 0);
     const geographyPreference = wantsSpain && group.some((item) => includesAny(normalise(`${item.dimensionLabels?.geo || ''} ${item.dimensions?.geo || ''}`), ['espana', 'spain', 'es'])) ? 0.35 : 0;
-    return { group, score: unitPreference + geographyPreference + Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000,
+    const latestPeriod = group.reduce((latest, item) => Number.isFinite(item.value) && String(item.period || '') > latest ? String(item.period) : latest, '');
+    return { group, unitPreference, geographyPreference, latestPeriod,
+      score: Math.max(...group.map((item) => item.score || 0)) + Math.min(group.length, 24) / 1000,
       retrievedAt: Math.max(...group.map((item) => Date.parse(item.source?.retrievedAt || '') || 0)) };
-  }).sort((left, right) => right.score - left.score || right.retrievedAt - left.retrievedAt);
+  }).sort((left, right) => right.unitPreference - left.unitPreference
+    || right.geographyPreference - left.geographyPreference
+    || right.latestPeriod.localeCompare(left.latestPeriod)
+    || right.retrievedAt - left.retrievedAt
+    || right.score - left.score);
   const selected = ranked[0]?.group || observations;
   return boundedSeries(selected);
 };
@@ -778,7 +784,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   // explicit metric retrieve enough of its own series to retain the latest
   // periods for the chart.
   const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('tertiary_education_attainment_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('life_expectancy_at_birth_europe') || hintedMetricIds.has('fertility_rate_europe') || hintedMetricIds.has('unmet_healthcare_waiting_list_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('government_education_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe') || hintedMetricIds.has('social_protection_benefits_per_capita_europe') || hintedMetricIds.has('government_deficit_ratio_europe') || hintedMetricIds.has('government_debt_ratio_europe') || hintedMetricIds.has('gini_coefficient_europe') || hintedMetricIds.has('household_electricity_price_europe');
-  const candidateLimit = comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
+  const candidateLimit = requestsLatestObservation(query) ? 1000 : comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds, records: warehouseRecords, useProvidedRecords: Array.isArray(warehouseRecords) });
   const candidates = rawCandidates.filter((item) => {
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId);

@@ -37,7 +37,7 @@ db.exec(`
   CREATE TRIGGER observations_fts_update AFTER UPDATE ON observations BEGIN INSERT INTO observations_fts(observations_fts, rowid, search_text) VALUES ('delete', old.rowid, old.search_text); INSERT INTO observations_fts(rowid, search_text) VALUES (new.rowid, new.search_text); END;
 `);
 const retrieved = new Date().toISOString();
-const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES';
+const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&coicop18=CP041&unit=I15&unit=RCH_A';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-source', 'Eurostat', 'Índice de precios del alquiler en España', url, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const rentArchiveUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP041';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-archive-source', 'Eurostat', 'Índice histórico de precios del alquiler', rentArchiveUrl, '2025-10-01T00:00:00Z', 'primary', '[]', 'eurostat', 'daily');
@@ -47,11 +47,13 @@ const inflationEuropeUrl = 'https://ec.europa.eu/eurostat/api/dissemination/stat
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('inflation-europe-source', 'Eurostat', 'Inflación armonizada: España y Unión Europea', inflationEuropeUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const insert = db.prepare('INSERT INTO observations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
-  for (const [code, unit, measured] of [['I96', 'Index, 1996=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
+  for (const [code, unit, measured] of [['I15', 'Index, 2015=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
     insert.run(`${code}-${year}`, 'observation', 'rent-data', 'Índice de precios del alquiler', 'rental_price_index', measured, unit, String(year), 'España', null,
       JSON.stringify({ geo: 'ES', unit: code, time: String(year) }), JSON.stringify({ geo: 'Spain', unit }), null, null, '{}', 'rent-source', 'índice precios alquiler España evolución subida tasa interanual');
   }
 }
+insert.run('I15-2026-09', 'observation', 'rent-data', 'Índice de precios del alquiler', 'rental_price_index', 117.05, 'Index, 2015=100', '2026-09', 'España', null,
+  JSON.stringify({ geo: 'ES', unit: 'I15', time: '2026-09' }), JSON.stringify({ geo: 'Spain', unit: 'Index, 2015=100' }), null, null, '{}', 'rent-source', 'índice precios alquiler España evolución');
 for (const [year, value] of [['2026-08', 3.1], ['2026-10', 3.4]]) {
   insert.run(`inflation-${year}`, 'observation', 'prc_hicp_minr', 'Inflación armonizada anual de España', 'inflation_rate', value, 'Annual rate of change', year, 'España', null,
     JSON.stringify({ geo: 'ES', coicop18: 'TOTAL', unit: 'RCH_A', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, year === '2026-10' ? '{"status":"e"}' : '{}', 'inflation-source', 'inflación armonizada anual España tasa interanual precios Eurostat');
@@ -61,7 +63,7 @@ for (const [geo, value] of [['ES', 3.4], ['EU27_2020', 2.8]]) {
     JSON.stringify({ geo, coicop18: 'TOTAL', unit: 'RCH_A', time: '2026-10' }), JSON.stringify({ geo: geo === 'ES' ? 'Spain' : 'European Union', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, '{}', 'inflation-europe-source', 'inflación armonizada anual España unión europea tasa interanual precios Eurostat');
 }
 for (const [year, value] of [['2015', 100], ['2020', 110], ['2025', 120]]) {
-  insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
+    insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
     JSON.stringify({ geo: 'ES', unit: 'I96', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Index, 1996=100' }), null, null, '{}', 'rent-archive-source', 'índice histórico precios alquiler España evolución subida Eurostat');
 }
 const d1 = { prepare(sql) { let values = []; return { bind(...args) { values = args; return this; }, async all() { const rows = db.prepare(sql).all(...values); if (process.env.DEBUG_STATISTICAL_FIXTURE) console.error('D1 rows', rows.length, values); return { results: rows }; }, async run() { return {}; } }; } };
@@ -108,10 +110,11 @@ try {
   };
   for (const query of ['¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?', '¿Ha subido el índice del alquiler en España desde 2015?']) {
     const result = await check(query);
-    assert.match(result.result.reply, /índice \(1996=100\)/, JSON.stringify(result));
+    assert.match(result.result.reply, /índice \(2015=100\)/, JSON.stringify(result));
     assert.match(result.result.reply, /2015/);
-    assert.match(result.result.reply, /2025/);
-    assert.doesNotMatch(result.result.reply, /2015=100|no ha pasado todos los controles/);
+    assert.match(result.result.reply, /2026-09/);
+    assert.match(result.result.reply, /índice \(2015=100\)/);
+    assert.doesNotMatch(result.result.reply, /1996=100|no ha pasado todos los controles/);
     assert.deepEqual(result.result.sources.map((source) => source.url), [url]);
     assert.doesNotMatch(result.result.limitations?.join(' ') || '', /fuente necesita una actualizaci[oó]n/i);
   }
@@ -141,8 +144,9 @@ try {
   assert.notEqual(absoluteRentPrice.state, 'supported');
   assert.match(absoluteRentPrice.result.reply, /no el importe del alquiler en euros/);
   assert.equal(absoluteRentPrice.result.visual, undefined);
+  assert.deepEqual(absoluteRentPrice.result.sources.map((source) => source.url), [url], JSON.stringify(absoluteRentPrice.result.sources));
   const currentRentIndex = await check('¿Cuál es el índice de precios del alquiler actual?');
-  assert.match(currentRentIndex.result.reply, /índice \(1996=100\).*2025/);
+  assert.match(currentRentIndex.result.reply, /índice \(2015=100\).*2026-09/);
   assert.deepEqual(currentRentIndex.result.sources.map((source) => source.url), [url]);
   assert.equal(currentRentIndex.result.visual, undefined);
   const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2010?');
@@ -159,7 +163,7 @@ try {
   assert.notEqual(stale.state, 'supported');
   assert.match(stale.result.reply, /no se ha actualizado.*revisiones recientes/);
   db.prepare('UPDATE source_documents SET retrieved_at = ? WHERE id = ?').run(retrieved, 'rent-source');
-  db.prepare('UPDATE observations SET value = NULL, payload_json = ? WHERE id = ?').run('{"status":"b"}', 'I96-2020');
+  db.prepare('UPDATE observations SET value = NULL, payload_json = ? WHERE id = ?').run('{"status":"b"}', 'I15-2020');
   const broken = await check('¿Cómo han evolucionado los precios del alquiler desde 2015?');
   assert.equal(broken.state, 'insufficient', JSON.stringify(broken));
   assert.match(broken.result.reply, /ruptura de serie en 2020/);
@@ -170,8 +174,8 @@ try {
       JSON.stringify({ geo: 'ES', unit: `NOISE${index}`, time: '2025' }), '{}', null, null, '{}', 'rent-source', 'índice precios alquiler España evolución subida tasa interanual');
   }
   const baselineRows = await searchD1Warehouse(d1, '¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?');
-  assert.ok(baselineRows.some((row) => row.id === 'I96-2015'), 'A crowded search must retain observations from the requested baseline year');
-  assert.ok(baselineRows.some((row) => row.id === 'I96-2020' && row.status === 'b'), 'A crowded historical search must retain a break between the endpoints');
+  assert.ok(baselineRows.some((row) => row.id === 'I15-2015'), 'A crowded search must retain observations from the requested baseline year');
+  assert.ok(baselineRows.some((row) => row.id === 'I15-2020' && row.status === 'b'), 'A crowded historical search must retain a break between the endpoints');
   assert.ok(baselineRows.length <= 500, 'Historical retrieval must respect the public payload cap');
   await Promise.allSettled(pending);
 } finally {

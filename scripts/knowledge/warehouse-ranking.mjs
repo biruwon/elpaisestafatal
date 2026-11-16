@@ -406,12 +406,19 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
   const spain = rows.find(isSpainObservation);
   const europeanUnion = rows.find(isEuropeanUnionObservation);
   if (!spain || !europeanUnion) return null;
+  const compatibleSeries = candidate.filter((item) => baseKey(item) === baseKey(spain));
+  const latestFor = (predicate) => compatibleSeries.filter(predicate).reduce((latest, item) => !latest || String(item.period) > String(latest.period) ? item : latest, null);
+  const latestSpain = latestFor(isSpainObservation);
+  const latestEuropeanUnion = latestFor(isEuropeanUnionObservation);
+  const periodAlignmentNote = latestSpain && latestEuropeanUnion && String(latestSpain.period) !== String(latestEuropeanUnion.period)
+    ? `La comparación usa el último periodo disponible para ambos territorios (${period}); los datos más recientes por separado no coinciden en periodo (España: ${latestSpain.period}; Unión Europea: ${latestEuropeanUnion.period}), así que no mezclamos meses distintos.`
+    : '';
   const quality = comparisonQuality([spain, europeanUnion]);
   if (quality.blocked) return {
     european: true, metricId, comparisonBlocked: true, observations: [spain, europeanUnion],
     headline: `${definition.label}: comparación pendiente (${period})`, summary: quality.reason,
-    points: [`España: ${formatNumber(spain.value, metricId)} ${definition.unit}.`, `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`, quality.reason, ...quality.notes],
-    reply: `En ${period}, la fuente registra ${formatNumber(spain.value, metricId)} ${definition.unit} para España y ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} para la Unión Europea. ${quality.reason}`,
+    points: [`España: ${formatNumber(spain.value, metricId)} ${definition.unit}.`, `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`, periodAlignmentNote, quality.reason, ...quality.notes].filter(Boolean),
+    reply: `En ${period}, la fuente registra ${formatNumber(spain.value, metricId)} ${definition.unit} para España y ${formatNumber(europeanUnion.value, metricId)} ${definition.unit} para la Unión Europea. ${periodAlignmentNote ? `${periodAlignmentNote} ` : ''}${quality.reason}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
   const difference = Number(spain.value) - Number(europeanUnion.value);
@@ -428,9 +435,10 @@ export const summarizeWarehouseEuropeanComparison = (_text, observations) => {
       `Unión Europea: ${formatNumber(europeanUnion.value, metricId)} ${definition.unit}.`,
       `Diferencia: ${formatNumber(Math.abs(difference), metricId)} ${definition.differenceUnit || 'puntos porcentuales'} ${difference < 0 ? 'menos' : difference > 0 ? 'más' : ''}.`,
       definition.method,
+      periodAlignmentNote,
       ...quality.notes,
-    ],
-    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value, metricId)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value, metricId)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`,
+    ].filter(Boolean),
+    reply: `En ${period}, ${definition.replyLead} ${formatNumber(spain.value, metricId)} ${definition.replyUnit || definition.unit} en España y ${formatNumber(europeanUnion.value, metricId)} ${definition.replyUnit || definition.unit} en la Unión Europea: ${definition.differenceVerb[directionIndex]} en esa comparación. ${definition.caveat}${periodAlignmentNote ? ` ${periodAlignmentNote}` : ''}${quality.notes.length ? ` ${quality.notes.join(' ')}` : ''}`,
     replyEvidenceIds: [spain.id, europeanUnion.id],
   };
 };
