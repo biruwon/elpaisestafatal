@@ -4,6 +4,8 @@ const normalize = (value) => String(value || '').toLocaleLowerCase('es').normali
 const has = (text, expression) => expression.test(text);
 const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
+const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
+const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
@@ -64,7 +66,7 @@ const focuses = [
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',
-    when: (t) => has(t, rents) && (has(t, wages) || /\b(ingres\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/.test(t)),
+    when: (t) => has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],
     needs: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo', 'porcentaje de ingresos destinado al alquiler'],
     explanation: 'Para saber si un alquiler es asumible hay que compararlo con los ingresos del mismo tipo de hogar, ciudad y periodo.',

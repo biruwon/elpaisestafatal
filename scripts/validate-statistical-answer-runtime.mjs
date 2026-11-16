@@ -144,6 +144,7 @@ try {
     '¿Cuánto cuesta el alquiler medio ahora?',
     '¿Cuál es el importe en euros del alquiler medio más reciente en España?',
     '¿Qué importe mensual en euros tiene el alquiler vigente de una vivienda en España?',
+    'En España, ¿cuánto se paga de alquiler al mes en euros según el dato oficial más reciente?',
   ]) {
     const absoluteRentPrice = await check(query);
     assert.notEqual(absoluteRentPrice.state, 'supported');
