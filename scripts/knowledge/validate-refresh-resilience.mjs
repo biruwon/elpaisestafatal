@@ -20,4 +20,14 @@ assert(domainRefresh.includes('failures.push') && domainRefresh.includes('contin
 assert(workflow.includes('Validate domain refresh report') && workflow.includes('path: .local/domain-refresh-report.json'), 'refresh workflow must validate and upload the operational report');
 assert(/id:\s*coverage\s*\n\s*continue-on-error:\s*true/.test(workflow), 'missing coverage must be reported without blocking validated sources from syncing');
 assert(workflow.includes("steps.coverage.outcome == 'failure'") && workflow.includes("steps.d1.outputs.configured != 'true'"), 'incomplete coverage and skipped production sync must fail the scheduled job visibly');
+const refreshConfig = JSON.parse(await readFile(new URL('../../config/source-refresh.json', import.meta.url), 'utf8'));
+const priceFeeds = Object.values(refreshConfig).flat().filter((item) => ['inflation_rate', 'inflation_rate_europe', 'rental_price_index', 'harmonised_price_index'].includes(item.metricId));
+assert(priceFeeds.length === 4 && priceFeeds.every((item) => new URL(item.url).pathname.endsWith('/prc_hicp_minr')), 'Current HICP feeds must use the active ECOICOP v2 dataset, not the frozen 1996–2025 tables');
+for (const item of priceFeeds) {
+  const url = new URL(item.url);
+  assert(url.searchParams.get('coicop18') === (item.metricId === 'rental_price_index' ? 'CP041' : 'TOTAL'), `Wrong HICP consumption group for ${item.metricId}`);
+  const units = url.searchParams.getAll('unit');
+  assert(units.includes(item.metricId.startsWith('inflation_rate') ? 'RCH_A' : 'I15'), `Missing the required HICP measurement for ${item.metricId}`);
+}
+assert(Object.values(refreshConfig).flat().some((item) => item.metricId === 'cpi_index' && item.url.includes('/DATOS_SERIE/IPC290751')), 'The national CPI index must use the current single INE index series');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

@@ -338,6 +338,11 @@ for (const [text, expectedPacketIds] of claimVariants) {
 }
 
 for (const [text, excludedId] of [
+  ['¿Cuál es la inflación armonizada actual de España?', 'broad-tax-burden-purchasing-power'],
+  ['¿Qué tasa anual de inflación registra España ahora?', 'broad-tax-burden-purchasing-power'],
+  ['¿Cuánto cuesta el IRPF?', 'broad-tax-burden-purchasing-power'],
+  ['¿Cuánto cuesta el alquiler medio ahora?', 'broad-housing'],
+  ['¿Cuál es el índice de precios del alquiler actual?', 'broad-housing'],
   ['¿Puede la Policía ocupar un puesto de trabajo vacante?', 'broad-illegal-occupation'],
   ['¿Puede el propietario desahuciar a un inquilino que ha dejado de pagar el alquiler?', 'broad-illegal-occupation'],
   ['¿Aumentaron las condenas por delitos sexuales el año pasado?', 'broad-sexual-consent-law-effects'],
@@ -347,6 +352,7 @@ for (const [text, excludedId] of [
 ]) {
   assert(!broadDomainPacketsFor(text).some((packet) => packet.id === excludedId), `${text}: unrelated neighboring topic cross-routed to ${excludedId}`);
 }
+assert(broadDomainPacketsFor('La vivienda es cada vez más difícil para las familias').some((packet) => packet.id === 'broad-housing'), 'A broad access claim must retain the reviewed housing context packet');
 
 const freshClaimAnswers = [
   {

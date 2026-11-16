@@ -761,8 +761,15 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
   const domainProfile = domainProfileFor(text);
-  const direct = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value));
-  const broadMultiDomain = direct.length >= 2 && !/\d/.test(value) && !claimFocusFor(text);
+  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
+  const taxBroadSignal = taxSignal && /inflaci[oó]n|precios?|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
+  const broadMultiDomain = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)).length >= 2
+    && !/\d/.test(value) && !claimFocusFor(text);
+  const explicitHousingMeasure = /\b(?:cuant\w*|precio\w*|coste\w*|indice\w*|tasa\w*|porcentaje\w*|media\w*|promedio\w*|evoluc\w*|cambi\w*|subid\w*|aument\w*|baj\w*|desde|entre|compar\w*)\b/i.test(value)
+    && /\b(?:viviend\w*|alquil\w*|renta\w*|hipotec\w*|piso\w*|casas?)\b/i.test(value);
+  const direct = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)
+    && (packet.id !== 'broad-tax-burden-purchasing-power' || taxBroadSignal)
+    && (packet.id !== 'broad-housing' || !explicitHousingMeasure || broadMultiDomain));
   if (needsScopedMeasurement(text) && !domainProfile?.packetId && !(broadMultiDomain && hasSpecificMetricReference(text))) return [];
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
@@ -774,7 +781,6 @@ export const broadDomainPacketsFor = (text) => {
   const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|piramide poblacional|ratio (?:de )?cotizantes/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit|quiebr|bancarrota/i.test(value);
   const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n|cotizantes/i.test(value) && /insostenib|sostenib|arruin|hunde|arcas p[uú]blicas|deficit|gasto|financ|quiebr|bancarrota|ratio|deuda|presupuesto/i.test(value);
   const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar|emancip|herencia|comprar casa|imposible/i.test(value);
-  const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
   const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacion|sustitucion (?:poblacional|demografica)|menos iq|menor iq|cociente intelectual|menos inteligent|menor inteligenc|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
   const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
   const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n(?: fiscal)?|pagan? menos|impuestos?|cotizacion\w*)\b/i.test(value);
@@ -793,7 +799,7 @@ export const broadDomainPacketsFor = (text) => {
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
   if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
-  if (taxSignal && (/inflaci[oó]n|poder de compra|salari|baby boom|gasto p[uú]blico|pensiones?/.test(value) || /impuesto|irpf|iva|carga fiscal|presi[oó]n fiscal/.test(value))) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
+  if (taxBroadSignal) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
   if (youthSignal) return [packetById('broad-youth-living-housing')].filter(Boolean);
   if (/\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value) && securitySignal) return [packetById('broad-immigration-security')].filter(Boolean);
   if (/nuevos? ["“”«»]?espanoles/.test(value) && securitySignal) return [packetById('broad-security')].filter(Boolean);

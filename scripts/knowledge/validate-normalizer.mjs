@@ -21,6 +21,8 @@ if (records.length !== 2) throw new Error(`Expected 2 INE observations, received
 if (records.some((record) => record.metric !== 'Nacional. Índice general. Índice.' || record.value <= 0)) throw new Error('INE observations lost their series or value');
 if (records[0].period !== '2025-12' || records[1].period !== '2025-11') throw new Error('INE periods were not normalized');
 if (records.some((record) => record.metric === 'FK_Unidad' || record.metric === 'FK_Escala')) throw new Error('INE implementation fields were emitted as metrics');
+const seriesRecords = normalizeJsonPayload(payload[0], source);
+if (seriesRecords.length !== 2 || seriesRecords[0].metric !== records[0].metric || seriesRecords[0].period !== '2025-12') throw new Error('A single INE DATOS_SERIE response did not preserve the selected series and periods');
 
 const flagged = normalizeJsonPayload({ id: ['time'], size: [2], dimension: { time: { category: { index: { '2024': 0, '2025': 1 }, label: { '2024': '2024', '2025': '2025' } } } }, value: { '0': 100, '1': 103 }, status: { '0': 'b', '1': 'p' } }, { id: 'source-jsonstat', title: 'Flagged statistical series' });
 if (flagged[0].status !== 'b' || flagged[1].status !== 'p') throw new Error('JSON-stat observation status flags were lost');

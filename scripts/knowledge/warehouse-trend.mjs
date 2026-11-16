@@ -1,5 +1,5 @@
 import { priceMeasurement, priceRateRequested } from '../../src/lib/knowledge/measurement-units.mjs';
-import { comparisonQuality, observationFlags } from '../../src/lib/knowledge/observation-quality.mjs';
+import { comparisonQuality, observationFlagNotes, observationFlags } from '../../src/lib/knowledge/observation-quality.mjs';
 import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
 
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
@@ -198,7 +198,111 @@ const trendGroup = (observations) => {
   return best.slice().sort((left, right) => String(left.period).localeCompare(String(right.period)));
 };
 
+const latestTrendGroup = (observations) => {
+  const groups = new Map();
+  for (const item of preferLatestSourceRevisions(observations)) {
+    if ((!Number.isFinite(item.value) && !observationFlags(item.status).includes('b')) || !item.period) continue;
+    const key = seriesKey(item);
+    groups.set(key, [...(groups.get(key) || []), item]);
+  }
+  return [...groups.values()].sort((left, right) => {
+    const latestPeriod = (items) => items.filter((item) => Number.isFinite(item.value)).reduce((period, item) => String(item.period) > period ? String(item.period) : period, '');
+    const periodDifference = latestPeriod(right).localeCompare(latestPeriod(left));
+    if (periodDifference) return periodDifference;
+    const retrieved = (items) => Math.max(0, ...items.map((item) => Date.parse(item.source?.retrievedAt || '') || 0));
+    return retrieved(right) - retrieved(left) || right.filter((item) => Number.isFinite(item.value)).length - left.filter((item) => Number.isFinite(item.value)).length;
+  })[0]?.slice().sort((left, right) => String(left.period).localeCompare(String(right.period))) || [];
+};
+
+const geographyKey = (item) => String(item.dimensions?.geo || item.geo || item.geography || item.dimensionLabels?.geo || '').trim();
+const queryNamesGeography = (normalizedQuery, item) => {
+  const code = String(item.dimensions?.geo || item.geo || '').trim().toUpperCase();
+  const label = normalise(item.dimensionLabels?.geo || item.geography || '');
+  const aliases = new Set([label]);
+  if (code === 'EU27_2020' || code === 'EU') for (const alias of ['europa', 'europe', 'ue', 'union europea', 'european union']) aliases.add(alias);
+  if (code.length === 2) {
+    for (const locale of ['es', 'en']) {
+      try {
+        const name = new Intl.DisplayNames([locale], { type: 'region' }).of(code);
+        if (name && name !== code) aliases.add(normalise(name));
+      } catch { /* Unknown region codes are matched by the source label. */ }
+    }
+  }
+  const queryWords = new Set(normalizedQuery.split(/\s+/));
+  return [...aliases].some((alias) => alias && (alias.length < 3 ? queryWords.has(alias) : normalizedQuery.includes(alias)));
+};
+
 export const compatibleTrendSeries = (observations) => trendGroup(observations).filter((item) => Number.isFinite(item.value));
+
+// A present-tense, single-value question should receive the latest measured
+// observation. Historical and comparative wording stays on the trend path.
+export const requestsLatestObservation = (text) => {
+  const normalized = normalise(text);
+  const historicalOrComparative = /\b(?:desde|entre|frente|compar\w*|evoluc\w*|cambio|cambi\w*|aument\w*|subida\w*|subieron|subio|bajada\w*|bajaron|bajo|caid\w*|cayeron|cayo|descend\w*|respecto|histor\w*|fue|eran?|estuvo|estaban|habia|registro|registraba|registraron|registrado|gasto|gastaron|recibio|recibieron|recibido|ha[n]?\s+(?:subido|aumentado|bajado|caido|descendido))\b/.test(normalized);
+  if (historicalOrComparative || /\b(?:19|20)\d{2}\b/.test(normalized)) return false;
+  if (/\b(?:actual\w*|ahora|hoy|ultimo(?:\s+dato)?|ultima\s+(?:observacion|cifra)|mas\s+reciente|vigente|a\s+dia\s+de\s+hoy)\b/.test(normalized)) return true;
+  return /^(?:cual\s+es|que\s+(?:tasa|indice|valor|dato|nivel|cifra)\b|cuant[oa]s?\s+(?:es|vale|marca|registra|tiene|hay|gasta|cuesta|corresponde)\b)/.test(normalized);
+};
+
+export const summarizeWarehouseLatest = (text, observations, metricIds = []) => {
+  const candidates = metricIds.length ? observations.filter((item) => metricIds.includes(item.metricId)) : observations;
+  const normalizedQuery = normalise(text);
+  const requestedGeographies = new Set(candidates.filter((item) => queryNamesGeography(normalizedQuery, item)).map(geographyKey).filter(Boolean));
+  if (requestedGeographies.size > 1) return null;
+  const scoped = requestedGeographies.size === 1
+    ? candidates.filter((item) => geographyKey(item) === [...requestedGeographies][0])
+    : candidates;
+  const group = latestTrendGroup(scoped);
+  const latest = group.filter((item) => Number.isFinite(item.value)).at(-1);
+  if (!latest) return null;
+
+  const trailingMissing = group.filter((item) => !Number.isFinite(item.value) && String(item.period) > String(latest.period)).at(-1);
+  const isPriceMetric = ['house_price_index', 'rental_price_index'].includes(latest.metricId);
+  const measurement = isPriceMetric ? priceMeasurement(latest) : null;
+  const wantsRate = priceRateRequested(text);
+  const asksForAbsolutePrice = /\b(?:cuant[oa] (?:cuesta|vale|paga)|precio (?:actual|medio)|alquiler (?:medio|mensual))\b/.test(normalise(text))
+    && !/\bindice\b/.test(normalise(text));
+  const metric = displayMetric(latest);
+  const period = displayPeriod(latest.period, latest.metricId);
+  const unit = displayUnit(latest);
+  const suffix = unit ? ` ${unit}` : '';
+  const notes = observationFlagNotes(latest.status);
+  const limitation = latest.freshness === 'stale'
+    ? 'La fuente necesita una actualización y puede no incluir revisiones recientes.'
+    : latest.freshness === 'unknown' ? 'No se ha podido comprobar cuándo se consultó la fuente.' : '';
+  const mismatch = trailingMissing
+    ? `La observación más reciente (${displayPeriod(trailingMissing.period, trailingMissing.metricId)}) no incluye un valor numérico; no podemos presentar el periodo anterior como el dato más reciente.`
+    : measurement?.kind === 'unknown'
+    ? 'La fuente no identifica con claridad qué mide esta unidad; no presentamos la cifra como si fuera un índice o una tasa.'
+    : measurement?.kind === 'rate' && !wantsRate
+      ? 'La serie recuperada mide una tasa de variación, no el nivel del precio solicitado. Hace falta localizar una serie de índices o precios para responder.'
+      : measurement?.kind === 'index' && asksForAbsolutePrice
+        ? 'La serie recuperada mide un índice de precios, no el importe del alquiler en euros solicitado. Hace falta localizar una fuente de precios monetarios para responder.'
+      : measurement?.kind === 'index' && wantsRate
+        ? 'La serie recuperada mide un índice de precios, no la tasa de variación solicitada. Hace falta localizar una serie de tasas para responder.'
+        : '';
+  const value = `${formatNumber(latest.value, latest.metricId)}${suffix}`;
+  const meaning = measurement?.kind === 'rate'
+    ? `Es una tasa ${measurement.period}; describe cuánto variaron los precios frente al periodo de comparación, no su nivel.`
+    : ['inflation_rate', 'inflation_rate_europe'].includes(latest.metricId)
+      ? 'Es la variación frente al mismo periodo del año anterior, no el nivel del índice ni el coste exacto de cada hogar.'
+      : '';
+  const source = latest.source?.publisher || latest.source?.title;
+  const periodCaveat = 'Corresponde al último periodo que aparece en la serie consultada; no significa que el dato sea de hoy.';
+  const quality = [...notes, limitation].filter(Boolean);
+  const reply = mismatch || `${metric}: ${value} (${period}). ${[meaning, periodCaveat, source ? `Fuente: ${source}.` : '', ...quality].filter(Boolean).join(' ')}`;
+  return {
+    observations: [latest],
+    comparisonBlocked: Boolean(mismatch),
+    measurementMismatch: Boolean(mismatch),
+    headline: mismatch ? `${metric}: medida no compatible` : `${metric}: ${value} (${period})`,
+    summary: mismatch || `El último dato recuperado para ${metric} corresponde a ${period}.`,
+    points: mismatch ? [mismatch] : [`${metric}: ${value} (${period}).`, meaning, periodCaveat, ...quality].filter(Boolean),
+    reply,
+    limitation: mismatch || [...quality, periodCaveat].filter(Boolean).join(' '),
+    replyEvidenceIds: [latest.id].filter(Boolean),
+  };
+};
 
 export const summarizeWarehouseTrend = (text, observations) => {
   const group = trendGroup(observations);

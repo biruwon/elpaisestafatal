@@ -75,8 +75,8 @@ const periodLabel = (point) => {
 // array. Treat each Data point as an observation instead of flattening the
 // row's implementation fields (FK_Unidad, FK_Escala, etc.) into fake values.
 const flattenIneTable = (payload, source) => {
-  if (!Array.isArray(payload)) return [];
-  return payload.flatMap((row, rowIndex) => {
+  const rows = Array.isArray(payload) ? payload : payload && typeof payload === 'object' && Array.isArray(payload.Data) ? [payload] : [];
+  return rows.flatMap((row, rowIndex) => {
     if (!row || typeof row !== 'object' || !Array.isArray(row.Data)) return [];
     const metric = typeof row.Nombre === 'string' ? row.Nombre.trim() : row.COD || `series-${rowIndex}`;
     return row.Data.filter((point) => point && typeof point === 'object' && typeof point.Valor === 'number' && Number.isFinite(point.Valor)).map((point, pointIndex) => ({

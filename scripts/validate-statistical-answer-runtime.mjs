@@ -39,12 +39,30 @@ db.exec(`
 const retrieved = new Date().toISOString();
 const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-source', 'Eurostat', 'Índice de precios del alquiler en España', url, retrieved, 'primary', '[]', 'eurostat', 'daily');
+const rentArchiveUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP041';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-archive-source', 'Eurostat', 'Índice histórico de precios del alquiler', rentArchiveUrl, '2025-10-01T00:00:00Z', 'primary', '[]', 'eurostat', 'daily');
+const inflationUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&coicop18=TOTAL&unit=RCH_A';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('inflation-source', 'Eurostat', 'Inflación armonizada anual de España', inflationUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
+const inflationEuropeUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&geo=EU27_2020&coicop18=TOTAL&unit=RCH_A';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('inflation-europe-source', 'Eurostat', 'Inflación armonizada: España y Unión Europea', inflationEuropeUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const insert = db.prepare('INSERT INTO observations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
   for (const [code, unit, measured] of [['I96', 'Index, 1996=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
     insert.run(`${code}-${year}`, 'observation', 'rent-data', 'Índice de precios del alquiler', 'rental_price_index', measured, unit, String(year), 'España', null,
       JSON.stringify({ geo: 'ES', unit: code, time: String(year) }), JSON.stringify({ geo: 'Spain', unit }), null, null, '{}', 'rent-source', 'índice precios alquiler España evolución subida tasa interanual');
   }
+}
+for (const [year, value] of [['2026-08', 3.1], ['2026-10', 3.4]]) {
+  insert.run(`inflation-${year}`, 'observation', 'prc_hicp_minr', 'Inflación armonizada anual de España', 'inflation_rate', value, 'Annual rate of change', year, 'España', null,
+    JSON.stringify({ geo: 'ES', coicop18: 'TOTAL', unit: 'RCH_A', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, year === '2026-10' ? '{"status":"e"}' : '{}', 'inflation-source', 'inflación armonizada anual España tasa interanual precios Eurostat');
+}
+for (const [geo, value] of [['ES', 3.4], ['EU27_2020', 2.8]]) {
+  insert.run(`inflation-europe-${geo}`, 'observation', 'prc_hicp_minr', 'Inflación armonizada: España y Unión Europea', 'inflation_rate_europe', value, 'Annual rate of change', '2026-10', geo === 'ES' ? 'España' : 'Unión Europea', null,
+    JSON.stringify({ geo, coicop18: 'TOTAL', unit: 'RCH_A', time: '2026-10' }), JSON.stringify({ geo: geo === 'ES' ? 'Spain' : 'European Union', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, '{}', 'inflation-europe-source', 'inflación armonizada anual España unión europea tasa interanual precios Eurostat');
+}
+for (const [year, value] of [['2015', 100], ['2020', 110], ['2025', 120]]) {
+  insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
+    JSON.stringify({ geo: 'ES', unit: 'I96', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Index, 1996=100' }), null, null, '{}', 'rent-archive-source', 'índice histórico precios alquiler España evolución subida Eurostat');
 }
 const d1 = { prepare(sql) { let values = []; return { bind(...args) { values = args; return this; }, async all() { const rows = db.prepare(sql).all(...values); if (process.env.DEBUG_STATISTICAL_FIXTURE) console.error('D1 rows', rows.length, values); return { results: rows }; }, async run() { return {}; } }; } };
 const reservation = createServer();
@@ -94,8 +112,39 @@ try {
     assert.match(result.result.reply, /2015/);
     assert.match(result.result.reply, /2025/);
     assert.doesNotMatch(result.result.reply, /2015=100|no ha pasado todos los controles/);
-    assert.ok(result.result.sources.some((source) => source.url === url));
+    assert.deepEqual(result.result.sources.map((source) => source.url), [url]);
+    assert.doesNotMatch(result.result.limitations?.join(' ') || '', /fuente necesita una actualizaci[oó]n/i);
   }
+  const currentInflationQueries = [
+    '¿Cuál es la inflación armonizada actual de España?',
+    '¿Qué tasa anual de inflación registra España ahora?',
+  ];
+  for (const query of currentInflationQueries) {
+    const result = await check(query);
+    assert.match(result.result.reply, /3,4 % interanual \(2026-10\)/, JSON.stringify(result));
+    assert.match(result.result.keyFact, /3,4 % interanual \(2026-10\)/, JSON.stringify(result.result));
+    assert.ok(result.result.whatWeKnow.some((point) => /3,4 % interanual \(2026-10\)/.test(point)));
+    assert.match(result.result.reply, /variaci[oó]n frente al mismo periodo del a[nñ]o anterior/i);
+    assert.match(result.result.reply, /estimado/i);
+    assert.doesNotMatch(result.result.reply, /cu[ií]a fiscal|pensiones|IRPF/);
+    assert.equal(result.result.sources.length, 1, JSON.stringify(result.result.sources));
+    assert.equal(result.result.sources[0].url, inflationUrl);
+    assert.equal(result.result.visual, undefined);
+    const responseEvidence = result.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
+    assert.deepEqual([...new Set(responseEvidence)], ['inflation-2026-10']);
+  }
+  const explicitEuropeanComparison = await check('¿Cuál es la inflación armonizada de España frente a la Unión Europea ahora?');
+  assert.match(explicitEuropeanComparison.result.reply, /3,4 % interanual.*España.*2,8 % interanual.*Unión Europea/);
+  assert.equal(explicitEuropeanComparison.result.sources.length, 1);
+  assert.equal(explicitEuropeanComparison.result.sources[0].url, inflationEuropeUrl);
+  const absoluteRentPrice = await check('¿Cuánto cuesta el alquiler medio ahora?');
+  assert.notEqual(absoluteRentPrice.state, 'supported');
+  assert.match(absoluteRentPrice.result.reply, /no el importe del alquiler en euros/);
+  assert.equal(absoluteRentPrice.result.visual, undefined);
+  const currentRentIndex = await check('¿Cuál es el índice de precios del alquiler actual?');
+  assert.match(currentRentIndex.result.reply, /índice \(1996=100\).*2025/);
+  assert.deepEqual(currentRentIndex.result.sources.map((source) => source.url), [url]);
+  assert.equal(currentRentIndex.result.visual, undefined);
   const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2010?');
   assert.equal(missing.state, 'insufficient', JSON.stringify(missing));
   assert.match(missing.result.reply, /no incluye 2010/);

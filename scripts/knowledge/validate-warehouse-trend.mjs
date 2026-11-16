@@ -1,4 +1,4 @@
-import { compatibleTrendSeries, summarizeWarehouseTrend } from './warehouse-trend.mjs';
+import { compatibleTrendSeries, requestsLatestObservation, summarizeWarehouseLatest, summarizeWarehouseTrend } from './warehouse-trend.mjs';
 import assert from 'node:assert/strict';
 
 const source = { id: 'eurostat', title: 'Población de España', url: 'https://ec.europa.eu/eurostat/' };
@@ -69,4 +69,52 @@ const revised = prices('Index, 1996=100').slice(1).map((item) => ({ ...item, val
 const revisionResult = summarizeWarehouseTrend('¿Cómo cambió el alquiler desde 2015?', [...older, ...revised]);
 assert.equal(revisionResult.comparisonBlocked, true, 'An older, longer source revision must not supply a missing requested year');
 assert.ok(revisionResult.observations.every((item) => item.source.id === 'new'));
+
+for (const query of [
+  '¿Cuál es la inflación armonizada actual de España?',
+  '¿Qué tasa anual de inflación registra España ahora?',
+  '¿Cuál es el último dato de inflación en España?',
+]) assert.equal(requestsLatestObservation(query), true, `Single-value paraphrase was not recognized: ${query}`);
+for (const query of [
+  '¿Cómo ha cambiado la inflación desde 2015?',
+  '¿Cómo ha evolucionado el alquiler en España?',
+  '¿Cuánto gastó España en pensiones durante 2024?',
+]) assert.equal(requestsLatestObservation(query), false, `Historical or comparative wording was routed to one value: ${query}`);
+
+const inflationSource = { id: 'inflation-current', title: 'Inflación armonizada · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&coicop18=TOTAL&unit=RCH_A', retrievedAt: '2026-11-15T10:00:00Z' };
+const inflationRows = [
+  { id: 'inflation-2026-08', metricId: 'inflation_rate', metric: 'HICP annual rate', value: 3.1, unit: 'Annual rate of change', period: '2026-08', dimensions: { geo: 'ES', coicop18: 'TOTAL', unit: 'RCH_A' }, source: inflationSource },
+  { id: 'inflation-2026-10', metricId: 'inflation_rate', metric: 'HICP annual rate', value: 3.4, unit: 'Annual rate of change', period: '2026-10', dimensions: { geo: 'ES', coicop18: 'TOTAL', unit: 'RCH_A' }, source: inflationSource },
+];
+const inflationArchiveSource = { ...inflationSource, id: 'inflation-archive', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=ES', retrievedAt: '2026-10-01T10:00:00Z' };
+const inflationArchive = Array.from({ length: 12 }, (_, index) => ({
+  ...inflationRows[0], id: `inflation-archive-${index}`, value: 2 + index / 10,
+  period: `2025-${String(index + 1).padStart(2, '0')}`, source: inflationArchiveSource,
+}));
+for (const query of ['¿Cuál es la inflación armonizada actual de España?', '¿Qué tasa anual de inflación registra España ahora?']) {
+  const latest = summarizeWarehouseLatest(query, [...inflationArchive, ...inflationRows], ['inflation_rate']);
+  assert.equal(latest.observations[0].id, 'inflation-2026-10', 'The latest observation must win even when a retired archive has a longer history');
+  assert.match(latest.reply, /3,4 % interanual \(2026-10\)/);
+  assert.match(latest.reply, /variaci[oó]n frente al mismo periodo del a[nñ]o anterior/i);
+  assert.match(latest.reply, /Eurostat/);
+  assert.doesNotMatch(latest.reply, /cu[ií]a fiscal|pensiones|IRPF/);
+  assert.deepEqual(latest.replyEvidenceIds, ['inflation-2026-10']);
+}
+const unrelatedMetric = summarizeWarehouseLatest('¿Cuál es la inflación armonizada actual de España?', inflationRows, ['cpi_index']);
+assert.equal(unrelatedMetric, null, 'A candidate from another metric family must not be substituted for the requested inflation rate');
+const staleLatest = summarizeWarehouseLatest('¿Cuál es la inflación actual?', inflationRows.map((item) => ({ ...item, freshness: 'stale' })), ['inflation_rate']);
+assert.match(staleLatest.reply, /fuente necesita una actualización/i);
+const flaggedLatest = summarizeWarehouseLatest('¿Cuál es la inflación actual?', inflationRows.map((item) => item.id.endsWith('10') ? { ...item, status: 'p' } : item), ['inflation_rate']);
+assert.match(flaggedLatest.reply, /provisional/i);
+const countrySource = { id: 'unemployment-country-feed', title: 'Tasa de desempleo · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/fixture' };
+const unemploymentCountries = [
+  { id: 'unemployment-de', metricId: 'unemployment_rate', metric: 'Unemployment', value: 4.2, unit: 'Percentage', period: '2026-10', dimensions: { geo: 'DE' }, dimensionLabels: { geo: 'Germany' }, source: countrySource },
+  { id: 'unemployment-es', metricId: 'unemployment_rate', metric: 'Unemployment', value: 10.8, unit: 'Percentage', period: '2026-09', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, source: countrySource },
+];
+const spanishUnemployment = summarizeWarehouseLatest('¿Cuál es la tasa de paro actual en España?', unemploymentCountries, ['unemployment_rate']);
+assert.equal(spanishUnemployment.observations[0].id, 'unemployment-es', 'An explicitly named territory must win over a newer observation from another country');
+assert.equal(summarizeWarehouseLatest('¿Cuál es la tasa de paro actual en España y Alemania?', unemploymentCountries, ['unemployment_rate']), null, 'A one-value answer must not choose arbitrarily between multiple requested territories');
+const rentRateLatest = summarizeWarehouseLatest('¿Cuál es el precio del alquiler ahora?', rate, ['rental_price_index']);
+assert.equal(rentRateLatest.comparisonBlocked, true, 'A rate must not be presented as a rent price index');
+assert.match(rentRateLatest.reply, /no el nivel del precio solicitado/i);
 console.log('Warehouse trend validation passed: compatible dimensions are isolated.');
