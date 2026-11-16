@@ -520,12 +520,36 @@ assert.equal(alignPropositionOutcomes([{ text: 'La recaudación aumenta' }], [{ 
 assert.equal(comparableObservationGroups([revenue, { ...revenue, id: 'eu-revenue', geography: 'UE' }, { ...revenue, id: 'people', population: 'hogares' }]).length, 3, 'Different scopes became one trend');
 assert.equal(rankWarehouseObservations('appointment delay', observations, 10, { metricIds: new Set(['primary_care_wait_days']) }).length, 1, 'An explicit metric ID must retrieve its source across languages');
 const youthRent = answerPlanForBroadDomains('El alquiler se come más de la mitad del sueldo de muchos jóvenes');
+assert.match(youthRent.headline, /no sabemos cu[aá]ntos gastan m[aá]s de la mitad/);
 assert.match(youthRent.shareableReply, /98,7/);
-assert.match(youthRent.shareableReply, /no indica cuántos jóvenes superan un porcentaje/);
-assert.deepEqual(youthRent.shareableSourceIds, ['cje-emancipation-2025'], 'A rental-only youth answer must not link family survey evidence it did not use');
+assert.match(youthRent.shareableReply, /27,4 %/);
+assert.match(youthRent.shareableReply, /34,2 %/);
+assert.match(youthRent.shareableReply, /36,3 %.*Madrid 50,2 %.*Val[eè]ncia 50,3 %.*M[aá]laga 51,1 %/);
+assert.match(youthRent.shareableReply, /no indican cu[aá]ntos j[oó]venes destinan m[aá]s de la mitad de su salario individual/);
+assert.deepEqual(youthRent.shareableSourceIds, ['cje-emancipation-2025', 'bank-spain-housing-annual-2025'], 'A youth-rent answer must link the observed household and potential-effort source, not unrelated family-survey evidence');
 assert.doesNotMatch(youthRent.shareableReply, /emigra|66\.900|peor que nunca/i);
 assert.ok(!youthRent.evidenceSummary.families.some((family) => family.criterionId === 'family-support-counterfactual'));
 assert.ok(!youthRent.visuals?.some((visual) => /Alquiler de vivienda completa/.test(visual.title)), 'An approximated graphic must not present exact regional values');
+const youthRentPublic = localPublicCheckResponse({ status: 'complete', requestId: 'youth-rent', result: youthRent }, 'El alquiler se come más de la mitad del sueldo de muchos jóvenes');
+assert.equal(youthRentPublic.state, 'limited');
+assert.match(youthRentPublic.result.reply, /27,4 %/);
+assert.ok(youthRentPublic.result.sources.some((source) => source.id === 'bank-spain-housing-annual-2025'));
+for (const paraphrase of [
+  'Los hogares jóvenes que alquilan destinan la mitad de sus ingresos a la vivienda',
+  'El alquiler consume más de la mitad del sueldo de la juventud en las grandes ciudades',
+]) {
+  const answer = answerPlanForBroadDomains(paraphrase);
+  assert.ok(answer, `Youth-rent paraphrase lost the reviewed answer family: ${paraphrase}`);
+  assert.match(answer.shareableReply, /27,4 %/);
+  assert.match(answer.shareableReply, /escenario potencial/);
+  assert.ok(answer.shareableSourceIds.includes('bank-spain-housing-annual-2025'));
+}
+const youthPurchase = answerPlanForBroadDomains('Los jóvenes no pueden comprar vivienda sin la ayuda de sus padres');
+assert.ok(!youthPurchase.shareableSourceIds.includes('bank-spain-housing-annual-2025'), 'Youth rental figures crossed into a nearby purchase-only claim');
+assert.ok(!youthPurchase.evidenceSummary.families.some((family) => ['youth-rental-household-effort', 'youth-rental-overburden', 'youth-rental-potential-effort'].includes(family.criterionId)));
+const nonYouthRent = focusedEvidencePlan('El alquiler se come más de la mitad del sueldo de muchas familias');
+assert.equal(nonYouthRent.answerScope.family, 'rental-affordability');
+assert.equal(nonYouthRent.sourceLinks.length, 0, 'Youth-specific rental evidence crossed into a nearby all-household claim');
 const security = answerPlanForBroadDomains('No se puede salir a la calle de cómo está la seguridad');
 assert.doesNotMatch(security.shareableReply, /extranj|nacionaliz|wokismo/i);
 assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId === 'group-causality'));

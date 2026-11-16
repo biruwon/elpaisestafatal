@@ -1148,6 +1148,7 @@ const scopeReviewedPacket = (packet, claim) => {
       if (criterion.id === 'family-co-residence' || criterion.id === 'family-housing-barrier') return family;
       if (criterion.id === 'youth-purchase-effort' || criterion.id === 'youth-housing-access') return purchase || !rent;
       if (criterion.id === 'youth-rental-effort') return rent || !purchase;
+      if (['youth-rental-household-effort', 'youth-rental-overburden', 'youth-rental-potential-effort'].includes(criterion.id)) return rent || !purchase;
       if (criterion.id === 'youth-long-run-wage-rent') return rent && wageTrend;
       if (criterion.id === 'youth-supply') return /oferta|construcc|obra|promoci/.test(text);
       if (criterion.id === 'youth-cost-of-living') return /costes? de (?:la )?vida|inflacion|ipc|consumo|comida/.test(text);
@@ -1169,8 +1170,12 @@ const scopeReviewedPacket = (packet, claim) => {
           'El cálculo usa una media nacional y no mide el ahorro disponible, los ingresos del hogar ni las condiciones hipotecarias de cada territorio.',
           ...(asksAboutFamilySupport ? ['La ECV recoge motivos declarados de convivencia, pero no mide el efecto de las ayudas familiares o herencias sobre el acceso individual a la compra.'] : []),
         ];
+      } else if (rent) {
+        headline = 'El alquiler pesa en hogares jóvenes; no sabemos cuántos gastan más de la mitad de su sueldo';
+        summary = 'El Observatorio de Emancipación compara el alquiler medio de una vivienda completa con un salario individual joven. El Banco de España mide el gasto de hogares arrendatarios sobre su renta neta y, por separado, un escenario potencial para jóvenes no emancipados.';
+        limitations = ['El 27,4 % es un promedio de renta neta del hogar; no muestra cuántas personas superan el 50 % de su salario individual. El escenario potencial para jóvenes no emancipados no es gasto observado. El precio de una vivienda completa dividido por un salario individual tampoco indica cuánto paga cada joven que comparte vivienda.'];
       } else {
-        headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
+        headline = 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
         summary = 'El Observatorio de Emancipación compara costes de vivienda con salarios jóvenes de referencia. Una media no describe a cada persona ni permite calcular cuántas superan un umbral concreto.';
         limitations = ['El esfuerzo varía según el salario, el territorio, el tamaño del hogar y si se comparte vivienda. Los datos medios no indican cuántos jóvenes superan un porcentaje concreto.'];
       }
@@ -1218,6 +1223,9 @@ const composeScopedReply = (plan) => {
   if (plan.id === 'broad-youth-living-housing') {
     const dataFor = (criterionId) => families.find((family) => family.criterionId === criterionId)?.data?.[0];
     const rental = dataFor('youth-rental-effort');
+    const observedYoungRent = dataFor('youth-rental-household-effort');
+    const youngRentOverburden = dataFor('youth-rental-overburden');
+    const potentialYoungRent = dataFor('youth-rental-potential-effort');
     const purchase = dataFor('youth-purchase-effort');
     const coResidence = dataFor('family-co-residence');
     const housingBarrier = dataFor('family-housing-barrier');
@@ -1229,13 +1237,16 @@ const composeScopedReply = (plan) => {
       ? ['España: alquiler de vivienda completa, 1.176 €/mes (98,7 % del salario individual mensual medio joven); entrada de compra, 66.900 € (4,7 años del salario anual individual de referencia, dedicado íntegramente).']
       : [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
     if (marketFacts.length) parts.push(`Observatorio de Emancipación 2025: ${marketFacts.join('; ')}.`);
+    if (observedYoungRent) parts.push(`Banco de España, hogares arrendatarios (2024): ${observedYoungRent}.`);
+    if (youngRentOverburden) parts.push(`Banco de España, umbral de sobresfuerzo (2024): ${youngRentOverburden}.`);
+    if (potentialYoungRent) parts.push(`Banco de España, escenario potencial de alquiler (2024): ${potentialYoungRent}.`);
     if (coResidence && !housingBarrier) parts.push(`INE, ECV 2025: ${coResidence.split(';')[0]}.`);
     if (housingBarrier) parts.push(housingBarrier);
     if (purchase) parts.push('Los 4,7 años suponen dedicar todo el salario; no son el tiempo real de ahorro ni prueban imposibilidad para todos.');
     if (housingBarrier && familyTransferGap) parts.push('El 47,3 % es un motivo declarado por convivientes; la ECV no mide el efecto de ayudas familiares o herencias.');
     else if (housingBarrier) parts.push('El 47,3 % es un motivo declarado por convivientes; no mide el gasto de cada hogar.');
     else if (familyTransferGap) parts.push('La ECV no mide el efecto de las ayudas familiares o herencias sobre la compra.');
-    if (rental) parts.push('La media no indica cuántos jóvenes superan un porcentaje concreto de su renta ni describe el gasto y el salario de cada persona.');
+    if (rental || observedYoungRent) parts.push('Estos datos no indican cuántos jóvenes destinan más de la mitad de su salario individual al alquiler; el alquiler de una vivienda completa, el gasto observado del hogar y el escenario potencial son medidas distintas.');
     if (migration) parts.push('La ECV 2025 no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no da una cifra para ese contrafactual.');
     const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
       .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
@@ -1386,7 +1397,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [], clai
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-16',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   if (packet.id === 'broad-youth-living-housing') {
