@@ -19,12 +19,35 @@ const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/
     /\b(transporte|autob[uú]s|tren|coche)\b/,
   ].filter((pattern) => pattern.test(t)).length >= 2
   && /\b(mas|menos|mejor|peor|diferenc\w*|compar\w*|frente a|que en|que quienes)\b/.test(t);
+const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia crece)\b/.test(t)
+  && /\b(?:hogar\w*|famili\w*|nivel de vida|condiciones de vida|bienestar|distribucion de la renta|desigualdad)\b/.test(t)
+  && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
+  && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 
 // Measurement contracts are reusable semantic families, not answer templates.
 // Direct measures and contextual proxies stay distinct all the way to the
 // answer. A missing direct measure must not be filled with a neighbouring
 // topic merely because it has a convenient chart.
 const focuses = [
+  {
+    id: 'gdp-household-welfare', label: 'PIB y condiciones de vida de los hogares',
+    when: gdpHouseholdWelfare,
+    direct: [], context: [],
+    needs: ['renta disponible mediana equivalente por persona, en términos reales, para el mismo territorio y periodo', 'distribución de la renta si se afirma que el crecimiento no llega a los hogares', 'definición concreta de bienestar si incluye vivienda, empleo, salud u otros servicios'],
+    explanation: 'El PIB mide producción agregada. Informa sobre el tamaño y el crecimiento de la economía, pero por sí solo no indica la renta disponible de cada hogar ni cómo se distribuye la prosperidad. Eurostat distingue el PIB de las medidas de ingreso y condiciones de vida de los hogares.',
+    explanationEvidence: {
+      expiresAt: '2027-11-16', territories: ['ES'],
+      facts: [
+        'Eurostat define el PIB real por habitante como el PIB ajustado por inflación dividido por la población media del año. Lo considera una aproximación al nivel material de vida, pero no una medida completa del bienestar económico.',
+        'Eurostat recoge ingresos y condiciones de vida mediante EU-SILC. La renta disponible equivalente ajusta el ingreso del hogar por su tamaño y composición y lo atribuye a cada persona; mide ingresos, no todas las dimensiones de bienestar.',
+      ],
+      sources: [
+        { id: 'eurostat-gdp-wellbeing-indicator', title: 'Real GDP per capita · SDG indicator profile', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/cache/metadata/en/sdg_08_10_esmsip2.htm', retrievedAt: '2026-11-16' },
+        { id: 'eurostat-income-living-conditions-metadata', title: 'Income and living conditions (EU-SILC) · metadata', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/cache/metadata/en/ilc_simsilc_el.htm', retrievedAt: '2026-11-16' },
+      ],
+    },
+    limitation: 'Esto confirma que el PIB no basta para describir cómo viven los hogares; no demuestra que el crecimiento no les beneficie. Para valorar su evolución hay que comparar ingresos reales y distribución en los mismos años y territorio.',
+  },
   {
     id: 'rural-urban-service-access', label: 'acceso rural y urbano a vivienda y servicios',
     when: ruralUrbanAccess,

@@ -15,6 +15,7 @@ import { alignPropositionOutcomes, comparableObservationGroups, composePropositi
 import { rankWarehouseObservations } from './warehouse-query.mjs';
 
 const cases = [
+  ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
@@ -38,7 +39,7 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
 }
 assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
 assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotizaciones actuales?')?.id, 'pension-financing', 'A funding question must stay in the pension-financing family, not a salary comparison');
-for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada']) {
+for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada', '¿Cómo ha crecido el PIB real en España?', '¿Cuál es la renta mediana equivalente de los hogares españoles?', 'La renta mediana equivalente creció más que el PIB en 2025']) {
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
 }
 const specificButUncovered = [
@@ -64,6 +65,19 @@ const ruralAccess = focusedEvidencePlan('La España rural tiene vivienda más ba
 assert.equal(ruralAccess.answerScope.family, 'rural-urban-service-access');
 assert.match(ruralAccess.shareableReply, /promedios nacionales.*no permiten concluir/i);
 assert.equal(ruralAccess.sourceLinks.length, 0, 'National indicators must not be presented as rural-versus-urban evidence');
+const gdpHousehold = focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
+assert.equal(gdpHousehold.answerScope.family, 'gdp-household-welfare');
+assert.equal(gdpHousehold.evidenceLevel, 'limited', 'Definitions explain the scope but do not establish household outcomes');
+assert.equal(gdpHousehold.sourceLinks.length, 2, 'The GDP and household-income definitions need direct official sources');
+assert.match(gdpHousehold.shareableReply, /aproximaci[oó]n al nivel material de vida/);
+assert.match(gdpHousehold.shareableReply, /renta disponible equivalente/);
+assert.match(gdpHousehold.shareableReply, /no demuestra que el crecimiento no les beneficie/);
+assert.doesNotMatch(gdpHousehold.shareableReply, /\d/);
+const gdpHouseholdPublic = localPublicCheckResponse({ status: 'complete', requestId: 'gdp-households', result: gdpHousehold }, 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
+assert.equal(gdpHouseholdPublic.state, 'limited');
+assert.equal(gdpHouseholdPublic.result.sources.length, 2, 'The public response must retain both definition sources');
+assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
+assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-11-17') })?.sourceLinks.length, 0, 'Expired definition evidence must not appear as current');
 for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {
   assert.ok(broadDomainPacketsFor(claim).length, `A broad claim lost its reviewed context: ${claim}`);
 }

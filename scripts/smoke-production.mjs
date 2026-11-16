@@ -3,6 +3,7 @@ const requireTerminal = process.env.SMOKE_REQUIRE_TERMINAL === '1';
 const checks = [
   { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'supported' },
   { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient', 'processing'] },
+  { text: 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', inputType: 'text', states: ['limited', 'insufficient', 'processing'] },
   { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient', 'processing'] },
 ];
 const failures = [];
