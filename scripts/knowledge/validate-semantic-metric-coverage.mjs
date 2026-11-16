@@ -69,6 +69,8 @@ const cases = [
   ['Crece la agricultura ecológica', 'organic_farming_share'],
   ['Los ríos están más contaminados', 'water_body_quality'],
   ['¿Qué parte de quienes tienen estudios superiores trabaja en puestos que no exigen ese nivel?', 'tertiary_overqualification_rate'],
+  ['Los jóvenes con estudios superiores están sobrecualificados en su empleo', 'tertiary_overqualification_rate_age_20_34'],
+  ['¿Qué porcentaje de personas ocupadas de 20 a 34 años con titulación terciaria trabaja en ocupaciones que no requieren ese nivel?', 'tertiary_overqualification_rate_age_20_34'],
   ['¿Qué residentes adultos forman el denominador de la cobertura del ingreso mínimo vital?', 'imv_comparable_population_by_nationality'],
   ['¿Cuál es la edad media de las personas beneficiarias del IMV?', 'imv_beneficiary_average_age'],
   ['¿Qué tasa de desempleo tienen las personas de nacionalidad extranjera?', 'unemployment_rate_by_nationality'],

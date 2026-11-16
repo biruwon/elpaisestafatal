@@ -31,7 +31,9 @@ const observationFitsClaim = (claim, item) => {
   const text = normalize(claim);
   const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
   if (/\bmujeres\b/.test(text) && !/\bfemale\b|\bmujeres\b|"sex"\s*:\s*"F"/i.test(population) && item.dimensions?.sex !== 'F') return false;
-  if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
+  const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
+  if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
+    && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
   return true;
 };
 const labels = {
@@ -51,6 +53,7 @@ const labels = {
   employment_rate_tertiary_education: 'Tasa de empleo de personas con estudios terciarios',
   unemployment_rate_tertiary_education: 'Tasa de paro de personas con estudios terciarios',
   tertiary_overqualification_rate: 'Tasa de sobrecualificación entre personas con estudios terciarios ocupadas',
+  tertiary_overqualification_rate_age_20_34: 'Tasa de sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria',
   in_work_poverty_rate: 'Personas ocupadas de 18 años o más en riesgo de pobreza',
   in_work_poverty_full_time_rate: 'Personas ocupadas de 18 años o más a jornada completa en riesgo de pobreza',
   primary_care_wait_days: 'Demora entre quienes esperaron más de un día',
@@ -88,10 +91,14 @@ const sourceValid = (source) => {
 const factsForMetric = (id, observations, claim) => {
   const series = new Map();
   const metricRows = observations.filter((row) => row.metricId === id);
+  const validYouthOverqualificationScope = (item) => id !== 'tertiary_overqualification_rate_age_20_34'
+    || item.dimensions?.age === 'Y20-34' && item.dimensions?.geo === 'ES'
+      && item.dimensions?.citizen === 'TOTAL' && item.dimensions?.sex === 'T' && item.dimensions?.unit === 'PC';
   const hasActiveRentalIndex = id === 'rental_price_index' && metricRows.some((item) => isRentalIndexObservation(item)
     && String(item.source?.url || '').includes('/prc_hicp_minr'));
   for (const item of metricRows.filter((row) => validNumber(row.value) && row.period && row.freshness !== 'invalid'
     && !['projected', 'budget'].includes(row.dataKind) && sourceValid(row.source) && observationFitsClaim(claim, row)
+    && validYouthOverqualificationScope(row)
     && (id !== 'rental_price_index' || isRentalIndexObservation(row)
       && (!hasActiveRentalIndex || String(row.source?.url || '').includes('/prc_hicp_minr')))
     && (!/^household_electricity_price/.test(id) || !/^(?:kilowatt-hour|kwh)$/i.test(row.unit || '') || Boolean(row.dimensions?.currency)))) {
@@ -137,16 +144,35 @@ const educationOutcomeFinding = (fact) => {
   if (fact.id === 'employment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 64 años con educación terciaria (ISCED 5–8) estaba ocupada en ${period}.`;
   if (fact.id === 'unemployment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de la población activa de 20 a 64 años con educación terciaria (ISCED 5–8) estaba en paro en ${period}.`;
   if (fact.id === 'tertiary_overqualification_rate') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 64 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9 que no requieren ese nivel en ${period}.`;
+  if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
   return fact.finding;
 };
 const educationOutcomeLimitation = (ids, fallback) => {
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
   const overqualification = ids.includes('tertiary_overqualification_rate');
+  const youthOverqualification = ids.includes('tertiary_overqualification_rate_age_20_34');
+  if (youthOverqualification) return 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.';
   if (employment && overqualification) return 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.';
   if (unemployment) return 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.';
   if (overqualification) return 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.';
   if (employment) return 'La tasa de empleo usa como denominador a todas las personas residentes de 20 a 64 años con educación terciaria. No se limita a recién graduados ni mide si el puesto coincide con sus estudios.';
+  return fallback;
+};
+const educationOutcomeNeedsForClaim = (claim, fallback) => {
+  const text = normalize(claim);
+  const recentGraduates = /\b(recien titulad\w*|recien graduad\w*|primer empleo)\b/.test(text);
+  const asksQualificationFit = /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|por debajo)\b/.test(text);
+  if (recentGraduates) return ['medición de sobrecualificación o ajuste laboral entre recién graduados, con el tiempo transcurrido desde que terminaron los estudios y un denominador definido'];
+  const age = String(claim).match(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/);
+  if (age && !(age[1] === '20' && (age[2] === '34' || age[2] === '64'))) {
+    const measure = asksQualificationFit ? 'tasa de sobrecualificación' : /\b(paro|desemple\w*)\b/.test(text) ? 'tasa de paro' : 'tasa de empleo';
+    return [`${measure} para personas de ${age[1]} a ${age[2]} años con la titulación solicitada, y el denominador de esa población`];
+  }
+  if (/\b(joven\w*|juvenil)\b/.test(text)) {
+    const measure = asksQualificationFit ? 'sobrecualificación' : /\b(paro|desemple\w*)\b/.test(text) ? 'desempleo' : 'empleo';
+    return [`medición directa de ${measure} para la franja de edad a la que se refiere «jóvenes», con titulación, periodo y denominador explícitos`];
+  }
   return fallback;
 };
 
@@ -192,10 +218,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? 'tasa de paro entre personas activas de 20 a 64 años con educación terciaria; denominador: ocupados más desempleados de ese grupo'
       : id === 'tertiary_overqualification_rate'
         ? 'sobrecualificación entre personas ocupadas de 20 a 64 años con educación terciaria; denominador: todas las personas ocupadas de ese grupo'
+        : id === 'tertiary_overqualification_rate_age_20_34'
+          ? 'sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria; denominador: todas las personas ocupadas de ese grupo'
         : '';
   const needs = asksAboutMakingEndsMeet ? ['dificultad declarada para llegar a fin de mes', 'situación laboral y jornada de las personas consultadas', 'periodo y población']
     : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso']
-      : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : focus.needs
+      : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : educationOutcomeNeedsForClaim(claim, focus.needs)
         : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const facts = ids.flatMap((id) => factsForMetric(id, observations, claim));

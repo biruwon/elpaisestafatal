@@ -72,12 +72,20 @@ for (const [claim, expected] of [
   ['¿Cuál es la tasa de empleo de titulados superiores?', ['employment_rate_tertiary_education']],
   ['Los titulados universitarios están sobrecualificados en sus empleos', ['tertiary_overqualification_rate']],
   ['¿Qué proporción de personas ocupadas con estudios superiores trabaja en puestos que no requieren ese nivel?', ['tertiary_overqualification_rate']],
+  ['Los jóvenes con estudios superiores están sobrecualificados en su empleo', ['tertiary_overqualification_rate_age_20_34']],
+  ['¿Qué proporción de personas ocupadas de 20 a 34 años con educación superior trabaja en puestos que no requieren ese nivel?', ['tertiary_overqualification_rate_age_20_34']],
+  ['¿Cuántos trabajadores jóvenes titulados están sobrecualificados?', ['tertiary_overqualification_rate_age_20_34']],
 ]) assert.deepEqual([...focusedMetricIdsFor(claim)], expected, `Education-employment paraphrase selected the wrong measures: ${claim}`);
 for (const claim of [
   'Cada vez se exige un máster para los puestos de titulados universitarios',
   'Los graduados tienen más empleo que quienes cursan formación profesional',
   'El empleo de universitarios es menor que el de otros titulados',
   'Los recién graduados no encuentran su primer empleo',
+  'Los recién graduados trabajan en puestos por debajo de su titulación',
+  'La tasa de sobrecualificación de personas con estudios superiores de 25 a 34 años',
+  'Los titulados jóvenes de 20 a 64 años trabajan en puestos por debajo de su titulación',
+  'Los jóvenes con estudios superiores tienen más paro que antes',
+  'La tasa de empleo de titulados superiores de 20 a 34 años',
   'La tasa de paro de titulados universitarios de 25 a 34 años',
   'Compara el empleo de titulados superiores de 20 a 64 años con el de 25 a 34 años',
   'La tasa de empleo de titulados universitarios en Europa',
@@ -264,6 +272,45 @@ const graduateGap = focusedEvidencePlan('Un título universitario ya no garantiz
 assert.equal(graduateGap.evidenceLevel, 'insufficient');
 assert.equal(graduateGap.sourceLinks.length, 0);
 assert.doesNotMatch(graduateGap.shareableReply, /34 %|83,2 %/, 'A missing warehouse observation must not be replaced with a hard-coded percentage');
+const youngOverqualificationSource = {
+  id: 'eurostat-tertiary-overqualification-age-20-34',
+  title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat',
+  url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan?freq=A&citizen=TOTAL&age=Y20-34&sex=T&unit=PC&geo=ES&sinceTimePeriod=2015',
+  retrievedAt: '2026-11-16',
+};
+const youngOverqualificationObservation = {
+  id: 'tertiary-overqualification-age-20-34-2025', metricId: 'tertiary_overqualification_rate_age_20_34',
+  value: 34.4, period: '2025', unit: 'Percentage', geography: 'España',
+  population: 'employed residents aged 20 to 34 with tertiary education',
+  denominator: 'all employed residents aged 20 to 34 with tertiary education',
+  dimensions: { freq: 'A', citizen: 'TOTAL', age: 'Y20-34', sex: 'T', unit: 'PC', geo: 'ES', time: '2025' },
+  dimensionLabels: { age: 'From 20 to 34 years', geo: 'Spain' },
+  status: 'd', freshness: 'fresh', source: youngOverqualificationSource,
+};
+const youngOverqualificationParaphrases = [
+  'Los jóvenes con estudios superiores están sobrecualificados en su empleo',
+  '¿Qué proporción de personas ocupadas de 20 a 34 años con educación superior trabaja en puestos que no requieren ese nivel?',
+  '¿Cuántos trabajadores jóvenes titulados están sobrecualificados?',
+];
+for (const claim of youngOverqualificationParaphrases) {
+  const answer = focusedEvidencePlan(claim, { observations: [youngOverqualificationObservation] });
+  assert.deepEqual(answer.answerScope.directMetrics, ['tertiary_overqualification_rate_age_20_34'], claim);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), [youngOverqualificationSource.id], claim);
+  assert.match(answer.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
+  assert.match(answer.shareableReply, /denominador son solo las personas ocupadas de ese grupo/);
+  assert.match(answer.shareableReply, /no equivale a reci[eé]n graduados/);
+  assert.match(answer.shareableReply, /definici[oó]n de este dato difiere/);
+}
+const wrongAgeYouthObservation = { ...youngOverqualificationObservation, dimensions: { ...youngOverqualificationObservation.dimensions, age: 'Y20-64' } };
+const wrongCountryYouthObservation = { ...youngOverqualificationObservation, dimensions: { ...youngOverqualificationObservation.dimensions, geo: 'FR' }, geography: 'Francia' };
+for (const invalidObservation of [wrongAgeYouthObservation, wrongCountryYouthObservation]) {
+  const answer = focusedEvidencePlan('Los jóvenes con estudios superiores están sobrecualificados en su empleo', { observations: [invalidObservation] });
+  assert.equal(answer.sourceLinks.length, 0, 'The age-specific metric must reject an observation outside its configured age or geography');
+  assert.equal(answer.evidenceLevel, 'insufficient');
+}
+const youthUnemploymentNeighbour = focusedEvidencePlan('Los jóvenes con estudios superiores tienen más paro que antes', { observations: [youngOverqualificationObservation] });
+assert.equal(youthUnemploymentNeighbour.sourceLinks.length, 0, 'Youth over-qualification must not stand in for youth unemployment');
+assert.match(youthUnemploymentNeighbour.shareableReply, /medici[oó]n directa de desempleo para la franja de edad/);
 const sectorWageGap = focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { observations: [
   { id: 'national-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },
   { id: 'tourism-value-added', metricId: 'gross_value_added_by_activity', value: 10, period: '2025', unit: 'million EUR', geography: 'España', dimensions: { activity: 'Accommodation and food service activities' } },

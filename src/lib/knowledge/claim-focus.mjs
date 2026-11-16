@@ -23,8 +23,8 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && /\b(?:hogar\w*|famili\w*|nivel de vida|condiciones de vida|bienestar|distribucion de la renta|desigualdad)\b/.test(t)
   && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
-const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
-  && /\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t);
+const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
+  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
 const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t)
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
   || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
@@ -34,15 +34,27 @@ const educationJobRequirement = (t) => /\b(master\w*|maestr\w*|posgrado\w*|postg
   && /\b(emple\w*|trabaj\w*|puesto\w*)\b/.test(t);
 const educationLevelComparison = (t) => /\b(formacion profesional|fp|grado medio|grado superior)\b/.test(t)
   && /\b(menos|mas|mayor|menor|compar\w*|diferent\w*|frente a|entre)\b/.test(t);
-const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|peor|superior|inferior)\b[\s\S]{0,35}\b(?:que|frente a|respecto a|comparad\w* con)\b/.test(t)
+const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|peor|superior|inferior)\b[\s\S]{0,35}\bque\s+(?:el|la|los|las|quien(?:es)?|otro|otra|otros|otras)\b/.test(t)
   || /\b(?:en comparacion con|comparad\w* con|que quienes)\b/.test(t);
 const educationOutcomeMetrics = (claim) => {
   const t = normalize(claim);
-  const unsupportedPopulation = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|recien titulad\w*|recien graduad\w*|primer empleo|joven\w*|juvenil|europa|europe[oa]s?|ue|union europea)\b/.test(t);
+  const unsupportedEducationOrTerritory = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|recien titulad\w*|recien graduad\w*|primer empleo|europa|europe[oa]s?|ue|union europea)\b/.test(t);
+  const youthReference = /\b(joven\w*|juvenil)\b/.test(t);
+  const belowThirty = /\bmenores? de \d+\b/.test(t);
   const requestedAges = [...String(claim).matchAll(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/gi)];
-  if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedPopulation
-    || educationCrossGroupComparison(t) || requestedAges.some(([, start, end]) => start !== '20' || end !== '64')) return [];
   const qualificationFit = educationJobFit(t);
+  const age20To34Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '34';
+  const age20To64Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '64';
+  if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedEducationOrTerritory
+    || educationCrossGroupComparison(t) || belowThirty || requestedAges.length > 1
+    || requestedAges.length > 0 && !age20To34Requested && !age20To64Requested
+    || age20To34Requested && !qualificationFit
+    || youthReference && (!qualificationFit || requestedAges.length > 0 && !age20To34Requested)) return [];
+  // Eurostat publishes over-qualification separately for ages 20–34 and
+  // 35–64. Use the former only for a youth over-qualification claim, and
+  // never let its rate stand in for recent graduates, unemployment, or all
+  // people with tertiary education.
+  if (qualificationFit && (youthReference || age20To34Requested)) return ['tertiary_overqualification_rate_age_20_34'];
   const unemployment = /\b(paro|desemple\w*)\b/.test(t);
   const employmentAccess = /\b(tasa de empleo|encontr\w*|consegu\w*|garantiz\w*|asegur\w*|acced\w*|menos empleo|mas empleo|mayor empleo|menor empleo)\b/.test(t);
   const metrics = [];

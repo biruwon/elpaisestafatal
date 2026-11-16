@@ -866,7 +866,7 @@
     "aliases": ["tasa de sobrecualificación de titulados superiores", "personas universitarias sobrecualificadas", "titulados con estudios superiores en puestos que no requieren estudios terciarios"],
     "unit": "percent of employed people aged 20 to 64 with tertiary education",
     "population": "employed residents aged 20 to 64 with tertiary education (ISCED 2011 levels 5 to 8); denominator is all employed people in this age and education group",
-    "notEquivalentTo": ["tertiary_education_attainment_rate", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education"],
+    "notEquivalentTo": ["tertiary_education_attainment_rate", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education", "tertiary_overqualification_rate_age_20_34"],
     "dimensions": ["period", "geography", "age", "sex", "citizenship", "education_level", "occupation_requirement"],
     "definition": {
       "label": "Tasa de sobrecualificación entre personas con estudios terciarios ocupadas",
@@ -875,6 +875,24 @@
       "denominator": "todas las personas ocupadas de 20 a 64 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
       "sources": [
         {"id": "definition-tertiary-overqualification-rate", "title": "Eurostat · Over-qualification rates by citizenship (lfsa_eoqgan)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en", "retrievedAt": "2026-11-16"},
+        {"id": "definition-eurostat-skills-mismatch", "title": "Eurostat · Skills mismatch methodology", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/web/skills/methodology", "retrievedAt": "2026-11-16"}
+      ]
+    }
+  },
+  "tertiary_overqualification_rate_age_20_34": {
+    "name": "Over-qualification rate among employed people aged 20 to 34 with tertiary education",
+    "aliases": ["tasa de sobrecualificación de personas ocupadas de 20 a 34 años", "sobrecualificación de jóvenes con estudios superiores", "titulados superiores de 20 a 34 años en ocupaciones que no requieren educación terciaria"],
+    "unit": "percent of employed people aged 20 to 34 with tertiary education",
+    "population": "employed residents aged 20 to 34 with tertiary education (ISCED 2011 levels 5 to 8); denominator is all employed residents in this age and education group",
+    "notEquivalentTo": ["tertiary_overqualification_rate", "tertiary_education_attainment_rate", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education"],
+    "dimensions": ["period", "geography", "age", "sex", "citizenship", "occupation_requirement"],
+    "definition": {
+      "label": "Tasa de sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria",
+      "explanation": "Mide qué proporción de las personas ocupadas de 20 a 34 años con educación terciaria trabaja en ocupaciones de los grupos principales 4 a 9 de ISCO, que no requieren ese nivel. Este grupo de edad no equivale a recién graduados: incluye a todas las personas ocupadas de 20 a 34 años con educación terciaria.",
+      "numerator": "personas ocupadas de 20 a 34 años con educación terciaria (ISCED 2011 niveles 5 a 8) en ocupaciones ISCO grupos principales 4 a 9",
+      "denominator": "todas las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 2011 niveles 5 a 8)",
+      "sources": [
+        {"id": "definition-tertiary-overqualification-rate-age-20-34", "title": "Eurostat · Over-qualification rates by citizenship (lfsa_eoqgan)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en", "retrievedAt": "2026-11-16"},
         {"id": "definition-eurostat-skills-mismatch", "title": "Eurostat · Skills mismatch methodology", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/web/skills/methodology", "retrievedAt": "2026-11-16"}
       ]
     }
