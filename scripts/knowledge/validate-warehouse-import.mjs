@@ -46,6 +46,8 @@ const d1SourceState = parseD1CompletedSourceSnapshots(JSON.stringify([{ results:
 ] }]));
 assert.deepEqual([...d1SourceState], [JSON.stringify(['source-legacy', 'legacy-hash']), JSON.stringify(['source-ready', 'ready-hash'])], 'Only legacy or explicitly completed matching snapshots should be skipped');
 await assert.rejects(async () => parseD1CompletedSourceSnapshots('not json'));
+await assert.rejects(async () => parseD1CompletedSourceSnapshots('[]'));
+await assert.rejects(async () => parseD1CompletedSourceSnapshots('[{"success":true}]'));
 await assert.rejects(async () => parseD1CompletedSourceSnapshots('[{"success":false,"results":[]}]'));
 const sourceLines = [
   "INSERT INTO source_documents (id) VALUES ('source-ready');",

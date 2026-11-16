@@ -65,9 +65,11 @@ export async function* skipUnchangedSourceData(lines, completedSnapshots, skippe
 export const parseD1CompletedSourceSnapshots = (output) => {
   let parsed;
   try { parsed = JSON.parse(output); } catch { throw new Error('Wrangler did not return valid JSON for the source manifest query'); }
-  if (!Array.isArray(parsed)) throw new Error('Wrangler source manifest query returned an unexpected JSON shape');
+  if (!Array.isArray(parsed) || !parsed.length || parsed.some((result) => !result || !Array.isArray(result.results))) {
+    throw new Error('Wrangler source manifest query returned an unexpected JSON shape');
+  }
   if (parsed.some((result) => result?.success === false)) throw new Error('Wrangler source manifest query reported a D1 error');
-  const rows = parsed.flatMap((result) => Array.isArray(result?.results) ? result.results : []);
+  const rows = parsed.flatMap((result) => result.results);
   if (rows.some((row) => !row || typeof row.id !== 'string' || typeof row.source_sha256 !== 'string'
     || (row.imported_sha256 !== null && typeof row.imported_sha256 !== 'string')
     || (row.import_status !== null && !['in_progress', 'complete'].includes(row.import_status))
