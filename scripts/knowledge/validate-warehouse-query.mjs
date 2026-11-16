@@ -1,4 +1,4 @@
-import { populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, warehouseEvidenceFit } from './warehouse-query.mjs';
+import { populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
 import { excludedMetricIdsForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 const records = [
@@ -218,4 +218,23 @@ if (!preferredMetricIdsForQuery('Las familias destinan demasiado dinero a la viv
 if (!preferredMetricIdsForQuery('La sanidad dedica más recursos por persona').has('health_expenditure_per_capita')) throw new Error('Natural health-resource wording did not resolve to the health-expenditure metric');
 if (!preferredMetricIdsForQuery('La economía crece más despacio que la Unión Europea').has('gdp_real_growth_europe')) throw new Error('Natural GDP-comparison wording did not resolve to the European GDP-growth metric');
 if (!preferredMetricIdsForQuery('El salario por hora es inferior al europeo').has('median_hourly_earnings_europe')) throw new Error('Natural hourly-pay wording did not resolve to the European hourly-earnings metric');
+
+const manifestFiles = [
+  { file: 'employment.json', metricIds: new Set(['employment_rate']), sourceTokens: new Set(['employment', 'rate', 'spain']), manifested: true },
+  { file: 'housing-context.json', metricIds: new Set(), sourceTokens: new Set(['housing', 'rental', 'price']), manifested: true },
+  { file: 'debt.json', metricIds: new Set(['government_debt_ratio']), sourceTokens: new Set(['government', 'debt']), manifested: true },
+  ...Array.from({ length: 6 }, (_, index) => ({ file: `other-${index}.json`, metricIds: new Set(), sourceTokens: new Set(['other', 'source']), manifested: true })),
+  { file: 'legacy-domain.json', metricIds: new Set(), sourceTokens: new Set(), manifested: false },
+];
+const manifestNames = manifestFiles.map((item) => item.file);
+const employmentFiles = selectWarehouseRecordFiles(manifestNames, manifestFiles, { query: 'employment rate Spain', metricIds: new Set(['employment_rate']) });
+if (!employmentFiles.includes('employment.json') || employmentFiles.includes('debt.json')) throw new Error('Manifest lookup did not keep explicit metric retrieval scoped');
+if (!employmentFiles.includes('legacy-domain.json')) throw new Error('Manifest lookup dropped a legacy domain record without a manifest');
+const housingFiles = selectWarehouseRecordFiles(manifestNames, manifestFiles, { query: 'housing rental price affordability', metricIds: new Set(['housing_cost_overburden_rate']) });
+if (!housingFiles.includes('housing-context.json')) throw new Error('Manifest lookup did not retain an untyped source whose title matches the metric query');
+const noMatchFiles = selectWarehouseRecordFiles(['employment.json', 'debt.json'], manifestFiles.slice(0, 1).concat(manifestFiles[2]), { query: 'a claim with no source alias match' });
+if (noMatchFiles.length) throw new Error('A complete manifest index fell back to every source file on a no-match query');
+const legacyFiles = ['employment.json', 'debt.json', 'unindexed.json'];
+const legacyIndex = manifestFiles.slice(0, 1).concat(manifestFiles[2], [{ file: 'unindexed.json', metricIds: new Set(), sourceTokens: new Set(), manifested: false }]);
+if (selectWarehouseRecordFiles(legacyFiles, legacyIndex, { query: 'a claim with no source alias match' }).length !== legacyFiles.length) throw new Error('An incomplete manifest index did not preserve its compatibility fallback');
 console.log('Warehouse query validation passed.');

@@ -91,7 +91,7 @@ const outputPath = join(root, 'records', `${source.id}.json`);
 await mkdir(join(root, 'objects'), { recursive: true });
 const objectPath = join(root, 'objects', hash);
 await writeFile(objectPath, bytes);
-const manifest = { ...source, domain, contentType, sha256: hash, objectPath, retrievedAt: new Date().toISOString(), recordCount: records.length, recordPath: outputPath };
+const manifest = { ...source, domain, contentType, sha256: hash, objectPath, retrievedAt: new Date().toISOString(), recordCount: records.length, metricIds: [...new Set(records.map((record) => record.metricId).filter(Boolean))], recordPath: outputPath };
 await writeFile(outputPath, JSON.stringify({ source: manifest, records }, null, 2));
 // The production D1 exporter reads manifests. A record file alone makes the
 // source usable locally while silently omitting it from production retrieval.

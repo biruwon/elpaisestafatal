@@ -16,8 +16,10 @@ const root = new URL('../../', import.meta.url);
 const d1Search = await readFile(new URL('functions/lib/d1-warehouse.ts', root), 'utf8');
 const d1Exporter = await readFile(new URL('./export-warehouse-sql.mjs', import.meta.url), 'utf8');
 const d1Loader = await readFile(new URL('./load-warehouse-d1.mjs', import.meta.url), 'utf8');
+const warehouseQuery = await readFile(new URL('./warehouse-query.mjs', import.meta.url), 'utf8');
 const d1Migration = await readFile(new URL('../../migrations/0010_remove_unused_tables_and_complete_warehouse.sql', import.meta.url), 'utf8');
 const d1CheckpointMigration = await readFile(new URL('../../migrations/0011_warehouse_source_imports.sql', import.meta.url), 'utf8');
+if (!warehouseQuery.includes("join(root, 'manifests')") || warehouseQuery.includes("join(root, '../manifests')")) throw new Error('Local warehouse search does not read manifests beside its source records');
 for (const [source, text, label] of [
   [d1Search, 'observations_fts MATCH ?', 'D1 full-text retrieval'],
   [d1Search, 'payload.finding', 'typed legal/event payload retrieval'],

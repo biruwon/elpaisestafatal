@@ -258,3 +258,25 @@ through metric families, up from 81 before these focus routes. It still
 returns only four limited-evidence completions and leaves 296 uncovered; a
 recognized metric family does not itself mean the evidence warehouse contains
 a matching observation.
+
+## Text retrieval latency — 16 November 2026
+
+The public health endpoint and the local resolver reported the same process
+telemetry after 33 completed text requests: 52.9 seconds p95 end-to-end,
+32.1 seconds p95 in warehouse retrieval and 51.3 seconds p95 in retrieval and
+answer composition. These are observations from that resolver process, not a
+site-wide benchmark. The local file warehouse contained 945 record files
+(2.2 GB) and 938 manifests (3.7 MB), but the search code looked one directory
+above the actual manifest directory. Retrieval therefore missed the metric
+and source-token index and could parse up to 50,000 records from an unfiltered
+file list on a cache miss.
+
+The resolver now reads manifests beside the record files, narrows metric
+lookups by metric ID and source aliases, and avoids scanning the full archive
+when the manifest index covers at least 90% of files but has no match. Domain
+manifests record the metric IDs they contain. On this local warehouse, the
+existing housing-price lookup took 1.225 seconds cold and 0.130 seconds warm;
+a synthetic no-match lookup returned no observations in 1.222 seconds. These
+measure the file-search step only. End-to-end production latency still needs
+to be remeasured after the resolver process reloads and accumulates new
+requests.

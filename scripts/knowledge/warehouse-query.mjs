@@ -113,22 +113,49 @@ const loadRecordFileIndex = async (files) => {
   if (recordFileIndex.key === key && recordFileIndex.expiresAt > Date.now()) return recordFileIndex.entries;
   const entriesByFile = new Map();
   let manifestFiles = [];
-  try { manifestFiles = (await readdir(join(root, '../manifests'))).filter((file) => file.endsWith('.json')); } catch { /* The warehouse may only contain records in a degraded local setup. */ }
+  try { manifestFiles = (await readdir(join(root, 'manifests'))).filter((file) => file.endsWith('.json')); } catch { /* The warehouse may only contain records in a degraded local setup. */ }
   for (const file of manifestFiles) {
     try {
-      const manifest = JSON.parse(await readFile(join(root, '../manifests', file), 'utf8'));
+      const manifest = JSON.parse(await readFile(join(root, 'manifests', file), 'utf8'));
       const recordFile = manifest.recordPath ? basename(manifest.recordPath) : '';
       if (!recordFile) continue;
-      const entry = entriesByFile.get(recordFile) || { file: recordFile, metricIds: new Set(), sourceTokens: new Set() };
+      const entry = entriesByFile.get(recordFile) || { file: recordFile, metricIds: new Set(), sourceTokens: new Set(), manifested: true };
       if (manifest.metricId) entry.metricIds.add(manifest.metricId);
       for (const metricId of manifest.metricIds || []) entry.metricIds.add(metricId);
       for (const token of tokens([manifest.metricId, manifest.title, ...(manifest.aliases || [])].join(' '))) entry.sourceTokens.add(token);
       entriesByFile.set(recordFile, entry);
     } catch { /* Malformed manifests are handled by warehouse validation. */ }
   }
-  const entries = files.map((file) => entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set() });
+  const entries = files.map((file) => entriesByFile.get(file) || { file, metricIds: new Set(), sourceTokens: new Set(), manifested: false });
   recordFileIndex = { expiresAt: Date.now() + recordCacheTtlMs * 5, key, entries };
   return entries;
+};
+
+export const selectWarehouseRecordFiles = (files, fileIndex, { query = '', metricIds } = {}) => {
+  const indexedCount = fileIndex.filter((entry) => entry.manifested).length;
+  const indexCoverage = files.length ? indexedCount / files.length : 1;
+  // Old warehouse snapshots may predate manifests. Keep their compatibility
+  // path, but use the manifest index as authoritative once it covers the
+  // current records; otherwise a no-match query scans gigabytes of JSON.
+  if (indexCoverage < 0.9) return files;
+
+  const unindexedFiles = fileIndex.filter((entry) => !entry.manifested).map((entry) => entry.file);
+  const wanted = tokens(query);
+  const overlapCount = (entry) => wanted.filter((token) => entry.sourceTokens.has(token)).length;
+  const minimumOverlap = Math.min(2, wanted.length);
+
+  if (metricIds?.size) {
+    const directMetricFiles = fileIndex.filter((entry) => [...entry.metricIds].some((metricId) => metricIds.has(metricId)));
+    const untypedMatches = wanted.length
+      ? fileIndex.filter((entry) => entry.manifested && entry.metricIds.size === 0 && overlapCount(entry) >= minimumOverlap)
+      : [];
+    return [...new Set([...directMetricFiles, ...untypedMatches].map((entry) => entry.file).concat(unindexedFiles))];
+  }
+
+  const queryMatches = wanted.length
+    ? fileIndex.filter((entry) => entry.manifested && overlapCount(entry) >= minimumOverlap)
+    : [];
+  return [...new Set([...queryMatches.map((entry) => entry.file), ...unindexedFiles])];
 };
 
 const readRecordPayload = async (file) => {
@@ -148,23 +175,7 @@ const readRecords = async ({ query = '', metricIds } = {}) => {
     let files;
     try { files = (await readdir(join(root, 'records'))).filter((file) => file.endsWith('.json')); } catch { return []; }
     const fileIndex = await loadRecordFileIndex(files);
-    if (metricIds?.size) {
-      // Metric-specific queries should not parse the complete warehouse. The
-      // manifests are tiny and already map most record files to their metric;
-      // keep unindexed domain files as a compatibility fallback because a
-      // single domain payload can contain several metric families.
-      const scoped = fileIndex.filter(({ file, metricIds: fileMetricIds }) => file.startsWith('domain-') || !fileMetricIds.size || [...fileMetricIds].some((metricId) => metricIds.has(metricId)));
-      if (scoped.length) files = scoped.map((entry) => entry.file);
-    }
-    if (!metricIds?.size && query) {
-      const wanted = tokens(query);
-      const candidates = [];
-      for (const entry of fileIndex) {
-        const overlap = wanted.filter((token) => entry.sourceTokens.has(token)).length;
-        if (overlap >= Math.min(2, wanted.length)) candidates.push(entry.file);
-      }
-      if (candidates.length) files = candidates;
-    }
+    files = selectWarehouseRecordFiles(files, fileIndex, { query, metricIds });
     const records = [];
     for (const file of files.slice(0, 5000)) {
       if (records.length >= maxCachedRecords) break;

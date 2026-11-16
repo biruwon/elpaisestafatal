@@ -18,6 +18,7 @@ try {
   const record = JSON.parse(await readFile(manifest.recordPath, 'utf8'));
   assert.equal(record.records[0].value, 100);
   assert.equal(manifest.trust, 'approved-domain');
+  assert.deepEqual(manifest.metricIds, [...new Set(record.records.map((item) => item.metricId).filter(Boolean))], 'The source manifest must index every metric in its domain payload');
   // Model a projection/budget row: its type, comparison population and legal
   // stage must survive the SQL mirror rather than becoming an observed value.
   record.records[0].dataKind = 'projected';
