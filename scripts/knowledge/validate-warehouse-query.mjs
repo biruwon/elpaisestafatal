@@ -30,8 +30,8 @@ for (const query of ['Tasa de paro de personas de 25 a 34 años', 'Unemployment 
 const adjacentAge = ageQuery('Tasa de paro de personas de 35 a 44 años');
 if (adjacentAge.length !== 1 || adjacentAge[0].id !== 'unemployment-35-44') throw new Error('A nearby age claim crossed into the 25–34 group');
 const yearRows = [2015, 2016, 2018, 2020, 2021].map((year) => ({
-  id: `unemployment-${year}`, metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', period: String(year), source: ageSource,
-})).concat([{ id: 'unemployment-period-missing', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', source: ageSource }]);
+  id: `unemployment-${year}`, metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', period: String(year), geography: 'Spain', dimensions: { geo: 'ES' }, source: ageSource,
+})).concat([{ id: 'unemployment-period-missing', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, unit: '%', geography: 'Spain', dimensions: { geo: 'ES' }, source: ageSource }]);
 const yearQuery = (query) => rankWarehouseObservations(query, yearRows, 20, { metricIds: new Set(['unemployment_rate']) });
 for (const query of ['Unemployment rate from 2015 to 2020', 'Unemployment rate between 2015 and 2020']) {
   const scoped = yearQuery(query);
@@ -62,6 +62,26 @@ for (const query of ['Tasa de paro en febrero de 2025', 'Unemployment rate in Fe
   const scoped = monthQuery(query);
   if (scoped.length !== 1 || scoped[0].id !== 'unemployment-2025-02') throw new Error(`An explicit month request returned another month or an annual total: ${query}`);
 }
+const geographyRows = [
+  { id: 'unemployment-spain', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 10, period: '2025', dimensions: { geo: 'ES' }, dimensionLabels: { geo: 'Spain' }, geography: 'Spain', source: ageSource },
+  { id: 'unemployment-france', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 8, period: '2025', dimensions: { geo: 'FR' }, dimensionLabels: { geo: 'France' }, geography: 'France', source: ageSource },
+  { id: 'unemployment-germany', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 6, period: '2025', dimensions: { geo: 'DE' }, dimensionLabels: { geo: 'Germany' }, geography: 'Germany', source: ageSource },
+  { id: 'unemployment-eu', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 7, period: '2025', dimensions: { geo: 'EU27_2020' }, dimensionLabels: { geo: 'European Union (27 countries)' }, geography: 'European Union', source: ageSource },
+  { id: 'unemployment-madrid', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 9, period: '2025', dimensions: { geo: 'ES30' }, dimensionLabels: { geo: 'Community of Madrid' }, geography: 'Spain', source: ageSource },
+  { id: 'unemployment-geography-missing', metricId: 'unemployment_rate', metric: 'unemployment rate', value: 11, period: '2025', source: ageSource },
+];
+const geographyQuery = (query) => rankWarehouseObservations(query, geographyRows, 20, { metricIds: new Set(['unemployment_rate']) });
+for (const query of ['Tasa de paro en Francia', 'Unemployment rate in France']) {
+  const scoped = geographyQuery(query);
+  if (scoped.length !== 1 || scoped[0].id !== 'unemployment-france') throw new Error(`A country-specific claim returned another country's data: ${query}`);
+}
+const internationalComparison = geographyQuery('Compare unemployment in Spain with the European Union');
+if (internationalComparison.length !== 2 || internationalComparison.some((item) => !['unemployment-spain', 'unemployment-eu'].includes(item.id))) throw new Error('A Spain/EU comparison included an unrelated geography');
+const regionalClaim = geographyQuery('Tasa de paro en Madrid, España');
+if (regionalClaim.length !== 1 || regionalClaim[0].id !== 'unemployment-madrid') throw new Error('A regional request was answered with national data');
+const regionalComparison = geographyQuery('Compare unemployment in Madrid with Spain');
+if (regionalComparison.length !== 2 || regionalComparison.some((item) => !['unemployment-madrid', 'unemployment-spain'].includes(item.id))) throw new Error('A regional/national comparison did not retain exactly its requested places');
+if (geographyQuery('Unemployment rate in France').some((item) => item.id === 'unemployment-geography-missing')) throw new Error('A geography-specific claim accepted an observation with unknown geography');
 const periodAndAmountQueries = ['La tasa pasó del 20 al 34 % entre 2015 y 2020', 'El coste está entre 20 y 34 euros al mes'];
 for (const query of periodAndAmountQueries) {
   if (requestedAgeScopes(query).length) throw new Error(`A year range or money amount was parsed as an age request: ${query}`);

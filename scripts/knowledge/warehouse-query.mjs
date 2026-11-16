@@ -3,8 +3,9 @@ import { basename, join } from 'node:path';
 import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
-import { observationMatchesAgeScope } from '../../src/lib/knowledge/age-scope.mjs';
-import { observationMatchesPeriodScope } from '../../src/lib/knowledge/period-scope.mjs';
+import { ageScopeMatcherFor } from '../../src/lib/knowledge/age-scope.mjs';
+import { periodScopeMatcherFor } from '../../src/lib/knowledge/period-scope.mjs';
+import { geographyScopeMatcherFor } from '../../src/lib/knowledge/geography-scope.mjs';
 
 const root = new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const recordCacheTtlMs = 60 * 1000;
@@ -317,7 +318,10 @@ const recordText = (record) => [
 export const rankWarehouseObservations = (query, records, limit = 12, { metricIds } = {}) => {
   const wanted = tokens(query);
   if (wanted.length < 2 && !metricIds?.size) return [];
-  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => observationMatchesAgeScope(query, record) && observationMatchesPeriodScope(query, record)).filter((record) => {
+  const matchesAge = ageScopeMatcherFor(query);
+  const matchesPeriod = periodScopeMatcherFor(query);
+  const matchesGeography = geographyScopeMatcherFor(query);
+  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => matchesAge(record) && matchesPeriod(record) && matchesGeography(record)).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;

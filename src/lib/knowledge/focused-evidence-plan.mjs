@@ -3,35 +3,26 @@ import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
-import { observationMatchesAgeScope } from './age-scope.mjs';
-import { observationMatchesPeriodScope } from './period-scope.mjs';
+import { ageScopeMatcherFor } from './age-scope.mjs';
+import { periodScopeMatcherFor } from './period-scope.mjs';
+import { geographyScopeMatcherFor, requestedGeographyScopes } from './geography-scope.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-const territoryAliases = [
-  ['ES', ['espana', 'espanol', 'espanola', 'spain']], ['FR', ['francia', 'frances', 'francesa', 'france']],
-  ['DE', ['alemania', 'aleman', 'alemana', 'germany']], ['IT', ['italia', 'italiano', 'italiana', 'italy']],
-  ['PT', ['portugal', 'portugues', 'portuguesa']], ['UK', ['reino unido', 'britanico', 'britanica', 'united kingdom']],
-  ...['andalucia', 'aragon', 'asturias', 'baleares', 'canarias', 'cantabria', 'castilla y leon', 'castilla la mancha', 'cataluna', 'comunidad valenciana', 'extremadura', 'galicia', 'madrid', 'murcia', 'navarra', 'pais vasco', 'la rioja', 'ceuta', 'melilla', 'barcelona', 'valencia', 'sevilla'].map((place) => [place, [place]]),
-];
-const requestedTerritories = (claim) => {
-  const text = ` ${normalize(claim)} `;
-  const found = territoryAliases.filter(([, aliases]) => aliases.some((alias) => [alias, `${alias}s`, `${alias}es`].some((term) => text.includes(` ${term} `))));
-  return found.some(([id]) => id.length > 2) ? found.filter(([id]) => id !== 'ES') : found;
-};
-const observationFitsClaim = (claim, item) => {
-  if (!observationMatchesAgeScope(claim, item) || !observationMatchesPeriodScope(claim, item)) return false;
-  const territories = requestedTerritories(claim);
-  const actual = ` ${normalize([item.geography, item.dimensions?.geo, item.dimensionLabels?.geo].filter(Boolean).join(' '))} `;
-  const europeanComparator = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(normalize(claim)) && /\b(eu27 2020|european union|union europea)\b/.test(actual);
-  if (territories.length && !europeanComparator && !territories.some(([id, aliases]) => actual.includes(` ${normalize(id)} `) || aliases.some((alias) => actual.includes(` ${alias} `)))) return false;
+const observationFitsClaim = (claim) => {
+  const matchesAge = ageScopeMatcherFor(claim);
+  const matchesPeriod = periodScopeMatcherFor(claim);
+  const matchesGeography = geographyScopeMatcherFor(claim);
   const text = normalize(claim);
-  const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
-  if (/\bmujeres\b/.test(text) && !/\bfemale\b|\bmujeres\b|"sex"\s*:\s*"F"/i.test(population) && item.dimensions?.sex !== 'F') return false;
-  const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
-  if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
-    && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
-  return true;
+  return (item) => {
+    if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item)) return false;
+    const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
+    if (/\bmujeres\b/.test(text) && !/\bfemale\b|\bmujeres\b|"sex"\s*:\s*"F"/i.test(population) && item.dimensions?.sex !== 'F') return false;
+    const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
+    if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
+      && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
+    return true;
+  };
 };
 const labels = {
   unemployment_rate: 'Tasa de paro entre personas activas de 15 a 74 años',
@@ -85,7 +76,7 @@ const scopeKey = (item) => JSON.stringify({
 const sourceValid = (source) => {
   try { return Boolean(source?.id && source?.title && new URL(source.url).protocol === 'https:'); } catch { return false; }
 };
-const factsForMetric = (id, observations, claim) => {
+const factsForMetric = (id, observations, fitsClaim) => {
   const series = new Map();
   const metricRows = observations.filter((row) => row.metricId === id);
   const validYouthOverqualificationScope = (item) => id !== 'tertiary_overqualification_rate_age_20_34'
@@ -94,7 +85,7 @@ const factsForMetric = (id, observations, claim) => {
   const hasActiveRentalIndex = id === 'rental_price_index' && metricRows.some((item) => isRentalIndexObservation(item)
     && String(item.source?.url || '').includes('/prc_hicp_minr'));
   for (const item of metricRows.filter((row) => validNumber(row.value) && row.period && row.freshness !== 'invalid'
-    && !['projected', 'budget'].includes(row.dataKind) && sourceValid(row.source) && observationFitsClaim(claim, row)
+    && !['projected', 'budget'].includes(row.dataKind) && sourceValid(row.source) && fitsClaim(row)
     && validYouthOverqualificationScope(row)
     && (id !== 'rental_price_index' || isRentalIndexObservation(row)
       && (!hasActiveRentalIndex || String(row.source?.url || '').includes('/prc_hicp_minr')))
@@ -223,11 +214,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : educationOutcomeNeedsForClaim(claim, focus.needs)
         : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
-  const facts = ids.flatMap((id) => factsForMetric(id, observations, claim));
+  const fitsClaim = observationFitsClaim(claim);
+  const facts = ids.flatMap((id) => factsForMetric(id, observations, fitsClaim));
   const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation) : focus.limitation;
-  const territories = requestedTerritories(claim);
+  const territories = requestedGeographyScopes(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
-    && territories.every(([id]) => focus.explanationEvidence.territories?.includes(id))
+    && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
   const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
   const direct = facts.filter((fact) => directIds.includes(fact.id));

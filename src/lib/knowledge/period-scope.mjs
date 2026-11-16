@@ -84,15 +84,18 @@ const yearForPeriod = (value) => {
 
 export const requestedPeriodScope = periodScopeFor;
 
-export const observationMatchesPeriodScope = (text, item) => {
+export const periodScopeMatcherFor = (text) => {
   const scope = periodScopeFor(text);
-  if (!scope) return true;
-  if (scope.kind === 'invalid') return false;
-  if (scope.kind === 'exactPeriods') return scope.periods.includes(normalizedPeriod(item?.period));
-  const year = yearForPeriod(item?.period);
-  if (year === undefined) return false;
-  if (scope.kind === 'range') return year >= scope.minimum && year <= scope.maximum;
-  if (scope.kind === 'since') return year >= scope.minimum;
-  if (scope.kind === 'until') return year <= scope.maximum;
-  return scope.years.includes(year);
+  if (!scope) return () => true;
+  if (scope.kind === 'invalid') return () => false;
+  if (scope.kind === 'exactPeriods') return (item) => scope.periods.includes(normalizedPeriod(item?.period));
+  if (scope.kind === 'range') return (item) => {
+    const year = yearForPeriod(item?.period);
+    return year !== undefined && year >= scope.minimum && year <= scope.maximum;
+  };
+  if (scope.kind === 'since') return (item) => yearForPeriod(item?.period) >= scope.minimum;
+  if (scope.kind === 'until') return (item) => yearForPeriod(item?.period) <= scope.maximum;
+  return (item) => scope.years.includes(yearForPeriod(item?.period));
 };
+
+export const observationMatchesPeriodScope = (text, item) => periodScopeMatcherFor(text)(item);

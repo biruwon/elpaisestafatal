@@ -72,9 +72,13 @@ export const requestedAgeScopes = requestedScopesFor;
 
 // Explicit age bands are part of the evidence contract. Missing or broader
 // age metadata cannot satisfy a narrower request.
-export const observationMatchesAgeScope = (text, item) => {
+export const ageScopeMatcherFor = (text) => {
   const requested = requestedScopesFor(text);
-  if (!requested.length) return true;
-  const observed = observationAgeScope(item);
-  return Boolean(observed && requested.some((scope) => sameScope(scope, observed)));
+  if (!requested.length) return () => true;
+  return (item) => {
+    const observed = observationAgeScope(item);
+    return Boolean(observed && requested.some((scope) => sameScope(scope, observed)));
+  };
 };
+
+export const observationMatchesAgeScope = (text, item) => ageScopeMatcherFor(text)(item);
