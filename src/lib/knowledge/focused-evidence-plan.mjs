@@ -211,11 +211,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   });
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType: explanation ? 'definition' : 'descriptive', headline: explanation ? `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
+    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanation ? `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
-    interpretation: { kind: 'quantitative', subject: focus.label, predicate: 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
+    interpretation: { kind: focus.claimType === 'causal' ? 'causal' : 'quantitative', subject: focus.label, predicate: focus.claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
-      { type: 'claim_breakdown', items: [{ text: claim, type: 'descriptive', explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
+      { type: 'claim_breakdown', items: [{ text: claim, type: focus.claimType || 'descriptive', explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
         verdict: 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
         finding: explanation ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
       ...(explanation ? [{ type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),

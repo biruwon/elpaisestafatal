@@ -32,6 +32,9 @@ const cases = [
   ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
   ['entrepreneurial-risk-perception', ['Emprender en España se percibe como más arriesgado que buscar una plaza pública', 'Crear una empresa parece más arriesgado que preparar una oposición', 'El riesgo percibido de emprender es mayor que el de trabajar como funcionario']],
   ['housing-supply', ['Los pisos turísticos retiran vivienda del alquiler residencial', 'Los apartamentos turísticos reducen la oferta de viviendas para residentes', '¿Cuántas casas vacías hay disponibles en la ciudad?']],
+  ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
+  ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
+  ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
   ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
@@ -45,6 +48,12 @@ assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotiz
 for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'El porcentaje de jóvenes de 25 a 34 años con estudios superiores aumentó', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada', '¿Cómo ha crecido el PIB real en España?', 'El turismo aporta más al PIB', '¿Cuál es la renta mediana equivalente de los hogares españoles?', 'La renta mediana equivalente creció más que el PIB en 2025']) {
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
 }
+assert.equal(claimFocusFor('Trabajar a jornada completa y ser pobre')?.id, 'working-poverty', 'A full-time poverty claim must not cross into housing independence');
+assert.equal(claimFocusFor('Los pisos turísticos han retirado viviendas del alquiler residencial')?.id, 'housing-supply', 'Tourist-housing supply claims must retain their own evidence contract');
+for (const claim of [
+  '¿Cuántas personas extranjeras no residentes compraron vivienda en España?',
+  '¿Cuánto subieron los precios de la vivienda en las zonas costeras?',
+]) assert.equal(claimFocusFor(claim), undefined, `A nearby claim crossed into a different housing evidence contract: ${claim}`);
 assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones vigentes')?.id, 'pension-financing', 'Current pension financing must stay separate from future benefit projections');
 const specificButUncovered = [
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',
@@ -95,6 +104,42 @@ for (const claim of [
   assert.deepEqual([...focusedMetricIdsFor(claim)], ['rental_price_index'], claim);
 }
 assert.deepEqual([...focusedMetricIdsFor('Trabajar a jornada completa y ser pobre')].filter((id) => id.includes('poverty')), ['in_work_poverty_full_time_rate']);
+
+const workHousingClaim = 'Tener un trabajo a jornada completa ya no garantiza poder independizarse';
+const workHousing = focusedEvidencePlan(workHousingClaim, { observations: [
+  { id: 'national-rent-index', metricId: 'rental_price_index', value: 114.78, period: '2025', unit: 'Index 2015=100', geography: 'España', population: 'household consumption of actual rentals for housing', source: { id: 'rent-index-source', title: 'Índice de alquileres pagados', url: 'https://example.org/rents' } },
+  { id: 'national-house-index', metricId: 'house_price_index', value: 198.4, period: '2025', unit: 'Index 2015=100', geography: 'España', population: 'residential property transactions', source: { id: 'house-index-source', title: 'Índice de precios de vivienda', url: 'https://example.org/housing' } },
+] });
+assert.equal(workHousing.answerScope.family, 'work-housing-independence');
+assert.equal(workHousing.evidenceLevel, 'insufficient', 'National price indexes are context, not direct evidence about independence among full-time workers');
+assert.deepEqual(workHousing.answerScope.directMetrics, []);
+assert.deepEqual([...focusedMetricIdsFor(workHousingClaim)], ['rental_price_index', 'house_price_index']);
+assert.equal(workHousing.sourceLinks.length, 2, 'Only housing price indexes should be shown as context');
+assert.match(workHousing.shareableReply, /Como contexto:/);
+assert.match(workHousing.shareableReply, /no muestran qu[eé] proporci[oó]n/);
+assert.doesNotMatch(workHousing.shareableReply, /temporalidad laboral|tasa de paro/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'work-housing', result: workHousing }, workHousingClaim).state, 'insufficient', 'Contextual housing prices must not upgrade a missing employment/housing cross-tab');
+
+const foreignHousingClaim = 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras';
+const foreignHousing = focusedEvidencePlan(foreignHousingClaim, { observations: [
+  { id: 'foreign-born-population', metricId: 'immigrant_population', value: 9460000, period: '2025', unit: 'persons', geography: 'España', source: { id: 'migration-stock-source', title: 'Población nacida en el extranjero', url: 'https://example.org/migration' } },
+  { id: 'national-house-index', metricId: 'house_price_index', value: 198.4, period: '2025', unit: 'Index 2015=100', geography: 'España', source: { id: 'house-index-source', title: 'Índice de precios de vivienda', url: 'https://example.org/housing' } },
+] });
+assert.equal(foreignHousing.answerScope.family, 'foreign-housing-price-causality');
+assert.equal(foreignHousing.claimType, 'causal');
+assert.equal(foreignHousing.evidenceLevel, 'insufficient');
+assert.equal(foreignHousing.interpretation.kind, 'causal');
+assert.equal(foreignHousing.blocks.find((block) => block.type === 'claim_breakdown').items[0].type, 'causal');
+assert.equal(foreignHousing.sourceLinks.length, 0, 'National immigration counts must not be attached as evidence for local nonresident purchases');
+assert.equal(focusedMetricIdsFor(foreignHousingClaim).size, 0, 'A local causal claim must not retrieve national demographic counts as supporting evidence');
+assert.match(foreignHousing.shareableReply, /residencia habitual describen grupos distintos/);
+assert.match(foreignHousing.shareableReply, /comparaci[oó]n causal/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'foreign-housing', result: foreignHousing }, foreignHousingClaim).state, 'insufficient');
+const migrationHousing = focusedEvidencePlan('La inmigración está haciendo que suban los alquileres en algunas ciudades');
+assert.equal(migrationHousing.answerScope.family, 'migration-housing-demand-causality');
+assert.equal(migrationHousing.claimType, 'causal');
+assert.equal(migrationHousing.sourceLinks.length, 0, 'National migration counts must not stand in for local housing-demand evidence');
+assert.match(migrationHousing.shareableReply, /cambios de poblaci[oó]n residente y flujos migratorios/);
 
 const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes');
 assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');

@@ -230,3 +230,31 @@ its limitation as one assessment. Four submissions still return complete API
 status with limited evidence, 296 remain uncovered and 28 have any evidence or
 source attached. These counts describe routing and answer structure only, not
 truth or factual accuracy.
+
+## Adjacent text-claim routing — 16 November 2026
+
+A live local-resolver probe found two answer-quality failures among related
+housing claims. A statement that full-time work no longer guarantees living
+independently was answered with temporary-contract and unemployment trends,
+which do not measure housing independence. A claim that nonresident foreign
+home purchases raise coastal prices was paired with national housing prices and
+immigration population counts, which do not establish buyer residence or a
+causal effect.
+
+The text route now gives these claims reusable measurement contracts. The
+full-time-work family asks for housing outcomes, net income and housing costs
+for the same population, place and period; rent and purchase-price indices can
+appear only as context. The housing-cause family separates nonresident purchase
+claims from claims about population growth. The first requires transaction
+records by buyer residence and local price data; the second requires local
+population flows, housing supply and prices. Both require a causal comparison
+and keep nationality, country of birth and residence distinct. Paraphrase tests
+cover these families, with nearby work-poverty, nonresident-count,
+coastal-price and tourist-housing claims kept in their own routes. They remain
+explicitly insufficient until compatible observations are available.
+
+The deterministic audit now routes 82 of the 300 unverified discovery claims
+through metric families, up from 81 before these focus routes. It still
+returns only four limited-evidence completions and leaves 296 uncovered; a
+recognized metric family does not itself mean the evidence warehouse contains
+a matching observation.

@@ -44,6 +44,9 @@ const cases = [
   { text: 'Pedro Sánchez traidor', state: 'insufficient' },
   { text: 'Pedro Sánchez corrupto', state: 'insufficient' },
   { text: 'Cómo ha cambiado la situación de una cuestión que no tiene fuentes', state: 'insufficient' },
+  { text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse', state: 'insufficient' },
+  { text: 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', state: 'insufficient' },
+  { text: 'La inmigración está haciendo que suban los alquileres en algunas ciudades', state: 'insufficient' },
 ];
 for (const test of cases) await check(test);
 

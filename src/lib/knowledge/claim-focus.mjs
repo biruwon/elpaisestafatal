@@ -25,6 +25,16 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t);
+const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t)
+  && /\b(emple\w*|trabaj\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t)
+  && /\b(independiz\w*|emancip\w*|vivir por su cuenta|vivir por cuenta propia|vivir de forma independiente|vivir solo|mudarse solo)\b/.test(t);
+const foreignHousingPriceCause = (t) => /\b(viviend\w*|alquil\w*|renta\w*|piso\w*|casas?|mercado inmobiliario|precios? inmobiliarios?)\b/.test(t)
+  && /\b(inmigr\w*|migrant\w*|extranjer\w*|no residentes?|comprador\w*|inversor\w*)\b/.test(t)
+  && /\b(caus\w*|provoc\w*|encarec\w*|aument\w*|sub\w*|elev\w*|dispar\w*|presion\w*|retir\w*)\b/.test(t);
+const foreignHousingPurchaseCause = (t) => foreignHousingPriceCause(t)
+  && /\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
+const migrationHousingDemandCause = (t) => foreignHousingPriceCause(t)
+  && !/\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
 const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|tecnolog\w*)\b/;
 const sectorWages = (t) => (namedSector.test(t) || /\bsectores?\b/.test(t))
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*)\b/.test(t);
@@ -125,6 +135,32 @@ const focuses = [
     needs: ['encuesta de preferencias y riesgo percibido entre personas comparables', 'probabilidad de ingresos y continuidad laboral por alternativa', 'población, territorio y periodo definidos'],
     explanation: 'La percepción de riesgo al emprender no se deduce de la temporalidad del empleo ni de la tasa de paro. Hacen falta respuestas de las mismas personas sobre alternativas comparables.',
     limitation: 'Una comparación entre emprendimiento y empleo público necesita definir qué riesgo se mide —ingresos, continuidad, inversión o fracaso— y a qué población se refiere.',
+  },
+  {
+    id: 'foreign-housing-price-causality', label: 'efecto de compras y población extranjera sobre los precios de vivienda',
+    when: foreignHousingPurchaseCause,
+    claimType: 'causal',
+    direct: [], context: [],
+    needs: ['compras de vivienda desglosadas por residencia habitual y nacionalidad del comprador', 'precios de vivienda o alquiler en los mismos municipios y periodos', 'una comparación causal que tenga en cuenta oferta, demanda local, turismo y financiación'],
+    explanation: 'Que coincidan precios altos y población extranjera en una zona no demuestra que las compras de no residentes los causaran. Nacionalidad, lugar de nacimiento y residencia habitual describen grupos distintos.',
+    limitation: 'Las series nacionales de precios y el número de residentes nacidos fuera no muestran cuántas compras hicieron personas no residentes ni su efecto en zonas costeras. Sin medidas locales y una comparación causal no se puede atribuirles la subida.',
+  },
+  {
+    id: 'migration-housing-demand-causality', label: 'efecto del crecimiento de población en los precios de vivienda',
+    when: migrationHousingDemandCause,
+    claimType: 'causal',
+    direct: [], context: [],
+    needs: ['cambios de población residente y flujos migratorios en los mismos municipios y periodos', 'alquileres o precios de vivienda, viviendas disponibles y oferta nueva en esas zonas', 'una comparación causal que separe el efecto de población de empleo, turismo, oferta y financiación'],
+    explanation: 'El crecimiento de población puede coincidir con más demanda de vivienda, pero el recuento de residentes no mide cuánto cambia los precios ni permite atribuir una subida a la inmigración.',
+    limitation: 'Las cifras nacionales de población inmigrante y los índices nacionales de vivienda no muestran la presión local sobre alquileres ni su efecto causal. Hacen falta medidas locales y una comparación para el mismo periodo.',
+  },
+  {
+    id: 'work-housing-independence', label: 'acceso a vivienda independiente con empleo a jornada completa',
+    when: workHousingIndependence,
+    direct: [], context: ['rental_price_index', 'house_price_index'],
+    needs: ['vivienda independiente observada entre personas con jornada completa', 'ingresos netos y coste de alquiler o compra para la misma población, territorio y periodo', 'edad, tipo de hogar y ayudas económicas cuando se afirma un cambio para un grupo'],
+    explanation: 'La jornada completa describe las horas trabajadas; por sí sola no mide el salario neto ni si una persona puede vivir por su cuenta.',
+    limitation: 'Los índices de alquiler y compraventa no muestran qué proporción de personas a jornada completa vive de forma independiente. Para comprobar un cambio como «ya no» también hace falta comparar la misma población, territorio y periodo.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',

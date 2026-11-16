@@ -66,6 +66,27 @@ if (normativeGap.result?.claimType !== 'normative' || !/criterio expl[ií]cito/.
   throw new Error('An unsupported value judgment did not ask for a criterion before factual evaluation.');
 }
 
+const independenceClaim = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse' });
+if (independenceClaim.status !== 'uncovered' || independenceClaim.result?.id !== 'measurement-work-housing-independence'
+  || independenceClaim.result?.evidenceLevel !== 'insufficient' || independenceClaim.result?.sourceIds?.length
+  || independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding' && /temporalidad|paro/.test(block.points?.join(' ') || ''))) {
+  throw new Error('A full-time-work housing claim inherited unrelated employment metrics or an unsupported verdict.');
+}
+const foreignHousingCause = deterministicApiFallback({ text: 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras' });
+if (foreignHousingCause.status !== 'uncovered' || foreignHousingCause.result?.id !== 'measurement-foreign-housing-price-causality'
+  || foreignHousingCause.result?.claimType !== 'causal' || foreignHousingCause.result?.evidenceLevel !== 'insufficient'
+  || foreignHousingCause.result?.sourceIds?.length
+  || !foreignHousingCause.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /residencia habitual/.test(item)))) {
+  throw new Error('A local causal housing claim was answered with aggregate immigration context instead of a causal evidence gap.');
+}
+const migrationHousingCause = deterministicApiFallback({ text: 'La inmigración está haciendo que suban los alquileres en algunas ciudades' });
+if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result?.id !== 'measurement-migration-housing-demand-causality'
+  || migrationHousingCause.result?.claimType !== 'causal' || migrationHousingCause.result?.evidenceLevel !== 'insufficient'
+  || migrationHousingCause.result?.sourceIds?.length
+  || !migrationHousingCause.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /municipios y periodos/.test(item)))) {
+  throw new Error('A migration-and-housing causal claim was answered with national population counts instead of local demand and causal evidence needs.');
+}
+
 const reviewedAt = Date.parse('2026-11-16T12:00:00Z');
 const youthRentClaims = [
   'El alquiler se come más de la mitad del sueldo de muchos jóvenes',

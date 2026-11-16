@@ -773,12 +773,14 @@ const supplementalRoutes = [
 export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
+  const focusedFamily = claimFocusFor(text)?.id;
+  if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence'].includes(focusedFamily)) return [];
   const compiledClaim = deterministicFallbackCompiler(text);
   const domainProfile = domainProfileFor(text, compiledClaim);
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
   const taxBroadSignal = taxSignal && /inflaci[oó]n|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
   const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|piso|casa|hipotec|emancip/i.test(value);
-  const focusedHousingFamily = claimFocusFor(text)?.id;
+  const focusedHousingFamily = focusedFamily;
   const reviewedYouthPurchaseContext = youthSignal && focusedHousingFamily === 'purchase-affordability'
     && /compr|entrada|hipotec|ahorr|deposit|aval/i.test(value);
   const broadYouthAccess = youthSignal
