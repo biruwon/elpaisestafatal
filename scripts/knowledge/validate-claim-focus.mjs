@@ -96,6 +96,10 @@ for (const claim of [
   'La tasa de empleo de titulados universitarios en Europa',
 ]) assert.deepEqual([...focusedMetricIdsFor(claim)], [], `A nearby education claim used an incompatible tertiary series: ${claim}`);
 assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
+for (const claim of [
+  'La gente paga consultas privadas para que la vea el especialista antes',
+  'El seguro médico privado evita demoras en las consultas externas',
+]) assert.equal(claimFocusFor(claim)?.id, 'private-healthcare-access', `A private-specialist-access paraphrase lost its semantic family: ${claim}`);
 assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotizaciones actuales?')?.id, 'pension-financing', 'A funding question must stay in the pension-financing family, not a salary comparison');
 assert.deepEqual([...focusedMetricIdsFor('Los costes fijos impiden a los autónomos sostenerse con ingresos irregulares')], [], 'General income and wage series must not stand in for self-employment viability');
 assert.notEqual(claimFocusFor('Las cotizaciones empresariales ocultan parte del coste laboral real que soporta cada empleo')?.id, 'self-employment-cost-viability', 'Employer contributions crossed into the self-employment cost family');
@@ -371,6 +375,7 @@ for (const claim of specialistWaitParaphrases) {
   const answer = focusedEvidencePlan(claim);
   assert.equal(answer.answerScope.family, 'specialist-outpatient-regional-waits');
   assert.equal(answer.evidenceLevel, 'limited');
+  assert.equal(answer.interpretation.kind, 'comparative', 'A regional wait comparison must retain comparative interpretation');
   assert.match(answer.headline, /variaron entre territorios en 2025/);
   assert.match(answer.shareableReply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
   assert.match(answer.limitation, /no establece si son excesivas ni por qu[eé]/);
@@ -386,6 +391,53 @@ for (const claim of specialistWaitParaphrases) {
   assert.equal(publicAnswer.state, 'limited', 'A scoped regional comparison should appear as a limited public answer');
   assert.match(publicAnswer.result.reply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
   assert.ok(publicAnswer.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+}
+const privateSpecialistWaitParaphrases = [
+  { claim: 'Se contrata un seguro privado para evitar esperas de especialistas', type: 'causal' },
+  { claim: 'La gente paga consultas privadas para que la vea el especialista antes', type: 'causal' },
+  { claim: 'El seguro médico privado evita demoras en las consultas externas', type: 'causal' },
+  { claim: 'La sanidad privada permite acceder antes a especialistas que la pública', type: 'comparative' },
+];
+for (const { claim, type } of privateSpecialistWaitParaphrases) {
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer.answerScope.family, 'private-healthcare-access', `A private-care claim was routed to the wrong family: ${claim}`);
+  assert.equal(answer.claimType, type, `A private-care claim was assigned the wrong claim type: ${claim}`);
+  assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].type, type);
+  assert.equal(answer.interpretation.kind, type);
+  assert.equal(answer.evidenceLevel, 'limited', 'Related official wait data may inform the reply but cannot settle the private-care claim');
+  assert.match(answer.shareableReply, /Como contexto: El informe/);
+  assert.match(answer.shareableReply, /16 d[ií]as en Melilla y 162 en Canarias/);
+  assert.match(answer.shareableReply, /Falta una medición directa/);
+  assert.match(answer.shareableReply, /motivos declarados para contratar seguro/);
+  assert.match(answer.shareableReply, /Una lista de espera pública no mide las motivaciones/);
+  assert.ok(answer.sourceLinks.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+  const breakdown = answer.blocks.find((block) => block.type === 'claim_breakdown').items[0];
+  assert.equal(breakdown.verdict, 'insufficient');
+  assert.equal(breakdown.evidenceLevel, 'none');
+  assert.deepEqual(breakdown.evidenceIds, [], 'Public wait data must not be attached as evidence of why people choose private care');
+  assert.deepEqual(breakdown.sourceIds, [], 'A public waiting-list source must not be attributed to private-care motives');
+  const contextFinding = answer.blocks.find((block) => block.type === 'data_finding');
+  assert.equal(contextFinding.dataKind, 'context', 'Related wait figures must remain visibly contextual');
+  const family = answer.evidenceSummary.families.find((item) => item.familyId === 'private-healthcare-access');
+  assert.equal(family.dataKind, 'context');
+  assert.equal(family.dimensions.period, '2025-12-31');
+  assert.deepEqual(family.missingDimensions, ['motivos declarados para contratar seguro', 'demoras comparables por servicio y sector', 'periodo y población con seguro']);
+  const publicAnswer = localPublicCheckResponse({ status: 'partial', requestId: 'private-specialist-waits', result: answer }, claim);
+  assert.equal(publicAnswer.state, 'insufficient', 'Relevant wait data must not make an unsupported private-care claim look partly proven');
+  assert.ok(publicAnswer.result.criteria.every((criterion) => criterion.label === 'Contexto'), 'Contextual sources must not be labelled as direct findings');
+  assert.ok(publicAnswer.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+}
+for (const claim of [
+  '¿La sanidad privada permite acceder antes a las pruebas diagnósticas?',
+  'El seguro privado evita esperas para operarse',
+  'Los seguros privados reducen esperas para acudir al médico de familia',
+  'La sanidad privada permite ver al especialista antes en Madrid',
+  'En Portugal se contrata seguro privado para evitar esperas de especialistas',
+  'En 2024 se contrata seguro privado para evitar esperas de especialistas',
+]) {
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer?.answerScope.family, 'private-healthcare-access', `A nearby healthcare-access claim left its semantic family: ${claim}`);
+  assert.equal(answer.sourceLinks.length, 0, `Incompatible wait-list context crossed into a private-care claim: ${claim}`);
 }
 assert.notEqual(claimFocusFor('En muchas zonas hay que esperar demasiado para conseguir cita con el médico de familia')?.id,
   'specialist-outpatient-regional-waits', 'Primary-care appointment delays must not inherit outpatient-specialist data');

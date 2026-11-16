@@ -42,6 +42,20 @@ const explanation = focusedEvidencePlan('¿Las pensiones públicas usan reparto 
 const explanationPublic = checkFromPlan('¿Las pensiones públicas usan reparto o cuentas individuales?', explanation, 'definition');
 assert.equal(explanationPublic.state, 'limited');
 assert.deepEqual(explanationPublic.result.arguments[0].sourceIds, ['social-security-pay-as-you-go']);
+const privateAccessClaim = 'Se contrata un seguro privado para evitar esperas de especialistas';
+const privateAccessContext = focusedEvidencePlan(privateAccessClaim);
+const privateAccessPages = checkFromPlan(privateAccessClaim, privateAccessContext, 'private-access-context');
+const privateAccessLocal = localPublicCheckResponse({ status: 'partial', requestId: 'private-access-context', result: privateAccessContext }, privateAccessClaim);
+assert.deepEqual(privateAccessPages.result.arguments[0].evidenceIds, [], 'The claim must not inherit evidence IDs from a contextual data finding');
+assert.deepEqual(privateAccessPages.result.arguments[0].sourceIds, [], 'The source must not be attributed as direct evidence for the submitted claim');
+for (const response of [privateAccessPages, privateAccessLocal]) {
+  assert.equal(response.state, 'insufficient', 'Context about public waits cannot be a partial verdict on private-care motives');
+  assert.ok(response.result.criteria.every((criterion) => criterion.label === 'Contexto'), 'Contextual data must be labelled as context in the public answer');
+  assert.ok(response.result.sources.some((item) => item.id === 'sisle-sns-regional-consultations-dec-2025'));
+  assert.match(response.result.reply, /Como contexto: El informe/);
+  assert.match(response.result.reply, /16 d[ií]as en Melilla y 162 en Canarias/);
+  assert.match(response.result.reply, /Falta una medición directa/);
+}
 assert.deepEqual(sourcesForEvidenceIds({ sourceLinks: [{ id: 'known' }], evidenceSummary: { families: [] } }, ['unrelated-observation']), [], 'Unknown observations must not acquire guessed sources');
 
 const exactClaim = 'España supera los 49 millones de residentes.';

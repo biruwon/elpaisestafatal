@@ -63,7 +63,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     .filter((block) => block?.type === 'confirmed' || block?.type === 'data_finding')
     .flatMap((block, blockIndex) => (Array.isArray(block.points) ? block.points : []).slice(0, 3).map((finding, pointIndex) => ({
       id: `evidence-${blockIndex + 1}-${pointIndex + 1}`,
-      label: pointIndex ? 'Contexto' : 'Dato respaldado',
+      label: block.dataKind === 'context' || pointIndex ? 'Contexto' : 'Dato respaldado',
       finding,
       sourceIds: sourcesForEvidenceIds(plan, Array.isArray(block.evidenceIds) ? block.evidenceIds : []),
     })));
@@ -107,12 +107,16 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     };
   }
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
+  const claimBreakdown = blocks.find((block) => block?.type === 'claim_breakdown');
+  const claimItems = Array.isArray(claimBreakdown?.items) ? claimBreakdown.items : [];
+  const claimHasDirectEvidence = claimItems.some((item) => Array.isArray(item?.evidenceIds) && item.evidenceIds.length > 0);
+  const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence ? 'insufficient' : evidenceLevel;
   const publicReply = missingPublicEvidence
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
     : reply;
 
   return attachExtraction({
-    state: evidenceLevel,
+    state: publicEvidenceLevel,
     id: safePayload.requestId || `local-${Date.now().toString(36)}`,
     result: {
       claim,
@@ -131,7 +135,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       visuals: missingPublicEvidence ? undefined : plannedVisuals.length > 1 ? plannedVisuals : undefined,
       evidenceSummary: missingPublicEvidence ? undefined : plan.evidenceSummary,
       answerScope: missingPublicEvidence ? undefined : plan.answerScope,
-      evidenceLevel,
+      evidenceLevel: publicEvidenceLevel,
     },
   }, extraction);
 };

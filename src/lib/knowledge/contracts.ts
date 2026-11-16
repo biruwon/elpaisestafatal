@@ -116,7 +116,7 @@ export type AnswerBlock =
   | { type: 'key_number'; evidenceId: string; label: string; value: string; caveat?: string }
   | { type: 'line_chart' | 'bar_chart' | 'comparison_chart'; visualId: string; evidenceIds: string[] }
   | { type: 'money_flow'; evidenceIds: string[]; amount?: string; origin?: string; destination?: string; purpose?: string }
-  | { type: 'data_finding'; evidenceIds: string[]; points: string[] }
+  | { type: 'data_finding'; evidenceIds: string[]; points: string[]; dataKind?: 'observed' | 'projected' | 'snapshot' | 'context' }
   | { type: 'source_excerpt'; evidenceIds: string[]; title: string; excerpt: string }
   | { type: 'confirmed'; propositionIds: string[]; evidenceIds?: string[]; points?: string[] }
   | { type: 'strongest_valid_concern'; text: string }

@@ -1,4 +1,4 @@
-import { claimFocusFor, focusedMetricIdsFor, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
+import { claimFocusFor, focusedMetricIdsFor, privateHealthcareAccessClaimType, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
@@ -230,13 +230,19 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  const claimType = focus.id === 'private-healthcare-access'
+    ? privateHealthcareAccessClaimType(claim)
+    : focus.claimType || (explanation ? 'definition' : 'descriptive');
   const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
   const direct = facts.filter((fact) => directIds.includes(fact.id));
   const context = facts.filter((fact) => !directIds.includes(fact.id));
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
-  const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
-  const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanation?.sources || []).map((source) => source.id)])];
-  const explanationMeasuresClaim = Boolean(explanation?.directClaimEvidence && explanation.facts?.length && explanation.sources?.length);
+  const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
+  const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
+  const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanationSupportsClaim ? explanationSourceIds : [])].filter(Boolean))];
+  const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanationSupportsClaim ? explanationSourceIds : [])])];
+  const contextualExplanationSourceIds = explanationSupportsClaim ? [] : explanationSourceIds;
+  const explanationMeasuresClaim = Boolean(explanationSupportsClaim && explanation.facts?.length && explanation.sources?.length);
   const missing = educationOutcome
     ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
     : direct.length || explanationMeasuresClaim ? [] : needs;
@@ -257,9 +263,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   ]).filter(Boolean))];
   const findingText = primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
   const gap = missing.length ? `Falta una medición directa de ${missing.join('; ')}.` : '';
-  const reply = [explanation ? explanation.facts.join('\n\n') : focus.explanation, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanation ? '' : gap,
-    direct.length ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
-  const evidenceLevel = directEvidenceIds.length ? 'limited' : 'insufficient';
+  const explanationReply = explanation
+    ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [focus.explanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
+    : focus.explanation;
+  const reply = [explanationReply, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanationMeasuresClaim ? '' : gap,
+    direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
+  const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);
     return {
@@ -288,16 +297,32 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     sourceIds: explanation.sources.map((source) => source.id),
     dimensions: explanation.dimensions,
   });
+  else if (explanation && ids.length === 0) families.push({
+    familyId: focus.id,
+    familyLabel: focus.label,
+    label: explanation.evidenceLabel || `Contexto: ${focus.label}`,
+    direction: 'qualifies',
+    status: 'partial',
+    dataKind: 'context',
+    finding: explanation.facts.join(' '),
+    data: explanation.facts,
+    evidenceIds: explanation.sources.map((source) => source.id),
+    sourceIds: explanation.sources.map((source) => source.id),
+    dimensions: explanation.dimensions,
+    missingDimensions: needs,
+  });
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType: focus.claimType || (explanation ? 'definition' : 'descriptive'), headline: explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Qué explican las fuentes sobre ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
+    claimType, headline: explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Contexto relacionado con ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
-    interpretation: { kind: focus.claimType === 'causal' ? 'causal' : 'quantitative', subject: focus.label, predicate: focus.claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
+    interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
-      { type: 'claim_breakdown', items: [{ text: claim, type: focus.claimType || 'descriptive', explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
+      { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
         verdict: 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
-        finding: explanation ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
-      ...(explanation ? [{ type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),
+        finding: explanationMeasuresClaim ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
+      ...(explanation ? [explanationSupportsClaim
+        ? { type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }
+        : { type: 'data_finding', dataKind: 'context', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [educationOutcome ? educationOutcomeFinding(fact) : fact.finding] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },

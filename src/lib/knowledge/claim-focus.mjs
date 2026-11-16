@@ -39,6 +39,24 @@ const specialistOutpatientRegionalWaits = (t) => {
   return wait && regionalComparison && !incompatibleService && !causalOrTrend && !specificSpecialty && !specificTerritory
     && (!years.length || years.every((year) => year === '2025'));
 };
+const specialistOutpatientWaitEvidence = {
+  expiresAt: '2027-03-24', territories: ['ES'],
+  evidenceLabel: 'Demoras registradas en consultas externas del SNS',
+  dimensions: {
+    subject: 'espera media de pacientes en listas estructurales de consultas externas del SNS, agregada en diez especialidades',
+    population: 'pacientes registrados en listas estructurales de espera de consultas externas del SNS',
+    period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas',
+    denominator: 'pacientes registrados en la lista estructural de consultas externas de cada territorio', unit: 'días de espera media',
+  },
+  facts: [
+    'A 31 de diciembre de 2025, la espera media total de consultas externas registrada por el SNS iba de 16 días en Melilla a 162 días en Canarias. El informe presenta el total de diez especialidades para cada territorio.',
+    'El Ministerio indicó el 24 de septiembre de 2026 que esos datos de diciembre de 2025 eran los últimos disponibles y que el informe se había actualizado tras corregir los datos aportados por Castilla-La Mancha. También advierte que las cifras dependen de la información remitida por cada comunidad autónoma y que cada administración responde de su exactitud y del cumplimiento de los criterios comunes.',
+  ],
+  sources: [
+    { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Datos_ccaa_dic2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-17' },
+    { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-17' },
+  ],
+};
 const bankSpainRentEffortSource = {
   id: 'bank-spain-housing-annual-2025',
   title: 'Informe Anual 2025 · esfuerzo del alquiler y acceso a la vivienda',
@@ -69,6 +87,15 @@ const bankSpainRentEffortEvidence = {
   sources: [bankSpainRentEffortSource],
 };
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
+const privateCareMention = /\b(seguro\w*(?: medico\w*)? privad\w*|sanidad privada|medicina privada|asistencia privada|consultas? privad\w*|atencion privada)\b/;
+export const privateHealthcareAccessClaimType = (claim) => {
+  const text = normalize(claim);
+  const statesMotiveOrEffect = /\b(contrat\w*|compr\w*|eligen|motivo\w*|porque|debido|caus\w*|evit\w*|reduc\w*)\b/.test(text)
+    || /\b(paga\w*|adquir\w*)\b/.test(text) && /\b(para|por)\b/.test(text);
+  if (statesMotiveOrEffect) return 'causal';
+  if (/\b(antes|mas rapid\w*|menos esper\w*|compar\w*|frente a|que (?:la|el|los|las) sanidad public\w*)\b/.test(text)) return 'comparative';
+  return 'descriptive';
+};
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
 const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t)
@@ -182,6 +209,7 @@ const focuses = [
     needs: ['renta disponible mediana equivalente por persona, en términos reales, para el mismo territorio y periodo', 'distribución de la renta si se afirma que el crecimiento no llega a los hogares', 'definición concreta de bienestar si incluye vivienda, empleo, salud u otros servicios'],
     explanation: 'El PIB mide producción agregada. Informa sobre el tamaño y el crecimiento de la economía, pero por sí solo no indica la renta disponible de cada hogar ni cómo se distribuye la prosperidad. Eurostat distingue el PIB de las medidas de ingreso y condiciones de vida de los hogares.',
     explanationEvidence: {
+      directClaimEvidence: true,
       expiresAt: '2027-11-16', territories: ['ES'],
       facts: [
         'Eurostat define el PIB real por habitante como el PIB ajustado por inflación dividido por la población media del año. Lo considera una aproximación al nivel material de vida, pero no una medida completa del bienestar económico.',
@@ -210,6 +238,7 @@ const focuses = [
     direct: [], context: [], needs: ['sistema de financiación aplicable', 'derechos contributivos y reglas de cálculo'],
     explanation: 'En un sistema de reparto, cotizar genera derechos conforme a las reglas vigentes; no crea por sí mismo una cuenta de ahorro personal.',
     explanationEvidence: {
+      directClaimEvidence: true,
       expiresAt: '2027-01-28', territories: ['ES'],
       facts: ['En España, la Seguridad Social explica que las cotizaciones y otros ingresos corrientes financian las prestaciones actuales. Es financiación de reparto, distinta de acumular capital en una cuenta individual.'],
       sources: [{ id: 'social-security-pay-as-you-go', title: 'Financiación de la Seguridad Social: reparto y solidaridad', publisher: 'Seguridad Social', url: 'https://www.seg-social.es/wps/portal/wss/internet/PortalEducativo/Profesores/Unidad5/PESS501/PESS503', retrievedAt: '2026-10-30' }],
@@ -257,24 +286,7 @@ const focuses = [
     needs: [],
     explanationHeadline: 'Las demoras registradas en consultas externas variaron entre territorios en 2025',
     explanation: 'El informe del Ministerio de Sanidad compara las listas de espera de consultas externas del Sistema Nacional de Salud por comunidad autónoma y ciudad autónoma.',
-    explanationEvidence: {
-      directClaimEvidence: true,
-      expiresAt: '2027-03-24', territories: ['ES'],
-      dimensions: {
-        subject: 'espera media de pacientes en listas estructurales de consultas externas del SNS, agregada en diez especialidades',
-        population: 'pacientes registrados en listas estructurales de espera de consultas externas del SNS',
-        period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas',
-        denominator: 'pacientes registrados en la lista estructural de consultas externas de cada territorio', unit: 'días de espera media',
-      },
-      facts: [
-        'A 31 de diciembre de 2025, la espera media total de consultas externas registrada por el SNS iba de 16 días en Melilla a 162 días en Canarias. El informe presenta el total de diez especialidades para cada territorio.',
-        'El Ministerio indicó el 24 de septiembre de 2026 que esos datos de diciembre de 2025 eran los últimos disponibles y que el informe se había actualizado tras corregir los datos aportados por Castilla-La Mancha. También advierte que las cifras dependen de la información remitida por cada comunidad autónoma y que cada administración responde de su exactitud y del cumplimiento de los criterios comunes.',
-      ],
-      sources: [
-        { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Datos_ccaa_dic2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-17' },
-        { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-17' },
-      ],
-    },
+    explanationEvidence: { ...specialistOutpatientWaitEvidence, directClaimEvidence: true },
     limitation: 'La comparación muestra diferencias en el tiempo medio registrado para consultas externas del SNS; no establece si son excesivas ni por qué existen. No mide atención primaria, cirugía, pruebas diagnósticas, hospitales concretos ni tiempos individuales. El Ministerio advierte que los datos proceden de las comunidades autónomas.',
   },
   {
@@ -468,7 +480,7 @@ const focuses = [
   },
   {
     id: 'primary-care-waits', label: 'citas de atención primaria',
-    when: (t) => has(t, waits) && /\b(medic\w* de (?:familia|cabecera)|atencion primaria|centro de salud)\b/.test(t),
+    when: (t) => has(t, waits) && /\b(medic\w* de (?:familia|cabecera)|atencion primaria|centro de salud)\b/.test(t) && !privateCareMention.test(t),
     direct: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'], context: [],
     needs: ['tiempo hasta la cita en atención primaria', 'base de pacientes encuestados', 'territorio y periodo'],
     explanation: 'La espera para el médico de familia debe medirse en atención primaria. Las listas hospitalarias de cirugía y especialistas son servicios diferentes.',
@@ -476,10 +488,24 @@ const focuses = [
   },
   {
     id: 'private-healthcare-access', label: 'seguro privado y acceso a la atención',
-    when: (t) => /\b(seguro\w* privad\w*|sanidad privada|medicina privada|asistencia privada)\b/.test(t) && (has(t, waits) || /\b(evitar|rapidez|especialista\w*|prueba\w*|motivo\w*)\b/.test(t)),
+    when: (t) => privateCareMention.test(t)
+      && (has(t, waits) || /\b(lista\w* de espera|evitar|rapidez|especialista\w*|prueba\w*|motivo\w*|cirug\w*|operaci\w*|quirurg\w*)\b/.test(t)),
     direct: [], context: [],
     needs: ['motivos declarados para contratar seguro', 'demoras comparables por servicio y sector', 'periodo y población con seguro'],
     explanation: 'Para comprobar por qué se contrata un seguro y si reduce las esperas hacen falta datos sobre los asegurados y los mismos servicios en ambos sectores.',
+    explanationEvidence: {
+      ...specialistOutpatientWaitEvidence,
+      directClaimEvidence: false,
+      facts: ['El informe del 31 de diciembre de 2025 registró una espera media de 16 días en Melilla y 162 en Canarias para el total de diez especialidades de consultas externas del SNS. Son datos remitidos por cada comunidad autónoma.'],
+      when: (t) => {
+        const wait = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|antes|rapidez|rapido)\b/.test(t);
+        const outpatientSpecialist = /\b(especialist\w*|consultas? externas?|atencion especializada)\b/.test(t);
+        const incompatibleService = /\b(atencion primaria|medic\w* de (?:familia|cabecera)|cirug\w*|operaci\w*|quirurg\w*|urgencias?|pruebas? diagnosticas?|analisis|resonancias?)\b/.test(t);
+        const specificTerritory = /\b(andalucia|aragon|asturias|baleares|canarias|cantabria|castilla(?: y leon| la mancha)?|cataluna|extremadura|galicia|madrid|murcia|navarra|pais vasco|rioja|ceuta|melilla|valencia|barcelona|sevilla|malaga|zaragoza)\b/.test(t);
+        const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+        return wait && outpatientSpecialist && !incompatibleService && !specificTerritory && (!years.length || years.every((year) => year === '2025'));
+      },
+    },
     limitation: 'Una lista de espera pública no mide las motivaciones de quienes contratan seguro ni el tiempo que esperan en la privada.',
   },
   {
@@ -489,6 +515,7 @@ const focuses = [
     needs: ['precio mayorista y contrato de suministro', 'hora o periodo comparable', 'peajes, cargos e impuestos de la factura'],
     explanation: 'El precio del mercado mayorista y el importe de una factura son medidas diferentes. El contrato, los periodos de consumo y los componentes regulados condicionan cómo se traslada un cambio de precio.',
     explanationEvidence: {
+      directClaimEvidence: true,
       expiresAt: '2027-01-28', territories: ['ES'],
       facts: ['En el mercado diario marginalista, el precio depende de la última oferta necesaria para cubrir la demanda. Si esa oferta procede de gas, puede fijar el precio de ese mercado aunque otras plantas hayan ofertado más barato.',
         'La CNMC explica que un precio mayorista muy bajo no se traslada íntegramente a cualquier factura: influyen el contrato y otros componentes, como redes y costes de operación.'],

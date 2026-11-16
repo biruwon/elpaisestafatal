@@ -38,7 +38,7 @@ const replyFromPlan = (plan?: AnswerPlan): string => {
 const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.filter((block) => block.type === 'confirmed' || block.type === 'data_finding').flatMap((block, index) => {
   const points = 'points' in block ? block.points || [] : [];
   const evidenceIds = 'evidenceIds' in block && Array.isArray(block.evidenceIds) ? block.evidenceIds : [];
-  return points.map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: pointIndex === 0 ? 'Dato respaldado' : 'Contexto', finding, sourceIds: sourcesForEvidenceIds(plan, evidenceIds) }));
+  return points.map((finding, pointIndex) => ({ id: `evidence-${index + 1}-${pointIndex + 1}`, label: ('dataKind' in block && block.dataKind === 'context') || pointIndex > 0 ? 'Contexto' : 'Dato respaldado', finding, sourceIds: sourcesForEvidenceIds(plan, evidenceIds) }));
 }).concat(plan.blocks.filter((block) => block.type === 'scorecard').flatMap((block, index) => {
   if (!('items' in block) || !Array.isArray(block.items)) return [];
   return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: sourcesForEvidenceIds(plan, item.evidenceIds || []) }));
