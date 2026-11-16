@@ -115,7 +115,7 @@ assert.equal(JSON.parse(JSON.stringify({ claim: accentedPollClaim })).claim, acc
 assert.match(browserClient, /shouldRetainReviewedPreview\(initialPreview, response\)/, 'The UI must keep a reviewed preview when a delayed answer changes its scope or drops reviewed charts');
 // Changing the combination must not reuse the immigration-specific answer.
 const novel = answerPlanForBroadDomains('La regularización de inmigrantes aumenta el precio del alquiler');
-assert(!novel.blocks.find((block) => block.type === 'conversation_reply').text.includes('tres afirmaciones'));
+assert.equal(novel, undefined, 'A causal claim linking immigration policy and rental prices must not inherit either broad snapshot as an answer');
 const healthOnlyRoute = broadDomainPacketsFor('La sanidad tiene listas de espera muy largas').map((packet) => packet.id);
 assert.deepEqual(healthOnlyRoute, ['broad-health'], 'A nearby health-only claim must use the health evidence once, without a duplicate public-services route');
 assert.deepEqual(broadDomainPacketsFor('El IMV ha crecido tras la regularización').map((packet) => packet.id), ['broad-benefits-recipients', 'broad-immigration-regularization'], 'An immigration-plus-benefits claim must not acquire an unmentioned public-services family and should preserve claim order');

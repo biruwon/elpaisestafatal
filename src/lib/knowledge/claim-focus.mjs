@@ -9,12 +9,30 @@ const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euro
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
+const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t)
+  && /\b(acceso|acceder|llegar|disponibilidad|servicios?)\b/.test(t)
+  && [
+    /\b(viviend\w*|alquil\w*|piso\w*|casas?)\b/,
+    /\b(emple\w*|trabaj\w*|oportunidad\w*)\b/,
+    /\b(sanidad|salud|medic\w*|hospital\w*)\b/,
+    /\b(educaci[oó]n|escuel\w*|colegio\w*|formaci[oó]n)\b/,
+    /\b(transporte|autob[uú]s|tren|coche)\b/,
+  ].filter((pattern) => pattern.test(t)).length >= 2
+  && /\b(mas|menos|mejor|peor|diferenc\w*|compar\w*|frente a|que en|que quienes)\b/.test(t);
 
 // Measurement contracts are reusable semantic families, not answer templates.
 // Direct measures and contextual proxies stay distinct all the way to the
 // answer. A missing direct measure must not be filled with a neighbouring
 // topic merely because it has a convenient chart.
 const focuses = [
+  {
+    id: 'rural-urban-service-access', label: 'acceso rural y urbano a vivienda y servicios',
+    when: ruralUrbanAccess,
+    direct: [], context: [],
+    needs: ['indicadores de acceso rural y urbano para cada servicio mencionado', 'misma población, territorio y periodo en cada comparación', 'vivienda asequible medida con alquiler o compra e ingresos locales'],
+    explanation: 'Que la vivienda cueste menos en una zona rural no demuestra que haya mejor acceso a empleo, sanidad, educación o transporte. Cada ámbito necesita su propia medida y una comparación territorial compatible.',
+    limitation: 'Los promedios nacionales de precios, empleo o sanidad no permiten concluir cómo difiere el acceso entre población rural y urbana.',
+  },
   {
     id: 'pension-financing', label: 'cómo se financian las pensiones de reparto',
     when: (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t) && /\b(reparto|capitaliz\w*|ahorr\w*|cuenta individual|cotizacion\w*|financ\w*)\b/.test(t)
@@ -28,6 +46,35 @@ const focuses = [
       sources: [{ id: 'social-security-pay-as-you-go', title: 'Financiación de la Seguridad Social: reparto y solidaridad', publisher: 'Seguridad Social', url: 'https://www.seg-social.es/wps/portal/wss/internet/PortalEducativo/Profesores/Unidad5/PESS501/PESS503', retrievedAt: '2026-10-30' }],
     },
     limitation: 'Esta descripción de la financiación no calcula tu futura pensión ni demuestra por sí sola la sostenibilidad del sistema. Eso requiere reglas, periodos cotizados y escenarios demográficos y económicos.',
+  },
+  {
+    id: 'pension-wage-comparison', label: 'pensiones y salarios de la población trabajadora',
+    when: (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t) && (has(t, wages) || /\bingres\w*\b/.test(t))
+      && /\b(mas que|mas (?:alt\w*|elevad\w*|grand\w*) que|menos que|por encima|por debajo|superior\w*|inferior\w*|super\w*|mayor\w*|menor\w*|compar\w*|frente a|mejor pagad\w*)\b/.test(t),
+    direct: [], context: [],
+    needs: ['importe de pensiones y salarios en la misma unidad y periodo', 'población trabajadora y pensionista definida por edad y tipo de prestación', 'distribución de importes si se afirma que muchas personas superan a otras'],
+    explanation: 'Comparar pensiones con salarios exige fijar si los importes son brutos o netos y mensuales o anuales, además de usar el mismo periodo. Una pensión media y un salario medio no indican cuántas personas de un grupo cobran más que las del otro.',
+    limitation: 'Sin distribuciones comparables por población, tipo de pensión, jornada y periodo no se puede cuantificar cuántas personas jubiladas reciben más que trabajadores jóvenes.',
+  },
+  {
+    id: 'healthcare-double-payment', label: 'impuestos, seguro privado y gasto sanitario de los hogares',
+    when: (t) => /\b(seguro(?: m[eé]dico)? privad\w*|sanidad privada|medicina privada|asistencia privada)\b/.test(t)
+      && /\b(impuest\w*|cotiz\w*|financi\w* p[uú]blic\w*)\b/.test(t)
+      && /\b(sanidad|salud|sanitari\w*|atenci[oó]n m[eé]dica)\b/.test(t),
+    direct: [], context: [],
+    needs: ['impuestos y cotizaciones atribuibles al mismo hogar', 'primas y pagos directos del seguro privado', 'cobertura, servicios y periodo comparables'],
+    explanation: 'Pagar impuestos y una prima privada son dos vías de financiación; eso por sí solo no mide si un hogar paga dos veces por el mismo servicio ni cuánto soporta en total.',
+    limitation: 'Las listas de espera públicas no miden primas privadas, pagos directos, solapamiento de coberturas ni la carga total por hogar.',
+  },
+  {
+    id: 'entrepreneurial-risk-perception', label: 'riesgo percibido al emprender y empleo público',
+    when: (t) => /\b(emprend\w*|emprendedor\w*|crear (?:una )?empresa|montar (?:un )?negocio)\b/.test(t)
+      && /\b(riesg\w*|arriesg\w*|segur\w*|estabil\w*)\b/.test(t)
+      && /\b(plaza\w* p[uú]blic\w*|empleo p[uú]blico|funcionari\w*|oposici[oó]n)\b/.test(t),
+    direct: [], context: [],
+    needs: ['encuesta de preferencias y riesgo percibido entre personas comparables', 'probabilidad de ingresos y continuidad laboral por alternativa', 'población, territorio y periodo definidos'],
+    explanation: 'La percepción de riesgo al emprender no se deduce de la temporalidad del empleo ni de la tasa de paro. Hacen falta respuestas de las mismas personas sobre alternativas comparables.',
+    limitation: 'Una comparación entre emprendimiento y empleo público necesita definir qué riesgo se mide —ingresos, continuidad, inversión o fracaso— y a qué población se refiere.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',

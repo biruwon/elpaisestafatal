@@ -6,8 +6,9 @@ import { broadObservationFits } from './broad-observation-fit.mjs';
 import { supplementReviewedPacket } from './reviewed-family-evidence.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { domainProfileFor } from '../../../scripts/knowledge/domain-handlers.mjs';
+import { deterministicFallbackCompiler } from '../../../scripts/knowledge/fallback-compiler.mjs';
 import { needsScopedMeasurement } from './measurement-intent.mjs';
-import { claimFocusFor, hasSpecificMetricReference } from './claim-focus.mjs';
+import { claimFocusFor } from './claim-focus.mjs';
 
 const source = (id, title, publisher, url, publishedAt, retrievedAt = '2026-09-25') => ({ id, title, publisher, url, publishedAt, retrievedAt, role: 'primary' });
 const reviewedVisuals = {
@@ -604,7 +605,7 @@ const packets = [
   {
     id: 'broad-security',
     visuals: [reviewedVisuals.securityRecent, reviewedVisuals.securityAdjustedTrend, reviewedVisuals.securityAdjustedGap],
-    matches: /\b(delincuenc|criminal|delito|seguridad|insegur|calle|salir|polic[ií]a|droga|judicial|disuasor|denuncia)\w*\b/i,
+    matches: /\b(delincuenc|criminal|delito|seguridad(?!\s+social)|insegur|calle|salir|polic[ií]a|droga|judicial|disuasor|denuncia)\w*\b/i,
     interpretation: { kind: 'quantitative', subject: 'seguridad en España', subjectType: 'country', predicate: 'has_distinct_offence_and_perception_measures', normalizedClaim: 'delincuencia, seguridad y experiencia del espacio público en España', interpretation: 'La delincuencia nacional, los delitos concretos y la sensación de inseguridad no son la misma medida.', confidence: 0.72, evidenceNeeds: ['categoría de delito', 'periodo', 'territorio', 'medida'] },
     headline: 'Las tendencias delictivas difieren y no prueban que los nacionalizados causen un aumento general de la inseguridad',
     summary: 'El último balance disponible compara enero-junio de 2026 con el mismo periodo de 2025: el total registrado subió ligeramente, mientras varios delitos patrimoniales bajaron y los delitos contra la libertad sexual subieron. Las cifras nacionales no describen automáticamente lo que ocurre en una calle concreta ni identifican por sí solas quién causa una tendencia.',
@@ -760,43 +761,79 @@ const supplementalRoutes = [
 export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
-  const domainProfile = domainProfileFor(text);
+  const compiledClaim = deterministicFallbackCompiler(text);
+  const domainProfile = domainProfileFor(text, compiledClaim);
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
-  const taxBroadSignal = taxSignal && /inflaci[oó]n|precios?|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
-  const broadMultiDomain = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)).length >= 2
+  const taxBroadSignal = taxSignal && /inflaci[oó]n|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
+  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|piso|casa|hipotec|emancip/i.test(value);
+  const broadYouthAccess = youthSignal
+    && /alquil|viviend|piso|casa|emancip|independiz|acceso/i.test(value)
+    && !/compit|transfer|redistribu|retras|atras|caus|provoc|encarec|desplaz|patrimoni|riqueza|generacion|baby boom|cotiz|paternidad|natalidad|hij\w*|ahorr|reduc|aument|sube|baja|compar|mas\s+que|menos\s+que|mejor|peor|superior|inferior|frente a|extran|migrant|inmigr/i.test(value);
+  const housingMeasureTerm = '(?:cuant\\w*|importe\\w*|cantid\\w*|valor\\w*|precio\\w*|coste\\w*|euro\\w*|indice\\w*|tasa\\w*|porcentaje\\w*|med\\w*|promedio\\w*|mensual\\w*|anual\\w*|evoluc\\w*|cambi\\w*|subid\\w*|aument\\w*|baj\\w*|desde|entre|compar\\w*)';
+  const housingSubject = '(?:viviend\\w*|alquil\\w*|renta\\w*|hipotec\\w*|piso\\w*|casas?)';
+  const explicitHousingMeasure = new RegExp(`\\b${housingMeasureTerm}\\b[\\w\\s]{0,60}\\b${housingSubject}\\b|\\b${housingSubject}\\b[\\w\\s]{0,60}\\b${housingMeasureTerm}\\b`, 'i').test(value);
+  const matchedDomainCount = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)
+    && (packet.id !== 'broad-tax-burden-purchasing-power' || taxBroadSignal)
+    && (packet.id !== 'broad-housing' || !explicitHousingMeasure)).length;
+  const explicitPropositionCount = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition.explicit !== false).length;
+  const youthSpecificMismatch = youthSignal && !broadYouthAccess;
+  const explicitMultiDomainClaim = !youthSpecificMismatch && matchedDomainCount >= 3 && compiledClaim.concepts.length >= 3
+    && (explicitPropositionCount >= 3 || (matchedDomainCount >= 4 && compiledClaim.concepts.length >= 4));
+  const broadMultiDomain = matchedDomainCount >= 2
+    && compiledClaim.concepts.length >= 2 && (compiledClaim.propositions.length >= 2 || compiledClaim.concepts.length >= 4)
+    && !/\d/.test(value) && !claimFocusFor(text) && (!needsScopedMeasurement(text) || explicitMultiDomainClaim) && !taxBroadSignal;
+  const explicitCascade = /\b(?:provoc\w*|caus\w*|gener\w*|desencaden\w*|har\w*|lleva a|hace que)\b/.test(value)
+    && /\b(?:colaps\w*|satur\w*|increment\w*|aument\w*|dispar\w*|explosi[oó]n|destru\w*)\b/.test(value);
+  const reviewedCompoundRoute = !youthSpecificMismatch && (explicitMultiDomainClaim || (matchedDomainCount >= 3 && (compiledClaim.concepts.length >= 3 || explicitCascade) && explicitCascade))
+    && compiledClaim.explicitPropositions?.some((proposition) => proposition.explicit !== false)
     && !/\d/.test(value) && !claimFocusFor(text);
-  const explicitHousingMeasure = /\b(?:cuant\w*|importe\w*|cantid\w*|valor\w*|precio\w*|coste\w*|euro\w*|indice\w*|tasa\w*|porcentaje\w*|med\w*|promedio\w*|mensual\w*|anual\w*|evoluc\w*|cambi\w*|subid\w*|aument\w*|baj\w*|desde|entre|compar\w*)\b/i.test(value)
-    && /\b(?:viviend\w*|alquil\w*|renta\w*|hipotec\w*|piso\w*|casas?)\b/i.test(value);
   const direct = packets.filter((packet) => !packet.methodologyOnly && packet.matches.test(value)
     && (packet.id !== 'broad-tax-burden-purchasing-power' || taxBroadSignal)
     && (packet.id !== 'broad-housing' || !explicitHousingMeasure || broadMultiDomain));
-  if (needsScopedMeasurement(text) && !domainProfile?.packetId && !(broadMultiDomain && hasSpecificMetricReference(text))) return [];
+  const broadHousingAccess = direct.some((packet) => packet.id === 'broad-housing')
+    && /\b(viviend\w*|casas?|pisos?)\b/.test(value)
+    && /\b(dificil\w*|imposib\w*|acceso|acceder)\b/.test(value)
+    && !claimFocusFor(text)
+    && !/\b(mas|menos|mejor|peor)\b[\w\s]{0,45}\bque\b/.test(value)
+    && !/generacion|baby boom|boomer|patrimoni|transfer|compit|retras|caus|provoc|encarec|desplaz/i.test(value)
+    && !explicitHousingMeasure;
+  const publicAdministrationPerformanceSignal = /\b(plaza fija|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|calentar (?:la )?silla|no trabaja|no mueven? un dedo|automatiz\w*)\b/i.test(value);
   // Broad political judgements are handled by the existing scorecard. Do not
   // let a mention of employment or security hijack that route accidentally.
   const specificPacketIds = new Set(['broad-nato-expulsion', 'broad-illegal-occupation', 'broad-sexual-consent-law-effects', 'broad-gender-law-evidence-standard', 'broad-nuclear-phaseout-risk', 'broad-autonomous-communities-duplication']);
+  const dedicatedProfileIds = new Set(['tax_policy_tradeoffs', 'tax_prices_financing_tradeoffs', 'youth_housing_access', 'youth_housing_family_counterfactual', 'illegal_occupation', 'sexual_consent_law_effects', 'gender_law_evidence_standard', 'nuclear_phaseout', 'autonomous_competence_savings', 'migrant_minor_accommodation_cost', 'amnesty_constitution', 'public_housing_allocation']);
+  const dedicatedProfile = Boolean(domainProfile?.packetId && dedicatedProfileIds.has(domainProfile.id));
   const hasSpecificClaim = packets.some((packet) => specificPacketIds.has(packet.id) && packet.matches.test(value)) || specificPacketIds.has(domainProfile?.packetId);
   if (!hasSpecificClaim && /\b(sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b/.test(value) && /\b(destruy|hunde|arruin|pais|espana|fatal|desastre|ruina)\b/.test(value)) return [];
   const agricultureTransitionSignal = /\b(agricultura|agricola|agricultores?|campo|ganaderia|explotacion(?:es)? agraria(?:s)?|sector agrario)\b/i.test(value) && /\b(pacto verde|green deal|agenda 2030|normas? ambientales?|requisitos ambientales?|regulacion ambiental|regulacion ecologica|pac|condicionalidad|eco.?regimen(?:es)?)\b/i.test(value);
   const administrationSignal = /administraci[oó]n|funcionari|oposici[oó]n|plantilla|absentismo|puestos? prescindibles?|puestos? innecesarios?|empleo p[uú]blico|sector p[uú]blico|plaza fija|calentar (?:la )?silla|no trabaja|automatiz|digitalizaci[oó]n/i.test(value);
   const demographyPensionSignal = /arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|piramide poblacional|ratio (?:de )?cotizantes/i.test(value) && /pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|deficit|quiebr|bancarrota/i.test(value);
   const pensionFinanceSignal = /pension|jubilaci[oó]n|cotizaci[oó]n|cotizantes/i.test(value) && /insostenib|sostenib|arruin|hunde|arcas p[uú]blicas|deficit|gasto|financ|quiebr|bancarrota|ratio|deuda|presupuesto/i.test(value);
-  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|coste de vida|salari|sueldo|padres|emigr|oportunidad|precar|emancip|herencia|comprar casa|imposible/i.test(value);
   const replacementSignal = /reemplazo poblacional|reemplaz\w* poblacion|sustitucion (?:poblacional|demografica)|menos iq|menor iq|cociente intelectual|menos inteligent|menor inteligenc|inferior capacidad|manipulables?|manipulable|gente que viene|motivos? (?:de )?inmigraci[oó]n|origenes? inmigrantes/i.test(value);
-  const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|polic[ií]a|justicia|wokismo)\b/i.test(value);
+  // "Seguridad Social" is an institution, not a claim about public safety.
+  const securityClaim = value.replace(/\bseguridad social\b/g, 'seguridadsocial');
+  const securitySignal = /\b(delincuenc\w*|criminal\w*|acuchill\w*|roba\w*|robo\w*|hurt\w*|viola\w*|violac\w*|paliza\w*|agresion\w*|insegur\w*|seguridad|polic[ií]a|justicia|wokismo)\b/i.test(securityClaim);
   const immigrantFiscalSignal = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value) && /\b(carga neta|saldo fiscal|contribuci[oó]n(?: fiscal)?|pagan? menos|impuestos?|cotizacion\w*)\b/i.test(value);
+  const securityGroupAttribution = securitySignal
+    && /\b(inmigr\w*|migrant\w*|extranj\w*|nuevos?\W+espanoles)\b/.test(value)
+    && /\b(son los que|caus\w*|provoc\w*|culp\w*|responsables? de|criminal\w*|acuchill\w*|roba\w*|hurt\w*|viola\w*|agresion\w*)\b/.test(value);
   const regionalMinoritySignal = /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i.test(value) && /\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b/i.test(value);
   const retirementAgeSignal = /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i.test(value) && /\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b/i.test(value);
   const natoExpulsionSignal = /\b(otan|nato)\b/i.test(value) && /\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b/i.test(value);
   // Strong multi-proposition routes are resolved before broad keyword matches.
   // This keeps a claim about one subject from inheriting nearby but incompatible
   // packets such as generic taxes, pensions, employment or economy context.
-  if (domainProfile?.packetId) return [packetById(domainProfile.packetId)].filter(Boolean);
+  const broadYouthProfile = ['youth_housing_access', 'youth_housing_family_counterfactual'].includes(domainProfile?.id);
+  if (dedicatedProfile && (!broadYouthProfile || domainProfile.id === 'youth_housing_family_counterfactual' || !needsScopedMeasurement(text) || (domainProfile.id === 'youth_housing_access' && broadYouthAccess))) return [packetById(domainProfile.packetId)].filter(Boolean);
   if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
   if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
   if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
   if (natoExpulsionSignal) return [packetById('broad-nato-expulsion')].filter(Boolean);
   if (agricultureTransitionSignal) return [packetById('broad-agriculture-green-transition')].filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
+  if (securityGroupAttribution && /\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value)) return [packetById('broad-immigration-security')].filter(Boolean);
+  if (securityGroupAttribution) return [packetById('broad-security')].filter(Boolean);
+  if (needsScopedMeasurement(text) && !broadHousingAccess && !broadYouthAccess && !taxBroadSignal && !reviewedCompoundRoute && !publicAdministrationPerformanceSignal) return [];
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
   if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
   if (taxBroadSignal) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);

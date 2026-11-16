@@ -15,6 +15,14 @@ const parseJson = <T>(value: unknown, fallback: T): T => {
   try { return JSON.parse(value) as T; } catch { return fallback; }
 };
 
+const freshnessFor = (retrievedAt: string, schedule: string | null, now = Date.now()): 'fresh' | 'stale' | 'invalid' | 'unknown' => {
+  const retrieved = Date.parse(retrievedAt || '');
+  if (!Number.isFinite(retrieved)) return 'unknown';
+  if (retrieved > now + 5 * 60_000) return 'invalid';
+  const maxAgeDays = ({ hourly: 3, daily: 14, weekly: 60, monthly: 120 } as Record<string, number>)[schedule || ''] || 14;
+  return (now - retrieved) / 86_400_000 <= maxAgeDays ? 'fresh' : 'stale';
+};
+
 interface WarehouseRow {
   id: string;
   kind: string;
@@ -60,6 +68,7 @@ const hydrateRows = (rows: WarehouseRow[]): Record<string, unknown>[] => rows.ma
     excerpt: row.excerpt, finding: payload.finding, propositionId: payload.propositionId, clusterId: payload.clusterId,
     support: payload.support, status: payload.status, stage: payload.stage, dataKind: payload.dataKind,
     periodType: payload.periodType, comparison: payload.comparison, quantities: payload.quantities, limitations: payload.limitations,
+    freshness: freshnessFor(row.retrieved_at, row.schedule),
     source: {
       id: row.source_id, publisher: row.publisher, title: row.title || row.publisher, url: row.source_url,
       publishedAt: row.published_at ?? undefined, retrievedAt: row.retrieved_at, trust: row.trust_tier,

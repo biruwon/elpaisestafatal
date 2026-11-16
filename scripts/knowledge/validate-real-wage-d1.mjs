@@ -13,7 +13,7 @@ database.exec(`
   CREATE TABLE observations (id TEXT PRIMARY KEY, kind TEXT, dataset_id TEXT, metric TEXT, metric_id TEXT, value REAL, unit TEXT, period TEXT, geography TEXT, population TEXT, dimensions_json TEXT, dimension_labels_json TEXT, url TEXT, excerpt TEXT, payload_json TEXT, source_document_id TEXT);
   CREATE INDEX idx_observations_metric_period ON observations(metric_id, period);
 `);
-const now = Date.now(), recent = new Date(now - 1000).toISOString(), older = new Date(now - 86400000).toISOString();
+const now = Date.now(), recent = new Date(now - 1000).toISOString(), older = new Date(now - 30 * 86400000).toISOString();
 const sources = [
   ['wages', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_a', recent],
   ['prices', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_ainr', recent],
@@ -38,6 +38,8 @@ assert.equal(rows.length, 13);
 assert.equal(rows.find((row) => row.id === 'w-2025').status, 'p', 'The D1 payload lost its provisional flag');
 assert.equal(rows.find((row) => row.id === 'w-2020').source.id, 'wages');
 assert.equal(rows.find((row) => row.id === 'w-2020').source.publishedAt, undefined, 'A missing D1 publication date must remain optional');
+assert.equal(rows.find((row) => row.id === 'w-2025').freshness, 'fresh', 'D1 hydration must carry schedule-aware freshness');
+assert.equal(rows.find((row) => row.id === 'old-2025').freshness, 'stale', 'An older daily source must be marked stale in the runtime payload');
 const ranked = rankWarehouseObservations('índice anual de salarios y precios', rows, 100, { metricIds: new Set(ids) });
 assert.equal(ranked.find((row) => row.id === 'w-2025').status, 'p', 'Retrieval lost its provisional flag');
 const plan = realWagePlan('Los salarios pierden poder adquisitivo frente a los precios', { observations: ranked, now });
@@ -85,6 +87,13 @@ try {
   assert.match(jobsResult.result.reply, /definición de este dato difiere/);
   assert.match(jobsResult.result.reply, /no cuenta los puestos disponibles/);
   assert.ok(jobsResult.result.sources.some((source) => /une_rt_a/.test(source.url)));
+  await Promise.all(pending);
+  const noResolverJobs = await api.onRequestPost({ request: new Request('https://site.test/api/check?fresh=1', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: shortClaim, inputType: 'text' }) }),
+    env: { DB: d1 }, waitUntil: (promise) => pending.push(promise) });
+  const noResolverResult = await noResolverJobs.json();
+  assert.match(noResolverResult.result.reply, /10,5 %/);
+  assert.match(noResolverResult.result.reply, /no cuenta los puestos disponibles/);
+  assert.ok(noResolverResult.result.sources.some((source) => /une_rt_a/.test(source.url)), 'A text measurement family must use compatible D1 evidence even when the optional resolver is offline');
   await Promise.all(pending);
 } finally { globalThis.fetch = originalFetch; }
 database.close();

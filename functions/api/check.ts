@@ -22,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-statistical-comparability-25-2026-11';
+const responseCacheVersion = 'claim-statistical-comparability-26-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -178,7 +178,7 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
   return model;
 };
 
-const resolvedResponse = (claim: string, safe: ResolveResult | undefined, id?: string, requireExtraction = false, allowClarification = true): PublicCheckResponse => {
+const resolvedResponse = (claim: string, safe: ResolveResult | undefined, id?: string, requireExtraction = false, allowClarification = true, contextual?: PublicCheckResponse): PublicCheckResponse => {
   if (requireExtraction && !safe?.extraction) return unavailableCheck(claim, 'No se ha podido leer el contenido. Pega la afirmación para comprobarla.');
   const extraction = safe?.extraction;
   const actualClaim = extraction ? extractedClaim(extraction) : claim;
@@ -186,7 +186,7 @@ const resolvedResponse = (claim: string, safe: ResolveResult | undefined, id?: s
   if (meaning) return attachExtraction(checkFromPlan(actualClaim, meaning, id || safe?.requestId), extraction) as PublicCheckResponse;
   if (!safe?.result && extraction) return attachExtraction(unavailableCheck(actualClaim, extraction.warnings[0] || 'No se ha podido completar la comprobación.'), extraction) as PublicCheckResponse;
   const model = safe?.result ? checkFromPlan(actualClaim, safe.result, id || safe.requestId, allowClarification) : undefined;
-  const response = chooseResponse(actualClaim, model, fallbackResponse(actualClaim, 'text'));
+  const response = chooseResponse(actualClaim, model, contextual || fallbackResponse(actualClaim, 'text'));
   return attachExtraction(response, extraction) as PublicCheckResponse;
 };
 
@@ -205,6 +205,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   const submissionFallback = (): PublicCheckResponse => body.inputType === 'text'
     ? fallbackResponse(effectiveClaim, 'text')
     : unavailableCheck(body.text, 'No hemos podido leer el contenido ahora. Pega el texto de la afirmación para comprobarlo.');
+  let focusedObservations: Record<string, unknown>[] | undefined;
+  let warehouseFocusedResponse: PublicCheckResponse | undefined;
   if (effectiveClaim.trim() && body.inputType === 'text') context.waitUntil(captureClaimDemand(env.DB, effectiveClaim, body.inputType));
 
   // `fresh=1` is an explicit development escape hatch. Responses are already
@@ -234,24 +236,37 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       return json(response);
     }
     const focus = claimFocusFor(effectiveClaim);
-    if (focus?.id === 'rental-price-amount') {
+    if (focus) {
       const metricIds = [...(focusedMetricIdsFor(effectiveClaim) || [])];
-      if (!env.DB || !metricIds.length) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
-      let lookupFailed = false;
-      const observations: Record<string, unknown>[] = await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => {
-        lookupFailed = true;
-        return [];
-      });
-      if (lookupFailed) return json(unavailableCheck(effectiveClaim, 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
-      const plan = focusedEvidencePlan(effectiveClaim, { observations: observations as never[] }) as AnswerPlan | undefined;
-      if (plan) return json(checkFromPlan(effectiveClaim, plan));
+      if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+      if (env.DB && metricIds.length) {
+        let lookupFailed = false;
+        focusedObservations = await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => {
+          lookupFailed = true;
+          return [];
+        });
+        if (lookupFailed) {
+          if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) {
+            return json(unavailableCheck(effectiveClaim, focus.id === 'rental-price-amount'
+              ? 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'
+              : `No hemos podido consultar datos compatibles sobre ${focus.label}. No sustituimos esa medida por cifras de otro tema.`));
+          }
+          focusedObservations = undefined;
+        } else {
+          const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
+          if (plan) {
+            warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
+            if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
+          }
+        }
+      }
     }
   }
 
   // Broad-domain packets are already reviewed and deterministic. Return them
   // immediately instead of queueing a slow local-model job; this keeps common
   // open-ended claims answerable even when the provider is saturated.
-  const immediateContext = submissionFallback();
+  const immediateContext = warehouseFocusedResponse || submissionFallback();
   const immediatePlan = (immediateContext as PublicCheckResponse & { result?: AnswerPlan }).result;
   // When the warehouse-backed resolver is configured, let it enrich broad
   // packets with actual observations before returning. The packet remains a
@@ -263,12 +278,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   }
 
   if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN) {
-    const response = submissionFallback();
+    const response = warehouseFocusedResponse || submissionFallback();
     if (!bypassResponseCache && cacheKey && response.state === 'supported') storeResponse(cacheKey, { expiresAt: Date.now() + 5 * 60_000, response });
     return json(response);
   }
 
-  if (localCircuitOpenUntil > Date.now()) return json(submissionFallback());
+  if (localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse || submissionFallback());
 
   try {
     // D1 is the production retrieval index. The local resolver still ranks
@@ -277,10 +292,9 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     let warehouseRecords: Record<string, unknown>[] | undefined;
     if (env.DB && body.inputType === 'text') {
       const focus = claimFocusFor(effectiveClaim);
-      const comparisonMetrics = focus?.id === 'real-wages' ? ['annual_hourly_wage_index', 'annual_hicp_index']
-        : focus?.id === 'job-opportunities' ? [...(focusedMetricIdsFor(effectiveClaim) || [])] : [];
+      const comparisonMetrics = focus ? [...(focusedMetricIdsFor(effectiveClaim) || [])] : [];
       const [contractRows, searchRows] = await Promise.all([
-        comparisonMetrics.length ? searchD1WarehouseByMetricIds(env.DB, comparisonMetrics).catch(() => []) : Promise.resolve([]),
+        focusedObservations ? Promise.resolve(focusedObservations) : comparisonMetrics.length ? searchD1WarehouseByMetricIds(env.DB, comparisonMetrics).catch(() => []) : Promise.resolve([]),
         searchD1Warehouse(env.DB, effectiveClaim).catch(() => []),
       ]);
       // Put the typed series first: the downstream payload has a 500-row cap.
@@ -307,7 +321,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     if (!upstreamResponse.ok) {
       localFailureCount += 1;
       if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-      return json(submissionFallback());
+      return json(warehouseFocusedResponse || submissionFallback());
     }
     localFailureCount = 0;
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
@@ -316,7 +330,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       // The local resolver has already accepted the job. Expose a deterministic
       // answer when it is sufficiently grounded so the user gets useful
       // context while optional model enrichment continues in the background.
-      const previewResponse = submissionFallback();
+      const previewResponse = warehouseFocusedResponse || submissionFallback();
       const preview = usefulPreview(previewResponse);
       return json(processingCheck(body.text, safe.requestId, preview), 202);
     }
@@ -324,14 +338,14 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // deterministic knowledge layer can still provide scoped, sourced
     // context. Prefer that context only when it improves an insufficient
     // model result; never replace a supported or clarification response.
-    const response = resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification);
+    const response = resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification, warehouseFocusedResponse);
     if (safe?.extraction && safe.requestId && safe.extraction.status !== 'failed') context.waitUntil(captureClaimDemand(env.DB, extractedClaim(safe.extraction), safe.extraction.inputType, safe.requestId));
     if (!bypassResponseCache && cacheKey && response.state === 'supported') storeResponse(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
     if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-    return json(submissionFallback());
+    return json(warehouseFocusedResponse || submissionFallback());
   }
 };
 

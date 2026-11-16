@@ -136,9 +136,13 @@ const profiles = [
   },
 ];
 
-export const domainProfileFor = (value) => {
+export const domainProfileFor = (value, compiled = deterministicFallbackCompiler(value)) => {
   const text = normalise(value);
-  const concepts = new Set(deterministicFallbackCompiler(value).concepts || []);
+  const concepts = new Set(compiled.concepts || []);
+  // The family-support counterfactual is narrower than the general youth
+  // housing profile, so resolve it first when both patterns match.
+  const familyCounterfactual = profiles.find((profile) => profile.id === 'youth_housing_family_counterfactual' && profile.when(text, concepts));
+  if (familyCounterfactual) return familyCounterfactual;
   return profiles.find((profile) => profile.when(text, concepts)) || null;
 };
 

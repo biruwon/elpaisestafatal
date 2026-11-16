@@ -5,6 +5,8 @@ import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-pl
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
+import { needsScopedMeasurement } from '../../src/lib/knowledge/measurement-intent.mjs';
+import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
 import { shouldRetainReviewedPreview } from '../../src/lib/knowledge/reviewed-answer-stability.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
@@ -23,15 +25,47 @@ const cases = [
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
+  ['pension-wage-comparison', ['Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', 'Los jubilados cobran pensiones más altas que el salario de muchos jóvenes empleados', 'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes']],
+  ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
+  ['entrepreneurial-risk-perception', ['Emprender en España se percibe como más arriesgado que buscar una plaza pública', 'Crear una empresa parece más arriesgado que preparar una oposición', 'El riesgo percibido de emprender es mayor que el de trabajar como funcionario']],
   ['housing-supply', ['Los pisos turísticos retiran vivienda del alquiler residencial', 'Los apartamentos turísticos reducen la oferta de viviendas para residentes', '¿Cuántas casas vacías hay disponibles en la ciudad?']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
+  ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
 ];
 for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
-for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?']) {
+assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
+assert.equal(claimFocusFor('¿Las pensiones públicas se financian con las cotizaciones actuales?')?.id, 'pension-financing', 'A funding question must stay in the pension-financing family, not a salary comparison');
+for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juvenil es elevada', 'Qué porcentaje de jóvenes activos no encuentra trabajo', 'Cuántas vacantes de empleo hay', 'Los inmigrantes causan que no haya trabajo', 'Los hospitales tienen pocas camas', 'El seguro del coche ha subido', 'Los trenes transportan más pasajeros', 'Mi plan de pensiones privado acumula ahorro en una cuenta individual', '¿Cuánto cuesta comprar una vivienda en España?', '¿Cómo han evolucionado los precios del alquiler desde 2015?', '¿Cuál es el índice de precios del alquiler actual?', 'Emprender es más arriesgado que trabajar en una empresa privada']) {
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
+}
+const specificButUncovered = [
+  'La cita previa obligatoria ha convertido trámites básicos en una barrera',
+  'Muchos autónomos necesitan pagar una gestoría solo para cumplir con Hacienda y Seguridad Social',
+  'Los delitos menores se denuncian menos porque muchas víctimas creen que no servirá para recuperar lo robado',
+  'Los pacientes rurales tienen menos acceso a médicos y especialistas que quienes viven en ciudades',
+  'Los jóvenes con salarios españoles compiten por vivienda con trabajadores remotos que cobran salarios extranjeros',
+  'El empleo público ofrece mejores condiciones que empleos privados equivalentes',
+  'Los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista',
+  'Los impuestos sobre comprar, vender y mantener vivienda dificultan cambiar de casa por trabajo',
+  'El trabajo irregular beneficia a empresarios que quieren reducir costes laborales',
+  'Reducir drásticamente el turismo destruiría empleo en regiones muy dependientes de él',
+  'Los beneficios del turismo no se reparten de forma proporcional entre trabajadores y propietarios',
+];
+for (const claim of specificButUncovered) {
+  assert.equal(needsScopedMeasurement(claim), true, claim);
+  assert.equal(broadDomainPacketsFor(claim).length, 0, `An unsupported narrow claim inherited a broad packet: ${claim}`);
+}
+assert.equal(measurementMeaningPlan('El empleo público ofrece mejores condiciones que empleos privados equivalentes'), undefined, 'A comparison of equivalent jobs must not be routed to the employment-rate definition');
+assert.equal(measurementMeaningPlan('¿Qué mide la tasa de empleo?')?.headline, 'Qué mide tasa de empleo', 'An explicit request for a definition must retain the metric explainer');
+const ruralAccess = focusedEvidencePlan('La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte');
+assert.equal(ruralAccess.answerScope.family, 'rural-urban-service-access');
+assert.match(ruralAccess.shareableReply, /promedios nacionales.*no permiten concluir/i);
+assert.equal(ruralAccess.sourceLinks.length, 0, 'National indicators must not be presented as rural-versus-urban evidence');
+for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {
+  assert.ok(broadDomainPacketsFor(claim).length, `A broad claim lost its reviewed context: ${claim}`);
 }
 assert.equal(claimFocusFor('¿El alquiler se lleva más de la mitad del sueldo?')?.id, 'rental-affordability', 'A question about rent relative to income must remain an affordability claim');
 for (const claim of [
@@ -43,6 +77,20 @@ for (const claim of [
   assert.deepEqual([...focusedMetricIdsFor(claim)], ['rental_price_index'], claim);
 }
 assert.deepEqual([...focusedMetricIdsFor('Trabajar a jornada completa y ser pobre')].filter((id) => id.includes('poverty')), ['in_work_poverty_full_time_rate']);
+
+const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes');
+assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');
+assert.match(pensionPayGap.shareableReply, /misma unidad y periodo/);
+assert.match(pensionPayGap.shareableReply, /distribuciones comparables/);
+assert.equal(pensionPayGap.sourceLinks.length, 0, 'A pension/salary comparison must not cite unrelated youth housing figures');
+const doubleHealthcarePayment = focusedEvidencePlan('Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado');
+assert.equal(doubleHealthcarePayment.answerScope.family, 'healthcare-double-payment');
+assert.match(doubleHealthcarePayment.shareableReply, /no mide si un hogar paga dos veces/);
+assert.doesNotMatch(doubleHealthcarePayment.shareableReply, /lista de espera|102 d[ií]as|121 d[ií]as/i);
+const entrepreneurshipRisk = focusedEvidencePlan('Emprender en España se percibe como más arriesgado que buscar una plaza pública');
+assert.equal(entrepreneurshipRisk.answerScope.family, 'entrepreneurial-risk-perception');
+assert.match(entrepreneurshipRisk.shareableReply, /no se deduce de la temporalidad/);
+assert.doesNotMatch(entrepreneurshipRisk.shareableReply, /25,0 %|14,7 %/);
 
 const source = { id: 'sanidad-wave-one', title: 'Barómetro Sanitario 2026, primera oleada', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/home_BS.htm', retrievedAt: '2026-10-30' };
 const jobsSource = { id: 'unemployment', title: 'Tasa de paro', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/', retrievedAt: '2026-11-15' };
@@ -223,4 +271,5 @@ assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId
 const health = answerPlanForBroadDomains('Las listas de espera sanitarias son muy largas');
 assert.doesNotMatch(health.shareableReply, /peor que nunca/i);
 assert.ok(!health.evidenceSummary.families.some((family) => family.criterionId === 'health-historical-claim'));
-console.log('Claim focus validated: 33 paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.');
+const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0);
+console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);

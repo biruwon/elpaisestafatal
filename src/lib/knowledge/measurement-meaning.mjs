@@ -1,11 +1,13 @@
 import registry from './measurement-definitions.generated.mjs';
-import { asksForMeasurementMeaning } from './measurement-intent.mjs';
+import { asksForMeasurementComparison, asksForMeasurementMeaning } from './measurement-intent.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 
 const normalize = (text) => String(text || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
 export const measurementMeaningPlan = (claim) => {
-  if (!asksForMeasurementMeaning(claim)) return undefined;
+  const definitionQuestion = asksForMeasurementMeaning(claim);
+  const comparesMeasurements = asksForMeasurementComparison(claim);
+  if (!definitionQuestion && !comparesMeasurements) return undefined;
   const text = ` ${normalize(claim)} `;
   const matches = Object.entries(registry).filter(([, metric]) => metric.definition?.sources?.length)
     .flatMap(([id, metric]) => metric.aliases.flatMap((alias) => {
@@ -18,6 +20,7 @@ export const measurementMeaningPlan = (claim) => {
   for (const item of matches) if (!selected.some((other) => item.start < other.end && item.end > other.start)) selected.push(item);
   const measurements = [...new Map(selected.sort((a, b) => a.start - b.start).map((item) => [item.id, item.metric])).values()].slice(0, 3);
   if (!measurements.length) return undefined;
+  if (!definitionQuestion && comparesMeasurements && measurements.length < 2) return undefined;
   const sources = [...new Map(measurements.flatMap((metric) => metric.definition.sources).map((source) => [source.id, source])).values()];
   const headline = measurements.length > 1 ? 'Estas medidas usan poblaciones o denominadores diferentes' : `Qué mide ${measurements[0].definition.label.toLocaleLowerCase('es')}`;
   const explanation = (metric) => `${metric.definition.label}: ${metric.definition.explanation}`;

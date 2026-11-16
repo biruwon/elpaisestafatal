@@ -166,6 +166,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const primaryFacts = (direct.length ? direct : context).slice(0, 2);
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
     fact.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
+    fact.latest.freshness === 'unknown' ? 'No se ha podido comprobar cuándo se consultó esta fuente.' : '',
     ...observationFlagNotes(fact.latest.status),
     fact.latest.dimensions?.provisional === true ? 'Resultados provisionales de una oleada; no equivalen al año completo.' : '',
     /^primary_care_wait_/.test(fact.id) ? 'La encuesta se refiere a la última consulta de adultos en medicina de familia pública durante los 12 meses anteriores; excluye mutualidades con asistencia privada.' : '',
