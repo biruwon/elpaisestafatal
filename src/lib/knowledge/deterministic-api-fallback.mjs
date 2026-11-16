@@ -39,6 +39,40 @@ const broadScorecard = (text) => {
     || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,32}\b(?:peor|mejor|mejores|peores)\b/.test(value);
 };
 
+// A reviewed family may add useful context when a focused measurement plan
+// has no observations. Keep these bridges explicit so related context cannot
+// replace a claim-specific measurement or its scope.
+const reviewedContextForFocusedGap = {
+  'measurement-rental-affordability': {
+    packetId: 'broad-youth-living-housing',
+    criterionId: 'youth-rental-effort',
+  },
+};
+
+const reviewedContextForGap = (focused, claim, now) => {
+  const bridge = reviewedContextForFocusedGap[focused?.id];
+  if (!bridge || focused.evidenceLevel !== 'insufficient'
+    || focused.evidenceIds?.length || focused.sourceIds?.length) return undefined;
+  const plan = answerPlanForBroadDomains(claim, { now });
+  if (plan?.id !== bridge.packetId || plan.evidenceLevel === 'insufficient') return undefined;
+  const planSources = new Set(plan.sourceIds || []);
+  const sourcedFamily = plan.evidenceSummary?.families?.some((family) => family.criterionId === bridge.criterionId
+    && family.data?.length
+    && family.sourceIds?.some((sourceId) => planSources.has(sourceId)));
+  if (!sourcedFamily) return undefined;
+
+  const gap = focused.blocks?.find((block) => block.type === 'evidence_gap');
+  if (!gap) return plan;
+  const blocks = [...(plan.blocks || [])];
+  const conclusionIndex = blocks.findIndex((block) => block.type === 'cannot_conclude');
+  blocks.splice(conclusionIndex < 0 ? blocks.length : conclusionIndex, 0, {
+    ...gap,
+    missing: [...gap.missing],
+    needed: [...gap.needed],
+  });
+  return { ...plan, blocks };
+};
+
 const fallbackGuidance = (text, inputType) => {
   if (!text) {
     const subject = inputType === 'audio' ? 'el audio' : inputType === 'image' ? 'la captura' : 'el contenido';
@@ -63,8 +97,20 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
   // the warehouse-backed resolver is unavailable or still processing.
   const propositions = deterministicFallbackCompiler(original).explicitPropositions;
   const focused = focusedEvidencePlan(original, { propositions, now });
-  if (focused) return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
   const related = topicReference(original);
+  if (focused) {
+    const reviewedContext = reviewedContextForGap(focused, original, now);
+    if (reviewedContext) {
+      return {
+        status: 'complete',
+        evidenceLevel: reviewedContext.evidenceLevel,
+        relatedClaims: related ? [related] : [],
+        guidance: { limitation: reviewedContext.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] },
+        result: reviewedContext,
+      };
+    }
+    return { status: 'uncovered', result: focused, relatedClaims: [], guidance };
+  }
   const institutionalLabel = spanishInstitutionalScope(original);
   if (institutionalLabel) {
     const evidenceIds = ['fallback-constitution', 'fallback-congress'];

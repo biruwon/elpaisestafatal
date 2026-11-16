@@ -1153,7 +1153,7 @@ const scopeReviewedPacket = (packet, claim) => {
       finding: /paro|desemple/.test(text) ? 'La tasa de paro juvenil mide personas desempleadas entre jóvenes activos; no mide salarios.' : 'La evolución salarial necesita una serie específica de jóvenes con población, unidad y periodo compatibles.',
       missingDimensions: /salari|sueldo|ingreso/.test(text) ? ['serie salarial específica de jóvenes y periodo comparable'] : criterion.missingDimensions }
       : criterion.id === 'youth-housing-access' ? { ...criterion, metricIds: (criterion.metricIds || []).filter((id) => id !== 'housing_cost_overburden_rate'), finding: 'El índice general mide precios de compraventa, no cuánto puede pagar una persona joven.' }
-      : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'El alquiler de una vivienda completa se compara con el salario joven medio de referencia. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
+      : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'En España, el alquiler mensual medio de una vivienda completa se compara con el salario individual mensual medio de referencia de la juventud en el Observatorio 2025. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
       : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La ECV 2025 muestra diferencias de convivencia por renta personal; describe una asociación, no mide transferencias familiares ni demuestra qué causó esa convivencia.' } : criterion);
     if (!emigrationCounterfactual) {
       headline = rent ? 'El alquiler medio equivale a gran parte del salario joven medio' : 'Los ingresos y el coste de vivienda limitan el acceso de muchos jóvenes';
