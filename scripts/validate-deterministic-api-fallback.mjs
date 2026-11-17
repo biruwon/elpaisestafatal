@@ -211,6 +211,102 @@ if (nonTextWorkingPoverty.result?.sourceIds?.some((sourceId) => sourceId.startsW
   || nonTextWorkingPoverty.result?.evidenceIds?.length) {
   throw new Error('The text-only working-poverty snapshot was reused for a non-text submission.');
 }
+const graduateOutcomeClaim = 'Un título universitario ya no garantiza encontrar un empleo cualificado';
+const graduateOutcome = deterministicApiFallback({ text: graduateOutcomeClaim, inputType: 'text', now: Date.parse('2026-11-17') });
+if (graduateOutcome.status !== 'partial' || graduateOutcome.result?.evidenceLevel !== 'limited'
+  || graduateOutcome.result?.evidenceSummary?.mode !== 'snapshot'
+  || graduateOutcome.result?.answerScope?.family !== 'education-employment-outcomes'
+  || !graduateOutcome.result?.shareableReply?.includes('83,2 %') || !graduateOutcome.result?.shareableReply?.includes('34 %')
+  || !graduateOutcome.result?.shareableReply?.includes('en 2025')
+  || !graduateOutcome.result?.shareableReply?.includes('definición de este dato difiere')
+  || graduateOutcome.result?.shareableReply?.includes('no compara dos periodos')
+  || !graduateOutcome.result?.shareableReply?.includes('no garantizan el resultado de cada persona')
+  || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-employment')
+  || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-overqualification')
+  || graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-unemployment')
+  || graduateOutcome.result?.shareableReply?.trim().split(/\s+/).length > 160) {
+  throw new Error('A degree-to-qualified-work claim did not receive concise, qualified 2025 employment and overqualification context.');
+}
+for (const paraphrase of [
+  'Tener una carrera no asegura encontrar un empleo acorde con la formación',
+  'Un título superior no garantiza conseguir un trabajo cualificado',
+]) {
+  const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.status !== 'partial' || answer.result?.answerScope?.family !== 'education-employment-outcomes'
+    || !answer.result?.shareableReply?.includes('83,2 %') || !answer.result?.shareableReply?.includes('34 %')
+    || JSON.stringify(answer.result?.sourceIds || []) !== JSON.stringify(graduateOutcome.result.sourceIds)) {
+    throw new Error(`A graduate employment paraphrase changed the evidence family or source scope: ${paraphrase}`);
+  }
+}
+const graduateUnemployment = deterministicApiFallback({
+  text: '¿Cuál fue la tasa de paro de la población activa de 20 a 64 años con estudios superiores en España en 2025?',
+  inputType: 'text', now: Date.parse('2026-11-17'),
+});
+if (graduateUnemployment.status !== 'partial' || graduateUnemployment.result?.answerScope?.directMetrics?.join(',') !== 'unemployment_rate_tertiary_education'
+  || !graduateUnemployment.result?.shareableReply?.includes('6,4 %')
+  || !graduateUnemployment.result?.shareableReply?.includes('población activa')
+  || !graduateUnemployment.result?.shareableReply?.includes('denominador')
+  || !graduateUnemployment.result?.shareableReply?.includes('definición de este dato difiere')
+  || !graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-unemployment')
+  || graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-employment')
+  || graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-overqualification')) {
+  throw new Error('A tertiary-unemployment question inherited an employment or overqualification measure.');
+}
+for (const paraphrase of [
+  '¿Qué porcentaje de la población activa de 20 a 64 años con educación superior estaba desempleada en España en 2025?',
+  '¿Cuál fue el paro entre personas activas de 20 a 64 años con titulación terciaria en España en 2025?',
+]) {
+  const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.result?.answerScope?.directMetrics?.join(',') !== 'unemployment_rate_tertiary_education'
+    || !answer.result?.shareableReply?.includes('6,4 %')
+    || JSON.stringify(answer.result?.sourceIds || []) !== JSON.stringify(graduateUnemployment.result.sourceIds)) {
+    throw new Error(`A tertiary-unemployment paraphrase changed metric, denominator or source: ${paraphrase}`);
+  }
+}
+const youthGraduateClaim = 'Los jóvenes con estudios superiores están sobrecualificados en sus empleos';
+const youthGraduate = deterministicApiFallback({ text: youthGraduateClaim, inputType: 'text', now: Date.parse('2026-11-17') });
+if (youthGraduate.status !== 'partial' || youthGraduate.result?.answerScope?.directMetrics?.join(',') !== 'tertiary_overqualification_rate_age_20_34'
+  || !youthGraduate.result?.shareableReply?.includes('34,4 %')
+  || !youthGraduate.result?.shareableReply?.includes('20 a 34 años')
+  || !youthGraduate.result?.shareableReply?.includes('denominador son solo las personas ocupadas de ese grupo')
+  || !youthGraduate.result?.shareableReply?.includes('no equivale a recién graduados')
+  || youthGraduate.result?.shareableReply?.includes('34 % de las personas ocupadas de 20 a 64 años')
+  || youthGraduate.result?.sourceIds?.includes('eurostat-tertiary-employment')) {
+  throw new Error('A youth overqualification claim inherited an all-age or graduate-only measure.');
+}
+for (const paraphrase of [
+  '¿Qué proporción de personas ocupadas de 20 a 34 años con educación terciaria trabaja en puestos que no requieren ese nivel?',
+  '¿Cuántos trabajadores jóvenes titulados están sobrecualificados?',
+]) {
+  const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.result?.answerScope?.directMetrics?.join(',') !== 'tertiary_overqualification_rate_age_20_34'
+    || !answer.result?.shareableReply?.includes('34,4 %')
+    || JSON.stringify(answer.result?.sourceIds || []) !== JSON.stringify(youthGraduate.result.sourceIds)) {
+    throw new Error(`A youth overqualification paraphrase changed the age group or source: ${paraphrase}`);
+  }
+}
+for (const nearbyClaim of [
+  'La FP tiene más salidas laborales que la universidad',
+  'Las empresas exigen un máster para encontrar un buen empleo',
+  'Las empresas valoran más las competencias digitales que las asignaturas de la carrera',
+  'La FP sigue teniendo un estigma social pese a tener buenas salidas laborales',
+]) {
+  const answer = deterministicApiFallback({ text: nearbyClaim, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-tertiary-'))
+    || answer.result?.evidenceIds?.some((evidenceId) => evidenceId.startsWith('tertiary-'))) {
+    throw new Error(`A tertiary employment statistic crossed into an adjacent education claim: ${nearbyClaim}`);
+  }
+}
+const foreignGraduateClaim = deterministicApiFallback({ text: 'En Francia, un título universitario ya no garantiza encontrar un empleo cualificado', inputType: 'text', now: Date.parse('2026-11-17') });
+if (foreignGraduateClaim.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-tertiary-'))
+  || foreignGraduateClaim.result?.evidenceIds?.length) {
+  throw new Error('Spain-only tertiary education measures crossed into a France claim.');
+}
+const staleEducationSnapshot = deterministicApiFallback({ text: graduateOutcomeClaim, inputType: 'text', now: Date.parse('2027-05-01') });
+if (staleEducationSnapshot.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-tertiary-'))
+  || staleEducationSnapshot.result?.evidenceIds?.length) {
+  throw new Error('The reviewed education snapshot remained usable after its expiry date.');
+}
 const povertyHousingNeighbour = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse', inputType: 'text', now: Date.parse('2026-11-17') });
 if (povertyHousingNeighbour.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-in-work-poverty'))) {
   throw new Error('Working-poverty evidence crossed into the separate housing-independence claim.');

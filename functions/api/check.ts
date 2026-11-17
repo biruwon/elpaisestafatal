@@ -22,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-poverty-snapshot-36-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-snapshot-37-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -274,8 +274,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (focus.id === 'working-poverty' && focusedObservations.length === 0) {
-            // The reviewed text snapshot can answer from its own dated source
+          if (['working-poverty', 'education-employment-outcomes'].includes(focus.id) && focusedObservations.length === 0) {
+            // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and
             // infrastructure failure are not interchangeable.

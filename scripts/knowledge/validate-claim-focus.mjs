@@ -170,6 +170,8 @@ for (const claim of [
   'Compara el empleo de titulados superiores de 20 a 64 años con el de 25 a 34 años',
   'La tasa de empleo de titulados universitarios en Europa',
 ]) assert.deepEqual([...focusedMetricIdsFor(claim)], [], `A nearby education claim used an incompatible tertiary series: ${claim}`);
+assert.notEqual(claimFocusFor('La FP sigue teniendo un estigma social pese a tener buenas salidas laborales')?.id,
+  'education-employment-outcomes', 'A social-perception claim must not be reduced to its employment-prospects clause');
 assert.equal(claimFocusFor('Se contrata un seguro privado para evitar esperas de especialistas')?.id, 'private-healthcare-access', 'A waiting-time claim must stay in the access family, not the double-payment family');
 for (const claim of [
   'La gente paga consultas privadas para que la vea el especialista antes',
@@ -590,7 +592,7 @@ assert.match(graduateMatch.shareableReply, /83,2 % de las personas residentes de
 assert.match(graduateMatch.shareableReply, /34 % de las personas ocupadas de 20 a 64 a[nñ]os/);
 assert.match(graduateMatch.shareableReply, /ocupaciones ISCO 4–9/);
 assert.match(graduateMatch.shareableReply, /no garantizan el resultado de cada persona/);
-assert.match(graduateMatch.shareableReply, /no compara dos periodos/);
+assert.doesNotMatch(graduateMatch.shareableReply, /no compara dos periodos/, 'A rhetorical claim that a degree no longer guarantees work is not itself a time-series claim');
 assert.match(graduateMatch.shareableReply, /definici[oó]n de este dato difiere/);
 assert.doesNotMatch(graduateMatch.shareableReply, /50 %|10 %|17 €/);
 const graduatePublic = localPublicCheckResponse({ status: 'complete', requestId: 'graduate-employment', result: graduateMatch }, 'Un título universitario ya no garantiza encontrar un empleo cualificado');
@@ -602,6 +604,65 @@ const graduateGap = focusedEvidencePlan('Un título universitario ya no garantiz
 assert.equal(graduateGap.evidenceLevel, 'insufficient');
 assert.equal(graduateGap.sourceLinks.length, 0);
 assert.doesNotMatch(graduateGap.shareableReply, /34 %|83,2 %/, 'A missing warehouse observation must not be replaced with a hard-coded percentage');
+const educationOutcomeObservations = [
+  { id: 'tertiary-employment-2025', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', population: 'residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: employmentSource },
+  { id: 'tertiary-overqualification-2025', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: 'Percentage', geography: 'España', population: 'employed residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64' }, status: 'd', freshness: 'fresh', source: overqualificationSource },
+];
+const educationOutcomeGapFamilies = [
+  {
+    claims: [
+      'Cada vez se exige un máster para trabajos que antes pedían solo una carrera',
+      'Cada vez más ofertas piden un máster para puestos que antes solicitaban solo un grado universitario',
+    ],
+    missing: /anuncios de las mismas ocupaciones en periodos comparables/,
+    limitation: /no muestran qu[eé] titulaci[oó]n piden las ofertas/,
+  },
+  {
+    claims: [
+      'La Formación Profesional permite entrar antes al mercado laboral que muchas carreras',
+      'Los titulados de FP consiguen su primer empleo antes que quienes estudian una carrera',
+    ],
+    missing: /tiempo desde terminar FP o universidad hasta el primer empleo/,
+    limitation: /no indica cu[aá]nto tardan las personas tituladas en encontrar su primer trabajo/,
+  },
+  {
+    claims: [
+      'La FP tiene más salidas laborales que la universidad',
+      'En comparación con la universidad, la FP ofrece más posibilidades de empleo',
+    ],
+    missing: /tasas de empleo de los grupos de titulaciones comparados/,
+    limitation: /no compara por s[ií] sola los grupos que menciona la afirmaci[oó]n/,
+  },
+];
+for (const family of educationOutcomeGapFamilies) {
+  let referenceMissing;
+  for (const claim of family.claims) {
+    const plan = focusedEvidencePlan(claim, { observations: educationOutcomeObservations });
+    assert.equal(plan.answerScope.family, 'education-employment-outcomes', claim);
+    assert.equal(plan.evidenceLevel, 'insufficient', claim);
+    assert.equal(plan.sourceLinks.length, 0, claim);
+    assert.ok(plan.evidenceSummary.missingDimensions.some((item) => family.missing.test(item)), claim);
+    assert.match(plan.shareableReply, family.limitation, claim);
+    assert.doesNotMatch(plan.shareableReply, /83,2 %|34 %/, claim);
+    if (referenceMissing) assert.deepEqual(plan.evidenceSummary.missingDimensions, referenceMissing, `A paraphrase changed the missing evidence: ${claim}`);
+    referenceMissing ||= plan.evidenceSummary.missingDimensions;
+  }
+}
+const educationTrendWithoutSeries = focusedEvidencePlan('La tasa de empleo de titulados ha subido entre 2015 y 2025', { observations: [
+  { id: 'tertiary-employment-2025', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', population: 'residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: employmentSource },
+] });
+assert.equal(educationTrendWithoutSeries.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.match(educationTrendWithoutSeries.shareableReply, /muestra el dato m[aá]s reciente \(2025\); no compara dos periodos/);
+assert.doesNotMatch(educationTrendWithoutSeries.headline, /subi[oó]|aument[oó]|baj[oó]/i);
+const educationTrendWithBreak = focusedEvidencePlan('La tasa de empleo de titulados ha subido entre 2019 y 2025', { observations: [
+  { id: 'tertiary-employment-2019', metricId: 'employment_rate_tertiary_education', value: 80, period: '2019', unit: 'Percentage', geography: 'España', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, source: employmentSource },
+  { id: 'tertiary-employment-2021', metricId: 'employment_rate_tertiary_education', value: 78, period: '2021', unit: 'Percentage', geography: 'España', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'bd', source: employmentSource },
+  { id: 'tertiary-employment-2025', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', source: employmentSource },
+] });
+assert.equal(educationTrendWithBreak.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.match(educationTrendWithBreak.shareableReply, /ruptura de serie en 2021/);
+assert.match(educationTrendWithBreak.shareableReply, /no compara dos periodos/);
+assert.doesNotMatch(educationTrendWithBreak.headline, /subi[oó]|aument[oó]|baj[oó]/i);
 const migrationWageClaim = 'La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores';
 const migrationFiscalClaim = 'La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios';
 const migrantCredentialClaim = 'La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación';

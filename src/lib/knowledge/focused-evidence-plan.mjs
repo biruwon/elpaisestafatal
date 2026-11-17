@@ -277,7 +277,29 @@ const workingPovertyWorktimeComparison = (facts) => {
     headline: `En ${period}, el riesgo fue ${partRate} en jornada parcial y ${fullRate} en jornada completa`,
   };
 };
-const educationOutcomeLimitation = (ids, fallback) => {
+const educationOutcomeQuestion = (claim) => {
+  const text = normalize(claim);
+  return {
+    text,
+    recentGraduates: /\b(recien titulad\w*|recien graduad\w*|primer empleo)\b/.test(text),
+    asksQualificationFit: /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|por debajo)\b/.test(text),
+    asksCredentialRequirements: /\b(master|maestria|doctorad\w*)\b/.test(text)
+      && /\b(exig\w*|requier\w*|pid\w*|ped\w*|anunci\w*|ofert\w*)\b/.test(text),
+    asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|primer empleo|tiempo.{0,24}empleo|tard\w*.{0,24}empleo|mas rapido|rapidamente)\b/.test(text),
+    asksEmploymentProspects: /\b(salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(text),
+    comparesEducationPaths: /\b(formacion profesional|fp)\b/.test(text)
+      && /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|estudios superiores)\b/.test(text)
+      && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|y)\b/.test(text),
+  };
+};
+const educationOutcomeLimitForQuestion = (question) => {
+  if (question.asksCredentialRequirements) return 'Las tasas de empleo y sobrecualificación no muestran qué titulación piden las ofertas. Para saber si ahora se exige más formación hay que comparar anuncios de las mismas ocupaciones, territorios y periodos.';
+  if (question.asksFirstJobTiming) return 'Una tasa de empleo no indica cuánto tardan las personas tituladas en encontrar su primer trabajo. Hace falta medir el tiempo desde la graduación y comparar cohortes de FP y universidad en el mismo territorio y periodo.';
+  if (question.comparesEducationPaths) return 'La tasa de empleo disponible describe solo a residentes de 20 a 64 años con educación terciaria; no compara por sí sola los grupos que menciona la afirmación. Hace falta medirlos con el mismo resultado, territorio, periodo y criterios de graduación.';
+  if (question.asksEmploymentProspects) return 'La tasa de empleo terciaria no mide las salidas laborales de FP ni garantiza la contratación de una persona. Para valorar la empleabilidad hace falta una tasa de empleo de titulados con edad, tiempo desde la graduación y denominador definidos.';
+  return '';
+};
+const educationOutcomeLimitation = (ids, fallback, question) => {
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
   const overqualification = ids.includes('tertiary_overqualification_rate');
@@ -287,13 +309,16 @@ const educationOutcomeLimitation = (ids, fallback) => {
   if (unemployment) return 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.';
   if (overqualification) return 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.';
   if (employment) return 'La tasa de empleo usa como denominador a todas las personas residentes de 20 a 64 años con educación terciaria. No se limita a recién graduados ni mide si el puesto coincide con sus estudios.';
-  return fallback;
+  return educationOutcomeLimitForQuestion(question) || fallback;
 };
 const educationOutcomeNeedsForClaim = (claim, fallback) => {
-  const text = normalize(claim);
-  const recentGraduates = /\b(recien titulad\w*|recien graduad\w*|primer empleo)\b/.test(text);
-  const asksQualificationFit = /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|por debajo)\b/.test(text);
+  const question = educationOutcomeQuestion(claim);
+  const { text, recentGraduates, asksQualificationFit } = question;
+  if (question.asksCredentialRequirements) return ['anuncios de las mismas ocupaciones en periodos comparables, contando qué proporción exige un máster'];
+  if (question.asksFirstJobTiming) return ['tiempo desde terminar FP o universidad hasta el primer empleo, por cohorte, territorio y periodo comparables'];
   if (recentGraduates) return ['medición de sobrecualificación o ajuste laboral entre recién graduados, con el tiempo transcurrido desde que terminaron los estudios y un denominador definido'];
+  if (question.comparesEducationPaths) return ['tasas de empleo de los grupos de titulaciones comparados, con edad, tiempo desde la titulación, territorio y periodo compatibles'];
+  if (question.asksEmploymentProspects) return ['tasa de empleo de titulados de la formación indicada, con edad, tiempo desde la graduación, territorio y denominador definidos'];
   const age = String(claim).match(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/);
   if (age && !(age[1] === '20' && (age[2] === '34' || age[2] === '64'))) {
     const measure = asksQualificationFit ? 'tasa de sobrecualificación' : /\b(paro|desemple\w*)\b/.test(text) ? 'tasa de paro' : 'tasa de empleo';
@@ -374,6 +399,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(m[aá]s|mayor|superior|super\w*|exced\w*|alto|elevad\w*|menos|menor|inferior|bajo|diferenc\w*|brecha|compar\w*|frente|respecto)\b/.test(normalizedClaim)
     && !workingPovertyTrendRequested;
   const educationTrendRequested = educationOutcome
+    && !/\b(garantiz\w*|asegur\w*|impid\w*)\b/.test(normalizedClaim)
     && /\b(ya no|antes|ahora|cada vez|subid\w*|aument\w*|crec\w*|bajad\w*|descend\w*|disminu\w*|mejor\w*|peor\w*|empeor\w*|desde|entre \d{4} y \d{4})\b/.test(normalizedClaim);
   const comparesSectorOutput = focus.id === 'sector-wage-comparison'
     && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(normalizedClaim);
@@ -431,7 +457,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const order = (fact) => fact.latest.dimensions?.geo === 'ES' ? 0 : /^EU/.test(String(fact.latest.dimensions?.geo || '')) ? 1 : 2;
     return order(left) - order(right);
   });
-  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation)
+  const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
+  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
     : focus.id === 'working-poverty' ? `${focus.limitation} El desglose por jornada no incluye dimensión de edad y una diferencia entre jornadas no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC; el año de referencia de los ingresos puede ser anterior.`
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
@@ -536,7 +563,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
   const trendNotes = educationTrendRequested ? primaryFacts.flatMap((fact) => {
     const quality = comparisonQuality(fact.items, { temporal: true, firstPeriod: fact.items[0]?.period || '' });
-    return [`La respuesta muestra el dato más reciente (${periodLabel(fact.latest.period)}); no compara dos periodos y no demuestra por sí sola que la tasa haya subido o bajado.${quality.blocked ? ` ${quality.reason}` : ''}`];
+    const breakNote = quality.reason.startsWith('La fuente marca una ruptura de serie') ? quality.reason : '';
+    return [
+      `La respuesta muestra el dato más reciente (${periodLabel(fact.latest.period)}); no compara dos periodos y no demuestra por sí sola que la tasa haya subido o bajado.`,
+      ...quality.notes,
+      breakNote,
+    ];
   }) : [];
   const scopeNotes = [...new Set(primaryFacts.flatMap((fact) => [
     fact.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
@@ -568,17 +600,18 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const gap = missing.length ? focus.id === 'working-poverty' && workingPovertyCountRequested
     ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
     : focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
+  const gapForReply = educationOutcome && !ids.length && educationOutcomeLimitForQuestion(educationQuestion) ? '' : gap;
   const sectorEmploymentExplanation = focus.id === 'sector-wage-comparison' && comparesSectorEmployment
     ? comparesSectorEmploymentTrend
       ? 'El crecimiento del empleo debe compararse con series por actividad y periodos iguales. Salarios y productividad requieren medidas aparte.'
       : 'El empleo debe compararse por actividad, población y periodo. Salarios y productividad requieren medidas aparte.'
     : focus.explanation;
-  const explanationReply = explanation
+  const explanationReply = educationOutcome ? '' : explanation
     ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
     : sectorEmploymentExplanation;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
-  const reply = [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gap,
-    direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
+  const reply = [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+    direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);

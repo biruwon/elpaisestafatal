@@ -241,7 +241,8 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
-  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
+  && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
+  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
 const educationSkillsVsCurriculum = (t) => /\b(idiom\w*|competenci\w*|habilidad\w*|destrez\w*|aptitud\w*|digital\w*|soft skills|habilidades blandas)\b/.test(t)
   && /\b(asignatur\w*|materia\w*|curr[ií]cul\w*|contenid\w*|plan de estudios|grado\w*|t[ií]tul\w*|carrer\w*|universidad\w*|formaci[oó]n)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|mercado laboral|puesto\w*|empresas?|empleador\w*|contrataci[oó]n|vacantes?|ofertas?)\b/.test(t)

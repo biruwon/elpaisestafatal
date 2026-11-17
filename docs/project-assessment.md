@@ -662,3 +662,38 @@ In the deterministic audit of the 300 unverified discovery claims, this reply
 fell from 254 to 151 words; all 300 replies are now under 160 words. This is a
 readability check on the fallback, not a factual-accuracy score or a result for
 the dynamic resolver.
+
+## Tertiary education and employment text fallback — 17 November 2026
+
+The text-only fallback now uses four reviewed 2025 Eurostat observations for
+Spain when the successful warehouse lookup has no matching rows. For residents
+aged 20–64 with tertiary education (ISCED 2011 levels 5–8), the employment rate
+was 83.2%; the unemployment rate was 6.4% of the active population. Among
+employed people with tertiary education, the overqualification rate was 34.0%
+for ages 20–64 and 34.4% for ages 20–34. Eurostat defines overqualification
+here as working in an occupation in ISCO groups 4–9. Sources are the official
+[employment](https://ec.europa.eu/eurostat/databrowser/view/lfsa_ergaedn/default/table?lang=en),
+[unemployment](https://ec.europa.eu/eurostat/databrowser/view/une_educ_a/default/table?lang=en)
+and [overqualification](https://ec.europa.eu/eurostat/databrowser/view/lfsa_eoqgan/default/table?lang=en)
+tables.
+
+All four 2025 observations carry Eurostat's `d` status: the definition differs
+from earlier years. The fallback therefore reports a latest-year observation,
+not a time trend. Employment is divided by all residents in the age and
+education group; unemployment is divided by the active population in that
+group; overqualification is divided only by employed people in its age group.
+The two overqualification rates are not interchangeable, and the younger
+measure does not mean “recent graduates.” These group rates do not establish
+that a degree guarantees or fails to guarantee a suitable job for an individual,
+match a job to a person's field of study, compare university with vocational
+training, or measure employers' requirements in job advertisements. Those
+questions need distinct evidence. A successful empty D1 lookup may use this
+dated fallback; a failed lookup remains unavailable, and matching warehouse
+observations remain the primary path. The reviewed snapshot expires on 30 April
+2027.
+
+Regression checks cover paraphrases of graduate employment and unemployment,
+age-specific overqualification, and nearby vocational-training, master's-
+requirement and employer-skills claims that must not inherit these rates. The
+tests also preserve the source flags and ensure an unavailable warehouse is
+not treated as proof that evidence is absent.
