@@ -5,6 +5,7 @@ import { attachExtraction, extractedClaim, publicExtraction } from '../../src/li
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
+import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
 const normalizedClaim = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const exactPublishedSlugFor = (payload, claim) => {
@@ -89,7 +90,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     .filter((source) => attributedIds.has(source.id))
     .map((source) => ({ id: source.id, title: source.title, publisher: source.publisher, url: source.url, publishedAt: source.publishedAt, retrievedAt: source.retrievedAt }));
   const composedReply = blocks.find((block) => block?.type === 'conversation_reply')?.text;
-  const reply = plan.shareableReply?.trim() || composedReply || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
+  const reply = plan.shareableReply?.trim() || composedReply || publicEvidenceGapReply(plan) || [criteria[0]?.finding, plan.summary].filter(Boolean).join(' ');
   const evidenceFamilies = plan.evidenceSummary?.families || [];
   const hasVisibleFindings = criteria.length > 0
     || evidenceFamilies.some((family) => family.status !== 'missing' && Boolean(family.finding?.trim() || family.data?.length))
@@ -98,7 +99,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = blocks.find((block) => block?.type === 'evidence_gap');
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
-    ? plan.limitation?.trim() || coverageGap.nextAction
+    ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
   if (publishedSlug) {

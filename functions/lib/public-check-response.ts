@@ -6,6 +6,7 @@ import { composeFamilyReply } from '../../src/lib/knowledge/broad-domain-snapsho
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
+import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
 // Interpretation confidence, model metadata and extraction provenance are
 // internal quality signals. Public answers describe the meaning in plain
@@ -32,6 +33,8 @@ const replyFromPlan = (plan?: AnswerPlan): string => {
   if (plan?.evidenceSummary?.families?.length && String((plan as AnswerPlan & { id?: string }).id || '').startsWith('broad-')) return composeFamilyReply(plan, { compact: String((plan as AnswerPlan & { id?: string }).id || '') === 'broad-compound-claim' });
   const composed = plan?.blocks?.find((block) => block.type === 'conversation_reply')?.text;
   if (composed) return composed;
+  const evidenceGap = publicEvidenceGapReply(plan);
+  if (evidenceGap) return evidenceGap;
   const finding = plan?.blocks?.find((block) => block.type === 'confirmed' || block.type === 'data_finding');
   const firstPoint = finding && 'points' in finding ? finding.points?.[0] : undefined;
   return [firstPoint, plan?.summary].filter(Boolean).join(' ');
@@ -167,7 +170,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = plan.blocks.find((block) => block.type === 'evidence_gap');
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
-    ? plan.limitation?.trim() || coverageGap.nextAction
+    ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const publicReply = missingPublicEvidence
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'

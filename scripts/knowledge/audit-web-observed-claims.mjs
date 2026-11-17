@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
 const resolveMode = process.argv.includes('--resolve');
 const deterministicMode = process.argv.includes('--deterministic');
@@ -32,7 +33,7 @@ const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 1
 const resolveOffset = offsetArg ? Math.max(0, Number.parseInt(offsetArg.slice(9), 10) || 0) : 0;
 const auditCandidates = candidates.filter((candidate) => !selectedIds || selectedIds.has(candidate.id)).slice(resolveOffset, resolveOffset + resolveLimit);
 const answerDetails = (candidate, result) => includeAnswers ? {
-  claim: candidate.claim, headline: result?.headline, reply: result?.shareableReply || result?.blocks?.find((block) => block.type === 'conversation_reply')?.text || result?.summary,
+  claim: candidate.claim, headline: result?.headline, reply: result?.shareableReply || result?.blocks?.find((block) => block.type === 'conversation_reply')?.text || publicEvidenceGapReply(result) || result?.summary,
   evidenceLevel: result?.evidenceLevel, limitation: result?.limitation, answerScope: result?.answerScope,
   families: result?.evidenceSummary?.families, sourceLinks: result?.sourceLinks,
 } : {};

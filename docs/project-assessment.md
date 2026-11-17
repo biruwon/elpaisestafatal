@@ -697,3 +697,25 @@ age-specific overqualification, and nearby vocational-training, master's-
 requirement and employer-skills claims that must not inherit these rates. The
 tests also preserve the source flags and ensure an unavailable warehouse is
 not treated as proof that evidence is absent.
+
+## Text answers explain evidence gaps — 17 November 2026
+
+The fallback compiler already records the evidence needed for unsupported
+claims, including separate requirements for causal claims, forecasts, legal
+questions and compound statements. The public answer had been dropping that
+structure and returning the same generic response for many of them. A shared
+composer now puts the evidence boundary, the missing measurement and the next
+check into the answer. The local preview and Pages API use the same composer;
+the response cache version was advanced so a warm Worker cannot keep the old
+copy.
+
+In the deterministic audit of 300 unverified discovery claims, 206 replies
+that had previously shown only the generic gap now include a claim-specific
+evidence requirement and next step. The median reply is 59 words, the 90th
+percentile is 109 and the longest is 158; all stay below 160 words. The audit
+still reports three complete, 21 limited and 276 uncovered replies. This is a
+readability and response-structure improvement, not new evidence, a factual
+accuracy score or a result for the dynamic resolver. The candidate claims
+remain unverified. Regression checks confirm that causal paraphrases share the
+same gap and a nearby descriptive comparison does not inherit causal
+requirements.

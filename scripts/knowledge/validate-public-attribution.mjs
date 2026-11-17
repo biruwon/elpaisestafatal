@@ -193,6 +193,33 @@ assert.equal(uncoveredPages.state, 'insufficient');
 assert.match(uncoveredPages.result.reply, /esto no demuestra que la afirmación sea falsa/i);
 assert.equal(uncoveredPages.result.evidenceSummary?.families[0]?.status, 'missing');
 
+const causalGapClaims = [
+  'Las redes sociales provocan más acoso entre jóvenes',
+  'El uso de las redes sociales causa un aumento del acoso entre jóvenes',
+];
+const causalGapAnswers = causalGapClaims.map((text, index) => {
+  const fallback = deterministicApiFallback({ text, inputType: 'text' });
+  const pages = checkFromPlan(text, fallback.result, `causal-gap-${index}`);
+  const local = localPublicCheckResponse({ status: fallback.status, requestId: `causal-gap-${index}`, result: fallback.result }, text);
+  assert.equal(pages.state, 'insufficient');
+  assert.equal(local.state, pages.state);
+  assert.equal(local.result.reply, pages.result.reply, 'Local and Pages answers must compose the same evidence gap');
+  assert.match(pages.result.reply, /no demuestra que la afirmación sea falsa/i);
+  assert.match(pages.result.reply, /medidas comparables.*evidencia del mecanismo o diseño que permita atribuir causalidad/i);
+  assert.match(pages.result.reply, /Siguiente paso: Separar los hechos relacionados/);
+  assert.deepEqual(pages.result.sources, [], 'An evidence gap must not invent a source');
+  assert.ok(pages.result.reply.trim().split(/\s+/).length < 100, 'The unsupported reply should stay digestible');
+  return pages.result.reply;
+});
+assert.equal(causalGapAnswers[0], causalGapAnswers[1], 'Causal paraphrases should receive the same evidence requirements and explanation');
+
+const adjacentDescriptiveClaim = 'Hay más casos de acoso entre jóvenes que antes';
+const adjacentFallback = deterministicApiFallback({ text: adjacentDescriptiveClaim, inputType: 'text' });
+const adjacentAnswer = checkFromPlan(adjacentDescriptiveClaim, adjacentFallback.result, 'descriptive-gap');
+assert.equal(adjacentAnswer.state, 'insufficient');
+assert.match(adjacentAnswer.result.reply, /población, territorio y periodo definidos/);
+assert.doesNotMatch(adjacentAnswer.result.reply, /atribuir causalidad|mecanismo o diseño causal/i, 'A descriptive comparison must not inherit the causal evidence gap');
+
 const periodGapPlan = {
   schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Falta el periodo solicitado',
   summary: 'Hay observaciones de otros años, pero no del periodo solicitado.', coverage: 'insufficient', claimType: 'trend',
