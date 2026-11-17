@@ -337,14 +337,39 @@ const workHousing = focusedEvidencePlan(workHousingClaim, { observations: [
   { id: 'national-house-index', metricId: 'house_price_index', value: 198.4, period: '2025', unit: 'Index 2015=100', geography: 'España', population: 'residential property transactions', source: { id: 'house-index-source', title: 'Índice de precios de vivienda', url: 'https://example.org/housing' } },
 ] });
 assert.equal(workHousing.answerScope.family, 'work-housing-independence');
-assert.equal(workHousing.evidenceLevel, 'insufficient', 'National price indexes are context, not direct evidence about independence among full-time workers');
+assert.equal(workHousing.claimType, 'trend', 'The phrase «ya no» asks for a comparison over time');
+assert.equal(workHousing.evidenceLevel, 'limited', 'Reviewed youth-housing evidence is useful context but does not isolate full-time workers');
 assert.deepEqual(workHousing.answerScope.directMetrics, []);
-assert.deepEqual([...focusedMetricIdsFor(workHousingClaim)], ['rental_price_index', 'house_price_index']);
-assert.equal(workHousing.sourceLinks.length, 2, 'Only housing price indexes should be shown as context');
+assert.deepEqual(workHousing.answerScope.contextMetrics, [], 'National price indexes do not measure housing independence among full-time workers');
+assert.deepEqual([...focusedMetricIdsFor(workHousingClaim)], []);
+assert.deepEqual(workHousing.sourceLinks.map((source) => source.id), ['cje-emancipation-2025', 'cje-emancipation-methodology', 'youth-family-housing-ine']);
 assert.match(workHousing.shareableReply, /Como contexto:/);
-assert.match(workHousing.shareableReply, /no muestran qu[eé] proporci[oó]n/);
+assert.match(workHousing.shareableReply, /14,5 %.*16[–-]29 a[nñ]os/);
+assert.match(workHousing.shareableReply, /44,3 %.*26[–-]34 a[nñ]os.*47,3 %/);
+assert.match(workHousing.shareableReply, /no desglosa el dato por jornada laboral/i);
+assert.match(workHousing.shareableReply, /no indican si quienes trabajan a jornada completa viven por su cuenta/i);
+assert.doesNotMatch(workHousing.shareableReply, /114,78|198,4|114\.78|198\.4/);
+assert.ok(workHousing.shareableReply.trim().split(/\s+/).length <= 160, 'The full-time housing answer should be short enough to read and share');
 assert.doesNotMatch(workHousing.shareableReply, /temporalidad laboral|tasa de paro/);
-assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'work-housing', result: workHousing }, workHousingClaim).state, 'insufficient', 'Contextual housing prices must not upgrade a missing employment/housing cross-tab');
+const workHousingPublic = localPublicCheckResponse({ status: 'complete', requestId: 'work-housing', result: workHousing }, workHousingClaim);
+assert.equal(workHousingPublic.state, 'insufficient', 'Population-level youth context does not establish the missing full-time-worker cross-tab');
+assert.match(workHousingPublic.result.shareableReply, /14,5 %.*16[–-]29 a[nñ]os/);
+assert.ok(workHousingPublic.result.sources.some((source) => source.id === 'cje-emancipation-2025'));
+assert.ok(workHousingPublic.result.sources.some((source) => source.id === 'youth-family-housing-ine'));
+const workHousingParaphrases = [
+  'Un empleo a tiempo completo no basta para emanciparse',
+  'Trabajar a jornada completa no permite vivir de forma independiente',
+];
+for (const paraphrase of workHousingParaphrases) {
+  const answer = focusedEvidencePlan(paraphrase);
+  assert.equal(answer.answerScope.family, 'work-housing-independence', `A full-time housing paraphrase changed family: ${paraphrase}`);
+  assert.equal(answer.claimType, 'descriptive', `A current-state paraphrase was misclassified as a trend: ${paraphrase}`);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), workHousing.sourceLinks.map((source) => source.id), `A full-time housing paraphrase changed its sources: ${paraphrase}`);
+  assert.deepEqual(answer.evidenceSummary.families[0].data, workHousing.evidenceSummary.families[0].data, `A full-time housing paraphrase changed its facts: ${paraphrase}`);
+}
+assert.equal(claimFocusFor('Trabajar a jornada completa y ser pobre')?.id, 'working-poverty', 'A nearby full-time poverty claim must retain its separate measure');
+assert.equal(claimFocusFor('El alquiler se come más de la mitad del sueldo de muchos jóvenes')?.id, 'rental-affordability', 'A nearby youth rent-burden claim must not inherit the full-time independence evidence');
+assert.ok(!focusedEvidencePlan('El alquiler se come más de la mitad del sueldo de muchos jóvenes')?.sourceLinks.some((source) => ['cje-emancipation-methodology', 'youth-family-housing-ine'].includes(source.id)), 'Youth rent burden inherited the separate full-time independence context');
 
 const foreignHousingClaim = 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras';
 const foreignHousing = focusedEvidencePlan(foreignHousingClaim, { observations: [
@@ -1119,5 +1144,5 @@ assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId
 const health = answerPlanForBroadDomains('Las listas de espera sanitarias son muy largas');
 assert.doesNotMatch(health.shareableReply, /peor que nunca/i);
 assert.ok(!health.evidenceSummary.families.some((family) => family.criterionId === 'health-historical-claim'));
-const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0);
+const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length;
 console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);

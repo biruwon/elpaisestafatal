@@ -6,6 +6,6 @@ export const RUNTIME_VERSIONS = Object.freeze({
   compilerContract: '2',
   knowledge: '2026-08-04.2',
   fallbackKnowledge: 'deterministic-fallback-43-youth-reply-concise-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-17.8-sector-earnings',
+  warehouseKnowledge: 'warehouse-2026-11-17.9-work-housing-context',
   indexKnowledge: 'index-only-2026-08-05.8',
 });

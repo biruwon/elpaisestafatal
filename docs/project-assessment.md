@@ -506,3 +506,31 @@ only partly covered. [Eurostat SES 2022 metadata](https://ec.europa.eu/eurostat/
 The focused claim suite now checks 189 existing paraphrases and nearby cases,
 plus sector-wage paraphrases that must select the same NACE rows and nearby
 productivity or wage-trend claims that must not inherit those rows.
+
+## Full-time work and housing independence — 17 November 2026
+
+The claim that full-time work no longer guarantees independent housing was
+receiving national rent and home-price indexes. Those describe price changes,
+not the share of full-time workers living independently, so the focused answer
+no longer attaches them.
+
+The reply gives two useful but distinct pieces of context. The CJE
+reports a 14.5% general youth-emancipation rate for Spain in 2025 and defines
+its main youth population as ages 16–29. The INE reports that 44.3% of people
+aged 26–34 in Spain lived with their parents in 2025; among that group, 47.3%
+named being unable to afford to rent or buy as their main reason. The CJE rate does not
+isolate full-time workers, and the INE's stated reason is self-reported and not
+broken down by employment hours. [CJE 2025 report](https://www.cje.org/ca/observatorio_2025/),
+[CJE population and methodology](https://www.cje.org/observatorio-de-emancipacion/),
+[INE ECV 2025 housing-access module](https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm).
+
+The public verdict remains insufficient: these figures do not establish a rate
+for full-time workers or a trend over time in that group's housing situation.
+Paraphrase checks require the same CJE and INE evidence while nearby
+poverty-only and youth rent-burden claims stay on their own measures.
+
+On the 300 still-unverified text claims, the deterministic audit now reports
+three complete, 16 limited and 281 uncovered answers, with 83 metric-routed
+claims. The full-time housing claim moved from uncovered to limited context;
+its public verdict remains insufficient. These are coverage and routing
+counts, not a measurement of factual accuracy.

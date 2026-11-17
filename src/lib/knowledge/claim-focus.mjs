@@ -67,6 +67,9 @@ const bankSpainRentEffortSource = {
   retrievedAt: '2026-11-16',
   role: 'primary',
 };
+const cjeEmancipation2025Source = { id: 'cje-emancipation-2025', title: 'Observatorio de Emancipación 2025 · balance publicado en mayo de 2026', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/ca/observatorio_2025/', publishedAt: '2026-05-26', retrievedAt: '2026-11-17', role: 'primary' };
+const cjeEmancipationMethodologySource = { id: 'cje-emancipation-methodology', title: 'Observatorio de Emancipación · población joven y alcance', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/observatorio-de-emancipacion/', retrievedAt: '2026-11-17', role: 'primary' };
+const ineHousingBarrierSource = { id: 'youth-family-housing-ine', title: 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm', publishedAt: '2026-04-27', retrievedAt: '2026-11-17', role: 'primary' };
 const eurostatOverqualificationEvidence = {
   expiresAt: '2027-11-16', territories: ['ES'],
   facts: ['La tasa de sobrecualificación de Eurostat se calcula entre personas ocupadas de 20 a 64 años con educación terciaria que trabajan en ocupaciones ISCO 4–9. El denominador son las personas ocupadas con educación terciaria del grupo correspondiente; la tabla permite desglosar por ciudadanía.'],
@@ -583,10 +586,19 @@ const focuses = [
   {
     id: 'work-housing-independence', label: 'acceso a vivienda independiente con empleo a jornada completa',
     when: workHousingIndependence,
-    direct: [], context: ['rental_price_index', 'house_price_index'],
-    needs: ['vivienda independiente observada entre personas con jornada completa', 'ingresos netos y coste de alquiler o compra para la misma población, territorio y periodo', 'edad, tipo de hogar y ayudas económicas cuando se afirma un cambio para un grupo'],
-    explanation: 'La jornada completa describe las horas trabajadas; por sí sola no mide el salario neto ni si una persona puede vivir por su cuenta.',
-    limitation: 'Los índices de alquiler y compraventa no muestran qué proporción de personas a jornada completa vive de forma independiente. Para comprobar un cambio como «ya no» también hace falta comparar la misma población, territorio y periodo.',
+    direct: [], context: [],
+    needs: ['tasa de emancipación o vivienda independiente entre personas empleadas a jornada completa', 'ingresos netos y coste de alquiler o compra para la misma población, territorio y periodo', 'serie comparable de esa misma población para comprobar «ya no»'],
+    explanationHeadline: 'Los datos juveniles disponibles no aíslan a quienes trabajan a jornada completa',
+    explanation: 'Trabajar a jornada completa indica las horas trabajadas, no si el sueldo alcanza para vivir de forma independiente.',
+    explanationEvidence: {
+      expiresAt: '2027-04-27', territories: ['ES'],
+      facts: [
+        'El CJE sitúa en 14,5 % la población joven emancipada en España en 2025 (16–29 años, según el Observatorio); no desglosa el dato por jornada laboral.',
+        'La ECV 2025 del INE indica que en España vivía con sus padres el 44,3 % de las personas de 26–34 años. Entre quienes convivían con sus padres, el 47,3 % señaló no poder permitirse alquilar o comprar como motivo principal.',
+      ],
+      sources: [cjeEmancipation2025Source, cjeEmancipationMethodologySource, ineHousingBarrierSource],
+    },
+    limitation: 'Estas cifras describen grupos de distintas edades; no indican si quienes trabajan a jornada completa viven por su cuenta.',
   },
   {
     id: 'rental-tenant-screening-exclusion', label: 'requisitos de acceso y rechazo de inquilinos',

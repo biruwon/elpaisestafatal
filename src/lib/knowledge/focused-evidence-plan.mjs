@@ -365,8 +365,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  const workHousingTrendRequested = focus.id === 'work-housing-independence'
+    && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
   const claimType = focus.id === 'private-healthcare-access'
     ? privateHealthcareAccessClaimType(claim)
+    : focus.id === 'work-housing-independence' ? (workHousingTrendRequested ? 'trend' : 'descriptive')
     : focus.claimType || (explanation ? 'definition' : 'descriptive');
   const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
   const direct = facts.filter((fact) => directIds.includes(fact.id));
