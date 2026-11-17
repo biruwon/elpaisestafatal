@@ -555,3 +555,29 @@ comparison that accounts for supply, demand, tourism and financing. Paraphrases
 must use the same source and figures; migration-and-rent, tourist-housing and
 descriptive nationality questions remain on separate routes. The source
 snapshot expires for review on 31 March 2027.
+
+## Unemployment and wage-bargaining claims — 17 November 2026
+
+The broad claim that structural unemployment lets employers hold down wages
+because candidates are always available previously fell into a general salary
+route. It now receives context from two Banco de España working papers. One
+study estimated that a 1 percentage-point rise in local unemployment was
+associated with a roughly 0.45 percentage-point fall in mean wages among metal
+workers in Spain and Italy from 2005 to 2013. A separate study of Spanish worker
+records from 1987 to 2013 found weak, asymmetric wage responses over the business
+cycle: higher unemployment did not produce additional real-wage adjustments in
+recessions, and new hires were more sensitive to the cycle than workers with
+over six years' tenure. [Working Paper 2036](https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/wage-determination-and-bite-collective-contracts-italy-and-spain-evidence-from-metal-working-industry.html),
+[Working Paper 1504](https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/real-wage-responsiveness-to-unemployment-spain-asymmetries-along-business-cycle.html).
+
+The first study's English and Spanish abstracts show different decimal values
+for a separate estimate around collective-agreement renewal, so the answer does
+not repeat that disputed figure. The retained estimate and both studies are
+explicitly scoped to their populations, places and historical periods. They do
+not measure current structural unemployment, the number of applicants for each
+vacancy or all employers' wage-setting decisions. The result is limited
+historical context; the public verdict remains insufficient, with a request for
+local or sector-level unemployment and pay measures and evidence about candidate
+supply in the same labor markets and periods. Paraphrases share these sources;
+direct unemployment rates, migration-related wage effects, matched-profile pay
+and real-wage claims remain separate routes.

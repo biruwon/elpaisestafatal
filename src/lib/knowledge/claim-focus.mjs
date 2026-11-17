@@ -24,6 +24,10 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*|cobr\w*|gan\w*)\b/.test(t)
   && /\b(press\w*|baj\w*|reduc\w*|afect\w*|compar\w*|menor\w*|mayor\w*|diferenc\w*|mas|menos|a la baja|por debajo)\b/.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const unemploymentWagePressure = (t) => !migrationPopulation.test(t)
+  && /\b(paro|desemple\w*|desocupad\w*|exceso de mano de obra|oferta de trabajadores|candidat\w*|demandantes? de empleo|abundancia de trabajadores|muchos aspirantes)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pagan?|cobr\w*|wage\w*)\b/.test(t)
+  && /\b(permit\w*|mantener|ofrec\w*|press\w*|presion\w*|negoci\w*|fren\w*|baj\w*|reduc\w*|contener|limitar|debilit\w*|menos|sub\w*|aument\w*)\b/.test(t);
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
@@ -88,6 +92,27 @@ const foreignHousingPurchaseEvidence = {
     'El Colegio de Registradores clasifica por nacionalidad. Como la residencia no consta en la escritura, no puede separar a residentes de no residentes.',
   ],
   sources: [foreignHousingRegistrySource],
+};
+const unemploymentWagePressureEvidence = {
+  expiresAt: '2027-11-17',
+  territories: ['ES'],
+  evidenceLabel: 'Estudios históricos sobre desempleo local y respuesta salarial',
+  dimensions: {
+    subject: 'respuesta estimada de los salarios a cambios en el desempleo y al ciclo económico',
+    population: 'trabajadores del metal en España e Italia para el estudio sectorial; historiales laborales administrativos de trabajadores en España para el estudio agregado',
+    period: '2005–2013 (estudio del metal); 1987–2013 (estudio agregado de España)',
+    geography: 'España; el estudio sectorial también incluye Italia',
+    denominator: 'estimaciones de cambios salariales asociados a variaciones de la tasa de desempleo; no es una proporción de trabajadores afectados',
+    unit: 'respuesta salarial estimada ante cambios de 1 punto porcentual en desempleo, y diferencias de sensibilidad por fase del ciclo',
+  },
+  facts: [
+    'Un estudio del Banco de España sobre trabajadores del metal en España e Italia estimó que, entre 2005 y 2013, un aumento de 1 punto porcentual en el desempleo local se asociaba con una reducción aproximada de 0,45 puntos porcentuales en el salario medio contemporáneo.',
+    'Otro estudio, con historiales laborales administrativos de España entre 1987 y 2013, encontró que la respuesta de los salarios reales al ciclo era débil y distinta en expansiones y recesiones. En las recesiones, un mayor desempleo no se traducía en ajustes adicionales del salario real; las personas recién contratadas eran más sensibles al ciclo que quienes llevaban más de seis años en el empleo.',
+  ],
+  sources: [
+    { id: 'bde-wp-2036-unemployment-wage-setting', title: 'Wage determination and the bite of collective contracts in Italy and Spain · Working Paper 2036', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/wage-determination-and-bite-collective-contracts-italy-and-spain-evidence-from-metal-working-industry.html', publishedAt: '2020-12-23', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'bde-wp-1504-real-wage-cyclicality', title: 'Real wage responsiveness to unemployment in Spain: asymmetries along the business cycle · Working Paper 1504', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/real-wage-responsiveness-to-unemployment-spain-asymmetries-along-business-cycle.html', publishedAt: '2015-02-19', retrievedAt: '2026-11-17', role: 'primary' },
+  ],
 };
 const eurostatOverqualificationEvidence = {
   expiresAt: '2027-11-16', territories: ['ES'],
@@ -708,6 +733,17 @@ const focuses = [
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
     limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
+  },
+  {
+    id: 'unemployment-wage-pressure', label: 'desempleo local, oferta de candidatos y negociación salarial',
+    when: unemploymentWagePressure,
+    claimType: 'causal',
+    direct: [], context: [],
+    needs: ['desempleo local o sectorial y salarios del mismo mercado laboral, población y periodo', 'una medida de la oferta de candidatos o vacantes si se afirma que siempre hay aspirantes', 'comparación que tenga en cuenta ocupación, jornada, composición de trabajadores, negociación colectiva, antigüedad y fase del ciclo económico'],
+    explanationHeadline: 'El desempleo puede influir en la negociación salarial, pero los estudios no prueban una regla universal',
+    explanation: 'La evidencia disponible estudia mercados y periodos concretos. Muestra que la sensibilidad salarial puede cambiar por sector, ciclo económico y antigüedad; no establece que todas las empresas puedan mantener bajos los sueldos porque siempre haya candidatos.',
+    explanationEvidence: unemploymentWagePressureEvidence,
+    limitation: 'Estos estudios son históricos: uno analiza trabajadores del metal en España e Italia y desempleo local entre 2005 y 2013; el otro estudia la respuesta de los salarios reales en España entre 1987 y 2013. Ninguno mide el desempleo estructural actual, cuántos candidatos hay para cada vacante ni la política salarial de todas las empresas.',
   },
   {
     id: 'migration-fiscal-contribution', label: 'aportación fiscal de la población migrante por nivel laboral',

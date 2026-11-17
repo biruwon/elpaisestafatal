@@ -86,6 +86,26 @@ if (foreignHousingCause.status !== 'partial' || foreignHousingCause.result?.id !
   || !foreignHousingCause.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /residencia habitual/.test(item)))) {
   throw new Error('The foreign-purchase claim lost registry context, its residence limitation, or its causal evidence gap.');
 }
+const unemploymentWagePressure = deterministicApiFallback({ text: 'El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', inputType: 'text' });
+if (unemploymentWagePressure.status !== 'partial' || unemploymentWagePressure.result?.id !== 'measurement-unemployment-wage-pressure'
+  || unemploymentWagePressure.result?.claimType !== 'causal' || unemploymentWagePressure.result?.evidenceLevel !== 'limited'
+  || JSON.stringify(unemploymentWagePressure.result?.sourceIds || []) !== JSON.stringify(['bde-wp-2036-unemployment-wage-setting', 'bde-wp-1504-real-wage-cyclicality'])
+  || unemploymentWagePressure.result?.answerScope?.directMetrics?.length
+  || !unemploymentWagePressure.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local o sectorial/.test(item)))
+  || unemploymentWagePressure.result?.blocks?.some((block) => block.type === 'claim_breakdown' && block.items?.[0]?.verdict === 'confirmed')) {
+  throw new Error('The unemployment/wage claim lost its historical evidence limits, causal classification, or direct evidence gap.');
+}
+for (const paraphrase of [
+  'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja',
+  'Cuando abundan los candidatos, las empresas pueden contener los salarios',
+]) {
+  const result = deterministicApiFallback({ text: paraphrase, inputType: 'text' });
+  if (result.status !== 'partial' || result.result?.id !== 'measurement-unemployment-wage-pressure'
+    || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== 'limited'
+    || JSON.stringify(result.result?.sourceIds || []) !== JSON.stringify(unemploymentWagePressure.result.sourceIds)) {
+    throw new Error(`An unemployment/wage paraphrase changed evidence family or scope: ${paraphrase}`);
+  }
+}
 const migrationHousingCause = deterministicApiFallback({ text: 'La inmigración está haciendo que suban los alquileres en algunas ciudades' });
 if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result?.id !== 'measurement-migration-housing-demand-causality'
   || migrationHousingCause.result?.claimType !== 'causal' || migrationHousingCause.result?.evidenceLevel !== 'insufficient'

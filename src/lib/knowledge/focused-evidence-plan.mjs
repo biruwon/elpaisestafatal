@@ -283,9 +283,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
       && (/(?:\b(pension\w*|jubilaci[oó]n)\b[\s\w]{0,60}\b(salari\w*|sueld\w*|cotiz\w*)\b|\b(salari\w*|sueld\w*|cotiz\w*)\b[\s\w]{0,60}\b(pension\w*|jubilaci[oó]n)\b)/.test(clauseText)
         || /\b(emple\w*|ocupaci[oó]n|cotiz\w*)\b/.test(clauseText));
+    const unemploymentSupplyExplanation = focus.id === 'unemployment-wage-pressure'
+      && propositions.length === 2 && /\b(porque|ya que|debido a que|por tener|al haber)\b/.test(normalizedClaim)
+      && /\b(paro|desemple\w*|candidat\w*|demandantes? de empleo|oferta de trabajadores|mano de obra|aspirantes?|vacantes?)\b/.test(clauseText);
     if (sameSectorOutput) return true;
     if (sameLandlordMotive) return true;
-    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism) return true;
+    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to
     // the preceding subject. A new named subject must remain a separate

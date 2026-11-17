@@ -46,6 +46,7 @@ const cases = [
   ['pension-worker-beneficiary-ratio', ['El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista', 'Cada vez hay menos cotizantes por jubilado y eso condiciona la financiación de las pensiones', 'La relación entre afiliados y pensionistas determina los recursos disponibles para prestaciones']],
   ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
   ['matched-pay', ['Las empresas españolas pagan menos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
+  ['unemployment-wage-pressure', ['El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', 'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja', 'Cuando abundan los candidatos, las empresas pueden contener los salarios', 'Con mucho paro, los empleadores pueden frenar las subidas de sueldo']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
@@ -408,6 +409,36 @@ assert.equal(migrationHousing.answerScope.family, 'migration-housing-demand-caus
 assert.equal(migrationHousing.claimType, 'causal');
 assert.equal(migrationHousing.sourceLinks.length, 0, 'National migration counts must not stand in for local housing-demand evidence');
 assert.match(migrationHousing.shareableReply, /cambios de poblaci[oó]n residente y flujos migratorios/);
+
+const unemploymentWageClaim = 'El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos';
+const unemploymentWageAnswer = focusedEvidencePlan(unemploymentWageClaim);
+assert.equal(unemploymentWageAnswer.answerScope.family, 'unemployment-wage-pressure');
+assert.equal(unemploymentWageAnswer.claimType, 'causal');
+assert.equal(unemploymentWageAnswer.evidenceLevel, 'limited', 'Historical studies provide context, not direct evidence about current structural unemployment');
+assert.deepEqual(unemploymentWageAnswer.sourceLinks.map((source) => source.id), ['bde-wp-2036-unemployment-wage-setting', 'bde-wp-1504-real-wage-cyclicality']);
+assert.deepEqual(unemploymentWageAnswer.answerScope.directMetrics, []);
+assert.match(unemploymentWageAnswer.shareableReply, /metal.*Espa[ñn]a e Italia/);
+assert.match(unemploymentWageAnswer.shareableReply, /2005 y 2013/);
+assert.match(unemploymentWageAnswer.shareableReply, /1987 y 2013/);
+assert.match(unemploymentWageAnswer.shareableReply, /no mide el desempleo estructural actual/);
+assert.ok(unemploymentWageAnswer.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local o sectorial/.test(item))));
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage', result: unemploymentWageAnswer }, unemploymentWageClaim).state, 'insufficient', 'Contextual studies must not turn the universal causal claim into a confirmed public verdict');
+for (const paraphrase of [
+  'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja',
+  'Cuando abundan los candidatos, las empresas pueden contener los salarios',
+  'Con mucho paro, los empleadores pueden frenar las subidas de sueldo',
+]) {
+  const answer = focusedEvidencePlan(paraphrase);
+  assert.equal(answer.answerScope.family, 'unemployment-wage-pressure', `An unemployment/wages paraphrase changed family: ${paraphrase}`);
+  assert.equal(answer.evidenceLevel, 'limited', `An unemployment/wages paraphrase lost its context evidence: ${paraphrase}`);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), unemploymentWageAnswer.sourceLinks.map((source) => source.id), `An unemployment/wages paraphrase changed sources: ${paraphrase}`);
+  assert.deepEqual(answer.evidenceSummary.families[0].data, unemploymentWageAnswer.evidenceSummary.families[0].data, `An unemployment/wages paraphrase changed facts: ${paraphrase}`);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage-paraphrase', result: answer }, paraphrase).state, 'insufficient');
+}
+assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
+assert.equal(claimFocusFor('La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores')?.id, 'migration-wage-effects', 'Migration-specific wage claims must retain their distinct evidence contract');
+assert.equal(claimFocusFor('Para el mismo perfil profesional las empresas pagan salarios más bajos')?.id, 'matched-pay', 'Matched-profile wage claims without an unemployment mechanism must keep their own route');
+assert.equal(claimFocusFor('Los salarios pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Real-wage claims must not inherit unemployment/wage-bargaining context');
 
 const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes');
 assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');
