@@ -358,3 +358,25 @@ inputs remain unverified, the audit does not exercise every live production
 path, and a family match does not establish that evidence is available. The
 focused claim suite now checks 171 paraphrases and nearby claims; the remaining
 gaps require source work before they can receive numeric answers.
+
+## Pension indexation text claims — 17 November 2026
+
+Claims about whether public pensions rise with prices had no direct text answer
+even though the annual legal revaluation decisions publish both the general
+percentage and its relation to the reference CPI. A reusable pension-price
+indexation family now reports the general contributory-pension increases for
+2022–2026: 2.5%, 8.5%, 3.8%, 2.8% and 2.7%, linked to the annual CPI reference
+in the relevant official rules. Each year links to its BOE decision.
+
+This answers the statutory revaluation question; it does not claim that every
+retiree's household kept the same purchasing power. Minimum amounts and some
+benefits can follow different rules, and the snapshot expires before the 2027
+decision is due. Claims comparing pension increases with wage growth keep their
+separate evidence gap because this rate series does not measure wages.
+
+Focused measurement plans now label explicitly reviewed, source-backed findings
+as partial. Related observations that do not measure the full claim remain
+insufficient for that claim; the top-level answer can still explain them as
+context. The pension projection router also distinguishes the current year
+from years still in the future, so a published current-year increase does not
+inherit a forecast-only explanation.

@@ -18,6 +18,26 @@ const plan = (claim) => ({ schemaVersion: '1', headline: 'Resultado de prueba', 
 const pending = [];
 const env = { LOCAL_CLASSIFIER_ENDPOINT: 'https://resolver.test', LOCAL_CLASSIFIER_TOKEN: 'test' };
 const waitUntil = (promise) => pending.push(promise);
+const focusedContext = {
+  state: 'limited', id: 'pension-indexation',
+  result: {
+    answerScope: { kind: 'measurement', family: 'pension-price-indexation', directMetrics: [], contextMetrics: [] },
+    evidenceSummary: { families: [{ label: 'Revalorización de pensiones', data: ['2,7 % en 2026'], evidenceIds: ['boe-revaluation'], sourceIds: ['boe-revaluation'] }] },
+    blocks: [], sources: [{ id: 'boe-revaluation', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-2548' }],
+  },
+};
+const genericModel = {
+  state: 'limited', id: 'model-summary',
+  result: { evidenceSummary: { families: [] }, blocks: [], sources: [] },
+};
+assert.equal(api.chooseResponse('Las pensiones contributivas se revalorizan según el IPC', genericModel, focusedContext), focusedContext,
+  'A generic model summary must not replace a focused, source-backed measurement answer');
+const sameFamilyModel = {
+  ...genericModel,
+  result: { ...genericModel.result, answerScope: { kind: 'measurement', family: 'pension-price-indexation', directMetrics: [], contextMetrics: [] } },
+};
+assert.equal(api.chooseResponse('Las pensiones contributivas se revalorizan según el IPC', sameFamilyModel, focusedContext), sameFamilyModel,
+  'A model answer scoped to the same reviewed measurement family may enrich the focused answer');
 const post = async (body, type = 'application/json') => {
   const request = new Request('https://site.test/api/check', { method: 'POST', ...(type ? { headers: { 'content-type': type } } : {}), body: type ? JSON.stringify(body) : body });
   const response = await api.onRequestPost({ request, env, waitUntil });

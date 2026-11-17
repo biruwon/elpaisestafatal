@@ -37,6 +37,7 @@ const cases = [
   ['public-private-job-conditions', ['La falta de conciliación empuja a trabajadores cualificados a buscar empleo público', 'Los horarios más compatibles con la vida familiar atraen a profesionales hacia la administración', 'La estabilidad del empleo público lleva a algunas personas a dejar el sector privado']],
   ['public-private-pay-comparison', ['El sector público paga salarios relativamente altos en puestos de baja cualificación frente al sector privado', 'Los empleos públicos cobran más que los privados en ocupaciones comparables', 'La brecha salarial entre funcionarios y trabajadores privados depende del puesto']],
   ['retiree-housing-cost-comparison', ['Los jubilados con vivienda pagada pueden tener más renta disponible que trabajadores que pagan alquiler', 'Tras pagar la vivienda, algunos pensionistas disponen de más ingresos que quienes trabajan y alquilan', 'La diferencia de coste de vivienda cambia la renta disponible de jubilados y trabajadores inquilinos']],
+  ['pension-price-indexation', ['Las pensiones contributivas se revalorizan con el IPC', '¿Las pensiones conservan poder adquisitivo al actualizarse con los precios?', '¿Cuánto subieron las pensiones públicas en 2026 según la inflación?']],
   ['pension-indexation-comparison', ['Las pensiones se actualizan mejor con la inflación que muchos salarios', 'Las revalorizaciones de las pensiones superan el crecimiento salarial en algunos periodos', 'Los salarios han seguido peor la inflación que las pensiones']],
   ['pension-wage-contribution-base', ['Los salarios bajos debilitan el sistema de pensiones aunque aumente el empleo', 'La creación de empleo no compensa unas bases de cotización demasiado bajas para financiar las pensiones', 'Las remuneraciones reducidas limitan la financiación contributiva de las pensiones']],
   ['pension-private-savings-requirement', ['Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado', 'Quienes trabajan deberán aportar a un plan privado además de cotizar para tener pensión', 'La jubilación exige pagar una pensión pública y otra privada']],
@@ -366,6 +367,25 @@ assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');
 assert.match(pensionPayGap.shareableReply, /misma unidad y periodo/);
 assert.match(pensionPayGap.shareableReply, /distribuciones comparables/);
 assert.equal(pensionPayGap.sourceLinks.length, 0, 'A pension/salary comparison must not cite unrelated youth housing figures');
+const pensionIndexationClaim = 'Las pensiones contributivas se revalorizan según el IPC';
+const pensionIndexation = focusedEvidencePlan(pensionIndexationClaim, { now: Date.parse('2026-11-17') });
+assert.equal(pensionIndexation.answerScope.family, 'pension-price-indexation');
+assert.equal(pensionIndexation.evidenceLevel, 'limited');
+assert.equal(pensionIndexation.evidenceSummary.mode, 'snapshot');
+assert.match(pensionIndexation.shareableReply, /2,5 % en 2022, 8,5 % en 2023, 3,8 % en 2024, 2,8 % en 2025 y 2,7 % en 2026/);
+assert.match(pensionIndexation.shareableReply, /no mide el coste de vida de cada hogar pensionista/);
+assert.deepEqual(pensionIndexation.sourceLinks.map((source) => source.id), [
+  'pension-revaluation-2022', 'pension-revaluation-2023', 'pension-revaluation-2024', 'pension-revaluation-2025', 'pension-revaluation-2026',
+]);
+assert.equal(pensionIndexation.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', 'A source-backed but qualified focused answer must not label the claim as unsupported');
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'pension-indexation', result: pensionIndexation }, pensionIndexationClaim).state, 'limited');
+assert.equal(focusedEvidencePlan('¿Cuánto subieron las pensiones en 2026?', { now: Date.parse('2026-11-17') }).sourceLinks.length, 5, 'A year-specific rate question must use the official revaluation decisions');
+assert.equal(focusedEvidencePlan('Las pensiones siguen el IPC desde 2018', { now: Date.parse('2026-11-17') }).sourceLinks.length, 0, 'A 2022–2026 snapshot must not answer a claim that starts in 2018');
+assert.equal(focusedEvidencePlan('Las pensiones contributivas francesas se revalorizan con el IPC', { now: Date.parse('2026-11-17') }).sourceLinks.length, 0, 'Spanish revaluation rules must not answer a French pension claim');
+assert.equal(focusedEvidencePlan('Las pensiones se actualizan mejor con la inflación que muchos salarios', { now: Date.parse('2026-11-17') }).answerScope.family, 'pension-indexation-comparison', 'A wage comparison must retain its separate evidence contract');
+assert.equal(focusedEvidencePlan('Las pensiones se actualizan mejor con la inflación que muchos salarios', { now: Date.parse('2026-11-17') }).sourceLinks.length, 0, 'The pension-price rule must not answer a pension-versus-wage comparison');
+assert.equal(claimFocusFor(`¿Cuánto cobraré de pensión en ${new Date().getFullYear() + 2}?`)?.id, 'future-pension-outlook', 'A genuinely future pension amount must remain a projection question');
+assert.equal(focusedEvidencePlan(pensionIndexationClaim, { now: Date.parse('2027-02-01') }).sourceLinks.length, 0, 'The 2022–2026 snapshot must expire before the next annual revaluation');
 const futurePension = focusedEvidencePlan('Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', { observations: [
   { id: 'current-pension', metricId: 'old_age_survivors_benefits_per_capita', value: 1200, period: '2025', unit: 'EUR per month', geography: 'España' },
   { id: 'current-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España' },

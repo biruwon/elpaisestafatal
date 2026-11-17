@@ -253,6 +253,45 @@ const pensionIndexationComparison = (t) => /\b(pension\w*|jubilad\w*|jubilaci[o�
   && /\b(inflaci[oó]n|precios|coste de vida|revaloriz\w*|actualiz\w*|index\w*)\b/.test(t)
   && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|trabajador\w*)\b/.test(t)
   && /\b(mejor\w*|peor\w*|mas|menos|mayor\w*|menor\w*|super\w*|compar\w*|frente a|que)\b/.test(t);
+const pensionPriceIndexation = (t) => {
+  const namesPension = /\b(pension\w*|jubilad\w*|jubilaci[oó]n)\b/.test(t);
+  const mentionsPrices = /\b(ipc|inflaci[oó]n|precios|coste de vida|poder adquisitivo)\b/.test(t);
+  const mentionsIncrease = /\b(revaloriz\w*|actualiz\w*|index\w*|mantien\w*|conserv\w*|perd\w*|pierde|pierden|sub\w*|aument\w*|ajust\w*|sigue\w*|segu\w*|ligad\w*|vinculad\w*)\b/.test(t);
+  const asksPublishedRate = /\b(cuant\w*|porcent\w*|tasa|increment\w*|subida)\b/.test(t) && /\b20\d{2}\b/.test(t);
+  const asksIndexationRule = /\b(revaloriz\w*|actualiz\w*|index\w*)\b/.test(t);
+  return namesPension && !/\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|trabajador\w*)\b/.test(t)
+    && (mentionsPrices && mentionsIncrease || asksIndexationRule || asksPublishedRate);
+};
+const pensionPriceIndexationEvidence = {
+  expiresAt: '2027-02-01',
+  territories: ['ES'],
+  when: (claim) => {
+    const years = [...claim.matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year));
+    return years.every((year) => year >= 2022 && year <= 2026);
+  },
+  evidenceLabel: 'Regla legal de revalorización de pensiones contributivas',
+  dimensions: {
+    subject: 'revalorización anual general de pensiones contributivas de la Seguridad Social',
+    population: 'pensiones contributivas del sistema de la Seguridad Social; existen excepciones y reglas específicas',
+    period: '2022–2026',
+    geography: 'España',
+    denominator: 'importe de cada pensión antes de la revalorización anual',
+    unit: 'porcentaje de aumento anual',
+  },
+  facts: [
+    'La regla general del artículo 58 de la Ley General de la Seguridad Social revaloriza al comienzo del año las pensiones contributivas según el promedio de las tasas interanuales del IPC del periodo de referencia del año anterior.',
+    'El aumento general aprobado fue del 2,5 % en 2022, 8,5 % en 2023, 3,8 % en 2024, 2,8 % en 2025 y 2,7 % en 2026. Las normas de cada ejercicio vinculan el porcentaje general al IPC medio de referencia, con excepciones y reglas distintas para algunas cuantías y prestaciones.',
+    'Esto acredita cómo se fijó la revalorización general; no mide el coste de vida de cada hogar pensionista ni demuestra que cada persona mantuviera el mismo poder de compra. Tampoco compara esos aumentos con los salarios.',
+  ],
+  sources: [
+    { id: 'pension-revaluation-2022', title: 'Real Decreto 65/2022 · actualización de pensiones para 2022', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-1189', publishedAt: '2022-01-26', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'pension-revaluation-2023', title: 'Real Decreto 1058/2022 · revalorización de pensiones para 2023', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-22694', publishedAt: '2022-12-28', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'pension-revaluation-2024', title: 'Real Decreto-ley 8/2023 · revalorización de pensiones para 2024', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-26452', publishedAt: '2023-12-28', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'pension-revaluation-2025', title: 'Real Decreto-ley 1/2025 · revalorización de pensiones para 2025', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-1560', publishedAt: '2025-01-29', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'pension-revaluation-2026', title: 'Real Decreto-ley 3/2026 · revalorización de pensiones para 2026', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-2548', publishedAt: '2026-02-04', retrievedAt: '2026-11-17', role: 'primary' },
+  ],
+  directClaimEvidence: true,
+};
 const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*|cotiz\w*)\b/.test(t)
   && /\b(baj\w*|reduc\w*|debilit\w*|presion\w*|merm\w*|insuficient\w*|poc\w*)\b/.test(t)
@@ -297,9 +336,13 @@ const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
   && /\b(ingres\w*|factur\w*|rentab\w*|viable|inviable|compens\w*|irregular\w*|estable)\b/.test(t);
-const futurePensionOutlook = (t) => /\b(pension\w*|jubil\w*|cotiz\w*)\b/.test(t)
-  && /\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|en (?:20|21)\d{2}|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t)
-  && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
+const futurePensionOutlook = (t) => {
+  const currentYear = new Date().getFullYear();
+  const namesFutureYear = [...t.matchAll(/\b(?:20|21)\d{2}\b/g)].some(([year]) => Number(year) > currentYear);
+  return /\b(pension\w*|jubil\w*|cotiz\w*)\b/.test(t)
+    && (/\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t) || namesFutureYear)
+    && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
+};
 const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t)
   && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
     || /\b(cobr\w*|pagan?)\b/.test(t) && /\b(trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t))
@@ -440,6 +483,15 @@ const focuses = [
     needs: ['ingresos netos y gastos de vivienda de jubilados y trabajadores para hogares comparables', 'tenencia, hipoteca, alquiler y tamaño del hogar en el mismo territorio y periodo', 'distribución de renta disponible después de costes de vivienda, no solo promedios de grupos'],
     explanation: 'Tener una vivienda pagada puede reducir el gasto mensual de un hogar, pero eso no basta para comparar sus ingresos disponibles con los de trabajadores que alquilan. Hay que medir ingresos y costes de vivienda en hogares comparables.',
     limitation: 'La pensión media, el salario medio o la proporción de propietarios no muestran por sí solos cuántos jubilados tienen más renta después de vivienda que los trabajadores inquilinos.',
+  },
+  {
+    id: 'pension-price-indexation', label: 'revalorización anual de pensiones contributivas e inflación',
+    when: pensionPriceIndexation,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['revalorización aprobada para el ejercicio consultado', 'medida de inflación que corresponda al mismo periodo', 'gasto y consumo de los hogares si se afirma que cada pensionista conservó poder adquisitivo'],
+    explanation: 'La revalorización general de las pensiones contributivas sigue una regla legal ligada al IPC medio del periodo de referencia. La cifra anual describe el aumento aprobado, no el coste de vida de cada hogar.',
+    limitation: 'El porcentaje general de revalorización no mide la inflación personal de cada pensionista ni el poder de compra de su hogar; las cuantías mínimas y algunas prestaciones pueden seguir reglas distintas.',
+    explanationEvidence: pensionPriceIndexationEvidence,
   },
   {
     id: 'pension-indexation-comparison', label: 'actualización de pensiones, salarios e inflación',

@@ -355,7 +355,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
-        verdict: 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
+        verdict: explanationMeasuresClaim ? 'mixed' : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
         finding: explanationMeasuresClaim ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
       ...(explanation ? [explanationSupportsClaim
         ? { type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }

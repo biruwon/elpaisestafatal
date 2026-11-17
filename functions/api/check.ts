@@ -22,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-31-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-pension-indexation-32-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -121,6 +121,14 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
   if (reviewed) return reviewed as PublicCheckResponse;
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
   const modelPlan = (model as PublicCheckResponse & { result?: AnswerPlan } | undefined)?.result;
+  const focusedFamily = claimFocusFor(claim)?.id;
+  const contextualFocusMatchesClaim = contextualPlan?.answerScope?.kind === 'measurement'
+    && contextualPlan.answerScope.family === focusedFamily;
+  const modelFocusMatchesClaim = modelPlan?.answerScope?.kind === 'measurement'
+    && modelPlan.answerScope.family === focusedFamily;
+  // A model response without the same reviewed measurement contract cannot
+  // replace a focused source-backed explanation with a generic summary.
+  if (contextualFocusMatchesClaim && !modelFocusMatchesClaim) return contextual;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
   const dataCount = (plan: AnswerPlan | undefined): number => plan?.evidenceSummary?.families?.reduce((total, family) => total + (family.data?.length || 0), 0) || 0;
   const criterionDataCount = (plan: AnswerPlan | undefined): Map<string, number> => new Map((plan?.evidenceSummary?.families || []).map((family) => {
