@@ -245,6 +245,18 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(ya no|antes|ahora|cada vez|subid\w*|aument\w*|crec\w*|bajad\w*|descend\w*|disminu\w*|mejor\w*|peor\w*|empeor\w*|desde|entre \d{4} y \d{4})\b/.test(normalizedClaim);
   const comparesSectorOutput = focus.id === 'sector-wage-comparison'
     && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(normalizedClaim);
+  const comparesSectorEmployment = focus.id === 'sector-wage-comparison'
+    && /\b(emple\w*|ocupaci\w*|contrataci\w*)\b/.test(normalizedClaim)
+    && /\b(crec\w*|aument\w*|sub\w*|baj\w*|disminu\w*|menos|mas|mayor\w*|menor\w*|desplaz\w*)\b/.test(normalizedClaim);
+  const employmentTrendAfterNoun = /\b(emple\w*|ocupaci\w*|contrataci\w*)\b[\s\w]{0,20}\b(crec\w*|aument\w*|sub\w*|baj\w*|disminu\w*|desplaz\w*|evoluc\w*|variaci\w*|increment\w*|descend\w*|caid\w*|reduc\w*)\b/.test(normalizedClaim);
+  const employmentTrendBeforeNoun = /\b(crec\w*|aument\w*|sub\w*|baj\w*|disminu\w*|desplaz\w*|evoluc\w*|variaci\w*|increment\w*|descend\w*|caid\w*|reduc\w*)\b[\s\w]{0,20}\b(emple\w*|ocupaci\w*|contrataci\w*)\b/.test(normalizedClaim);
+  const comparesSectorEmploymentTrend = comparesSectorEmployment && (employmentTrendAfterNoun || employmentTrendBeforeNoun);
+  const comparesSectorAverageWageImpact = focus.id === 'sector-wage-comparison'
+    && /\b(salari\w*|sueld\w*|remuneraci\w*)\b.{0,30}\b(medi\w*|promedi\w*)\b|\b(medi\w*|promedi\w*)\b.{0,30}\b(salari\w*|sueld\w*|remuneraci\w*)\b/.test(normalizedClaim)
+    && /\b(tir\w*\s+hacia abajo|arrastr\w*|deprim\w*|lastr\w*|reduc\w*|baj\w*|disminu\w*)\b/.test(normalizedClaim);
+  const comparesLifetimePensionContributions = focus.id === 'future-pension-outlook'
+    && /\b(pag\w*\s+(?:las?\s+)?pension\w*|cotiz\w*|contribu\w*|financ\w*)\b/.test(normalizedClaim)
+    && /\b(decad\w*|durante|jubil\w*|retir\w*)\b/.test(normalizedClaim);
   const ids = [...focusedMetricIdsFor(claim)];
   const allowedDirect = educationOutcome ? ids : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
@@ -260,7 +272,17 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const needs = asksAboutMakingEndsMeet ? ['dificultad declarada para llegar a fin de mes', 'situación laboral y jornada de las personas consultadas', 'periodo y población']
     : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso']
       : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : educationOutcomeNeedsForClaim(claim, focus.needs)
-        : comparesSectorOutput ? [...focus.needs, 'valor añadido o aportación del mismo sector al PIB, con la misma clasificación y periodo'] : focus.needs;
+        : focus.id === 'sector-wage-comparison' ? [
+          ...focus.needs,
+          ...(comparesSectorEmployment ? [comparesSectorEmploymentTrend
+            ? 'variación del empleo por actividad entre los mismos periodos'
+            : 'empleo por actividad, población y periodo'] : []),
+          ...(comparesSectorAverageWageImpact ? ['salario medio por actividad y proporción del empleo de cada actividad, en el mismo periodo'] : []),
+          ...(comparesSectorOutput ? ['valor añadido o aportación al PIB por el mismo sector y periodo'] : []),
+        ] : focus.id === 'future-pension-outlook' ? [
+          ...focus.needs,
+          ...(comparesLifetimePensionContributions ? ['cotizaciones y prestaciones futuras para la misma cohorte y ciclo laboral'] : []),
+        ] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const fitsClaim = observationFitsClaim(claim);
   const facts = ids.flatMap((id) => factsForMetric(id, observations, fitsClaim));
@@ -268,7 +290,17 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const order = (fact) => fact.latest.dimensions?.geo === 'ES' ? 0 : /^EU/.test(String(fact.latest.dimensions?.geo || '')) ? 1 : 2;
     return order(left) - order(right);
   });
-  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation) : focus.limitation;
+  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation)
+    : focus.id === 'sector-wage-comparison' ? [
+      comparesSectorEmployment
+        ? comparesSectorEmploymentTrend
+          ? 'La encuesta describe salarios; no mide el crecimiento del empleo ni la productividad.'
+          : 'La encuesta describe salarios; no mide el empleo por actividad ni la productividad.'
+        : comparesSectorAverageWageImpact
+          ? 'La encuesta describe salarios brutos, pero no establece la contribución de cada actividad al promedio nacional ni mide productividad.'
+          : focus.limitation,
+      comparesSectorOutput ? 'Comparar la aportación al PIB requiere el valor añadido del mismo sector y periodo.' : '',
+    ].filter(Boolean).join(' ') : focus.limitation;
   const territories = requestedGeographyScopes(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
@@ -322,9 +354,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   })();
   const findingText = industrialComparison || primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
   const gap = missing.length ? `Falta una medición directa de ${missing.join('; ')}.` : '';
-  const explanationReply = explanation
-    ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [focus.explanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
+  const sectorEmploymentExplanation = focus.id === 'sector-wage-comparison' && comparesSectorEmployment
+    ? comparesSectorEmploymentTrend
+      ? 'El crecimiento del empleo debe compararse con series por actividad y periodos iguales. Salarios y productividad requieren medidas aparte.'
+      : 'El empleo debe compararse por actividad, población y periodo. Salarios y productividad requieren medidas aparte.'
     : focus.explanation;
+  const explanationReply = explanation
+    ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
+    : sectorEmploymentExplanation;
   const reply = [explanationReply, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanationMeasuresClaim ? '' : gap,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';

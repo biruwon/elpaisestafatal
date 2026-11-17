@@ -353,7 +353,7 @@ have source links, and 36 return structured compound responses; metric-family
 routes cover 84 candidates. These are routing and answer-structure counts, not
 an accuracy score: all 300 inputs remain unverified, the audit does not
 exercise every live production path, and a family match does not establish
-that evidence is available. The focused claim suite checks 186 paraphrases and
+that evidence is available. The focused claim suite checks 189 paraphrases and
 nearby claims; the remaining gaps require source work before they can receive
 numeric answers.
 
@@ -462,3 +462,31 @@ binding or failed read says the statistical series could not be checked and
 invites a retry. This avoids presenting an infrastructure failure as evidence
 that the needed data do not exist. The real-wage API validation covers absent,
 failed and successful-empty lookups.
+
+## Text-answer readability and measurement gaps — 17 November 2026
+
+A fresh deterministic audit inspected the replies to all 300 unverified
+web-observed text claims. Every reply was under 160 words; the longest was 158.
+Three related sector-and-wage claims had previously received nearly identical
+replies of about 240 words. Their reusable answer family now adds the specific
+missing measure requested by the wording: employment by activity and period
+for employment comparisons, sector pay and employment weights for claims that
+an activity lowers the national wage average, and same-sector value added for
+GDP comparisons. The Eurostat wage-structure survey remains labelled as salary
+context (gross pay, 2022 reference, four-year collection and enterprise
+coverage); it is not presented as a productivity or employment-growth series.
+
+The same pass shortened the rental-affordability and future-pension replies,
+while preserving the renter population, rental-income denominator, cohort and
+projection limits. A compound claim about young people paying into the system
+and receiving lower pensions now also requests projected contributions and
+benefits for the same cohort and working life.
+
+The reply-length result does not measure factual accuracy. The 300 claims are
+still unverified discovery inputs; the deterministic fallback returned three
+`complete`, 15 `limited` and 282 `uncovered` results. No sector wage,
+productivity or employment-growth observations were added in this change, so
+these claims remain qualified evidence gaps until compatible data are
+available. The focused claim suite now checks 189 paraphrases and nearby
+claims, including that each added measurement requirement stays within its
+claim family.

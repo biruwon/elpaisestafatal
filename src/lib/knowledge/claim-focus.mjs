@@ -351,7 +351,7 @@ const sectorWages = (t) => !businessTaxBurdenComparison(t) && !smallBusinessCost
   && !firmWageCapacity(t) && !publicPrivatePayComparison(t) && !educationPayComparison(t)
   && (namedSector.test(t) || /\bsectores?\b/.test(t))
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*|gan\w*)\b/.test(t)
-  && /\b(productiv\w*|compar\w*|mas|menos|mayor|menor|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|diferenc\w*)\b/.test(t);
+  && /\b(productiv\w*|compar\w*|mas|menos|mayor|menor|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|arrastr\w*|deprim\w*|lastr\w*|reduc\w*|diferenc\w*)\b/.test(t);
 const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
@@ -485,16 +485,16 @@ const focuses = [
     when: futurePensionOutlook,
     direct: [], context: [],
     needs: ['cohorte de nacimiento y año previsto de jubilación', 'proyección de prestaciones bajo reglas, cotizaciones y supuestos económicos explícitos', 'tasa de sustitución o prestación neta y bruta, con carrera laboral y unidad comparables'],
-    explanation: 'La pensión de una generación que aún trabaja es una proyección, no una prestación observada. La pensión media actual de quienes ya se jubilaron no permite estimar por sí sola cuánto cobrará esa generación.',
+    explanation: 'La pensión de una generación que aún trabaja es una proyección; la pensión media actual de jubilados no basta para calcular la suya.',
     explanationEvidence: {
       expiresAt: '2027-04-30', territories: ['ES'],
       facts: [
-        'La metodología de AIReF para el gasto público en pensiones usa un modelo de cohortes y separa las proyecciones de pensiones medias y número de prestaciones por sexo, edad y tipo de pensión, bajo escenarios demográficos y macroeconómicos.',
-        'Es una proyección agregada de gasto y prestaciones medias; no predice la pensión concreta de cada persona ni su tasa de sustitución individual.',
+        'El modelo de AIReF proyecta gasto y prestaciones medias por cohorte, sexo, edad y tipo de pensión, con supuestos demográficos y macroeconómicos.',
+        'Es un resultado agregado: no predice la pensión ni la tasa de sustitución de una persona.',
       ],
       sources: [{ id: 'airef-pension-projection-method-2025', title: 'Metodología del modelo para estimar el gasto en pensiones · Documento técnico 3/25', publisher: 'AIReF', url: 'https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250225_DT_metodologia_pensiones.pdf', retrievedAt: '2026-11-16' }],
     },
-    limitation: 'Una comparación actual entre pensión media y salario medio no demuestra que las generaciones jóvenes cobrarán relativamente menos. Para responder hacen falta cohortes de nacimiento y años de jubilación definidos, además de separar el importe nominal de la tasa de sustitución y publicar las reglas y supuestos de cada escenario.',
+    limitation: 'La comparación actual de pensiones y salarios medios no prueba qué cobrarán los jóvenes: hay que fijar la cohorte, el año de jubilación y las reglas del escenario.',
   },
   {
     id: 'retiree-housing-cost-comparison', label: 'ingresos de jubilación y gastos de vivienda',
@@ -868,9 +868,9 @@ const focuses = [
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],
     needs: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo', 'porcentaje de ingresos destinado al alquiler'],
     explanationHeadline: 'El dato disponible no permite saber si un sueldo normal alcanza para alquilar solo',
-    explanation: 'El esfuerzo medio del alquiler depende de los ingresos y del tipo de hogar. Un promedio de hogares arrendatarios aporta contexto, pero no responde por sí solo si una persona con un sueldo concreto puede alquilar una vivienda completa.',
+    explanation: 'El alquiler medio de los hogares no indica si un sueldo individual alcanza para alquilar una vivienda completa.',
     explanationEvidence: bankSpainRentEffortEvidence,
-    limitation: 'El promedio describe hogares que ya vivían de alquiler; no incluye el gasto de cada persona ni a quienes no lograron acceder. Para comprobar si alguien puede alquilar un piso entero hacen falta el alquiler y el ingreso neto individual comparables por ciudad y periodo. El índice de alquiler mide cambios de precios, no importes mensuales.',
+    limitation: 'El promedio solo representa hogares que ya alquilaban; no incluye a quienes quedaron fuera. El índice de precios muestra cambios, no el alquiler mensual.',
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',
@@ -886,17 +886,17 @@ const focuses = [
     id: 'sector-wage-comparison', label: 'salarios y productividad por sector',
     when: sectorWages,
     direct: [], context: [],
-    needs: ['distribución salarial por sector y ocupación, incluidos jornada, tipo de contrato y salarios brutos o netos', 'productividad sectorial medida con una definición comparable, como valor añadido por hora trabajada', 'misma clasificación sectorial, territorio y periodo para salarios y productividad'],
-    explanation: 'El salario mediano nacional no permite comparar sectores. Una comparación sectorial necesita alinear salarios y productividad por actividad y periodo; el valor añadido total de un sector tampoco equivale a productividad por trabajador u hora.',
+    needs: ['salarios por actividad y ocupación, con jornada, contrato y si son brutos o netos', 'productividad por hora en los mismos sectores, territorio y periodo'],
+    explanation: 'Una media o mediana nacional no compara sectores. Hay que alinear salarios y productividad por hora por actividad, territorio y periodo; el valor añadido total no mide productividad.',
     explanationEvidence: {
       expiresAt: '2027-11-16', territories: ['ES'],
       facts: [
-        'El salario mediano nacional no separa las diferencias entre sectores. Eurostat dispone de encuestas armonizadas de estructura salarial que desglosan las remuneraciones brutas por actividad económica y características de las personas empleadas. Se realizan cada cuatro años; la edición de referencia más reciente que recoge la ficha consultada es 2022.',
-        'La cobertura obligatoria incluye unidades con al menos 10 empleados y excluye agricultura, pesca, hogares privados y organizaciones extraterritoriales; la administración pública se recoge voluntariamente. Ese alcance debe tenerse en cuenta al hablar de sectores o empresas pequeñas.',
+        'La Encuesta de Estructura Salarial de Eurostat desglosa la remuneración bruta por actividad cada cuatro años; la edición más reciente es de 2022.',
+        'Cubre empresas de 10 o más empleados; excluye agricultura, pesca, hogares y organismos extraterritoriales. La administración pública participa voluntariamente.',
       ],
       sources: [{ id: 'eurostat-structure-earnings-survey', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-16' }],
     },
-    limitation: 'Sin distribuciones salariales por sector y una medida comparable de productividad —por ejemplo, valor añadido por hora trabajada para la misma actividad y periodo— no se puede afirmar qué sectores generan más salarios altos ni que el turismo cause por sí solo una diferencia salarial. Si también se compara su aportación al PIB, hay que medir el valor añadido del mismo sector y periodo; el valor total no equivale a productividad ni a salarios.',
+    limitation: 'La encuesta describe remuneraciones brutas, pero no mide productividad ni demuestra qué actividad determina el nivel salarial nacional.',
   },
   {
     id: 'self-employment-cost-viability', label: 'costes fijos y viabilidad del trabajo autónomo',

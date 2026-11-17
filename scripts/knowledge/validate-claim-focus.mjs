@@ -74,7 +74,7 @@ const cases = [
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida']],
   ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada']],
   ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual']],
-  ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores']],
+  ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores', 'El empleo aumenta más en sectores de baja productividad que en sectores con salarios elevados', 'La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
   ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
 ];
@@ -315,7 +315,8 @@ assert.equal(cityRentAffordability.evidenceLevel, 'limited');
 assert.match(cityRentAffordability.headline, /no permite saber si un sueldo normal alcanza/);
 assert.match(cityRentAffordability.shareableReply, /26,7 %.*Madrid.*31,6 %.*M[aá]laga.*34,5 %/s);
 assert.match(cityRentAffordability.shareableReply, /no es el sueldo individual/i);
-assert.match(cityRentAffordability.limitation, /hogares que ya viv[ií]an de alquiler/);
+assert.match(cityRentAffordability.limitation, /hogares que ya alquilaban/);
+assert.ok(cityRentAffordability.shareableReply.trim().split(/\s+/).length <= 160, 'Rental-affordability context should be concise enough to read and share');
 assert.equal(cityRentAffordability.sourceLinks[0].id, 'bank-spain-housing-annual-2025');
 assert.equal(focusedEvidencePlan('Con un sueldo normal no se puede alquilar un piso entero en 2025').sourceLinks.length, 0, 'The 2024 household snapshot must not answer a 2025 request');
 assert.equal(focusedEvidencePlan('El alquiler se lleva cada vez más sueldo en las ciudades').sourceLinks.length, 0, 'A single 2024 snapshot must not answer a rent-trend claim');
@@ -401,9 +402,13 @@ assert.equal(futurePension.answerScope.family, 'future-pension-outlook');
 assert.equal(futurePension.evidenceLevel, 'limited', 'Official projection methodology adds context but cannot predict an individual future pension');
 assert.equal(futurePension.sourceLinks.length, 1);
 assert.doesNotMatch(futurePension.shareableReply, /1\.200|17 €/);
-assert.match(futurePension.shareableReply, /modelo de cohortes/);
-assert.match(futurePension.shareableReply, /no predice la pensi[oó]n concreta de cada persona/);
-assert.match(futurePension.shareableReply, /cohortes de nacimiento/);
+assert.match(futurePension.shareableReply, /modelo de AIReF.*por cohorte/s);
+assert.match(futurePension.shareableReply, /no predice la pensi[oó]n ni la tasa de sustituci[oó]n de una persona/);
+assert.match(futurePension.shareableReply, /cohorte de nacimiento/);
+assert.ok(futurePension.shareableReply.trim().split(/\s+/).length <= 160, 'Future-pension context should be concise enough to read and share');
+assert.ok(futurePension.evidenceSummary.missingDimensions.some((item) => /cotizaciones y prestaciones futuras para la misma cohorte/.test(item)), 'A lifetime pay-in/pay-out claim must require contributions and benefits for a matched cohort');
+const futurePensionAmount = focusedEvidencePlan('¿Qué pensión recibirán en el futuro quienes cotizan hoy?');
+assert.ok(!futurePensionAmount.evidenceSummary.missingDimensions.some((item) => /cotizaciones y prestaciones futuras para la misma cohorte/.test(item)), 'A future-benefit question alone must not inherit a lifetime funding comparison');
 const graduateRate = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
   { id: 'overall-graduate-context', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
   { id: 'graduate-overqualification-neighbour', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: '%', geography: 'España' },
@@ -694,12 +699,42 @@ assert.equal(sectorWageGap.answerScope.family, 'sector-wage-comparison');
 assert.equal(sectorWageGap.evidenceLevel, 'limited', 'Official survey metadata gives coverage context but no aligned wage and productivity comparison');
 assert.deepEqual(sectorWageGap.answerScope.contextMetrics, []);
 assert.equal(sectorWageGap.sourceLinks.length, 1);
-assert.match(sectorWageGap.shareableReply, /mediano nacional no separa las diferencias entre sectores/);
-assert.match(sectorWageGap.shareableReply, /valor a[nñ]adido por hora trabajada/);
+assert.match(sectorWageGap.shareableReply, /media o mediana nacional no compara sectores/);
+assert.match(sectorWageGap.shareableReply, /valor a[nñ]adido total no mide productividad/);
 assert.match(sectorWageGap.shareableReply, /cada cuatro a[nñ]os/);
 assert.match(sectorWageGap.shareableReply, /excluye agricultura/);
+assert.ok(sectorWageGap.shareableReply.trim().split(/\s+/).length <= 160, 'Sector-wage context should be concise enough to read and share');
 assert.doesNotMatch(sectorWageGap.shareableReply, /17 €/);
-assert.ok(sectorWageGap.evidenceSummary.missingDimensions.some((item) => /aportaci[oó]n del mismo sector al PIB/.test(item)), 'A compound sector claim must retain its GDP contribution requirement');
+assert.ok(sectorWageGap.evidenceSummary.missingDimensions.some((item) => /aportaci[oó]n al PIB por el mismo sector/.test(item)), 'A compound sector claim must retain its GDP contribution requirement');
+const sectorEmploymentGap = focusedEvidencePlan('El empleo crece más en sectores de baja productividad que en sectores de salarios altos');
+assert.equal(sectorEmploymentGap.answerScope.family, 'sector-wage-comparison');
+assert.ok(sectorEmploymentGap.evidenceSummary.missingDimensions.some((item) => /variaci[oó]n del empleo por actividad/.test(item)), 'An employment-growth claim must retain the missing sector employment series');
+assert.ok(sectorEmploymentGap.shareableReply.trim().split(/\s+/).length <= 160, 'Sector-employment context should be concise enough to read and share');
+assert.match(sectorEmploymentGap.shareableReply, /2022/);
+assert.match(sectorEmploymentGap.shareableReply, /10 o m[aá]s empleados/);
+assert.match(sectorEmploymentGap.shareableReply, /no mide el crecimiento del empleo ni la productividad/);
+assert.doesNotMatch(sectorEmploymentGap.shareableReply, /Comparar la aportaci[oó]n al PIB/);
+const sectorEmploymentParaphrase = focusedEvidencePlan('En los sectores menos productivos crece más la ocupación que en los que mejor pagan');
+assert.equal(sectorEmploymentParaphrase.answerScope.family, sectorEmploymentGap.answerScope.family);
+assert.ok(sectorEmploymentParaphrase.evidenceSummary.missingDimensions.some((item) => /variaci[oó]n del empleo por actividad/.test(item)), 'Employment-growth paraphrases must request the same sector series');
+const sectorEmploymentLevel = focusedEvidencePlan('El empleo se concentra en sectores de salarios bajos y productividad reducida');
+assert.ok(sectorEmploymentLevel.evidenceSummary.missingDimensions.some((item) => /empleo por actividad, poblaci[oó]n y periodo/.test(item)), 'A sector-employment level comparison must request employment by activity');
+assert.ok(!sectorEmploymentLevel.evidenceSummary.missingDimensions.some((item) => /variaci[oó]n del empleo/.test(item)), 'A sector-employment level claim must not be mistaken for a growth claim');
+assert.match(sectorEmploymentLevel.shareableReply, /no mide el empleo por actividad ni la productividad/);
+assert.doesNotMatch(sectorEmploymentLevel.shareableReply, /crecimiento del empleo/);
+const sectorSalaryGap = focusedEvidencePlan('El turismo y la hostelería tiran hacia abajo del salario medio español');
+assert.equal(sectorSalaryGap.answerScope.family, 'sector-wage-comparison');
+assert.ok(!sectorSalaryGap.evidenceSummary.missingDimensions.some((item) => /crecimiento del empleo/.test(item)), 'A salary claim should not inherit a missing-employment requirement');
+assert.ok(sectorSalaryGap.evidenceSummary.missingDimensions.some((item) => /proporci[oó]n del empleo/.test(item)), 'An average-wage impact claim must retain the employment weight needed for the national average');
+assert.ok(sectorSalaryGap.shareableReply.trim().split(/\s+/).length <= 160, 'Sector-salary context should be concise enough to read and share');
+assert.doesNotMatch(sectorSalaryGap.shareableReply, /Comparar la aportaci[oó]n al PIB/);
+for (const claim of ['La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']) {
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer.answerScope.family, sectorSalaryGap.answerScope.family, 'Average-wage impact paraphrases must use the same family');
+  assert.ok(answer.evidenceSummary.missingDimensions.some((item) => /proporci[oó]n del empleo/.test(item)), 'Average-wage impact paraphrases must require the employment weight');
+}
+assert.equal(claimFocusFor('El empleo crece más en la industria que en la hostelería'), undefined, 'A sector employment-growth claim without a wage or productivity comparison must not be routed to the wage family');
+assert.equal(claimFocusFor('El salario medio español aumenta este año')?.id, 'nominal-wages', 'A national wage trend without sector comparison must stay outside the sector wage family');
 assert.equal(focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { propositions: [
   { text: 'La vivienda se encarece en Madrid' },
   { text: 'El turismo genera menos salarios altos que sectores de mayor productividad' },
@@ -1022,6 +1057,7 @@ assert.equal(nonYouthRent.answerScope.family, 'rental-affordability');
 assert.ok(nonYouthRent.sourceLinks.some((source) => source.id === 'bank-spain-housing-annual-2025'), 'All-household rent claims should use the all-renter measure');
 assert.match(nonYouthRent.shareableReply, /26,7 %/);
 assert.doesNotMatch(nonYouthRent.shareableReply, /27,4 %|34,2 %|36,3 %/, 'Youth-only measures crossed into a nearby all-household claim');
+assert.ok(nonYouthRent.shareableReply.trim().split(/\s+/).length <= 160, 'Rental-affordability context should be concise enough to read and share');
 const security = answerPlanForBroadDomains('No se puede salir a la calle de cómo está la seguridad');
 assert.doesNotMatch(security.shareableReply, /extranj|nacionaliz|wokismo/i);
 assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId === 'group-causality'));
