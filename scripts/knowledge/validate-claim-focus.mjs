@@ -33,6 +33,7 @@ const cases = [
   ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda']],
   ['housing-investment-return-comparison', ['Los inversores compran vivienda porque ofrece más rentabilidad que los negocios productivos', 'El capital prefiere el ladrillo frente a la inversión en empresas productivas', 'La rentabilidad inmobiliaria supera a la de invertir en actividades productivas']],
   ['education-pay-comparison', ['Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen menos formación', 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios', 'La remuneración es similar entre puestos de distinta cualificación']],
+  ['education-skill-demand-vs-curriculum', ['Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título', 'Las empresas priorizan competencias digitales e idiomas frente a muchas materias de la carrera', 'El mercado de trabajo exige habilidades que la universidad no enseña en sus asignaturas']],
   ['firm-wage-capacity', ['Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios', 'Las empresas más productivas podrían pagar mejores sueldos y no lo hacen', 'Las compañías con más beneficios frenan la remuneración de sus plantillas']],
   ['public-private-job-conditions', ['La falta de conciliación empuja a trabajadores cualificados a buscar empleo público', 'Los horarios más compatibles con la vida familiar atraen a profesionales hacia la administración', 'La estabilidad del empleo público lleva a algunas personas a dejar el sector privado']],
   ['public-private-pay-comparison', ['El sector público paga salarios relativamente altos en puestos de baja cualificación frente al sector privado', 'Los empleos públicos cobran más que los privados en ocupaciones comparables', 'La brecha salarial entre funcionarios y trabajadores privados depende del puesto']],
@@ -409,6 +410,28 @@ assert.deepEqual(graduateRate.answerScope.contextMetrics, []);
 assert.deepEqual(graduateRate.answerScope.directMetrics, ['unemployment_rate_tertiary_education']);
 assert.equal(graduateRate.sourceLinks.length, 0, 'General unemployment and overqualification among employed graduates must not answer an education-specific unemployment claim');
 assert.doesNotMatch(graduateRate.shareableReply, /10 %|34 %/);
+const skillDemandClaim = 'Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título';
+const skillDemand = focusedEvidencePlan(skillDemandClaim, { observations: [
+  { id: 'tertiary-employment-neighbour', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: '%', geography: 'España' },
+] });
+assert.equal(claimFocusFor(skillDemandClaim)?.id, 'education-skill-demand-vs-curriculum');
+assert.equal(skillDemand.answerScope.family, 'education-skill-demand-vs-curriculum');
+assert.equal(skillDemand.evidenceLevel, 'insufficient');
+assert.deepEqual(skillDemand.answerScope.directMetrics, []);
+assert.deepEqual(skillDemand.answerScope.contextMetrics, []);
+assert.equal(skillDemand.sourceLinks.length, 0, 'A tertiary-employment rate cannot answer which skills employers value relative to course content');
+assert.match(skillDemand.shareableReply, /no mide qu[eé] competencias piden las empresas ni las compara con los contenidos/);
+assert.doesNotMatch(skillDemand.shareableReply, /83,2 %/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'skill-curriculum-gap', result: skillDemand }, skillDemandClaim).state, 'insufficient');
+for (const paraphrase of [
+  'Las empresas priorizan competencias digitales e idiomas frente a muchas materias de la carrera',
+  'El mercado de trabajo exige habilidades que la universidad no enseña en sus asignaturas',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { observations: [{ id: 'tertiary-employment-neighbour', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: '%', geography: 'España' }] });
+  assert.equal(plan.answerScope.family, skillDemand.answerScope.family, `A skill-versus-curriculum paraphrase crossed into another family: ${paraphrase}`);
+  assert.deepEqual(plan.evidenceSummary.missingDimensions, skillDemand.evidenceSummary.missingDimensions, `A paraphrase changed the required evidence: ${paraphrase}`);
+  assert.equal(plan.sourceLinks.length, 0, `A paraphrase inherited an unrelated tertiary-employment source: ${paraphrase}`);
+}
 const graduateUnemployment = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
   { id: 'overall-unemployment-neighbour', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
   { id: 'graduate-unemployment', metricId: 'unemployment_rate_tertiary_education', value: 6.4, period: '2025', unit: 'Percentage of population in the labour force', geography: 'España', population: 'labour force aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: { id: 'eurostat-tertiary-unemployment', title: 'Unemployment by educational attainment level · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_educ_a', retrievedAt: '2026-11-16' } },

@@ -53,6 +53,22 @@ try {
   assert.match(general.shareableReply, /2020 y 2025/);
   assert.match(general.shareableReply, /índice salarial bajó aproximadamente un 4,6 %/);
   assert.ok(general.sourceIds.includes('wage-new') && !general.sourceIds.includes('wage-old'), 'The resolver selected an older wage revision');
+  const observedCandidate = await check('Los salarios españoles llevan años perdiendo poder adquisitivo frente al coste de la vida');
+  assert.equal(observedCandidate.answerScope?.family, 'real-wages');
+  assert.deepEqual(observedCandidate.sourceIds, general.sourceIds, 'A web-observed paraphrase should use the same aligned wage and price series');
+  assert.match(observedCandidate.shareableReply, /entre 2020 y 2025/);
+  assert.match(observedCandidate.shareableReply, /el índice salarial bajó aproximadamente un 4,6 %/);
+  const observedParaphrase = await check('Los sueldos en España pierden capacidad de compra frente al coste de vida');
+  assert.equal(observedParaphrase.answerScope?.family, 'real-wages');
+  assert.deepEqual(observedParaphrase.sourceIds, general.sourceIds, 'A semantic paraphrase should retain the same evidence family');
+  for (const scopedClaim of [
+    'Los salarios en Madrid pierden poder adquisitivo frente a la inflación',
+    'Los salarios netos medianos españoles pierden poder adquisitivo',
+  ]) {
+    const scoped = await check(scopedClaim);
+    assert.equal(scoped.evidenceLevel, 'insufficient', `National gross hourly series crossed into an incompatible claim: ${scopedClaim}`);
+    assert.doesNotMatch(scoped.shareableReply, /4,6 %|índice salarial bajó aproximadamente/, `The national result was overstated for an incompatible scope: ${scopedClaim}`);
+  }
   const since = await check('Los salarios han perdido poder adquisitivo desde 2018');
   assert.match(since.shareableReply, /2018 y 2025/);
   assert.match(since.shareableReply, /índice salarial subió aproximadamente un 1 %/);

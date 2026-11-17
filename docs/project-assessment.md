@@ -353,9 +353,21 @@ have source links, and 36 return structured compound responses; metric-family
 routes cover 84 candidates. These are routing and answer-structure counts, not
 an accuracy score: all 300 inputs remain unverified, the audit does not
 exercise every live production path, and a family match does not establish
-that evidence is available. The focused claim suite checks 174 paraphrases and
+that evidence is available. The focused claim suite checks 177 paraphrases and
 nearby claims; the remaining gaps require source work before they can receive
 numeric answers.
+
+## Employer skills and course-content claims — 17 November 2026
+
+A claim that languages and digital skills matter more to employers than
+university course content previously could inherit a tertiary-employment
+percentage. The text router now treats this as its own comparative claim
+family and explains the missing evidence: comparable job-vacancy skill
+requirements, course objectives and content, and a defined employment outcome
+for the same occupations, place and period. The 83.2% tertiary employment rate
+does not measure those comparisons, so it is kept out of the answer. Paraphrases
+use the same evidence requirements while graduate employment-rate questions
+remain in their separate family.
 
 ## Youth rental reply readability — 17 November 2026
 

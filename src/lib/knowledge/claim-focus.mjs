@@ -130,6 +130,10 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
+const educationSkillsVsCurriculum = (t) => /\b(idiom\w*|competenci\w*|habilidad\w*|destrez\w*|aptitud\w*|digital\w*|soft skills|habilidades blandas)\b/.test(t)
+  && /\b(asignatur\w*|materia\w*|curr[ií]cul\w*|contenid\w*|plan de estudios|grado\w*|t[ií]tul\w*|carrer\w*|universidad\w*|formaci[oó]n)\b/.test(t)
+  && /\b(emple\w*|trabaj\w*|mercado laboral|puesto\w*|empresas?|empleador\w*|contrataci[oó]n|vacantes?|ofertas?)\b/.test(t)
+  && /\b(pes\w*|val\w*|prioriz\w*|import\w*|exig\w*|demand\w*|busc\w*|necesit\w*|prefer\w*|prepar\w*|ensen\w*|sirv\w*|cuent\w*|m[aá]s|menos|mejor|peor)\b/.test(t);
 const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t)
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
   || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
@@ -719,6 +723,14 @@ const focuses = [
     needs: ['salarios por ocupación y nivel de formación requerido para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y tamaño de las diferencias, no solo medias'],
     explanation: 'Que puestos con distintos requisitos formativos tengan salarios parecidos es una comparación de remuneración por puesto. La tasa de sobrecualificación mide si una persona ocupada trabaja en una ocupación de menor cualificación; no compara cuánto pagan esos puestos.',
     limitation: 'Las tasas de empleo y sobrecualificación no permiten concluir si trabajos que exigen distinta formación cobran lo mismo.',
+  },
+  {
+    id: 'education-skill-demand-vs-curriculum', label: 'competencias laborales y contenidos de los estudios',
+    when: educationSkillsVsCurriculum,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['competencias solicitadas en ofertas de empleo comparables por ocupación, territorio y periodo', 'contenidos y objetivos de aprendizaje de las titulaciones que se comparan', 'un resultado laboral comparable que permita relacionar las competencias con contratación, empleo o salario', 'un criterio medible para interpretar «pesan más»'],
+    explanation: 'La tasa de empleo por nivel educativo cuenta cuántas personas trabajan; no mide qué competencias piden las empresas ni las compara con los contenidos de una titulación.',
+    limitation: 'Sin vacantes, programas formativos y resultados laborales comparables, no se puede determinar qué competencias pesan más ni atribuir un resultado laboral a las asignaturas cursadas.',
   },
   {
     id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',
