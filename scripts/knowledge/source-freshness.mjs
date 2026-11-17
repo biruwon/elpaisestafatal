@@ -1,8 +1,8 @@
 import { sourceRegistry } from './source-registry.mjs';
 import { isBoeLegalDiscoveryUrl } from './refresh-utils.mjs';
 
-const maxAgeBySchedule = Object.freeze({ hourly: 3, daily: 14, weekly: 60, monthly: 120 });
-const staleActionBySchedule = Object.freeze({ hourly: 'exclude', daily: 'label-limited', weekly: 'label-limited', monthly: 'fallback-only' });
+const maxAgeBySchedule = Object.freeze({ hourly: 3, daily: 14, weekly: 60, monthly: 120, quarterly: 210, semiannual: 240, yearly: 450 });
+const staleActionBySchedule = Object.freeze({ hourly: 'exclude', daily: 'label-limited', weekly: 'label-limited', monthly: 'fallback-only', quarterly: 'label-limited', semiannual: 'label-limited', yearly: 'label-limited' });
 
 export const freshnessMaxAgeDays = (source = {}) => maxAgeBySchedule[source.schedule] || maxAgeBySchedule.daily;
 

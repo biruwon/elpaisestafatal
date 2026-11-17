@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const contracts = JSON.parse(await readFile(new URL('../../config/domain-source-coverage.json', import.meta.url), 'utf8'));
-const required = ['immigration_benefits', 'immigration_crime', 'public_housing_allocation'];
+const required = ['immigration_benefits', 'immigration_crime', 'public_housing_allocation', 'tourist_housing'];
 const errors = [];
 for (const id of required) {
   const contract = contracts[id];

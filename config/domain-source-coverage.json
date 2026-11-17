@@ -60,5 +60,26 @@
       "https://publicaciones.transportes.gob.es/observatorio-de-vivienda-y-suelo-boletin-especial-alquiler-residencial-2024"
     ],
     "knownLimitation": "The active MIVAU feed covers protected-housing actions by territory, typology, and administrative status; it does not contain applicants or allocations by nationality or other group. Foreign-born population or employment totals cannot establish priority in a specific housing programme."
+  },
+  "tourist_housing": {
+    "status": "partial",
+    "requiredEvidence": [
+      "estimated_tourist_dwellings_by_period_and_geography",
+      "housing_stock_share_with_2021_census_denominator",
+      "geography_level",
+      "residential_rental_conversions_for_displacement_claims",
+      "causal_design_for_claims_of_effect"
+    ],
+    "preferredSources": [
+      { "publisher": "INE", "role": "experimental_tourist_dwelling_count" },
+      { "publisher": "INE", "role": "tourist_dwellings_as_share_of_housing_stock" },
+      { "publisher": "INE", "role": "methodology_and_regional_definitions" }
+    ],
+    "discoverySources": [
+      "https://www.ine.es/experimental/viv_turistica/experimental_viv_turistica.htm",
+      "https://www.ine.es/jaxiT3/Tabla.htm?t=39364",
+      "https://www.ine.es/jaxiT3/Tabla.htm?t=39365"
+    ],
+    "knownLimitation": "INE's experimental platform-based estimate describes tourist dwellings and their share of the 2021 housing stock. It does not identify homes withdrawn from long-term rental, measure neighbourhood distribution, or establish a causal effect on resident housing supply."
   }
 }

@@ -33,7 +33,11 @@ const cases = [
   ['self-employment-cost-viability', ['La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', 'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares', 'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos']],
   ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
   ['entrepreneurial-risk-perception', ['Emprender en España se percibe como más arriesgado que buscar una plaza pública', 'Crear una empresa parece más arriesgado que preparar una oposición', 'El riesgo percibido de emprender es mayor que el de trabajar como funcionario']],
-  ['housing-supply', ['Los pisos turísticos retiran vivienda del alquiler residencial', 'Los apartamentos turísticos reducen la oferta de viviendas para residentes', '¿Cuántas casas vacías hay disponibles en la ciudad?']],
+  ['tourist-housing-count', ['¿Cuántas viviendas turísticas hay en España?', '¿Cuál es el recuento oficial de pisos turísticos?']],
+  ['tourist-housing-share', ['¿Qué porcentaje del parque de viviendas corresponde a viviendas turísticas?', '¿Qué parte del parque de viviendas son viviendas de uso turístico?']],
+  ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
+  ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
+  ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
   ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral', 'La inmigración presiona los salarios en los sectores con sueldos bajos']],
@@ -110,11 +114,64 @@ for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juven
   assert.equal(claimFocusFor(claim), undefined, `Neighbour crossed into a different measurement: ${claim}`);
 }
 assert.equal(claimFocusFor('Trabajar a jornada completa y ser pobre')?.id, 'working-poverty', 'A full-time poverty claim must not cross into housing independence');
-assert.equal(claimFocusFor('Los pisos turísticos han retirado viviendas del alquiler residencial')?.id, 'housing-supply', 'Tourist-housing supply claims must retain their own evidence contract');
+assert.equal(claimFocusFor('Los pisos turísticos han retirado viviendas del alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist-housing supply claims must retain their causal evidence contract');
 assert.equal(claimFocusFor('El alquiler se lleva más de la mitad del salario joven')?.id, 'rental-affordability', 'A rent-to-income claim must remain separate from tenant-screening claims');
 assert.equal(claimFocusFor('Un seguro de impago cubre al propietario si el inquilino deja de pagar')?.id, undefined, 'Insurance coverage alone must not be interpreted as tenant exclusion');
 assert.equal(claimFocusFor('Los precios del alquiler subieron después de aprobarse la ley')?.id, undefined, 'A rent-price trend must not be mistaken for a contract-supply shift caused by regulation');
-assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'housing-supply', 'Tourist conversion claims must remain separate from landlord-reason claims');
+assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist conversion claims must remain separate from landlord-reason claims');
+assert.equal(claimFocusFor('¿Cuántas viviendas turísticas hay en España?')?.id, 'tourist-housing-count', 'A direct count question must use the count family');
+assert.equal(claimFocusFor('¿Qué proporción del parque de viviendas es de uso turístico?')?.id, 'tourist-housing-share', 'A direct share question must use the housing-stock denominator family');
+assert.equal(claimFocusFor('¿Cuántos apartamentos turísticos con licencia hay en España?')?.id, 'tourist-housing-registration', 'Platform estimates must not answer a licensing-register count');
+assert.equal(claimFocusFor('¿Cuántos pisos turísticos han retirado viviendas del alquiler residencial?')?.id, 'tourist-housing-supply', 'A count inside a displacement claim must not be treated as evidence of homes withdrawn from long-term rental');
+assert.equal(claimFocusFor('¿Cuántas viviendas vacías hay disponibles en la ciudad?')?.id, 'housing-supply', 'Vacant-home counts must not inherit tourist-housing evidence');
+assert.equal(claimFocusFor('¿Cuántos anuncios de Airbnb hay en España?'), undefined, 'Counts across three accommodation platforms must not answer an Airbnb-only listing question');
+assert.equal(Boolean(focusedMetricIdsFor('¿Cuántos apartamentos turísticos hay en España?')?.has('tourist_housing_count')), false, 'The tourist-dwelling estimate must not be presented as a count of tourist-apartment establishments');
+assert.equal(Boolean(focusedMetricIdsFor('¿Qué porcentaje del parque representan los apartamentos turísticos?')?.has('tourist_housing_share')), false, 'The tourist-dwelling share must not be presented as the share of tourist-apartment establishments');
+assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourist-housing-supply', 'General tourism and rent claims must not inherit tourist-dwelling counts');
+assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos hay en España?')], ['tourist_housing_count']);
+assert.deepEqual([...focusedMetricIdsFor('¿Qué proporción del parque de viviendas es turístico?')], ['tourist_housing_share']);
+assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos han retirado viviendas del alquiler residencial?')], ['tourist_housing_count', 'tourist_housing_share']);
+assert.deepEqual([...focusedMetricIdsFor('¿Cuántos apartamentos turísticos con licencia hay en España?')], ['tourist_housing_count']);
+assert.deepEqual([...focusedMetricIdsFor('¿Cuántas viviendas vacías hay disponibles en la ciudad?')], [], 'Vacant-home claims must not retrieve tourist-housing series');
+const touristCountSource = { id: 'ine-tourist-count', title: 'Viviendas turísticas, tabla 39364', publisher: 'INE', url: 'https://www.ine.es/jaxiT3/Tabla.htm?t=39364', retrievedAt: '2026-11-17T10:00:00Z' };
+const touristShareSource = { id: 'ine-tourist-share', title: 'Porcentaje de viviendas turísticas, tabla 39365', publisher: 'INE', url: 'https://www.ine.es/jaxiT3/Tabla.htm?t=39365', retrievedAt: '2026-11-17T10:00:00Z' };
+const touristHousingObservations = [
+  { id: 'tourist-count-es', metricId: 'tourist_housing_count', value: 341001, period: '2026M05', unit: 'viviendas', geography: 'España', population: 'viviendas turísticas estimadas', dimensions: { geo: 'España', geographyLevel: 'country' }, source: touristCountSource },
+  { id: 'tourist-count-madrid', metricId: 'tourist_housing_count', value: 20000, period: '2026M05', unit: 'viviendas', geography: 'Comunidad de Madrid', population: 'viviendas turísticas estimadas', dimensions: { geo: 'Comunidad de Madrid', geographyLevel: 'region' }, source: touristCountSource },
+  { id: 'tourist-count-barcelona-province', metricId: 'tourist_housing_count', value: 14000, period: '2026M05', unit: 'viviendas', geography: 'Provincia de Barcelona', population: 'viviendas turísticas estimadas', dimensions: { geo: 'Provincia de Barcelona', geographyLevel: 'province' }, source: touristCountSource },
+  { id: 'tourist-share-es', metricId: 'tourist_housing_share', value: 1.28, period: '2026M05', unit: '%', geography: 'España', population: 'viviendas turísticas como proporción del parque total de viviendas', denominator: 'total housing stock in the 2021 Population and Housing Census', dimensions: { geo: 'España', geographyLevel: 'country', denominator: 'total housing stock in the 2021 Population and Housing Census' }, source: touristShareSource },
+  { id: 'tourist-share-barcelona-province', metricId: 'tourist_housing_share', value: 1.4, period: '2026M05', unit: '%', geography: 'Provincia de Barcelona', population: 'viviendas turísticas como proporción del parque total de viviendas', denominator: 'total housing stock in the 2021 Population and Housing Census', dimensions: { geo: 'Provincia de Barcelona', geographyLevel: 'province', denominator: 'total housing stock in the 2021 Population and Housing Census' }, source: touristShareSource },
+];
+const touristCountClaim = '¿Cuántos pisos turísticos hay en España?';
+const touristCountPlan = focusedEvidencePlan(touristCountClaim, { observations: touristHousingObservations });
+assert.equal(touristCountPlan.answerScope.family, 'tourist-housing-count');
+assert.equal(touristCountPlan.evidenceLevel, 'limited');
+assert.deepEqual(touristCountPlan.evidenceSummary.families.map((family) => family.familyId), ['tourist_housing_count']);
+assert.match(touristCountPlan.shareableReply, /341\.001 viviendas.*mayo de 2026/s);
+assert.match(touristCountPlan.limitation, /tres grandes plataformas/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourist-count', result: touristCountPlan }, touristCountClaim).state, 'limited');
+const touristRegistrationClaim = '¿Cuántos apartamentos turísticos con licencia hay en España?';
+const touristRegistrationPlan = focusedEvidencePlan(touristRegistrationClaim, { observations: touristHousingObservations });
+assert.equal(touristRegistrationPlan.answerScope.family, 'tourist-housing-registration');
+assert.deepEqual(touristRegistrationPlan.answerScope.directMetrics, []);
+assert.match(touristRegistrationPlan.shareableReply, /no es un registro de licencias/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourist-registration', result: touristRegistrationPlan }, touristRegistrationClaim).state, 'insufficient');
+const touristShareClaim = '¿Qué porcentaje del parque de viviendas corresponde a viviendas turísticas?';
+const touristSharePlan = focusedEvidencePlan(touristShareClaim, { observations: touristHousingObservations });
+assert.equal(touristSharePlan.answerScope.family, 'tourist-housing-share');
+assert.match(touristSharePlan.shareableReply, /1,28 %.*mayo de 2026/s);
+assert.match(touristSharePlan.limitation, /Censo.*2021/);
+assert.equal(touristSharePlan.evidenceSummary.families[0].dimensions.denominator, 'total housing stock in the 2021 Population and Housing Census');
+const touristDisplacementClaim = 'Los pisos turísticos están retirando viviendas del alquiler residencial';
+const touristDisplacementPlan = focusedEvidencePlan(touristDisplacementClaim, { observations: touristHousingObservations });
+assert.equal(touristDisplacementPlan.answerScope.family, 'tourist-housing-supply');
+assert.deepEqual(touristDisplacementPlan.answerScope.directMetrics, [], 'The INE tourist-housing counts do not directly measure homes lost from residential rent');
+assert.match(touristDisplacementPlan.shareableReply, /Como contexto:/);
+assert.match(touristDisplacementPlan.shareableReply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourist-displacement', result: touristDisplacementPlan }, touristDisplacementClaim).state, 'insufficient');
+const touristNeighbourhoodClaim = 'Los pisos turísticos reducen la oferta para residentes en los barrios céntricos de Barcelona';
+const touristNeighbourhoodPlan = focusedEvidencePlan(touristNeighbourhoodClaim, { observations: touristHousingObservations });
+assert.equal(touristNeighbourhoodPlan.sourceLinks.length, 0, 'A provincial or national aggregate cannot answer a neighbourhood-level claim');
 for (const claim of [
   '¿Cuántas personas extranjeras no residentes compraron vivienda en España?',
   '¿Cuánto subieron los precios de la vivienda en las zonas costeras?',

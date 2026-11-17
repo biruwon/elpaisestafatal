@@ -86,6 +86,20 @@ const bankSpainRentEffortEvidence = {
   ],
   sources: [bankSpainRentEffortSource],
 };
+const touristHousingMention = (text) => /\b(?:viviend\w*|piso\w*|apartament\w*|alojamiento\w*|alquiler\w*)\s+(?:de uso\s+)?(?:turistic\w*|vacacional\w*)\b/.test(text)
+  || /\b(?:turistic\w*|vacacional\w*)\s+(?:viviend\w*|piso\w*|apartament\w*|alojamiento\w*|alquiler\w*)\b/.test(text)
+  || /\b(?:viviend\w*|pisos?|apartament\w*|alojamientos?|alquiler\w*)\b[\s\w]{0,24}\bturistic\w*\b/.test(text)
+  || /\b(?:viviend\w*|pisos?|apartament\w*|alojamientos?)\s+de\s+airbnb\b/.test(text);
+const touristHousingRegistrationQuestion = (text) => touristHousingMention(text)
+  && /\b(licenciad\w*|licencia\w*|registrad\w*|registro\w*|inscripci\w*|inscrit\w*|legalizad\w*)\b/.test(text);
+const touristHousingCountQuestion = (text) => touristHousingMention(text)
+  && /\b(cuant\w*|numero|cantidad|total de|recuento)\b/.test(text)
+  && !/\b(porcent\w*|proporcion|cuota|parte del parque|de cada|airbnb|apartament\w*)\b/.test(text);
+const touristHousingShareQuestion = (text) => touristHousingMention(text)
+  && /\b(porcent\w*|proporcion|cuota|parte del parque|de cada|represent\w*)\b/.test(text)
+  && !/\b(airbnb|apartament\w*)\b/.test(text);
+const touristHousingDisplacementClaim = (text) => touristHousingMention(text)
+  && /\b(retir\w*|reduc\w*|disminu\w*|quit\w*|sac\w*|desplaz\w*|rest\w*|oferta|disponib\w*|escasez|resident\w*|alquiler residencial|alquiler de larga duracion|barri\w*|distrit\w*|centro\w*)\b/.test(text);
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const privateCareMention = /\b(seguro\w*(?: medico\w*)? privad\w*|sanidad privada|medicina privada|asistencia privada|consultas? privad\w*|atencion privada)\b/;
 export const privateHealthcareAccessClaimType = (claim) => {
@@ -376,6 +390,38 @@ const focuses = [
     needs: ['cambios observados en viviendas retiradas, vacías o pasadas a contratos temporales', 'motivos declarados por una muestra representativa de propietarios que tomó esa decisión', 'si se alega flexibilidad, una medida concreta como duración, preaviso o disponibilidad de uso', 'territorio, periodo y comparación que permita separar el motivo alegado de otros cambios del mercado'],
     explanation: 'El miedo o la preferencia que se atribuye a los propietarios debe contrastarse con sus decisiones y motivos declarados.',
     limitation: 'Contar viviendas vacías no indica si estaban disponibles para alquilar ni por qué; las opiniones generales tampoco demuestran qué decisión tomó cada propietario.',
+  },
+  {
+    id: 'tourist-housing-registration', label: 'registro y licencia de viviendas turísticas',
+    when: touristHousingRegistrationQuestion,
+    direct: [], context: ['tourist_housing_count'],
+    needs: ['registro oficial de licencias o números de inscripción', 'mismo territorio y periodo del recuento solicitado'],
+    explanation: 'El recuento del INE se estima a partir de anuncios y criterios autonómicos; no es un registro de licencias ni confirma la situación legal de cada vivienda.',
+    limitation: 'El dato del INE puede dar contexto sobre el volumen estimado de anuncios turísticos, pero no permite contar viviendas licenciadas, sin licencia o con número de registro válido. Tampoco equivale necesariamente al total de apartamentos turísticos, cuya clasificación depende de cada comunidad autónoma.',
+  },
+  {
+    id: 'tourist-housing-count', label: 'recuento de viviendas turísticas estimadas',
+    when: (t) => touristHousingCountQuestion(t) && !touristHousingDisplacementClaim(t),
+    direct: ['tourist_housing_count'], context: [],
+    needs: ['número de viviendas turísticas estimadas', 'mismo periodo y nivel geográfico solicitado'],
+    explanation: 'El INE ofrece una estimación experimental del número de viviendas turísticas a partir de anuncios en plataformas de alojamiento.',
+    limitation: 'La estimación cubre anuncios de tres grandes plataformas, elimina duplicados y aplica criterios autonómicos. Los datos nacionales, autonómicos y provinciales no miden barrios ni viviendas retiradas del alquiler residencial.',
+  },
+  {
+    id: 'tourist-housing-share', label: 'proporción estimada de viviendas turísticas sobre el parque de viviendas',
+    when: (t) => touristHousingShareQuestion(t) && !touristHousingDisplacementClaim(t),
+    direct: ['tourist_housing_share'], context: [],
+    needs: ['porcentaje de viviendas turísticas sobre el parque de viviendas', 'denominador del Censo de Población y Viviendas de 2021', 'mismo periodo y nivel geográfico solicitado'],
+    explanation: 'El porcentaje compara la estimación de viviendas turísticas del INE con el parque total de viviendas del Censo de 2021.',
+    limitation: 'El denominador es el parque total del Censo de 2021, no una estimación actualizada de viviendas disponibles para alquiler. El porcentaje no mide qué viviendas se retiraron del alquiler residencial.',
+  },
+  {
+    id: 'tourist-housing-supply', label: 'efecto de las viviendas turísticas sobre la oferta residencial',
+    when: touristHousingDisplacementClaim,
+    direct: [], context: ['tourist_housing_count', 'tourist_housing_share'], claimType: 'causal',
+    needs: ['viviendas que pasan del alquiler residencial a uso turístico en el mismo territorio y periodo', 'oferta de alquiler residencial antes y después del cambio', 'diseño que permita atribuir el cambio al uso turístico y no a otros factores'],
+    explanation: 'El recuento de viviendas turísticas y su peso en el parque describen el uso turístico estimado; no indican cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.',
+    limitation: 'La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos. El dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',

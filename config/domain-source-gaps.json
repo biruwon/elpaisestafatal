@@ -96,6 +96,24 @@
       "nextEvidence": "Attempt retrieval of the referenced Excel nº 1 and nº 3 attachments when the Madrid transparency portal exposes them; until then, use the validated Euskadi documentation split and Catalonia demand profile as regional evidence without generalising either to Spain.",
       "sourceTargets": ["regional housing authorities", "municipal housing registers", "MIVAU protected-housing data", "Excel nº 1 and Excel nº 3 attached to Madrid AVS transparency resolution 10-OPEN-00039.7/2022"],
       "acceptanceCriteria": ["applicants and allocations are separate measures", "the programme rule and group field are explicit", "nationality is never inferred from birthplace, crime, or total housing actions", "the attached Excel files are checked for years, missing fields, and whether adjudications are directly extractable"]
+    },
+    {
+      "id": "tourist-housing-count-versus-residential-rental-loss",
+      "domain": "tourist_housing",
+      "missingFields": ["same-dwelling-conversion-from-residential-rent-to-tourist-use", "neighbourhood-level-residential-supply-change", "causal-counterfactual"],
+      "resolvedFields": ["experimental-count-by-province-and-period", "share-of-total-housing-stock-with-2021-census-denominator"],
+      "irreducibleFields": ["causal-effect-on-long-term-rental-supply-from-current-stock-counts-alone"],
+      "status": "partial_official_measurement",
+      "officialSourcesChecked": [
+        "https://www.ine.es/experimental/viv_turistica/experimental_viv_turistica.htm",
+        "https://www.ine.es/jaxiT3/Tabla.htm?t=39364",
+        "https://www.ine.es/jaxiT3/Tabla.htm?t=39365"
+      ],
+      "availableEvidence": ["INE experimental estimates of tourist dwellings by period and geography", "share of tourist dwellings using the 2021 Population and Housing Census as the housing-stock denominator"],
+      "permittedConclusion": "Report the count or share for the source's period and geographic level. These measures describe estimated tourist housing and cannot establish how many homes left long-term rental or whether tourism caused a reduction in resident supply.",
+      "nextEvidence": "Find linked local records that identify housing-use conversions and residential rental availability in the same territory and period; preserve neighbourhood limitations until such data is available.",
+      "sourceTargets": ["INE experimental tourist-housing tables", "municipal housing-use registers", "local residential-rental supply series"],
+      "acceptanceCriteria": ["count and share remain distinct metrics", "the share retains the 2021 housing-census denominator", "province, region, municipality, and neighbourhood scopes are not interchanged", "stock counts remain context for causal displacement claims"]
     }
   ]
 }

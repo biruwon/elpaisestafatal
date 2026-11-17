@@ -197,6 +197,22 @@
       "title": "INE housing tenure by reference-person nationality, annual table 9995"
     },
     {
+      "id": "ine-tourist-housing-count",
+      "domain": "tourist_housing",
+      "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39364.csv",
+      "schedule": "semiannual",
+      "mode": "active",
+      "title": "INE estimated tourist dwellings by province and period, table 39364"
+    },
+    {
+      "id": "ine-tourist-housing-share",
+      "domain": "tourist_housing",
+      "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39365.csv",
+      "schedule": "semiannual",
+      "mode": "active",
+      "title": "INE tourist dwellings as a share of housing stock by province and period, table 39365"
+    },
+    {
       "id": "igvs-protected-housing-awards",
       "domain": "public_housing_allocation",
       "url": "https://igvs.xunta.gal/es/vivienda-protegida/adjudicaciones-sorteos-de-vivienda-protegida",

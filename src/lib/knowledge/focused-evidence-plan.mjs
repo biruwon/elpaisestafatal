@@ -16,9 +16,15 @@ const observationFitsClaim = (claim) => {
   const matchesGeography = geographyScopeMatcherFor(claim);
   const matchesSex = sexScopeMatcherFor(claim);
   const text = normalize(claim);
+  const requestedTerritories = requestedGeographyScopes(claim);
   return (item) => {
     if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item) || !matchesSex(item)) return false;
     if (!tertiaryOverqualificationCitizenshipFitsClaim(claim, item)) return false;
+    if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
+      && requestedTerritories.length === 0 && item.dimensions?.geographyLevel !== 'country') return false;
+    if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
+      && /\b(?:barri\w*|distrit\w*|municipi\w*|ciudad\w*|centro|casco urbano)\b/.test(text)
+      && item.dimensions?.geographyLevel !== 'municipality') return false;
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
     if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
@@ -48,6 +54,8 @@ const labels = {
   in_work_poverty_full_time_rate: 'Personas ocupadas de 18 años o más a jornada completa en riesgo de pobreza',
   primary_care_wait_days: 'Demora entre quienes esperaron más de un día',
   primary_care_wait_over_one_day_rate: 'Pacientes de medicina de familia pública que esperaron más de un día por falta de cita',
+  tourist_housing_count: 'Viviendas turísticas estimadas',
+  tourist_housing_share: 'Viviendas turísticas como parte del parque total de viviendas',
 };
 const unitFor = (item) => /^household_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
@@ -63,7 +71,12 @@ const placeLabel = (item) => {
   const place = item.geography || item.dimensionLabels?.geo || item.dimensions?.geo || '';
   return /^(spain|es)$/i.test(place) ? 'España' : /european union|^eu27/i.test(place) ? 'Unión Europea (27 países)' : place;
 };
-const periodLabel = (period) => String(period).replace(/^(\d{4})-O([123])$/, '$1 · oleada $2');
+const periodLabel = (period) => {
+  const value = String(period);
+  const month = value.match(/^(\d{4})M(0[1-9]|1[0-2])$/);
+  if (month) return `${['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][Number(month[2]) - 1]} de ${month[1]}`;
+  return value.replace(/^(\d{4})-O([123])$/, '$1 · oleada $2');
+};
 const validNumber = (value) => typeof value === 'number' && Number.isFinite(value);
 const isRentalIndexObservation = (item) => {
   const unit = normalize(item.unit || '');

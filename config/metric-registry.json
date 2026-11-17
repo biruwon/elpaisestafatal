@@ -1902,5 +1902,73 @@
     "limitations": [
       "Demora declarada para la última consulta de los 12 meses previos; no mide toda la población ni cada centro. Cada oleada es provisional hasta completarse el año."
     ]
+  },
+  "tourist_housing_count": {
+    "name": "Estimated count of tourist dwellings",
+    "displayName": "Viviendas turísticas estimadas",
+    "aliases": [
+      "viviendas turísticas",
+      "pisos turísticos",
+      "viviendas de uso turístico",
+      "cuántos pisos turísticos hay",
+      "número de viviendas turísticas"
+    ],
+    "unit": "dwellings",
+    "population": "tourist dwellings identified by the INE experimental estimate from major accommodation platforms",
+    "notEquivalentTo": [
+      "tourist_housing_share",
+      "housing_tenure",
+      "housing_overcrowding_rate",
+      "housing_payment_arrears_rate",
+      "rental_price_index"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "geography_level"
+    ],
+    "supports": [
+      "descriptive",
+      "comparative",
+      "trend"
+    ],
+    "limitations": [
+      "Experimental estimate based on scraping and deduplicating listings from three major accommodation platforms, classified under current definitions that vary by autonomous community. It is not a register of licences and does not count dwellings withdrawn from the long-term rental market or measure the cause of a housing shortage."
+    ]
+  },
+  "tourist_housing_share": {
+    "name": "Tourist dwellings as a share of total housing stock",
+    "displayName": "Viviendas turísticas como proporción del parque de viviendas",
+    "aliases": [
+      "porcentaje de viviendas turísticas",
+      "proporción de viviendas turísticas",
+      "cuota de viviendas turísticas",
+      "parte del parque de viviendas que son turísticas",
+      "porcentaje del parque de viviendas ocupado por pisos turísticos"
+    ],
+    "unit": "percent of housing stock",
+    "population": "INE experimental estimate of tourist dwellings divided by total dwellings in the 2021 Population and Housing Census",
+    "notEquivalentTo": [
+      "tourist_housing_count",
+      "housing_tenure",
+      "housing_overcrowding_rate",
+      "housing_payment_arrears_rate",
+      "rental_price_index"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "geography_level",
+      "denominator"
+    ],
+    "denominator": "Total dwellings in the 2021 Population and Housing Census",
+    "supports": [
+      "descriptive",
+      "comparative",
+      "trend"
+    ],
+    "limitations": [
+      "The denominator is the 2021 housing census and does not change with current listings. The numerator is an experimental platform-based estimate under definitions that vary by autonomous community; this share does not measure homes removed from long-term rental."
+    ]
   }
 }

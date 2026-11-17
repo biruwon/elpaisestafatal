@@ -36,6 +36,48 @@ const common = (row, source, index) => ({
   url: source.url,
 });
 
+const ineTerritoryName = (value) => String(value || '').replace(/^\d{1,2}\s+/, '').trim();
+const ineCommunityName = (value) => {
+  const label = ineTerritoryName(value);
+  return ({
+    'asturias_principado_de': 'Asturias',
+    'balears_illes': 'Islas Baleares',
+    'comunitat_valenciana': 'Comunidad Valenciana',
+    'madrid_comunidad_de': 'Comunidad de Madrid',
+    'murcia_region_de': 'Región de Murcia',
+    'navarra_comunidad_foral_de': 'Comunidad Foral de Navarra',
+    'rioja_la': 'La Rioja',
+  })[normalise(label)] || label.replace(/^Palmas, Las$/i, 'Las Palmas');
+};
+const ineTouristHousingGeography = (row) => {
+  const municipality = ineTerritoryName(valueFor(row, ['Municipios', 'Municipios y ciudades autónomas']));
+  const province = ineCommunityName(valueFor(row, ['Provincias']));
+  const community = ineCommunityName(valueFor(row, ['Comunidades y Ciudades Autónomas', 'Comunidades y Ciudades Autonomas']));
+  if (municipality) return { geography: municipality, level: 'municipality' };
+  if (province) return { geography: `Provincia de ${province}`, level: 'province' };
+  if (community) return { geography: community, level: 'region' };
+  const country = ineTerritoryName(valueFor(row, ['Total Nacional']));
+  return country ? { geography: 'España', level: 'country' } : undefined;
+};
+
+export const parseIneTouristHousingTable = (rows, source, metricId) => rows.flatMap((row, index) => {
+  const period = String(valueFor(row, ['Periodo', 'period', 'periodo']) || '').trim();
+  const value = numberFor(valueFor(row, ['Total', 'value', 'valor']));
+  const location = ineTouristHousingGeography(row);
+  if (!period || value === null || !location) return [];
+  if (metricId === 'tourist_housing_count'
+    && normalise(valueFor(row, ['Viviendas y plazas', 'measure', 'medida'])) !== 'viviendas_turisticas') return [];
+  return [{ id: `${source.id}-tourist-housing-${index}`, kind: 'observation', sourceId: source.id, datasetId: source.title,
+    period, geography: location.geography, population: metricId === 'tourist_housing_share'
+      ? 'viviendas turísticas estimadas como proporción del parque total de viviendas'
+      : 'viviendas turísticas identificadas en las plataformas incluidas por el INE',
+    ...(metricId === 'tourist_housing_share' ? { denominator: 'total housing stock in the 2021 Population and Housing Census' } : {}),
+    dimensions: { geo: location.geography, geographyLevel: location.level,
+      ...(metricId === 'tourist_housing_count' ? { measure: 'count of tourist dwellings' } : { denominator: 'total housing stock in the 2021 Population and Housing Census' }) },
+    metricId, metric: metricId === 'tourist_housing_share' ? 'Proporción de viviendas turísticas sobre el parque total' : 'Viviendas turísticas estimadas',
+    value, unit: metricId === 'tourist_housing_share' ? '%' : 'viviendas', url: source.url }];
+});
+
 const parsers = {
   immigration_benefits: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: row.metricId || 'benefit_recipients_by_group', metric: row.metric || 'Beneficiarios de prestaciones por grupo', value: numberFor(valueFor(row, ['value', 'valor', 'beneficiaries', 'beneficiarios', 'holders', 'titulares', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'personas',
@@ -46,6 +88,10 @@ const parsers = {
   public_housing_allocation: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: row.metricId || 'public_housing_allocations_by_group', metric: row.metric || 'Adjudicaciones de vivienda pública por grupo', value: numberFor(valueFor(row, ['allocations', 'adjudicaciones', 'dwellings', 'viviendas', 'value', 'valor', 'count', 'numero'])), unit: valueFor(row, ['unit', 'unidad']) || 'adjudicaciones',
   })),
+  tourist_housing: (rows, source) => {
+    const metricId = /39365|porcentaje|share|proporci[oó]n/i.test(source.title || '') ? 'tourist_housing_share' : 'tourist_housing_count';
+    return parseIneTouristHousingTable(rows, source, metricId);
+  },
   wildfire_statistics: (rows, source) => rows.map((row, index) => ({
     ...common(row, source, index), metricId: row.metricId || 'wildfire_surface_affected', metric: row.metric || 'Incendios forestales', value: numberFor(valueFor(row, ['value', 'valor', 'surface', 'superficie', 'incidents', 'siniestros'])), unit: valueFor(row, ['unit', 'unidad']) || 'observaciones',
   })),
