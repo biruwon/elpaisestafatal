@@ -1,9 +1,10 @@
 import type { AnswerPlan } from '../../src/lib/knowledge/contracts';
 import type { CatalogueEntry } from '../../src/data/catalogue';
 import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolver';
-import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, ArgumentAssessment, CheckScorecard } from '../../src/lib/knowledge/public-check';
+import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, CheckScorecard } from '../../src/lib/knowledge/public-check';
 import { composeFamilyReply } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
+import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
 
 // Interpretation confidence, model metadata and extraction provenance are
@@ -43,37 +44,6 @@ const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.fil
   if (!('items' in block) || !Array.isArray(block.items)) return [];
   return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: sourcesForEvidenceIds(plan, item.evidenceIds || []) }));
 }));
-const argumentsFromPlan = (plan: AnswerPlan): ArgumentAssessment[] => {
-  const breakdown = plan.blocks.find((block) => block.type === 'claim_breakdown');
-  if (!breakdown || !('items' in breakdown) || !breakdown.items?.length) return [];
-  const items = breakdown.items;
-  const evidenceBlocks = plan.blocks.filter((block) => block.type === 'data_finding' || block.type === 'confirmed');
-  return items.map((item, index) => {
-    // Evidence belongs to a proposition only through an explicit association.
-    // Positional assignment can attach unrelated numbers to the next claim.
-    const propositionId = breakdown.propositionIds[index];
-    const evidenceIds = item.evidenceIds?.length ? item.evidenceIds : evidenceBlocks
-      .filter((block) => 'propositionIds' in block && block.propositionIds?.includes(propositionId))
-      .flatMap((block) => 'evidenceIds' in block ? block.evidenceIds || [] : []);
-    const verdict = item.verdict || (evidenceIds.length ? (plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient') : 'insufficient');
-    const matchingBlock = evidenceBlocks.find((block) => 'evidenceIds' in block && evidenceIds.some((id) => block.evidenceIds?.includes(id)));
-    const finding = matchingBlock && 'points' in matchingBlock && matchingBlock.points?.length
-      ? matchingBlock.points.join(' ')
-      : plan.summary || plan.headline;
-    return {
-    id: breakdown.propositionIds[index] || `argument-${index + 1}`,
-    claim: item.text,
-    kind: item.type as ArgumentAssessment['kind'],
-    verdict,
-    evidenceLevel: item.evidenceLevel || (verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none'),
-    finding: item.finding || finding,
-    evidenceIds,
-    sourceIds: (plan.sourceIds || []).filter((sourceId) => (Array.isArray(item.sourceIds) && item.sourceIds.includes(sourceId)) || evidenceIds.includes(sourceId)
-      || (plan.evidenceSummary?.families || []).some((family) => family.evidenceIds.some((id) => evidenceIds.includes(id)) && family.sourceIds?.includes(sourceId))),
-    limitations: [plan.limitation].filter((value): value is string => Boolean(value)),
-    };
-  });
-};
 const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
   const visual = 'visual' in entry ? entry.visual : undefined;
   if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length || visual.labels.length !== visual.values.length) return undefined;
@@ -176,7 +146,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const sources = sourceLinks(plan).filter((source) => attributedIds.has(source.id));
   const supported = plan.evidenceLevel === 'supported' || (plan.evidenceLevel === undefined && plan.evidenceIds.length > 0 && plan.sourceIds.length > 0 && sources.length > 0);
   const interpretation = publicInterpretation(plan.interpretation as ClaimInterpretation | undefined);
-  const argumentsList = argumentsFromPlan(plan);
+  const argumentsList = publicArgumentsFromPlan(plan);
   const counts = argumentsList.reduce((acc, item) => { acc[item.verdict] += 1; return acc; }, { supported: 0, contradicted: 0, mixed: 0, insufficient: 0, not_verifiable: 0 } as Record<string, number>);
   const evaluativeWording = /\b(?:peor|mejor|mejores|peores|mejor[ae]s)\b/i.test(claim) && /\b(?:presidente|gobierno|partido|gesti[oó]n|administraci[oó]n|pol[ií]tica)\b/i.test(claim);
   const evaluative = String(plan.claimType) === 'evaluative' || String(plan.claimType) === 'evaluative_judgment' || plan.interpretation?.kind === 'evaluative_judgment' || evaluativeWording;

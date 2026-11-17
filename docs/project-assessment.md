@@ -581,3 +581,20 @@ local or sector-level unemployment and pay measures and evidence about candidate
 supply in the same labor markets and periods. Paraphrases share these sources;
 direct unemployment rates, migration-related wage effects, matched-profile pay
 and real-wage claims remain separate routes.
+
+## Text claim breakdown in public answers — 17 November 2026
+
+The resolver and Pages response already retained claim-by-claim assessments,
+but the local preview mapper dropped them and the next clarification question.
+Both public paths now use one mapper for per-part verdicts, findings and
+explicitly attributed sources. It does not create per-part verdicts
+when a plan only contains a list of clauses without a finding or evidence link.
+Context-only evidence remains unattached to the claim's direct assessment.
+
+Regression checks cover two paraphrases of a multi-part tax-and-services
+claim, a nearby single-part claim, an unassessed clause list, and a context-only
+poverty measure. The two public paths agree on per-claim verdict and source
+attribution. The refreshed 300-claim deterministic fallback audit reports
+three complete, 18 limited and 279 uncovered replies, with 82 metric-routed
+claims. These are fallback coverage counts, not factual-accuracy results or a
+measure of the dynamic resolver.

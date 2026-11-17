@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
+import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
@@ -21,6 +22,8 @@ assert.equal(published.state, 'limited');
 assert.equal(local.state, published.state, 'Local and Pages evidence labels disagree');
 assert.equal(published.result.arguments[0].verdict, 'insufficient', 'Relevant data must not become proof of the entire claim');
 assert.deepEqual(published.result.arguments[0].sourceIds, ['health-source']);
+assert.equal(local.result.arguments[0].verdict, published.result.arguments[0].verdict, 'The local preview must retain the per-claim verdict');
+assert.deepEqual(local.result.arguments[0].sourceIds, published.result.arguments[0].sourceIds, 'The local preview must attribute the same source to the same claim');
 for (const result of [published.result, local.result]) {
   assert.ok(result.criteria.length >= 2);
   assert.ok(result.criteria.every((criterion) => criterion.sourceIds.includes('health-source')), 'Observation IDs were not mapped to their document');
@@ -35,8 +38,52 @@ const contextualPublic = checkFromPlan(povertyClaim, contextual, 'context');
 assert.equal(contextualPublic.state, 'insufficient');
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'context', result: contextual }, povertyClaim).state, 'insufficient');
 assert.deepEqual(contextualPublic.result.arguments[0].evidenceIds, [], 'Contextual poverty data cannot prove difficulty making ends meet');
+const contextualLocal = localPublicCheckResponse({ status: 'complete', requestId: 'context', result: contextual }, povertyClaim);
+assert.deepEqual(contextualLocal.result.arguments[0].evidenceIds, [], 'Contextual observations must not become direct evidence in the local preview');
+assert.deepEqual(contextualLocal.result.arguments[0].sourceIds, [], 'The local preview must not attribute a context-only source to the submitted claim');
 assert.deepEqual(contextualPublic.result.criteria[0].sourceIds, ['poverty-source']);
 assert.match(contextualPublic.result.reply, /Como contexto/);
+
+const compoundParaphrases = [
+  'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años',
+  'La ciudadanía paga cada vez más impuestos, pero siente que los servicios públicos han empeorado',
+];
+for (const [index, text] of compoundParaphrases.entries()) {
+  const fallback = deterministicApiFallback({ text, inputType: 'text' });
+  const internalItems = fallback.result.blocks.find((block) => block.type === 'claim_breakdown')?.items || [];
+  const localResult = localPublicCheckResponse({ ...fallback, requestId: `compound-${index}` }, text);
+  assert.equal(localResult.state, 'insufficient', 'An unevidenced compound claim must remain insufficient');
+  assert.deepEqual(localResult.result.arguments?.map((argument) => argument.claim), internalItems.map((item) => item.text), 'The public local response must preserve the complete claim and every parsed part');
+  assert.equal(localResult.result.arguments?.length, 3, 'Both paraphrases should expose the whole statement and its two explicit parts');
+  assert.ok(localResult.result.arguments.every((argument) => argument.verdict === 'insufficient' && argument.evidenceLevel === 'none'), 'No clause may acquire evidence from an unrelated part');
+  assert.ok(localResult.result.arguments.every((argument) => argument.evidenceIds.length === 0 && argument.sourceIds.length === 0), 'An unsupported compound claim must not display invented evidence or sources');
+  assert.ok(localResult.result.nextQuestion, 'The next concrete question should survive the public mapping');
+}
+
+const neighboringSingle = 'El contribuyente medio paga más impuestos';
+const neighboringFallback = deterministicApiFallback({ text: neighboringSingle, inputType: 'text' });
+const neighboringLocal = localPublicCheckResponse({ ...neighboringFallback, requestId: 'neighboring-single' }, neighboringSingle);
+assert.deepEqual(neighboringLocal.result.arguments?.map((argument) => argument.claim), [neighboringSingle], 'A single tax claim must not inherit the separate services clause');
+
+const unassessedCompoundPlan = {
+  schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Faltan medidas compatibles',
+  summary: 'No se ha localizado evidencia compatible para estas partes.', coverage: 'insufficient', claimType: 'mixed',
+  blocks: [
+    { type: 'claim_breakdown', propositionIds: [], items: [
+      { text: 'El gasto público crece', type: 'trend', explicit: true, coveredBy: 'spending-claim' },
+      { text: 'Los servicios públicos empeoran', type: 'trend', explicit: true, coveredBy: 'service-claim' },
+    ] },
+    { type: 'evidence_gap', missing: ['serie por periodo'], needed: ['medidas comparables'], nextAction: 'Concretar los indicadores y el periodo.' },
+  ],
+  evidenceIds: [], sourceIds: [], sourceLinks: [], knowledgeVersion: 'test',
+};
+const unassessedText = 'El gasto público crece mientras los servicios públicos empeoran';
+const unassessedPages = checkFromPlan(unassessedText, unassessedCompoundPlan, 'unassessed-compound');
+const unassessedLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'unassessed-compound', result: unassessedCompoundPlan }, unassessedText);
+for (const response of [unassessedPages, unassessedLocal]) {
+  assert.equal(response.state, 'insufficient');
+  assert.equal(response.result.arguments?.length || 0, 0, 'A parsed clause list without findings or evidence links must not look like per-part fact-checks');
+}
 
 const explanation = focusedEvidencePlan('¿Las pensiones públicas usan reparto o cuentas individuales?', { now: Date.parse('2026-10-30') });
 const explanationPublic = checkFromPlan('¿Las pensiones públicas usan reparto o cuentas individuales?', explanation, 'definition');

@@ -3,6 +3,7 @@ import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snap
 import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
+import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 
 const normalizedClaim = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -61,6 +62,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   if (!plan || typeof plan !== 'object') return attachExtraction({ state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: extraction?.warnings[0] || 'La comprobación local no pudo completarse.', retryable: true }, extraction);
 
   const blocks = Array.isArray(plan.blocks) ? plan.blocks : [];
+  const claimBreakdown = blocks.find((block) => block?.type === 'claim_breakdown');
+  const claimItems = Array.isArray(claimBreakdown?.items) ? claimBreakdown.items : [];
+  const argumentsList = publicArgumentsFromPlan(plan);
   const criteria = blocks
     .filter((block) => block?.type === 'confirmed' || block?.type === 'data_finding')
     .flatMap((block, blockIndex) => (Array.isArray(block.points) ? block.points : []).slice(0, 3).map((finding, pointIndex) => ({
@@ -78,6 +82,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       ...(family.criteria || []).flatMap((criterion) => criterion.sourceIds || []),
     ]),
     ...plannedVisuals.flatMap((visual) => [...(visual.evidenceIds || []), ...(visual.sourceId ? [visual.sourceId] : [])]),
+    ...argumentsList.flatMap((argument) => [...argument.evidenceIds, ...argument.sourceIds]),
     ...shareableSourceIds,
   ]);
   const sources = (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : [])
@@ -109,20 +114,26 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     };
   }
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  const claimBreakdown = blocks.find((block) => block?.type === 'claim_breakdown');
-  const claimItems = Array.isArray(claimBreakdown?.items) ? claimBreakdown.items : [];
-  const claimHasDirectEvidence = claimItems.some((item) => Array.isArray(item?.evidenceIds) && item.evidenceIds.length > 0);
+  const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
   const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence ? 'insufficient' : evidenceLevel;
   const publicReply = missingPublicEvidence
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
     : reply;
+  const nextQuestion = typeof plan.clarificationQuestion === 'string'
+    ? plan.clarificationQuestion
+    : safePayload.guidance?.questions?.[0];
 
   return attachExtraction({
     state: publicEvidenceLevel,
     id: safePayload.requestId || `local-${Date.now().toString(36)}`,
     result: {
       claim,
+      ...(argumentsList.length ? { arguments: argumentsList.map((argument) => ({
+        ...argument,
+        sourceIds: argument.sourceIds.filter((id) => sources.some((source) => source.id === id)),
+      })) } : {}),
       interpretation: plan.interpretation,
+      ...(nextQuestion ? { nextQuestion } : {}),
       reply: publicReply,
       answer: publicReply || plan.summary || plan.headline,
       shareableReply: missingPublicEvidence ? undefined : plan.shareableReply,
