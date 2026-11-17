@@ -22,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-35-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-poverty-snapshot-36-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -274,11 +274,18 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
-          if (plan) {
-            warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
-            if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
+          if (focus.id === 'working-poverty' && focusedObservations.length === 0) {
+            // The reviewed text snapshot can answer from its own dated source
+            // when a successful warehouse lookup has no rows. A failed D1
+            // query still follows the unavailable path above; absence and
+            // infrastructure failure are not interchangeable.
+            warehouseFocusedResponse = fallbackResponse(effectiveClaim, 'text');
+          } else {
+            const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
+            if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
           }
+          if (warehouseFocusedResponse
+            && (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now())) return json(warehouseFocusedResponse);
         }
       } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0 && metricIds.length === 0) {
         // If no warehouse metric is defined for this family, its reviewed

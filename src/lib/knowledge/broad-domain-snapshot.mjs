@@ -774,7 +774,7 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
   const focusedFamily = claimFocusFor(text)?.id;
-  if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence', 'youth-housing-family-formation-costs', 'inflation-tax-bracket-creep', 'local-safety-trend'].includes(focusedFamily)) return [];
+  if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence', 'youth-housing-family-formation-costs', 'inflation-tax-bracket-creep'].includes(focusedFamily)) return [];
   const compiledClaim = deterministicFallbackCompiler(text);
   const domainProfile = domainProfileFor(text, compiledClaim);
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
@@ -836,6 +836,11 @@ export const broadDomainPacketsFor = (text) => {
   const securityGroupAttribution = securitySignal
     && /\b(inmigr\w*|migrant\w*|extranj\w*|nuevos?\W+espanoles)\b/.test(value)
     && /\b(son los que|caus\w*|provoc\w*|culp\w*|responsables? de|criminal\w*|acuchill\w*|roba\w*|hurt\w*|viola\w*|agresion\w*)\b/.test(value);
+  // A reference to "the streets" can trigger the narrow local-safety family
+  // inside a broader group-attribution claim. Keep genuinely local claims on
+  // their focused route, but allow attributed national claims to use the
+  // reviewed crime packet and its explicit scope limitations.
+  if (focusedFamily === 'local-safety-trend' && !securityGroupAttribution) return [];
   const regionalMinoritySignal = /\b(minor[ií]a|mayor[ií]a|mayoritari\w*|reemplaz\w*)\b/i.test(value) && /\b(espa[nñ]ol\w*|poblaci[oó]n|inmigr\w*|migrant\w*|extranj\w*|regiones?|comunidades? aut[oó]nomas?|provincias?)\b/i.test(value);
   const retirementAgeSignal = /\b(67 a[nñ]os|sesenta y siete|edad (?:legal )?de jubilaci[oó]n|jubilarse a los 67|trabajar hasta los 67)\b/i.test(value) && /\b(inmigr\w*|migrant\w*|extranj\w*|cotiz\w*|pensi[oó]n\w*)\b/i.test(value);
   const natoExpulsionSignal = /\b(otan|nato)\b/i.test(value) && /\b(expuls\w*|suspend\w*|echar a espa[nñ]a|fuera de la alianza)\b/i.test(value);

@@ -604,6 +604,9 @@ measure of the dynamic resolver.
 The text fallback now carries reviewed 2015–2025 Spain series for the overall,
 full-time and part-time in-work at-risk-of-poverty rates. The existing warehouse
 refresh configuration also includes separate queries for each measure. In
+the Pages text endpoint, a successful D1 lookup with no rows now uses this
+reviewed snapshot; a failed D1 lookup remains unavailable, and warehouse rows
+continue through the warehouse evidence plan.
 2025, the overall rate was 11.2% among employed people aged 18 or over who
 worked more than half of the reference year. Eurostat's full-/part-time split
 reported 9.5% for full-time workers and 18.6% for part-time workers; that
