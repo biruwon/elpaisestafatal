@@ -196,7 +196,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const sectorNames = [/\bturis\w*\b/, /\bhosteler\w*\b/, /\bhotel\w*\b/, /\bagricultur\w*\b/, /\bsector primario\b/, /\bconstrucci\w*\b/, /\bindustri\w*\b/, /\bmanufactur\w*\b/, /\bcomerci\w*\b/, /\btransporte\b/, /\bfinancier\w*\b/, /\btecnolog\w*\b/];
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
-    if (clauseFocus) return clauseFocus.id === focus.id;
+    if (clauseFocus?.id === focus.id) return true;
     const clauseText = normalize(item.text);
     const sameSectorOutput = focus.id === 'sector-wage-comparison'
       && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(clauseText)
@@ -208,8 +208,24 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         || /\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?)\b/.test(clauseText)
           && /\b(prefier\w*|prefer\w*)\b/.test(clauseText)
           && /\b(alquil\w*|arrendam\w*|temporad\w*|contrat\w*)\b/.test(clauseText));
+    const housingInvestmentReason = focus.id === 'housing-investment-return-comparison'
+      && propositions.length === 2 && /\b(porque|ya que|debido a que)\b/.test(normalizedClaim)
+      && (/\b(inversor\w*|compr\w*|invert\w*)\b/.test(clauseText)
+        && /\b(viviend\w*|inmobiliari\w*|inmuebl\w*|ladrillo)\b/.test(clauseText)
+        || /\b(rentabil\w*|rendimient\w*|retorno\w*|benefici\w*)\b/.test(clauseText)
+          && /\b(negocio\w*|empres\w*|productiv\w*|economia real)\b/.test(clauseText));
+    const firmWageMechanism = focus.id === 'firm-wage-capacity'
+      && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
+      && (/(?:\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*)\b[\s\w]{0,50}\b(productiv\w*|benefici\w*)\b|\b(productiv\w*|benefici\w*)\b[\s\w]{0,50}\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*)\b)/.test(clauseText)
+        || /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(clauseText));
+    const pensionWageMechanism = focus.id === 'pension-wage-contribution-base'
+      && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
+      && (/(?:\b(pension\w*|jubilaci[oó]n)\b[\s\w]{0,60}\b(salari\w*|sueld\w*|cotiz\w*)\b|\b(salari\w*|sueld\w*|cotiz\w*)\b[\s\w]{0,60}\b(pension\w*|jubilaci[oó]n)\b)/.test(clauseText)
+        || /\b(emple\w*|ocupaci[oó]n|cotiz\w*)\b/.test(clauseText));
     if (sameSectorOutput) return true;
     if (sameLandlordMotive) return true;
+    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism) return true;
+    if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to
     // the preceding subject. A new named subject must remain a separate
     // proposition rather than silently inheriting this measurement contract.

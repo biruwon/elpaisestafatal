@@ -10,7 +10,8 @@ const migrationPopulation = /\b(inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera|na
 const migrationCredentialRecognition = (t) => migrationPopulation.test(t)
   && /\b(titul\w*|estudios? (?:superiores?|universitarios?)|cualific\w*|formacion|sobrecualific\w*)\b/.test(t)
   && /\b(homolog\w*|reconoc\w*|convalid\w*|revalid\w*|equivalen\w*|sobrecualific\w*|por debajo|inferior\w*|desajust\w*|desencaj\w*|baja cualificaci\w*|trabaj\w*[^.]{0,45}(?:formacion|titulaci\w*|cualificaci\w*)|acab\w*[^.]{0,45}(?:emple\w*|puesto\w*))\b/.test(t)
-  && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+  && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t)
+  && !healthcareWorkforceCausality(t);
 const migrationOverqualification = (t) => migrationPopulation.test(t)
   && (/\bsobrecualific\w*\b/.test(t)
     || /\b(titul\w*|estudios? (?:superiores?|universitarios?|terciarios?)|educacion (?:superior|terciaria)|universitari\w*)\b/.test(t)
@@ -25,7 +26,7 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
-  && /\b(condicion\w*|titulad\w*|graduad\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
+  && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
 const specialistOutpatientRegionalWaits = (t) => {
   const wait = /\blistas? de espera\b/.test(t)
     || /\b(espera\w*|demora\w*)\b/.test(t) && /\b(consultas? externas?|atencion especializada|especialistas?|sanidad|salud|medic\w*|hospital\w*)\b/.test(t);
@@ -192,7 +193,7 @@ const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jorn
 const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
 const rentalTenantScreeningExclusion = (t) => rentalSubject(t)
   && /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*)\b/.test(t)
-  && /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
+  && /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|penaliz\w*|discrimin\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
 const rentalRegulationContractShift = (t) => rentalSubject(t)
   && /\b(regulaci\w*|topes?\b|control de precios|l[ií]mite\w* (?:al|del) alquiler|ley de vivienda)\b/.test(t)
   && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
@@ -208,9 +209,90 @@ const foreignHousingPurchaseCause = (t) => foreignHousingPriceCause(t)
   && /\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
 const migrationHousingDemandCause = (t) => foreignHousingPriceCause(t)
   && !/\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
-const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|tecnolog\w*)\b/;
-const sectorWages = (t) => (namedSector.test(t) || /\bsectores?\b/.test(t))
-  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*)\b/.test(t);
+const youthHousingFamilyFormation = (t) => /\b(j[oó]ven\w*|juventud|emancip\w*)\b/.test(t)
+  && /\b(viviend\w*|alquil\w*|hipotec\w*|coste de (?:la )?viviend\w*|precio\w* de (?:la )?viviend\w*)\b/.test(t)
+  && /\b(cotiz\w*|cuot\w*|impuest\w*|carga fiscal|aportaci[oó]n\w*|contribu\w*)\b/.test(t)
+  && /\b(hij\w*|tener familia|formar familia|ahorr\w*|ahorro\w*|capacidad econ[oó]mica)\b/.test(t)
+  && /\b(reduc\w*|limit\w*|dificult\w*|impid\w*|menoscab\w*|condicion\w*)\b/.test(t);
+const inflationTaxBracketCreep = (t) => /\b(inflaci[oó]n|subida de precios)\b/.test(t)
+  && /\b(irpf|impuest\w*|carga fiscal|recaudaci[oó]n tributaria)\b/.test(t)
+  && /\b(tramos?|deduccion\w*|m[ií]nimo exento|par[aá]metros? (?:nominales?|del irpf)|progresividad en fr[ií]o)\b/.test(t)
+  && /\b(no se actualiz\w*|no actualiz\w*|al mismo ritmo|progresividad en fr[ií]o|eleva\w*|aument\w*|increment\w*|sub\w*)\b/.test(t);
+const housingInvestmentReturnComparison = (t) => /\b(viviend\w*|inmobiliari\w*|inmuebl\w*|ladrillo|alquiler\w*)\b/.test(t)
+  && /\b(rentabil\w*|rendimient\w*|retorno\w*|benefici\w*|invert\w*|inversion\w*)\b/.test(t)
+  && /\b(negocio\w*|empres\w*|productiv\w*|economia real|capital productiv\w*)\b/.test(t)
+  && /\b(mas|menos|mayor\w*|menor\w*|super\w*|inferior\w*|mejor\w*|peor\w*|compar\w*|frente a|prefier\w*|desvi\w*|compite\w*)\b/.test(t);
+const regionalWageHousingCost = (t) => /\b(ciudad\w*|municip\w*|metropolitan\w*|region\w*|territori\w*|capital\w*|area\w*|zona\w*)\b/.test(t)
+  && /\b(viviend\w*|alquil\w*|arrendam\w*|coste de (?:la )?viviend\w*|gasto(?:s)? (?:de )?viviend\w*)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
+  && /\b(come|comen|comer\w*|comi\w*|absorb\w*|compens\w*|neutraliz\w*|contrarrest\w*|mejor\w*|aument\w*|sub\w*)\b/.test(t);
+const wageProgression = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
+  && /\b(entrada|inicial\w*|comienzo|primeros? a[nñ]os|banda salarial|salario base|empez\w*|empiez\w*|inici\w*|antiguedad)\b/.test(t)
+  && /\b(progres\w*|avanz\w*|estanc\w*|permanec\w*|encaden\w*|a[nñ]os|sub\w*|aument\w*|crec\w*|antiguedad)\b/.test(t)
+  && !/\b(viviend\w*|casas?|piso\w*|hipotec\w*|comprar|compra de)\b/.test(t);
+const educationPayComparison = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*)\b/.test(t)
+  && /\b(cualificad\w*|cualificaci\w*|formaci\w*|estudios? (?:superiores?|universitarios?)|titulaci\w*|educaci\w*|puestos? que (?:exigen|requieren)|trabajos? que (?:exigen|requieren))\b/.test(t)
+  && /\b(parecid\w*|similar\w*|igual\w*|mism\w*|diferenc\w*|distint\w*|brecha\w*|compar\w*|menos|mas|mayor\w*|menor\w*|superior\w*|inferior\w*)\b/.test(t);
+const firmWageCapacity = (t) => /\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*|negocio\w*)\b/.test(t)
+  && /\b(productiv\w*|valor a[nñ]adido|benefici\w*|rentabil\w*)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*)\b/.test(t)
+  && /\b(capacidad|podr[ií]an?|pueden?|suficient\w*|contien\w*|fren\w*|reprim\w*|pag\w* mas|pagar mejor|salarios? altos)\b/.test(t);
+const publicPrivateJobConditions = (t) => /\b(emple\w*|trabaj\w*|puesto\w*|sector\w*|empleo|profesional\w*)\b/.test(t)
+  && /\b(public\w*|privad\w*|funcionari\w*|administraci[oó]n)\b/.test(t)
+  && /\b(conciliaci[oó]n|equilibrio entre vida|horario\w*|compatib\w*|vida familiar|flexibilidad|estabilidad|condiciones? laborales|calidad de vida)\b/.test(t)
+  && /\b(empuj\w*|busc\w*|prefer\w*|atra\w*|eleg\w*|decant\w*|pas\w*|cambi\w*|dej\w*|opt\w*|interes\w*)\b/.test(t)
+  && !/\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|cobra\w*|pag\w*)\b/.test(t);
+const publicPrivatePayComparison = (t) => /\b(sector publico|sector privado|empleos? public\w*|empleos? privad\w*|administraci[oó]n publica|funcionari\w*|sector\w* public\w*|sector\w* privad\w*)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*|cobr\w*)\b/.test(t)
+  && /\b(compar\w*|frente a(?:l| la| los| las)?|que en|que el|que la|mayor\w*|menor\w*|mas|menos|superior\w*|inferior\w*|brecha\w*|diferenc\w*)\b/.test(t);
+const retireeHousingCostComparison = (t) => /\b(jubilad\w*|pensionist\w*|pension\w*|jubilaci[oó]n)\b/.test(t)
+  && /\b(viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|propietari\w*|pagad\w*|pagada\w*)\b/.test(t)
+  && /\b(renta\w*|ingres\w*|salari\w*|sueld\w*|remuner\w*|trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t)
+  && /\b(mas|menos|mayor\w*|menor\w*|superior\w*|inferior\w*|compar\w*|diferenc\w*|cambi\w*|frente a|que quien\w*|pued\w* tener)\b/.test(t);
+const pensionIndexationComparison = (t) => /\b(pension\w*|jubilad\w*|jubilaci[oó]n)\b/.test(t)
+  && /\b(inflaci[oó]n|precios|coste de vida|revaloriz\w*|actualiz\w*|index\w*)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|trabajador\w*)\b/.test(t)
+  && /\b(mejor\w*|peor\w*|mas|menos|mayor\w*|menor\w*|super\w*|compar\w*|frente a|que)\b/.test(t);
+const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*|cotiz\w*)\b/.test(t)
+  && /\b(baj\w*|reduc\w*|debilit\w*|presion\w*|merm\w*|insuficient\w*|poc\w*)\b/.test(t)
+  && /\b(emple\w*|ocupaci[oó]n|trabajador\w*|cotiz\w*|financi\w*|sostenibilidad|recaud\w*)\b/.test(t);
+const pensionDoublePaymentClaim = (t) => /\b(pension\w*|jubilaci[oó]n)\b/.test(t)
+  && /\b(cotiz\w*|seguridad social|contribuci\w*|pension\w* public\w*)\b/.test(t)
+  && /\b(ahorro privad\w*|plan(?:es)? privad\w*|plan(?:es)? de pensiones? privad\w*|pension\w* privad\w*|pension\w* complementar\w*|fondo de pensiones? privad\w*|otra privad\w*)\b/.test(t)
+  && /\b(dos veces|doble|por duplicado|adem[aá]s|tener que|tendr\w* que|obligad\w*|pagar)\b/.test(t);
+const pensionWorkerSupportRatio = (t) => /\b(pension\w*|jubilad\w*|jubilaci[oó]n|sistema de reparto)\b/.test(t)
+  && /\b(trabajador\w*|cotiz\w*|emple\w*|afiliad\w*)\b/.test(t)
+  && /\b(por cada|ratio|relaci[oó]n|proporci[oó]n|suficient\w*|depend\w*|cotiz\w* por (?:cada )?(?:pensionist\w*|jubilad\w*))\b/.test(t)
+  && !pensionDoublePaymentClaim(t) && !pensionWageContributionBase(t);
+const intergenerationalHousingPensionComparison = (t) => /\b(generaci[oó]n|generaciones|boomers?|nacid\w* entre|mayores? de)\b/.test(t)
+  && /\b(viviend\w*|alquil\w*|compra de vivienda|acceso a la vivienda|propietari\w*)\b/.test(t)
+  && /\b(pension\w*|jubilaci[oó]n|jubilad\w*)\b/.test(t)
+  && /\b(mejor\w*|peor\w*|condiciones?|acceso|tendr\w*|podr\w*|futur\w*|compar\w*|diferenc\w*)\b/.test(t);
+const businessTaxBurdenComparison = (t) => /\b(multinacional\w*|empresa\w*|negocio\w*|comerci\w*|tienda\w*|pyme\w*|compa[nñ]ia\w*)\b/.test(t)
+  && /\b(impuest\w*|fiscal\w*|tribut\w*|sociedades|iva)\b/.test(t)
+  && /\b(menos|mas|mayor|menor|reduc\w*|proporci\w*|efectiv\w*|carg\w*|compar\w*)\b/.test(t)
+  && /\b(pag\w*|tribut\w*|carg\w*|contribu\w*|compit\w*|compar\w*)\b/.test(t);
+const smallBusinessCostPressure = (t) => !housingInvestmentReturnComparison(t)
+  && /\b(negocio\w*|comerci\w*|tienda\w*|empresa\w*|pyme\w*|restaurante\w*|bar\w*)\b/.test(t)
+  && /\b(desaparec\w*|cerr\w*|cierr\w*|quebr\w*|inviab\w*|sobreviv\w*|margen\w*|rentabil\w*)\b/.test(t)
+  && /\b(combinaci\w*|suma|acumulaci\w*|cost\w*|gasto\w*|alquil\w*|rent\w*|energ[ií]a|electricidad|impuest\w*|salari\w*|sueld\w*|cotiz\w*)\b/.test(t);
+const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|peque[nñ]o tama[nñ]o|tama[nñ]o (?:medio de (?:las )?empresas?|empresari\w*)|pymes?|microempresas?)\b/.test(t)
+  && /\b(inversi\w*|tecnolog\w*|productiv\w*|salari\w*|sueld\w*|innovaci\w*|exportaci\w*)\b/.test(t)
+  && (/\b(limit\w*|fren\w*|impid\w*|reduc\w*|afect\w*|condicion\w*|explic\w*)\b/.test(t)
+    || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
+const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
+  && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|trabaj\w* gratis)\b/.test(t);
+const wageGrowthJobMobility = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
+  && /\b(subid\w*|aument\w*|mejor\w*|crec\w*|increment\w*)\b/.test(t)
+  && /\b(cambi\w* de (?:empresa|trabajo|empleo)|cambio de (?:empresa|trabajo|empleo)|moverse de empresa|pasar a otra empresa)\b/.test(t);
+const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|sector tecnolog\w*|tecnolog\w*\s+(?:sector|industria))\b/;
+const sectorWages = (t) => !businessTaxBurdenComparison(t) && !smallBusinessCostPressure(t)
+  && !businessSizeProductivityConstraint(t) && !unpaidOvertime(t) && !wageGrowthJobMobility(t)
+  && !firmWageCapacity(t) && !publicPrivatePayComparison(t) && !educationPayComparison(t)
+  && (namedSector.test(t) || /\bsectores?\b/.test(t))
+  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*|gan\w*)\b/.test(t)
+  && /\b(productiv\w*|compar\w*|mas|menos|mayor|menor|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|diferenc\w*)\b/.test(t);
 const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
@@ -228,6 +310,38 @@ const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/
 // answer. A missing direct measure must not be filled with a neighbouring
 // topic merely because it has a convenient chart.
 const focuses = [
+  {
+    id: 'youth-housing-family-formation-costs', label: 'vivienda, cotizaciones y decisiones familiares de la juventud',
+    when: youthHousingFamilyFormation,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['ingresos netos y gastos de vivienda de hogares jóvenes', 'cotizaciones e impuestos realmente pagados por esos hogares', 'ahorro y decisiones de formar una familia medidos en la misma población y periodo', 'comparación que permita separar estos factores de empleo, edad, cuidados y preferencias'],
+    explanation: 'La dificultad para acceder a vivienda, las cotizaciones y las decisiones de tener hijos o ahorrar son resultados relacionados pero distintos. Un promedio de alquiler no mide cuánto reduce una cotización el ahorro ni si esos costes cambian las decisiones familiares.',
+    limitation: 'Los datos de vivienda juvenil no permiten atribuir cambios en ahorro o natalidad a cotizaciones o alquileres. Harían falta medidas de hogar y periodo compatibles y un análisis que distinga otros factores.',
+  },
+  {
+    id: 'inflation-tax-bracket-creep', label: 'inflación y actualización de los parámetros del IRPF',
+    when: inflationTaxBracketCreep,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['parámetros del IRPF y rentas nominales en el mismo periodo', 'estimación del efecto separado de cambios reales de renta y de la falta de actualización', 'grupo de hogares y supuestos de la simulación'],
+    explanationHeadline: 'El Banco de España estima un efecto de progresividad en frío del IRPF',
+    explanation: 'Si los tramos y otros parámetros nominales del IRPF no se actualizan con los precios, una subida nominal de ingresos puede elevar el impuesto efectivo aunque la renta real apenas cambie.',
+    explanationEvidence: {
+      directClaimEvidence: true,
+      expiresAt: '2027-06-14', territories: ['ES'],
+      dimensions: {
+        subject: 'efecto de la inflación sobre la recaudación del IRPF',
+        population: 'hogares y rentas modelados por el Banco de España; simulación con incremento homogéneo de rentas',
+        geography: 'España', period: 'estimación hipotética y evolución observada 2019–2023',
+        denominator: 'recaudación por IRPF; ratio IRPF/PIB', unit: 'elasticidad de recaudación y parte atribuida del cambio de la ratio',
+      },
+      facts: [
+        'El Banco de España estima que, si no se actualizan los parámetros del IRPF, un aumento homogéneo del 1 % en las rentas elevaría la recaudación un 1,85 %. Es una estimación del efecto bajo ese supuesto, no un aumento observado que se aplique por igual a cada hogar.',
+        'El estudio atribuye aproximadamente la mitad del aumento de la ratio IRPF/PIB entre 2019 y 2023 a la progresividad en frío. La conclusión se refiere al IRPF y a ese periodo; no mide la carga total de todos los impuestos.',
+      ],
+      sources: [{ id: 'fiscal-drag-bde', title: 'Progresividad en frío: impacto de la inflación sobre la recaudación por IRPF', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/documentos-ocasionales/progresividad-en-frio--el-impacto-heterogeneo-de-la-inflacion-sobre-la-recaudacion-por-irpf.html', publishedAt: '2024-06-14', retrievedAt: '2026-11-17', role: 'primary' }],
+    },
+    limitation: 'La estimación describe la progresividad en frío del IRPF bajo supuestos concretos. No mide cuánto paga cada familia ni demuestra que toda inflación, cualquier impuesto o toda deducción produzca el mismo efecto.',
+  },
   {
     id: 'gdp-household-welfare', label: 'PIB y condiciones de vida de los hogares',
     when: gdpHouseholdWelfare,
@@ -257,6 +371,22 @@ const focuses = [
     limitation: 'Los promedios nacionales de precios, empleo o sanidad no permiten concluir cómo difiere el acceso entre población rural y urbana.',
   },
   {
+    id: 'pension-private-savings-requirement', label: 'cotizaciones públicas y ahorro privado para la jubilación',
+    when: pensionDoublePaymentClaim,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['obligaciones legales de cotización y de ahorro privado vigentes para el grupo mencionado', 'prestación pública proyectada para la cohorte bajo reglas y carrera laboral explícitas', 'motivo y población a la que se atribuye una necesidad de ahorro adicional'],
+    explanation: 'Las cotizaciones a la Seguridad Social y el ahorro privado son mecanismos distintos. Que las cotizaciones financien prestaciones actuales no demuestra por sí solo que una persona vaya a tener que aportar también a un plan privado.',
+    limitation: 'Sin una obligación legal o una proyección compatible de prestaciones e ingresos no se puede afirmar que los jóvenes deban pagar dos veces o que el ahorro privado sea obligatorio.',
+  },
+  {
+    id: 'pension-worker-beneficiary-ratio', label: 'personas cotizantes por pensionista y financiación del sistema',
+    when: pensionWorkerSupportRatio,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['personas afiliadas que cotizan y personas pensionistas para el mismo periodo y perímetro', 'bases de cotización, ingresos del sistema y gasto en prestaciones', 'otras fuentes de financiación, transferencias y reglas de prestaciones'],
+    explanation: 'La relación entre cotizantes y pensionistas puede describir la estructura del sistema, pero no determina por sí sola si la financiación es suficiente. También importan las bases salariales, las prestaciones y los ingresos no contributivos.',
+    limitation: 'La dependencia por edad no equivale a cotizantes por pensionista. Un único cociente sin importes, perímetro y fuentes de financiación no demuestra por sí solo la sostenibilidad del sistema.',
+  },
+  {
     id: 'pension-financing', label: 'cómo se financian las pensiones de reparto',
     when: (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t) && /\b(reparto|capitaliz\w*|ahorr\w*|cuenta individual|cotizacion\w*|financ\w*)\b/.test(t)
       && /\b(actual\w*|propia\w*|reparto|capitaliz\w*|ahorr\w*|cuenta individual)\b/.test(t)
@@ -270,6 +400,22 @@ const focuses = [
       sources: [{ id: 'social-security-pay-as-you-go', title: 'Financiación de la Seguridad Social: reparto y solidaridad', publisher: 'Seguridad Social', url: 'https://www.seg-social.es/wps/portal/wss/internet/PortalEducativo/Profesores/Unidad5/PESS501/PESS503', retrievedAt: '2026-10-30' }],
     },
     limitation: 'Esta descripción de la financiación no calcula tu futura pensión ni demuestra por sí sola la sostenibilidad del sistema. Eso requiere reglas, periodos cotizados y escenarios demográficos y económicos.',
+  },
+  {
+    id: 'intergenerational-housing-pension-comparison', label: 'vivienda y jubilación entre generaciones',
+    when: intergenerationalHousingPensionComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['medidas de acceso y coste de vivienda para las cohortes y edades comparadas', 'proyecciones de pensión para esas mismas cohortes bajo reglas y escenarios publicados', 'ingresos netos, composición del hogar, patrimonio y años de observación comparables', 'conclusiones separadas para vivienda y jubilación, con sus poblaciones y periodos'],
+    explanation: 'Una comparación entre generaciones reúne al menos dos resultados distintos. El acceso a vivienda depende de precios, ingresos, crédito y patrimonio; la pensión futura depende de la carrera de cotización y de reglas y supuestos proyectados.',
+    limitation: 'La metodología de una proyección de pensiones no aporta evidencia sobre la vivienda, y los precios de vivienda no predicen una pensión. Sin cohortes comparables y datos de ambos ámbitos no se puede concluir que unas generaciones tuvieron o tendrán mejores condiciones en conjunto.',
+  },
+  {
+    id: 'pension-wage-contribution-base', label: 'salarios, empleo y financiación de pensiones',
+    when: pensionWageContributionBase,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['bases e ingresos por cotizaciones, con salarios, jornada y empleo comparables', 'recaudación contributiva y prestaciones financiadas en los mismos periodos', 'aportaciones públicas y cambios normativos separados de las cotizaciones sociales'],
+    explanation: 'Más personas ocupadas no equivalen automáticamente a más ingresos suficientes para financiar las pensiones: importan los salarios, las jornadas, las bases de cotización y las reglas aplicables.',
+    limitation: 'Una tasa de empleo o un salario mediano no mide por sí solo los ingresos totales por cotizaciones ni demuestra cuánto debilitan el sistema los salarios bajos.',
   },
   {
     id: 'future-pension-outlook', label: 'pensiones futuras de una generación',
@@ -286,6 +432,22 @@ const focuses = [
       sources: [{ id: 'airef-pension-projection-method-2025', title: 'Metodología del modelo para estimar el gasto en pensiones · Documento técnico 3/25', publisher: 'AIReF', url: 'https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250225_DT_metodologia_pensiones.pdf', retrievedAt: '2026-11-16' }],
     },
     limitation: 'Una comparación actual entre pensión media y salario medio no demuestra que las generaciones jóvenes cobrarán relativamente menos. Para responder hacen falta cohortes de nacimiento y años de jubilación definidos, además de separar el importe nominal de la tasa de sustitución y publicar las reglas y supuestos de cada escenario.',
+  },
+  {
+    id: 'retiree-housing-cost-comparison', label: 'ingresos de jubilación y gastos de vivienda',
+    when: retireeHousingCostComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['ingresos netos y gastos de vivienda de jubilados y trabajadores para hogares comparables', 'tenencia, hipoteca, alquiler y tamaño del hogar en el mismo territorio y periodo', 'distribución de renta disponible después de costes de vivienda, no solo promedios de grupos'],
+    explanation: 'Tener una vivienda pagada puede reducir el gasto mensual de un hogar, pero eso no basta para comparar sus ingresos disponibles con los de trabajadores que alquilan. Hay que medir ingresos y costes de vivienda en hogares comparables.',
+    limitation: 'La pensión media, el salario medio o la proporción de propietarios no muestran por sí solos cuántos jubilados tienen más renta después de vivienda que los trabajadores inquilinos.',
+  },
+  {
+    id: 'pension-indexation-comparison', label: 'actualización de pensiones, salarios e inflación',
+    when: pensionIndexationComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['reglas y cambios efectivos de las pensiones en cada año', 'serie salarial definida como bruta o neta y para la misma población y periodo', 'índice de precios y comparación acumulada desde una fecha común'],
+    explanation: 'La revalorización de las pensiones, el crecimiento de los salarios y la inflación son series distintas. Para decir cuál evolucionó mejor hay que fijar el periodo y comparar cambios acumulados en unidades compatibles.',
+    limitation: 'Una regla de actualización con la inflación no demuestra por sí sola que las pensiones crecieran más que los salarios; importan las fechas iniciales, los cambios salariales y qué grupos se comparan.',
   },
   {
     id: 'pension-wage-comparison', label: 'pensiones y salarios de la población trabajadora',
@@ -376,7 +538,7 @@ const focuses = [
         denominator: 'contratos de temporada con fianza depositada en cada año', unit: 'contratos registrados',
       },
       facts: [
-        'Como contexto, el registro de fianzas del INCASÒL contabilizó 9.330 contratos de temporada en 2023 y 13.517 en 2024 (+44,9 %).',
+        'El registro de fianzas del INCASÒL contabilizó 9.330 contratos de temporada en 2023 y 13.517 en 2024 (+44,9 %).',
         'La serie cuenta contratos con fianza registrada en Cataluña. No identifica viviendas que pasaron del alquiler habitual al temporal ni el motivo del cambio; por sí sola no mide un efecto de la regulación.',
       ],
       sources: [{ id: 'catalonia-seasonal-rental-deposits', title: 'Lloguer de temporada per trimestres fins al segon trimestre de 2026', publisher: 'Agència de l’Habitatge de Catalunya · INCASÒL', url: 'https://habitatge.gencat.cat/ca/dades/indicadors_estadistiques/estadistiques_de_construccio_i_mercat_immobiliari/mercat_de_lloguer/lloguer-de-temporada/', publishedAt: '2026-11-02', retrievedAt: '2026-11-17', role: 'primary' }],
@@ -482,6 +644,30 @@ const focuses = [
     limitation: 'Un total nacional de médicos o de graduados no permite establecer por qué faltan profesionales en una zona concreta. Para atribuirlo a las condiciones laborales hacen falta datos territoriales y una comparación del mismo periodo.',
   },
   {
+    id: 'public-private-job-conditions', label: 'condiciones laborales y elección entre empleo público y privado',
+    when: publicPrivateJobConditions,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['condiciones y horarios efectivos en puestos públicos y privados comparables', 'preferencias y decisiones de personas con ocupación y formación similares', 'mismo territorio y periodo, separando conciliación, estabilidad y salario'],
+    explanation: 'Que un puesto público tenga fama de ofrecer más conciliación no demuestra que esa condición cause que profesionales cualificados lo elijan. Hacen falta datos de condiciones reales y motivos de elección entre personas comparables.',
+    limitation: 'Las tasas de empleo por titulación y la temporalidad no miden la conciliación ni explican por qué alguien busca trabajo en un sector.',
+  },
+  {
+    id: 'public-private-pay-comparison', label: 'salarios públicos y privados para trabajos comparables',
+    when: publicPrivatePayComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['salarios brutos y netos por ocupación, cualificación, antigüedad y jornada', 'complementos, estabilidad y horas trabajadas en ambos sectores', 'misma población, territorio y periodo'],
+    explanation: 'Comparar salarios públicos y privados exige igualar ocupación, cualificación, jornada y antigüedad. Las medias generales de cada sector pueden reflejar que sus plantillas realizan trabajos distintos.',
+    limitation: 'Sin perfiles laborales comparables no se puede afirmar qué sector paga más en puestos de baja cualificación ni trasladar una media sectorial a cada trabajador.',
+  },
+  {
+    id: 'education-pay-comparison', label: 'salarios según formación exigida por el puesto',
+    when: educationPayComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['salarios por ocupación y nivel de formación requerido para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y tamaño de las diferencias, no solo medias'],
+    explanation: 'Que puestos con distintos requisitos formativos tengan salarios parecidos es una comparación de remuneración por puesto. La tasa de sobrecualificación mide si una persona ocupada trabaja en una ocupación de menor cualificación; no compara cuánto pagan esos puestos.',
+    limitation: 'Las tasas de empleo y sobrecualificación no permiten concluir si trabajos que exigen distinta formación cobran lo mismo.',
+  },
+  {
     id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',
     when: educationEmploymentOutcome,
     direct: [], context: [],
@@ -509,12 +695,84 @@ const focuses = [
     limitation: 'Un salario nominal o un IPC aislado no demuestra una pérdida salarial real. Tampoco la temporalidad o la cuña fiscal responden a esa comparación.',
   },
   {
+    id: 'regional-wage-housing-cost', label: 'empleo, salarios y coste de vivienda por ciudad',
+    when: regionalWageHousingCost,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['empleo, salarios netos y costes de vivienda de las mismas ciudades', 'misma población, ocupación, vivienda y periodo en cada lugar', 'medida de cuánto cambia el poder de compra después del coste de vivienda'],
+    explanation: 'Una ciudad puede concentrar empleo y pagar salarios más altos, pero el coste de vivienda puede reducir o anular esa ventaja para quienes viven allí. Los promedios nacionales no permiten medir ese balance entre ciudades.',
+    limitation: 'El salario mediano nacional y un índice de precios de vivienda no muestran el ingreso disponible tras pagar vivienda en cada ciudad ni demuestran que el empleo adicional quede compensado.',
+  },
+  {
     id: 'rental-price-amount', label: 'importe mensual del alquiler',
     when: (t) => has(t, rents) && has(t, absoluteRentAmount) && !has(t, rentalBurden),
     direct: [], context: ['rental_price_index'],
     needs: ['importe del alquiler expresado en euros por vivienda y periodo', 'territorio, tipo de vivienda y contrato comparables'],
     explanation: 'Para saber cuánto se paga por un alquiler hace falta un importe en euros por vivienda y periodo; un índice solo registra cambios relativos de precios.',
     limitation: 'El índice armonizado de alquiler sigue los precios que pagan los hogares, pero no publica el importe mensual medio en euros ni el precio anunciado de un piso. Tampoco identifica por sí solo la ciudad, el tipo de vivienda o el contrato.',
+  },
+  {
+    id: 'business-tax-burden', label: 'carga fiscal efectiva de empresas comparables',
+    when: businessTaxBurdenComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['impuestos efectivamente pagados por empresas comparables', 'base común como beneficios o valor añadido, separada por tamaño, actividad y tipo de impuesto', 'mismo territorio y periodo'],
+    explanation: 'Comparar los impuestos totales de empresas de distinto tamaño no muestra quién soporta una carga mayor. Hay que relacionar los impuestos pagados con una base común y distinguir los tributos incluidos.',
+    limitation: 'Sin tipos efectivos y grupos empresariales comparables no se puede concluir que las multinacionales digitales paguen proporcionalmente menos que el comercio local.',
+  },
+  {
+    id: 'housing-investment-return-comparison', label: 'rentabilidad de la vivienda frente a la inversión productiva',
+    when: housingInvestmentReturnComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['rentabilidad total de vivienda y negocios, incluidos costes, riesgo e impuestos', 'capital y horizonte temporal comparables', 'flujos de inversión observados y una población de inversores definida'],
+    explanation: 'Una comparación entre vivienda y negocios productivos requiere medir rendimientos netos con riesgo, costes, impuestos y plazos comparables. Los precios de vivienda no indican por sí solos el rendimiento obtenido ni por qué invierten las empresas.',
+    limitation: 'Sin retornos comparables y datos sobre decisiones de inversión no se puede concluir que el capital se desvíe a la vivienda porque ofrezca más rentabilidad.',
+  },
+  {
+    id: 'small-business-cost-pressure', label: 'costes operativos y continuidad de pequeños negocios',
+    when: smallBusinessCostPressure,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['altas, cierres y supervivencia de negocios del mismo tipo y territorio', 'alquiler, energía, impuestos, salarios y demás costes en los mismos periodos', 'comparación que distinga el efecto de cada coste y de la demanda'],
+    explanation: 'Que cierren negocios mientras suben varios costes no permite saber cuál de ellos causó los cierres ni cuántos negocios resultaron afectados.',
+    limitation: 'Los índices generales de alquiler o energía no miden el gasto total de cada negocio, su margen ni los motivos de cierre.',
+  },
+  {
+    id: 'business-size-productivity', label: 'tamaño empresarial, inversión y productividad',
+    when: businessSizeProductivityConstraint,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['empresas clasificadas por tamaño y actividad', 'inversión, adopción tecnológica, productividad y salarios con definiciones comparables', 'evolución temporal o diseño que permita atribuir diferencias al tamaño empresarial'],
+    explanation: 'Una diferencia entre empresas pequeñas y grandes no demuestra que su tamaño limite la inversión o los salarios; también pueden variar su actividad, edad, capital y acceso a financiación.',
+    limitation: 'Los salarios nacionales o sectoriales y el tamaño medio de las empresas no identifican por sí solos los mecanismos que relacionan tamaño, tecnología e inversión.',
+  },
+  {
+    id: 'firm-wage-capacity', label: 'productividad de las empresas y salarios que pagan',
+    when: firmWageCapacity,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['productividad, beneficios y salarios por tamaño, sector y ocupación', 'evolución de salarios y productividad para las mismas empresas', 'evidencia sobre negociación y decisiones salariales que permita comprobar una contención deliberada'],
+    explanation: 'Una empresa puede tener productividad o beneficios altos sin que eso determine cuánto paga a cada trabajador. Para afirmar que contiene salarios hacen falta datos de productividad, remuneración y decisiones de pago en las mismas empresas.',
+    limitation: 'Una mediana salarial nacional o sectorial no demuestra que grandes empresas puedan pagar más ni que estén frenando los salarios.',
+  },
+  {
+    id: 'unpaid-overtime', label: 'horas extraordinarias trabajadas y remuneradas',
+    when: unpaidOvertime,
+    direct: [], context: [],
+    needs: ['horas extraordinarias efectivamente trabajadas y pagadas', 'sector, tipo de contrato, periodo y población laboral comparables', 'fuente que permita distinguir horas no registradas de horas no remuneradas'],
+    explanation: 'Las encuestas salariales generales no cuentan por sí solas las horas extra trabajadas y no pagadas.',
+    limitation: 'Sin registros comparables de horas trabajadas y remuneradas no se puede estimar con qué frecuencia se incumple el pago de horas extraordinarias.',
+  },
+  {
+    id: 'wage-growth-job-mobility', label: 'cambio salarial asociado a cambiar de empleo',
+    when: wageGrowthJobMobility,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['salario de las mismas personas antes y después de cambiar de empresa', 'ocupación, jornada, antigüedad y periodo comparables', 'grupo de comparación que permaneció en su empleo'],
+    explanation: 'Comparar salarios de personas que cambiaron de empresa con quienes no lo hicieron no demuestra cuánto causó el cambio; sus ocupaciones y trayectorias también pueden diferir.',
+    limitation: 'Una mediana salarial nacional o una encuesta sectorial transversal no mide la subida que obtiene una persona al cambiar de empresa.',
+  },
+  {
+    id: 'wage-progression', label: 'progresión salarial al inicio de la carrera laboral',
+    when: wageProgression,
+    direct: [], context: [], claimType: 'trend',
+    needs: ['salarios de entrada y su evolución para las mismas ocupaciones y cohortes', 'antigüedad, jornada, sector y tipo de contrato', 'salarios reales o nominales identificados y periodo de seguimiento'],
+    explanation: 'Un salario de entrada describe el comienzo de una carrera laboral, no cómo evoluciona el sueldo de las mismas personas con los años. Para medir progresión hace falta seguir cohortes u ocupaciones comparables.',
+    limitation: 'La mediana salarial actual no permite saber si trabajadores jóvenes permanecen años en salarios iniciales ni si su sueldo progresa en términos reales.',
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',
@@ -528,7 +786,9 @@ const focuses = [
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',
-    when: (t) => /\b(hipotec\w*|entrada|comprar (?:una )?(?:casa|vivienda|piso))\b/.test(t) && /\b(salari\w*|sueld\w*|ingres\w*|ahorr\w*|deposit\w*|aval\w*|familiar\w*|barrera|acceso|acceder)\b/.test(t),
+    when: (t) => /\b(viviend\w*|casas?|piso\w*|inmobiliari\w*)\b/.test(t)
+      && /\b(hipotec\w*|entrada|compr\w*|adquir\w*|compra|ahorr\w*|deposit\w*|aval\w*|acceso|acceder)\b/.test(t)
+      && /\b(salari\w*|sueld\w*|ingres\w*|ahorr\w*|deposit\w*|aval\w*|familiar\w*|barrera|acceso|acceder|cuota)\b/.test(t),
     direct: [], context: ['house_price_index', 'median_equivalised_income'],
     needs: ['precio y ahorro inicial', 'ingresos, intereses y plazo de financiación', 'territorio y tipo de hogar'],
     explanation: 'El acceso a una hipoteca depende de la entrada y los gastos iniciales, los ingresos y las condiciones de financiación.',

@@ -774,7 +774,7 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
   const focusedFamily = claimFocusFor(text)?.id;
-  if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence'].includes(focusedFamily)) return [];
+  if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence', 'youth-housing-family-formation-costs', 'inflation-tax-bracket-creep'].includes(focusedFamily)) return [];
   const compiledClaim = deterministicFallbackCompiler(text);
   const domainProfile = domainProfileFor(text, compiledClaim);
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);

@@ -16,12 +16,32 @@ import { rankWarehouseObservations } from './warehouse-query.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const cases = [
+  ['youth-housing-family-formation-costs', ['La combinación de vivienda cara y cotizaciones altas reduce la capacidad de los jóvenes para tener hijos y ahorrar', 'El alquiler y las contribuciones elevadas limitan que la juventud ahorre y forme una familia', 'La vivienda costosa y los impuestos reducen la capacidad económica de los jóvenes para ahorrar y tener hijos']],
+  ['inflation-tax-bracket-creep', ['La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo', 'Si el IRPF no actualiza sus tramos con los precios, la inflación aumenta la recaudación', 'La progresividad en frío hace subir el IRPF cuando las rentas nominales crecen por la inflación']],
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
   ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
   ['rental-affordability', ['Con un sueldo normal ya no se puede alquilar un piso entero solo', 'El alquiler se lleva la mitad de los ingresos', 'La renta mensual consume casi todo el salario']],
+  ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
+  ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
+  ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
+  ['unpaid-overtime', ['En hostelería se hacen horas extra sin cobrar', 'Las horas extraordinarias no remuneradas son habituales en algunos trabajos', 'Muchos trabajadores trabajan horas extra gratis']],
+  ['wage-growth-job-mobility', ['Cambiar de empresa es la única forma de conseguir una subida salarial importante', 'El sueldo aumenta más al cambiar de trabajo que permaneciendo en la misma empresa', 'Quienes cambian de empleo logran mejores subidas de salario']],
+  ['wage-progression', ['Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', 'Los sueldos iniciales se estancan durante los primeros años de carrera', 'Quienes empiezan con un salario bajo apenas avanzan aunque acumulen antigüedad']],
+  ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda']],
+  ['housing-investment-return-comparison', ['Los inversores compran vivienda porque ofrece más rentabilidad que los negocios productivos', 'El capital prefiere el ladrillo frente a la inversión en empresas productivas', 'La rentabilidad inmobiliaria supera a la de invertir en actividades productivas']],
+  ['education-pay-comparison', ['Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen menos formación', 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios', 'La remuneración es similar entre puestos de distinta cualificación']],
+  ['firm-wage-capacity', ['Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios', 'Las empresas más productivas podrían pagar mejores sueldos y no lo hacen', 'Las compañías con más beneficios frenan la remuneración de sus plantillas']],
+  ['public-private-job-conditions', ['La falta de conciliación empuja a trabajadores cualificados a buscar empleo público', 'Los horarios más compatibles con la vida familiar atraen a profesionales hacia la administración', 'La estabilidad del empleo público lleva a algunas personas a dejar el sector privado']],
+  ['public-private-pay-comparison', ['El sector público paga salarios relativamente altos en puestos de baja cualificación frente al sector privado', 'Los empleos públicos cobran más que los privados en ocupaciones comparables', 'La brecha salarial entre funcionarios y trabajadores privados depende del puesto']],
+  ['retiree-housing-cost-comparison', ['Los jubilados con vivienda pagada pueden tener más renta disponible que trabajadores que pagan alquiler', 'Tras pagar la vivienda, algunos pensionistas disponen de más ingresos que quienes trabajan y alquilan', 'La diferencia de coste de vivienda cambia la renta disponible de jubilados y trabajadores inquilinos']],
+  ['pension-indexation-comparison', ['Las pensiones se actualizan mejor con la inflación que muchos salarios', 'Las revalorizaciones de las pensiones superan el crecimiento salarial en algunos periodos', 'Los salarios han seguido peor la inflación que las pensiones']],
+  ['pension-wage-contribution-base', ['Los salarios bajos debilitan el sistema de pensiones aunque aumente el empleo', 'La creación de empleo no compensa unas bases de cotización demasiado bajas para financiar las pensiones', 'Las remuneraciones reducidas limitan la financiación contributiva de las pensiones']],
+  ['pension-private-savings-requirement', ['Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado', 'Quienes trabajan deberán aportar a un plan privado además de cotizar para tener pensión', 'La jubilación exige pagar una pensión pública y otra privada']],
+  ['pension-worker-beneficiary-ratio', ['El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista', 'Cada vez hay menos cotizantes por jubilado y eso condiciona la financiación de las pensiones', 'La relación entre afiliados y pensionistas determina los recursos disponibles para prestaciones']],
+  ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
   ['matched-pay', ['Las empresas españolas pagan menos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
@@ -46,7 +66,7 @@ const cases = [
   ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
-  ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías']],
+  ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida']],
   ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada']],
   ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores']],
@@ -128,6 +148,62 @@ assert.equal(claimFocusFor('¿Cuántos anuncios de Airbnb hay en España?'), und
 assert.equal(Boolean(focusedMetricIdsFor('¿Cuántos apartamentos turísticos hay en España?')?.has('tourist_housing_count')), false, 'The tourist-dwelling estimate must not be presented as a count of tourist-apartment establishments');
 assert.equal(Boolean(focusedMetricIdsFor('¿Qué porcentaje del parque representan los apartamentos turísticos?')?.has('tourist_housing_share')), false, 'The tourist-dwelling share must not be presented as the share of tourist-apartment establishments');
 assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourist-housing-supply', 'General tourism and rent claims must not inherit tourist-dwelling counts');
+const crossTopicClaims = [
+  ['business-tax-burden', 'Las multinacionales digitales compiten con comercios locales pagando proporcionalmente menos impuestos'],
+  ['small-business-cost-pressure', 'Los negocios de barrio desaparecen por la combinación de alquiler, energía, impuestos y salarios'],
+  ['business-size-productivity', 'El pequeño tamaño medio de las empresas limita inversión, tecnología y salarios'],
+  ['unpaid-overtime', 'Las horas extra sin pagar siguen siendo habituales en la hostelería'],
+  ['wage-growth-job-mobility', 'En muchos sectores la única forma de conseguir una subida salarial importante es cambiar de empresa'],
+  ['wage-progression', 'Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real'],
+  ['regional-wage-housing-cost', 'Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial'],
+  ['housing-investment-return-comparison', 'Los inversores compran vivienda porque ofrece más rentabilidad que los negocios productivos'],
+  ['education-pay-comparison', 'Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación'],
+  ['firm-wage-capacity', 'Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios'],
+  ['public-private-job-conditions', 'La falta de conciliación empuja a trabajadores cualificados a buscar empleo público'],
+  ['public-private-pay-comparison', 'El sector público paga salarios relativamente altos en puestos de baja cualificación comparado con el sector privado'],
+  ['retiree-housing-cost-comparison', 'Los jubilados con vivienda pagada pueden tener más renta disponible que trabajadores que pagan alquiler'],
+  ['pension-indexation-comparison', 'Las pensiones se actualizan mejor con la inflación que muchos salarios'],
+  ['pension-wage-contribution-base', 'Los salarios bajos debilitan el sistema de pensiones aunque aumente el empleo'],
+  ['pension-private-savings-requirement', 'Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado'],
+  ['pension-worker-beneficiary-ratio', 'El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista'],
+  ['intergenerational-housing-pension-comparison', 'Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán'],
+  ['youth-housing-family-formation-costs', 'La combinación de vivienda cara y cotizaciones altas reduce la capacidad de los jóvenes para tener hijos y ahorrar'],
+  ['healthcare-staffing-causality', 'La homologación lenta de títulos extranjeros agrava la falta de profesionales sanitarios'],
+  ['rental-tenant-screening-exclusion', 'El mercado de alquiler penaliza especialmente a autónomos, temporales y personas sin nómina indefinida'],
+];
+const irrelevantWageObservation = { id: 'unrelated-national-wage', metricId: 'median_hourly_earnings', value: 17, period: '2025', unit: 'EUR per hour', geography: 'España', source: { id: 'unrelated-wage-source', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-16' } };
+for (const [family, claim] of crossTopicClaims) {
+  const focus = claimFocusFor(claim);
+  assert.equal(focus?.id, family, `Claim crossed into an unrelated topic instead of ${family}: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
+  assert.deepEqual(plan.answerScope.directMetrics, [], `A nearby salary statistic became direct evidence: ${claim}`);
+  assert.deepEqual(plan.answerScope.contextMetrics, [], `A nearby salary statistic became context for a different claim: ${claim}`);
+  assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
+  assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'insufficient');
+}
+assert.equal(claimFocusFor('¿Qué entrada necesito para comprar una vivienda con mi salario?')?.id, 'purchase-affordability', 'A genuine home-purchase deposit question must keep its housing route');
+assert.equal(claimFocusFor('Los trabajadores jóvenes cobran salarios de entrada sin progresar')?.id, 'wage-progression', 'Salary-entry wording must not be mistaken for a home-purchase deposit');
+assert.equal(claimFocusFor('Los pequeños comercios cierran por la subida del alquiler y la caída de su rentabilidad')?.id, 'small-business-cost-pressure', 'Business cost pressure must stay separate from property investment returns');
+assert.equal(claimFocusFor('La tasa de sobrecualificación de titulados universitarios es alta')?.id, 'education-employment-outcomes', 'A qualification-fit rate must not be rerouted to pay comparisons');
+assert.equal(claimFocusFor('La pensión media supera el salario medio de los trabajadores jóvenes')?.id, 'pension-wage-comparison', 'A pension-to-wage comparison without housing costs must stay in its own family');
+assert.equal(claimFocusFor('Las cotizaciones actuales de quienes trabajan financian las pensiones públicas')?.id, 'pension-financing', 'A system-financing explanation must remain separate from the wage-base causal claim');
+assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones de reparto')?.id, 'pension-financing', 'A pay-as-you-go financing explanation must not imply that private saving is compulsory');
+assert.equal(claimFocusFor('Las próximas generaciones cobrarán pensiones más bajas')?.id, 'future-pension-outlook', 'A future-pension projection without a housing claim must keep its pension route');
+assert.equal(claimFocusFor('La inflación sube los precios y reduce el poder adquisitivo de los salarios')?.id, 'real-wages', 'A general real-wage claim must not be treated as tax bracket creep');
+assert.equal(claimFocusFor('El Gobierno sube el IVA de la electricidad este verano')?.id, undefined, 'A rate change must not inherit income-tax inflation evidence');
+const fiscalDragClaim = 'La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo';
+const fiscalDragPlan = focusedEvidencePlan(fiscalDragClaim);
+assert.equal(fiscalDragPlan.answerScope.family, 'inflation-tax-bracket-creep');
+assert.equal(fiscalDragPlan.evidenceLevel, 'limited');
+assert.deepEqual(fiscalDragPlan.sourceLinks.map((source) => source.id), ['fiscal-drag-bde'], 'The specific IRPF question must use the reviewed Banco de España source without unrelated tax or pension sources');
+assert.match(fiscalDragPlan.shareableReply, /1,85 %/);
+assert.match(fiscalDragPlan.shareableReply, /2019 y 2023/);
+assert.doesNotMatch(fiscalDragPlan.shareableReply, /41,4 %|123 % del PIB|IVA/);
+assert.equal(claimFocusFor('La tasa de sobrecualificación de inmigrantes obliga a trabajar por debajo de la formación')?.id, 'migration-overqualification', 'A general credential fit claim must stay with the labour outcome measure');
+const rentalRegulationPlan = focusedEvidencePlan('La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales');
+assert.equal(rentalRegulationPlan.answerScope.family, 'rental-regulation-contract-shift');
+assert.doesNotMatch(rentalRegulationPlan.shareableReply, /Como contexto:\s*Como contexto/);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos hay en España?')], ['tourist_housing_count']);
 assert.deepEqual([...focusedMetricIdsFor('¿Qué proporción del parque de viviendas es turístico?')], ['tourist_housing_share']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos han retirado viviendas del alquiler residencial?')], ['tourist_housing_count', 'tourist_housing_share']);

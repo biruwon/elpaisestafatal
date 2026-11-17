@@ -320,3 +320,41 @@ zero top matches marked incompatible with the expected measure. This benchmark
 checks metric routing, not end-to-end factual accuracy. A per-person final-energy
 comparison remains unsupported because the registry contains only aggregate
 energy totals; those totals are kept out of the answer path.
+
+## Text claim routing and source fit — 17 November 2026
+
+A second review of all 300 unverified discovery candidates found cross-topic
+routes that could attach plausible but irrelevant statistics: entry-level
+salary claims selected home-purchase data; returns on housing investment could
+fall into small-business closure claims; pay differences by education or public
+and private sector could select an overqualification rate; and a pension
+indexation claim could select general wage and price series. A claim about
+housing costs, contributions and family formation could also receive a youth
+housing answer that did not measure savings or having children.
+
+Text interpretation now separates those reusable claim families, along with
+regional wage and housing-cost comparisons, firm productivity and pay,
+unpaid overtime, wage progression, pension contribution bases, pension
+financing, private retirement saving and workers per pensioner. Compound
+causal clauses that belong to one family can use that family's evidence plan;
+separate topics retain their own scope. Where the warehouse does not contain
+the required compatible measures, these routes return an evidence gap without
+substituting nearby national wages, housing indices or age-dependency ratios.
+
+The broad tax packet also attached wage-tax, VAT and pension projections to a
+specific question about inflation and unadjusted income-tax parameters. The
+focused answer now uses the Banco de España estimate for that mechanism alone:
+its 1.85% IRPF revenue response is a modeled result for a homogeneous 1% income
+increase without parameter updates, while the estimated contribution to the
+IRPF/GDP rise refers to 2019–2023. Neither figure is presented as the amount
+every household paid or as a measure of all taxes.
+
+In the deterministic fallback audit, the result changed from four API-complete
+responses, 24 limited responses and 272 uncovered claims to three API-complete,
+15 limited and 282 uncovered. Claims with attached evidence or sources fell
+from 28 to 18, and metric-family routes from 92 to 82. This is a deliberate
+reduction in unsupported attachments, not a measure of accuracy: all 300
+inputs remain unverified, the audit does not exercise every live production
+path, and a family match does not establish that evidence is available. The
+focused claim suite now checks 171 paraphrases and nearby claims; the remaining
+gaps require source work before they can receive numeric answers.
