@@ -156,8 +156,8 @@ const unemploymentWagePressureEvidence = {
     unit: 'respuesta salarial estimada ante cambios de 1 punto porcentual en desempleo, y diferencias de sensibilidad por fase del ciclo',
   },
   facts: [
-    'Un estudio del Banco de España sobre trabajadores del metal en España e Italia estimó que, entre 2005 y 2013, un aumento de 1 punto porcentual en el desempleo local se asociaba con una reducción aproximada de 0,45 puntos porcentuales en el salario medio contemporáneo.',
-    'Otro estudio, con historiales laborales administrativos de España entre 1987 y 2013, encontró que la respuesta de los salarios reales al ciclo era débil y distinta en expansiones y recesiones. En las recesiones, un mayor desempleo no se traducía en ajustes adicionales del salario real; las personas recién contratadas eran más sensibles al ciclo que quienes llevaban más de seis años en el empleo.',
+    'Entre trabajadores del metal en España e Italia (2005–2013), 1 punto porcentual más de desempleo local se asoció con 0,45 puntos porcentuales menos en el salario medio contemporáneo.',
+    'En historiales laborales administrativos de España (1987–2013), la respuesta del salario real al ciclo fue débil: en recesión, más paro no produjo ajustes adicionales; quienes acababan de entrar al empleo fueron más sensibles que quienes llevaban más de seis años.',
   ],
   sources: [
     { id: 'bde-wp-2036-unemployment-wage-setting', title: 'Wage determination and the bite of collective contracts in Italy and Spain · Working Paper 2036', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/wage-determination-and-bite-collective-contracts-italy-and-spain-evidence-from-metal-working-industry.html', publishedAt: '2020-12-23', retrievedAt: '2026-11-17', role: 'primary' },
@@ -800,11 +800,11 @@ const focuses = [
     when: unemploymentWagePressure,
     claimType: 'causal',
     direct: [], context: [],
-    needs: ['desempleo local o sectorial y salarios del mismo mercado laboral, población y periodo', 'una medida de la oferta de candidatos o vacantes si se afirma que siempre hay aspirantes', 'comparación que tenga en cuenta ocupación, jornada, composición de trabajadores, negociación colectiva, antigüedad y fase del ciclo económico'],
+    needs: ['desempleo local y salarios comparables por ocupación, sector y periodo', 'candidatos por vacante en el mismo mercado laboral', 'comparación por jornada, antigüedad, negociación colectiva y fase del ciclo económico'],
     explanationHeadline: 'El desempleo puede influir en la negociación salarial, pero los estudios no prueban una regla universal',
-    explanation: 'La evidencia disponible estudia mercados y periodos concretos. Muestra que la sensibilidad salarial puede cambiar por sector, ciclo económico y antigüedad; no establece que todas las empresas puedan mantener bajos los sueldos porque siempre haya candidatos.',
+    explanation: 'La relación entre paro y salarios depende del mercado y del ciclo; estos estudios no justifican una regla para todas las empresas.',
     explanationEvidence: unemploymentWagePressureEvidence,
-    limitation: 'Estos estudios son históricos: uno analiza trabajadores del metal en España e Italia y desempleo local entre 2005 y 2013; el otro estudia la respuesta de los salarios reales en España entre 1987 y 2013. Ninguno mide el desempleo estructural actual, cuántos candidatos hay para cada vacante ni la política salarial de todas las empresas.',
+    limitation: 'Son estudios históricos y de poblaciones específicas; no miden el desempleo estructural actual, los candidatos por vacante ni la política salarial de todas las empresas.',
   },
   {
     id: 'migration-fiscal-contribution', label: 'aportación fiscal de la población migrante por nivel laboral',

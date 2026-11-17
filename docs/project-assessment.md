@@ -647,3 +647,18 @@ explanation quality and are not an accuracy score. Paraphrases use the same
 work-hour-specific series; absolute headcounts, subjective affordability,
 nearby housing independence and foreign-country claims remain outside those
 series' direct scope.
+
+## Unemployment and wage-pressure replies — 17 November 2026
+
+The unemployment-and-wages family now gives a shorter, source-scoped summary.
+It keeps the Banco de España metal-worker estimate for Spain and Italy
+(2005–2013) separate from the Spanish administrative-worker study (1987–2013),
+and labels both as historical context. Neither measures current structural
+unemployment, candidates per vacancy or the pay policies of all firms. See
+[Working Paper 2036](https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/wage-determination-and-bite-collective-contracts-italy-and-spain-evidence-from-metal-working-industry.html)
+and [Working Paper 1504](https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/documentos-trabajo/real-wage-responsiveness-to-unemployment-spain-asymmetries-along-business-cycle.html).
+
+In the deterministic audit of the 300 unverified discovery claims, this reply
+fell from 254 to 151 words; all 300 replies are now under 160 words. This is a
+readability check on the fallback, not a factual-accuracy score or a result for
+the dynamic resolver.

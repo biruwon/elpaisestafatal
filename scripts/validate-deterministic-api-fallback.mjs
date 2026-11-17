@@ -243,7 +243,7 @@ if (unemploymentWagePressure.status !== 'partial' || unemploymentWagePressure.re
   || unemploymentWagePressure.result?.claimType !== 'causal' || unemploymentWagePressure.result?.evidenceLevel !== 'limited'
   || JSON.stringify(unemploymentWagePressure.result?.sourceIds || []) !== JSON.stringify(['bde-wp-2036-unemployment-wage-setting', 'bde-wp-1504-real-wage-cyclicality'])
   || unemploymentWagePressure.result?.answerScope?.directMetrics?.length
-  || !unemploymentWagePressure.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local o sectorial/.test(item)))
+  || !unemploymentWagePressure.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local y salarios comparables/.test(item)))
   || unemploymentWagePressure.result?.blocks?.some((block) => block.type === 'claim_breakdown' && block.items?.[0]?.verdict === 'confirmed')) {
   throw new Error('The unemployment/wage claim lost its historical evidence limits, causal classification, or direct evidence gap.');
 }

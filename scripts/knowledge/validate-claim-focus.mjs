@@ -463,11 +463,11 @@ assert.equal(unemploymentWageAnswer.claimType, 'causal');
 assert.equal(unemploymentWageAnswer.evidenceLevel, 'limited', 'Historical studies provide context, not direct evidence about current structural unemployment');
 assert.deepEqual(unemploymentWageAnswer.sourceLinks.map((source) => source.id), ['bde-wp-2036-unemployment-wage-setting', 'bde-wp-1504-real-wage-cyclicality']);
 assert.deepEqual(unemploymentWageAnswer.answerScope.directMetrics, []);
-assert.match(unemploymentWageAnswer.shareableReply, /metal.*Espa[ñn]a e Italia/);
-assert.match(unemploymentWageAnswer.shareableReply, /2005 y 2013/);
-assert.match(unemploymentWageAnswer.shareableReply, /1987 y 2013/);
-assert.match(unemploymentWageAnswer.shareableReply, /no mide el desempleo estructural actual/);
-assert.ok(unemploymentWageAnswer.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local o sectorial/.test(item))));
+assert.match(unemploymentWageAnswer.shareableReply, /trabajadores del metal en Espa[ñn]a e Italia \(2005–2013\)/);
+assert.match(unemploymentWageAnswer.shareableReply, /historiales laborales administrativos de Espa[ñn]a \(1987–2013\)/);
+assert.match(unemploymentWageAnswer.shareableReply, /no miden el desempleo estructural actual/);
+assert.ok(unemploymentWageAnswer.shareableReply.trim().split(/\s+/).length <= 160, 'The unemployment/wage explanation must stay digestible while preserving scope and limits');
+assert.ok(unemploymentWageAnswer.blocks.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /desempleo local y salarios comparables/.test(item))));
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage', result: unemploymentWageAnswer }, unemploymentWageClaim).state, 'insufficient', 'Contextual studies must not turn the universal causal claim into a confirmed public verdict');
 for (const paraphrase of [
   'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja',
@@ -479,6 +479,7 @@ for (const paraphrase of [
   assert.equal(answer.evidenceLevel, 'limited', `An unemployment/wages paraphrase lost its context evidence: ${paraphrase}`);
   assert.deepEqual(answer.sourceLinks.map((source) => source.id), unemploymentWageAnswer.sourceLinks.map((source) => source.id), `An unemployment/wages paraphrase changed sources: ${paraphrase}`);
   assert.deepEqual(answer.evidenceSummary.families[0].data, unemploymentWageAnswer.evidenceSummary.families[0].data, `An unemployment/wages paraphrase changed facts: ${paraphrase}`);
+  assert.ok(answer.shareableReply.trim().split(/\s+/).length <= 160, `An unemployment/wages paraphrase exceeded the digestible answer length: ${paraphrase}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage-paraphrase', result: answer }, paraphrase).state, 'insufficient');
 }
 assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
