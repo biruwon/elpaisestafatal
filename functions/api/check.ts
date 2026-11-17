@@ -22,7 +22,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-youth-reply-concise-34-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-35-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -215,6 +215,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     : unavailableCheck(body.text, 'No hemos podido leer el contenido ahora. Pega el texto de la afirmación para comprobarlo.');
   let focusedObservations: Record<string, unknown>[] | undefined;
   let warehouseFocusedResponse: PublicCheckResponse | undefined;
+  let warehouseUnavailableResponse: PublicCheckResponse | undefined;
   if (effectiveClaim.trim() && body.inputType === 'text') context.waitUntil(captureClaimDemand(env.DB, effectiveClaim, body.inputType));
 
   // `fresh=1` is an explicit development escape hatch. Responses are already
@@ -246,7 +247,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     const focus = claimFocusFor(effectiveClaim);
     if (focus) {
       const metricIds = [...(focusedMetricIdsFor(effectiveClaim) || [])];
+      const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
+      const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
       if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+      // A focused metric family with no D1 binding has not been checked. Do not
+      // turn missing retrieval infrastructure into an evidence-gap conclusion.
+      if (metricIds.length && !env.DB) {
+        warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
+        if (!localResolverAvailable) return json(warehouseUnavailableResponse);
+      }
       if (env.DB && metricIds.length) {
         let lookupFailed = false;
         focusedObservations = await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => {
@@ -257,17 +266,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (focus.id === 'rental-price-amount') {
             return json(unavailableCheck(effectiveClaim, 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
           }
-          // Context metrics (for example, unemployment as background to a
-          // claim about job opportunities) cannot answer the direct claim.
-          // If their lookup is unavailable, retain the measurement gap rather
-          // than turning a transient D1 failure into an empty public response.
-          if (focus.direct.length === 0) {
-            const plan = focusedEvidencePlan(effectiveClaim, { observations: [] }) as AnswerPlan | undefined;
-            if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
-            if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse || submissionFallback());
-          } else if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) {
-            return json(unavailableCheck(effectiveClaim, `No hemos podido consultar datos compatibles sobre ${focus.label}. No sustituimos esa medida por cifras de otro tema.`));
-          }
+          // An exception is different from a successful lookup with no rows.
+          // Keep this distinction for context-only families too: their
+          // contextual series may still exist even when they cannot prove the
+          // submitted claim on their own.
+          warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
+          if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
           const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
@@ -276,10 +280,9 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
             if (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
           }
         }
-      } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0) {
-        // A context-only family has no direct metric that can support the
-        // submitted claim. Explain the missing measurement even when D1 is
-        // not bound or has no matching metric IDs.
+      } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0 && metricIds.length === 0) {
+        // If no warehouse metric is defined for this family, its reviewed
+        // explanation can identify the missing measurement without a lookup.
         const plan = focusedEvidencePlan(effectiveClaim, { observations: [] }) as AnswerPlan | undefined;
         if (plan) {
           warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
@@ -309,7 +312,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     return json(response);
   }
 
-  if (localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse || submissionFallback());
+  if (localCircuitOpenUntil > Date.now()) return json(warehouseUnavailableResponse || warehouseFocusedResponse || submissionFallback());
 
   try {
     // D1 is the production retrieval index. The local resolver still ranks
@@ -347,7 +350,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     if (!upstreamResponse.ok) {
       localFailureCount += 1;
       if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-      return json(warehouseFocusedResponse || submissionFallback());
+      return json(warehouseUnavailableResponse || warehouseFocusedResponse || submissionFallback());
     }
     localFailureCount = 0;
     const upstreamPayload = await upstreamResponse.json().catch(() => undefined);
@@ -356,7 +359,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       // The local resolver has already accepted the job. Expose a deterministic
       // answer when it is sufficiently grounded so the user gets useful
       // context while optional model enrichment continues in the background.
-      const previewResponse = warehouseFocusedResponse || submissionFallback();
+      const previewResponse = warehouseUnavailableResponse || warehouseFocusedResponse || submissionFallback();
       const preview = usefulPreview(previewResponse);
       return json(processingCheck(body.text, safe.requestId, preview), 202);
     }
@@ -364,14 +367,16 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // deterministic knowledge layer can still provide scoped, sourced
     // context. Prefer that context only when it improves an insufficient
     // model result; never replace a supported or clarification response.
-    const response = resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification, warehouseFocusedResponse);
+    const response = safe?.result
+      ? resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification, warehouseUnavailableResponse || warehouseFocusedResponse)
+      : warehouseUnavailableResponse || resolvedResponse(effectiveClaim, safe, safe?.requestId, body.inputType !== 'text', !body.clarification, warehouseFocusedResponse);
     if (safe?.extraction && safe.requestId && safe.extraction.status !== 'failed') context.waitUntil(captureClaimDemand(env.DB, extractedClaim(safe.extraction), safe.extraction.inputType, safe.requestId));
     if (!bypassResponseCache && cacheKey && response.state === 'supported') storeResponse(cacheKey, { expiresAt: Date.now() + 10 * 60_000, response });
     return json(response);
   } catch {
     localFailureCount += 1;
     if (localFailureCount >= circuitBreakAfter) localCircuitOpenUntil = Date.now() + circuitCooldownMs;
-    return json(warehouseFocusedResponse || submissionFallback());
+    return json(warehouseUnavailableResponse || warehouseFocusedResponse || submissionFallback());
   }
 };
 

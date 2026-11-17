@@ -56,6 +56,11 @@ const api = await import(`data:text/javascript;base64,${Buffer.from(apiBuilt.out
 const originalFetch = globalThis.fetch;
 const pending = [];
 let received;
+const postCheck = (text, env) => api.onRequestPost({
+  request: new Request('https://site.test/api/check?fresh=1', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, inputType: 'text' }) }),
+  env,
+  waitUntil: (promise) => pending.push(promise),
+});
 try {
   globalThis.fetch = async (_url, init) => {
     received = JSON.parse(init.body);
@@ -73,6 +78,34 @@ try {
   assert.deepEqual(new Set(received.warehouseRecords.map((item) => item.metricId)), new Set(ids));
   assert.ok(publicResult.result.criteria.every((criterion) => criterion.sourceIds.every((id) => publicResult.result.sources.some((source) => source.id === id))));
   await Promise.all(pending);
+
+  const outageClaim = 'Los salarios españoles han perdido poder adquisitivo desde 2020';
+  const noDatabase = await postCheck(outageClaim, {});
+  const noDatabaseResult = await noDatabase.json();
+  assert.equal(noDatabaseResult.state, 'unavailable', 'No D1 binding must not be described as missing evidence');
+  assert.match(noDatabaseResult.message, /no hemos podido consultar las series estadísticas/i);
+
+  const failedDatabase = {
+    prepare() {
+      return { bind() { return this; }, async all() { throw new Error('warehouse read failed'); }, async run() { return {}; } };
+    },
+  };
+  const failedLookup = await postCheck(outageClaim, { DB: failedDatabase });
+  const failedLookupResult = await failedLookup.json();
+  assert.equal(failedLookupResult.state, 'unavailable', 'A failed warehouse read must not be described as missing evidence');
+  assert.match(failedLookupResult.message, /no hemos podido consultar las series estadísticas/i);
+
+  const emptyDatabase = {
+    prepare() {
+      return { bind() { return this; }, async all() { return { results: [] }; }, async run() { return {}; } };
+    },
+  };
+  const emptyLookup = await postCheck(outageClaim, { DB: emptyDatabase });
+  const emptyLookupResult = await emptyLookup.json();
+  assert.equal(emptyLookupResult.state, 'insufficient', 'A successful empty lookup is an evidence gap, not a retrieval outage');
+  assert.doesNotMatch(emptyLookupResult.result.reply, /no hemos podido consultar las series estadísticas/i);
+  await Promise.all(pending);
+
   globalThis.fetch = async (_url, init) => {
     received = JSON.parse(init.body);
     const observations = rankWarehouseObservations(received.text, received.warehouseRecords, 100, { metricIds: new Set(['unemployment_rate']) });
@@ -98,4 +131,4 @@ try {
   await Promise.all(pending);
 } finally { globalThis.fetch = originalFetch; }
 database.close();
-console.log('Real-wage D1 retrieval passed: both complete annual series, source revisions and observation flags survive the public submission path.');
+console.log('Real-wage D1 retrieval passed: evidence, source revisions, observation flags, empty searches and warehouse outages keep distinct public outcomes.');

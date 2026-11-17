@@ -452,3 +452,13 @@ The hourly export/import claim still lacks cross-border electricity flows
 aligned with hourly wholesale prices. The wage-price claim still lacks labor
 costs aligned with business prices and margins. Those causal conclusions remain
 open; the household tariff, broad wage index and HICP cannot fill them.
+
+## Text evidence-store outages — 17 November 2026
+
+A focused claim can be missing a compatible observation, or the data store can
+be unreachable. These cases now have different public outcomes: a successful
+search with no compatible rows can explain the evidence gap; a missing D1
+binding or failed read says the statistical series could not be checked and
+invites a retry. This avoids presenting an infrastructure failure as evidence
+that the needed data do not exist. The real-wage API validation covers absent,
+failed and successful-empty lookups.
