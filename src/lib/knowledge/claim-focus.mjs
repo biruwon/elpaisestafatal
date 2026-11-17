@@ -345,13 +345,16 @@ const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.te
 const wageGrowthJobMobility = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
   && /\b(subid\w*|aument\w*|mejor\w*|crec\w*|increment\w*)\b/.test(t)
   && /\b(cambi\w* de (?:empresa|trabajo|empleo)|cambio de (?:empresa|trabajo|empleo)|moverse de empresa|pasar a otra empresa)\b/.test(t);
-const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|sector tecnolog\w*|tecnolog\w*\s+(?:sector|industria))\b/;
+const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|alojam\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|finanzas?|sector tecnolog\w*|tecnolog\w*\s+(?:sector|industria))\b/;
+const sectorSalaryReference = (t) => /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|gan\w*)\b/.test(t)
+  || /\b(cobr\w*|pag\w*)\b/.test(t) && /\bpor hora\b/.test(t)
+  || /\b(mejor|peor)\s+pag\w*\b/.test(t);
 const sectorWages = (t) => !businessTaxBurdenComparison(t) && !smallBusinessCostPressure(t)
   && !businessSizeProductivityConstraint(t) && !unpaidOvertime(t) && !wageGrowthJobMobility(t)
   && !firmWageCapacity(t) && !publicPrivatePayComparison(t) && !educationPayComparison(t)
   && (namedSector.test(t) || /\bsectores?\b/.test(t))
-  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pag\w*|gan\w*)\b/.test(t)
-  && /\b(productiv\w*|compar\w*|mas|menos|mayor|menor|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|arrastr\w*|deprim\w*|lastr\w*|reduc\w*|diferenc\w*)\b/.test(t);
+  && sectorSalaryReference(t)
+  && /\b(productiv\w*|compar\w*|mas|menos|mejor\w*|peor\w*|bien pagad\w*|mal pagad\w*|bien remunerad\w*|mal remunerad\w*|mayor\w*|menor\w*|inferior\w*|superior\w*|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|por debajo|por encima|arrastr\w*|deprim\w*|lastr\w*|reduc\w*|diferenc\w*)\b/.test(t);
 const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
@@ -885,18 +888,21 @@ const focuses = [
   {
     id: 'sector-wage-comparison', label: 'salarios y productividad por sector',
     when: sectorWages,
-    direct: [], context: [],
-    needs: ['salarios por actividad y ocupación, con jornada, contrato y si son brutos o netos', 'productividad por hora en los mismos sectores, territorio y periodo'],
-    explanation: 'Una media o mediana nacional no compara sectores. Hay que alinear salarios y productividad por hora por actividad, territorio y periodo; el valor añadido total no mide productividad.',
+    direct: [], context: ['mean_hourly_earnings_by_activity'],
+    needs: ['empleos por actividad que superan un umbral salarial definido', 'productividad por hora en los mismos sectores y periodo'],
+    explanation: 'La media salarial da contexto; la distribución salarial y la productividad requieren otras medidas.',
     explanationEvidence: {
       expiresAt: '2027-11-16', territories: ['ES'],
       facts: [
-        'La Encuesta de Estructura Salarial de Eurostat desglosa la remuneración bruta por actividad cada cuatro años; la edición más reciente es de 2022.',
-        'Cubre empresas de 10 o más empleados; excluye agricultura, pesca, hogares y organismos extraterritoriales. La administración pública participa voluntariamente.',
+        'La encuesta es cuatrienal; este feed usa 2022, todos los sexos y la media del salario bruto del mes por hora pagada, para empresas con 10 o más empleados.',
+        'En España se excluyen agricultura, pesca, hogares empleadores y organismos extraterritoriales; la sección O de administración pública solo queda parcialmente cubierta.',
       ],
-      sources: [{ id: 'eurostat-structure-earnings-survey', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-16' }],
+      sources: [
+        { id: 'eurostat-structure-earnings-survey', title: 'Earnings · Structure of earnings survey', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/en/web/labour-market/information-data/earnings', retrievedAt: '2026-11-17' },
+        { id: 'eurostat-spain-structure-earnings-2022', title: 'Structure of earnings survey 2022 · Spain quality report', publisher: 'Eurostat / INE', url: 'https://ec.europa.eu/eurostat/cache/metadata/EN/earn_ses2022_esqrs_es.htm', retrievedAt: '2026-11-17' },
+      ],
     },
-    limitation: 'La encuesta describe remuneraciones brutas, pero no mide productividad ni demuestra qué actividad determina el nivel salarial nacional.',
+    limitation: 'La media es bruta por hora; no mide salario neto ni distribución salarial. NACE I abarca alojamiento y servicios de comida, no todo el turismo; la encuesta no mide productividad.',
   },
   {
     id: 'self-employment-cost-viability', label: 'costes fijos y viabilidad del trabajo autónomo',

@@ -37,6 +37,7 @@ const labels = {
   unemployment_rate_europe: 'Tasa de paro entre personas activas de 15 a 74 años',
   median_hourly_earnings: 'Salario mediano bruto por hora',
   median_hourly_earnings_europe: 'Salario mediano bruto por hora en Europa',
+  mean_hourly_earnings_by_activity: 'Salario bruto medio por hora según actividad',
   cpi_index: 'IPC general', harmonised_price_index: 'Índice armonizado de precios',
   rental_price_index: 'Índice de alquileres pagados',
   housing_cost_overburden_rate: 'Sobrecarga de gastos de vivienda',
@@ -66,7 +67,7 @@ const unitFor = (item) => /^(?:household|industrial)_electricity_price/.test(ite
   : item.metricId === 'rental_price_index' && /index|índice/i.test(item.unit || '')
     ? `índice${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/) ? ` (${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/)[0].replace(/\s/g, '')})` : ''}`
   : item.metricId === 'cpi_index' || /index/i.test(item.unit || '') ? 'índice'
-    : /median_hourly_earnings/.test(item.metricId || '') && /eur/i.test(item.unit || '') ? '€/hora' : item.displayUnit || item.unit || '';
+    : /(?:median|mean)_hourly_earnings/.test(item.metricId || '') && /eur/i.test(item.unit || '') ? '€/hora' : item.displayUnit || item.unit || '';
 const number = (value, metricId) => new Intl.NumberFormat('es-ES', { maximumFractionDigits:
   metricId === 'primary_care_wait_over_one_day_rate' ? 1 : /^(?:household|industrial)_electricity_price/.test(metricId || '') ? 4 : 2 }).format(value);
 const placeLabel = (item) => {
@@ -145,6 +146,64 @@ const factsForMetric = (id, observations, fitsClaim) => {
     const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship ? ` · ${citizenship}` : ''}: ${value} (${periodLabel(latest.period)}).`;
     return { id, items: rows, latest, finding, scope, sourceIds: [...new Set(rows.map((item) => item.source.id))] };
   }).filter(Boolean);
+};
+
+const sectorEarningsActivity = [
+  { code: 'I', label: 'alojamiento y servicios de comida', match: /\b(turis\w*|hosteler\w*|hotel\w*|alojam\w*|restaur\w*)\b/ },
+  { code: 'C', label: 'manufactura', match: /\b(manufactur\w*|fabric\w*)\b/ },
+  { code: 'B-E', label: 'industria (sin construcción)', match: /\bindustr\w*\b/ },
+  { code: 'F', label: 'construcción', match: /\bconstrucci\w*\b/ },
+  { code: 'G', label: 'comercio mayorista, minorista y reparación de vehículos', match: /\bcomerci\w*\b/ },
+  { code: 'H', label: 'transporte y almacenamiento', match: /\b(transporte|logistic\w*|almacenamiento)\b/ },
+  { code: 'J', label: 'información y comunicaciones', match: /\b(tecnolog\w*|informatica|telecomunicaci\w*|comunicaci\w*)\b/ },
+  { code: 'K', label: 'finanzas y seguros', match: /\b(financier\w*|finanzas?|banc\w*|seguros?)\b/ },
+  { code: 'L', label: 'actividades inmobiliarias', match: /\b(inmobiliari\w*|inmuebl\w*)\b/ },
+  { code: 'M', label: 'actividades profesionales, científicas y técnicas', match: /\b(profesional\w*|cientific\w*|tecnic\w*)\b/ },
+  { code: 'N', label: 'servicios administrativos y de apoyo', match: /\b(administrativ\w*|servicios? de apoyo)\b/ },
+  { code: 'P', label: 'educación', match: /\b(educaci\w*|enseñan\w*|docent\w*)\b/ },
+  { code: 'Q', label: 'sanidad y servicios sociales', match: /\b(sanidad|sanitari\w*|salud|servicios? sociales?)\b/ },
+  { code: 'R', label: 'artes, espectáculos y ocio', match: /\b(artes?|espectaculos?|ocio|entretenimiento)\b/ },
+  { code: 'S', label: 'otros servicios', match: /\botros? servicios?\b/ },
+];
+
+// Eurostat publishes overlapping NACE aggregates alongside the one-letter
+// activities. Select only the activity named in the claim so a broad label
+// such as tourism cannot inherit a hand-picked comparison sector.
+const sectorEarningsFactsForClaim = (claim, observations, fitsClaim) => {
+  const text = normalize(claim);
+  const requested = sectorEarningsActivity.filter((activity) => activity.match.test(text))
+    .filter((activity) => activity.code !== 'B-E' || !/\b(manufactur\w*|fabric\w*)\b/.test(text));
+  if (!requested.length) return [];
+  const eligibleRows = observations.filter((item) => item.metricId === 'mean_hourly_earnings_by_activity'
+    && validNumber(item.value) && item.period === '2022' && item.freshness !== 'invalid'
+    && sourceValid(item.source) && String(item.source?.url || '').includes('/earn_ses22_17?')
+    && fitsClaim(item)
+    && item.dimensions?.geo === 'ES' && item.dimensions?.freq === 'A'
+    && item.dimensions?.sex === 'T' && item.dimensions?.indic_se === 'ERN'
+    && item.dimensions?.l_serv === 'TOTAL' && item.dimensions?.sizeclas === 'GE10'
+    && item.dimensions?.unit === 'EUR' && item.dimensions?.time === '2022');
+  const selected = [];
+  for (const activity of requested) {
+    const candidates = eligibleRows.filter((item) => item.dimensions?.nace_r2 === activity.code)
+      .sort((a, b) => (Date.parse(b.source?.retrievedAt || '') || 0) - (Date.parse(a.source?.retrievedAt || '') || 0)
+        || String(a.id || '').localeCompare(String(b.id || '')));
+    if (!candidates.length) continue;
+    const newestTime = Date.parse(candidates[0].source?.retrievedAt || '') || 0;
+    const newest = candidates.filter((item) => (Date.parse(item.source?.retrievedAt || '') || 0) === newestTime);
+    if (newest.some((item) => item.value !== newest[0].value || String(item.status || '') !== String(newest[0].status || ''))) continue;
+    selected.push({ ...newest[0], activityLabel: activity.label });
+  }
+  if (!selected.length) return [];
+  const values = selected.map((item) => `${item.activityLabel} (NACE ${item.dimensions.nace_r2}): ${number(item.value, 'mean_hourly_earnings_by_activity')} €/hora`);
+  const limitations = [];
+  if (/\b(tecnolog\w*|informatica)\b/.test(text)) limitations.push('NACE J mide información y comunicaciones, no todo el sector tecnológico.');
+  const latest = { ...selected[0], status: [...new Set(selected.map((item) => String(item.status || '')).filter(Boolean))].join('') };
+  const finding = `Eurostat, España, 2022; media de remuneración bruta por hora: ${values.join('; ')}.${limitations.length ? ` ${limitations.join(' ')}` : ''}`;
+  return [{
+    id: 'mean_hourly_earnings_by_activity', items: selected, latest, finding,
+    scope: 'España · empleados de empresas con 10 o más personas · NACE Rev. 2 · salarios brutos por hora',
+    sourceIds: [...new Set(selected.map((item) => item.source.id))],
+  }];
 };
 
 const educationOutcomeFinding = (fact) => {
@@ -285,7 +344,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         ] : focus.needs;
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const fitsClaim = observationFitsClaim(claim);
-  const facts = ids.flatMap((id) => factsForMetric(id, observations, fitsClaim));
+  const facts = ids.flatMap((id) => id === 'mean_hourly_earnings_by_activity'
+    ? sectorEarningsFactsForClaim(claim, observations, fitsClaim)
+    : factsForMetric(id, observations, fitsClaim));
   if (ids.includes('industrial_electricity_price_europe')) facts.sort((left, right) => {
     const order = (fact) => fact.latest.dimensions?.geo === 'ES' ? 0 : /^EU/.test(String(fact.latest.dimensions?.geo || '')) ? 1 : 2;
     return order(left) - order(right);
@@ -299,7 +360,6 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : comparesSectorAverageWageImpact
           ? 'La encuesta describe salarios brutos, pero no establece la contribución de cada actividad al promedio nacional ni mide productividad.'
           : focus.limitation,
-      comparesSectorOutput ? 'Comparar la aportación al PIB requiere el valor añadido del mismo sector y periodo.' : '',
     ].filter(Boolean).join(' ') : focus.limitation;
   const territories = requestedGeographyScopes(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
@@ -362,7 +422,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanationReply = explanation
     ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
     : sectorEmploymentExplanation;
-  const reply = [explanationReply, findingText ? `${direct.length ? 'Datos de la fuente' : 'Como contexto'}: ${findingText}` : explanationMeasuresClaim ? '' : gap,
+  const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
+  const reply = [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gap,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gap && findingText ? gap : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {

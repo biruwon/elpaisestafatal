@@ -484,9 +484,25 @@ benefits for the same cohort and working life.
 
 The reply-length result does not measure factual accuracy. The 300 claims are
 still unverified discovery inputs; the deterministic fallback returned three
-`complete`, 15 `limited` and 282 `uncovered` results. No sector wage,
-productivity or employment-growth observations were added in this change, so
-these claims remain qualified evidence gaps until compatible data are
-available. The focused claim suite now checks 189 paraphrases and nearby
-claims, including that each added measurement requirement stays within its
-claim family.
+`complete`, 15 `limited` and 282 `uncovered` results after this change.
+
+A new text feed now imports Eurostat's 2022 mean gross hourly earnings by NACE
+activity. The local ingestion produced 29 rows, including aggregate and
+one-letter activity codes. With the all-sexes, gross-earnings, total-service,
+10-or-more-employees and Spain filters, the source reports €9.86 per hour for
+accommodation and food services (NACE I), €16.75 for information and
+communications (J), €20.35 for finance and insurance (K), and €13.52 for
+manufacturing (C). [Eurostat dataset](https://ec.europa.eu/eurostat/databrowser/product/page/earn_ses22_17).
+
+The text resolver now uses only the activity names present in a claim. It
+labels NACE I as accommodation and food services rather than all tourism, and
+keeps these averages as limited context. They do not show the share or number of
+high-wage jobs, productivity, employment growth, or an activity's contribution
+to the national wage average. Eurostat's survey is four-yearly; Spain's quality
+report documents that agriculture is excluded and public administration is
+only partly covered. [Eurostat SES 2022 metadata](https://ec.europa.eu/eurostat/cache/metadata/en/earn_ses2022_esms.htm),
+[Spain quality report](https://ec.europa.eu/eurostat/cache/metadata/EN/earn_ses2022_esqrs_es.htm).
+
+The focused claim suite now checks 189 existing paraphrases and nearby cases,
+plus sector-wage paraphrases that must select the same NACE rows and nearby
+productivity or wage-trend claims that must not inherit those rows.

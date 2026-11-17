@@ -697,15 +697,70 @@ const sectorWageGap = focusedEvidencePlan('El turismo aumenta el PIB pero genera
 ] });
 assert.equal(sectorWageGap.answerScope.family, 'sector-wage-comparison');
 assert.equal(sectorWageGap.evidenceLevel, 'limited', 'Official survey metadata gives coverage context but no aligned wage and productivity comparison');
-assert.deepEqual(sectorWageGap.answerScope.contextMetrics, []);
-assert.equal(sectorWageGap.sourceLinks.length, 1);
-assert.match(sectorWageGap.shareableReply, /media o mediana nacional no compara sectores/);
-assert.match(sectorWageGap.shareableReply, /valor a[nñ]adido total no mide productividad/);
-assert.match(sectorWageGap.shareableReply, /cada cuatro a[nñ]os/);
-assert.match(sectorWageGap.shareableReply, /excluye agricultura/);
+assert.deepEqual(sectorWageGap.answerScope.contextMetrics, ['mean_hourly_earnings_by_activity']);
+assert.equal(sectorWageGap.sourceLinks.length, 2);
+assert.match(sectorWageGap.shareableReply, /media salarial da contexto/);
+assert.match(sectorWageGap.shareableReply, /no mide productividad/);
+assert.match(sectorWageGap.shareableReply, /cuatrienal|cada cuatro a[nñ]os/);
+assert.match(sectorWageGap.shareableReply, /excluyen agricultura/);
 assert.ok(sectorWageGap.shareableReply.trim().split(/\s+/).length <= 160, 'Sector-wage context should be concise enough to read and share');
 assert.doesNotMatch(sectorWageGap.shareableReply, /17 €/);
 assert.ok(sectorWageGap.evidenceSummary.missingDimensions.some((item) => /aportaci[oó]n al PIB por el mismo sector/.test(item)), 'A compound sector claim must retain its GDP contribution requirement');
+const sectorWageSource = {
+  id: 'eurostat-sector-earnings-2022',
+  title: 'Mean hourly earnings by sex, economic activity and length of service (2022)',
+  publisher: 'Eurostat',
+  url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_17?geo=ES&freq=A&sex=T&indic_se=ERN&l_serv=TOTAL&sizeclas=GE10&unit=EUR&time=2022',
+  retrievedAt: '2026-11-17T10:00:00Z',
+};
+const sectorWageRows = [
+  ['I', 9.86], ['C', 13.52], ['J', 16.75], ['K', 20.35],
+].map(([activity, value]) => ({
+  id: `ses-2022-${activity}`, metricId: 'mean_hourly_earnings_by_activity', value, period: '2022', unit: 'Euro', geography: 'Spain',
+  population: 'employees in Spanish enterprises with 10 or more employees, all sexes',
+  dimensions: { freq: 'A', sex: 'T', indic_se: 'ERN', l_serv: 'TOTAL', sizeclas: 'GE10', nace_r2: activity, unit: 'EUR', geo: 'ES', time: '2022' },
+  source: sectorWageSource,
+}));
+const sectorWageParaphrases = [
+  'El salario bruto por hora de la hostelería es menor que el del sector financiero',
+  'En alojamiento y comidas se cobra menos por hora que en finanzas',
+  'La remuneración media por hora en hoteles es menor que en los bancos',
+  'Los trabajos de hostelería están peor pagados que los de la banca',
+];
+let selectedSectorWageEvidence;
+for (const claim of sectorWageParaphrases) {
+  const answer = focusedEvidencePlan(claim, { observations: sectorWageRows });
+  assert.equal(answer.answerScope.family, 'sector-wage-comparison', claim);
+  assert.deepEqual(answer.answerScope.contextMetrics, ['mean_hourly_earnings_by_activity'], claim);
+  assert.ok(answer.shareableReply.includes('9,86 €/hora'), claim);
+  assert.ok(answer.shareableReply.includes('20,35 €/hora'), claim);
+  assert.match(answer.shareableReply, /distribuci[oó]n salarial y la productividad requieren otras medidas/, claim);
+  assert.match(answer.shareableReply, /no mide productividad/, claim);
+  assert.doesNotMatch(answer.shareableReply, /13,52 €\/hora|16,75 €\/hora/, `The claim inherited an unnamed activity comparison: ${claim}`);
+  const evidence = answer.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_activity');
+  const ids = [...evidence.evidenceIds].sort();
+  assert.doesNotMatch(answer.shareableReply, /Como contexto:\s*Como contexto/);
+  if (selectedSectorWageEvidence) assert.deepEqual(ids, selectedSectorWageEvidence, `A paraphrase selected different activity evidence: ${claim}`);
+  selectedSectorWageEvidence = ids;
+}
+const broadTourismWageClaim = focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { observations: sectorWageRows });
+const broadTourismWageEvidence = broadTourismWageClaim.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_activity');
+assert.deepEqual(broadTourismWageEvidence.evidenceIds, ['ses-2022-I'], 'A broad tourism claim may use only the accommodation and food-services row it names');
+assert.ok(broadTourismWageClaim.shareableReply.includes('9,86 €/hora'));
+assert.doesNotMatch(broadTourismWageClaim.shareableReply, /13,52 €\/hora|16,75 €\/hora|20,35 €\/hora/, 'An unnamed comparison activity must not be selected to strengthen the claim');
+assert.match(broadTourismWageClaim.shareableReply, /NACE I abarca alojamiento y servicios de comida, no todo el turismo/);
+assert.ok(broadTourismWageClaim.evidenceSummary.missingDimensions.some((item) => /valor añadido o aportación al PIB/.test(item)));
+assert.ok(broadTourismWageClaim.shareableReply.trim().split(/\s+/).length <= 160, 'A sector-wage answer with observed data should remain concise');
+const publicSectorWageAnswer = localPublicCheckResponse({ status: 'complete', requestId: 'sector-wage-context', result: broadTourismWageClaim }, 'El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad');
+assert.equal(publicSectorWageAnswer.state, 'insufficient', 'Contextual mean pay must not be presented as a verdict on high-wage jobs or productivity');
+assert.ok(publicSectorWageAnswer.result.reply.includes('9,86 €/hora'));
+assert.ok(publicSectorWageAnswer.result.sources.some((source) => source.id === sectorWageSource.id));
+assert.equal(claimFocusFor('La productividad de los hoteles es menor que la de las finanzas'), undefined, 'A productivity comparison without a wage claim must not fetch sector earnings');
+assert.equal(claimFocusFor('Los hoteles cobran más por noche que los restaurantes'), undefined, 'A room-price comparison must not be interpreted as an hourly wage comparison');
+const nationalWageTrendNeighbour = focusedEvidencePlan('Los salarios de hostelería subieron este año', { observations: sectorWageRows });
+assert.equal(nationalWageTrendNeighbour.answerScope.family, 'nominal-wages', 'A sector wage trend must not cross-route into the static sector comparison');
+assert.deepEqual(nationalWageTrendNeighbour.answerScope.contextMetrics, ['median_hourly_earnings']);
+assert.ok(!nationalWageTrendNeighbour.sourceLinks.some((source) => source.id === sectorWageSource.id), 'Sector comparison rows must not answer a wage trend claim');
 const sectorEmploymentGap = focusedEvidencePlan('El empleo crece más en sectores de baja productividad que en sectores de salarios altos');
 assert.equal(sectorEmploymentGap.answerScope.family, 'sector-wage-comparison');
 assert.ok(sectorEmploymentGap.evidenceSummary.missingDimensions.some((item) => /variaci[oó]n del empleo por actividad/.test(item)), 'An employment-growth claim must retain the missing sector employment series');

@@ -257,6 +257,12 @@
       "metricId": "median_hourly_earnings_europe"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_17?geo=ES&freq=A&sex=T&indic_se=ERN&l_serv=TOTAL&sizeclas=GE10&unit=EUR&time=2022",
+      "title": "Mean gross hourly earnings by economic activity, 2022 · Eurostat",
+      "aliases": ["salario bruto medio por actividad", "salario medio bruto por sector económico", "ganancia media bruta por hora y actividad", "sueldo medio por hora en cada sector"],
+      "metricId": "mean_hourly_earnings_by_activity"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"],

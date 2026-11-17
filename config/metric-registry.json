@@ -343,6 +343,16 @@
     "notEquivalentTo": ["median_hourly_earnings", "median_equivalised_income_europe", "minimum_wage_monthly", "employment_rate_europe"],
     "dimensions": ["period", "geography", "enterprise_size", "sex", "currency"]
   },
+  "mean_hourly_earnings_by_activity": {
+    "name": "Mean gross hourly earnings by economic activity",
+    "displayName": "Salario bruto medio por hora según actividad económica",
+    "aliases": ["salario bruto medio por actividad", "salario medio bruto por sector económico", "ganancia media bruta por hora y actividad", "sueldo medio por hora en cada sector"],
+    "unit": "EUR per hour",
+    "population": "employees in Spanish enterprises with 10 or more employees, all sexes, by NACE Rev. 2 economic activity; reference year 2022",
+    "notEquivalentTo": ["median_hourly_earnings", "annual_hourly_wage_index", "gross_value_added_by_activity", "minimum_wage_monthly"],
+    "dimensions": ["period", "geography", "economic_activity", "enterprise_size", "sex", "currency"],
+    "limitations": ["It is a mean of gross hourly earnings, not net pay, median pay, or the share of jobs above a high-wage threshold.", "The Spain series is for 2022 and does not measure productivity, employment growth, or the contribution of each activity to the national wage average.", "NACE activity I covers accommodation and food services; it is not the whole tourism economy."]
+  },
   "minimum_wage_monthly": {
     "name": "Statutory minimum wage per month",
     "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "mínimo salarial"],
