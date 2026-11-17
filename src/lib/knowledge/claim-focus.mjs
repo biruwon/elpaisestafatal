@@ -117,9 +117,14 @@ const wagePriceMarginPassThrough = (t) => has(t, wages)
   && /\b(preci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
   && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
   && !/\b(poder adquisitivo|poder de compra|salari\w* real|coste de (?:la )?vida|viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|renta mensual)\b/.test(t);
+const electricityIndustryPrice = (t) => has(t, electricity)
+  && /\b(industria\w*|industrial\w*|empresas?|negocios?|f[aá]bricas?|manufactur\w*|sector productivo|no dom[eé]stic\w*|grandes? consumidores?)\b/.test(t)
+  && has(t, cost)
+  && !/\b(competitiv\w*|margen\w*|rentabil\w*|productiv\w*|encarec\w*|reduc\w*|limit\w*|rest\w*|afect\w*|oblig\w*|forz\w*|provoc\w*|caus\w*)\b/.test(t);
 const electricityIndustryCosts = (t) => has(t, electricity)
   && /\b(industria\w*|industrial\w*|empresas?|negocios?|f[aá]bricas?|manufactur\w*|sector productivo)\b/.test(t)
-  && (has(t, cost) || /\b(competitiv\w*|margen\w*|rentabil\w*|productiv\w*|encarec\w*)\b/.test(t));
+  && (has(t, cost) || /\b(competitiv\w*|margen\w*|rentabil\w*|productiv\w*|encarec\w*)\b/.test(t))
+  && /\b(competitiv\w*|margen\w*|rentabil\w*|productiv\w*|encarec\w*|reduc\w*|limit\w*|rest\w*|afect\w*|oblig\w*|forz\w*|provoc\w*|caus\w*|perjudic\w*|fren\w*)\b/.test(t);
 const electricityMarketTrading = (t) => has(t, electricity)
   && /\b(export\w*|import\w*|interconexi\w*|intercambios? (?:con|entre)|fronter\w*)\b/.test(t)
   && /\b(hor\w*|mediod[ií]a|noche|sol\w*|e[oó]lic\w*|renovabl\w*|moment\w*|barat\w*|car\w*|preci\w*)\b/.test(t);
@@ -950,12 +955,20 @@ const focuses = [
     limitation: 'Una lista de espera pública no mide las motivaciones de quienes contratan seguro ni el tiempo que esperan en la privada.',
   },
   {
+    id: 'electricity-industry-price', label: 'precio eléctrico para grandes consumidores no domésticos',
+    when: electricityIndustryPrice,
+    direct: ['industrial_electricity_price'], context: [], claimType: 'descriptive',
+    needs: ['precio medio por kWh para consumidores no domésticos de la banda ID (2.000 a menos de 20.000 MWh anuales)', 'geografía, semestre y tratamiento fiscal comparables'],
+    explanation: 'Eurostat publica el precio medio por kWh para consumidores no domésticos en la banda ID. La serie permite responder sobre ese grupo de grandes consumidores.',
+    limitation: 'La banda agrupa a clientes por consumo anual, no por sector. Su promedio no es el precio de cada contrato ni representa a todas las empresas industriales.',
+  },
+  {
     id: 'electricity-industry-costs', label: 'coste eléctrico de la industria y competitividad',
     when: electricityIndustryCosts,
-    direct: [], context: [], claimType: 'causal',
+    direct: [], context: ['industrial_electricity_price'], claimType: 'causal',
     needs: ['precios eléctricos pagados por empresas e industrias comparables, con contrato, consumo, impuestos y cargos', 'países, sectores, periodos y tamaño de empresa equivalentes', 'peso de la electricidad en los costes y una medida de productividad, precios de venta o competitividad'],
-    explanation: 'El precio eléctrico de los hogares no mide lo que pagan las industrias ni permite concluir cuánto afecta a su competitividad.',
-    limitation: 'Sin precios industriales comparables y datos de costes y resultados por sector, no se puede cuantificar el efecto sobre la competitividad.',
+    explanation: 'Eurostat publica un precio medio para grandes consumidores eléctricos no domésticos. Sirve de contexto para la industria, pero no mide por separado cada sector ni demuestra un efecto sobre su competitividad.',
+    limitation: 'La serie solo agrupa clientes por consumo anual; sin precios comparables por sector y datos de costes y resultados, no permite cuantificar el efecto sobre la competitividad.',
   },
   {
     id: 'electricity-market-trading', label: 'exportaciones, importaciones y precios horarios de electricidad',

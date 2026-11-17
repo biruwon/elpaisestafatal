@@ -861,32 +861,65 @@ const electricityAnswer = focusedEvidencePlan(marginalClaim, { observations: ele
 assert.match(electricityAnswer.shareableReply, /0,2739 €\/kWh/);
 assert.match(electricityAnswer.shareableReply, /todos los tramos de consumo, con impuestos y tasas incluidos/);
 assert.doesNotMatch(electricityAnswer.shareableReply, /0,2739 Kilowatt-hour/);
+const industrialElectricitySource = { id: 'eurostat-industrial-electricity', title: 'Electricity prices for non-household consumers · Eurostat (nrg_pc_205)', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_205', retrievedAt: '2026-11-17' };
+const industrialElectricityRows = [
+  { id: 'industrial-electricity-spain', metricId: 'industrial_electricity_price', metric: 'Non-household electricity price', value: 0.1177, period: '2026-S1', unit: 'Kilowatt-hour', geography: 'Spain', population: 'Final non-household consumers in annual consumption band ID, 2,000 to less than 20,000 MWh', dimensions: { geo: 'ES', currency: 'EUR', unit: 'KWH', nrg_cons: 'MWH2000-19999', tax: 'X_VAT' }, dimensionLabels: { geo: 'Spain', nrg_cons: 'Consumption from 2,000 MWh to 19,999 MWh - band ID', tax: 'Excluding VAT and other recoverable taxes and levies' }, source: industrialElectricitySource },
+  { id: 'industrial-electricity-comparison-spain', metricId: 'industrial_electricity_price_europe', metric: 'Non-household electricity price', value: 0.1177, period: '2026-S1', unit: 'Kilowatt-hour', geography: 'Spain', population: 'Final non-household consumers in annual consumption band ID, 2,000 to less than 20,000 MWh', dimensions: { geo: 'ES', currency: 'EUR', unit: 'KWH', nrg_cons: 'MWH2000-19999', tax: 'X_VAT' }, dimensionLabels: { geo: 'Spain', nrg_cons: 'Consumption from 2,000 MWh to 19,999 MWh - band ID', tax: 'Excluding VAT and other recoverable taxes and levies' }, source: industrialElectricitySource },
+  { id: 'industrial-electricity-comparison-eu', metricId: 'industrial_electricity_price_europe', metric: 'Non-household electricity price', value: 0.1559, period: '2026-S1', unit: 'Kilowatt-hour', geography: 'European Union', population: 'Final non-household consumers in annual consumption band ID, 2,000 to less than 20,000 MWh', dimensions: { geo: 'EU27_2020', currency: 'EUR', unit: 'KWH', nrg_cons: 'MWH2000-19999', tax: 'X_VAT' }, dimensionLabels: { geo: 'European Union (27 countries)', nrg_cons: 'Consumption from 2,000 MWh to 19,999 MWh - band ID', tax: 'Excluding VAT and other recoverable taxes and levies' }, source: industrialElectricitySource },
+];
+const allElectricityRows = [...electricity, ...industrialElectricityRows];
+const industrialPriceQuestion = '¿Cuál es el precio medio de la electricidad para grandes consumidores no domésticos en España?';
+const industrialPriceAnswer = focusedEvidencePlan(industrialPriceQuestion, { observations: allElectricityRows });
+assert.equal(industrialPriceAnswer.answerScope.family, 'electricity-industry-price');
+assert.deepEqual(industrialPriceAnswer.answerScope.directMetrics, ['industrial_electricity_price']);
+assert.equal(industrialPriceAnswer.evidenceLevel, 'limited');
+assert.ok(industrialPriceAnswer.shareableReply.includes('0,1177 €/kWh'));
+assert.ok(industrialPriceAnswer.shareableReply.includes('banda ID') && industrialPriceAnswer.shareableReply.includes('2.000 y menos de 20.000 MWh'));
+assert.match(industrialPriceAnswer.shareableReply, /excluye el IVA y otros impuestos y gravámenes recuperables/);
+assert.doesNotMatch(industrialPriceAnswer.shareableReply, /0,2739/);
+const industrialPriceComparison = focusedEvidencePlan('¿Cuál es el precio eléctrico industrial de grandes consumidores en España frente a la Unión Europea?', { observations: allElectricityRows });
+assert.equal(industrialPriceComparison.answerScope.family, 'electricity-industry-price');
+assert.deepEqual(industrialPriceComparison.answerScope.directMetrics, ['industrial_electricity_price_europe']);
+assert.ok(industrialPriceComparison.shareableReply.includes('0,1177 €/kWh') && industrialPriceComparison.shareableReply.includes('0,1559 €/kWh'));
+assert.ok(industrialPriceComparison.shareableReply.includes('0,1177 €/kWh en España y 0,1559 €/kWh en la Unión Europea: 0,0382 €/kWh menos en España'));
+assert.match(industrialPriceComparison.shareableReply, /2026-S1/);
+assert.match(industrialPriceComparison.limitation, /ni representa a todas las empresas industriales/);
 const industryElectricityClaim = 'El precio de la electricidad resta competitividad a parte de la industria española';
-const industryElectricity = focusedEvidencePlan(industryElectricityClaim, { observations: electricity });
+const industryElectricity = focusedEvidencePlan(industryElectricityClaim, { observations: allElectricityRows });
 assert.equal(industryElectricity.answerScope.family, 'electricity-industry-costs');
 assert.equal(industryElectricity.evidenceLevel, 'insufficient');
 assert.deepEqual(industryElectricity.answerScope.directMetrics, []);
-assert.deepEqual(industryElectricity.answerScope.contextMetrics, []);
-assert.equal(industryElectricity.sourceLinks.length, 0, 'A household electricity tariff cannot answer an industrial competitiveness claim');
-assert.doesNotMatch(industryElectricity.shareableReply, /0,2739|precio dom[eé]stico por kWh/);
-assert.match(industryElectricity.shareableReply, /no mide lo que pagan las industrias/);
+assert.deepEqual(industryElectricity.answerScope.contextMetrics, ['industrial_electricity_price']);
+assert.ok(industryElectricity.sourceLinks.some((source) => source.id === industrialElectricitySource.id), 'A scoped non-household rate should appear as context for an industrial competitiveness claim');
+assert.ok(industryElectricity.shareableReply.includes('0,1177 €/kWh'));
+assert.doesNotMatch(industryElectricity.shareableReply, /0,2739|0,1559/);
+assert.match(industryElectricity.shareableReply, /no mide por separado cada sector/);
+assert.match(industryElectricity.shareableReply, /Falta una medición directa/);
 for (const paraphrase of [
   'La factura eléctrica reduce la competitividad de las fábricas españolas',
   'La electricidad encarece la producción de muchas empresas industriales',
 ]) {
-  const plan = focusedEvidencePlan(paraphrase, { observations: electricity });
+  const plan = focusedEvidencePlan(paraphrase, { observations: allElectricityRows });
   assert.equal(plan.answerScope.family, industryElectricity.answerScope.family, `An industrial electricity paraphrase crossed into a household price route: ${paraphrase}`);
   assert.deepEqual(plan.answerScope.directMetrics, []);
-  assert.equal(plan.sourceLinks.length, 0);
+  assert.deepEqual(plan.answerScope.contextMetrics, ['industrial_electricity_price']);
+  assert.ok(plan.shareableReply.includes('0,1177 €/kWh'));
+  assert.doesNotMatch(plan.shareableReply, /0,2739/);
 }
+const householdElectricityClaim = '¿Cómo ha cambiado el precio de la electricidad para los hogares en España?';
+const householdElectricityAnswer = focusedEvidencePlan(householdElectricityClaim, { observations: allElectricityRows });
+assert.deepEqual(householdElectricityAnswer.answerScope.directMetrics, ['household_electricity_price']);
+assert.deepEqual(householdElectricityAnswer.answerScope.contextMetrics, []);
+assert.ok(householdElectricityAnswer.shareableReply.includes('0,2739 €/kWh'));
+assert.doesNotMatch(householdElectricityAnswer.shareableReply, /0,1177|0,1559/);
 const marketTradingClaim = 'España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos';
-const marketTrading = focusedEvidencePlan(marketTradingClaim, { observations: electricity });
+const marketTrading = focusedEvidencePlan(marketTradingClaim, { observations: allElectricityRows });
 assert.equal(marketTrading.answerScope.family, 'electricity-market-trading');
 assert.equal(marketTrading.evidenceLevel, 'insufficient');
 assert.deepEqual(marketTrading.answerScope.directMetrics, []);
 assert.deepEqual(marketTrading.answerScope.contextMetrics, []);
-assert.equal(marketTrading.sourceLinks.length, 0, 'A household tariff cannot verify hourly electricity exports, imports or wholesale prices');
-assert.doesNotMatch(marketTrading.shareableReply, /0,2739|precio dom[eé]stico por kWh/);
+assert.equal(marketTrading.sourceLinks.length, 0, 'Retail and band-average rates cannot verify hourly electricity exports, imports or wholesale prices');
+assert.doesNotMatch(marketTrading.shareableReply, /0,2739|0,1177|0,1559|precio dom[eé]stico por kWh/);
 assert.match(marketTrading.shareableReply, /exporta o importa electricidad/);
 for (const paraphrase of [
   'España exporta electricidad barata al mediodía e importa energía más cara por la noche',

@@ -45,6 +45,8 @@ const labels = {
   gender_pay_gap: 'Brecha salarial sin ajustar',
   household_electricity_price: 'Precio doméstico de electricidad',
   household_electricity_price_europe: 'Precio doméstico de electricidad',
+  industrial_electricity_price: 'Precio eléctrico para grandes consumidores no domésticos · banda ID',
+  industrial_electricity_price_europe: 'Precio eléctrico para grandes consumidores no domésticos · banda ID',
   education_personnel: 'Personal docente',
   employment_rate_tertiary_education: 'Tasa de empleo de personas con estudios terciarios',
   unemployment_rate_tertiary_education: 'Tasa de paro de personas con estudios terciarios',
@@ -57,16 +59,16 @@ const labels = {
   tourist_housing_count: 'Viviendas turísticas estimadas',
   tourist_housing_share: 'Viviendas turísticas como parte del parque total de viviendas',
 };
-const unitFor = (item) => /^household_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
+const unitFor = (item) => /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
-  : /^household_electricity_price/.test(item.metricId || '') && /eur|euro/i.test(item.unit || '') ? '€/kWh'
+  : /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && /eur|euro/i.test(item.unit || '') ? '€/kWh'
   : /percent|percentage|^pc$|%/i.test(item.unit || '') ? '%' : /days|d[ií]as/i.test(item.unit || '') ? 'días'
   : item.metricId === 'rental_price_index' && /index|índice/i.test(item.unit || '')
     ? `índice${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/) ? ` (${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/)[0].replace(/\s/g, '')})` : ''}`
   : item.metricId === 'cpi_index' || /index/i.test(item.unit || '') ? 'índice'
     : /median_hourly_earnings/.test(item.metricId || '') && /eur/i.test(item.unit || '') ? '€/hora' : item.displayUnit || item.unit || '';
 const number = (value, metricId) => new Intl.NumberFormat('es-ES', { maximumFractionDigits:
-  metricId === 'primary_care_wait_over_one_day_rate' ? 1 : /^household_electricity_price/.test(metricId || '') ? 4 : 2 }).format(value);
+  metricId === 'primary_care_wait_over_one_day_rate' ? 1 : /^(?:household|industrial)_electricity_price/.test(metricId || '') ? 4 : 2 }).format(value);
 const placeLabel = (item) => {
   const place = item.geography || item.dimensionLabels?.geo || item.dimensions?.geo || '';
   return /^(spain|es)$/i.test(place) ? 'España' : /european union|^eu27/i.test(place) ? 'Unión Europea (27 países)' : place;
@@ -110,7 +112,7 @@ const factsForMetric = (id, observations, fitsClaim) => {
     && validYouthOverqualificationScope(row)
     && (id !== 'rental_price_index' || isRentalIndexObservation(row)
       && (!hasActiveRentalIndex || String(row.source?.url || '').includes('/prc_hicp_minr')))
-    && (!/^household_electricity_price/.test(id) || !/^(?:kilowatt-hour|kwh)$/i.test(row.unit || '') || Boolean(row.dimensions?.currency)))) {
+    && (!/^(?:household|industrial)_electricity_price/.test(id) || !/^(?:kilowatt-hour|kwh)$/i.test(row.unit || '') || Boolean(row.dimensions?.currency)))) {
     const key = scopeKey(item);
     const rows = series.get(key) || [];
     rows.push(item);
@@ -262,6 +264,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const fitsClaim = observationFitsClaim(claim);
   const facts = ids.flatMap((id) => factsForMetric(id, observations, fitsClaim));
+  if (ids.includes('industrial_electricity_price_europe')) facts.sort((left, right) => {
+    const order = (fact) => fact.latest.dimensions?.geo === 'ES' ? 0 : /^EU/.test(String(fact.latest.dimensions?.geo || '')) ? 1 : 2;
+    return order(left) - order(right);
+  });
   const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation) : focus.limitation;
   const territories = requestedGeographyScopes(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
@@ -297,8 +303,24 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     /^primary_care_wait_/.test(fact.id) ? 'La encuesta se refiere a la última consulta de adultos en medicina de familia pública durante los 12 meses anteriores; excluye mutualidades con asistencia privada.' : '',
     /^household_electricity_price/.test(fact.id) && fact.latest.dimensions?.nrg_cons === 'TOT_KWH' && fact.latest.dimensions?.tax === 'I_TAX'
       ? 'Es un precio medio de los hogares para todos los tramos de consumo, con impuestos y tasas incluidos.' : '',
+    /^industrial_electricity_price/.test(fact.id) && fact.latest.dimensions?.nrg_cons === 'MWH2000-19999' && fact.latest.dimensions?.tax === 'X_VAT'
+      ? 'Eurostat agrupa a consumidores no domésticos que usan entre 2.000 y menos de 20.000 MWh al año (banda ID). El precio excluye el IVA y otros impuestos y gravámenes recuperables; no identifica un sector concreto ni el contrato de cada empresa.' : '',
   ]).filter(Boolean))];
-  const findingText = primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
+  const industrialComparison = (() => {
+    if (!directIds.includes('industrial_electricity_price_europe')) return '';
+    const spain = primaryFacts.find((fact) => fact.latest.dimensions?.geo === 'ES');
+    const union = primaryFacts.find((fact) => /^EU/.test(String(fact.latest.dimensions?.geo || '')));
+    if (!spain || !union || spain.latest.period !== union.latest.period || spain.latest.unit !== union.latest.unit
+      || spain.latest.source?.id !== union.latest.source?.id) return '';
+    const compatibleDimensions = (item) => JSON.stringify(Object.fromEntries(Object.entries(item.dimensions || {})
+      .filter(([key]) => !['geo', 'time', 'period', 'year'].includes(key)).sort(([left], [right]) => left.localeCompare(right))));
+    if (compatibleDimensions(spain.latest) !== compatibleDimensions(union.latest)) return '';
+    const difference = Math.abs(spain.latest.value - union.latest.value);
+    const relation = spain.latest.value < union.latest.value ? 'menos' : spain.latest.value > union.latest.value ? 'más' : 'el mismo precio medio';
+    const differenceText = relation === 'el mismo precio medio' ? '' : `: ${number(difference, 'industrial_electricity_price_europe')} €/kWh ${relation} en España`;
+    return `En ${periodLabel(spain.latest.period)}, el precio medio fue ${number(spain.latest.value, 'industrial_electricity_price_europe')} €/kWh en España y ${number(union.latest.value, 'industrial_electricity_price_europe')} €/kWh en la Unión Europea${differenceText}.`;
+  })();
+  const findingText = industrialComparison || primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
   const gap = missing.length ? `Falta una medición directa de ${missing.join('; ')}.` : '';
   const explanationReply = explanation
     ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [focus.explanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')

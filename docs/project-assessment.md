@@ -436,9 +436,19 @@ national wage and consumer-price indexes. Those measurements do not establish
 the claims' industrial, hourly-flow or business pass-through propositions.
 
 Text routing now separates those three reusable claim families. Their answers
-explain which measurements are missing: industrial contract prices and sector
-cost outcomes; cross-border electricity flows aligned with hourly wholesale
-prices; or labor costs aligned with business prices and margins. The household
-tariff, wage index and HICP are excluded from these answer paths. The source
-gaps remain open, so these claims receive no numeric conclusion until compatible
-data are available.
+explain which measurements are missing. The industrial-price route now uses
+Eurostat's non-household electricity series for band ID (2,000 to less than
+20,000 MWh a year), with VAT and recoverable taxes excluded. It can show a
+same-period Spain/EU price comparison when the claim asks for one, but the
+average is grouped by annual consumption rather than sector and cannot establish
+an effect on industry-wide costs or competitiveness. [Eurostat nrg_pc_205](https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_205/default/table?lang=en), [European Commission definition of band ID and tax treatment](https://single-market-scoreboard.ec.europa.eu/node/699_el).
+
+The live 2026-S1 observations in that band are €0.1177/kWh for Spain and
+€0.1559/kWh for the EU-27, a difference of €0.0382/kWh. These values are
+shown only for a question that asks for this industrial-consumer band or its
+Spain/EU comparison.
+
+The hourly export/import claim still lacks cross-border electricity flows
+aligned with hourly wholesale prices. The wage-price claim still lacks labor
+costs aligned with business prices and margins. Those causal conclusions remain
+open; the household tariff, broad wage index and HICP cannot fill them.

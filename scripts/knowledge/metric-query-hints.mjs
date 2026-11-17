@@ -438,6 +438,11 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.add('household_electricity_price');
     preferred.delete('cpi_index');
   }
+  if (hasAny('luz', 'electricidad') && hasAny('hogar', 'hogares', 'familia', 'familias')
+    && hasAny('cuesta', 'cuestan', 'costar', 'precio', 'coste', 'factura', 'tarifa', 'paga', 'pagar')) {
+    preferred.add('household_electricity_price');
+    preferred.delete('cpi_index');
+  }
   // Word order varies substantially in short Spanish questions (“ha
   // cambiado precio luz hogares”). Require the same subject and price
   // signals, but do not require the catalogue phrase to appear contiguously.
