@@ -23,6 +23,7 @@ const cases = [
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
+  ['wage-price-margin-pass-through', ['Subir mucho los salarios de hostelería obligaría a subir precios o reducir márgenes en muchos negocios', 'Un aumento de sueldo en las empresas se acaba trasladando a los precios o reduce sus márgenes', 'Si suben los salarios, los negocios tienen que encarecer sus productos o ganar menos']],
   ['rental-affordability', ['Con un sueldo normal ya no se puede alquilar un piso entero solo', 'El alquiler se lleva la mitad de los ingresos', 'La renta mensual consume casi todo el salario']],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
@@ -48,6 +49,8 @@ const cases = [
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
+  ['electricity-industry-costs', ['El precio de la electricidad resta competitividad a parte de la industria española', 'La factura eléctrica reduce la competitividad de las fábricas españolas', 'La electricidad encarece la producción de muchas empresas industriales']],
+  ['electricity-market-trading', ['España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos', 'España exporta electricidad barata al mediodía e importa energía más cara por la noche', 'Las interconexiones permiten vender electricidad cuando sobra y comprarla cuando sube el precio']],
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
   ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
@@ -858,6 +861,43 @@ const electricityAnswer = focusedEvidencePlan(marginalClaim, { observations: ele
 assert.match(electricityAnswer.shareableReply, /0,2739 €\/kWh/);
 assert.match(electricityAnswer.shareableReply, /todos los tramos de consumo, con impuestos y tasas incluidos/);
 assert.doesNotMatch(electricityAnswer.shareableReply, /0,2739 Kilowatt-hour/);
+const industryElectricityClaim = 'El precio de la electricidad resta competitividad a parte de la industria española';
+const industryElectricity = focusedEvidencePlan(industryElectricityClaim, { observations: electricity });
+assert.equal(industryElectricity.answerScope.family, 'electricity-industry-costs');
+assert.equal(industryElectricity.evidenceLevel, 'insufficient');
+assert.deepEqual(industryElectricity.answerScope.directMetrics, []);
+assert.deepEqual(industryElectricity.answerScope.contextMetrics, []);
+assert.equal(industryElectricity.sourceLinks.length, 0, 'A household electricity tariff cannot answer an industrial competitiveness claim');
+assert.doesNotMatch(industryElectricity.shareableReply, /0,2739|precio dom[eé]stico por kWh/);
+assert.match(industryElectricity.shareableReply, /no mide lo que pagan las industrias/);
+for (const paraphrase of [
+  'La factura eléctrica reduce la competitividad de las fábricas españolas',
+  'La electricidad encarece la producción de muchas empresas industriales',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { observations: electricity });
+  assert.equal(plan.answerScope.family, industryElectricity.answerScope.family, `An industrial electricity paraphrase crossed into a household price route: ${paraphrase}`);
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.equal(plan.sourceLinks.length, 0);
+}
+const marketTradingClaim = 'España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos';
+const marketTrading = focusedEvidencePlan(marketTradingClaim, { observations: electricity });
+assert.equal(marketTrading.answerScope.family, 'electricity-market-trading');
+assert.equal(marketTrading.evidenceLevel, 'insufficient');
+assert.deepEqual(marketTrading.answerScope.directMetrics, []);
+assert.deepEqual(marketTrading.answerScope.contextMetrics, []);
+assert.equal(marketTrading.sourceLinks.length, 0, 'A household tariff cannot verify hourly electricity exports, imports or wholesale prices');
+assert.doesNotMatch(marketTrading.shareableReply, /0,2739|precio dom[eé]stico por kWh/);
+assert.match(marketTrading.shareableReply, /exporta o importa electricidad/);
+for (const paraphrase of [
+  'España exporta electricidad barata al mediodía e importa energía más cara por la noche',
+  'Las interconexiones permiten vender electricidad cuando sobra y comprarla cuando sube el precio',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { observations: electricity });
+  assert.equal(plan.answerScope.family, marketTrading.answerScope.family, `An hourly market-trading paraphrase crossed into a household price route: ${paraphrase}`);
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.equal(plan.sourceLinks.length, 0);
+}
+assert.equal(claimFocusFor('El precio doméstico de la electricidad por kWh ha aumentado para los hogares')?.id, 'electricity-retail', 'Household price claims must keep their direct electricity measure');
 const unknownCurrency = focusedEvidencePlan(marginalClaim, { observations: [{ ...electricity[0], dimensions: { ...electricity[0].dimensions, currency: undefined } }] });
 assert.doesNotMatch(unknownCurrency.shareableReply, /0,2739/, 'An energy unit alone does not identify the currency of a price');
 assert.equal(focusedEvidencePlan('La luz está cara y una parte de la educación empeora', { propositions: [
@@ -873,6 +913,32 @@ const unaligned = focusedEvidencePlan('Los salarios pierden poder adquisitivo fr
 assert.ok(unaligned.evidenceSummary.families.filter((item) => item.data.length).every((item) => item.dataKind === 'context'));
 assert.match(unaligned.shareableReply, /mismas fechas|mismos periodos/);
 assert.ok(unaligned.blocks.some((block) => block.type === 'evidence_gap'));
+const wagePassThroughClaim = 'Subir mucho los salarios de hostelería obligaría a subir precios o reducir márgenes en muchos negocios';
+const wagePassThrough = focusedEvidencePlan(wagePassThroughClaim, { observations: [
+  { ...poverty[0], id: 'national-wage-index', metricId: 'annual_hourly_wage_index', value: 116.3, period: '2025', unit: 'index' },
+  { ...poverty[0], id: 'national-price-index', metricId: 'annual_hicp_index', value: 121.9, period: '2025', unit: 'index' },
+] });
+assert.equal(wagePassThrough.answerScope.family, 'wage-price-margin-pass-through');
+assert.equal(wagePassThrough.evidenceLevel, 'insufficient');
+assert.deepEqual(wagePassThrough.answerScope.directMetrics, []);
+assert.deepEqual(wagePassThrough.answerScope.contextMetrics, []);
+assert.equal(wagePassThrough.sourceLinks.length, 0, 'National wage and price indexes do not show sectoral price or margin pass-through');
+assert.doesNotMatch(wagePassThrough.shareableReply, /116,3|121,9/);
+assert.match(wagePassThrough.shareableReply, /no muestran si una empresa trasladar[ií]a una subida salarial/);
+for (const paraphrase of [
+  'Un aumento de sueldo en las empresas se acaba trasladando a los precios o reduce sus márgenes',
+  'Si suben los salarios, los negocios tienen que encarecer sus productos o ganar menos',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { observations: [
+    { ...poverty[0], id: 'national-wage-index', metricId: 'annual_hourly_wage_index', value: 116.3, period: '2025', unit: 'index' },
+    { ...poverty[0], id: 'national-price-index', metricId: 'annual_hicp_index', value: 121.9, period: '2025', unit: 'index' },
+  ] });
+  assert.equal(plan.answerScope.family, wagePassThrough.answerScope.family, `A wage pass-through paraphrase crossed into real-wage purchasing power: ${paraphrase}`);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.sourceLinks.length, 0);
+}
+assert.equal(claimFocusFor('Los salarios españoles pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Purchasing-power claims must keep the aligned wage and price series');
+assert.equal(claimFocusFor('Los sueldos turísticos son más bajos que en las industrias más productivas')?.id, 'sector-wage-comparison', 'A sector wage comparison must not become a wage price pass-through claim');
 assert.equal(focusedEvidencePlan('Los salarios pierden poder adquisitivo y los trenes se retrasan', { propositions: [{ text: 'Los salarios pierden poder adquisitivo' }, { text: 'Los trenes se retrasan' }] }), undefined, 'A compound claim must not silently lose its second proposition');
 const revenue = { id: 'revenue', metricId: 'government_revenue_ratio', metric: 'Ingresos públicos', value: 42.9, period: '2025', unit: '% del PIB', geography: 'España' };
 assert.deepEqual(evidenceForProposition({ text: 'La recaudación aumenta' }, [revenue]), [revenue]);

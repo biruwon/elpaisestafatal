@@ -353,7 +353,7 @@ have source links, and 36 return structured compound responses; metric-family
 routes cover 84 candidates. These are routing and answer-structure counts, not
 an accuracy score: all 300 inputs remain unverified, the audit does not
 exercise every live production path, and a family match does not establish
-that evidence is available. The focused claim suite checks 177 paraphrases and
+that evidence is available. The focused claim suite checks 186 paraphrases and
 nearby claims; the remaining gaps require source work before they can receive
 numeric answers.
 
@@ -425,3 +425,20 @@ visible: this is a gross hourly index, not net or median pay or each worker's
 salary, and HICP does not measure an individual household's basket. The answer
 also shows the recent positive comparison so a broad claim does not imply that
 real wages fell throughout the full period.
+
+## Industrial electricity and wage-cost claims — 17 November 2026
+
+A read-only warehouse pass over the 300 unverified discovery claims found that
+an industrial competitiveness claim and an hourly export/import claim could
+receive the household electricity-price series. A separate claim that higher
+hospitality wages would force price rises or lower margins could receive
+national wage and consumer-price indexes. Those measurements do not establish
+the claims' industrial, hourly-flow or business pass-through propositions.
+
+Text routing now separates those three reusable claim families. Their answers
+explain which measurements are missing: industrial contract prices and sector
+cost outcomes; cross-border electricity flows aligned with hourly wholesale
+prices; or labor costs aligned with business prices and margins. The household
+tariff, wage index and HICP are excluded from these answer paths. The source
+gaps remain open, so these claims receive no numeric conclusion until compatible
+data are available.

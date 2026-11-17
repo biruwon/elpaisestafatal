@@ -113,6 +113,16 @@ export const privateHealthcareAccessClaimType = (claim) => {
 };
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
+const wagePriceMarginPassThrough = (t) => has(t, wages)
+  && /\b(preci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
+  && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
+  && !/\b(poder adquisitivo|poder de compra|salari\w* real|coste de (?:la )?vida|viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|renta mensual)\b/.test(t);
+const electricityIndustryCosts = (t) => has(t, electricity)
+  && /\b(industria\w*|industrial\w*|empresas?|negocios?|f[aá]bricas?|manufactur\w*|sector productivo)\b/.test(t)
+  && (has(t, cost) || /\b(competitiv\w*|margen\w*|rentabil\w*|productiv\w*|encarec\w*)\b/.test(t));
+const electricityMarketTrading = (t) => has(t, electricity)
+  && /\b(export\w*|import\w*|interconexi\w*|intercambios? (?:con|entre)|fronter\w*)\b/.test(t)
+  && /\b(hor\w*|mediod[ií]a|noche|sol\w*|e[oó]lic\w*|renovabl\w*|moment\w*|barat\w*|car\w*|preci\w*)\b/.test(t);
 const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t)
   && /\b(acceso|acceder|llegar|disponibilidad|servicios?)\b/.test(t)
   && [
@@ -752,6 +762,14 @@ const focuses = [
     limitation: 'Las oportunidades dependen del territorio, la ocupación y las condiciones del puesto. La temporalidad de los contratos tampoco mide cuántos empleos hay disponibles.',
   },
   {
+    id: 'wage-price-margin-pass-through', label: 'salarios, costes empresariales, precios y márgenes',
+    when: wagePriceMarginPassThrough,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['cambio salarial y coste laboral total del sector u ocupación afectados', 'precios de venta y márgenes empresariales para la misma actividad y periodo', 'peso del trabajo en los costes, productividad y otras variaciones de costes o demanda', 'una comparación que permita separar asociación y traslado causal a precios o márgenes'],
+    explanation: 'Las series nacionales de salarios y precios comparan poder adquisitivo; no muestran si una empresa trasladaría una subida salarial a los precios o la absorbería en sus márgenes.',
+    limitation: 'Sin costes laborales, precios de venta y márgenes comparables para las empresas o sectores afectados, no se puede estimar ese traslado ni afirmar que sea inevitable.',
+  },
+  {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
     when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t),
     direct: [], context: ['annual_hourly_wage_index', 'annual_hicp_index', 'median_hourly_earnings', 'cpi_index'],
@@ -930,6 +948,22 @@ const focuses = [
       },
     },
     limitation: 'Una lista de espera pública no mide las motivaciones de quienes contratan seguro ni el tiempo que esperan en la privada.',
+  },
+  {
+    id: 'electricity-industry-costs', label: 'coste eléctrico de la industria y competitividad',
+    when: electricityIndustryCosts,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['precios eléctricos pagados por empresas e industrias comparables, con contrato, consumo, impuestos y cargos', 'países, sectores, periodos y tamaño de empresa equivalentes', 'peso de la electricidad en los costes y una medida de productividad, precios de venta o competitividad'],
+    explanation: 'El precio eléctrico de los hogares no mide lo que pagan las industrias ni permite concluir cuánto afecta a su competitividad.',
+    limitation: 'Sin precios industriales comparables y datos de costes y resultados por sector, no se puede cuantificar el efecto sobre la competitividad.',
+  },
+  {
+    id: 'electricity-market-trading', label: 'exportaciones, importaciones y precios horarios de electricidad',
+    when: electricityMarketTrading,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['flujos de exportación e importación por hora y sentido de la interconexión', 'precios mayoristas horarios del mismo mercado y periodo', 'generación disponible, demanda y zona de intercambio para identificar las horas con renovables'],
+    explanation: 'El precio medio que pagan los hogares no indica a qué horas España exporta o importa electricidad ni qué precio tuvo cada intercambio.',
+    limitation: 'Sin flujos transfronterizos y precios mayoristas alineados por hora no se puede verificar si se exportó energía barata y se importó energía más cara en otros momentos.',
   },
   {
     id: 'electricity-price-transmission', label: 'precio mayorista y factura eléctrica',
