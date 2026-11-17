@@ -378,14 +378,31 @@ const foreignHousing = focusedEvidencePlan(foreignHousingClaim, { observations: 
 ] });
 assert.equal(foreignHousing.answerScope.family, 'foreign-housing-price-causality');
 assert.equal(foreignHousing.claimType, 'causal');
-assert.equal(foreignHousing.evidenceLevel, 'insufficient');
+assert.equal(foreignHousing.evidenceLevel, 'limited', 'The registry report supplies context but does not measure the claim’s causal effect');
 assert.equal(foreignHousing.interpretation.kind, 'causal');
 assert.equal(foreignHousing.blocks.find((block) => block.type === 'claim_breakdown').items[0].type, 'causal');
-assert.equal(foreignHousing.sourceLinks.length, 0, 'National immigration counts must not be attached as evidence for local nonresident purchases');
+assert.deepEqual(foreignHousing.sourceLinks.map((source) => source.id), ['registradores-eri-2026-q3-foreign-purchases']);
+assert.match(foreignHousing.shareableReply, /16,05 %/);
+assert.match(foreignHousing.shareableReply, /en Alicante fue el 46,46 %/);
+assert.match(foreignHousing.shareableReply, /la residencia no consta en la escritura, no puede separar/);
+assert.match(foreignHousing.shareableReply, /no estima el efecto de esas compras en los precios locales/);
 assert.equal(focusedMetricIdsFor(foreignHousingClaim).size, 0, 'A local causal claim must not retrieve national demographic counts as supporting evidence');
-assert.match(foreignHousing.shareableReply, /residencia habitual describen grupos distintos/);
+assert.match(foreignHousing.shareableReply, /no a personas no residentes/);
 assert.match(foreignHousing.shareableReply, /comparaci[oó]n causal/);
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'foreign-housing', result: foreignHousing }, foreignHousingClaim).state, 'insufficient');
+for (const paraphrase of [
+  'Los compradores extranjeros están haciendo subir los precios de la vivienda en la costa',
+  'Las operaciones de compradores de otras nacionalidades encarecen las casas en zonas costeras',
+]) {
+  const answer = focusedEvidencePlan(paraphrase);
+  assert.equal(answer.answerScope.family, 'foreign-housing-price-causality', `A foreign-purchase paraphrase changed family: ${paraphrase}`);
+  assert.equal(answer.evidenceLevel, 'limited', `A foreign-purchase paraphrase lost its evidence boundary: ${paraphrase}`);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), foreignHousing.sourceLinks.map((source) => source.id), `A foreign-purchase paraphrase changed sources: ${paraphrase}`);
+  assert.deepEqual(answer.evidenceSummary.families[0].data, foreignHousing.evidenceSummary.families[0].data, `A foreign-purchase paraphrase changed facts: ${paraphrase}`);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'foreign-housing-paraphrase', result: answer }, paraphrase).state, 'insufficient');
+}
+assert.notEqual(claimFocusFor('¿Qué porcentaje de compraventas de vivienda corresponde a compradores de nacionalidad extranjera?')?.id, 'foreign-housing-price-causality', 'A descriptive buyer-nationality query must not be routed as a causal price claim');
+assert.notEqual(claimFocusFor('Las viviendas vacacionales de la costa encarecen el alquiler residencial')?.id, 'foreign-housing-price-causality', 'Tourist-housing claims must not inherit foreign-buyer evidence');
 const migrationHousing = focusedEvidencePlan('La inmigración está haciendo que suban los alquileres en algunas ciudades');
 assert.equal(migrationHousing.answerScope.family, 'migration-housing-demand-causality');
 assert.equal(migrationHousing.claimType, 'causal');

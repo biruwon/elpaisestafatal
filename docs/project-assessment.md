@@ -534,3 +534,24 @@ three complete, 16 limited and 281 uncovered answers, with 83 metric-routed
 claims. The full-time housing claim moved from uncovered to limited context;
 its public verdict remains insufficient. These are coverage and routing
 counts, not a measurement of factual accuracy.
+
+## Foreign-buyer housing claims — 17 November 2026
+
+A live housing-claim audit could not resolve its foreign-buyer claim because
+that request failed at the local resolver. The failure was not treated as
+evidence that no data exist. The Colegio de Registradores' third-quarter 2026
+report provides a useful, narrower measure: buyers of foreign nationality made
+16.05% of registered home purchases in Spain, 46.46% in Alicante province and
+38.83% in Málaga province. The same report says its deeds record nationality,
+not residence, so it cannot separate foreign residents from non-residents.
+[Registradores, Q3 2026 report](https://www.registradores.org/documents/d/guest/eri_3t_2026).
+
+The focused text fallback now attaches that primary source as context for the
+reusable foreign-purchase-and-price claim family. It explains that the purchase
+shares describe transactions and do not establish that buyers raised local
+prices. The answer keeps the public verdict insufficient and asks for purchase
+and price measures in the same local markets and periods plus a causal
+comparison that accounts for supply, demand, tourism and financing. Paraphrases
+must use the same source and figures; migration-and-rent, tourist-housing and
+descriptive nationality questions remain on separate routes. The source
+snapshot expires for review on 31 March 2027.

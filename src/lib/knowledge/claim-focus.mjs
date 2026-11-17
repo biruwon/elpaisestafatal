@@ -70,6 +70,25 @@ const bankSpainRentEffortSource = {
 const cjeEmancipation2025Source = { id: 'cje-emancipation-2025', title: 'Observatorio de Emancipación 2025 · balance publicado en mayo de 2026', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/ca/observatorio_2025/', publishedAt: '2026-05-26', retrievedAt: '2026-11-17', role: 'primary' };
 const cjeEmancipationMethodologySource = { id: 'cje-emancipation-methodology', title: 'Observatorio de Emancipación · población joven y alcance', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/observatorio-de-emancipacion/', retrievedAt: '2026-11-17', role: 'primary' };
 const ineHousingBarrierSource = { id: 'youth-family-housing-ine', title: 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm', publishedAt: '2026-04-27', retrievedAt: '2026-11-17', role: 'primary' };
+const foreignHousingRegistrySource = { id: 'registradores-eri-2026-q3-foreign-purchases', title: 'Estadística Registral Inmobiliaria · tercer trimestre de 2026', publisher: 'Colegio de Registradores de España', url: 'https://www.registradores.org/documents/d/guest/eri_3t_2026', retrievedAt: '2026-11-17', role: 'primary' };
+const foreignHousingPurchaseEvidence = {
+  expiresAt: '2027-03-31',
+  territories: ['ES'],
+  evidenceLabel: 'Compras de vivienda por nacionalidad y límite sobre residencia',
+  dimensions: {
+    subject: 'compraventas de vivienda registradas según la nacionalidad del comprador',
+    population: 'compraventas de vivienda inscritas; la residencia habitual del comprador no se identifica',
+    period: '2026-T3',
+    geography: 'España y provincias',
+    denominator: 'compraventas de vivienda registradas en cada territorio',
+    unit: 'porcentaje de compraventas',
+  },
+  facts: [
+    'En el tercer trimestre de 2026, el 16,05 % de las compraventas de vivienda registradas en España tuvo compradores de nacionalidad extranjera; en Alicante fue el 46,46 % y en Málaga, el 38,83 %.',
+    'El Colegio de Registradores clasifica por nacionalidad. Como la residencia no consta en la escritura, no puede separar a residentes de no residentes.',
+  ],
+  sources: [foreignHousingRegistrySource],
+};
 const eurostatOverqualificationEvidence = {
   expiresAt: '2027-11-16', territories: ['ES'],
   facts: ['La tasa de sobrecualificación de Eurostat se calcula entre personas ocupadas de 20 a 64 años con educación terciaria que trabajan en ocupaciones ISCO 4–9. El denominador son las personas ocupadas con educación terciaria del grupo correspondiente; la tabla permite desglosar por ciudadanía.'],
@@ -571,8 +590,10 @@ const focuses = [
     claimType: 'causal',
     direct: [], context: [],
     needs: ['compras de vivienda desglosadas por residencia habitual y nacionalidad del comprador', 'precios de vivienda o alquiler en los mismos municipios y periodos', 'una comparación causal que tenga en cuenta oferta, demanda local, turismo y financiación'],
-    explanation: 'Que coincidan precios altos y población extranjera en una zona no demuestra que las compras de no residentes los causaran. Nacionalidad, lugar de nacimiento y residencia habitual describen grupos distintos.',
-    limitation: 'Las series nacionales de precios y el número de residentes nacidos fuera no muestran cuántas compras hicieron personas no residentes ni su efecto en zonas costeras. Sin medidas locales y una comparación causal no se puede atribuirles la subida.',
+    explanationHeadline: 'El registro cuenta compras por nacionalidad, no por residencia ni su efecto en los precios',
+    explanation: 'El dato describe a compradores de nacionalidad extranjera, no a personas no residentes. Las cuotas muestran quién compra, pero no si esas compras elevaron los precios.',
+    explanationEvidence: foreignHousingPurchaseEvidence,
+    limitation: 'La estadística publica cuotas provinciales y no estima el efecto de esas compras en los precios locales.',
   },
   {
     id: 'migration-housing-demand-causality', label: 'efecto del crecimiento de población en los precios de vivienda',

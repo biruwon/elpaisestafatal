@@ -66,10 +66,12 @@ if (normativeGap.result?.claimType !== 'normative' || !/criterio expl[ií]cito/.
 }
 
 const independenceClaim = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse' });
-if (independenceClaim.status !== 'uncovered' || independenceClaim.result?.id !== 'measurement-work-housing-independence'
-  || independenceClaim.result?.evidenceLevel !== 'insufficient' || independenceClaim.result?.sourceIds?.length
+if (independenceClaim.status !== 'partial' || independenceClaim.result?.id !== 'measurement-work-housing-independence'
+  || independenceClaim.result?.evidenceLevel !== 'limited'
+  || !independenceClaim.result?.sourceIds?.includes('cje-emancipation-2025')
+  || !independenceClaim.result?.sourceIds?.includes('youth-family-housing-ine')
   || independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding' && /temporalidad|paro/.test(block.points?.join(' ') || ''))) {
-  throw new Error('A full-time-work housing claim inherited unrelated employment metrics or an unsupported verdict.');
+  throw new Error('A full-time-work housing claim lost its limited CJE/INE context or inherited unrelated employment metrics.');
 }
 const specialistRegionalWait = deterministicApiFallback({ text: 'Las listas de espera varían demasiado entre comunidades autónomas', inputType: 'text' });
 if (specialistRegionalWait.status !== 'partial' || specialistRegionalWait.result?.evidenceLevel !== 'limited'
@@ -78,11 +80,11 @@ if (specialistRegionalWait.status !== 'partial' || specialistRegionalWait.result
   throw new Error('A dated, source-backed regional waiting-time comparison was still marked as uncovered or as missing the data it contains.');
 }
 const foreignHousingCause = deterministicApiFallback({ text: 'Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras' });
-if (foreignHousingCause.status !== 'uncovered' || foreignHousingCause.result?.id !== 'measurement-foreign-housing-price-causality'
-  || foreignHousingCause.result?.claimType !== 'causal' || foreignHousingCause.result?.evidenceLevel !== 'insufficient'
-  || foreignHousingCause.result?.sourceIds?.length
+if (foreignHousingCause.status !== 'partial' || foreignHousingCause.result?.id !== 'measurement-foreign-housing-price-causality'
+  || foreignHousingCause.result?.claimType !== 'causal' || foreignHousingCause.result?.evidenceLevel !== 'limited'
+  || !foreignHousingCause.result?.sourceIds?.includes('registradores-eri-2026-q3-foreign-purchases')
   || !foreignHousingCause.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /residencia habitual/.test(item)))) {
-  throw new Error('A local causal housing claim was answered with aggregate immigration context instead of a causal evidence gap.');
+  throw new Error('The foreign-purchase claim lost registry context, its residence limitation, or its causal evidence gap.');
 }
 const migrationHousingCause = deterministicApiFallback({ text: 'La inmigración está haciendo que suban los alquileres en algunas ciudades' });
 if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result?.id !== 'measurement-migration-housing-demand-causality'
