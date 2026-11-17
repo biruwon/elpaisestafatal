@@ -8,7 +8,6 @@ const textPlan = text.result;
 if (textPlan?.['sourceLinks'] || textPlan?.evidenceIds?.length) throw new Error('text fallback invented evidence or sources');
 
 for (const claim of [
-  'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual',
   'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años',
 ]) {
   const result = deterministicApiFallback({ text: claim, inputType: 'text' });
@@ -91,6 +90,43 @@ if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result
   || migrationHousingCause.result?.sourceIds?.length
   || !migrationHousingCause.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /municipios y periodos/.test(item)))) {
   throw new Error('A migration-and-housing causal claim was answered with national population counts instead of local demand and causal evidence needs.');
+}
+
+const rentalMechanismClaims = [
+  { family: 'rental-tenant-screening-exclusion', claim: 'Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares' },
+  { family: 'rental-regulation-contract-shift', claim: 'La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', context: true },
+  { family: 'rental-regulation-contract-shift', claim: 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', context: true },
+  { family: 'rental-regulation-contract-shift', claim: 'La regulación en Cataluña desplazó viviendas del alquiler habitual a contratos de temporada', context: true },
+  { family: 'rental-regulation-contract-shift', claim: 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado' },
+  { family: 'rental-landlord-motives', claim: 'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler' },
+  { family: 'rental-landlord-motives', claim: 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos' },
+  { family: 'rental-landlord-motives', claim: 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual' },
+];
+for (const { family, claim, context = false } of rentalMechanismClaims) {
+  const result = deterministicApiFallback({ text: claim, inputType: 'text' });
+  const reply = result.result?.shareableReply || '';
+  const claimItem = result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
+  const expectedSourceIds = context ? ['catalonia-seasonal-rental-deposits'] : [];
+  if (result.status !== (context ? 'partial' : 'uncovered') || result.result?.id !== `measurement-${family}`
+    || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== (context ? 'limited' : 'insufficient')
+    || JSON.stringify(result.result?.sourceIds || []) !== JSON.stringify(expectedSourceIds)
+    || !claimItem || claimItem.sourceIds?.length || claimItem.evidenceIds?.length
+    || result.result?.answerScope?.contextMetrics?.length
+    || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.length)) {
+    throw new Error(`A rental-market mechanism did not preserve its own evidence gap: ${claim}`);
+  }
+  if (context && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/44,9 %/.test(reply)
+    || !/Catalu[nñ]a/.test(reply) || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context'))) {
+    throw new Error(`The seasonal-rental trend lost its region, figures, or context-only label: ${claim}`);
+  }
+  if (/26,7|31,6|32,4|34,5|98,7/.test(reply)) {
+    throw new Error(`A neighboring rent-affordability statistic crossed into a landlord or screening claim: ${claim}`);
+  }
+}
+const madridRentalRegulation = deterministicApiFallback({ text: 'La regulación del alquiler en Madrid ha empujado a propietarios hacia contratos temporales' });
+if (madridRentalRegulation.result?.id !== 'measurement-rental-regulation-contract-shift'
+  || madridRentalRegulation.result?.sourceIds?.length || madridRentalRegulation.result?.evidenceLevel !== 'insufficient') {
+  throw new Error('The Catalonia-only seasonal-rental context crossed into a Madrid-specific claim.');
 }
 
 const reviewedAt = Date.parse('2026-11-16T12:00:00Z');

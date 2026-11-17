@@ -188,7 +188,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const sameSectorOutput = focus.id === 'sector-wage-comparison'
       && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(clauseText)
       && sectorNames.some((pattern) => pattern.test(normalizedClaim) && pattern.test(clauseText));
+    const sameLandlordMotive = focus.id === 'rental-landlord-motives'
+      && (/^(?:les|le|esa modalidad|esa forma)\b/.test(clauseText)
+        && /\b(flexibil\w*|seguridad|riesg\w*|rentabil\w*)\b/.test(clauseText)
+        && /\b(alquil\w*|arrendam\w*|temporad\w*|contrat\w*)\b/.test(clauseText)
+        || /\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?)\b/.test(clauseText)
+          && /\b(prefier\w*|prefer\w*)\b/.test(clauseText)
+          && /\b(alquil\w*|arrendam\w*|temporad\w*|contrat\w*)\b/.test(clauseText));
     if (sameSectorOutput) return true;
+    if (sameLandlordMotive) return true;
     // A clause such as “una parte se produce más barata” can refer back to
     // the preceding subject. A new named subject must remain a separate
     // proposition rather than silently inheriting this measurement contract.

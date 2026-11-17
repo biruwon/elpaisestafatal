@@ -175,6 +175,18 @@ export const tertiaryOverqualificationCitizenshipFitsClaim = (claim, item) => {
 const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t)
   && /\b(independiz\w*|emancip\w*|vivir por su cuenta|vivir por cuenta propia|vivir de forma independiente|vivir solo|mudarse solo)\b/.test(t);
+const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
+const rentalTenantScreeningExclusion = (t) => rentalSubject(t)
+  && /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*)\b/.test(t)
+  && /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
+const rentalRegulationContractShift = (t) => rentalSubject(t)
+  && /\b(regulaci\w*|topes?\b|control de precios|l[ií]mite\w* (?:al|del) alquiler|ley de vivienda)\b/.test(t)
+  && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
+const rentalLandlordMotives = (t) => rentalSubject(t)
+  && (/\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?|anfitri[oó]n\w*)\b/.test(t)
+    || /\b(viviend\w*|piso\w*|casas?|apartament\w*)\b[\w\s]{0,40}\b(vac[ií]a\w*|desocupad\w*|retirad\w*)\b/.test(t))
+  && /\b(mied\w*|temor\w*|riesg\w*|problem\w* legal\w*|flexibil\w*|prefier\w*|prefer\w*|rentabil\w*|seguridad jur[ií]dica)\b/.test(t)
+  && /\b(alquil\w*|arrendam\w*|vac[ií]a\w*|desocupad\w*|retir\w*|dej\w*|temporad\w*|temporal(?:es)?|contrat\w*)\b/.test(t);
 const foreignHousingPriceCause = (t) => /\b(viviend\w*|alquil\w*|renta\w*|piso\w*|casas?|mercado inmobiliario|precios? inmobiliarios?)\b/.test(t)
   && /\b(inmigr\w*|migrant\w*|extranjer\w*|no residentes?|comprador\w*|inversor\w*)\b/.test(t)
   && /\b(caus\w*|provoc\w*|encarec\w*|aument\w*|sub\w*|elev\w*|dispar\w*|presion\w*|retir\w*)\b/.test(t);
@@ -324,6 +336,46 @@ const focuses = [
     needs: ['vivienda independiente observada entre personas con jornada completa', 'ingresos netos y coste de alquiler o compra para la misma población, territorio y periodo', 'edad, tipo de hogar y ayudas económicas cuando se afirma un cambio para un grupo'],
     explanation: 'La jornada completa describe las horas trabajadas; por sí sola no mide el salario neto ni si una persona puede vivir por su cuenta.',
     limitation: 'Los índices de alquiler y compraventa no muestran qué proporción de personas a jornada completa vive de forma independiente. Para comprobar un cambio como «ya no» también hace falta comparar la misma población, territorio y periodo.',
+  },
+  {
+    id: 'rental-tenant-screening-exclusion', label: 'requisitos de acceso y rechazo de inquilinos',
+    when: rentalTenantScreeningExclusion,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['solicitudes y rechazos de alquiler desglosados por estabilidad de ingresos', 'requisitos de fianza, aval, seguro o solvencia aplicados en cada caso', 'misma población de solicitantes, territorio y periodo'],
+    explanation: 'Que se pidan garantías no indica cuántas personas con ingresos irregulares son rechazadas ni por qué.',
+    limitation: 'El esfuerzo medio del alquiler describe a hogares que ya alquilan; no mide solicitudes rechazadas ni selección por estabilidad de ingresos.',
+  },
+  {
+    id: 'rental-regulation-contract-shift', label: 'cambios de oferta y contrato atribuidos a la regulación del alquiler',
+    when: rentalRegulationContractShift,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['viviendas y contratos residenciales por duración y régimen, antes y después de la medida', 'misma zona y periodo, con una zona comparable no afectada', 'análisis que separe la medida de demanda, turismo, estacionalidad y nueva construcción'],
+    explanation: 'Un cambio en contratos o anuncios después de una norma no demuestra por sí solo que la norma lo causara.',
+    explanationEvidence: {
+      expiresAt: '2027-11-02', territories: ['ES', 'cataluna'],
+      when: (claim) => /\b(temporad\w*|temporal(?:es)?|habitual\w*)\b/.test(claim),
+      evidenceLabel: 'Contratos de temporada con fianza registrada en Cataluña',
+      dimensions: {
+        subject: 'contratos de alquiler de temporada con fianza registrada en el INCASÒL',
+        population: 'contratos de temporada registrados; no viviendas identificadas como retiradas del alquiler habitual',
+        period: '2023–2024', geography: 'Cataluña',
+        denominator: 'contratos de temporada con fianza depositada en cada año', unit: 'contratos registrados',
+      },
+      facts: [
+        'Como contexto, el registro de fianzas del INCASÒL contabilizó 9.330 contratos de temporada en 2023 y 13.517 en 2024 (+44,9 %).',
+        'La serie cuenta contratos con fianza registrada en Cataluña. No identifica viviendas que pasaron del alquiler habitual al temporal ni el motivo del cambio; por sí sola no mide un efecto de la regulación.',
+      ],
+      sources: [{ id: 'catalonia-seasonal-rental-deposits', title: 'Lloguer de temporada per trimestres fins al segon trimestre de 2026', publisher: 'Agència de l’Habitatge de Catalunya · INCASÒL', url: 'https://habitatge.gencat.cat/ca/dades/indicadors_estadistiques/estadistiques_de_construccio_i_mercat_immobiliari/mercat_de_lloguer/lloguer-de-temporada/', publishedAt: '2026-11-02', retrievedAt: '2026-11-17', role: 'primary' }],
+    },
+    limitation: 'Los índices generales de alquiler y el número de anuncios no distinguen viviendas convertidas, retiradas, vacías o nuevas ni aportan el contrafactual necesario para medir el efecto de una regulación.',
+  },
+  {
+    id: 'rental-landlord-motives', label: 'motivos de propietarios para retirar o cambiar el uso de una vivienda',
+    when: rentalLandlordMotives,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['cambios observados en viviendas retiradas, vacías o pasadas a contratos temporales', 'motivos declarados por una muestra representativa de propietarios que tomó esa decisión', 'si se alega flexibilidad, una medida concreta como duración, preaviso o disponibilidad de uso', 'territorio, periodo y comparación que permita separar el motivo alegado de otros cambios del mercado'],
+    explanation: 'El miedo o la preferencia que se atribuye a los propietarios debe contrastarse con sus decisiones y motivos declarados.',
+    limitation: 'Contar viviendas vacías no indica si estaban disponibles para alquilar ni por qué; las opiniones generales tampoco demuestran qué decisión tomó cada propietario.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',
